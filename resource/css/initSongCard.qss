@@ -1,0 +1,250 @@
+QWidget {
+    background-color: white;
+}
+
+QWidget#songCard {
+    border: 2px solid black;
+}
+
+/*设置标签文本左对齐*/
+QLabel,
+QPushButton,
+QToolButton {
+    text-align: left;
+    color: rgb(75, 75, 75);
+    font-size: 16px;
+    font: 16px;
+    background-color: transparent;
+    font-family: 'Microsoft YaHei';
+}
+
+QLabel#albumLinkBt,QLabel#songerLinkbt{
+    text-align: left;
+}
+
+QLabel#yearLabel {
+    width: 52px;
+}
+
+QLabel#sortModeLabel {
+    font-size: 16px;
+    /*font-weight: 500;
+    font-family: 'Microsoft YaHei Light';*/
+}
+
+/*设置按钮的样式*/
+QToolButton,
+QPushButton {
+    background-color: transparent;
+}
+
+QPushButton#albumLinkBt,
+QPushButton#songerLinkBt {
+    border: none;
+    text-align: left;
+}
+
+QPushButton#songerLinkBt:hover,
+QPushButton#albumLinkBt:hover {
+    color: rgb(150, 150, 150);
+}
+
+QToolButton#hidePlayBt:hover {
+    background-color: rgb(196, 196, 196);
+    border: transparent;
+    min-width: 68px;
+    height: 66px;
+}
+
+QToolButton#hideAddToBt:hover {
+    background-color: rgb(196, 196, 196);
+    border: transparent;
+    min-width: 66px;
+}
+
+
+
+QPushButton#sortModeButton {
+    /*color:rgb(79,150,169);*/
+    color: rgb(81, 154, 170);
+}
+
+QPushButton#sortModeButton:hover {
+    color: rgb(59, 165, 194);
+}
+
+QPushButton#loopModeButton,
+QPushButton#sortModeButton {
+    font-weight: 500;
+    font-size: 16px;
+}
+
+QPushButton#loopModeButton:hover {
+    color: rgb(130, 130, 130);
+
+}
+
+/*设置复选框的样式*/
+QCheckBox {
+    spacing: 15px;
+    color: black;
+    font-size: 18px;
+    font-family: 'Microsoft YaHei';
+    background-color: transparent;
+}
+
+QCheckBox::indicator {
+    width: 22px;
+    height: 22px;
+    border: none;
+}
+
+
+/*设置菜单样式*/
+QMenu {
+    background-color: rgb(242, 242, 242);
+    /*background-color: white;*/
+    font-size: 18px;
+    font: 18px "Microsoft YaHei";
+    padding: 5px 3px 16px 2px;
+    border: 1px solid rgb(120, 120, 120);
+}
+
+QMenu::right-arrow {
+    border-image: url(resource/images/右箭头.svg);
+    padding-right: 8px;
+}
+
+QMenu::separator {
+    height: 2px;
+    width: 140px;
+    background: rgb(145, 145, 145);
+    margin-right: 13px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: 13;
+}
+
+QMenu::item {
+    padding: 9px 13px 9px 13px;
+    
+}
+
+QMenu::item:selected {
+    border-width: 1px;
+    border-color: rgb(212, 212, 212);
+    background: rgb(218, 218, 218);
+    color: black;
+}
+
+QMenu#addToMenu{
+    padding: 8px 3px 8px 3px;
+    border: 1px solid rgb(204,204,204);
+}
+
+QMenu#addToMenu::item {
+    padding-left: 0px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    
+}
+
+QMenu#addToMenu::separator {
+    height: 2px;
+    width: 140px;
+    background: rgb(145, 145, 145);
+    margin-right: 2px;
+    margin-left: 2px;
+}
+
+QMenu#sortModeMenu {
+    font-size: 17px;
+    width: 158px;
+    height: 111px;
+    border: 1px solid rgb(41, 41, 41);
+    border-bottom: none;
+
+}
+
+QMenu#sortModeMenu::item {
+    width: 59;
+    height: 10;
+    color: black;
+    padding: 11px 80px 10px 12px;
+    margin: 1px 0px 1px 0px;
+}
+
+QMenu#sortModeMenu::item:default {
+    background: rgba(9, 158, 220, 0.79);
+}
+
+QMenu#sortModeMenu::item:selected {
+    /*border-width: 1px;*/
+    background: rgb(218, 218, 218);
+}
+
+QMenu#sortModeMenu::item:default:selected {
+    /*border-width: 1px;*/
+    background: rgba(9, 158, 240, 0.79);
+}
+
+/*设置列表视图样式*/
+QListWidget {
+    /*selection-color:white;*/
+    border: transparent;
+    min-width: 1021px;
+    outline: none;
+    alternate-background-color: white;
+    background: rgb(242, 242, 242);
+    padding: 0px;
+}
+
+/*设置鼠标悬浮时的颜色*/
+QListWidget::item:hover {
+    background-color: rgb(217, 217, 217);
+}
+
+/*设置项目选中时的颜色*/
+QListWidget::item:selected:!hover {
+    background-color: rgb(0, 153, 188);
+}
+
+
+
+QListWidget::item:hover:selected {
+    background-color: rgb(0, 107, 131);
+}
+
+/*设置竖直滚动条样式*/
+QScrollBar#LWidgetVScrollBar {
+    background: white;
+    width: 8px;
+}
+
+
+/*隐藏上箭头*/
+QScrollBar#LWidgetVScrollBar::sub-line {
+    background: transparent
+}
+
+/*隐藏下箭头*/
+QScrollBar#LWidgetVScrollBar::add-line {
+    background: transparent
+}
+
+QScrollBar#LWidgetVScrollBar::handle {
+    background: rgb(122, 122, 122);
+    border: 2px solid transparent;
+    border-radius: 4px;
+    min-height: 45px;
+}
+
+QScrollBar#LWidgetVScrollBar:hover {
+    width: 30px;
+}
+
+QScrollBar#LWidgetVScrollBar::handle:hover {
+    background: rgb(186, 186, 186);
+    border: 2px solid transparent;
+    border-radius: 4px;
+}

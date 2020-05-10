@@ -1,0 +1,30 @@
+QDialog {
+    background-color: white;
+    border: none;
+    /*border: 1px solid rgb(0, 153, 188);*/
+}
+
+QLabel {
+    font: 18px 'Microsoft YaHei';
+}
+
+QLabel#propertyLabel {
+    font: 20px 'Microsoft YaHei';
+}
+
+QLabel#songPath,QLabel#songer{
+    font-size:17px;
+}
+
+QPushButton {
+    background-color: rgb(204, 204, 204);
+    padding: 9px 65px 9px 65px;
+    font: 19px 'Microsoft YaHei';
+    border: transparent;
+}
+
+QPushButton:hover {
+    background-color: rgb(204, 204, 204);
+    border: 2px solid rgb(122, 122, 122);
+    padding: 7px 64px 7px 64px;
+}

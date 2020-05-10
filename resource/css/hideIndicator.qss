@@ -1,0 +1,15 @@
+QCheckBox {
+    spacing: 15px;
+    font: 18px 'Microsoft YaHei';
+    background-color: transparent;
+}
+
+QCheckBox::indicator {
+    width: 22px;
+    height: 22px;
+    border: none;
+}
+
+QCheckBox::indicator:checked {
+    border-image: url(resource/images/white_ok_18_18.png);
+}
