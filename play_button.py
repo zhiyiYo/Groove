@@ -10,14 +10,14 @@ class SongerPlayButton(QPushButton):
     def __init__(self):
         super().__init__()
 
-        self.mask = QBitmap('resource\\images\\mask.svg')
+        self.mask = QBitmap('resource\\images\\play_button_mask2.svg')
         self.resize(self.mask.size())
         self.setMask(self.mask)
 
     def paintEvent(self, e):
         painter = QPainter(self)
-        pix = QPixmap('resource\\images\\播放按钮2.png').scaled(
-            200, 200, Qt.KeepAspectRatio)
+        #painter.setRenderHint(QPainter.Antialiasing)
+        pix = QPixmap('resource\\images\\播放按钮_.png')
         painter.drawPixmap(0, 0, self.width(), self.height(), pix)
 
 

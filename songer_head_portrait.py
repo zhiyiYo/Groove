@@ -17,7 +17,7 @@ class Mask(QWidget):
     def paintEvent(self, e):
         painter = QPainter(self)
         pix = QPixmap('resource\\Songer Photos\\Carpenters\\Carpenters.jpg').scaled(
-            200, 200, Qt.KeepAspectRatio)
+            200, 200, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         painter.drawPixmap(0, 0, self.width(), self.height(), pix)
 
 
