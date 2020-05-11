@@ -4,8 +4,7 @@ from PyQt5.QtCore import Qt, QEvent
 from PyQt5.QtGui import QBitmap, QPainter, QPixmap
 from PyQt5.QtWidgets import QApplication, QPushButton, QWidget
 
-from songer_addTo_button import SongerAddToButton
-from songer_play_button import SongerPlayButton
+from my_button import SongerPlayButton,SongerAddToButton
 
 
 class SongerHeadPortrait(QWidget):
@@ -36,6 +35,9 @@ class SongerHeadPortrait(QWidget):
 
         self.addToButton.move(int(0.5*self.width()+39-0.5*self.playButton.width()),
                               int(0.5*self.height() - 0.5*self.playButton.height()+1))
+
+        self.addToButton.setToolTip('添加到')
+        self.playButton.setToolTip('播放')
 
         # 隐藏按钮
         self.playButton.setHidden(True)
