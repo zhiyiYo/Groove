@@ -111,7 +111,7 @@ QMenu {
 }
 
 QMenu::right-arrow {
-    border-image: url(resource/images/右箭头.svg);
+    border-image: url(resource/images/right_arrow.svg);
     padding-right: 8px;
 }
 

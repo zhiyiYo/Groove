@@ -4,9 +4,9 @@
 
 import sys
 
-from PyQt5.QtCore import Qt, QEvent
+from PyQt5.QtCore import Qt, QEvent, QPoint
 from PyQt5.QtGui import QBitmap, QPainter, QPixmap
-from PyQt5.QtWidgets import QApplication, QPushButton
+from PyQt5.QtWidgets import QApplication, QPushButton, QToolTip
 
 
 class SongerPlayButton(QPushButton):
@@ -17,7 +17,7 @@ class SongerPlayButton(QPushButton):
         # 隐藏边框
         self.setWindowFlags(Qt.FramelessWindowHint)
 
-        #设置悬浮提醒
+        # 设置悬浮提醒
         self.setToolTip('全部播放')
 
         # 设置鼠标没有hover时的遮罩
@@ -27,6 +27,11 @@ class SongerPlayButton(QPushButton):
 
         # 设置监听
         self.installEventFilter(self)
+
+        # 设置tooltip的显示位置
+
+        """ QToolTip.showText(QPoint(self.cursor().pos().x()-30,
+                                 self.cursor().pos().y()-20), '全部播放', self) """
 
     def paintEvent(self, e):
         """ 绘制背景 """
@@ -43,6 +48,7 @@ class SongerPlayButton(QPushButton):
                     'resource\\images\\play_button_mask_67_67.svg')
                 self.resize(self.mask.size())
                 self.setMask(self.mask)
+
             elif e.type() == QEvent.Leave:
                 self.mask = QBitmap(
                     'resource\\images\\play_button_mask_57_57.svg')
@@ -61,7 +67,7 @@ class SongerAddToButton(QPushButton):
         # 隐藏边框
         self.setWindowFlags(Qt.FramelessWindowHint)
 
-        #设置悬浮提示
+        # 设置悬浮提示
         self.setToolTip('添加到')
 
         # 设置遮罩
@@ -76,7 +82,7 @@ class SongerAddToButton(QPushButton):
         """ 绘制背景 """
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
-        pix = QPixmap('resource\\images\\歌手添加到按钮1.png')
+        pix = QPixmap('resource\\images\\歌手添加到按钮_65_65.png')
         painter.drawPixmap(0, 0, self.width(), self.height(), pix)
 
     def eventFilter(self, obj, e):

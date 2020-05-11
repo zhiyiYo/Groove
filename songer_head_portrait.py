@@ -1,10 +1,10 @@
 import sys
 
-from PyQt5.QtCore import Qt, QEvent
+from PyQt5.QtCore import Qt, QEvent,QPoint
 from PyQt5.QtGui import QBitmap, QPainter, QPixmap
-from PyQt5.QtWidgets import QApplication, QPushButton, QWidget
+from PyQt5.QtWidgets import QApplication, QPushButton, QWidget, QToolTip
 
-from my_button import SongerPlayButton,SongerAddToButton
+from my_button import SongerPlayButton, SongerAddToButton
 
 
 class SongerHeadPortrait(QWidget):
@@ -43,8 +43,10 @@ class SongerHeadPortrait(QWidget):
         # 安装监听
         self.installEventFilter(self)
 
-        #设置样式
+        # 设置样式
         self.setQss()
+
+        
 
     def paintEvent(self, e):
         painter = QPainter(self)
@@ -61,7 +63,7 @@ class SongerHeadPortrait(QWidget):
             elif event.type() == QEvent.Leave:
                 self.playButton.setHidden(True)
                 self.addToButton.setHidden(True)
-                
+
         return False
 
     def setQss(self):
@@ -76,9 +78,10 @@ class SongerHeadPortrait(QWidget):
                     } """
         self.setStyleSheet(qss)
 
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     demo = SongerHeadPortrait(
-        'resource\\Songer Photos\\H△G\\H△G.jpg')
+        'resource\\Songer Photos\\Charlie Puth\\Charlie Puth.jpg')
     demo.show()
     sys.exit(app.exec_())
