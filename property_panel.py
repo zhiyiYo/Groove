@@ -4,7 +4,7 @@ import re
 
 from PyQt5.QtCore import QSize, Qt, QRect
 from PyQt5.QtGui import QPixmap, QPainter, QPen, QColor
-from PyQt5.QtWidgets import (QAction, QApplication, QDialog, QHBoxLayout,
+from PyQt5.QtWidgets import (QAction, QApplication, QDialog, QHBoxLayout, QGraphicsDropShadowEffect,
                              QLabel, QPushButton, QTextBrowser)
 
 
@@ -189,6 +189,7 @@ class PropertyPanel(QDialog):
                            self.SHADOW_WIDTH, QPixmap(self.pixmaps[5]).scaled(self.width()-2*self.SHADOW_WIDTH, self.SHADOW_WIDTH))  # 下
 
     def paintEvent(self, event):
+        """ 绘制背景和阴影 """
         painter = QPainter(self)
         self.drawShadow(painter)
         # 绘制边框

@@ -1,0 +1,15 @@
+/*设置歌手名标签样式*/
+QLabel {
+    font: 17px 'Microsoft YaHei Light';
+    font-weight: 700;
+}
+
+/*设置悬浮提示气泡的样式*/
+QToolTip {
+    border: 1px solid rgb(209, 209, 209);
+    font: 15px 'Microsoft YaHei';
+    background: rgb(242, 242, 242);
+    padding: 5px 5px 5px 5px;
+    max-width: 80px;
+    max-height: 34px;
+}
