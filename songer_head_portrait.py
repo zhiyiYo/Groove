@@ -30,10 +30,10 @@ class SongerHeadPortrait(QWidget):
 
     def initWidget(self):
         """ 初始化小部件 """
-        self.playButton.move(int(0.5 * self.width() - 39 - 0.5 * self.playButton.width()),
+        self.playButton.move(int(0.5 * self.width() - 36 - 0.5 * self.playButton.width()),
                              int(0.5*self.height() - 0.5*self.playButton.height()+1))
 
-        self.addToButton.move(int(0.5*self.width()+39-0.5*self.playButton.width()),
+        self.addToButton.move(int(0.5*self.width()+36-0.5*self.playButton.width()),
                               int(0.5*self.height() - 0.5*self.playButton.height()+1))
 
         self.addToButton.setToolTip('添加到')
