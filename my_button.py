@@ -17,6 +17,9 @@ class SongerPlayButton(QPushButton):
         # 隐藏边框
         self.setWindowFlags(Qt.FramelessWindowHint)
 
+        #设置悬浮提醒
+        self.setToolTip('全部播放')
+
         # 设置鼠标没有hover时的遮罩
         self.mask = QBitmap('resource\\images\\play_button_mask_57_57.svg')
         self.resize(self.mask.size())
@@ -57,6 +60,9 @@ class SongerAddToButton(QPushButton):
 
         # 隐藏边框
         self.setWindowFlags(Qt.FramelessWindowHint)
+
+        #设置悬浮提示
+        self.setToolTip('添加到')
 
         # 设置遮罩
         self.mask = QBitmap('resource\\images\\play_button_mask_57_57.svg')

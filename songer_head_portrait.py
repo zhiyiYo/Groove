@@ -36,15 +36,15 @@ class SongerHeadPortrait(QWidget):
         self.addToButton.move(int(0.5*self.width()+36-0.5*self.playButton.width()),
                               int(0.5*self.height() - 0.5*self.playButton.height()+1))
 
-        self.addToButton.setToolTip('添加到')
-        self.playButton.setToolTip('播放')
-
         # 隐藏按钮
         self.playButton.setHidden(True)
         self.addToButton.setHidden(True)
 
         # 安装监听
         self.installEventFilter(self)
+
+        #设置样式
+        self.setQss()
 
     def paintEvent(self, e):
         painter = QPainter(self)
@@ -64,9 +64,21 @@ class SongerHeadPortrait(QWidget):
                 
         return False
 
+    def setQss(self):
+        """ 设置层叠样式 """
+        qss = """ QToolTip{
+                        border:1px solid rgb(209,209,209);
+                        font:15px 'Microsoft YaHei';
+                        background:rgb(242,242,242);
+                        padding:5px 5px 5px 5px;
+                        max-width:80px;
+                        max-height:34px;
+                    } """
+        self.setStyleSheet(qss)
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     demo = SongerHeadPortrait(
-        'resource\\Songer Photos\\Carpenters\\Carpenters.jpg')
+        'resource\\Songer Photos\\H△G\\H△G.jpg')
     demo.show()
     sys.exit(app.exec_())
