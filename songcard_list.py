@@ -73,6 +73,10 @@ class SongCardList(QListWidget):
         self.contextMenu = QMenu(self)
         self.addToMenu = QMenu('添加到', self)
 
+        #设置菜单的属性
+        #self.contextMenu.setWindowFlags(Qt.FramelessWindowHint)
+        #self.contextMenu.setAttribute(Qt.WA_TranslucentBackground)
+
         # 将动作添加到菜单中
         self.contextMenu.addActions([self.playAct, self.nextSongAct])
         self.addToMenu.addActions(

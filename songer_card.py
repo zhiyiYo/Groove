@@ -127,12 +127,12 @@ class SongerName(QWidget):
         self.setLayout(self.v_layout)
 
         # 设置自动换行
-        #self.songerNameLabel.setWordWrap(True)
+        # self.songerNameLabel.setWordWrap(True)
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     songCard = SongerCard(
-        'resource\\Songer Photos\\Carly Rae Jepsen\\Carly Rae Jepsen.jpg', 'Carly Rae Jepsen')
+        'resource\\Songer Photos\\Backstreet Boys\\Backstreet Boys.jpg', 'Backstreet Boys')
     songCard.show()
     sys.exit(app.exec_())

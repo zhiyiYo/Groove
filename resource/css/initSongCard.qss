@@ -106,13 +106,14 @@ QMenu {
     /*background-color: white;*/
     font-size: 18px;
     font: 18px "Microsoft YaHei";
-    padding: 5px 3px 16px 2px;
+    padding: 5px 0px 16px 0px;
     border: 1px solid rgb(120, 120, 120);
+    border-radius: 5px;
 }
 
 QMenu::right-arrow {
     border-image: url(resource/images/right_arrow.svg);
-    padding-right: 8px;
+
 }
 
 QMenu::separator {
@@ -126,7 +127,7 @@ QMenu::separator {
 }
 
 QMenu::item {
-    padding: 9px 13px 9px 13px;
+    padding: 7px 20px 7px 13px;
     
 }
 
@@ -236,7 +237,7 @@ QScrollBar#LWidgetVScrollBar::handle {
     background: rgb(122, 122, 122);
     border: 2px solid transparent;
     border-radius: 4px;
-    min-height: 45px;
+    /*min-height: 45px;*/
 }
 
 QScrollBar#LWidgetVScrollBar:hover {

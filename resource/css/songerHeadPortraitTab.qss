@@ -1,0 +1,42 @@
+QWidget#father,QWidget#songerHeadViewer {
+    background-color: white;
+}
+
+QScrollArea{
+    background-color: white;
+    border: none;
+}
+
+/*设置竖直滚动条样式*/
+QScrollBar {
+    background: white;
+    width: 3px;
+}
+
+
+/*隐藏上箭头*/
+QScrollBarr::sub-line {
+    background: transparent
+}
+
+/*隐藏下箭头*/
+QScrollBar::add-line {
+    background: transparent
+}
+
+QScrollBar::handle {
+    background: rgb(122, 122, 122);
+    border: 2px solid transparent;
+    border-radius: 4px;
+    min-height: 45px;
+}
+
+QScrollBar:hover {
+    width: 30px;
+}
+
+QScrollBar::handle:hover {
+    background: rgb(186, 186, 186);
+    border: 2px solid transparent;
+    border-radius: 4px;
+}

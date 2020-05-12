@@ -21,10 +21,13 @@ QPushButton {
     padding: 9px 65px 9px 65px;
     font: 19px 'Microsoft YaHei';
     border: transparent;
+    border-radius: 4px;
 }
 
 QPushButton:hover {
-    background-color: rgb(204, 204, 204);
-    border: 2px solid rgb(122, 122, 122);
+    background-color: rgb(230,230,230);
+    border:transparent;
+    border-radius: 4px;
+    /*border: 2px solid rgb(122, 122, 122);*/
     padding: 7px 64px 7px 64px;
 }
