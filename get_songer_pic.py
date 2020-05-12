@@ -1,6 +1,6 @@
 import os
 import re
-from json import dump
+from json import dump, load
 from time import sleep
 import requests
 from selenium.webdriver import Firefox, FirefoxOptions
@@ -17,7 +17,7 @@ class SongerInfo():
     def __init__(self, target_path):
         """ 初始化属性 """
         self.cwd = os.getcwd()
-        self.songerInfo_list = []
+
         self.songInfo = SongInfo(target_path)
         self.songer_pic_folder = os.path.join(
             self.cwd, 'resource\\Songer Photos')
@@ -25,6 +25,13 @@ class SongerInfo():
 
     def getSongerInfo(self):
         """ 开始爬取歌手信息 """
+        # 从json文件中读取歌手信息
+        with open('Data\songerInfo.json', encoding='utf-8') as f:
+            try:
+                self.songerInfo_list = load(f)
+            except:
+                self.songerInfo_list = []
+
         # 确定是否已创建用于存放歌手图片的目录
         if not os.path.exists(self.songer_pic_folder):
             os.mkdir(self.songer_pic_folder)
@@ -33,14 +40,19 @@ class SongerInfo():
             print(
                 f'\r当前进度:{self.songInfo.songInfo_list.index(info_dict)/len(self.songInfo.songInfo_list):%}', end='', flush=True)
             self.songer = info_dict['songer']
-            self.sub_songer_pic_folder = os.path.join(
-                self.songer_pic_folder, self.songer)
-            # 检查目录下是否已经包含了用于存放歌手图片的子目录
-            if not os.path.exists(self.sub_songer_pic_folder):
-                # 传入参数
-                url = self.url + self.songer
-                self.crawlInfo(info_dict, url)
+            # 过滤歌手名
+            Match = re.match(r'(.+)、(.+)', self.songer)
+            # 如果不是合唱就爬取
+            if not Match:
+                self.sub_songer_pic_folder = os.path.join(
+                    self.songer_pic_folder, self.songer)
+                # 检查目录下是否已经包含了用于存放歌手图片的子目录
+                if not os.path.exists(self.sub_songer_pic_folder):
+                    # 传入参数
+                    url = self.url + self.songer
+                    self.crawlInfo(info_dict, url)
 
+        # 更新json文件
         with open('Data\\songerInfo.json', 'w', encoding='utf-8') as f:
             dump(self.songerInfo_list, f)
 
