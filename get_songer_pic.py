@@ -42,7 +42,7 @@ class SongerInfo():
             self.songer = info_dict['songer']
             # 过滤歌手名
             Match = re.match(r'(.+)、(.+)', self.songer)
-            # 如果不是合唱就爬取
+            # 如果不是合唱就直接爬取
             if not Match:
                 self.sub_songer_pic_folder = os.path.join(
                     self.songer_pic_folder, self.songer)
@@ -51,6 +51,19 @@ class SongerInfo():
                     # 传入参数
                     url = self.url + self.songer
                     self.crawlInfo(info_dict, url)
+            else:
+                # 分离合唱歌手
+                songer_list = [songer.strip()
+                               for songer in Match.group().split('、')]
+                for songer in songer_list:
+                    self.songer = songer
+                    self.sub_songer_pic_folder = os.path.join(
+                        self.songer_pic_folder, self.songer)
+                    # 检查目录下是否已经包含了用于存放歌手图片的子目录
+                    if not os.path.exists(self.sub_songer_pic_folder):
+                        # 传入参数
+                        url = self.url + self.songer
+                        self.crawlInfo(info_dict, url)
 
         # 更新json文件
         with open('Data\\songerInfo.json', 'w', encoding='utf-8') as f:

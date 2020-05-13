@@ -1,11 +1,32 @@
-QWidget#father,QWidget#songerHeadViewer {
+QWidget#father,
+QWidget#songerHeadViewer {
     background-color: white;
 }
 
-QScrollArea{
+QScrollArea {
     background-color: white;
     border: none;
 }
+
+
+QGroupBox {
+    font: 17px 'Microsoft YaHei';
+    color: rgb(46, 134, 153);
+    border: none;
+    padding: 5px;
+}
+
+QGroupBox::title {
+    color: rgb(46, 134, 153);
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    margin-bottom: 10px;
+    /*left: 10px;
+    top: 0px;
+    padding: 5px;*/
+}
+
+
 
 /*设置竖直滚动条样式*/
 QScrollBar {

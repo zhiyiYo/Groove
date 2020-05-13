@@ -35,7 +35,8 @@ class SongerHeadPortraitTab(QWidget):
         # 初始化歌手头像和布局
         self.createSongerHeadPortraits()
         self.createSongerGroup()
-        self.initLayout()
+        self.addSongerToGroup()
+        self.initLayout(5)
         self.initWidget()
 
         # 设置层叠样式
@@ -75,7 +76,7 @@ class SongerHeadPortraitTab(QWidget):
         for songerInfo_dict in self.songerInfo_list:
             songerName = songerInfo_dict['songer']
             songerPicPath = 'resource\\Songer Photos\\' + \
-                songerName + '\\'+songerInfo_dict[' songer ']+'.jpg '
+                songerName + '\\'+songerInfo_dict['songer']+'.jpg'
             # 实例化歌手头像窗口
             songerCard = SongerCard(songerPicPath, songerName)
             # 将包含头像窗口，歌手名，歌手名首字母的字典插入列表
@@ -92,12 +93,13 @@ class SongerHeadPortraitTab(QWidget):
         # 获取第一个字符的大写首字母
         first_letter_set = {pinyin.get_initial(
             first_char)[0].upper() for first_char in first_char_set}
-        first_letter_set_copy = first_char_set.copy()
+
+        first_letter_set_copy = first_letter_set.copy()
         for letter in first_letter_set_copy:
             # 匹配英文字母
             Match = re.match(r'[A-Z]', letter)
             if not Match:
-                first_letter_set.pop(letter)
+                first_letter_set.remove(letter)
                 first_letter_set.add('...')
 
         # 创建分组
@@ -133,30 +135,37 @@ class SongerHeadPortraitTab(QWidget):
                     songerHeadPortrait_dict['songerCard'])
                 songerHeadGroup_dict['firstLetter'] = '...'
 
-    def initLayout(self):
+    def initLayout(self, column):
         """ 初始化布局 """
 
         for songerHeadGroup_dict in self.songerHeadGroup_dict_list:
             # 根据每个分组含有的歌手数量计算网格的行数和列数
-            columns = range(5)
-            rows = range(len(songerHeadGroup_dict['songer_list']) // 5 + 1)
+            columns = range(column)
+            rows = range((len(songerHeadGroup_dict['songer_list']) - 1) // 5 + 1)
+            gridLayout = songerHeadGroup_dict['gridLayout']
+            # 设置网格的行距
+            gridLayout.setVerticalSpacing(30)
+
             # 设置网格大小
             for column in columns:
-                songerHeadGroup_dict['gridLayout'].setColumnMinimumWidth(
+                gridLayout.setColumnMinimumWidth(
                     column, 224)
             for row in rows:
-                songerHeadGroup_dict['gridLayout'].setRowMinimumHeight(
+                gridLayout.setRowMinimumHeight(
                     row, 266)
 
             # 向网格中添加小部件
             for index, songerHeadPortrait in enumerate(songerHeadGroup_dict['songer_list']):
                 x = index // 5
                 y = index-5*x
-                songerHeadGroup_dict['gridLayout'].addWidget(
+                gridLayout.addWidget(
                     songerHeadPortrait, x, y, 1, 1)
 
+            self.v_layout.addWidget(songerHeadGroup_dict['group'])
+            self.v_layout.addSpacing(10)
+
         # 设置歌手头像视图窗口的布局
-        self.songerHeadViewer.setLayout(self.gridLayout)
+        self.songerHeadViewer.setLayout(self.v_layout)
 
         # 将歌手头像窗口添加到滚动区域中
         self.scrollArea.setWidget(self.songerHeadViewer)
