@@ -1,0 +1,20 @@
+QWidget#songerTabInterface {
+    background-color: white;
+}
+
+QPushButton#randomPlayBt {
+    background-color: white;
+    border: none;
+    margin-left: 17px;
+}
+
+QLabel {
+    font-size: 16px;
+    font-family: 'Microsoft YaHei';
+}
+
+QLabel#AToZ {
+    padding-top: 1px;
+    color:rgb(102, 102, 102);
+    font:16px 'Microsoft YaHei';
+}

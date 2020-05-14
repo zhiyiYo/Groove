@@ -10,23 +10,26 @@ QScrollArea {
 
 
 QGroupBox {
-    font: 17px 'Microsoft YaHei';
-    color: rgb(46, 134, 153);
+    font: 18px 'Microsoft YaHei Light';
+    font-weight: bold;
+    color: rgb(0,107,131);
     border: none;
-    padding: 5px;
+    margin-top: 20px;
 }
 
 QGroupBox::title {
-    color: rgb(46, 134, 153);
     subcontrol-origin: margin;
     subcontrol-position: top left;
-    margin-bottom: 10px;
-    /*left: 10px;
-    top: 0px;
-    padding: 5px;*/
+
 }
 
-
+QLabel#firstLetter{
+    font: 18px 'Microsoft YaHei Light';
+    font-weight: bold;
+    color: rgb(0,107,131);
+    padding-left: 22px;
+    background-color: white;
+}
 
 /*设置竖直滚动条样式*/
 QScrollBar {

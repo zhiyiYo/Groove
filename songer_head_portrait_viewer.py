@@ -2,30 +2,32 @@ import json
 import sys
 import re
 import pinyin
-from PyQt5.QtCore import QEvent, QPoint, Qt
+from PyQt5.QtCore import QPoint, Qt
 from PyQt5.QtGui import QBitmap, QPainter, QPixmap
 from PyQt5.QtWidgets import (
     QApplication, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QScrollArea,
     QScrollBar, QVBoxLayout, QWidget)
 
-from detect_Chinese import is_Chinese
 from songer_card import SongerCard
 
 
-class SongerHeadPortraitTab(QWidget):
+class SongerHeadPortraitViewer(QWidget):
     """ 创建一个包含所有歌手头像的界面 """
 
     def __init__(self):
         super().__init__()
 
-        self.resize(1267, 684)
+        self.resize(1267, 638)
 
         # 实例化一个滚动区域
         self.scrollArea = QScrollArea(self)
-        self.songerHeadViewer = QWidget()
+        self.songerHeadViewer = Widget()
+
+        # 实例化标题栏
+        self.firstLetterLabel = QLabel('A', self)
 
         # 实例化滚动条
-        self.scrollBar = QScrollBar(self)
+        # self.scrollBar = QScrollBar(self)
 
         # 实例化布局
         self.all_h_layout = QHBoxLayout()
@@ -48,18 +50,22 @@ class SongerHeadPortraitTab(QWidget):
         self.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         # 将两个滚动条关联起来
-        self.scrollBar.setMaximum(
+        """ self.scrollBar.setMaximum(
             self.scrollArea.verticalScrollBar().maximum())
 
         self.scrollBar.valueChanged.connect(
             lambda: self.scrollArea.verticalScrollBar().setValue(self.scrollBar.value()))
 
         self.scrollArea.verticalScrollBar().valueChanged.connect(
-            lambda: self.scrollBar.setValue(self.scrollArea.verticalScrollBar().value()))
+            lambda: self.scrollBar.setValue(self.scrollArea.verticalScrollBar().value())) """
+
+        # 设置标题栏的位置
+        self.firstLetterLabel.setGeometry(0, 0, self.width(), 47)
 
         # 分配ID
         self.setObjectName('father')
         self.songerHeadViewer.setObjectName('songerHeadViewer')
+        self.firstLetterLabel.setObjectName('firstLetter')
 
     def createSongerHeadPortraits(self):
         """ 创建歌手头像窗口列表 """
@@ -135,17 +141,17 @@ class SongerHeadPortraitTab(QWidget):
                     songerHeadPortrait_dict['songerCard'])
                 songerHeadGroup_dict['firstLetter'] = '...'
 
-    def initLayout(self, column):
+    def initLayout(self, column_num):
         """ 初始化布局 """
 
         for songerHeadGroup_dict in self.songerHeadGroup_dict_list:
             # 根据每个分组含有的歌手数量计算网格的行数和列数
-            columns = range(column)
-            rows = range((len(songerHeadGroup_dict['songer_list']) - 1) // 5 + 1)
+            columns = range(column_num)
+            rows = range(
+                (len(songerHeadGroup_dict['songer_list']) - 1) // 5 + 1)
             gridLayout = songerHeadGroup_dict['gridLayout']
             # 设置网格的行距
-            gridLayout.setVerticalSpacing(30)
-
+            gridLayout.setVerticalSpacing(20)
             # 设置网格大小
             for column in columns:
                 gridLayout.setColumnMinimumWidth(
@@ -153,13 +159,16 @@ class SongerHeadPortraitTab(QWidget):
             for row in rows:
                 gridLayout.setRowMinimumHeight(
                     row, 266)
-
             # 向网格中添加小部件
             for index, songerHeadPortrait in enumerate(songerHeadGroup_dict['songer_list']):
                 x = index // 5
                 y = index-5*x
                 gridLayout.addWidget(
                     songerHeadPortrait, x, y, 1, 1)
+            # 如果歌手数小于五，就在右侧增加弹簧
+            offset = column - len(songerHeadGroup_dict['songer_list'])
+            for i in range(offset):
+                gridLayout.setColumnStretch(i+offset-1, 1)
 
             self.v_layout.addWidget(songerHeadGroup_dict['group'])
             self.v_layout.addSpacing(10)
@@ -172,18 +181,27 @@ class SongerHeadPortraitTab(QWidget):
 
         # 设置全局布局
         self.all_h_layout.addWidget(self.scrollArea)
-        self.all_h_layout.addWidget(self.scrollBar)
         self.setLayout(self.all_h_layout)
 
     def setQss(self):
         """ 设置层叠样式 """
-        with open('resource\css\songerHeadPortraitTab.qss', encoding='utf-8') as f:
+        with open('resource\css\songerHeadPortraitViewer.qss', encoding='utf-8') as f:
             qss = f.read()
             self.setStyleSheet(qss)
 
 
+class Widget(QWidget):
+    """ 自定义滚动区域 """
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+    """ def wheelEvent(self, e):
+        print(self.parent().parent().parent().songerHeadGroup_dict_list[7]['group'].geometry()) """
+
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    demo = SongerHeadPortraitTab()
+    demo = SongerHeadPortraitViewer()
     demo.show()
     sys.exit(app.exec_())

@@ -1,5 +1,6 @@
 import sys
 import time
+import json
 from PyQt5.QtCore import QPoint, QSize, Qt, QEvent
 from PyQt5.QtGui import QContextMenuEvent, QIcon
 from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
@@ -35,6 +36,7 @@ class SongCardList(QListWidget):
 
         # 设置层叠样式
         self.setQss()
+        # 更新json文件
 
     def initWidget(self):
         """ 初始化小部件 """
@@ -73,10 +75,6 @@ class SongCardList(QListWidget):
         self.contextMenu = QMenu(self)
         self.addToMenu = QMenu('添加到', self)
 
-        #设置菜单的属性
-        #self.contextMenu.setWindowFlags(Qt.FramelessWindowHint)
-        #self.contextMenu.setAttribute(Qt.WA_TranslucentBackground)
-
         # 将动作添加到菜单中
         self.contextMenu.addActions([self.playAct, self.nextSongAct])
         self.addToMenu.addActions(
@@ -111,20 +109,21 @@ class SongCardList(QListWidget):
 
         for i in range(len(self.songInfo.songInfo_list)):
             # 添加空项目
-            songFile = self.songInfo.songInfo_list[i]
-            songFile['index'] = i
+            songInfo_dict = self.songInfo.songInfo_list[i]
+            songInfo_dict['index'] = i
             self.item = QListWidgetItem()
 
             # 将项目的内容重置为自定义类
             self.song_card = SongCard(
-                songFile['songname'], songFile['songer'],
-                songFile['album'], songFile['tcon'], songFile['year'], songFile['duration'])
+                songInfo_dict['songname'], songInfo_dict['songer'],
+                songInfo_dict['album'], songInfo_dict['tcon'], songInfo_dict['year'], songInfo_dict['duration'])
+
             self.song_card.resize(1150, 68)
             self.item.setSizeHint(QSize(self.song_card.width(), 66))
             self.addItem(self.item)
             self.setItemWidget(self.item, self.song_card)
             # 通过whatsthis记录每个项目对应的路径和下标
-            self.item.setWhatsThis(str(songFile))
+            self.item.setWhatsThis(str(songInfo_dict))
             # 将项目添加到项目列表中
             self.song_card_list.append(self.song_card)
             self.item_list.append(self.item)

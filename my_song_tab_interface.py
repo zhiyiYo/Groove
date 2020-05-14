@@ -48,7 +48,6 @@ class MySongTabInterface(QWidget):
         """ 初始化小部件的属性 """
 
         # 设置鼠标光标
-
         self.sortModeButton.setCursor(Qt.PointingHandCursor)
         self.loopModeButton.setCursor(Qt.PointingHandCursor)
 

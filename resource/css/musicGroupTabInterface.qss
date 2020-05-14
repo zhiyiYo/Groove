@@ -9,7 +9,7 @@ QLabel#myMusicLabel {
 }
 
 /*设置竖直滚动条样式*/
-QScrollBar{
+QScrollBar {
     background: white;
     width: 3px;
 }
@@ -28,7 +28,7 @@ QScrollBar::add-line {
 QScrollBar::handle {
     background: rgb(122, 122, 122);
     border: 0px solid transparent;
-    padding-left:2px;
+    padding-left: 2px;
 }
 
 /* QScrollBar:hover {
@@ -42,5 +42,3 @@ QScrollBar::handle {
     border: 2px solid transparent;
 
 } */
-
-

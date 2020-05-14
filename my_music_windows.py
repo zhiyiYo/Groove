@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
                              QTabWidget, QVBoxLayout, QWidget)
 
 from my_song_tab_interface import MySongTabInterface
+from songer_tab_interface import SongerTabInterface
 
 
 class MyMusicWindows(QTabWidget):
@@ -16,7 +17,7 @@ class MyMusicWindows(QTabWidget):
 
         # 创建三个标签窗口
         self.songTag = MySongTabInterface(songs_folder)
-        self.songerTag = QWidget()
+        self.songerTag = SongerTabInterface()
         self.albumTag = QWidget()
 
         # 初始化MyMusicWindows的属性
@@ -34,14 +35,14 @@ class MyMusicWindows(QTabWidget):
         """ 初始化子类的一些属性 """
         # 允许拖动标签
         self.resize(1276, 733)
-        self.setMovable(True)
+        # self.setMovable(True)
         self.setUsesScrollButtons(False)
 
         # 分配ID
         self.setObjectName('MyMusicWindows')
 
         # 设置监听
-        #self.tabBar().installEventFilter(self)
+        # self.tabBar().installEventFilter(self)
 
     def setQss(self):
         """ 设置层叠样式表 """
@@ -55,7 +56,7 @@ class MyMusicWindows(QTabWidget):
             QEvent.MouseButtonPress, QEvent.MouseButtonRelease] and event.button() == Qt.LeftButton
         if obj == self.tabBar() and event_cond:
             tabIndex = self.tabBar().tabAt(event.pos())
-            if event.type() == QEvent.MouseButtonPress and tabIndex != -1:            
+            if event.type() == QEvent.MouseButtonPress and tabIndex != -1:
                 return True
             elif event.type() == QEvent.MouseButtonRelease and tabIndex != -1:
                 self.setCurrentIndex(tabIndex)

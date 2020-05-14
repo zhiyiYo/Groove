@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
                              QScrollBar, QVBoxLayout, QWidget)
 
 from my_music_windows import MyMusicWindows
+
 from getfont import onLoadFont
 
 
@@ -69,7 +70,9 @@ class MusicGroupTabInterface(QWidget):
 
         self.myMusicWindows.songTag.songCardListWidget.verticalScrollBar().valueChanged.connect(
             lambda: self.scrollBar.setValue(self.myMusicWindows.
-            songTag.songCardListWidget.verticalScrollBar().value()))
+                                            songTag.songCardListWidget.verticalScrollBar().value()))
+
+        #self.myMusicWindows.currentChanged.connect(self.changeTabEvent)
 
         # 分配ID
         self.setObjectName('musicGroupTabInterface')
@@ -84,8 +87,8 @@ class MusicGroupTabInterface(QWidget):
 
     def resizeEvent(self, e: QResizeEvent):
         """ 当窗口大小发生改变时隐藏小部件 """
-        self.myMusicWindows.songTag.songCardListWidget.setLineWidth(self.width()-33)
-        
+        self.myMusicWindows.songTag.songCardListWidget.setLineWidth(
+            self.width()-33)
 
         if self.width() < 1156:
             # 窗口宽度大于956px且小于1156时显示年份标签，隐藏专辑按钮
@@ -99,6 +102,41 @@ class MusicGroupTabInterface(QWidget):
                 song_card.albumButton.show()
                 song_card.yearTconDuration.durationLabel.show()
 
+    def changeTabEvent(self, index):
+        """ 当前标签窗口改变时更改滚动条的绑定对象 """
+
+        if index == 0:
+            self.myMusicWindows.songerTag.songerHeadPortraitViewer.scrollArea.verticalScrollBar().setValue(0)
+            """ self.scrollBar.setMaximum(
+                self.myMusicWindows.songTag.songCardListWidget.verticalScrollBar().maximum())
+            #更新滚动条的当前值
+            self.scrollBar.setValue(
+                self.myMusicWindows.songTag.songCardListWidget.verticalScrollBar().value())
+
+            # 将信号连接到槽函数
+            self.scrollBar.valueChanged.connect(
+                lambda: self.myMusicWindows.songTag.songCardListWidget.
+                verticalScrollBar().setValue(self.scrollBar.value()))
+
+            self.myMusicWindows.songTag.songCardListWidget.verticalScrollBar().valueChanged.connect(
+                lambda: self.scrollBar.setValue(self.myMusicWindows.
+                                                songTag.songCardListWidget.verticalScrollBar().value())) """
+        elif index == 1:
+            self.myMusicWindows.songTag.songCardListWidget.verticalScrollBar().setValue(0)
+            """ self.scrollBar.setMaximum(
+                self.myMusicWindows.songerTag.songerHeadPortraitViewer.scrollArea.verticalScrollBar().maximum())
+            self.scrollBar.setValue(
+                self.myMusicWindows.songerTag.songerHeadPortraitViewer.scrollArea.verticalScrollBar().value())
+
+            # 将信号连接到槽函数
+            self.scrollBar.valueChanged.connect(
+                lambda: self.myMusicWindows.songerTag.songerHeadPortraitViewer.scrollArea.
+                verticalScrollBar().setValue(self.scrollBar.value()))
+
+            self.myMusicWindows.songerTag.songerHeadPortraitViewer.scrollArea.verticalScrollBar().valueChanged.connect(
+                lambda: self.scrollBar.setValue(self.myMusicWindows.
+                                                songTag.songCardListWidget.verticalScrollBar().value()))
+ """
 
 if __name__ == "__main__":
 
@@ -110,5 +148,5 @@ if __name__ == "__main__":
 
     demo = MusicGroupTabInterface('D:\\KuGou')
     demo.show()
-    
+
     sys.exit(app.exec_())
