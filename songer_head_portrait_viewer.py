@@ -27,7 +27,7 @@ class SongerHeadPortraitViewer(QWidget):
         self.firstLetterLabel = QLabel('A', self)
 
         # 实例化滚动条
-        # self.scrollBar = QScrollBar(self)
+        #self.scrollBar = QScrollBar(self)
 
         # 实例化布局
         self.all_h_layout = QHBoxLayout()
@@ -48,6 +48,9 @@ class SongerHeadPortraitViewer(QWidget):
         """ 初始化歌手头像 """
         # 隐藏滚动区域的自带滚动条
         self.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        #设置滚动条的步长
+        self.scrollArea.verticalScrollBar().setSingleStep(40)
 
         # 将两个滚动条关联起来
         """ self.scrollBar.setMaximum(
@@ -181,6 +184,7 @@ class SongerHeadPortraitViewer(QWidget):
 
         # 设置全局布局
         self.all_h_layout.addWidget(self.scrollArea)
+        #self.all_h_layout.addWidget(self.scrollBar)
         self.setLayout(self.all_h_layout)
 
     def setQss(self):

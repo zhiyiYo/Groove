@@ -53,13 +53,13 @@ QToolButton#hidePlayBt:hover {
     background-color: rgb(196, 196, 196);
     border: transparent;
     min-width: 68px;
-    height: 66px;
+    height: 68px;
 }
 
 QToolButton#hideAddToBt:hover {
     background-color: rgb(196, 196, 196);
     border: transparent;
-    min-width: 66px;
+    min-width: 68px;
 }
 
 
