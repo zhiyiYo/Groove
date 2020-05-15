@@ -6,7 +6,7 @@ QLabel {
     font: 18px 'Microsoft YaHei';
 }
 
-QLabel#songPath{
+QLabel#songPath {
     font: 17px 'Microsoft YaHei';
 }
 
@@ -25,7 +25,7 @@ QLineEdit {
     selection-background-color: rgb(0, 153, 188);
 }
 
-QLineEdit#songer{
+QLineEdit#songer {
     font: 16px 'Microsoft YaHei';
 }
 
@@ -45,6 +45,14 @@ QPushButton:hover {
     background-color: rgb(230, 230, 230);
 }
 
-QToolButton{
+QToolButton {
     background: transparent;
+}
+
+QToolTip {
+    border: 1px solid rgb(209, 209, 209);
+    font: 15px 'Microsoft YaHei';
+    background: rgb(242, 242, 242);
+    padding: 5px 5px 5px 5px;
+    height:30px;
 }

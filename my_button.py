@@ -4,8 +4,8 @@
 
 import sys
 
-from PyQt5.QtCore import Qt, QEvent, QPoint
-from PyQt5.QtGui import QBitmap, QPainter, QPixmap, QBrush
+from PyQt5.QtCore import Qt, QEvent, QPoint, QTimer
+from PyQt5.QtGui import QBitmap, QPainter, QPixmap, QBrush, QEnterEvent
 from PyQt5.QtWidgets import QApplication, QPushButton, QToolTip
 
 
@@ -22,8 +22,6 @@ class SongerPlayButton(QPushButton):
 
         # 设置鼠标进入标志位
         self.enter = False
-
-        # 设置悬浮提醒
         self.setToolTip('全部播放')
 
         # 设置背景图
@@ -32,10 +30,6 @@ class SongerPlayButton(QPushButton):
         # 设置监听
         self.installEventFilter(self)
 
-        # 设置tooltip的显示位置
-
-        """ QToolTip.showText(QPoint(self.cursor().pos().x()-30,
-                                 self.cursor().pos().y() - 20), '全部播放', self) """
 
     def paintEvent(self, e):
         """ 绘制背景 """
@@ -59,15 +53,12 @@ class SongerPlayButton(QPushButton):
         """ hover时变大,没有hover时变小 """
         if obj == self:
             if e.type() == QEvent.Enter:
-                self.enter = True
-                self.update()
-
+                self.enter = True 
+                self.update()    
             elif e.type() == QEvent.Leave:
                 self.enter = False
                 self.update()
-
         return False
-
 
 class SongerAddToButton(QPushButton):
     """ 歌手头像上的添加到按钮 """

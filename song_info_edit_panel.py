@@ -5,11 +5,11 @@ import re
 import sys
 
 from mutagen import File
-from PyQt5.QtCore import QEvent, QRect, QRegExp, QSize, Qt
-from PyQt5.QtGui import (QColor, QContextMenuEvent, QIcon, QPainter, QPen,
-                         QPixmap, QRegExpValidator)
+from PyQt5.QtCore import QEvent, QRect, QRegExp, QSize, Qt, QPoint, QTimer
+from PyQt5.QtGui import (QColor, QContextMenuEvent, QIcon, QPainter, QPen, QHelpEvent,
+                         QPixmap, QRegExpValidator, QFont)
 from PyQt5.QtWidgets import (QAction, QApplication, QDialog,
-                             QGraphicsDropShadowEffect, QHBoxLayout, QLabel,
+                             QGraphicsDropShadowEffect, QHBoxLayout, QLabel, QToolTip,
                              QLineEdit, QMenu, QPushButton, QToolButton)
 
 from modify_songInfo import modifySongInfo
@@ -46,7 +46,7 @@ class SongInfoEditPanel(QDialog):
         self.albumSongerLabel = QLabel('专辑歌手', self)
         self.editInfoLabel = QLabel('编辑歌曲信息', self)
         self.songPath = QLabel(songInfo['song_path'], self)
-        self.emptyTrackErrorLabel = QLabel(self)
+        self.emptyTrackErrorLabel = ErrorLabel(self)
 
         # 实例化单行输入框
         self.diskEditLine = LineEdit('1', self)
@@ -102,7 +102,7 @@ class SongInfoEditPanel(QDialog):
         self.saveButton.setFixedSize(165, 41)
         self.cancelButton.setFixedSize(165, 41)
 
-        #如果曲目为空就禁用保存按钮
+        # 如果曲目为空就禁用保存按钮
         if not self.trackNumEditLine.text():
             self.saveButton.setEnabled(False)
 
@@ -113,7 +113,8 @@ class SongInfoEditPanel(QDialog):
         self.emptyTrackErrorLabel.move(
             7 + self.SHADOW_WIDTH, 224 + self.SHADOW_WIDTH)
         self.emptyTrackErrorLabel.setHidden(True)
-        self.emptyTrackErrorLabel.setToolTip('曲目必须是1000以下的数字')
+        # self.emptyTrackErrorLabel.setToolTip('曲目必须是1000以下的数字')
+        self.installEventFilter(self)
 
         # 给输入框设置过滤器
         rex_trackNum = QRegExp(r'(\d)|([1-9]\d*)')
@@ -231,12 +232,17 @@ class SongInfoEditPanel(QDialog):
 
     def saveInfo(self):
         """ 保存标签卡信息 """
-        self.songInfo['songname'] = self.songerNameEditLine.text()
+        self.songInfo['songname'] = self.songNameEditLine.text()
         self.songInfo['songer'] = self.songerNameEditLine.text()
-        self.songInfo['album'] = self.albumSongerEditLine.text()
-        track_tuple = (int(self.trackNumEditLine.text()),
-                       eval(self.songInfo['tracknumber'])[1])
-        self.songInfo['tracknumber'] = str(track_tuple)
+        self.songInfo['album'] = self.albumNameEditLine.text()
+        #根据后缀名选择曲目标签的写入方式
+        if self.songInfo['suffix']=='.m4a':
+            track_tuple = (int(self.trackNumEditLine.text()),
+                        eval(self.songInfo['tracknumber'])[1])
+            self.songInfo['tracknumber'] = str(track_tuple)
+        else:
+            self.songInfo['tracknumber']=self.trackNumEditLine.text()
+            
         self.songInfo['tcon'] = self.tconEditLine.text()
         self.songInfo['year'] = self.yearEditLine.text()[:4]
         modifySongInfo(self.id_card, self.songInfo)
@@ -323,14 +329,42 @@ class LineEdit(QLineEdit):
 
     def eventFilter(self, obj, e):
         """ 当鼠标进入或离开按钮时改变按钮的图片 """
-        if obj == self.clearButton:
-            if e.type() == QEvent.Enter:
-                self.clearButton.setIcon(
-                    QIcon('resource\\images\\clearInfo_cross_hover.png'))
-            elif e.type() == QEvent.Leave:
-                self.clearButton.setIcon(
-                    QIcon('resource\\images\\clearInfo_cross.png'))
+        if e.type() == QEvent.Enter:
+            self.clearButton.setIcon(
+                QIcon('resource\\images\\clearInfo_cross_hover.png'))
+        elif e.type() == QEvent.Leave:
+            self.clearButton.setIcon(
+                QIcon('resource\\images\\clearInfo_cross.png'))
+
         return False
+
+
+class ErrorLabel(QLabel):
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.enterTime = 0
+
+        # 定时器用于控制提示条的显示时间
+        self.timer = QTimer(self)
+        self.timer.setInterval(5000)
+        self.timer.timeout.connect(self.hideToolTip)
+
+    def enterEvent(self, e):
+        if not self.enterTime:
+            self.timer.start()
+            x = e.globalX()-110
+            y = e.globalY() - 80
+            QToolTip.showText(QPoint(x, y), '曲目必须是1000以下的数字', self)
+            self.enterTime = 1
+
+    def hideToolTip(self):
+        QToolTip.hideText()
+        self.timer.stop()
+
+    def leaveEvent(self, e):
+        self.enterTime = 0
+        self.timer.stop()
 
 
 if __name__ == "__main__":
