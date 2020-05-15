@@ -1,0 +1,50 @@
+QDialog {
+    background-color: white;
+}
+
+QLabel {
+    font: 18px 'Microsoft YaHei';
+}
+
+QLabel#songPath{
+    font: 17px 'Microsoft YaHei';
+}
+
+QLabel#editSongInfo {
+    font: 21px 'Microsoft YaHei';
+}
+
+QLabel#infoTypeLabel {
+    font: 18px 'Microsoft YaHei';
+}
+
+
+QLineEdit {
+    padding: 9px 14px 8px 14px;
+    font: 16px 'Microsoft YaHei';
+    selection-background-color: rgb(0, 153, 188);
+}
+
+QLineEdit#songer{
+    font: 16px 'Microsoft YaHei';
+}
+
+QLineEdit:focus {
+    border: 1px solid rgb(0, 153, 188);
+}
+
+QPushButton {
+    background-color: rgb(204, 204, 204);
+    padding: 11px 64px 11px 64px;
+    font: 19px 'Microsoft YaHei';
+    border: transparent;
+    border-radius: 4px;
+}
+
+QPushButton:hover {
+    background-color: rgb(230, 230, 230);
+}
+
+QToolButton{
+    background: transparent;
+}

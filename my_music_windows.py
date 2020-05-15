@@ -12,11 +12,11 @@ from songer_tab_interface import SongerTabInterface
 class MyMusicWindows(QTabWidget):
     """ 创建一个包含歌曲,歌手和专辑标签窗口的类 """
 
-    def __init__(self, songs_folder):
-        super().__init__()
+    def __init__(self, songs_folder,parent=None):
+        super().__init__(parent)
 
         # 创建三个标签窗口
-        self.songTag = MySongTabInterface(songs_folder)
+        self.songTag = MySongTabInterface(songs_folder,self)
         self.songerTag = SongerTabInterface()
         self.albumTag = QWidget()
 

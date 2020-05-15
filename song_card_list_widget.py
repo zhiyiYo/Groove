@@ -1,5 +1,6 @@
 import sys
 import time
+from json import dump
 from PyQt5.QtCore import QPoint, QSize, Qt, QEvent
 from PyQt5.QtGui import QContextMenuEvent, QIcon, QBrush, QColor, QPixmap
 from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
@@ -9,6 +10,8 @@ from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
 from get_song_info import SongInfo
 from songcard import SongCard
 from property_panel import PropertyPanel
+from song_info_edit_panel import SongInfoEditPanel
+from window_mask import WindowMask
 
 
 class SongCardListWidget(QListWidget):
@@ -17,12 +20,13 @@ class SongCardListWidget(QListWidget):
     def __init__(self, songs_folder):
         super().__init__()
         self.resize(1267, 638)
+        self.songs_folder = songs_folder
 
         # 创建一个项目列表
         self.song_card_list = []
         self.item_list = []
         # 将歌曲信息设置为属性
-        self.songInfo = SongInfo(songs_folder)
+        self.songInfo = SongInfo(self.songs_folder)
         # 默认排序方式为添加时间
         self.sortMode = '添加时间'
 
@@ -64,7 +68,8 @@ class SongCardListWidget(QListWidget):
         self.playAct = QAction('播放', self)
         self.nextSongAct = QAction('下一首播放', self)
         self.showAlbumAct = QAction('显示专辑', self)
-        self.editInfoAct = QAction('编辑信息', self)
+        self.editInfoAct = QAction(
+            '编辑信息', self, triggered=self.showSongInfoEditPanel)
         self.showPropertyAct = QAction(
             '属性', self, triggered=self.showPropertyPanel)
         self.deleteAct = QAction('删除', self, triggered=self.deleteItem)
@@ -166,15 +171,57 @@ class SongCardListWidget(QListWidget):
         """ 显示属性面板 """
         info = eval(self.selectedItems()[0].whatsThis())
         propertyPanel = PropertyPanel(info)
-        # 定位到祖父部件
-        grandparent = self.parent().parent().parent().parent()
+
+        # 获取祖父级窗口的引用
+        try:
+            self.grandparent = self.parent().parent().parent().parent()
+        except:
+            self.grandparent = self.parent()
         # 在祖父窗口中居中显示
-        x = int(grandparent.geometry().x() + 0.5 *
-                grandparent.width() - 0.5 * propertyPanel.width())
-        y = int(grandparent.geometry().y() + 0.5*grandparent.height() -
+        x = int(self.grandparent.geometry().x() + 0.5 *
+                self.grandparent.width() - 0.5 * propertyPanel.width())
+        y = int(self.grandparent.geometry().y() + 0.5*self.grandparent.height() -
                 0.5 * propertyPanel.height())
         propertyPanel.move(x, y)
+        mask = WindowMask(self.grandparent)
+        mask.show()
         propertyPanel.exec_()
+        mask.close()
+
+    def showSongInfoEditPanel(self):
+        """ 显示编辑歌曲信息面板 """
+        info = eval(self.selectedItems()[0].whatsThis())
+        # 创建一个指向当前字典的临时属性
+        for info_dict in self.songInfo.songInfo_list:
+            if info['song_path'] == info_dict['song_path']:
+                self.current_dict = info_dict
+                break
+        self.songInfoEditPanel = SongInfoEditPanel(self.current_dict)
+
+        # 获取祖父级窗口的引用
+        try:
+            self.grandparent = self.parent().parent().parent().parent()
+        except:
+            self.grandparent = self.parent()
+        # 在祖父窗口中居中显示
+        x = int(self.grandparent.geometry().x() + 0.5 *
+                self.grandparent.width() - 0.5 * self.songInfoEditPanel.width())
+        y = int(self.grandparent.geometry().y() + 0.5*self.grandparent.height() -
+                0.5 * self.songInfoEditPanel.height())
+        self.songInfoEditPanel.move(x, y)
+        mask = WindowMask(self.grandparent)
+        mask.show()
+        self.songInfoEditPanel.exec_()
+        mask.close()
+
+        #更新item的信息
+        self.selectedItems()[0].setWhatsThis(str(self.current_dict))
+        # 将修改的信息存入json文件
+        with open('Data\\songInfo.json', 'w', encoding='utf-8') as f:
+            dump(self.songInfo.songInfo_list, f)
+
+        # 更新歌曲信息
+        self.songInfo = SongInfo(self.songs_folder)
 
     def select_func(self):
         """ 点击选择时的槽函数 """
@@ -215,4 +262,5 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     demo = SongCardListWidget('D:\\KuGou')
     demo.show()
+
     sys.exit(app.exec_())

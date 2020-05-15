@@ -12,8 +12,8 @@ from getfont import onLoadFont
 class MySongTabInterface(QWidget):
     """ 创建歌曲标签界面 """
 
-    def __init__(self, songs_folder):
-        super().__init__()
+    def __init__(self, songs_folder,parent=None):
+        super().__init__(parent)
 
         self.resize(1267, 684)
         # 创建一个存储播放模式的标志位，4、3、1分别对应随机播放、列表循环、单曲循环

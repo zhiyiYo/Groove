@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
                              QScrollBar, QVBoxLayout, QWidget)
 
 from my_music_windows import MyMusicWindows
-
+from window_mask import WindowMask
 from getfont import onLoadFont
 
 
@@ -22,7 +22,7 @@ class MusicGroupTabInterface(QWidget):
         self.songer_scrollBar = QScrollBar(Qt.Vertical)
 
         # 实例化一个包含三个标签界面的QTabWidget
-        self.myMusicWindows = MyMusicWindows(songs_folder)
+        self.myMusicWindows = MyMusicWindows(songs_folder,self)
 
         # 实例化两个布局
         self.all_h_layout = QHBoxLayout()
@@ -147,5 +147,5 @@ if __name__ == "__main__":
 
     demo = MusicGroupTabInterface('D:\\KuGou\\')
     demo.show()
-
+    
     sys.exit(app.exec_())

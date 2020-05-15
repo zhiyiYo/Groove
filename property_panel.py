@@ -1,11 +1,11 @@
 import json
-import sys
 import re
+import sys
 
-from PyQt5.QtCore import QSize, Qt, QRect
-from PyQt5.QtGui import QPixmap, QPainter, QPen, QColor
-from PyQt5.QtWidgets import (QAction, QApplication, QDialog, QHBoxLayout, QGraphicsDropShadowEffect,
-                             QLabel, QPushButton, QTextBrowser)
+from PyQt5.QtCore import QRect, QSize, Qt
+from PyQt5.QtGui import QColor, QPainter, QPen, QPixmap
+from PyQt5.QtWidgets import (QAction, QApplication, QDialog, QHBoxLayout,
+                             QLabel, QPushButton)
 
 
 class PropertyPanel(QDialog):
@@ -43,7 +43,11 @@ class PropertyPanel(QDialog):
         self.songName = QLabel(songInfo['songname'], self)
         self.albumSonger = QLabel(songInfo['songer'], self)
         self.songPath = QLabel(songInfo['song_path'], self)
-        self.trackNumber = QLabel(songInfo['tracknumber'], self)
+        if songInfo['suffix'] in ['.flac', '.mp3']:
+            self.trackNumber = QLabel(songInfo['tracknumber'], self)
+        elif songInfo['suffix'] == '.m4a':
+            trackNUm = str(eval(songInfo['tracknumber'])[0])
+            self.trackNumber = QLabel(trackNUm, self)
 
         # 实例化关闭按钮
         self.closeButton = QPushButton('关闭', self)

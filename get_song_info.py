@@ -144,8 +144,9 @@ class SongInfo():
 
         elif suffix == '.m4a':
             album = id_card.get('©alb')[0] if id_card.get('©alb') else '未知专辑'
-            tracknumber = str(id_card['trkn'][0][0]
-                              ) if id_card.get('trkn') else '0'
+            # m4a的曲目标签还应包括专辑中的总曲数,得到的是元胞数组
+            tracknumber = str(id_card['trkn'][0]
+                              ) if id_card.get('trkn') else '(0,0)'
             tcon = id_card.get('©gen')[0] if id_card.get('©gen') else '未知流派'
             year = id_card.get('©day')[0][:4] + \
                 '年' if id_card.get('©day') else '未知年份'
