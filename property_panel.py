@@ -119,7 +119,7 @@ class PropertyPanel(QDialog):
 
     def adjustHeight(self):
         """ 如果有换行的发生就调整高度 """
-        rex = r'[a-zA-Z0-9]+$'
+        rex = r'[\)\.a-zA-Z、\d\(\s]+$'
         Match_1 = re.match(rex, self.songName.text())
         Match_2 = re.match(rex, self.songer.text())
         Match_3 = re.match(rex, self.albumName.text())

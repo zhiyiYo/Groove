@@ -235,16 +235,16 @@ class SongInfoEditPanel(QDialog):
         self.songInfo['songname'] = self.songNameEditLine.text()
         self.songInfo['songer'] = self.songerNameEditLine.text()
         self.songInfo['album'] = self.albumNameEditLine.text()
-        #根据后缀名选择曲目标签的写入方式
-        if self.songInfo['suffix']=='.m4a':
+        # 根据后缀名选择曲目标签的写入方式
+        if self.songInfo['suffix'] == '.m4a':
             track_tuple = (int(self.trackNumEditLine.text()),
-                        eval(self.songInfo['tracknumber'])[1])
+                           eval(self.songInfo['tracknumber'])[1])
             self.songInfo['tracknumber'] = str(track_tuple)
         else:
-            self.songInfo['tracknumber']=self.trackNumEditLine.text()
-            
+            self.songInfo['tracknumber'] = self.trackNumEditLine.text()
+
         self.songInfo['tcon'] = self.tconEditLine.text()
-        self.songInfo['year'] = self.yearEditLine.text()[:4]
+        self.songInfo['year'] = self.yearEditLine.text()[:4]+'年'
         modifySongInfo(self.id_card, self.songInfo)
         self.id_card.save()
         self.close()

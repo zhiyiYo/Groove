@@ -19,7 +19,7 @@ class MusicGroupTabInterface(QWidget):
         # 实例化一个标签和两个竖直滚动条
         self.myMusicLabel = QLabel(self)
         self.song_scrollBar = QScrollBar(Qt.Vertical, self)
-        self.songer_scrollBar = QScrollBar(Qt.Vertical)
+        self.songer_scrollBar = QScrollBar(Qt.Vertical,self)
 
         # 实例化一个包含三个标签界面的QTabWidget
         self.myMusicWindows = MyMusicWindows(songs_folder,self)
@@ -35,37 +35,33 @@ class MusicGroupTabInterface(QWidget):
         # 设置样式
         self.setQss()
 
+
     def initLayout(self):
         """ 初始化布局 """
-        # self.v_layout.addSpacing(55)
+
         self.v_layout.addSpacing(40)
         self.v_layout.addWidget(self.myMusicLabel)
+        self.v_layout.addSpacing(8)
         self.v_layout.addWidget(self.myMusicWindows)
 
-        # self.all_h_layout.addSpacing(15)
+
         self.all_h_layout.addLayout(self.v_layout)
         self.all_h_layout.addSpacing(11)
         self.all_h_layout.addWidget(self.song_scrollBar, 0, Qt.AlignRight)
-        #self.all_h_layout.addWidget(self.songer_scrollBar, 0, Qt.AlignRight)
+        self.all_h_layout.addWidget(self.songer_scrollBar, 0, Qt.AlignRight)
         self.all_h_layout.setContentsMargins(20,0,1,0)
 
         self.setLayout(self.all_h_layout)
 
     def initWidget(self):
         """ 初始化小部件的属性 """
+        #self.setWindowFlags(Qt.WindowStaysOnTopHint)
         self.resize(1300, 852)
         self.setMinimumHeight(630)
         self.setMouseTracking(True)
         self.setWindowIcon(QIcon('resource\\images\\Shoko.png'))
         self.setWindowTitle('Groove')
 
-        # 调整滚动条的位置
-        """ self.song_scrollBar.setFixedWidth(3)
-        self.songer_scrollBar.setFixedWidth(3)
-        self.songer_scrollBar.move(
-            self.width() - self.songer_scrollBar.width(), 0)
-        self.song_scrollBar.move(
-            self.width() - self.song_scrollBar.width(), 0) """
 
         # 引用两个视图的滚动条
         self.songCardList_vScrollBar = self.myMusicWindows.songTag.songCardListWidget.verticalScrollBar()
@@ -96,14 +92,15 @@ class MusicGroupTabInterface(QWidget):
             lambda: self.songer_scrollBar.setValue(self.songerViewer_vScrollBar.value()))
 
         # 先隐藏歌手视图的滚动条
-        #self.songer_scrollBar.setHidden(True)
+        self.songer_scrollBar.setHidden(True)
 
-        #self.myMusicWindows.currentChanged.connect(self.changeTabEvent)
+        self.myMusicWindows.currentChanged.connect(self.changeTabEvent)
 
         # 分配ID
         self.setObjectName('musicGroupTabInterface')
         self.myMusicLabel.setObjectName('myMusicLabel')
         self.song_scrollBar.setObjectName('musicGroupScrollBar')
+        self.songer_scrollBar.setObjectName('songerScrollBar')
 
     def setQss(self):
         """ 设置层叠样式表 """
@@ -136,7 +133,7 @@ class MusicGroupTabInterface(QWidget):
         elif index == 1:
             print(1)
             self.song_scrollBar.setHidden(True)
-            self.songer_scrollBar.setHidden(False)
+            self.songer_scrollBar.show()
 
 
 if __name__ == "__main__":

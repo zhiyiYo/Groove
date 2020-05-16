@@ -162,18 +162,20 @@ QMenu#addToMenu::separator {
 QMenu#sortModeMenu {
     font-size: 17px;
     width: 158px;
-    height: 111px;
+    height: 116px;
     border: 1px solid rgb(41, 41, 41);
     border-bottom: none;
+    padding-top: 1px;
+    /*padding: 1px;*/
 
 }
 
 QMenu#sortModeMenu::item {
-    width: 59;
-    height: 10;
+    width: 57;
+    height: 14;
     color: black;
-    padding: 11px 80px 10px 12px;
-    margin: 1px 0px 1px 0px;
+    padding: 11px 85px 11px 12px;
+    margin: 0px 1px 1px 1px;
 }
 
 QMenu#sortModeMenu::item:default {
@@ -181,12 +183,10 @@ QMenu#sortModeMenu::item:default {
 }
 
 QMenu#sortModeMenu::item:selected {
-    /*border-width: 1px;*/
     background: rgb(218, 218, 218);
 }
 
 QMenu#sortModeMenu::item:default:selected {
-    /*border-width: 1px;*/
     background: rgba(9, 158, 240, 0.79);
 }
 

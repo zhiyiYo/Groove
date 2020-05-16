@@ -12,7 +12,7 @@ def modifySongInfo(id_card, songInfo_dict):
         id_card['TALB'] = TALB(encoding=3, text=songInfo_dict['album'])
         id_card['TRCK'] = TRCK(encoding=3, text=songInfo_dict['tracknumber'])
         id_card['TCON'] = TCON(encoding=3, text=songInfo_dict['tcon'])
-        id_card['TDRC'] = TDRC(encoding=3, text=songInfo_dict['year'])
+        id_card['TDRC'] = TDRC(encoding=3, text=songInfo_dict['year'][:4])
 
     elif songInfo_dict['suffix'] == '.flac':
         id_card['title'] = songInfo_dict['songname']
@@ -20,7 +20,7 @@ def modifySongInfo(id_card, songInfo_dict):
         id_card['album'] = songInfo_dict['album']
         id_card['tracknumber'] = songInfo_dict['tracknumber']
         id_card['genre'] = songInfo_dict['tcon']
-        id_card['year'] = songInfo_dict['year']
+        id_card['year'] = songInfo_dict['year'][:4]
 
     elif songInfo_dict['suffix'] == '.m4a':
         id_card['©nam'] = [songInfo_dict['songname']]
@@ -30,4 +30,4 @@ def modifySongInfo(id_card, songInfo_dict):
         track_tuple = eval(songInfo_dict['tracknumber'])
         id_card['trkn'] = [(track_tuple[0], track_tuple[1])]
         id_card['©gen'] = [songInfo_dict['tcon']]
-        id_card['©day'] = [songInfo_dict['year']]
+        id_card['©day'] = [songInfo_dict['year'][:4]]

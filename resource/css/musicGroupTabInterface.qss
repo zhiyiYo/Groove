@@ -31,6 +31,21 @@ QScrollBar::handle {
     padding-left: 2px;
 }
 
+QScrollBarr#songerScrollBar::sub-line {
+    background: transparent
+}
+
+/*隐藏下箭头*/
+QScrollBar#songerScrollBar::add-line {
+    background: transparent
+}
+
+QScrollBar#songerScrollBar::handle {
+    background: rgb(122, 122, 122);
+    border: 0px solid transparent;
+    padding-left: 2px;
+}
+
 /* QScrollBar:hover {
     width: 30px;
     background-color: rgb(166, 166, 166);
