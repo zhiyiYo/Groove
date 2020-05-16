@@ -44,8 +44,10 @@ class MusicGroupTabInterface(QWidget):
 
         # self.all_h_layout.addSpacing(15)
         self.all_h_layout.addLayout(self.v_layout)
+        self.all_h_layout.addSpacing(11)
         self.all_h_layout.addWidget(self.song_scrollBar, 0, Qt.AlignRight)
         #self.all_h_layout.addWidget(self.songer_scrollBar, 0, Qt.AlignRight)
+        self.all_h_layout.setContentsMargins(20,0,1,0)
 
         self.setLayout(self.all_h_layout)
 

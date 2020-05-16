@@ -27,9 +27,10 @@ QLabel#yearLabel {
 }
 
 QLabel#sortModeLabel {
-    font-size: 16px;
-    /*font-weight: 500;
-    font-family: 'Microsoft YaHei Light';*/
+    color: black;
+    /*font-size: 16px;
+    font-family: 'Microsoft YaHei';*/
+    font: 16px 'Microsoft YaHei';
 }
 
 /*设置按钮的样式*/
@@ -52,14 +53,14 @@ QPushButton#albumLinkBt:hover {
 QToolButton#hidePlayBt:hover {
     background-color: rgb(196, 196, 196);
     border: transparent;
-    min-width: 68px;
-    height: 68px;
+    min-width: 61px;
+    height: 61px;
 }
 
 QToolButton#hideAddToBt:hover {
     background-color: rgb(196, 196, 196);
     border: transparent;
-    min-width: 68px;
+    min-width: 61px;
 }
 
 
@@ -94,8 +95,8 @@ QCheckBox {
 }
 
 QCheckBox::indicator {
-    width: 22px;
-    height: 22px;
+    width: 23px;
+    height: 23px;
     border: none;
 }
 

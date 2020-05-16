@@ -24,7 +24,7 @@ class SongerHeadPortraitViewer(QWidget):
         self.songerHeadViewer = Widget()
 
         # 实例化标题栏
-        self.firstLetterLabel = QLabel('A', self)
+        #self.firstLetterLabel = QLabel('A', self)
 
         # 实例化滚动条
         #self.scrollBar = QScrollBar(self)
@@ -63,12 +63,12 @@ class SongerHeadPortraitViewer(QWidget):
             lambda: self.scrollBar.setValue(self.scrollArea.verticalScrollBar().value())) """
 
         # 设置标题栏的位置
-        self.firstLetterLabel.setGeometry(0, 0, self.width(), 47)
+        #self.firstLetterLabel.setGeometry(0, 0, self.width(), 47)
 
         # 分配ID
         self.setObjectName('father')
         self.songerHeadViewer.setObjectName('songerHeadViewer')
-        self.firstLetterLabel.setObjectName('firstLetter')
+        #self.firstLetterLabel.setObjectName('firstLetter')
 
     def createSongerHeadPortraits(self):
         """ 创建歌手头像窗口列表 """
@@ -155,6 +155,7 @@ class SongerHeadPortraitViewer(QWidget):
             gridLayout = songerHeadGroup_dict['gridLayout']
             # 设置网格的行距
             gridLayout.setVerticalSpacing(20)
+            gridLayout.setContentsMargins(0,0,0,0)
             # 设置网格大小
             for column in columns:
                 gridLayout.setColumnMinimumWidth(

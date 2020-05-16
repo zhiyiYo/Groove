@@ -59,7 +59,7 @@ class SongerTabInterface(QWidget):
     def init_layout(self):
         """ 初始化布局 """
         self.h_layout.addWidget(self.randomPlayButton,0, Qt.AlignLeft)
-        self.h_layout.addSpacing(30)
+        self.h_layout.addSpacing(36)
         self.h_layout.addWidget(self.sortModeLabel_1, 0, Qt.AlignLeft)
         self.h_layout.addWidget(self.sortModeLabel_2, 0, Qt.AlignLeft)
         # 不给按钮和标签分配多余的空间
@@ -68,6 +68,7 @@ class SongerTabInterface(QWidget):
         self.v_layout.addLayout(self.h_layout)
         self.v_layout.addSpacing(6)
         self.v_layout.addWidget(self.songerHeadPortraitViewer)
+        self.v_layout.setContentsMargins(0,15,0,0)
         self.setLayout(self.v_layout)
 
     def eventFilter(self, obj, e):

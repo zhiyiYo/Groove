@@ -129,8 +129,8 @@ class SongCardListWidget(QListWidget):
             self.song_card = SongCard(
                 songFile['songname'], songFile['songer'],
                 songFile['album'], songFile['tcon'], songFile['year'], songFile['duration'])
-            self.song_card.resize(1150, 68)
-            self.item.setSizeHint(QSize(self.song_card.width(), 68))
+            self.song_card.resize(1150, 61)
+            self.item.setSizeHint(QSize(self.song_card.width(), 61))
             self.addItem(self.item)
             self.setItemWidget(self.item, self.song_card)
             # 通过whatsthis记录每个项目对应的路径和下标

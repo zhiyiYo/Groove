@@ -48,6 +48,7 @@ class SongCard(QWidget):
         # 设置全局布局
         self.all_h_layout.addWidget(self.song_name_card)
         self.all_h_layout.addLayout(self.right_h_layout)
+        self.all_h_layout.setContentsMargins(0,0,0,0)
         self.setLayout(self.all_h_layout)
 
         self.resizetimes = 0

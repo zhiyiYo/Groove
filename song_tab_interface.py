@@ -9,10 +9,10 @@ from song_card_list_widget import SongCardListWidget
 from getfont import onLoadFont
 
 
-class MySongTabInterface(QWidget):
+class SongTabInterface(QWidget):
     """ 创建歌曲标签界面 """
 
-    def __init__(self, songs_folder,parent=None):
+    def __init__(self, songs_folder, parent=None):
         super().__init__(parent)
 
         self.resize(1267, 684)
@@ -178,7 +178,7 @@ class MySongTabInterface(QWidget):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
-    mySongTab = MySongTabInterface('D:\\KuGou')
+    mySongTab = SongTabInterface('D:\\KuGou')
     mySongTab.show()
 
     sys.exit(app.exec_())

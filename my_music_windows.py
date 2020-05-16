@@ -5,18 +5,18 @@ from PyQt5.QtGui import QContextMenuEvent, QIcon, QMouseEvent
 from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
                              QTabWidget, QVBoxLayout, QWidget)
 
-from my_song_tab_interface import MySongTabInterface
+from song_tab_interface import SongTabInterface
 from songer_tab_interface import SongerTabInterface
 
 
 class MyMusicWindows(QTabWidget):
     """ 创建一个包含歌曲,歌手和专辑标签窗口的类 """
 
-    def __init__(self, songs_folder,parent=None):
+    def __init__(self, songs_folder, parent=None):
         super().__init__(parent)
 
         # 创建三个标签窗口
-        self.songTag = MySongTabInterface(songs_folder,self)
+        self.songTag = SongTabInterface(songs_folder, self)
         self.songerTag = SongerTabInterface()
         self.albumTag = QWidget()
 
