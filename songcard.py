@@ -48,7 +48,7 @@ class SongCard(QWidget):
         # 设置全局布局
         self.all_h_layout.addWidget(self.song_name_card)
         self.all_h_layout.addLayout(self.right_h_layout)
-        self.all_h_layout.setContentsMargins(0,0,0,0)
+        self.all_h_layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.all_h_layout)
 
         self.resizetimes = 0
@@ -97,12 +97,18 @@ class SongCard(QWidget):
             if event.type() == QEvent.Enter and not self.song_name_card.contextMenuSelecting:
                 if not self.song_name_card.clicked:
                     self.song_name_card.showIndicator()
+                    self.song_name_card.playButton.show()
+                    self.song_name_card.addToButton.show()
+                    self.song_name_card.maskButton.show()
                     return False
                 if self.song_name_card.clicked:
                     pass
             # 当歌曲卡不处于选择状态时使用hideIndicator.qss
             elif event.type() == QEvent.Leave and not self.song_name_card.contextMenuSelecting and not self.song_name_card.clicked:
                 self.song_name_card.hideIndicator()
+                self.song_name_card.playButton.setHidden(True)
+                self.song_name_card.addToButton.setHidden(True)
+                self.song_name_card.maskButton.hide()
 
             if event.type() == QEvent.MouseButtonPress:
                 self.song_name_card.clicked = True

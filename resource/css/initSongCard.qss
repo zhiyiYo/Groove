@@ -50,21 +50,6 @@ QPushButton#albumLinkBt:hover {
     color: rgb(150, 150, 150);
 }
 
-QToolButton#hidePlayBt:hover {
-    background-color: rgb(196, 196, 196);
-    border: transparent;
-    min-width: 61px;
-    height: 61px;
-}
-
-QToolButton#hideAddToBt:hover {
-    background-color: rgb(196, 196, 196);
-    border: transparent;
-    min-width: 61px;
-}
-
-
-
 QPushButton#sortModeButton {
     /*color:rgb(79,150,169);*/
     color: rgb(81, 154, 170);
@@ -84,6 +69,25 @@ QPushButton#loopModeButton:hover {
     color: rgb(130, 130, 130);
 
 }
+
+QToolButton#addToButton,
+QToolButton#playButton{
+    /*background-color: transparent;*/
+    background-color: rgb(217,217,217);
+    border: transparent;
+}
+
+QToolButton#maskButton {
+    background-color: rgb(217, 217, 217);
+    border: transparent;
+}
+
+QToolButton#addToButton:hover,
+QToolButton#playButton:hover {
+    background-color: rgb(196, 196, 196);
+    border: transparent;
+}
+
 
 /*设置复选框的样式*/
 QCheckBox {

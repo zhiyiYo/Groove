@@ -25,6 +25,9 @@ class SongNameCard(QWidget):
         # 实例化小部件
         self.setFixedWidth(342)
         self.songName = QCheckBox(songName, self)
+        self.maskButton = QToolButton(self)
+        self.playButton = QToolButton(self)
+        self.addToButton = QToolButton(self)
 
         # 实例化布局
         self.all_h_layout = QHBoxLayout()
@@ -43,10 +46,31 @@ class SongNameCard(QWidget):
 
     def initWidget(self):
         """ 初始化小部件 """
+        # 设置按钮大小和图标
+        self.addToButton.setIcon(QIcon('resource\\images\\black_addTo_bt.png'))
+        self.playButton.setIcon(QIcon('resource\\images\\black_play_bt.png'))
+        self.addToButton.setIconSize(QSize(61, 61))
+        self.playButton.setIconSize(QSize(61, 61))
+        self.addToButton.setFixedSize(61, 61)
+        self.playButton.setFixedSize(61, 61)
+        self.maskButton.setFixedSize(25, 61)
+
+        # 设置按钮的绝对坐标
+        self.addToButton.move(281, 0)
+        self.playButton.move(220, 0)
+        self.maskButton.move(195, 0)
+
+        # 隐藏按钮
+        self.playButton.setHidden(True)
+        self.addToButton.setHidden(True)
+        self.maskButton.setHidden(True)
 
         # 分配ID
         self.setObjectName('songNameCard')
         self.songName.setObjectName('songNameCheckbox')
+        self.addToButton.setObjectName('addToButton')
+        self.playButton.setObjectName('playButton')
+        self.maskButton.setObjectName('maskButton')
 
     def showIndicator(self):
         """ 当鼠标光标移动到歌曲卡上时显示复选框 """
@@ -100,6 +124,6 @@ class TconYearDurationCard(QWidget):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    demo = SongNameCard('猫じゃらし')
+    demo = SongNameCard('何十年後に「君」と出会っていなかったアナタに向けた歌')
     demo.show()
     sys.exit(app.exec_())

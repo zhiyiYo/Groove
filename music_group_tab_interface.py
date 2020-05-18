@@ -102,6 +102,7 @@ class MusicGroupTabInterface(QWidget):
         self.song_scrollBar.setObjectName('musicGroupScrollBar')
         self.songer_scrollBar.setObjectName('songerScrollBar')
 
+
     def setQss(self):
         """ 设置层叠样式表 """
         with open('resource\\css\\musicGroupTabInterface.qss', 'r', encoding='utf-8') as f:
