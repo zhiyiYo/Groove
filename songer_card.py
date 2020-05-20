@@ -85,7 +85,7 @@ class SongerHeadPortrait(QWidget):
         self.circle_image = QPixmap(songer_pic_path).scaled(
             self.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
 
-        # 初始化布局
+        # 初始化小部件
         self.initWidget()
 
     def initWidget(self):

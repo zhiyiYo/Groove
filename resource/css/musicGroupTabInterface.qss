@@ -8,6 +8,8 @@ QLabel#myMusicLabel {
     margin-left: 1px;
 }
 
+
+
 /*设置竖直滚动条样式*/
 QScrollBar {
     background: white;

@@ -17,7 +17,7 @@ class SongTabInterface(QWidget):
 
         self.resize(1267, 684)
         # 创建一个存储播放模式的标志位，4、3、1分别对应随机播放、列表循环、单曲循环
-        self.loopMode = 4
+        #self.loopMode = 4
 
         # 实例化布局
         self.h_layout = QHBoxLayout()
@@ -28,8 +28,8 @@ class SongTabInterface(QWidget):
         self.sortModeLabel = QLabel('排序依据:', self)
         self.sortModeButton = QPushButton('添加日期', self)
         self.loopModeButton = QPushButton(
-            QIcon('resource\\images\\随机播放（2）.png'), '', self)
-        self.loopModeButton.setIconSize(QSize(110, 39))
+            QIcon('resource\\images\\无序播放所有_130_17.png'), '', self)
+        self.loopModeButton.setIconSize(QSize(130,17))
 
         # 实例化歌曲列表视图
         self.songCardListWidget = SongCardListWidget(songs_folder)
@@ -46,6 +46,10 @@ class SongTabInterface(QWidget):
 
     def initWidget(self):
         """ 初始化小部件的属性 """
+
+        #获取歌曲总数
+        songs_num = len(self.songCardListWidget.song_card_list)
+        self.loopModeButton.setText(f'({songs_num})')
 
         # 设置鼠标光标
         self.sortModeButton.setCursor(Qt.PointingHandCursor)
@@ -74,7 +78,9 @@ class SongTabInterface(QWidget):
         # 不给按钮和标签分配多余的空间
         self.h_layout.addStretch(1)
 
+        self.all_v_layout.addSpacing(7)
         self.all_v_layout.addLayout(self.h_layout)
+        self.all_v_layout.addSpacing(7)
         self.all_v_layout.addWidget(self.songCardListWidget)
         self.setLayout(self.all_v_layout)
 
@@ -99,17 +105,7 @@ class SongTabInterface(QWidget):
 
     def changeLoopMode(self):
         """ 改变播放的循环模式 """
-        if self.loopMode == 4:
-            self.loopMode = 2
-            self.loopModeButton.setIcon(QIcon('resource\\images\\列表循环（2）.png'))
-
-        elif self.loopMode == 2:
-            self.loopMode = 1
-            self.loopModeButton.setIcon(QIcon('resource\\images\\单曲循环（2）.png'))
-
-        elif self.loopMode == 1:
-            self.loopMode = 4
-            self.loopModeButton.setIcon(QIcon('resource\\images\\随机播放（2）.png'))
+        pass
 
     def sortSongCard(self):
         """ 根据所选的排序方式对歌曲卡进行重新排序 """
@@ -139,7 +135,7 @@ class SongTabInterface(QWidget):
         # 设置默认动作
         self.sortModeMenu.setDefaultAction(self.currentSortMode)
         self.sortModeMenu.exec(
-            self.mapToGlobal(QPoint(self.sortModeButton.x(), self.sortModeButton.y()-5)))
+            self.mapToGlobal(QPoint(self.sortModeButton.x(), self.sortModeButton.y() - 5)))
 
     def setQss(self):
         """ 设置层叠样式 """
@@ -152,25 +148,11 @@ class SongTabInterface(QWidget):
         """ 当鼠标移到播放模式按钮上时更换图标 """
         if obj == self.loopModeButton:
             if event.type() == QEvent.Enter or event.type() == QEvent.HoverMove:
-                if self.loopMode == 4:
-                    self.loopModeButton.setIcon(
-                        QIcon('resource\\images\\随机播放（1）.png'))
-                elif self.loopMode == 2:
-                    self.loopModeButton.setIcon(
-                        QIcon('resource\\images\\列表循环（1）.png'))
-                elif self.loopMode == 1:
-                    self.loopModeButton.setIcon(
-                        QIcon('resource\\images\\单曲循环（1）.png'))
+                self.loopModeButton.setIcon(
+                    QIcon('resource\\images\\无序播放所有_hover_130_17.png'))
             elif event.type() == QEvent.Leave:
-                if self.loopMode == 4:
-                    self.loopModeButton.setIcon(
-                        QIcon('resource\\images\\随机播放（2）.png'))
-                elif self.loopMode == 2:
-                    self.loopModeButton.setIcon(
-                        QIcon('resource\\images\\列表循环（2）.png'))
-                elif self.loopMode == 1:
-                    self.loopModeButton.setIcon(
-                        QIcon('resource\\images\\单曲循环（2）.png'))
+                self.loopModeButton.setIcon(
+                    QIcon('resource\\images\\无序播放所有_130_17.png'))
 
         return QWidget.eventFilter(self, obj, event)
 

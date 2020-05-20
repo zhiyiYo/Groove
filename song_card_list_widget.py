@@ -247,6 +247,7 @@ class SongCardListWidget(QListWidget):
         """ 设置鼠标左键时的层叠样式 """
         with open('resource\\css\\clickedSongCard.qss', 'r', encoding='utf-8') as f:
             qss = f.read()
+            
             self.setStyleSheet(qss)
 
     def refreshTextColor(self):

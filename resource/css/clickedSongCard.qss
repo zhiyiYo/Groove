@@ -21,3 +21,6 @@ QLabel,QPushButton {
     color: white
 }
 
+QToolButton {
+    background-color: transparent;
+}

@@ -112,6 +112,10 @@ class SongCard(QWidget):
 
             if event.type() == QEvent.MouseButtonPress:
                 self.song_name_card.clicked = True
+                self.song_name_card.addToButton.setIcon(
+                    QIcon('resource\\images\\white_add_to_bt.png'))
+                self.song_name_card.playButton.setIcon(
+                    QIcon('resource\\images\\white_play_bt.png'))
                 self.setClickedQss()
 
             # 当歌曲卡不处于选择状态时使用showIndicator.qss

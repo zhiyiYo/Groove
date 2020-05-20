@@ -3,7 +3,6 @@ QTabWidget#MyMusicWindows {
 }
 
 QTabWidget::pane {
-
     border-top: 1px solid rgb(224, 224, 224);
 }
 
@@ -14,13 +13,13 @@ QTabBar::tab {
     color: rgb(145, 145, 145);
     font: 25px "Microsoft YaHei";
     border: 0px solid;
-
+    padding-bottom: 1px;
 }
 
 QTabBar::tab:selected {
     color: black;
     border: none;
-    border-bottom: 2px solid rgb(0, 153, 188)
+    border-bottom: 3px solid rgb(0, 153, 188)
 }
 
 QTabBar::tab:pressed {

@@ -7,7 +7,6 @@ from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
 
 from my_music_windows import MyMusicWindows
 from window_mask import WindowMask
-from getfont import onLoadFont
 
 
 class MusicGroupTabInterface(QWidget):
@@ -132,7 +131,6 @@ class MusicGroupTabInterface(QWidget):
             self.song_scrollBar.show()
             self.songer_scrollBar.setHidden(True)
         elif index == 1:
-            print(1)
             self.song_scrollBar.setHidden(True)
             self.songer_scrollBar.show()
 
@@ -140,7 +138,7 @@ class MusicGroupTabInterface(QWidget):
 if __name__ == "__main__":
 
     app = QApplication(sys.argv)
-
+    
     font = QFont(QApplication.font())
     font.setStyleStrategy(QFont.PreferAntialias)
     app.setFont(font)

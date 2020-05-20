@@ -20,8 +20,8 @@ class SongerTabInterface(QWidget):
         self.songerHeadPortraitViewer = SongerHeadPortraitViewer()
         # 实例化随机播放按钮
         self.randomPlayButton = QPushButton(
-            QIcon('resource\\images\\随机播放（2）.png'), '', self)
-        self.randomPlayButton.setIconSize(QSize(110, 39))
+            QIcon('resource\\images\\无序播放所有_130_17.png'), '', self)
+        self.randomPlayButton.setIconSize(QSize(130,17))
 
         # 实例化排序依据标签
         self.sortModeLabel_1 = QLabel('排序依据:', self)
@@ -44,6 +44,10 @@ class SongerTabInterface(QWidget):
         """ 初始化小部件 """
         self.resize(1267, 684)
 
+        songer_num=len(self.songerHeadPortraitViewer.songerInfo_list)
+        self.randomPlayButton.setText(f'({songer_num})')
+        
+
         # 设置无序播放按钮上的鼠标光标
         self.randomPlayButton.setCursor(Qt.PointingHandCursor)
 
@@ -59,12 +63,13 @@ class SongerTabInterface(QWidget):
     def init_layout(self):
         """ 初始化布局 """
         self.h_layout.addWidget(self.randomPlayButton,0, Qt.AlignLeft)
-        self.h_layout.addSpacing(36)
+        self.h_layout.addSpacing(34)
         self.h_layout.addWidget(self.sortModeLabel_1, 0, Qt.AlignLeft)
         self.h_layout.addWidget(self.sortModeLabel_2, 0, Qt.AlignLeft)
         # 不给按钮和标签分配多余的空间
         self.h_layout.addStretch(1)
 
+        self.v_layout.addSpacing(6)
         self.v_layout.addLayout(self.h_layout)
         self.v_layout.addSpacing(6)
         self.v_layout.addWidget(self.songerHeadPortraitViewer)
@@ -76,10 +81,10 @@ class SongerTabInterface(QWidget):
         if obj == self.randomPlayButton :
             if e.type() == QEvent.Enter or e.type() == QEvent.HoverMove:
                 self.randomPlayButton.setIcon(
-                    QIcon('resource\\images\\随机播放（1）.png'))
+                    QIcon('resource\\images\\无序播放所有_hover_130_17.png'))
             elif e.type() == QEvent.Leave:
                 self.randomPlayButton.setIcon(
-                    QIcon('resource\\images\\随机播放（2）.png'))
+                    QIcon('resource\\images\\无序播放所有_130_17.png'))
 
         return False
 
