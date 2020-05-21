@@ -29,7 +29,6 @@ class SongerCard(QWidget):
     def initWidget(self):
         """ 初始化小部件 """
         self.resize(222, 267)
-
         self.setWindowFlags(Qt.FramelessWindowHint)
 
         # 设置小部件的绝对位置
@@ -38,7 +37,7 @@ class SongerCard(QWidget):
 
         # 初始化背景图片
         self.backgroundLabel.setPixmap(
-            QPixmap('resource\\images\\歌手头像无阴影2.png'))
+            QPixmap('resource\\images\\歌手头像无阴影.png'))
 
         # 设置监听
         self.installEventFilter(self)
@@ -53,7 +52,7 @@ class SongerCard(QWidget):
                 self.songerHeadPortrait.playButton.show()
             elif e.type() == QEvent.Leave:
                 self.backgroundLabel.setPixmap(
-                    QPixmap('resource\\images\\歌手头像无阴影2.png'))
+                    QPixmap('resource\\images\\歌手头像无阴影.png'))
                 self.songerHeadPortrait.addToButton.setHidden(True)
                 self.songerHeadPortrait.playButton.setHidden(True)
 
@@ -100,8 +99,6 @@ class SongerHeadPortrait(QWidget):
         self.playButton.setHidden(True)
         self.addToButton.setHidden(True)
 
-        # 安装监听
-        self.installEventFilter(self)
 
     def paintEvent(self, e):
         super(SongerHeadPortrait, self).paintEvent(e)

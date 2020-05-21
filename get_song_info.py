@@ -13,6 +13,7 @@ class SongInfo():
         self.target_path = target_path
         self.songInfo_list = []
         self.getInfo()
+        
 
     def getInfo(self):
         """ 从指定的目录读取符合匹配规则的歌曲的标签卡信息 """
@@ -23,15 +24,16 @@ class SongInfo():
         # 获取符合匹配音频文件名列表
         self.split_song_list(filename_list, update_songList=True)
 
-        with open('Data\\songInfo.json', 'r', encoding='utf-8') as f:
-            try:
-                # 尝试读取旧歌曲信息
-
-                oldData = json.load(f)
-
-            except:
-                # 如果信息为空就创建一个空列表
-                oldData = [{}]
+        if os.path.exists('Data\\songInfo.json'):
+            with open('Data\\songInfo.json', 'r', encoding='utf-8') as f:
+                try:
+                    # 尝试读取旧歌曲信息
+                    oldData = json.load(f)
+                except:
+                    # 如果信息为空就创建一个空列表
+                    oldData = [{}]
+        else:
+            oldData = [{}]
 
         oldFilename_list = [oldFileInfo.get('song') for oldFileInfo in oldData]
 
@@ -87,6 +89,7 @@ class SongInfo():
                                                'duration': duration,
                                                'suffix': suffix,
                                                'createTime': createTime})
+            self.sortByCreateTime()
             # 更新json文件
             with open('Data\\songInfo.json', 'w', encoding='utf-8') as f:
                 json.dump(self.songInfo_list, f)
