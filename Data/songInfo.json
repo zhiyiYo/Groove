@@ -263,18 +263,6 @@
     "suffix": ".m4a",
     "createTime": "2020-04-19 07:50:36"
 }, {
-    "song": "RADWIMPS - \u5098\u62cd\u5b50.m4a",
-    "song_path": "D:\\KuGou\\RADWIMPS - \u5098\u62cd\u5b50.m4a",
-    "songer": "RADWIMPS",
-    "songname": "\u5098\u62cd\u5b50",
-    "album": "RADWIMPS 4 \uff5e\u304a\u304b\u305a\u306e\u3054\u306f\u3093\uff5e",
-    "tcon": "Japanese Pop & Rock",
-    "year": "2006\u5e74",
-    "tracknumber": "(10, 13)",
-    "duration": "4:02",
-    "suffix": ".m4a",
-    "createTime": "2020-04-19 07:50:36"
-}, {
     "song": "RADWIMPS - \u5922\u756a\u5730.m4a",
     "song_path": "D:\\KuGou\\RADWIMPS - \u5922\u756a\u5730.m4a",
     "songer": "RADWIMPS",
@@ -287,17 +275,17 @@
     "suffix": ".m4a",
     "createTime": "2020-04-19 07:50:36"
 }, {
-    "song": "RADWIMPS - \u3044\u3044\u3093\u3067\u3059\u304b\uff1f.m4a",
-    "song_path": "D:\\KuGou\\RADWIMPS - \u3044\u3044\u3093\u3067\u3059\u304b\uff1f.m4a",
+    "song": "RADWIMPS - \u5098\u62cd\u5b50.m4a",
+    "song_path": "D:\\KuGou\\RADWIMPS - \u5098\u62cd\u5b50.m4a",
     "songer": "RADWIMPS",
-    "songname": "\u3044\u3044\u3093\u3067\u3059\u304b\uff1f",
+    "songname": "\u5098\u62cd\u5b50",
     "album": "RADWIMPS 4 \uff5e\u304a\u304b\u305a\u306e\u3054\u306f\u3093\uff5e",
     "tcon": "Japanese Pop & Rock",
     "year": "2006\u5e74",
-    "tracknumber": "(8, 13)",
-    "duration": "4:08",
+    "tracknumber": "(10, 13)",
+    "duration": "4:02",
     "suffix": ".m4a",
-    "createTime": "2020-04-19 07:50:35"
+    "createTime": "2020-04-19 07:50:36"
 }, {
     "song": "RADWIMPS - \u6307\u304d\u308a\u3052\u3093\u307e\u3093.m4a",
     "song_path": "D:\\KuGou\\RADWIMPS - \u6307\u304d\u308a\u3052\u3093\u307e\u3093.m4a",
@@ -308,6 +296,18 @@
     "year": "2006\u5e74",
     "tracknumber": "(9, 13)",
     "duration": "4:04",
+    "suffix": ".m4a",
+    "createTime": "2020-04-19 07:50:35"
+}, {
+    "song": "RADWIMPS - \u3044\u3044\u3093\u3067\u3059\u304b\uff1f.m4a",
+    "song_path": "D:\\KuGou\\RADWIMPS - \u3044\u3044\u3093\u3067\u3059\u304b\uff1f.m4a",
+    "songer": "RADWIMPS",
+    "songname": "\u3044\u3044\u3093\u3067\u3059\u304b\uff1f",
+    "album": "RADWIMPS 4 \uff5e\u304a\u304b\u305a\u306e\u3054\u306f\u3093\uff5e",
+    "tcon": "Japanese Pop & Rock",
+    "year": "2006\u5e74",
+    "tracknumber": "(8, 13)",
+    "duration": "4:08",
     "suffix": ".m4a",
     "createTime": "2020-04-19 07:50:35"
 }, {
@@ -347,18 +347,6 @@
     "suffix": ".m4a",
     "createTime": "2020-04-19 07:50:33"
 }, {
-    "song": "RADWIMPS - \u30ae\u30df\u30ae\u30df\u30c3\u30af.m4a",
-    "song_path": "D:\\KuGou\\RADWIMPS - \u30ae\u30df\u30ae\u30df\u30c3\u30af.m4a",
-    "songer": "RADWIMPS",
-    "songname": "\u30ae\u30df\u30ae\u30df\u30c3\u30af",
-    "album": "RADWIMPS 4 \uff5e\u304a\u304b\u305a\u306e\u3054\u306f\u3093\uff5e",
-    "tcon": "Japanese Pop & Rock",
-    "year": "2006\u5e74",
-    "tracknumber": "(2, 13)",
-    "duration": "2:39",
-    "suffix": ".m4a",
-    "createTime": "2020-04-19 07:50:33"
-}, {
     "song": "RADWIMPS - me me she.m4a",
     "song_path": "D:\\KuGou\\RADWIMPS - me me she.m4a",
     "songer": "RADWIMPS",
@@ -368,6 +356,18 @@
     "year": "2006\u5e74",
     "tracknumber": "(4, 13)",
     "duration": "4:41",
+    "suffix": ".m4a",
+    "createTime": "2020-04-19 07:50:33"
+}, {
+    "song": "RADWIMPS - \u30ae\u30df\u30ae\u30df\u30c3\u30af.m4a",
+    "song_path": "D:\\KuGou\\RADWIMPS - \u30ae\u30df\u30ae\u30df\u30c3\u30af.m4a",
+    "songer": "RADWIMPS",
+    "songname": "\u30ae\u30df\u30ae\u30df\u30c3\u30af",
+    "album": "RADWIMPS 4 \uff5e\u304a\u304b\u305a\u306e\u3054\u306f\u3093\uff5e",
+    "tcon": "Japanese Pop & Rock",
+    "year": "2006\u5e74",
+    "tracknumber": "(2, 13)",
+    "duration": "2:39",
     "suffix": ".m4a",
     "createTime": "2020-04-19 07:50:33"
 }, {
@@ -395,18 +395,6 @@
     "suffix": ".mp3",
     "createTime": "2020-04-18 23:21:37"
 }, {
-    "song": "RADWIMPS - \u6700\u5f8c\u306e\u6b4c.m4a",
-    "song_path": "D:\\KuGou\\RADWIMPS - \u6700\u5f8c\u306e\u6b4c.m4a",
-    "songer": "RADWIMPS",
-    "songname": "\u6700\u5f8c\u306e\u6b4c",
-    "album": "RADWIMPS3\uff5e\u7121\u4eba\u5cf6\u306b\u6301\u3063\u3066\u3044\u304d\u5fd8\u308c\u305f\u4e00\u679a\uff5e",
-    "tcon": "Japanese Pop & Rock",
-    "year": "2006\u5e74",
-    "tracknumber": "(12, 12)",
-    "duration": "6:26",
-    "suffix": ".m4a",
-    "createTime": "2020-04-18 23:10:21"
-}, {
     "song": "RADWIMPS -  \u30c8\u30ec\u30e2\u30ed.m4a",
     "song_path": "D:\\KuGou\\RADWIMPS -  \u30c8\u30ec\u30e2\u30ed.m4a",
     "songer": "RADWIMPS",
@@ -416,6 +404,18 @@
     "year": "2006\u5e74",
     "tracknumber": "(11, 12)",
     "duration": "3:20",
+    "suffix": ".m4a",
+    "createTime": "2020-04-18 23:10:21"
+}, {
+    "song": "RADWIMPS - \u6700\u5f8c\u306e\u6b4c.m4a",
+    "song_path": "D:\\KuGou\\RADWIMPS - \u6700\u5f8c\u306e\u6b4c.m4a",
+    "songer": "RADWIMPS",
+    "songname": "\u6700\u5f8c\u306e\u6b4c",
+    "album": "RADWIMPS3\uff5e\u7121\u4eba\u5cf6\u306b\u6301\u3063\u3066\u3044\u304d\u5fd8\u308c\u305f\u4e00\u679a\uff5e",
+    "tcon": "Japanese Pop & Rock",
+    "year": "2006\u5e74",
+    "tracknumber": "(12, 12)",
+    "duration": "6:26",
     "suffix": ".m4a",
     "createTime": "2020-04-18 23:10:21"
 }, {
@@ -1403,18 +1403,6 @@
     "suffix": ".mp3",
     "createTime": "2019-08-24 16:58:47"
 }, {
-    "song": "Taylor Swift\u3001Dixie Chicks - Soon You'll Get Better.mp3",
-    "song_path": "D:\\KuGou\\Taylor Swift\u3001Dixie Chicks - Soon You'll Get Better.mp3",
-    "songer": "Taylor Swift\u3001Dixie Chicks",
-    "songname": "Soon You'll Get Better",
-    "album": "Lover",
-    "tcon": "POP\u6d41\u884c",
-    "year": "2019\u5e74",
-    "tracknumber": "12",
-    "duration": "3:21",
-    "suffix": ".mp3",
-    "createTime": "2019-08-24 16:58:46"
-}, {
     "song": "Taylor Swift - Lover.mp3",
     "song_path": "D:\\KuGou\\Taylor Swift - Lover.mp3",
     "songer": "Taylor Swift",
@@ -1424,6 +1412,18 @@
     "year": "2019\u5e74",
     "tracknumber": "3",
     "duration": "3:41",
+    "suffix": ".mp3",
+    "createTime": "2019-08-24 16:58:46"
+}, {
+    "song": "Taylor Swift\u3001Dixie Chicks - Soon You'll Get Better.mp3",
+    "song_path": "D:\\KuGou\\Taylor Swift\u3001Dixie Chicks - Soon You'll Get Better.mp3",
+    "songer": "Taylor Swift\u3001Dixie Chicks",
+    "songname": "Soon You'll Get Better",
+    "album": "Lover",
+    "tcon": "POP\u6d41\u884c",
+    "year": "2019\u5e74",
+    "tracknumber": "12",
+    "duration": "3:21",
     "suffix": ".mp3",
     "createTime": "2019-08-24 16:58:46"
 }, {
@@ -1967,18 +1967,6 @@
     "suffix": ".mp3",
     "createTime": "2019-07-20 09:53:34"
 }, {
-    "song": "RADWIMPS - \u5927\u4e08\u592b (Movie edit).mp3",
-    "song_path": "D:\\KuGou\\RADWIMPS - \u5927\u4e08\u592b (Movie edit).mp3",
-    "songer": "RADWIMPS",
-    "songname": "\u5927\u4e08\u592b (Movie edit)",
-    "album": "\u5929\u6c17\u306e\u5b50",
-    "tcon": "Soundtrack",
-    "year": "2019\u5e74",
-    "tracknumber": "30",
-    "duration": "4:18",
-    "suffix": ".mp3",
-    "createTime": "2019-07-20 09:53:33"
-}, {
     "song": "RADWIMPS\u3001\u4e09\u6d66\u900f\u5b50 - \u30b0\u30e9\u30f3\u30c9\u30a8\u30b9\u30b1\u30fc\u30d7 (Movie edit).mp3",
     "song_path": "D:\\KuGou\\RADWIMPS\u3001\u4e09\u6d66\u900f\u5b50 - \u30b0\u30e9\u30f3\u30c9\u30a8\u30b9\u30b1\u30fc\u30d7 (Movie edit).mp3",
     "songer": "RADWIMPS\u3001\u4e09\u6d66\u900f\u5b50",
@@ -1988,6 +1976,18 @@
     "year": "2019\u5e74",
     "tracknumber": "28",
     "duration": "3:08",
+    "suffix": ".mp3",
+    "createTime": "2019-07-20 09:53:33"
+}, {
+    "song": "RADWIMPS - \u5927\u4e08\u592b (Movie edit).mp3",
+    "song_path": "D:\\KuGou\\RADWIMPS - \u5927\u4e08\u592b (Movie edit).mp3",
+    "songer": "RADWIMPS",
+    "songname": "\u5927\u4e08\u592b (Movie edit)",
+    "album": "\u5929\u6c17\u306e\u5b50",
+    "tcon": "Soundtrack",
+    "year": "2019\u5e74",
+    "tracknumber": "30",
+    "duration": "4:18",
     "suffix": ".mp3",
     "createTime": "2019-07-20 09:53:33"
 }, {
@@ -2003,18 +2003,6 @@
     "suffix": ".mp3",
     "createTime": "2019-07-20 09:53:23"
 }, {
-    "song": "RADWIMPS - \u5bb6\u65cf\u306e\u6642\u9593.mp3",
-    "song_path": "D:\\KuGou\\RADWIMPS - \u5bb6\u65cf\u306e\u6642\u9593.mp3",
-    "songer": "RADWIMPS",
-    "songname": "\u5bb6\u65cf\u306e\u6642\u9593",
-    "album": "\u5929\u6c17\u306e\u5b50",
-    "tcon": "Soundtrack",
-    "year": "2019\u5e74",
-    "tracknumber": "20",
-    "duration": "2:33",
-    "suffix": ".mp3",
-    "createTime": "2019-07-20 09:52:28"
-}, {
     "song": "RADWIMPS - \u98a8\u305f\u3061\u306e\u58f0 (Movie edit).mp3",
     "song_path": "D:\\KuGou\\RADWIMPS - \u98a8\u305f\u3061\u306e\u58f0 (Movie edit).mp3",
     "songer": "RADWIMPS",
@@ -2027,17 +2015,17 @@
     "suffix": ".mp3",
     "createTime": "2019-07-20 09:52:28"
 }, {
-    "song": "RADWIMPS\u3001\u4e09\u6d66\u900f\u5b50 - \u795d\u796d (Movie edit).mp3",
-    "song_path": "D:\\KuGou\\RADWIMPS\u3001\u4e09\u6d66\u900f\u5b50 - \u795d\u796d (Movie edit).mp3",
-    "songer": "RADWIMPS\u3001\u4e09\u6d66\u900f\u5b50",
-    "songname": "\u795d\u796d (Movie edit)",
+    "song": "RADWIMPS - \u5bb6\u65cf\u306e\u6642\u9593.mp3",
+    "song_path": "D:\\KuGou\\RADWIMPS - \u5bb6\u65cf\u306e\u6642\u9593.mp3",
+    "songer": "RADWIMPS",
+    "songname": "\u5bb6\u65cf\u306e\u6642\u9593",
     "album": "\u5929\u6c17\u306e\u5b50",
     "tcon": "Soundtrack",
     "year": "2019\u5e74",
-    "tracknumber": "12",
-    "duration": "2:36",
+    "tracknumber": "20",
+    "duration": "2:33",
     "suffix": ".mp3",
-    "createTime": "2019-07-20 09:52:27"
+    "createTime": "2019-07-20 09:52:28"
 }, {
     "song": "RADWIMPS - \u829d\u516c\u5712.mp3",
     "song_path": "D:\\KuGou\\RADWIMPS - \u829d\u516c\u5712.mp3",
@@ -2048,6 +2036,18 @@
     "year": "2019\u5e74",
     "tracknumber": "15",
     "duration": "3:12",
+    "suffix": ".mp3",
+    "createTime": "2019-07-20 09:52:27"
+}, {
+    "song": "RADWIMPS\u3001\u4e09\u6d66\u900f\u5b50 - \u795d\u796d (Movie edit).mp3",
+    "song_path": "D:\\KuGou\\RADWIMPS\u3001\u4e09\u6d66\u900f\u5b50 - \u795d\u796d (Movie edit).mp3",
+    "songer": "RADWIMPS\u3001\u4e09\u6d66\u900f\u5b50",
+    "songname": "\u795d\u796d (Movie edit)",
+    "album": "\u5929\u6c17\u306e\u5b50",
+    "tcon": "Soundtrack",
+    "year": "2019\u5e74",
+    "tracknumber": "12",
+    "duration": "2:36",
     "suffix": ".mp3",
     "createTime": "2019-07-20 09:52:27"
 }, {

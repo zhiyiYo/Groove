@@ -1,5 +1,5 @@
 import sys
-
+import re
 from PyQt5.QtCore import QEvent, QPoint, Qt
 from PyQt5.QtGui import QBitmap, QPixmap, QBrush, QPen, QColor, QPainter
 from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget
@@ -34,9 +34,6 @@ class AlbumCard(QWidget):
         self.setFixedSize(220, 290)
         self.setWindowFlags(Qt.FramelessWindowHint)
 
-        # 设置专辑名自动折叠
-        self.albumName.setWordWrap(True)
-
         # 设置鼠标光标
         self.songerName.setCursor(Qt.PointingHandCursor)
 
@@ -46,7 +43,8 @@ class AlbumCard(QWidget):
 
         self.albumCover.move(10, 10)
         self.albumName.move(10, 218)
-        self.songerName.move(10, self.albumName.y()+26)
+        self.songerName.move(10, 244)
+        self.adjustLabel()
 
         # 设置背景图片
         self.backgroundLabel.setPixmap(
@@ -58,6 +56,60 @@ class AlbumCard(QWidget):
 
         # 设置监听
         self.installEventFilter(self)
+
+    def adjustLabel(self):
+        """ 根据专辑名的长度决定是否换行 """
+        # 设置换行标志位
+        wordWrap = True
+        text = self.albumName.text()
+        text_list = list(text)
+        alpha_num = 0
+        not_alpha_num = 0
+        blank_index = 0
+        for index, i in enumerate(text):
+            Match = re.match(r'[A-Z0-9a-z\(\)\*\.\s]', i)
+            if Match:
+                alpha_num += 1
+                if Match.group() == ' ':
+                    #记录上一个空格的下标
+                    blank_index = index
+                if alpha_num + 2 * not_alpha_num == 22:
+                    #发生异常就说明正好22个长度
+                    try:
+                        if text[index + 1] == ' ':
+                            #插入换行符
+                            text_list.insert(index + 1, '\n')
+                            #弹出空格
+                            text_list.pop(index + 2)
+                        else:
+                            text_list.insert(blank_index, '\n')
+                            text_list.pop(blank_index + 1)
+                        break
+                    except IndexError:
+                        pass
+
+            else:
+                not_alpha_num += 1
+                if alpha_num + 2 * not_alpha_num == 22:
+                    text_list.insert(index + 1, '\n')
+                    try:
+                        if text_list[index + 2] == ' ':
+                            text_list.pop(index + 2)
+                        break
+                    except:
+                        pass
+                elif alpha_num + 2 * not_alpha_num > 22:
+                    if text_list[index - 1] == ' ':
+                        text_list.insert(index - 1, '\n')
+                        text_list.pop(index)
+                    else:
+                        text_list.insert(index, '\n')
+                    break
+        else:
+            wordWrap = False
+        if wordWrap:
+            self.albumName.setText(''.join(text_list))
+            self.songerName.move(10,self.songerName.y()+22)
 
     def eventFilter(self, obj, e):
         """ 鼠标进入窗口时显示阴影和按钮，否则不显示 """
@@ -136,7 +188,7 @@ class AlbumCover(QWidget):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    albumInfo = {'album': 'Assortrip', 'songer': 'HALCA',
+    albumInfo = {'album': '星之回响 (2020 bilibili拜年祭单品)', 'songer': 'HALCA',
                  'cover_path': 'resource\\Album Cover\\Assortrip\\Assortrip.jpg'}
     demo = AlbumCard(albumInfo)
     demo.show()
