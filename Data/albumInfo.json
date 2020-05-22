@@ -1,4 +1,72 @@
 [{
+    "album": "\u5929\u6c17\u306e\u5b50 complete version",
+    "songer": "RADWIMPS",
+    "songInfo_list": [{
+        "song": "RADWIMPS - \u98a8\u305f\u3061\u306e\u58f0.flac",
+        "song_path": "D:\\KuGou\\RADWIMPS - \u98a8\u305f\u3061\u306e\u58f0.flac",
+        "songer": "RADWIMPS",
+        "songname": "\u98a8\u305f\u3061\u306e\u58f0",
+        "album": "\u5929\u6c17\u306e\u5b50 complete version",
+        "tcon": "RAP/HIP HOP",
+        "year": "2019\u5e74",
+        "tracknumber": "0",
+        "duration": "4:13",
+        "suffix": ".flac",
+        "createTime": "2020-05-22 09:18:33"
+    }, {
+        "song": "RADWIMPS - \u5927\u4e08\u592b.flac",
+        "song_path": "D:\\KuGou\\RADWIMPS - \u5927\u4e08\u592b.flac",
+        "songer": "RADWIMPS",
+        "songname": "\u5927\u4e08\u592b",
+        "album": "\u5929\u6c17\u306e\u5b50 complete version",
+        "tcon": "Soundtrack",
+        "year": "2019\u5e74",
+        "tracknumber": "4",
+        "duration": "5:35",
+        "suffix": ".flac",
+        "createTime": "2020-04-08 14:04:00"
+    }, {
+        "song": "RADWIMPS\u3001\u4e09\u6d66\u900f\u5b50 - \u30b0\u30e9\u30f3\u30c9\u30a8\u30b9\u30b1\u30fc\u30d7 feat.\u4e09\u6d66\u900f\u5b50.flac",
+        "song_path": "D:\\KuGou\\RADWIMPS\u3001\u4e09\u6d66\u900f\u5b50 - \u30b0\u30e9\u30f3\u30c9\u30a8\u30b9\u30b1\u30fc\u30d7 feat.\u4e09\u6d66\u900f\u5b50.flac",
+        "songer": "RADWIMPS\u3001\u4e09\u6d66\u900f\u5b50",
+        "songname": "\u30b0\u30e9\u30f3\u30c9\u30a8\u30b9\u30b1\u30fc\u30d7 feat.\u4e09\u6d66\u900f\u5b50",
+        "album": "\u5929\u6c17\u306e\u5b50 complete version",
+        "tcon": "RAP/HIP HOP",
+        "year": "2019\u5e74",
+        "tracknumber": "3",
+        "duration": "5:39",
+        "suffix": ".flac",
+        "createTime": "2019-11-27 07:14:15"
+    }, {
+        "song": "RADWIMPS - Is there still anything that love can do\uff1f (English Version).flac",
+        "song_path": "D:\\KuGou\\RADWIMPS - Is there still anything that love can do\uff1f (English Version).flac",
+        "songer": "RADWIMPS",
+        "songname": "Is there still anything that love can do\uff1f (English Version)",
+        "album": "\u5929\u6c17\u306e\u5b50 complete version",
+        "tcon": "RAP/HIP HOP",
+        "year": "2019\u5e74",
+        "tracknumber": "6",
+        "duration": "6:45",
+        "suffix": ".flac",
+        "createTime": "2019-11-27 07:13:27"
+    }, {
+        "song": "RADWIMPS\u3001\u4e09\u6d66\u900f\u5b50 - \u795d\u796d feat.\u4e09\u6d66\u900f\u5b50.flac",
+        "song_path": "D:\\KuGou\\RADWIMPS\u3001\u4e09\u6d66\u900f\u5b50 - \u795d\u796d feat.\u4e09\u6d66\u900f\u5b50.flac",
+        "songer": "RADWIMPS\u3001\u4e09\u6d66\u900f\u5b50",
+        "songname": "\u795d\u796d feat.\u4e09\u6d66\u900f\u5b50",
+        "album": "\u5929\u6c17\u306e\u5b50 complete version",
+        "tcon": "RAP/HIP HOP",
+        "year": "2019\u5e74",
+        "tracknumber": "2",
+        "duration": "4:34",
+        "suffix": ".flac",
+        "createTime": "2019-11-27 07:11:43"
+    }],
+    "tcon": "RAP/HIP HOP",
+    "year": "2019\u5e74",
+    "updateTime": "2020-05-22 09:18:33",
+    "cover_path": "resource\\Album Cover\\\u5929\u6c17\u306e\u5b50 complete version\\\u5929\u6c17\u306e\u5b50 complete version.png"
+}, {
     "album": "\u98a8\u306b\u5439\u304b\u308c\u3066",
     "songer": "\u798f\u539f\u9065",
     "songInfo_list": [{
@@ -17,7 +85,7 @@
     "tcon": "POP\u6d41\u884c",
     "year": "2020\u5e74",
     "updateTime": "2020-05-19 09:02:03",
-    "cover_path": "resource\\Album Cover\\\u98a8\u306b\u5439\u304b\u308c\u3066\\\u98a8\u306b\u5439\u304b\u308c\u3066.jpg"
+    "cover_path": "resource\\Album Cover\\\u98a8\u306b\u5439\u304b\u308c\u3066\\\u98a8\u306b\u5439\u304b\u308c\u3066.png"
 }, {
     "album": "Summer Feelings (feat. Charlie Puth)",
     "songer": "Lennon Stella\u3001Charlie Puth",
@@ -99,14 +167,14 @@
     "updateTime": "2020-05-11 09:06:46",
     "cover_path": "resource\\Album Cover\\\u3082\u3063\u3068\\\u3082\u3063\u3068.jpg"
 }, {
-    "album": "\u4e09\u6d66\u900f\u5b50",
+    "album": "\u304a\u3061\u3064\u3051",
     "songer": "\u4e09\u6d66\u900f\u5b50",
     "songInfo_list": [{
         "song": "\u4e09\u6d66\u900f\u5b50 - \u304a\u3061\u3064\u3051.m4a",
         "song_path": "D:\\KuGou\\\u4e09\u6d66\u900f\u5b50 - \u304a\u3061\u3064\u3051.m4a",
         "songer": "\u4e09\u6d66\u900f\u5b50",
         "songname": "\u304a\u3061\u3064\u3051",
-        "album": "\u4e09\u6d66\u900f\u5b50",
+        "album": "\u304a\u3061\u3064\u3051",
         "tcon": "POP\u6d41\u884c",
         "year": "2020\u5e74",
         "tracknumber": "(0, 0)",
@@ -117,7 +185,7 @@
     "tcon": "POP\u6d41\u884c",
     "year": "2020\u5e74",
     "updateTime": "2020-04-26 10:54:42",
-    "cover_path": "resource\\Album Cover\\\u4e09\u6d66\u900f\u5b50\\\u4e09\u6d66\u900f\u5b50.jpg"
+    "cover_path": "resource\\Album Cover\\\u304a\u3061\u3064\u3051\\\u304a\u3061\u3064\u3051.jpg"
 }, {
     "album": "\u58f0 \uff5eVOCALOID Cover Album\uff5e",
     "songer": "H\u25b3G",
@@ -442,15 +510,15 @@
         "suffix": ".m4a",
         "createTime": "2020-04-19 07:50:37"
     }, {
-        "song": "RADWIMPS - \u5098\u62cd\u5b50.m4a",
-        "song_path": "D:\\KuGou\\RADWIMPS - \u5098\u62cd\u5b50.m4a",
+        "song": "RADWIMPS - \u307e\u3059\u3002.m4a",
+        "song_path": "D:\\KuGou\\RADWIMPS - \u307e\u3059\u3002.m4a",
         "songer": "RADWIMPS",
-        "songname": "\u5098\u62cd\u5b50",
+        "songname": "\u307e\u3059\u3002",
         "album": "RADWIMPS 4 \uff5e\u304a\u304b\u305a\u306e\u3054\u306f\u3093\uff5e",
         "tcon": "Japanese Pop & Rock",
         "year": "2006\u5e74",
-        "tracknumber": "(10, 13)",
-        "duration": "4:02",
+        "tracknumber": "(11, 13)",
+        "duration": "2:15",
         "suffix": ".m4a",
         "createTime": "2020-04-19 07:50:36"
     }, {
@@ -466,15 +534,15 @@
         "suffix": ".m4a",
         "createTime": "2020-04-19 07:50:36"
     }, {
-        "song": "RADWIMPS - \u307e\u3059\u3002.m4a",
-        "song_path": "D:\\KuGou\\RADWIMPS - \u307e\u3059\u3002.m4a",
+        "song": "RADWIMPS - \u5098\u62cd\u5b50.m4a",
+        "song_path": "D:\\KuGou\\RADWIMPS - \u5098\u62cd\u5b50.m4a",
         "songer": "RADWIMPS",
-        "songname": "\u307e\u3059\u3002",
+        "songname": "\u5098\u62cd\u5b50",
         "album": "RADWIMPS 4 \uff5e\u304a\u304b\u305a\u306e\u3054\u306f\u3093\uff5e",
         "tcon": "Japanese Pop & Rock",
         "year": "2006\u5e74",
-        "tracknumber": "(11, 13)",
-        "duration": "2:15",
+        "tracknumber": "(10, 13)",
+        "duration": "4:02",
         "suffix": ".m4a",
         "createTime": "2020-04-19 07:50:36"
     }, {
@@ -526,18 +594,6 @@
         "suffix": ".m4a",
         "createTime": "2020-04-19 07:50:34"
     }, {
-        "song": "RADWIMPS - me me she.m4a",
-        "song_path": "D:\\KuGou\\RADWIMPS - me me she.m4a",
-        "songer": "RADWIMPS",
-        "songname": "me me she",
-        "album": "RADWIMPS 4 \uff5e\u304a\u304b\u305a\u306e\u3054\u306f\u3093\uff5e",
-        "tcon": "Japanese Pop & Rock",
-        "year": "2006\u5e74",
-        "tracknumber": "(4, 13)",
-        "duration": "4:41",
-        "suffix": ".m4a",
-        "createTime": "2020-04-19 07:50:33"
-    }, {
         "song": "RADWIMPS - 05410-(\u3093).m4a",
         "song_path": "D:\\KuGou\\RADWIMPS - 05410-(\u3093).m4a",
         "songer": "RADWIMPS",
@@ -547,6 +603,18 @@
         "year": "2006\u5e74",
         "tracknumber": "(3, 13)",
         "duration": "3:10",
+        "suffix": ".m4a",
+        "createTime": "2020-04-19 07:50:33"
+    }, {
+        "song": "RADWIMPS - me me she.m4a",
+        "song_path": "D:\\KuGou\\RADWIMPS - me me she.m4a",
+        "songer": "RADWIMPS",
+        "songname": "me me she",
+        "album": "RADWIMPS 4 \uff5e\u304a\u304b\u305a\u306e\u3054\u306f\u3093\uff5e",
+        "tcon": "Japanese Pop & Rock",
+        "year": "2006\u5e74",
+        "tracknumber": "(4, 13)",
+        "duration": "4:41",
         "suffix": ".m4a",
         "createTime": "2020-04-19 07:50:33"
     }, {
@@ -601,7 +669,7 @@
     "tcon": "Japanese Pop & Rock",
     "year": "2006\u5e74",
     "updateTime": "2020-04-19 07:50:37",
-    "cover_path": "resource\\Album Cover\\RADWIMPS 4 \uff5e\u304a\u304b\u305a\u306e\u3054\u306f\u3093\uff5e\\RADWIMPS 4 \uff5e\u304a\u304b\u305a\u306e\u3054\u306f\u3093\uff5e.jpg"
+    "cover_path": "resource\\Album Cover\\RADWIMPS 4 \uff5e\u304a\u304b\u305a\u306e\u3054\u306f\u3093\uff5e\\RADWIMPS 4 \uff5e\u304a\u304b\u305a\u306e\u3054\u306f\u3093\uff5e.png"
 }, {
     "album": "\u732b\u3058\u3083\u3089\u3057 - Single",
     "songer": "RADWIMPS",
@@ -658,18 +726,6 @@
     "album": "RADWIMPS3\uff5e\u7121\u4eba\u5cf6\u306b\u6301\u3063\u3066\u3044\u304d\u5fd8\u308c\u305f\u4e00\u679a\uff5e",
     "songer": "RADWIMPS",
     "songInfo_list": [{
-        "song": "RADWIMPS - \u6700\u5f8c\u306e\u6b4c.m4a",
-        "song_path": "D:\\KuGou\\RADWIMPS - \u6700\u5f8c\u306e\u6b4c.m4a",
-        "songer": "RADWIMPS",
-        "songname": "\u6700\u5f8c\u306e\u6b4c",
-        "album": "RADWIMPS3\uff5e\u7121\u4eba\u5cf6\u306b\u6301\u3063\u3066\u3044\u304d\u5fd8\u308c\u305f\u4e00\u679a\uff5e",
-        "tcon": "Japanese Pop & Rock",
-        "year": "2006\u5e74",
-        "tracknumber": "(12, 12)",
-        "duration": "6:26",
-        "suffix": ".m4a",
-        "createTime": "2020-04-18 23:10:21"
-    }, {
         "song": "RADWIMPS -  \u30c8\u30ec\u30e2\u30ed.m4a",
         "song_path": "D:\\KuGou\\RADWIMPS -  \u30c8\u30ec\u30e2\u30ed.m4a",
         "songer": "RADWIMPS",
@@ -679,6 +735,18 @@
         "year": "2006\u5e74",
         "tracknumber": "(11, 12)",
         "duration": "3:20",
+        "suffix": ".m4a",
+        "createTime": "2020-04-18 23:10:21"
+    }, {
+        "song": "RADWIMPS - \u6700\u5f8c\u306e\u6b4c.m4a",
+        "song_path": "D:\\KuGou\\RADWIMPS - \u6700\u5f8c\u306e\u6b4c.m4a",
+        "songer": "RADWIMPS",
+        "songname": "\u6700\u5f8c\u306e\u6b4c",
+        "album": "RADWIMPS3\uff5e\u7121\u4eba\u5cf6\u306b\u6301\u3063\u3066\u3044\u304d\u5fd8\u308c\u305f\u4e00\u679a\uff5e",
+        "tcon": "Japanese Pop & Rock",
+        "year": "2006\u5e74",
+        "tracknumber": "(12, 12)",
+        "duration": "6:26",
         "suffix": ".m4a",
         "createTime": "2020-04-18 23:10:21"
     }, {
@@ -730,18 +798,6 @@
         "suffix": ".m4a",
         "createTime": "2020-04-18 23:10:18"
     }, {
-        "song": "RADWIMPS -  \u30bb\u30d7\u30c6\u30f3\u30d0\u30fc\u3055\u3093.m4a",
-        "song_path": "D:\\KuGou\\RADWIMPS -  \u30bb\u30d7\u30c6\u30f3\u30d0\u30fc\u3055\u3093.m4a",
-        "songer": "RADWIMPS",
-        "songname": " \u30bb\u30d7\u30c6\u30f3\u30d0\u30fc\u3055\u3093",
-        "album": "RADWIMPS3\uff5e\u7121\u4eba\u5cf6\u306b\u6301\u3063\u3066\u3044\u304d\u5fd8\u308c\u305f\u4e00\u679a\uff5e",
-        "tcon": "Japanese Pop & Rock",
-        "year": "2006\u5e74",
-        "tracknumber": "(2, 12)",
-        "duration": "5:07",
-        "suffix": ".m4a",
-        "createTime": "2020-04-18 23:10:17"
-    }, {
         "song": "RADWIMPS -  \u9589\u3058\u305f\u5149.m4a",
         "song_path": "D:\\KuGou\\RADWIMPS -  \u9589\u3058\u305f\u5149.m4a",
         "songer": "RADWIMPS",
@@ -751,6 +807,18 @@
         "year": "2006\u5e74",
         "tracknumber": "(4, 12)",
         "duration": "4:28",
+        "suffix": ".m4a",
+        "createTime": "2020-04-18 23:10:17"
+    }, {
+        "song": "RADWIMPS -  \u30bb\u30d7\u30c6\u30f3\u30d0\u30fc\u3055\u3093.m4a",
+        "song_path": "D:\\KuGou\\RADWIMPS -  \u30bb\u30d7\u30c6\u30f3\u30d0\u30fc\u3055\u3093.m4a",
+        "songer": "RADWIMPS",
+        "songname": " \u30bb\u30d7\u30c6\u30f3\u30d0\u30fc\u3055\u3093",
+        "album": "RADWIMPS3\uff5e\u7121\u4eba\u5cf6\u306b\u6301\u3063\u3066\u3044\u304d\u5fd8\u308c\u305f\u4e00\u679a\uff5e",
+        "tcon": "Japanese Pop & Rock",
+        "year": "2006\u5e74",
+        "tracknumber": "(2, 12)",
+        "duration": "5:07",
         "suffix": ".m4a",
         "createTime": "2020-04-18 23:10:17"
     }, {
@@ -769,7 +837,7 @@
     "tcon": "Japanese Pop & Rock",
     "year": "2006\u5e74",
     "updateTime": "2020-04-18 23:10:21",
-    "cover_path": "resource\\Album Cover\\RADWIMPS3\uff5e\u7121\u4eba\u5cf6\u306b\u6301\u3063\u3066\u3044\u304d\u5fd8\u308c\u305f\u4e00\u679a\uff5e\\RADWIMPS3\uff5e\u7121\u4eba\u5cf6\u306b\u6301\u3063\u3066\u3044\u304d\u5fd8\u308c\u305f\u4e00\u679a\uff5e.jpg"
+    "cover_path": "resource\\Album Cover\\RADWIMPS3\uff5e\u7121\u4eba\u5cf6\u306b\u6301\u3063\u3066\u3044\u304d\u5fd8\u308c\u305f\u4e00\u679a\uff5e\\RADWIMPS3\uff5e\u7121\u4eba\u5cf6\u306b\u6301\u3063\u3066\u3044\u304d\u5fd8\u308c\u305f\u4e00\u679a\uff5e.png"
 }, {
     "album": "\u6642\u3068\u3057\u3066\u30d0\u30a4\u30aa\u30ec\u30f3\u30b9",
     "songer": "HALCA",
@@ -790,62 +858,6 @@
     "year": "2020\u5e74",
     "updateTime": "2020-04-15 08:17:45",
     "cover_path": "resource\\Album Cover\\\u6642\u3068\u3057\u3066\u30d0\u30a4\u30aa\u30ec\u30f3\u30b9\\\u6642\u3068\u3057\u3066\u30d0\u30a4\u30aa\u30ec\u30f3\u30b9.jpg"
-}, {
-    "album": "\u5929\u6c17\u306e\u5b50 complete version",
-    "songer": "RADWIMPS",
-    "songInfo_list": [{
-        "song": "RADWIMPS - \u5927\u4e08\u592b.flac",
-        "song_path": "D:\\KuGou\\RADWIMPS - \u5927\u4e08\u592b.flac",
-        "songer": "RADWIMPS",
-        "songname": "\u5927\u4e08\u592b",
-        "album": "\u5929\u6c17\u306e\u5b50 complete version",
-        "tcon": "Soundtrack",
-        "year": "2019\u5e74",
-        "tracknumber": "4",
-        "duration": "5:35",
-        "suffix": ".flac",
-        "createTime": "2020-04-08 14:04:00"
-    }, {
-        "song": "RADWIMPS\u3001\u4e09\u6d66\u900f\u5b50 - \u30b0\u30e9\u30f3\u30c9\u30a8\u30b9\u30b1\u30fc\u30d7 feat.\u4e09\u6d66\u900f\u5b50.flac",
-        "song_path": "D:\\KuGou\\RADWIMPS\u3001\u4e09\u6d66\u900f\u5b50 - \u30b0\u30e9\u30f3\u30c9\u30a8\u30b9\u30b1\u30fc\u30d7 feat.\u4e09\u6d66\u900f\u5b50.flac",
-        "songer": "RADWIMPS\u3001\u4e09\u6d66\u900f\u5b50",
-        "songname": "\u30b0\u30e9\u30f3\u30c9\u30a8\u30b9\u30b1\u30fc\u30d7 feat.\u4e09\u6d66\u900f\u5b50",
-        "album": "\u5929\u6c17\u306e\u5b50 complete version",
-        "tcon": "RAP/HIP HOP",
-        "year": "2019\u5e74",
-        "tracknumber": "3",
-        "duration": "5:39",
-        "suffix": ".flac",
-        "createTime": "2019-11-27 07:14:15"
-    }, {
-        "song": "RADWIMPS - Is there still anything that love can do\uff1f (English Version).flac",
-        "song_path": "D:\\KuGou\\RADWIMPS - Is there still anything that love can do\uff1f (English Version).flac",
-        "songer": "RADWIMPS",
-        "songname": "Is there still anything that love can do\uff1f (English Version)",
-        "album": "\u5929\u6c17\u306e\u5b50 complete version",
-        "tcon": "RAP/HIP HOP",
-        "year": "2019\u5e74",
-        "tracknumber": "6",
-        "duration": "6:45",
-        "suffix": ".flac",
-        "createTime": "2019-11-27 07:13:27"
-    }, {
-        "song": "RADWIMPS\u3001\u4e09\u6d66\u900f\u5b50 - \u795d\u796d feat.\u4e09\u6d66\u900f\u5b50.flac",
-        "song_path": "D:\\KuGou\\RADWIMPS\u3001\u4e09\u6d66\u900f\u5b50 - \u795d\u796d feat.\u4e09\u6d66\u900f\u5b50.flac",
-        "songer": "RADWIMPS\u3001\u4e09\u6d66\u900f\u5b50",
-        "songname": "\u795d\u796d feat.\u4e09\u6d66\u900f\u5b50",
-        "album": "\u5929\u6c17\u306e\u5b50 complete version",
-        "tcon": "RAP/HIP HOP",
-        "year": "2019\u5e74",
-        "tracknumber": "2",
-        "duration": "4:34",
-        "suffix": ".flac",
-        "createTime": "2019-11-27 07:11:43"
-    }],
-    "tcon": "Soundtrack",
-    "year": "2019\u5e74",
-    "updateTime": "2020-04-08 14:04:00",
-    "cover_path": "resource\\Album Cover\\\u5929\u6c17\u306e\u5b50 complete version\\\u5929\u6c17\u306e\u5b50 complete version.jpg"
 }, {
     "album": "White Disc +++",
     "songer": "halca",
@@ -945,7 +957,7 @@
     "tcon": "\u6d41\u884cPOP",
     "year": "2020\u5e74",
     "updateTime": "2020-03-21 10:44:35",
-    "cover_path": "resource\\Album Cover\\\u30cf\u30c3\u30d4\u30fc\u3067\u30d0\u30c3\u30c9\u306a\u7720\u308a\u306f\u6d45\u3044\\\u30cf\u30c3\u30d4\u30fc\u3067\u30d0\u30c3\u30c9\u306a\u7720\u308a\u306f\u6d45\u3044.jpg"
+    "cover_path": "resource\\Album Cover\\\u30cf\u30c3\u30d4\u30fc\u3067\u30d0\u30c3\u30c9\u306a\u7720\u308a\u306f\u6d45\u3044\\\u30cf\u30c3\u30d4\u30fc\u3067\u30d0\u30c3\u30c9\u306a\u7720\u308a\u306f\u6d45\u3044.png"
 }, {
     "album": "Assortrip",
     "songer": "HALCA",
@@ -1823,134 +1835,6 @@
     "updateTime": "2019-11-29 10:30:12",
     "cover_path": "resource\\Album Cover\\Documentary\\Documentary.jpg"
 }, {
-    "album": "\u5929\u6c17\u306e\u5b50",
-    "songer": "RADWIMPS",
-    "songInfo_list": [{
-        "song": "RADWIMPS - \u98a8\u305f\u3061\u306e\u58f0.flac",
-        "song_path": "D:\\KuGou\\RADWIMPS - \u98a8\u305f\u3061\u306e\u58f0.flac",
-        "songer": "RADWIMPS",
-        "songname": "\u98a8\u305f\u3061\u306e\u58f0",
-        "album": "\u5929\u6c17\u306e\u5b50",
-        "tcon": "RAP/HIP HOP",
-        "year": "2019\u5e74",
-        "tracknumber": "0",
-        "duration": "4:13",
-        "suffix": ".flac",
-        "createTime": "2019-11-27 07:15:30"
-    }, {
-        "song": "RADWIMPS - \u967d\u83dc\u3068\u3001\u8d70\u308b\u5e06\u9ad8.mp3",
-        "song_path": "D:\\KuGou\\RADWIMPS - \u967d\u83dc\u3068\u3001\u8d70\u308b\u5e06\u9ad8.mp3",
-        "songer": "RADWIMPS",
-        "songname": "\u967d\u83dc\u3068\u3001\u8d70\u308b\u5e06\u9ad8",
-        "album": "\u5929\u6c17\u306e\u5b50",
-        "tcon": "Soundtrack",
-        "year": "2019\u5e74",
-        "tracknumber": "26",
-        "duration": "2:23",
-        "suffix": ".mp3",
-        "createTime": "2019-07-20 09:54:41"
-    }, {
-        "song": "RADWIMPS - \u611b\u306b\u3067\u304d\u308b\u3053\u3068\u306f\u307e\u3060\u3042\u308b\u304b\u3044.mp3",
-        "song_path": "D:\\KuGou\\RADWIMPS - \u611b\u306b\u3067\u304d\u308b\u3053\u3068\u306f\u307e\u3060\u3042\u308b\u304b\u3044.mp3",
-        "songer": "RADWIMPS",
-        "songname": "\u611b\u306b\u3067\u304d\u308b\u3053\u3068\u306f\u307e\u3060\u3042\u308b\u304b\u3044",
-        "album": "\u5929\u6c17\u306e\u5b50",
-        "tcon": "Soundtrack",
-        "year": "2019\u5e74",
-        "tracknumber": "31",
-        "duration": "6:54",
-        "suffix": ".mp3",
-        "createTime": "2019-07-20 09:53:34"
-    }, {
-        "song": "RADWIMPS - \u5927\u4e08\u592b (Movie edit).mp3",
-        "song_path": "D:\\KuGou\\RADWIMPS - \u5927\u4e08\u592b (Movie edit).mp3",
-        "songer": "RADWIMPS",
-        "songname": "\u5927\u4e08\u592b (Movie edit)",
-        "album": "\u5929\u6c17\u306e\u5b50",
-        "tcon": "Soundtrack",
-        "year": "2019\u5e74",
-        "tracknumber": "30",
-        "duration": "4:18",
-        "suffix": ".mp3",
-        "createTime": "2019-07-20 09:53:33"
-    }, {
-        "song": "RADWIMPS\u3001\u4e09\u6d66\u900f\u5b50 - \u30b0\u30e9\u30f3\u30c9\u30a8\u30b9\u30b1\u30fc\u30d7 (Movie edit).mp3",
-        "song_path": "D:\\KuGou\\RADWIMPS\u3001\u4e09\u6d66\u900f\u5b50 - \u30b0\u30e9\u30f3\u30c9\u30a8\u30b9\u30b1\u30fc\u30d7 (Movie edit).mp3",
-        "songer": "RADWIMPS\u3001\u4e09\u6d66\u900f\u5b50",
-        "songname": "\u30b0\u30e9\u30f3\u30c9\u30a8\u30b9\u30b1\u30fc\u30d7 (Movie edit)",
-        "album": "\u5929\u6c17\u306e\u5b50",
-        "tcon": "Soundtrack",
-        "year": "2019\u5e74",
-        "tracknumber": "28",
-        "duration": "3:08",
-        "suffix": ".mp3",
-        "createTime": "2019-07-20 09:53:33"
-    }, {
-        "song": "RADWIMPS - \u3075\u305f\u305f\u3073\u306e\u3001\u96e8.mp3",
-        "song_path": "D:\\KuGou\\RADWIMPS - \u3075\u305f\u305f\u3073\u306e\u3001\u96e8.mp3",
-        "songer": "RADWIMPS",
-        "songname": "\u3075\u305f\u305f\u3073\u306e\u3001\u96e8",
-        "album": "\u5929\u6c17\u306e\u5b50",
-        "tcon": "Soundtrack",
-        "year": "2019\u5e74",
-        "tracknumber": "29",
-        "duration": "0:44",
-        "suffix": ".mp3",
-        "createTime": "2019-07-20 09:53:23"
-    }, {
-        "song": "RADWIMPS - \u5bb6\u65cf\u306e\u6642\u9593.mp3",
-        "song_path": "D:\\KuGou\\RADWIMPS - \u5bb6\u65cf\u306e\u6642\u9593.mp3",
-        "songer": "RADWIMPS",
-        "songname": "\u5bb6\u65cf\u306e\u6642\u9593",
-        "album": "\u5929\u6c17\u306e\u5b50",
-        "tcon": "Soundtrack",
-        "year": "2019\u5e74",
-        "tracknumber": "20",
-        "duration": "2:33",
-        "suffix": ".mp3",
-        "createTime": "2019-07-20 09:52:28"
-    }, {
-        "song": "RADWIMPS - \u98a8\u305f\u3061\u306e\u58f0 (Movie edit).mp3",
-        "song_path": "D:\\KuGou\\RADWIMPS - \u98a8\u305f\u3061\u306e\u58f0 (Movie edit).mp3",
-        "songer": "RADWIMPS",
-        "songname": "\u98a8\u305f\u3061\u306e\u58f0 (Movie edit)",
-        "album": "\u5929\u6c17\u306e\u5b50",
-        "tcon": "Soundtrack",
-        "year": "2019\u5e74",
-        "tracknumber": "6",
-        "duration": "2:37",
-        "suffix": ".mp3",
-        "createTime": "2019-07-20 09:52:28"
-    }, {
-        "song": "RADWIMPS - \u829d\u516c\u5712.mp3",
-        "song_path": "D:\\KuGou\\RADWIMPS - \u829d\u516c\u5712.mp3",
-        "songer": "RADWIMPS",
-        "songname": "\u829d\u516c\u5712",
-        "album": "\u5929\u6c17\u306e\u5b50",
-        "tcon": "Soundtrack",
-        "year": "2019\u5e74",
-        "tracknumber": "15",
-        "duration": "3:12",
-        "suffix": ".mp3",
-        "createTime": "2019-07-20 09:52:27"
-    }, {
-        "song": "RADWIMPS\u3001\u4e09\u6d66\u900f\u5b50 - \u795d\u796d (Movie edit).mp3",
-        "song_path": "D:\\KuGou\\RADWIMPS\u3001\u4e09\u6d66\u900f\u5b50 - \u795d\u796d (Movie edit).mp3",
-        "songer": "RADWIMPS\u3001\u4e09\u6d66\u900f\u5b50",
-        "songname": "\u795d\u796d (Movie edit)",
-        "album": "\u5929\u6c17\u306e\u5b50",
-        "tcon": "Soundtrack",
-        "year": "2019\u5e74",
-        "tracknumber": "12",
-        "duration": "2:36",
-        "suffix": ".mp3",
-        "createTime": "2019-07-20 09:52:27"
-    }],
-    "tcon": "RAP/HIP HOP",
-    "year": "2019\u5e74",
-    "updateTime": "2019-11-27 07:15:30",
-    "cover_path": "resource\\Album Cover\\\u5929\u6c17\u306e\u5b50\\\u5929\u6c17\u306e\u5b50.jpg"
-}, {
     "album": "Dynamite",
     "songer": "Westlife",
     "songInfo_list": [{
@@ -2168,14 +2052,14 @@
         "songname": "\u541b\u306b\u307e\u3064\u308f\u308b\u30df\u30b9\u30c6\u30ea\u30fc",
         "album": "\u541b\u306b\u307e\u3064\u308f\u308b\u30df\u30b9\u30c6\u30ea\u30fc",
         "tcon": "Anime",
-        "year": "2012-08-22\u5e74",
+        "year": "\u672a\u77e5\u5e74\u4efd",
         "tracknumber": "1/4",
         "duration": "4:16",
         "suffix": ".mp3",
         "createTime": "2019-08-31 22:23:55"
     }],
     "tcon": "Anime",
-    "year": "2012-08-22\u5e74",
+    "year": "\u672a\u77e5\u5e74\u4efd",
     "updateTime": "2019-08-31 22:23:55",
     "cover_path": "resource\\Album Cover\\\u541b\u306b\u307e\u3064\u308f\u308b\u30df\u30b9\u30c6\u30ea\u30fc\\\u541b\u306b\u307e\u3064\u308f\u308b\u30df\u30b9\u30c6\u30ea\u30fc.jpg"
 }, {
@@ -2359,26 +2243,6 @@
     "updateTime": "2019-08-22 09:45:42",
     "cover_path": "resource\\Album Cover\\Cold\\Cold.jpg"
 }, {
-    "album": "\u8303\u7279\u897f",
-    "songer": "\u5468\u6770\u4f26",
-    "songInfo_list": [{
-        "song": "\u5468\u6770\u4f26 - \u5b89\u9759.mp3",
-        "song_path": "D:\\KuGou\\\u5468\u6770\u4f26 - \u5b89\u9759.mp3",
-        "songer": "\u5468\u6770\u4f26",
-        "songname": "\u5b89\u9759",
-        "album": "\u8303\u7279\u897f",
-        "tcon": "POP\u6d41\u884c",
-        "year": "2001\u5e74",
-        "tracknumber": "0",
-        "duration": "5:34",
-        "suffix": ".mp3",
-        "createTime": "2019-08-17 08:52:47"
-    }],
-    "tcon": "POP\u6d41\u884c",
-    "year": "2001\u5e74",
-    "updateTime": "2019-08-17 08:52:47",
-    "cover_path": "resource\\Album Cover\\\u8303\u7279\u897f\\\u8303\u7279\u897f.jpg"
-}, {
     "album": "\u53f6\u60e0\u7f8e",
     "songer": "\u5468\u6770\u4f26",
     "songInfo_list": [{
@@ -2398,6 +2262,26 @@
     "year": "2003\u5e74",
     "updateTime": "2019-08-17 08:52:47",
     "cover_path": "resource\\Album Cover\\\u53f6\u60e0\u7f8e\\\u53f6\u60e0\u7f8e.jpg"
+}, {
+    "album": "\u8303\u7279\u897f",
+    "songer": "\u5468\u6770\u4f26",
+    "songInfo_list": [{
+        "song": "\u5468\u6770\u4f26 - \u5b89\u9759.mp3",
+        "song_path": "D:\\KuGou\\\u5468\u6770\u4f26 - \u5b89\u9759.mp3",
+        "songer": "\u5468\u6770\u4f26",
+        "songname": "\u5b89\u9759",
+        "album": "\u8303\u7279\u897f",
+        "tcon": "POP\u6d41\u884c",
+        "year": "2001\u5e74",
+        "tracknumber": "0",
+        "duration": "5:34",
+        "suffix": ".mp3",
+        "createTime": "2019-08-17 08:52:47"
+    }],
+    "tcon": "POP\u6d41\u884c",
+    "year": "2001\u5e74",
+    "updateTime": "2019-08-17 08:52:47",
+    "cover_path": "resource\\Album Cover\\\u8303\u7279\u897f\\\u8303\u7279\u897f.jpg"
 }, {
     "album": "\u5341\u4e00\u6708\u7684\u8427\u90a6",
     "songer": "\u5468\u6770\u4f26",
@@ -3039,6 +2923,122 @@
     "updateTime": "2019-08-01 10:29:06",
     "cover_path": "resource\\Album Cover\\Attention\\Attention.jpg"
 }, {
+    "album": "\u5929\u6c17\u306e\u5b50",
+    "songer": "RADWIMPS",
+    "songInfo_list": [{
+        "song": "RADWIMPS - \u967d\u83dc\u3068\u3001\u8d70\u308b\u5e06\u9ad8.mp3",
+        "song_path": "D:\\KuGou\\RADWIMPS - \u967d\u83dc\u3068\u3001\u8d70\u308b\u5e06\u9ad8.mp3",
+        "songer": "RADWIMPS",
+        "songname": "\u967d\u83dc\u3068\u3001\u8d70\u308b\u5e06\u9ad8",
+        "album": "\u5929\u6c17\u306e\u5b50",
+        "tcon": "Soundtrack",
+        "year": "2019\u5e74",
+        "tracknumber": "26",
+        "duration": "2:23",
+        "suffix": ".mp3",
+        "createTime": "2019-07-20 09:54:41"
+    }, {
+        "song": "RADWIMPS - \u611b\u306b\u3067\u304d\u308b\u3053\u3068\u306f\u307e\u3060\u3042\u308b\u304b\u3044.mp3",
+        "song_path": "D:\\KuGou\\RADWIMPS - \u611b\u306b\u3067\u304d\u308b\u3053\u3068\u306f\u307e\u3060\u3042\u308b\u304b\u3044.mp3",
+        "songer": "RADWIMPS",
+        "songname": "\u611b\u306b\u3067\u304d\u308b\u3053\u3068\u306f\u307e\u3060\u3042\u308b\u304b\u3044",
+        "album": "\u5929\u6c17\u306e\u5b50",
+        "tcon": "Soundtrack",
+        "year": "2019\u5e74",
+        "tracknumber": "31",
+        "duration": "6:54",
+        "suffix": ".mp3",
+        "createTime": "2019-07-20 09:53:34"
+    }, {
+        "song": "RADWIMPS\u3001\u4e09\u6d66\u900f\u5b50 - \u30b0\u30e9\u30f3\u30c9\u30a8\u30b9\u30b1\u30fc\u30d7 (Movie edit).mp3",
+        "song_path": "D:\\KuGou\\RADWIMPS\u3001\u4e09\u6d66\u900f\u5b50 - \u30b0\u30e9\u30f3\u30c9\u30a8\u30b9\u30b1\u30fc\u30d7 (Movie edit).mp3",
+        "songer": "RADWIMPS\u3001\u4e09\u6d66\u900f\u5b50",
+        "songname": "\u30b0\u30e9\u30f3\u30c9\u30a8\u30b9\u30b1\u30fc\u30d7 (Movie edit)",
+        "album": "\u5929\u6c17\u306e\u5b50",
+        "tcon": "Soundtrack",
+        "year": "2019\u5e74",
+        "tracknumber": "28",
+        "duration": "3:08",
+        "suffix": ".mp3",
+        "createTime": "2019-07-20 09:53:33"
+    }, {
+        "song": "RADWIMPS - \u5927\u4e08\u592b (Movie edit).mp3",
+        "song_path": "D:\\KuGou\\RADWIMPS - \u5927\u4e08\u592b (Movie edit).mp3",
+        "songer": "RADWIMPS",
+        "songname": "\u5927\u4e08\u592b (Movie edit)",
+        "album": "\u5929\u6c17\u306e\u5b50",
+        "tcon": "Soundtrack",
+        "year": "2019\u5e74",
+        "tracknumber": "30",
+        "duration": "4:18",
+        "suffix": ".mp3",
+        "createTime": "2019-07-20 09:53:33"
+    }, {
+        "song": "RADWIMPS - \u3075\u305f\u305f\u3073\u306e\u3001\u96e8.mp3",
+        "song_path": "D:\\KuGou\\RADWIMPS - \u3075\u305f\u305f\u3073\u306e\u3001\u96e8.mp3",
+        "songer": "RADWIMPS",
+        "songname": "\u3075\u305f\u305f\u3073\u306e\u3001\u96e8",
+        "album": "\u5929\u6c17\u306e\u5b50",
+        "tcon": "Soundtrack",
+        "year": "2019\u5e74",
+        "tracknumber": "29",
+        "duration": "0:44",
+        "suffix": ".mp3",
+        "createTime": "2019-07-20 09:53:23"
+    }, {
+        "song": "RADWIMPS - \u98a8\u305f\u3061\u306e\u58f0 (Movie edit).mp3",
+        "song_path": "D:\\KuGou\\RADWIMPS - \u98a8\u305f\u3061\u306e\u58f0 (Movie edit).mp3",
+        "songer": "RADWIMPS",
+        "songname": "\u98a8\u305f\u3061\u306e\u58f0 (Movie edit)",
+        "album": "\u5929\u6c17\u306e\u5b50",
+        "tcon": "Soundtrack",
+        "year": "2019\u5e74",
+        "tracknumber": "6",
+        "duration": "2:37",
+        "suffix": ".mp3",
+        "createTime": "2019-07-20 09:52:28"
+    }, {
+        "song": "RADWIMPS - \u5bb6\u65cf\u306e\u6642\u9593.mp3",
+        "song_path": "D:\\KuGou\\RADWIMPS - \u5bb6\u65cf\u306e\u6642\u9593.mp3",
+        "songer": "RADWIMPS",
+        "songname": "\u5bb6\u65cf\u306e\u6642\u9593",
+        "album": "\u5929\u6c17\u306e\u5b50",
+        "tcon": "Soundtrack",
+        "year": "2019\u5e74",
+        "tracknumber": "20",
+        "duration": "2:33",
+        "suffix": ".mp3",
+        "createTime": "2019-07-20 09:52:28"
+    }, {
+        "song": "RADWIMPS - \u829d\u516c\u5712.mp3",
+        "song_path": "D:\\KuGou\\RADWIMPS - \u829d\u516c\u5712.mp3",
+        "songer": "RADWIMPS",
+        "songname": "\u829d\u516c\u5712",
+        "album": "\u5929\u6c17\u306e\u5b50",
+        "tcon": "Soundtrack",
+        "year": "2019\u5e74",
+        "tracknumber": "15",
+        "duration": "3:12",
+        "suffix": ".mp3",
+        "createTime": "2019-07-20 09:52:27"
+    }, {
+        "song": "RADWIMPS\u3001\u4e09\u6d66\u900f\u5b50 - \u795d\u796d (Movie edit).mp3",
+        "song_path": "D:\\KuGou\\RADWIMPS\u3001\u4e09\u6d66\u900f\u5b50 - \u795d\u796d (Movie edit).mp3",
+        "songer": "RADWIMPS\u3001\u4e09\u6d66\u900f\u5b50",
+        "songname": "\u795d\u796d (Movie edit)",
+        "album": "\u5929\u6c17\u306e\u5b50",
+        "tcon": "Soundtrack",
+        "year": "2019\u5e74",
+        "tracknumber": "12",
+        "duration": "2:36",
+        "suffix": ".mp3",
+        "createTime": "2019-07-20 09:52:27"
+    }],
+    "tcon": "Soundtrack",
+    "year": "2019\u5e74",
+    "updateTime": "2019-07-20 09:54:41",
+    "cover_path": "resource\\Album Cover\\\u5929\u6c17\u306e\u5b50\\\u5929\u6c17\u306e\u5b50.png"
+}, {
     "album": "\u5287\u5834\u7248\u300c\u305a\u3063\u3068\u524d\u304b\u3089\u597d\u304d\u3067\u3057\u305f\u3002\uff5e\u544a\u767d\u5b9f\u884c\u59d4\u54e1\u4f1a\uff5e\u300d\u30aa\u30ea\u30b8\u30ca\u30eb\u30b5\u30a6\u30f3\u30c9\u30c8\u30e9\u30c3\u30af",
     "songer": "HoneyWorks\u3001CHiCO with HoneyWorks\u3001\u9396\u90a3",
     "songInfo_list": [{
@@ -3289,7 +3289,7 @@
     "tcon": "Country",
     "year": "2013\u5e74",
     "updateTime": "2018-11-24 21:51:56",
-    "cover_path": "resource\\Album Cover\\Megahits 2013 - Vol.1\\Megahits 2013 - Vol.1.jpg"
+    "cover_path": "resource\\Album Cover\\Megahits 2013 - Vol.1\\Megahits 2013 - Vol.1.png"
 }, {
     "album": "Trouble Maker",
     "songer": "Trouble Maker",

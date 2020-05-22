@@ -1,6 +1,7 @@
 import json
 import sys
 import re
+import os
 import pinyin
 from PyQt5.QtCore import QPoint, Qt
 from PyQt5.QtGui import QBitmap, QPainter, QPixmap
@@ -46,7 +47,7 @@ class SongerHeadPortraitViewer(QWidget):
         # 隐藏滚动区域的自带滚动条
         self.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
-        #设置滚动条的步长
+        # 设置滚动条的步长
         self.scrollArea.verticalScrollBar().setSingleStep(40)
 
         # 设置标题栏的位置
@@ -55,7 +56,7 @@ class SongerHeadPortraitViewer(QWidget):
         # 分配ID
         self.setObjectName('father')
         self.songerHeadViewer.setObjectName('songerHeadViewer')
-        #self.firstLetterLabel.setObjectName('firstLetter')
+        # self.firstLetterLabel.setObjectName('firstLetter')
 
     def createSongerHeadPortraits(self):
         """ 创建歌手头像窗口列表 """
@@ -71,8 +72,11 @@ class SongerHeadPortraitViewer(QWidget):
         self.songerHeadPortrait_dict_list = []
         for songerInfo_dict in self.songerInfo_list:
             songerName = songerInfo_dict['songer']
-            songerPicPath = 'resource\\Songer Photos\\' + \
-                songerName + '\\'+songerInfo_dict['songer']+'.jpg'
+            try:
+                songerPicPath = os.path.join("resource\\Songer Photos\\"+songerName,
+                                             os.listdir('resource\\Songer Photos\\'+songerName)[0])
+            except:
+                songerPicPath = 'resource\\Songer Photos\\未知歌手.png'
             # 实例化歌手头像窗口
             songerCard = SongerCard(songerPicPath, songerName)
             # 将包含头像窗口，歌手名，歌手名首字母的字典插入列表
@@ -142,7 +146,7 @@ class SongerHeadPortraitViewer(QWidget):
             gridLayout = songerHeadGroup_dict['gridLayout']
             # 设置网格的行距
             gridLayout.setVerticalSpacing(20)
-            gridLayout.setContentsMargins(0,0,0,0)
+            gridLayout.setContentsMargins(0, 0, 0, 0)
             # 设置网格大小
             for column in columns:
                 gridLayout.setColumnMinimumWidth(

@@ -35,11 +35,16 @@ class AlbumInfo():
             album = songInfo['album']
             # 如果专辑名不在集合中，就往列表中插入专辑信息字典
             if album not in album_set:
+                pic_list=os.listdir(f'resource\\Album Cover\\{album}')
+                if pic_list:
+                    cover_path = os.path.join(f'resource\\Album Cover\\{album}', pic_list[0])
+                else:
+                    cover_path = 'resource\\Album Cover\\未知专辑封面.png'
                 albumInfo_list.append(
                     {'album': album, 'songer': songInfo['songer'],
                      'songInfo_list': [], 'tcon': songInfo['tcon'],
                      'year': songInfo['year'], 'updateTime': '0',
-                     'cover_path':os.path.join('resource\\Album Cover',f'{album}\\{album}.jpg')})
+                     'cover_path':cover_path})
                 album_set.add(album)
 
         # 再将歌曲添加到字典的歌曲列表中
@@ -56,7 +61,7 @@ class AlbumInfo():
         with open('Data\\albumInfo.json', 'w', encoding='utf-8') as f:
             json.dump(albumInfo_list, f)
 
-        return albumInfo_dict
+        return albumInfo_list
 
     def sortByUpdateTime(self):
         """ 依据文件创建日期排序文件信息列表 """

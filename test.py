@@ -1,5 +1,8 @@
-for i in range(5):
-    if i == 1:
-        break
-else:
-    print('5')
+import json
+with open('Data\\initProfile.json') as f:
+    profile = json.load(f)
+profile['isFirstTimeToRun'] = False
+with open('Data\\initProfile.json','w') as f:
+    json.dump(profile, f)
+    
+

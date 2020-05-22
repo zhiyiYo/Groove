@@ -1,5 +1,6 @@
 import os
 import re
+import imghdr
 from json import dump, load
 from time import sleep
 import requests
@@ -101,9 +102,15 @@ class SongerInfo():
             # 发出下载歌手图片的请求
             resp = requests.get(songer_pic_url)
             pic_data = resp.content
+            try:
+                suffix = '.' + imghdr.what(None, pic_data)
+                if suffix == '.jpeg':
+                    suffix='.jpg'
+            except:
+                suffix = '.jpg'
             os.mkdir(self.sub_songer_pic_folder)
             pic_path = os.path.join(
-                self.sub_songer_pic_folder, self.songer + '.jpg')
+                self.sub_songer_pic_folder, self.songer + suffix)
             with open(pic_path, 'wb') as f:
                 f.write(pic_data)
 

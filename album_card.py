@@ -1,5 +1,6 @@
 import sys
 import re
+
 from PyQt5.QtCore import QEvent, QPoint, Qt
 from PyQt5.QtGui import QBitmap, QPixmap, QBrush, QPen, QColor, QPainter
 from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget
@@ -189,7 +190,7 @@ class AlbumCover(QWidget):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     albumInfo = {'album': '星之回响 (2020 bilibili拜年祭单品)', 'songer': 'HALCA',
-                 'cover_path': 'resource\\Album Cover\\Assortrip\\Assortrip.jpg'}
+                 'cover_path': 'resource\\Album Cover\\天気の子 complete version\\天気の子 complete version.jpg'}
     demo = AlbumCard(albumInfo)
     demo.show()
     sys.exit(app.exec_())

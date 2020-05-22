@@ -1,17 +1,18 @@
 import json
+import os
 import re
 import sys
 
 import pinyin
 from PyQt5.QtCore import QPoint, Qt
-from PyQt5.QtGui import QBitmap, QPainter, QPixmap
+from PyQt5.QtGui import QBitmap, QImage, QPainter, QPixmap
 from PyQt5.QtWidgets import (
     QApplication, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QScrollArea,
     QScrollBar, QVBoxLayout, QWidget)
 
+import get_album_cover
 from album_card import AlbumCard
 from get_album_info import AlbumInfo
-import get_album_cover
 
 
 class AlbumCardViewer(QWidget):
@@ -36,10 +37,11 @@ class AlbumCardViewer(QWidget):
         # 初始化小部件
         self.initWidget()
         # 创建专辑卡并将其添加到布局中
+        self.checkIsFirstTimeToRun()
         self.createAlbumCards()
         self.initLayout()
 
-        #设置样式
+        # 设置样式
         self.setQss()
 
     def initWidget(self):
@@ -99,6 +101,24 @@ class AlbumCardViewer(QWidget):
         with open('resource\\css\\albumCardViewer.qss', encoding='utf-8') as f:
             qss = f.read()
             self.setStyleSheet(qss)
+
+    def checkIsFirstTimeToRun(self):
+        """ 检查是否初次运行程序，是的话就更改png文件 """
+        with open('Data\\initProfile.json', encoding='utf-8') as f:
+            self.profile = json.load(f)
+        if self.profile['isFirstTimeToRun']:
+            img = QImage()
+            path = "resource\\Album Cover"
+            for root, dirs, files in os.walk(path):
+                for name in files:
+                    if name.endswith(".png"):
+                        print(path+'\\' + name)
+                        img.load(path +'\\'+name)
+                        img.save(path + '\\'+name)
+            self.profile['isFirstTimeToRun'] = False
+            # 更新配置文件
+            with open('Data\initProfile.json', 'w', encoding='utf-8') as f:
+                json.dump(self.profile, f)
 
 
 if __name__ == "__main__":
