@@ -26,9 +26,6 @@ class SongerHeadPortraitViewer(QWidget):
         # 实例化标题栏
         #self.firstLetterLabel = QLabel('A', self)
 
-        # 实例化滚动条
-        #self.scrollBar = QScrollBar(self)
-
         # 实例化布局
         self.all_h_layout = QHBoxLayout()
         self.gridLayout = QGridLayout()
@@ -51,16 +48,6 @@ class SongerHeadPortraitViewer(QWidget):
 
         #设置滚动条的步长
         self.scrollArea.verticalScrollBar().setSingleStep(40)
-
-        # 将两个滚动条关联起来
-        """ self.scrollBar.setMaximum(
-            self.scrollArea.verticalScrollBar().maximum())
-
-        self.scrollBar.valueChanged.connect(
-            lambda: self.scrollArea.verticalScrollBar().setValue(self.scrollBar.value()))
-
-        self.scrollArea.verticalScrollBar().valueChanged.connect(
-            lambda: self.scrollBar.setValue(self.scrollArea.verticalScrollBar().value())) """
 
         # 设置标题栏的位置
         #self.firstLetterLabel.setGeometry(0, 0, self.width(), 47)
@@ -165,12 +152,12 @@ class SongerHeadPortraitViewer(QWidget):
                     row, 266)
             # 向网格中添加小部件
             for index, songerHeadPortrait in enumerate(songerHeadGroup_dict['songer_list']):
-                x = index // 5
-                y = index-5*x
+                x = index // column_num
+                y = index-column_num*x
                 gridLayout.addWidget(
                     songerHeadPortrait, x, y, 1, 1)
-            # 如果歌手数小于五，就在右侧增加弹簧
-            offset = column - len(songerHeadGroup_dict['songer_list'])
+            # 如果歌手数小于设定的列数，就在右侧增加弹簧
+            offset = column_num - len(songerHeadGroup_dict['songer_list'])
             for i in range(offset):
                 gridLayout.setColumnStretch(i+offset-1, 1)
 
@@ -185,7 +172,7 @@ class SongerHeadPortraitViewer(QWidget):
 
         # 设置全局布局
         self.all_h_layout.addWidget(self.scrollArea)
-        #self.all_h_layout.addWidget(self.scrollBar)
+
         self.setLayout(self.all_h_layout)
 
     def setQss(self):

@@ -1,6 +1,7 @@
 # coding:utf-8
 import os
 import re
+from shutil import copyfile
 
 from mutagen import File
 from mutagen.flac import Picture
@@ -39,58 +40,89 @@ class AlbumCover():
             elif info_dict['suffix'] == '.m4a':
                 self.getM4aAlbumCover(info_dict, id_card)
 
+        #扫描文件夹，如果有专辑没有对应的文件夹就创建一个包含默认封面图像的文件夹
+        for info_dict in self.songInfo.songInfo_list:
+            # 封面目录
+            sub_album_cover_folder = os.path.join(
+                self.album_cover_folder, info_dict['album'])
+            # 封面路径
+            pic_path = os.path.join(
+                sub_album_cover_folder, info_dict['album'] + '.jpg')
+            if not os.path.exists(sub_album_cover_folder):
+                os.mkdir(sub_album_cover_folder)
+                copyfile('resource\\Album Cover\\未知专辑封面.png', pic_path)
+
+
     def getID3AlbumCover(self, info_dict, id_card):
         """ 获取mp3文件的封面并写入文件夹 """
-        rex = r'APIC.*'
+        # 封面目录
+        sub_album_cover_folder = os.path.join(
+            self.album_cover_folder, info_dict['album'])
 
+        # 如果已经存在封面目录就直接返回
+        if os.path.exists(sub_album_cover_folder):
+            return
+        # 封面路径
+        pic_path = os.path.join(
+            sub_album_cover_folder, info_dict['album'] + '.jpg')
+
+        rex = r'APIC.*'
         for key in id_card.tags.keys():
             Match = re.match(rex, key)
             if Match:
                 # 如果不存在专辑对应的目录,就新建一个并写入专辑封面
-                sub_album_cover_folder = os.path.join(
-                    self.album_cover_folder, info_dict['album'])
-                if not os.path.exists(sub_album_cover_folder):
-                    os.mkdir(sub_album_cover_folder)
-                    # 提取封面数据
-                    pic_data = id_card[Match.group()].data
-                    # 封面路径
-                    pic_path = os.path.join(
-                        sub_album_cover_folder, info_dict['album'] + '.jpg')
-                    # 写入封面
-                    with open(pic_path, 'wb') as f:
-                        f.write(pic_data)
+                os.mkdir(sub_album_cover_folder)
+                # 提取封面数据
+                pic_data = id_card[Match.group()].data
+                # 写入封面
+                with open(pic_path, 'wb') as f:
+                    f.write(pic_data)
+                break
 
     def getFlacAlbumCover(self, info_dict, id_card):
         """ 获取flac文件的封面并写入文件夹 """
+
+        sub_album_cover_folder = os.path.join(
+            self.album_cover_folder, info_dict['album'])
+
+        # 如果已经存在封面目录就直接返回
+        if os.path.exists(sub_album_cover_folder):
+            return
+        
+        pic_path = os.path.join(
+            sub_album_cover_folder, info_dict['album'] + '.jpg')
+
         # 确认是否存在封面数据
         if id_card.pictures:
             # 如果不存在专辑对应的目录,就新建一个并写入专辑封面
-            sub_album_cover_folder = os.path.join(
-                self.album_cover_folder, info_dict['album'])
-            if not os.path.exists(sub_album_cover_folder):
-                os.mkdir(sub_album_cover_folder)
-                pic_path = os.path.join(
-                    sub_album_cover_folder, info_dict['album'] + '.jpg')
-                # 提取封面数据
-                pic_data = id_card.pictures[0].data
-                # 写入封面
-                with open(pic_path, 'wb') as f:
-                    f.write(pic_data)
+            os.mkdir(sub_album_cover_folder)
+            # 提取封面数据
+            pic_data = id_card.pictures[0].data
+            # 写入封面
+            with open(pic_path, 'wb') as f:
+                f.write(pic_data)
+
 
     def getM4aAlbumCover(self, info_dict, id_card):
+        """ 获取m4a文件的封面 """
+        sub_album_cover_folder = os.path.join(
+            self.album_cover_folder, info_dict['album'])
+
+        # 如果已经存在封面目录就直接返回
+        if os.path.exists(sub_album_cover_folder):
+            return
+        
+        pic_path = os.path.join(
+            sub_album_cover_folder, info_dict['album'] + '.jpg')
         if id_card.get('covr'):
             # 如果不存在专辑对应的目录,就新建一个并写入专辑封面
-            sub_album_cover_folder = os.path.join(
-                self.album_cover_folder, info_dict['album'])
-            if not os.path.exists(sub_album_cover_folder):
-                os.mkdir(sub_album_cover_folder)
-                pic_path = os.path.join(
-                    sub_album_cover_folder, info_dict['album'] + '.jpg')
-                # 提取封面数据
-                pic_data = bytes(id_card['covr'][0])
-                # 写入封面
-                with open(pic_path, 'wb') as f:
-                    f.write(pic_data)
+            os.mkdir(sub_album_cover_folder)
+            # 提取封面数据
+            pic_data = bytes(id_card['covr'][0])
+            # 写入封面
+            with open(pic_path, 'wb') as f:
+                f.write(pic_data)
+
 
 
 if __name__ == "__main__":

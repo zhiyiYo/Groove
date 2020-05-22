@@ -23,7 +23,6 @@ class SongInfo():
 
         # 获取符合匹配音频文件名列表
         self.split_song_list(filename_list, update_songList=True)
-
         if os.path.exists('Data\\songInfo.json'):
             with open('Data\\songInfo.json', 'r', encoding='utf-8') as f:
                 try:
@@ -132,8 +131,9 @@ class SongInfo():
             tracknumber = str(id_card['TRCK'][0]) if id_card.get(
                 'TRCK') else '0'
             tcon = str(id_card['TCON'][0]) if id_card.get('TCON') else '未知流派'
-            year = str(id_card['TDRC'][0]) + \
-                '年' if id_card.get('TDRC')[:4] else '未知年份'
+            if id_card.get('TDRC'):
+                year = str(id_card['TDRC'][0]) + \
+                    '年' if len(str(id_card['TDRC']))==4 else '未知年份'
             duration = f'{int(id_card.info.length//60)}:{int(id_card.info.length%60):02}'
 
         elif suffix == '.flac':
@@ -179,6 +179,3 @@ class SongInfo():
 if __name__ == "__main__":
     songInfo = SongInfo('D:\\KuGou')
 
-    """ for info in songInfo.songInfo_list:
-        print(info['song_path']+' : '+info['createTime'])
-        print('=='*30) """

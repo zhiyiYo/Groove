@@ -8,6 +8,10 @@ QLabel#songerName{
     font-size: 16px;
 }
 
+QLabel#songerName:hover{
+    color: rgb(150, 150, 150);
+}
+
 QLabel#albumName{
     font-weight: bold;
 }
@@ -18,7 +22,4 @@ QToolTip {
     font: 15px 'Microsoft YaHei';
     background: rgb(242, 242, 242);
     padding: 5px 5px 5px 5px;
-    max-width: 80px;
-    max-height: 34px;
-    /*border-radius: 5px;*/
 }

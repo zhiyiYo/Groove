@@ -37,6 +37,13 @@ class AlbumCard(QWidget):
         # 设置专辑名自动折叠
         self.albumName.setWordWrap(True)
 
+        # 设置鼠标光标
+        self.songerName.setCursor(Qt.PointingHandCursor)
+
+        # 设置悬浮提示
+        self.songerName.setToolTip(self.songerName.text())
+        self.albumName.setToolTip(self.albumName.text())
+
         self.albumCover.move(10, 10)
         self.albumName.move(10, 218)
         self.songerName.move(10, self.albumName.y()+26)

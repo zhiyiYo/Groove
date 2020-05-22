@@ -1,2 +1,2 @@
 
-        self.h_layout = QHBoxLayout()
+        super().__init__(parent)

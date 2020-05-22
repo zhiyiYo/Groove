@@ -9,6 +9,7 @@ class AlbumInfo():
 
     def __init__(self):
         self.albumInfo_list = self.getAlbumInfo()
+        self.sortByUpdateTime()
 
     def getAlbumInfo(self):
         """ 从json文件读入信息 """
@@ -59,7 +60,6 @@ class AlbumInfo():
 
     def sortByUpdateTime(self):
         """ 依据文件创建日期排序文件信息列表 """
-
         self.albumInfo_list.sort(
             key=lambda albumInfo: albumInfo['updateTime'], reverse=True)
 
@@ -74,4 +74,4 @@ class AlbumInfo():
 
 if __name__ == "__main__":
     albumInfo = AlbumInfo()
-    albumInfo.updateAlbumInfo()
+    

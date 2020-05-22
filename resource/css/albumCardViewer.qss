@@ -1,0 +1,8 @@
+QWidget{
+    background-color: white;
+}
+
+QScrollArea{
+    background-color: white;
+    border: none;
+}
