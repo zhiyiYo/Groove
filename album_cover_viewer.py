@@ -23,6 +23,7 @@ class AlbumCardViewer(QWidget):
 
         # 初始化网格的列数
         self.column_num = 5
+        self.row_num = 0
 
         # 先扫描本地音乐的专辑封面
         self.getAlbumCover = get_album_cover.AlbumCover(target_path)
@@ -40,7 +41,6 @@ class AlbumCardViewer(QWidget):
         # 初始化小部件
         self.initWidget()
         # 创建专辑卡并将其添加到布局中
-        self.checkIsFirstTimeToRun()
         self.createAlbumCards()
         self.initLayout()
 
@@ -71,47 +71,25 @@ class AlbumCardViewer(QWidget):
     def initLayout(self):
         """ 初始化布局 """
         self.updateGridLayout()
+        self.gridLayout.setVerticalSpacing(11)
+        self.gridLayout.setHorizontalSpacing(0)
+        self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.albumView.setLayout(self.gridLayout)
         self.scrollArea.setWidget(self.albumView)
         # 设置全局布局
         self.all_h_layout.addWidget(self.scrollArea)
         self.setLayout(self.all_h_layout)
-        self.albumView.setMinimumWidth(self.scrollArea.width()-23)
-
-    def setQss(self):
-        """ 设置层叠样式 """
-        with open('resource\\css\\albumCardViewer.qss', encoding='utf-8') as f:
-            qss = f.read()
-            self.setStyleSheet(qss)
-
-    def checkIsFirstTimeToRun(self):
-        """ 检查是否初次运行程序，是的话就更改png文件 """
-        with open('Data\\initProfile.json', encoding='utf-8') as f:
-            self.profile = json.load(f)
-        if self.profile['isFirstTimeToRun']:
-            img = QImage()
-            path = "resource\\Album Cover"
-            for root, dirs, files in os.walk(path):
-                for name in files:
-                    if name.endswith(".png"):
-                        img.load(path + '\\'+name)
-                        img.save(path + '\\'+name)
-            self.profile['isFirstTimeToRun'] = False
-            # 更新配置文件
-            with open('Data\\initProfile.json', 'w', encoding='utf-8') as f:
-                json.dump(self.profile, f)
 
     def updateGridLayout(self):
         """ 更新网格 """
         columns = range(self.column_num)
         rows = range(
             (len(self.albumCardDict_list) - 1) // self.column_num + 1)
-        self.gridLayout.setVerticalSpacing(11)
-        self.gridLayout.setContentsMargins(0, 0, 0, 0)
+
         # 设置网格大小
         for column in columns:
             self.gridLayout.setColumnMinimumWidth(
-                column, 222)
+                column, 221)
         for row in rows:
             self.gridLayout.setRowMinimumHeight(
                 row, 292)
@@ -121,30 +99,51 @@ class AlbumCardViewer(QWidget):
             y = index-self.column_num*x
             self.gridLayout.addWidget(
                 albumCardDict['albumCard'], x, y, 1, 1)
-
+        # 获取当前的总行数
+        self.row_num = x+1 
         # 如果专辑数小于设定的列数，就在右侧增加弹簧
         offset = self.column_num - len(self.albumCardDict_list)
         for i in range(offset):
             self.gridLayout.setColumnStretch(i + offset - 1, 1)
-        self.albumView.setMinimumWidth(self.scrollArea.width() - 23)
+
+        self.albumView.setFixedWidth(221 * self.column_num)
+        self.albumView.setFixedHeight(303 * self.row_num)
+
+         
+        # 如果现在的总行数小于网格的总行数，就将多出来的行宽度的最小值设为0
+        for i in range(self.gridLayout.rowCount() - 1,self.row_num - 1,-1):
+            self.gridLayout.setRowMinimumHeight(i, 0)
+        
+        #如果现在的总列数小于网格的总列数，就将多出来的列的宽度的最小值设置为0
+        for i in range(self.gridLayout.columnCount() - 1, self.column_num - 1, -1):
+            self.gridLayout.setColumnMinimumWidth(i,0)
+
 
     def resizeEvent(self, event):
         """ 根据宽度调整网格的列数 """
         # 如果第一次超过1337就调整网格的列数
-        if self.width() >= 1337 and self.column_num != 6:
+        if self.width() >= 1353 and self.column_num != 6:
             for albumCard_dict in self.albumCardDict_list:
                 self.gridLayout.removeWidget(albumCard_dict['albumCard'])
-            self.column_num = 6    
+            self.column_num = 6
             self.updateGridLayout()
-            
-        elif self.width() < 1337 and self.column_num != 5:
+        elif 1134<self.width() < 1353 and self.column_num != 5:
             for albumCard_dict in self.albumCardDict_list:
                 self.gridLayout.removeWidget(albumCard_dict['albumCard'])
-            self.column_num = 5    
+            self.column_num = 5
             self.updateGridLayout()
-            self.gridLayout.setColumnStretch(4, 0)
-            print(self.gridLayout.columnCount())
-            
+        elif self.width() <= 1134:
+            for albumCard_dict in self.albumCardDict_list:
+                self.gridLayout.removeWidget(albumCard_dict['albumCard'])
+            self.column_num = 4
+            self.updateGridLayout()
+
+    def setQss(self):
+        """ 设置层叠样式 """
+        with open('resource\\css\\albumCardViewer.qss', encoding='utf-8') as f:
+            qss = f.read()
+            self.setStyleSheet(qss)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

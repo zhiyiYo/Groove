@@ -143,6 +143,10 @@ class SongerHeadPortraitViewer(QWidget):
         self.updateGridLayout()
 
         for songerHeadGroup_dict in self.songerHeadGroup_dict_list:
+            gridLayout = songerHeadGroup_dict['gridLayout']
+            # 设置网格的行距
+            gridLayout.setVerticalSpacing(20)
+            gridLayout.setContentsMargins(0, 0, 0, 0)
             self.v_layout.addWidget(songerHeadGroup_dict['group'])
             self.v_layout.addSpacing(10)
 
@@ -153,7 +157,6 @@ class SongerHeadPortraitViewer(QWidget):
         # 设置全局布局
         self.all_h_layout.addWidget(self.scrollArea)
         self.setLayout(self.all_h_layout)
-        self.songerHeadViewer.setMinimumWidth(self.scrollArea.width()-20)
 
     def setQss(self):
         """ 设置层叠样式 """
@@ -169,10 +172,6 @@ class SongerHeadPortraitViewer(QWidget):
             rows = range(
                 (len(songerHeadGroup_dict['songer_list']) - 1) // self.column_num + 1)
             gridLayout = songerHeadGroup_dict['gridLayout']
-            # 设置网格的行距
-            gridLayout.setVerticalSpacing(20)
-            gridLayout.setContentsMargins(0, 0, 0, 0)
-            
             # 设置网格大小
             for column in columns:
                 gridLayout.setColumnMinimumWidth(
@@ -186,11 +185,17 @@ class SongerHeadPortraitViewer(QWidget):
                 y = index-self.column_num*x
                 gridLayout.addWidget(
                     songerHeadPortrait, x, y, 1, 1)
+            #如果总的列数少于网格的总列数，就将多出来列的最小宽度设置为0
+            """ for i in range(gridLayout.columnCount() - 1, self.column_num - 1, -1):
+                gridLayout.setColumnMinimumWidth(i, 0)  """       
             # 如果歌手数小于设定的列数，就在右侧增加弹簧
             offset = self.column_num - len(songerHeadGroup_dict['songer_list'])
             for i in range(offset):
                 gridLayout.setColumnStretch(i + offset - 1, 1)
-            self.songerHeadViewer.setMinimumWidth(self.scrollArea.width()-20)
+            
+        #设置窗口的最小宽度        
+        self.songerHeadViewer.setMinimumWidth(self.column_num * 224)
+        
             
 
     def resizeEvent(self, event):
