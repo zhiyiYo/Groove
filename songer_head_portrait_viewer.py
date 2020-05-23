@@ -19,10 +19,12 @@ class SongerHeadPortraitViewer(QWidget):
         super().__init__()
 
         self.resize(1267, 638)
+        # 设置网格列数
+        self.column_num = 5
 
         # 实例化一个滚动区域
         self.scrollArea = QScrollArea(self)
-        self.songerHeadViewer = Widget()
+        self.songerHeadViewer = QWidget()
 
         # 实例化标题栏
         #self.firstLetterLabel = QLabel('A', self)
@@ -36,7 +38,7 @@ class SongerHeadPortraitViewer(QWidget):
         self.createSongerHeadPortraits()
         self.createSongerGroup()
         self.addSongerToGroup()
-        self.initLayout(5)
+        self.initLayout()
         self.initWidget()
 
         # 设置层叠样式
@@ -135,18 +137,42 @@ class SongerHeadPortraitViewer(QWidget):
                     songerHeadPortrait_dict['songerCard'])
                 songerHeadGroup_dict['firstLetter'] = '...'
 
-    def initLayout(self, column_num):
+    def initLayout(self):
         """ 初始化布局 """
 
+        self.updateGridLayout()
+
+        for songerHeadGroup_dict in self.songerHeadGroup_dict_list:
+            self.v_layout.addWidget(songerHeadGroup_dict['group'])
+            self.v_layout.addSpacing(10)
+
+        # 设置歌手头像视图窗口的布局
+        self.songerHeadViewer.setLayout(self.v_layout)
+        # 将歌手头像窗口添加到滚动区域中
+        self.scrollArea.setWidget(self.songerHeadViewer)
+        # 设置全局布局
+        self.all_h_layout.addWidget(self.scrollArea)
+        self.setLayout(self.all_h_layout)
+        self.songerHeadViewer.setMinimumWidth(self.scrollArea.width()-20)
+
+    def setQss(self):
+        """ 设置层叠样式 """
+        with open(r'resource\css\songerHeadPortraitViewer.qss', encoding='utf-8') as f:
+            qss = f.read()
+            self.setStyleSheet(qss)
+
+    def updateGridLayout(self):
+        """ 更新网格的列数 """
         for songerHeadGroup_dict in self.songerHeadGroup_dict_list:
             # 根据每个分组含有的歌手数量计算网格的行数和列数
-            columns = range(column_num)
+            columns = range(self.column_num)
             rows = range(
-                (len(songerHeadGroup_dict['songer_list']) - 1) // 5 + 1)
+                (len(songerHeadGroup_dict['songer_list']) - 1) // self.column_num + 1)
             gridLayout = songerHeadGroup_dict['gridLayout']
             # 设置网格的行距
             gridLayout.setVerticalSpacing(20)
             gridLayout.setContentsMargins(0, 0, 0, 0)
+            
             # 设置网格大小
             for column in columns:
                 gridLayout.setColumnMinimumWidth(
@@ -156,44 +182,33 @@ class SongerHeadPortraitViewer(QWidget):
                     row, 266)
             # 向网格中添加小部件
             for index, songerHeadPortrait in enumerate(songerHeadGroup_dict['songer_list']):
-                x = index // column_num
-                y = index-column_num*x
+                x = index // self.column_num
+                y = index-self.column_num*x
                 gridLayout.addWidget(
                     songerHeadPortrait, x, y, 1, 1)
             # 如果歌手数小于设定的列数，就在右侧增加弹簧
-            offset = column_num - len(songerHeadGroup_dict['songer_list'])
+            offset = self.column_num - len(songerHeadGroup_dict['songer_list'])
             for i in range(offset):
-                gridLayout.setColumnStretch(i+offset-1, 1)
+                gridLayout.setColumnStretch(i + offset - 1, 1)
+            self.songerHeadViewer.setMinimumWidth(self.scrollArea.width()-20)
+            
 
-            self.v_layout.addWidget(songerHeadGroup_dict['group'])
-            self.v_layout.addSpacing(10)
-
-        # 设置歌手头像视图窗口的布局
-        self.songerHeadViewer.setLayout(self.v_layout)
-
-        # 将歌手头像窗口添加到滚动区域中
-        self.scrollArea.setWidget(self.songerHeadViewer)
-
-        # 设置全局布局
-        self.all_h_layout.addWidget(self.scrollArea)
-
-        self.setLayout(self.all_h_layout)
-
-    def setQss(self):
-        """ 设置层叠样式 """
-        with open('resource\css\songerHeadPortraitViewer.qss', encoding='utf-8') as f:
-            qss = f.read()
-            self.setStyleSheet(qss)
-
-
-class Widget(QWidget):
-    """ 自定义滚动区域 """
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-
-    """ def wheelEvent(self, e):
-        print(self.parent().parent().parent().songerHeadGroup_dict_list[7]['group'].geometry()) """
+    def resizeEvent(self, event):
+        """ 根据宽度调整列数 """
+        if self.width()>=1337 and self.column_num!=6:
+            for songerHeadGroup_dict in self.songerHeadGroup_dict_list:
+                for songerHeadPortrait in songerHeadGroup_dict['songer_list']:
+                    songerHeadGroup_dict['gridLayout'].removeWidget(songerHeadPortrait)
+            self.column_num = 6
+            self.updateGridLayout()
+        elif self.width() < 1337 and self.column_num != 5:
+            for songerHeadGroup_dict in self.songerHeadGroup_dict_list:
+                for songerHeadPortrait in songerHeadGroup_dict['songer_list']:
+                    songerHeadGroup_dict['gridLayout'].removeWidget(
+                        songerHeadPortrait)
+            self.column_num = 5
+            self.updateGridLayout()
+            
 
 
 if __name__ == "__main__":
