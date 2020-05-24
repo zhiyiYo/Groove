@@ -1,1 +1,1 @@
-ver
+gridLayout.setColumnMinimumWidth(i,0)

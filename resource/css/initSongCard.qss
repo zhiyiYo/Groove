@@ -116,7 +116,7 @@ QMenu {
     font-size: 18px;
     font: 18px "Microsoft YaHei";
     padding: 5px 0px 16px 0px;
-    border: 1px solid rgb(120, 120, 120);
+    border: 1px solid rgb(196, 199, 200);
     /*border-radius: 5px;*/
 }
 

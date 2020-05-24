@@ -1,8 +1,8 @@
 import sys
 
 from PyQt5.QtCore import QEvent, QPoint, Qt
-from PyQt5.QtGui import QBitmap, QBrush, QColor, QPainter, QPen, QPixmap
-from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget
+from PyQt5.QtGui import QBitmap, QBrush, QColor, QPainter, QPen, QPixmap,QIcon,QContextMenuEvent
+from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget,QAction,QMenu
 
 from my_button import SongerAddToButton, SongerPlayButton
 
@@ -57,6 +57,28 @@ class SongerCard(QWidget):
                 self.songerHeadPortrait.playButton.setHidden(True)
 
         return False
+
+    def contextMenuEvent(self, event: QContextMenuEvent):
+        """ 显示右击菜单 """
+        menu = QMenu(self)
+        addToMenu = QMenu('添加到', self)
+        playAct = QAction('播放', self)
+        chooseAct = QAction('选择', self)
+        playingAct = QAction(QIcon('resource\\images\\正在播放.svg'), '正在播放', self)
+        newPlayList = QAction(
+            QIcon('resource\\images\\黑色加号.svg'), '新的播放列表', self)
+        nextToPlayAct = QAction('下一首播放', self)
+        pinToStartMenuAct = QAction('固定到开始菜单', self)
+        # 将动作添加到菜单中
+        addToMenu.addAction(playingAct)
+        addToMenu.addSeparator()
+        addToMenu.addAction(newPlayList)
+        menu.addActions([playAct, nextToPlayAct])
+        menu.addMenu(addToMenu)
+        menu.addAction(pinToStartMenuAct)
+        menu.addSeparator()
+        menu.addAction(chooseAct)
+        menu.exec_(event.globalPos())
 
     def setQss(self):
         """ 设置层叠样式 """
