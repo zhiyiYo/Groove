@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
 
 from song_tab_interface import SongTabInterface
 from songer_tab_interface import SongerTabInterface
+from album_tab_interface import AlbumTabInterface
 
 
 class MyMusicWindows(QTabWidget):
@@ -18,7 +19,7 @@ class MyMusicWindows(QTabWidget):
         # 创建三个标签窗口
         self.songTag = SongTabInterface(songs_folder, self)
         self.songerTag = SongerTabInterface()
-        self.albumTag = QWidget()
+        self.albumTag = AlbumTabInterface(songs_folder)
 
         # 初始化MyMusicWindows的属性
         self.initAttribute()

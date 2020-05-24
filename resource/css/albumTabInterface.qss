@@ -1,0 +1,62 @@
+QWidget#albumTabInterface {
+    background-color: white;
+}
+
+QPushButton#randomPlayBt {
+    background-color: white;
+    border: none;
+    margin-left: 1px;
+    font: 15px 'Microsoft YaHei';
+}
+
+QPushButton#randomPlayBt:hover {
+    color: rgb(110, 110, 110);
+}
+
+QPushButton#sortModeButton {
+    color: rgb(81, 154, 170);
+    background-color: transparent;
+    font: 16px 'Microsoft YaHei';
+    font-weight: 500;
+    text-align: left;
+}
+
+QPushButton#sortModeButton:hover {
+    color: rgb(59, 165, 194);
+}
+
+QLabel#sortModeLabel {
+    color: black;
+    font: 16px 'Microsoft YaHei';
+}
+
+QMenu#sortModeMenu {
+    font-size: 17px;
+    width: 158px;
+    height: 150px;
+    border: 1px solid rgb(41, 41, 41);
+    border-bottom: none;
+    padding-top: 1px;
+    font-family: 'Microsoft YaHei';
+    /*padding: 1px;*/
+}
+
+QMenu#sortModeMenu::item {
+    width: 57;
+    height: 14;
+    color: black;
+    padding: 11px 85px 11px 12px;
+    margin: 0px 1px 1px 1px;
+}
+
+QMenu#sortModeMenu::item:default {
+    background: rgba(9, 158, 220, 0.79);
+}
+
+QMenu#sortModeMenu::item:selected {
+    background: rgb(218, 218, 218);
+}
+
+QMenu#sortModeMenu::item:default:selected {
+    background: rgba(9, 158, 240, 0.79);
+}

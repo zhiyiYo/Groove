@@ -141,7 +141,7 @@ class AlbumCard(QWidget):
         showSongerAct = QAction('显示歌手', self)
         newPlayList = QAction(QIcon('resource\\images\\黑色加号.svg'),'新的播放列表', self)
         nextToPlayAct = QAction('下一首播放', self)
-        pinToStartMenuAct = QAction('固定到开始菜单', self)
+        pinToStartMenuAct = QAction('固定到"开始"菜单', self)
         # 将动作添加到菜单中
         addToMenu.addAction(playingAct)
         addToMenu.addSeparator()

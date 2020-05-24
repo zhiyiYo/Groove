@@ -6,3 +6,17 @@ QScrollArea{
     background-color: white;
     border: none;
 }
+
+QGroupBox {
+    font: 21px 'Microsoft YaHei';
+    color: rgb(0, 107, 131);
+    border: none;
+    /*改标题懒到组内小部件的垂直距离*/
+    margin-top: 30px;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+
+}

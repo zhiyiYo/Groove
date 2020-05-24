@@ -39,6 +39,7 @@ class SongTabInterface(QWidget):
 
         # 设置初始排序方式
         self.currentSortMode = self.sortByCratedTime
+        self.sortModeNum_dict = {'添加日期': 0, 'A到Z': 1,'歌手': 2}
         # 初始化UI界面
         self.initWidget()
         self.initLayout()
@@ -46,6 +47,9 @@ class SongTabInterface(QWidget):
 
     def initWidget(self):
         """ 初始化小部件的属性 """
+
+        #隐藏滚动条
+        self.songCardListWidget.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         #获取歌曲总数
         songs_num = len(self.songCardListWidget.song_card_list)
@@ -135,7 +139,8 @@ class SongTabInterface(QWidget):
         # 设置默认动作
         self.sortModeMenu.setDefaultAction(self.currentSortMode)
         self.sortModeMenu.exec(
-            self.mapToGlobal(QPoint(self.sortModeButton.x(), self.sortModeButton.y() - 5)))
+            self.mapToGlobal(QPoint(self.sortModeButton.x(),
+                             self.sortModeButton.y() - 37*self.sortModeNum_dict[self.currentSortMode.text()]-1)))
 
     def setQss(self):
         """ 设置层叠样式 """

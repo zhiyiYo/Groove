@@ -1,9 +1,7 @@
-import re
 import sys
 
-import pinyin
-from PyQt5.QtCore import QPoint, Qt, QEvent,QSize
-from PyQt5.QtGui import QBitmap, QPainter, QPixmap, QIcon
+from PyQt5.QtCore import  Qt, QEvent,QSize
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (QApplication, QHBoxLayout, QLabel, QVBoxLayout, QPushButton,
                              QWidget)
 

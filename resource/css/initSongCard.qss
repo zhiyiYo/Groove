@@ -13,7 +13,6 @@ QToolButton {
     text-align: left;
     color: rgb(75, 75, 75);
     font-size: 16px;
-    font: 16px;
     background-color: transparent;
     font-family: 'Microsoft YaHei';
 }
@@ -28,8 +27,6 @@ QLabel#yearLabel {
 
 QLabel#sortModeLabel {
     color: black;
-    /*font-size: 16px;
-    font-family: 'Microsoft YaHei';*/
     font: 16px 'Microsoft YaHei';
 }
 
@@ -51,7 +48,6 @@ QPushButton#albumLinkBt:hover {
 }
 
 QPushButton#sortModeButton {
-    /*color:rgb(79,150,169);*/
     color: rgb(81, 154, 170);
 }
 
@@ -170,7 +166,7 @@ QMenu#addToMenu::separator {
 QMenu#sortModeMenu {
     font-size: 17px;
     width: 158px;
-    height: 116px;
+    height: 114px;
     border: 1px solid rgb(41, 41, 41);
     border-bottom: none;
     padding-top: 1px;
