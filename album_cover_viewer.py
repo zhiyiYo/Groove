@@ -34,7 +34,6 @@ class AlbumCardViewer(QWidget):
         self.albumInfo = AlbumInfo()
 
         # 实例化布局
-        self.gridLayout = QGridLayout()
         self.albumView_h_layout = QHBoxLayout()
         self.all_h_layout = QHBoxLayout()
 
@@ -71,14 +70,13 @@ class AlbumCardViewer(QWidget):
             self.albumCard_list.append(albumCard)
             self.albumCardDict_list.append({'albumCard': albumCard,
                                             'albumName': album,
-                                            'year': albumInfo_dict['year'],
+                                            'year': albumInfo_dict['year'][:4],
                                             'songer': albumInfo_dict['songer'],
                                             'firstLetter': pinyin.get_initial(album)[0].upper()})
 
     def initLayout(self):
         """ 初始化布局 """
-        # 引用albumView_h_layout当前的布局
-        self.album_h_layout_clayout = self.gridLayout
+
         # 创建添加时间分组
         self.createAddTimeGroup()
         self.updateGridLayout()
@@ -91,6 +89,7 @@ class AlbumCardViewer(QWidget):
         self.scrollArea.setWidget(self.albumView)
         # 设置全局布局
         self.all_h_layout.addWidget(self.scrollArea)
+        self.all_h_layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.all_h_layout)
 
     def updateGridLayout(self):
@@ -101,6 +100,7 @@ class AlbumCardViewer(QWidget):
             columns = range(self.column_num)
             rows = range(
                 (len(currentGroup_dict['album_list']) - 1) // self.column_num + 1)
+            self.current_row_num = max(rows) + 1
             # 引用当前分组的网格布局
             gridLayout = currentGroup_dict['gridLayout']
 
@@ -116,8 +116,8 @@ class AlbumCardViewer(QWidget):
                 y = index-self.column_num*x
                 gridLayout.addWidget(
                     albumCard, x, y, 1, 1)
-            # 获取当前的总行数
-            self.current_row_num = x + 1
+                # 获取当前的总行数
+
             self.total_row_num += self.current_row_num
             # 如果专辑数小于设定的列数，就在右侧增加弹簧
             offset = self.column_num - len(self.albumCardDict_list)
@@ -133,31 +133,67 @@ class AlbumCardViewer(QWidget):
                 gridLayout.setColumnMinimumWidth(i, 0)
 
         self.albumView.setFixedWidth(221 * self.column_num)
-        self.albumView.setFixedHeight(
-            313 * self.total_row_num+10*self.vertical_spacing_count)
+        if self.sortMode == '添加时间':
+            self.albumView.setFixedHeight(303*self.total_row_num)
+        else:
+            # 补上分组标题所占的高度
+            self.albumView.setFixedHeight(
+                303*self.total_row_num+34*len(self.currentGroupDict_list))
 
     def resizeEvent(self, event):
         """ 根据宽度调整网格的列数 """
         # 如果第一次超过1337就调整网格的列数
-        if self.width() >= 1353 and self.column_num != 6:
-            for albumCard_dict in self.albumCardDict_list:
-                self.gridLayout.removeWidget(albumCard_dict['albumCard'])
+        if self.width() >= 1335 and self.column_num != 6:
+            for currentGroup_dict in self.currentGroupDict_list:
+                for albumCard in currentGroup_dict['album_list']:
+                    currentGroup_dict['gridLayout'].removeWidget(albumCard)
             self.column_num = 6
             self.updateGridLayout()
-        elif 1134 < self.width() < 1353 and self.column_num != 5:
-            for albumCard_dict in self.albumCardDict_list:
-                self.gridLayout.removeWidget(albumCard_dict['albumCard'])
+        elif 1115 < self.width() < 1335 and self.column_num != 5:
+            for currentGroup_dict in self.currentGroupDict_list:
+                for albumCard in currentGroup_dict['album_list']:
+                    currentGroup_dict['gridLayout'].removeWidget(albumCard)
             self.column_num = 5
             self.updateGridLayout()
-        elif self.width() <= 1134:
-            for albumCard_dict in self.albumCardDict_list:
-                self.gridLayout.removeWidget(albumCard_dict['albumCard'])
+        elif self.width() <= 1115:
+            for currentGroup_dict in self.currentGroupDict_list:
+                for albumCard in currentGroup_dict['album_list']:
+                    currentGroup_dict['gridLayout'].removeWidget(albumCard)
             self.column_num = 4
             self.updateGridLayout()
 
+    def removeOldWidget(self):
+        """ 从布局中移除小部件,同时设置新的布局 """
+        # 将专辑卡从布局中移除
+        for currentGroup_dict in self.currentGroupDict_list:
+            for albumCard in currentGroup_dict['album_list']:
+                currentGroup_dict['gridLayout'].removeWidget(albumCard)
+            # 删除groupBox和布局
+            currentGroup_dict['group'].deleteLater()
+            currentGroup_dict['gridLayout'].deleteLater()
+
+        # 先移除albumView_h_layout的当前分组
+        self.albumView_h_layout.removeItem(self.album_h_layout_clayout)
+        # 创建一个新的竖直布局再将其加到布局中
+        self.v_layout = QVBoxLayout()
+        self.album_h_layout_clayout = self.v_layout
+
+    def addGroupToLayout(self):
+        """ 将当前的分组添加到箱式布局中 """
+        for index, currentGroup_dict in enumerate(self.currentGroupDict_list):
+            gridLayout = currentGroup_dict['gridLayout']
+            # 设置网格的行距
+            gridLayout.setVerticalSpacing(20)
+            gridLayout.setContentsMargins(0, 0, 0, 0)
+            self.v_layout.addWidget(currentGroup_dict['group'])
+            if index < len(self.currentGroupDict_list)-1:
+                self.v_layout.addSpacing(10)
+
+        self.albumView_h_layout.addLayout(self.v_layout)
+
     def createAddTimeGroup(self):
         """ 按照添加时间分组 """
-
+        self.gridLayout = QGridLayout()
         # 移除旧的布局
         if self.sortMode != '添加时间':
             self.sortMode = '添加时间'
@@ -175,7 +211,7 @@ class AlbumCardViewer(QWidget):
         self.album_h_layout_clayout = self.gridLayout
         # 构造一个包含布局和小部件列表字典的列表
         self.addTimeGroup_list = [
-            {'gridLayout': self.gridLayout, 'album_list': self.albumCard_list}]
+            {'gridLayout': self.gridLayout, 'album_list': self.albumCard_list, 'group': QGroupBox()}]
         # 创建一个对当前分组列表引用的列表
         self.currentGroupDict_list = self.addTimeGroup_list
         # 更新网格
@@ -184,7 +220,7 @@ class AlbumCardViewer(QWidget):
         self.albumView_h_layout.addLayout(self.gridLayout)
 
     def createFirstLetterGroup(self):
-        """ 按照首字母对歌手进行分组 """
+        """ 按照首字母对歌手创建分组 """
         # 获取专辑的第一个字符组成的集合
         first_char_set = {albumInfo_dict['albumName'][0]
                           for albumInfo_dict in self.albumCardDict_list}
@@ -221,15 +257,9 @@ class AlbumCardViewer(QWidget):
 
     def sortByFirsetLetter(self):
         """ 按照专辑名的首字母进行分组排序 """
-        # 将专辑卡从布局中移除
-        for currentGroup_dict in self.currentGroupDict_list:
-            for albumCard in currentGroup_dict['album_list']:
-                currentGroup_dict['gridLayout'].removeWidget(albumCard)
-        # 先移除albumView_h_layout的当前分组
-        self.albumView_h_layout.removeItem(self.album_h_layout_clayout)
-        # 创建一个新的竖直布局再将其加到布局中
-        self.v_layout = QVBoxLayout()
-        self.album_h_layout_clayout = self.v_layout
+        self.createFirstLetterGroup()
+        # 将专辑卡从旧布局中移除
+        self.removeOldWidget()
 
         # 将专辑加到分组中
         for albumCard_dict in self.albumCardDict_list:
@@ -242,21 +272,103 @@ class AlbumCardViewer(QWidget):
                 # 将不符合分组依据的头像插到特殊分组中
                 self.firsetLetterGroupDict_list[-1]['album_list'].append(
                     albumCard_dict['albumCard'])
-                firstLetterGroup_dict['firstLetter'] = '...'
+                #firstLetterGroup_dict['firstLetter'] = '...'
 
         # 将专辑加到分组的网格布局中
         self.currentGroupDict_list = self.firsetLetterGroupDict_list
         self.updateGridLayout()
-        for index, firstLetterGroup_dict in enumerate(self.firsetLetterGroupDict_list):
-            gridLayout = firstLetterGroup_dict['gridLayout']
-            # 设置网格的行距
-            gridLayout.setVerticalSpacing(20)
-            gridLayout.setContentsMargins(0, 0, 0, 0)
-            self.v_layout.addWidget(firstLetterGroup_dict['group'])
-            if index < len(self.firsetLetterGroupDict_list)-1:
-                self.v_layout.addSpacing(10)
+        self.addGroupToLayout()
 
-        self.albumView_h_layout.addLayout(self.v_layout)
+    def createYearGroup(self):
+        """ 对专辑按照年份创建分组 """
+        # 获取专辑的年份组成的集合
+        year_set = {albumInfo_dict['year']
+                    for albumInfo_dict in self.albumCardDict_list}
+
+        # 将未知年份替换为未知
+        if '未知年份' in year_set:
+            year_set.remove('未知年份')
+            year_set.add('未知')
+
+        # 创建分组
+        self.yearGroupDict_list = []
+        for year in year_set:
+            # 实例化分组和网格布局
+            group = QGroupBox(year)
+            gridLayout = QGridLayout()
+            group.setLayout(gridLayout)
+            # 将含有字母和分组的字典插入列表
+            self.yearGroupDict_list.append(
+                {'group': group, 'year': year, 'gridLayout': gridLayout, 'album_list': []})
+
+        # 按照年份从进到远排序
+        self.yearGroupDict_list.sort(
+            key=lambda item: item['year'], reverse=True)
+
+        # 检测是否含有未知分组,有的话将其移到最后一个
+        if self.yearGroupDict_list[0]['year'] == '未知':
+            unique_group = self.yearGroupDict_list.pop(0)
+            self.yearGroupDict_list.append(unique_group)
+
+    def sortByYear(self):
+        """ 按照专辑的年份进行分组排序 """
+        self.createYearGroup()
+        # 将专辑卡从旧布局中移除
+        self.removeOldWidget()
+        # 将专辑加到分组中
+        for albumCard_dict in self.albumCardDict_list:
+            for yearGroup_dict in self.yearGroupDict_list:
+                if yearGroup_dict['year'] == albumCard_dict['year']:
+                    yearGroup_dict['album_list'].append(
+                        albumCard_dict['albumCard'])
+                    break
+            else:
+                # 将不符合分组依据的头像插到特殊分组中
+                self.yearGroupDict_list[-1]['album_list'].append(
+                    albumCard_dict['albumCard'])
+
+        # 将专辑加到分组的网格布局中
+        self.currentGroupDict_list = self.yearGroupDict_list
+        self.updateGridLayout()
+        self.addGroupToLayout()
+
+    def createSongerGroup(self):
+        """ 对专辑的所属歌手创建分组 """
+        songer_set = {albumInfo_dict['songer']
+                      for albumInfo_dict in self.albumCardDict_list}
+        # 创建分组
+        self.songerGroupDict_list = []
+        for songer in songer_set:
+            # 实例化分组和网格布局
+            group = QGroupBox(songer)
+            gridLayout = QGridLayout()
+            group.setLayout(gridLayout)
+            # 将含有字母和分组的字典插入列表
+            self.songerGroupDict_list.append(
+                {'group': group, 'songer': songer, 'gridLayout': gridLayout, 'album_list': []})
+
+        # 按照年份从进到远排序
+        self.songerGroupDict_list.sort(key=lambda item: item['songer'].lower())
+
+    def sortBySonger(self):
+        """ 按照专辑的专辑进行分组排序 """
+        self.createSongerGroup()
+        # 将专辑卡从旧布局中移除
+        self.removeOldWidget()
+        # 将专辑加到分组中
+        for albumCard_dict in self.albumCardDict_list:
+            for songerGroup_dict in self.songerGroupDict_list:
+                if songerGroup_dict['songer'] == albumCard_dict['songer']:
+                    songerGroup_dict['album_list'].append(
+                        albumCard_dict['albumCard'])
+                    break
+
+        # 将专辑加到分组的网格布局中
+        self.currentGroupDict_list = self.songerGroupDict_list
+        self.updateGridLayout()
+        self.addGroupToLayout()
+
+        
 
     def setQss(self):
         """ 设置层叠样式 """

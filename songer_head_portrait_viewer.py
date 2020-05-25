@@ -135,7 +135,7 @@ class SongerHeadPortraitViewer(QWidget):
                 # 将不符合分组依据的头像插到特殊分组中
                 self.songerHeadGroup_dict_list[-1]['songer_list'].append(
                     songerHeadPortrait_dict['songerCard'])
-                songerHeadGroup_dict['firstLetter'] = '...'
+                #songerHeadGroup_dict['firstLetter'] = '...'
 
     def initLayout(self):
         """ 初始化布局 """
@@ -156,6 +156,7 @@ class SongerHeadPortraitViewer(QWidget):
         self.scrollArea.setWidget(self.songerHeadViewer)
         # 设置全局布局
         self.all_h_layout.addWidget(self.scrollArea)
+        self.all_h_layout.setContentsMargins(0,0,0,0)
         self.setLayout(self.all_h_layout)
 
     def setQss(self):

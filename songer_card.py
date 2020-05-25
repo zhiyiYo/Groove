@@ -32,7 +32,7 @@ class SongerCard(QWidget):
         self.setWindowFlags(Qt.FramelessWindowHint)
 
         # 设置小部件的绝对位置
-        self.songerHeadPortrait.move(10, 10)
+        self.songerHeadPortrait.move(10, 9)
         self.songerNameLabel.move(1, 212)
 
         # 初始化背景图片

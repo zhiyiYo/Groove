@@ -113,23 +113,23 @@ class AlbumTabInterface(QWidget):
         """ 根据所选的排序方式对歌曲卡进行重新排序 """
         sender = self.sender()
         self.currentSortMode = sender
-        # 清空旧的列表
-
         # 更新分组
         if sender == self.sortByCratedTime and self.albumViewer.sortMode != '添加时间':
             self.sortModeButton.setText('添加时间')
-            self.albumViewer.update()
             self.albumViewer.createAddTimeGroup()
-        elif sender == self.sortByDictOrder:
+        elif sender == self.sortByDictOrder and self.albumViewer.sortMode != 'A到Z':
             self.sortModeButton.setText('A到Z')
             self.albumViewer.sortMode = 'A到Z'
-            self.albumViewer.createFirstLetterGroup()
             self.albumViewer.sortByFirsetLetter()
-        elif sender == self.sortByYear:
+        elif sender == self.sortByYear and self.albumViewer.sortMode != '发行年份':
             self.sortModeButton.setText('发行年份')
-        elif sender == self.sortBySonger:
+            self.albumViewer.sortMode = '发行年份'
+            self.albumViewer.sortByYear()
+        elif sender == self.sortBySonger and self.albumViewer.sortMode != '歌手':
             self.sortModeButton.setText('歌手')
-
+            self.albumViewer.sortMode = '歌手'
+            self.albumViewer.sortBySonger()
+            
     def showSortModeMenu(self):
         """ 显示排序方式菜单 """
         # 设置默认动作
