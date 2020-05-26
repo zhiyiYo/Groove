@@ -28,7 +28,7 @@ class SongerCard(QWidget):
 
     def initWidget(self):
         """ 初始化小部件 """
-        self.resize(222, 267)
+        self.resize(222, 268)
         self.setWindowFlags(Qt.FramelessWindowHint)
 
         # 设置小部件的绝对位置
@@ -154,12 +154,9 @@ class SongerName(QWidget):
         self.v_layout = QVBoxLayout()
 
         # 初始化布局
+
         self.v_layout.addWidget(self.songerNameLabel, 0, Qt.AlignHCenter)
         self.setLayout(self.v_layout)
-
-        # 设置自动换行
-        # self.songerNameLabel.setWordWrap(True)
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

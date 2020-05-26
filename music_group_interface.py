@@ -9,11 +9,11 @@ from my_music_windows import MyMusicWindows
 from window_mask import WindowMask
 
 
-class MusicGroupTabInterface(QWidget):
+class MusicGroupInterface(QWidget):
     """ 创建一个本地音乐分组界面 """
 
-    def __init__(self, songs_folder):
-        super().__init__()
+    def __init__(self, songs_folder,parent=None):
+        super().__init__(parent)
 
         # 实例化一个标签和两个竖直滚动条
         self.myMusicLabel = QLabel(self)
@@ -143,7 +143,7 @@ if __name__ == "__main__":
     font.setStyleStrategy(QFont.PreferAntialias)
     app.setFont(font)
 
-    demo = MusicGroupTabInterface('D:\\KuGou\\')
+    demo = MusicGroupInterface('D:\\KuGou\\')
     demo.show()
     
     sys.exit(app.exec_())

@@ -1,2 +1,5 @@
 1.不能直接给图片添加.jpg后缀名，会导致QPixmap无法识别
 2.网格布局的行和列只能增加不能减少，但是可以改变没有用到的行或者列的宽度
+3.要想改变旧布局，只需在一个总的布局中添加后来想要移除的布局就行，比如all_h_layout中addLayout(gridLayout)，
+后面要改变的时候只需removeItem(gridLayout)
+4.deleteLater()释放内存

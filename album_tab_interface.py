@@ -116,7 +116,7 @@ class AlbumTabInterface(QWidget):
         # 更新分组
         if sender == self.sortByCratedTime and self.albumViewer.sortMode != '添加时间':
             self.sortModeButton.setText('添加时间')
-            self.albumViewer.createAddTimeGroup()
+            self.albumViewer.sortByAddTimeGroup()
         elif sender == self.sortByDictOrder and self.albumViewer.sortMode != 'A到Z':
             self.sortModeButton.setText('A到Z')
             self.albumViewer.sortMode = 'A到Z'

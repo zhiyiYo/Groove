@@ -21,6 +21,7 @@ class SongerHeadPortraitViewer(QWidget):
         self.resize(1267, 638)
         # 设置网格列数
         self.column_num = 5
+        self.total_cow_num = 0
 
         # 实例化一个滚动区域
         self.scrollArea = QScrollArea(self)
@@ -135,12 +136,11 @@ class SongerHeadPortraitViewer(QWidget):
                 # 将不符合分组依据的头像插到特殊分组中
                 self.songerHeadGroup_dict_list[-1]['songer_list'].append(
                     songerHeadPortrait_dict['songerCard'])
-                #songerHeadGroup_dict['firstLetter'] = '...'
 
     def initLayout(self):
         """ 初始化布局 """
 
-        self.updateGridLayout()
+        self.__updateGridLayout()
 
         for songerHeadGroup_dict in self.songerHeadGroup_dict_list:
             gridLayout = songerHeadGroup_dict['gridLayout']
@@ -156,7 +156,7 @@ class SongerHeadPortraitViewer(QWidget):
         self.scrollArea.setWidget(self.songerHeadViewer)
         # 设置全局布局
         self.all_h_layout.addWidget(self.scrollArea)
-        self.all_h_layout.setContentsMargins(0,0,0,0)
+        self.all_h_layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.all_h_layout)
 
     def setQss(self):
@@ -165,13 +165,18 @@ class SongerHeadPortraitViewer(QWidget):
             qss = f.read()
             self.setStyleSheet(qss)
 
-    def updateGridLayout(self):
+    def __updateGridLayout(self):
         """ 更新网格的列数 """
+        self.total_cow_num = 0
+        self.vertical_spacing_count = len(self.songerHeadPortrait_dict_list)-1
         for songerHeadGroup_dict in self.songerHeadGroup_dict_list:
             # 根据每个分组含有的歌手数量计算网格的行数和列数
             columns = range(self.column_num)
             rows = range(
                 (len(songerHeadGroup_dict['songer_list']) - 1) // self.column_num + 1)
+            self.current_row_num = max(rows)+1
+            self.total_cow_num += self.current_row_num
+
             gridLayout = songerHeadGroup_dict['gridLayout']
             # 设置网格大小
             for column in columns:
@@ -179,42 +184,43 @@ class SongerHeadPortraitViewer(QWidget):
                     column, 224)
             for row in rows:
                 gridLayout.setRowMinimumHeight(
-                    row, 266)
+                    row, 268)
             # 向网格中添加小部件
             for index, songerHeadPortrait in enumerate(songerHeadGroup_dict['songer_list']):
                 x = index // self.column_num
                 y = index-self.column_num*x
                 gridLayout.addWidget(
                     songerHeadPortrait, x, y, 1, 1)
-            #如果总的列数少于网格的总列数，就将多出来列的最小宽度设置为0
-            """ for i in range(gridLayout.columnCount() - 1, self.column_num - 1, -1):
-                gridLayout.setColumnMinimumWidth(i, 0)  """       
-            # 如果歌手数小于设定的列数，就在右侧增加弹簧
-            offset = self.column_num - len(songerHeadGroup_dict['songer_list'])
-            for i in range(offset):
-                gridLayout.setColumnStretch(i + offset - 1, 1)
-            
-        #设置窗口的最小宽度        
-        self.songerHeadViewer.setMinimumWidth(self.column_num * 224)
-        
-            
+
+            # 如果现在的总行数小于网格的总行数，就将多出来的行宽度的最小值设为0
+            for i in range(gridLayout.rowCount() - 1, self.current_row_num - 1, -1):
+                gridLayout.setRowMinimumHeight(i, 0)
+            # 如果总的列数少于网格的总列数，就将多出来列的最小宽度设置为0
+            for i in range(gridLayout.columnCount() - 1, self.column_num - 1, -1):
+                gridLayout.setColumnMinimumWidth(i, 0)
+
+        # 设置窗口的最小宽度
+        self.songerHeadViewer.setFixedWidth(self.column_num * 224)
+        self.songerHeadViewer.setFixedHeight(
+            284*self.total_cow_num+40*len(self.songerHeadGroup_dict_list))
 
     def resizeEvent(self, event):
         """ 根据宽度调整列数 """
-        if self.width()>=1337 and self.column_num!=6:
-            for songerHeadGroup_dict in self.songerHeadGroup_dict_list:
-                for songerHeadPortrait in songerHeadGroup_dict['songer_list']:
-                    songerHeadGroup_dict['gridLayout'].removeWidget(songerHeadPortrait)
-            self.column_num = 6
-            self.updateGridLayout()
-        elif self.width() < 1337 and self.column_num != 5:
-            for songerHeadGroup_dict in self.songerHeadGroup_dict_list:
-                for songerHeadPortrait in songerHeadGroup_dict['songer_list']:
-                    songerHeadGroup_dict['gridLayout'].removeWidget(
-                        songerHeadPortrait)
-            self.column_num = 5
-            self.updateGridLayout()
-            
+        if self.width() >= 1337 and self.column_num != 6:
+            self.__updateColumnNum(6)
+        elif 1135 < self.width() < 1337 and self.column_num != 5:
+            self.__updateColumnNum(5)
+        elif self.width() <= 1135 and self.column_num != 4:
+            self.__updateColumnNum(4)
+
+    def __updateColumnNum(self, new_column):
+        """ 移除旧的布局中的小部件并更新布局 """
+        for songerHeadGroup_dict in self.songerHeadGroup_dict_list:
+            for songerHeadPortrait in songerHeadGroup_dict['songer_list']:
+                songerHeadGroup_dict['gridLayout'].removeWidget(
+                    songerHeadPortrait)
+        self.column_num = new_column
+        self.__updateGridLayout()
 
 
 if __name__ == "__main__":
