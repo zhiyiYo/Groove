@@ -3,3 +3,4 @@
 3.要想改变旧布局，只需在一个总的布局中添加后来想要移除的布局就行，比如all_h_layout中addLayout(gridLayout)，
 后面要改变的时候只需removeItem(gridLayout)
 4.deleteLater()释放内存
+5.滚动条最好手动设置最小高度，不然可能太小而看不见

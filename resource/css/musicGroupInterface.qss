@@ -1,4 +1,4 @@
-QWidget#musicGroupTabInterface {
+QWidget#musicGroupInterface {
     background-color: white;
 }
 
@@ -30,21 +30,16 @@ QScrollBar::add-line {
 QScrollBar::handle {
     background: rgb(122, 122, 122);
     border: 0px solid transparent;
-    padding-left: 2px;
 }
 
-QScrollBarr::sub-line {
-    background: transparent
+QScrollBar::handle#songScrollBar {
+    min-height: 40px;
 }
 
-/*隐藏下箭头*/
-QScrollBar::add-line {
-    background: transparent
+QScrollBar::handle#songerScrollBar{
+    min-height: 55px;
 }
 
-QScrollBar::handle {
-    background: rgb(122, 122, 122);
-    border: 0px solid transparent;
-    padding-left: 2px;
+QScrollBar::handle#albumScrollBar {
+    min-height: 40px;
 }
-
