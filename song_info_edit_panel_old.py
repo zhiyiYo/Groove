@@ -13,8 +13,7 @@ from PyQt5.QtWidgets import (QAction, QApplication, QDialog,
                              QLineEdit, QMenu, QPushButton, QToolButton)
 
 from modify_songInfo import modifySongInfo
-from my_lineEdit import LineEdit
-from my_label import ErrorLabel
+
 
 class SongInfoEditPanel(QDialog):
     """ 定义一个用来编辑歌曲信息的对话框 """
@@ -35,6 +34,7 @@ class SongInfoEditPanel(QDialog):
         self.cancelButton = QPushButton('取消', self)
 
         # 实例化标签
+
         self.yearLabel = QLabel('年', self)
         self.tconLabel = QLabel('类型', self)
         self.diskLabel = QLabel('光盘', self)
@@ -91,13 +91,9 @@ class SongInfoEditPanel(QDialog):
         self.setFixedSize(932+2*self.SHADOW_WIDTH, 652+2*self.SHADOW_WIDTH)
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
-        self.setFocusPolicy(Qt.StrongFocus)
 
-        # 默认选中歌名编辑框
         self.songNameEditLine.setFocus()
         self.songNameEditLine.clearButton.show()
-        """ if self.songerNameLabel.text():
-            self.songerNameEditLine.setReadOnly(True) """
         # 给每个单行输入框设置大小、添加清空动作
         for editLine in self.editLine_list:
             editLine.setFixedSize(408, 40)
@@ -273,6 +269,102 @@ class SongInfoEditPanel(QDialog):
             self.emptyTrackErrorLabel.setHidden(True)
             self.saveButton.setEnabled(True)
 
+
+class LineEdit(QLineEdit):
+    """ 定义一个被点击就全选文字的单行输入框 """
+
+    def __init__(self, string=None, parent=None):
+        super().__init__(string, parent)
+
+        # 创建右击菜单
+        self.createContextMenu()
+        # 实例化一个用于清空内容的按钮
+        self.clearButton = QToolButton(self)
+
+        # 实例化布局
+        self.h_layout = QHBoxLayout()
+        self.initWidget()
+        self.initLayout()
+
+    def initWidget(self):
+        """ 初始化小部件 """
+        self.clearButton.setFixedSize(39, 39)
+        self.clearButton.setFocusPolicy(Qt.NoFocus)
+        self.clearButton.setCursor(Qt.ArrowCursor)
+        self.clearButton.setIcon(
+            QIcon('resource\\images\\clearInfo_cross.png'))
+        self.clearButton.setIconSize(QSize(39, 39))
+        self.clearButton.clicked.connect(self.clear)
+        self.clearButton.setHidden(True)
+        self.clearButton.installEventFilter(self)
+
+    def initLayout(self):
+        """ 初始化布局 """
+        self.h_layout.addWidget(self.clearButton, 0, Qt.AlignRight)
+        self.h_layout.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(self.h_layout)
+        self.setTextMargins(0, 0, self.clearButton.width(), 0)
+
+    def createContextMenu(self):
+        """ 创建右击菜单 """
+        self.menu = QMenu(self)
+        self.cutAct = QAction('剪切', self, shortcut='Ctrl+X')
+        self.copyAct = QAction('复制', self, shortcut='Ctrl+C')
+        self.pasteAct = QAction('粘贴', self, shortcut='Ctrl+V')
+        self.menu.addActions([self.cutAct, self.copyAct, self.pasteAct])
+
+    def mousePressEvent(self, e):
+        self.selectAll()
+        self.clearButton.show()
+
+    def contextMenuEvent(self, e: QContextMenuEvent):
+        """ 设置右击菜单 """
+        self.menu.exec_(e.globalPos())
+
+    def focusOutEvent(self, e):
+        """ 当焦点移到别的输入框时隐藏按钮 """
+        # 调用父类的函数，消除焦点
+        super().focusOutEvent(e)
+        self.clearButton.setHidden(True)
+
+    def eventFilter(self, obj, e):
+        """ 当鼠标进入或离开按钮时改变按钮的图片 """
+        if e.type() == QEvent.Enter:
+            self.clearButton.setIcon(
+                QIcon('resource\\images\\clearInfo_cross_hover.png'))
+        elif e.type() == QEvent.Leave:
+            self.clearButton.setIcon(
+                QIcon('resource\\images\\clearInfo_cross.png'))
+
+        return False
+
+
+class ErrorLabel(QLabel):
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.enterTime = 0
+
+        # 定时器用于控制提示条的显示时间
+        self.timer = QTimer(self)
+        self.timer.setInterval(5000)
+        self.timer.timeout.connect(self.hideToolTip)
+
+    def enterEvent(self, e):
+        if not self.enterTime:
+            self.timer.start()
+            x = e.globalX()-110
+            y = e.globalY() - 80
+            QToolTip.showText(QPoint(x, y), '曲目必须是1000以下的数字', self)
+            self.enterTime = 1
+
+    def hideToolTip(self):
+        QToolTip.hideText()
+        self.timer.stop()
+
+    def leaveEvent(self, e):
+        self.enterTime = 0
+        self.timer.stop()
 
 
 if __name__ == "__main__":

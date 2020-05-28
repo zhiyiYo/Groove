@@ -7,7 +7,7 @@ from PyQt5.QtGui import (QBitmap, QBrush, QColor, QContextMenuEvent,
 from PyQt5.QtWidgets import QApplication, QLabel, QMenu, QVBoxLayout, QWidget, QAction
 
 from my_button import SongerAddToButton, SongerPlayButton
-from my_label import Label
+from my_label import ClickableLabel
 
 class AlbumCard(QWidget):
     """ 定义包含专辑歌手名的窗口 """
@@ -19,8 +19,8 @@ class AlbumCard(QWidget):
         self.backgroundLabel = QLabel(self)
 
         # 实例化专辑名和歌手名
-        self.albumName = Label(albumInfo['album'], self)
-        self.songerName = Label(albumInfo['songer'], self)
+        self.albumName = ClickableLabel(albumInfo['album'], self)
+        self.songerName = ClickableLabel(albumInfo['songer'], self)
 
         # 实例化专辑封面
         self.albumCover = AlbumCover(albumInfo['cover_path'], self)
