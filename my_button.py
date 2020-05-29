@@ -114,8 +114,8 @@ class SongerAddToButton(QPushButton):
         return False
 
 
-class BlackMinimizeButton(QPushButton):
-    """ 定义黑底的最小化按钮 """
+class MinimizeButton(QPushButton):
+    """ 定义最小化按钮 """
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -124,7 +124,7 @@ class BlackMinimizeButton(QPushButton):
         # 扁平化
         self.setFlat(True)
         self.setStyleSheet("QPushButton{border:none;margin:0}")
-        self.setIcon(QIcon('resource\\images\\最小化按钮_57_40.png'))
+        self.setIcon(QIcon('resource\\images\\黑色最小化按钮_57_40_2.png'))
         self.setIconSize(QSize(57, 40))
         self.installEventFilter(self)
 
@@ -134,12 +134,12 @@ class BlackMinimizeButton(QPushButton):
             if e.type() == QEvent.Enter:
                 self.setIcon(QIcon('resource\\images\\最小化按钮_hover_57_40.png'))
             elif e.type() == QEvent.Leave:
-                self.setIcon(QIcon('resource\\images\\最小化按钮_57_40.png'))
+                self.setIcon(QIcon('resource\\images\\黑色最小化按钮_57_40_2.png'))
         return False
 
 
-class BlackMaximizeButton(QPushButton):
-    """ 定义黑底的最大化按钮 """
+class MaximizeButton(QPushButton):
+    """ 定义最大化按钮 """
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -148,7 +148,7 @@ class BlackMaximizeButton(QPushButton):
         # 扁平化
         self.setFlat(True)
         self.setStyleSheet("QPushButton{border:none;margin:0}")
-        self.setIcon(QIcon('resource\\images\\最大化按钮_57_40.png'))
+        self.setIcon(QIcon('resource\\images\\黑色最大化按钮_57_40_2.png'))
         self.setIconSize(QSize(57, 40))
         self.installEventFilter(self)
 
@@ -158,12 +158,12 @@ class BlackMaximizeButton(QPushButton):
             if e.type() == QEvent.Enter:
                 self.setIcon(QIcon('resource\\images\\最大化按钮_hover_57_40.png'))
             elif e.type() == QEvent.Leave:
-                self.setIcon(QIcon('resource\\images\\最大化按钮_57_40.png'))
+                self.setIcon(QIcon('resource\\images\\黑色最大化按钮_57_40_2.png'))
         return False
 
 
-class BlackCloseButton(QPushButton):
-    """ 定义黑底的关闭按钮 """
+class CloseButton(QPushButton):
+    """ 定义关闭按钮 """
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -172,7 +172,7 @@ class BlackCloseButton(QPushButton):
         # 扁平化
         #self.setFlat(True)
         self.setStyleSheet("QPushButton{border:none;margin:0}")
-        self.setIcon(QIcon('resource\\images\\关闭按钮_57_40.png'))
+        self.setIcon(QIcon('resource\\images\\黑色关闭按钮_57_40_2.png'))
         self.setIconSize(QSize(57, 40))
         self.installEventFilter(self)
 
@@ -182,7 +182,7 @@ class BlackCloseButton(QPushButton):
             if e.type() == QEvent.Enter:
                 self.setIcon(QIcon('resource\\images\\关闭按钮_hover_57_40.png'))
             elif e.type() == QEvent.Leave:
-                self.setIcon(QIcon('resource\\images\\关闭按钮_57_40.png'))
+                self.setIcon(QIcon('resource\\images\\黑色关闭按钮_57_40_2.png'))
         return False
 
 

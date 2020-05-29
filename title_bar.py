@@ -1,9 +1,11 @@
 import sys
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QResizeEvent
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QApplication, QSpacerItem, QSizePolicy
-from my_button import BlackMinimizeButton, BlackMaximizeButton, BlackCloseButton
+from PyQt5.QtGui import QResizeEvent,QIcon
+from PyQt5.QtWidgets import (QApplication, QHBoxLayout, QSizePolicy,
+                             QSpacerItem, QWidget)
+
+from my_button import CloseButton, MaximizeButton, MinimizeButton
 
 
 class TitleBar(QWidget):
@@ -15,9 +17,9 @@ class TitleBar(QWidget):
         self.win = parent
 
         # 实例化按钮
-        self.blackMinBt = BlackMinimizeButton(self)
-        self.blackMaxBt = BlackMaximizeButton(self)
-        self.blackCloseBt = BlackCloseButton(self)
+        self.minBt = MinimizeButton(self)
+        self.maxBt = MaximizeButton(self)
+        self.closeBt = CloseButton(self)
 
         self.initWidget()
         self.adjustButtonPos()
@@ -29,15 +31,15 @@ class TitleBar(QWidget):
         self.setStyleSheet("background-color:transparent")
 
         # 将按钮的点击信号连接到槽函数
-        self.blackMinBt.clicked.connect(self.win.showMinimized)
-        self.blackMaxBt.clicked.connect(self.win.showMaximized)
-        self.blackCloseBt.clicked.connect(self.win.close)
+        self.minBt.clicked.connect(self.win.showMinimized)
+        self.maxBt.clicked.connect(self.win.showMaximized)
+        self.closeBt.clicked.connect(self.win.close)
 
     def adjustButtonPos(self):
         """ 初始化小部件位置 """
-        self.blackCloseBt.move(self.width() - 57, 0)
-        self.blackMaxBt.move(self.width() - 2 * 57, 0)
-        self.blackMinBt.move(self.width()-3*57, 0)
+        self.closeBt.move(self.width() - 57, 0)
+        self.maxBt.move(self.width() - 2 * 57, 0)
+        self.minBt.move(self.width()-3*57, 0)
 
     def resizeEvent(self, e: QResizeEvent):
         """ 尺寸改变时移动按钮 """
