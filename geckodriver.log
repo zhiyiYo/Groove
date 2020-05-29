@@ -1,0 +1,216 @@
+1590729506889	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofileaXL8P9"
+*** You are running in headless mode.
+1590729507990	addons.webextension.doh-rollout@mozilla.org	WARN	Loading extension 'doh-rollout@mozilla.org': Reading manifest: Invalid extension permission: networkStatus
+1590729508787	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: mozillaAddons
+1590729508787	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: telemetry
+1590729508788	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: resource://pdf.js/
+1590729508788	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: about:reader*
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1590729511932	Marionette	INFO	Listening on port 65214
+1590729512301	Marionette	WARN	TLS certificate errors will be ignored for this session
+1590729513665	Marionette	INFO	Stopped listening on port 65214
+[Child 3500, Chrome_ChildThread] WARNING: pipe error: 232: file /builds/worker/checkouts/gecko/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 522
+1590729521246	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofileVxxG3f"
+*** You are running in headless mode.
+1590729521922	addons.webextension.doh-rollout@mozilla.org	WARN	Loading extension 'doh-rollout@mozilla.org': Reading manifest: Invalid extension permission: networkStatus
+1590729522708	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: mozillaAddons
+1590729522709	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: telemetry
+1590729522709	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: resource://pdf.js/
+1590729522709	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: about:reader*
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1590729525885	Marionette	INFO	Listening on port 65290
+1590729526063	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+1590729529566	Marionette	INFO	Stopped listening on port 65290
+1590729535887	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofile74a26x"
+*** You are running in headless mode.
+1590729536460	addons.webextension.doh-rollout@mozilla.org	WARN	Loading extension 'doh-rollout@mozilla.org': Reading manifest: Invalid extension permission: networkStatus
+1590729537245	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: mozillaAddons
+1590729537245	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: telemetry
+1590729537246	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: resource://pdf.js/
+1590729537246	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: about:reader*
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1590729540244	Marionette	INFO	Listening on port 65366
+1590729540705	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+1590729543688	Marionette	INFO	Stopped listening on port 65366
+1590729549348	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofileSGoeNU"
+*** You are running in headless mode.
+1590729549943	addons.webextension.doh-rollout@mozilla.org	WARN	Loading extension 'doh-rollout@mozilla.org': Reading manifest: Invalid extension permission: networkStatus
+1590729550806	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: mozillaAddons
+1590729550807	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: telemetry
+1590729550807	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: resource://pdf.js/
+1590729550807	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: about:reader*
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1590729553807	Marionette	INFO	Listening on port 65446
+1590729554173	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+1590729557090	Marionette	INFO	Stopped listening on port 65446
+1590729563948	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofile8BIegj"
+*** You are running in headless mode.
+1590729564529	addons.webextension.doh-rollout@mozilla.org	WARN	Loading extension 'doh-rollout@mozilla.org': Reading manifest: Invalid extension permission: networkStatus
+1590729565427	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: mozillaAddons
+1590729565427	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: telemetry
+1590729565427	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: resource://pdf.js/
+1590729565427	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: about:reader*
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1590729568551	Marionette	INFO	Listening on port 65521
+1590729568743	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+1590729571833	Marionette	INFO	Stopped listening on port 65521
+1590729577992	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofileE4LsuF"
+*** You are running in headless mode.
+1590729578610	addons.webextension.doh-rollout@mozilla.org	WARN	Loading extension 'doh-rollout@mozilla.org': Reading manifest: Invalid extension permission: networkStatus
+1590729579449	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: mozillaAddons
+1590729579449	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: telemetry
+1590729579449	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: resource://pdf.js/
+1590729579450	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: about:reader*
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1590729582566	Marionette	INFO	Listening on port 49213
+1590729582810	Marionette	WARN	TLS certificate errors will be ignored for this session
+1590729584112	Marionette	INFO	Stopped listening on port 49213
+1590729590237	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofileThFTz9"
+*** You are running in headless mode.
+1590729590814	addons.webextension.doh-rollout@mozilla.org	WARN	Loading extension 'doh-rollout@mozilla.org': Reading manifest: Invalid extension permission: networkStatus
+1590729591808	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: mozillaAddons
+1590729591808	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: telemetry
+1590729591809	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: resource://pdf.js/
+1590729591809	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: about:reader*
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1590729595891	Marionette	INFO	Listening on port 49278
+1590729596083	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript error: , line 0: InvalidStateError: An attempt was made to use an object that is not, or is no longer, usable
+1590729603599	Marionette	INFO	Stopped listening on port 49278
+1590729611554	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofileSxApe4"
+*** You are running in headless mode.
+1590729612259	addons.webextension.doh-rollout@mozilla.org	WARN	Loading extension 'doh-rollout@mozilla.org': Reading manifest: Invalid extension permission: networkStatus
+1590729613036	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: mozillaAddons
+1590729613036	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: telemetry
+1590729613036	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: resource://pdf.js/
+1590729613037	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: about:reader*
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1590729616303	Marionette	INFO	Listening on port 49372
+1590729616394	Marionette	WARN	TLS certificate errors will be ignored for this session
+1590729619228	Marionette	INFO	Stopped listening on port 49372
+JavaScript error: , line 0: TypeError: ServiceWorker script at https://y.qq.com/n/yqq/sw.js for scope https://y.qq.com/n/yqq/ encountered an error during installation.
+1590729628540	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofileNG0WWP"
+*** You are running in headless mode.
+1590729629319	addons.webextension.doh-rollout@mozilla.org	WARN	Loading extension 'doh-rollout@mozilla.org': Reading manifest: Invalid extension permission: networkStatus
+1590729630109	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: mozillaAddons
+1590729630109	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: telemetry
+1590729630109	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: resource://pdf.js/
+1590729630110	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: about:reader*
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1590729633416	Marionette	INFO	Listening on port 49447
+1590729633879	Marionette	WARN	TLS certificate errors will be ignored for this session
+1590729636144	Marionette	INFO	Stopped listening on port 49447
+JavaScript error: , line 0: TypeError: ServiceWorker script at https://y.qq.com/n/yqq/sw.js for scope https://y.qq.com/n/yqq/ encountered an error during installation.
+1590729642299	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofileq3mJmR"
+*** You are running in headless mode.
+1590729642985	addons.webextension.doh-rollout@mozilla.org	WARN	Loading extension 'doh-rollout@mozilla.org': Reading manifest: Invalid extension permission: networkStatus
+1590729643931	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: mozillaAddons
+1590729643931	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: telemetry
+1590729643932	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: resource://pdf.js/
+1590729643932	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: about:reader*
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1590729647011	Marionette	INFO	Listening on port 49521
+1590729647119	Marionette	WARN	TLS certificate errors will be ignored for this session
+1590729649857	Marionette	INFO	Stopped listening on port 49521
+JavaScript error: https://y.gtimg.cn/c/=/music/portal/js/common/map.js,/music/portal/js/common/music/mod.js?r=2651216, line 1: NS_ERROR_NOT_INITIALIZED: 
+JavaScript error: , line 0: TypeError: ServiceWorker script at https://y.qq.com/n/yqq/sw.js for scope https://y.qq.com/n/yqq/ encountered an error during installation.

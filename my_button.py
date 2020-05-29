@@ -4,7 +4,7 @@
 
 import sys
 
-from PyQt5.QtCore import Qt, QEvent, QPoint, QTimer,QSize
+from PyQt5.QtCore import Qt, QEvent, QPoint, QTimer, QSize
 from PyQt5.QtGui import QBitmap, QPainter, QPixmap, QBrush, QEnterEvent, QIcon
 from PyQt5.QtWidgets import QApplication, QPushButton, QToolTip
 
@@ -145,6 +145,8 @@ class MaximizeButton(QPushButton):
         super().__init__(parent)
 
         self.resize(57, 40)
+        # 设置最大化标志位
+        self.isMax = False
         # 扁平化
         self.setFlat(True)
         self.setStyleSheet("QPushButton{border:none;margin:0}")
@@ -156,9 +158,18 @@ class MaximizeButton(QPushButton):
         """ hover或leave时更换图标 """
         if obj == self:
             if e.type() == QEvent.Enter:
-                self.setIcon(QIcon('resource\\images\\最大化按钮_hover_57_40.png'))
+                if not self.isMax:
+                    self.setIcon(
+                        QIcon('resource\\images\\最大化按钮_hover_57_40.png'))
+                else:
+                    self.setIcon(
+                        QIcon('resource\\images\\向下还原按钮_hover_57_40.png'))
             elif e.type() == QEvent.Leave:
-                self.setIcon(QIcon('resource\\images\\黑色最大化按钮_57_40_2.png'))
+                if not self.isMax:
+                    self.setIcon(
+                        QIcon('resource\\images\\黑色最大化按钮_57_40_2.png'))
+                else:
+                    self.setIcon(QIcon('resource\\images\\黑色向下还原按钮_57_40.png'))
         return False
 
 
@@ -170,7 +181,7 @@ class CloseButton(QPushButton):
 
         self.setFixedSize(57, 40)
         # 扁平化
-        #self.setFlat(True)
+        # self.setFlat(True)
         self.setStyleSheet("QPushButton{border:none;margin:0}")
         self.setIcon(QIcon('resource\\images\\黑色关闭按钮_57_40_2.png'))
         self.setIconSize(QSize(57, 40))

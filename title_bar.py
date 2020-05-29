@@ -1,7 +1,7 @@
 import sys
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QResizeEvent,QIcon
+from PyQt5.QtGui import QResizeEvent, QIcon
 from PyQt5.QtWidgets import (QApplication, QHBoxLayout, QSizePolicy,
                              QSpacerItem, QWidget)
 
@@ -32,7 +32,7 @@ class TitleBar(QWidget):
 
         # 将按钮的点击信号连接到槽函数
         self.minBt.clicked.connect(self.win.showMinimized)
-        self.maxBt.clicked.connect(self.win.showMaximized)
+        self.maxBt.clicked.connect(self.showRestoreWindow)
         self.closeBt.clicked.connect(self.win.close)
 
     def adjustButtonPos(self):
@@ -67,11 +67,15 @@ class TitleBar(QWidget):
             self.win.move(self.win.pos() + movePos)
 
     def showRestoreWindow(self):
-        """ 复原窗口 """
+        """ 复原窗口并更换最大化按钮的图标 """
         if self.win.isMaximized():
             self.win.showNormal()
+            self.maxBt.isMax = False
+            self.maxBt.setIcon(QIcon('resource\\images\\黑色最大化按钮_57_40.png'))
         else:
             self.win.showMaximized()
+            self.maxBt.isMax = True
+            self.maxBt.setIcon(QIcon('resource\\images\\黑色向下还原按钮_57_40.png'))
 
 
 class Demo(QWidget):
@@ -84,7 +88,7 @@ class Demo(QWidget):
         self.titleBar = TitleBar(self)
 
     def resizeEvent(self, e):
-        self.titleBar.move(self.width()-self.titleBar.width(),0)
+        self.titleBar.move(self.width()-self.titleBar.width(), 0)
 
 
 if __name__ == "__main__":
