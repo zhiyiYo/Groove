@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
                              QScrollBar, QVBoxLayout, QWidget)
 
 from my_music_windows import MyMusicWindows
-from window_mask import WindowMask
+from my_dialog_box.window_mask import WindowMask
 
 
 class MusicGroupInterface(QWidget):

@@ -5,9 +5,9 @@ from PyQt5.QtGui import QContextMenuEvent, QIcon, QMouseEvent
 from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
                              QTabWidget, QVBoxLayout, QWidget)
 
-from song_tab_interface import SongTabInterface
-from songer_tab_interface import SongerTabInterface
-from album_tab_interface import AlbumTabInterface
+from tab_interface.song_tab_interface import SongTabInterface
+from tab_interface.songer_tab_interface import SongerTabInterface
+from tab_interface.album_tab_interface import AlbumTabInterface
 
 
 class MyMusicWindows(QTabWidget):
