@@ -13,7 +13,6 @@ class SongInfo():
         self.target_path = target_path
         self.songInfo_list = []
         self.getInfo()
-        
 
     def getInfo(self):
         """ 从指定的目录读取符合匹配规则的歌曲的标签卡信息 """
@@ -74,14 +73,14 @@ class SongInfo():
                     timeStruct = time.localtime(createTime)
                     # 格式化时间结构
                     createTime = time.strftime('%Y-%m-%d %H:%M:%S', timeStruct)
-                    album, tcon, year, duration, tracknumber = self.fetch_album_tcon_year_trkn(
+                    album_list, tcon, year, duration, tracknumber = self.fetch_album_tcon_year_trkn(
                         suffix, id_card)
                     # 将歌曲信息字典插入列表
                     self.songInfo_list.append({'song': song,
                                                'song_path': song_path,
                                                'songer': songer,
                                                'songname': songname,
-                                               'album': album,
+                                               'album': album_list,
                                                'tcon': tcon,
                                                'year': year,
                                                'tracknumber': tracknumber,
@@ -133,7 +132,7 @@ class SongInfo():
             tcon = str(id_card['TCON'][0]) if id_card.get('TCON') else '未知流派'
             if id_card.get('TDRC'):
                 year = str(id_card['TDRC'][0]) + \
-                    '年' if len(str(id_card['TDRC']))==4 else '未知年份'
+                    '年' if len(str(id_card['TDRC'])) == 4 else '未知年份'
             duration = f'{int(id_card.info.length//60)}:{int(id_card.info.length%60):02}'
 
         elif suffix == '.flac':
@@ -155,11 +154,21 @@ class SongInfo():
                 '年' if id_card.get('©day') else '未知年份'
             duration = f'{int(id_card.info.length//60)}:{int(id_card.info.length%60):02}'
 
-        # 替换不符合命名规则的专辑名
-        album = re.sub(r'[><:\\/\*\?]', ' ', album)
+        # album作为列表返回，最后元素是该过的专辑名，第一个是原名
+        rex = r'[><:\\/\*\?]'
+        album_list = []
+        #往列表中插入原名
         album = re.sub(r'[\"]', "'", album)
         album = album.strip()
-        return album, tcon, year, duration, tracknumber
+        album_list.append(album)
+        if re.search(rex, album):  
+            #替换不符合命名规则的专辑名
+            album = re.sub(rex, ' ', album)
+            album = re.sub(r'[\"]', "'", album)
+            album = album.strip()
+            album_list.append(album)
+            
+        return album_list, tcon, year, duration, tracknumber
 
     def sortByCreateTime(self):
         """ 依据文件创建日期排序文件信息列表 """
@@ -178,4 +187,3 @@ class SongInfo():
 
 if __name__ == "__main__":
     songInfo = SongInfo('D:\\KuGou')
-

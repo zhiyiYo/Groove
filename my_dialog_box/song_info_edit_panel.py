@@ -52,7 +52,7 @@ class SongInfoEditPanel(QDialog):
         self.diskEditLine = LineEdit('1', self)
         self.tconEditLine = LineEdit(songInfo['tcon'], self)
         self.yearEditLine = LineEdit(songInfo['year'], self)
-        self.albumNameEditLine = LineEdit(songInfo['album'], self)
+        self.albumNameEditLine = LineEdit(songInfo['album'][0], self)
         self.songNameEditLine = LineEdit(songInfo['songname'], self)
         self.songerNameEditLine = LineEdit(songInfo['songer'], self)
         self.albumSongerEditLine = LineEdit(songInfo['songer'], self)
@@ -238,7 +238,7 @@ class SongInfoEditPanel(QDialog):
         """ 保存标签卡信息 """
         self.songInfo['songname'] = self.songNameEditLine.text()
         self.songInfo['songer'] = self.songerNameEditLine.text()
-        self.songInfo['album'] = self.albumNameEditLine.text()
+        self.songInfo['album'][0] = self.albumNameEditLine.text()
         # 根据后缀名选择曲目标签的写入方式
         if self.songInfo['suffix'] == '.m4a':
             track_tuple = (int(self.trackNumEditLine.text()),

@@ -128,7 +128,7 @@ class SongCardListWidget(QListWidget):
             # 将项目的内容重置为自定义类
             self.song_card = SongCard(
                 songFile['songname'], songFile['songer'],
-                songFile['album'], songFile['tcon'], songFile['year'], songFile['duration'])
+                songFile['album'][0], songFile['tcon'], songFile['year'], songFile['duration'])
             self.song_card.resize(1150, 61)
             self.item.setSizeHint(QSize(self.song_card.width(), 61))
             self.addItem(self.item)

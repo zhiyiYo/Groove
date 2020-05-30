@@ -73,7 +73,7 @@ class AlbumCardViewer(QWidget):
                                             'albumName': album,
                                             'year': albumInfo_dict['year'][:4],
                                             'songer': albumInfo_dict['songer'],
-                                            'firstLetter': pinyin.get_initial(album)[0].upper()})
+                                            'firstLetter': pinyin.get_initial(album[0])[0].upper()})
 
     def initLayout(self):
         """ 初始化布局 """

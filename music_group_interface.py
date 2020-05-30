@@ -1,3 +1,5 @@
+# coding:utf-8
+
 import sys
 import time
 from PyQt5.QtCore import QPoint, QSize, Qt
@@ -47,7 +49,7 @@ class MusicGroupInterface(QWidget):
         self.all_h_layout.addSpacing(11)
         self.all_h_layout.addWidget(self.song_scrollBar, 0, Qt.AlignRight)
         self.all_h_layout.addWidget(self.songer_scrollBar, 0, Qt.AlignRight)
-        self.all_h_layout.addWidget(self.album_scrollBar,0, Qt.AlignRight)
+        self.all_h_layout.addWidget(self.album_scrollBar, 0, Qt.AlignRight)
         self.all_h_layout.setContentsMargins(20, 0, 1, 0)
 
         self.setLayout(self.all_h_layout)

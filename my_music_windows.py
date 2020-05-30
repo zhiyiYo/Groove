@@ -1,3 +1,5 @@
+# coding:utf-8
+
 import sys
 import time
 from PyQt5.QtCore import QPoint, QSize, Qt, QEvent
@@ -5,9 +7,7 @@ from PyQt5.QtGui import QContextMenuEvent, QIcon, QMouseEvent
 from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
                              QTabWidget, QVBoxLayout, QWidget)
 
-from tab_interface.song_tab_interface import SongTabInterface
-from tab_interface.songer_tab_interface import SongerTabInterface
-from tab_interface.album_tab_interface import AlbumTabInterface
+from tab_interface import AlbumTabInterface, SongTabInterface, SongerTabInterface
 
 
 class MyMusicWindows(QTabWidget):

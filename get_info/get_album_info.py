@@ -1,7 +1,7 @@
 # coding:utf-8
 
-import os
 import json
+import os
 
 
 class AlbumInfo():
@@ -27,29 +27,29 @@ class AlbumInfo():
             songInfo_list = json.load(f)
         # 先将专辑信息字典插到列表中
         for songInfo in songInfo_list:
-            album = songInfo['album']
+            album_list = songInfo['album']
             # 如果专辑名不在集合中，就往列表中插入专辑信息字典
-            if album not in album_set:
-                pic_list=os.listdir(f'resource\\Album Cover\\{album}')
+            if album_list[0] not in album_set:
+                pic_list=os.listdir(f'resource\\Album Cover\\{album_list[-1]}')
                 if pic_list:
-                    cover_path = os.path.join(f'resource\\Album Cover\\{album}', pic_list[0])
+                    cover_path = os.path.join(f'resource\\Album Cover\\{album_list[-1]}', pic_list[0])
                 else:
                     cover_path = 'resource\\Album Cover\\未知专辑封面.png'
                 albumInfo_list.append(
-                    {'album': album, 'songer': songInfo['songer'],
+                    {'album': album_list[0], 'songer': songInfo['songer'],
                      'songInfo_list': [], 'tcon': songInfo['tcon'],
                      'year': songInfo['year'], 'updateTime': '0',
                      'cover_path':cover_path})
-                album_set.add(album)
+                album_set.add(album_list[0])
 
-        # 再将歌曲添加到字典的歌曲列表中
+        # 再将同一个专辑的歌曲添加到字典的歌曲列表中
         for songInfo in songInfo_list:
             for albumInfo_dict in albumInfo_list:
                 # 更新专辑的更新时间
                 if albumInfo_dict['updateTime'] < songInfo['createTime']:
                     albumInfo_dict['updateTime'] = songInfo['createTime']
 
-                if albumInfo_dict['album'] == songInfo['album']:
+                if albumInfo_dict['album'] == songInfo['album'][0]:
                     # 如果专辑名匹配就将歌曲信息插到字典的列表中
                     albumInfo_dict['songInfo_list'].append(songInfo)
                     break
@@ -74,4 +74,3 @@ class AlbumInfo():
 
 if __name__ == "__main__":
     albumInfo = AlbumInfo()
-    

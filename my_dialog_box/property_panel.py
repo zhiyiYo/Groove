@@ -38,7 +38,7 @@ class PropertyPanel(QDialog):
         self.year = QLabel(songInfo['year'], self)
         self.tcon = QLabel(songInfo['tcon'], self)
         self.songer = QLabel(songInfo['songer'], self)
-        self.albumName = QLabel(songInfo['album'], self)
+        self.albumName = QLabel(songInfo['album'][0], self)
         self.duration = QLabel(songInfo['duration'], self)
         self.songName = QLabel(songInfo['songname'], self)
         self.albumSonger = QLabel(songInfo['songer'], self)
