@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
 
 from my_music_windows import MyMusicWindows
 from my_dialog_box.window_mask import WindowMask
+from my_widget.my_scrollBar import ScrollBar
 
 
 class MusicGroupInterface(QWidget):
@@ -17,14 +18,18 @@ class MusicGroupInterface(QWidget):
     def __init__(self, songs_folder, parent=None):
         super().__init__(parent)
 
-        # 实例化一个标签和三个竖直滚动条
-        self.myMusicLabel = QLabel(self)
-        self.song_scrollBar = QScrollBar(Qt.Vertical, self)
-        self.songer_scrollBar = QScrollBar(Qt.Vertical, self)
-        self.album_scrollBar = QScrollBar(Qt.Vertical, self)
-
         # 实例化一个包含三个标签界面的QTabWidget
         self.myMusicWindows = MyMusicWindows(songs_folder, self)
+        # 引用三个视图的滚动条
+        self.songCardList_vScrollBar = self.myMusicWindows.songTag.songCardListWidget.verticalScrollBar()
+        self.songerViewer_vScrollBar = self.myMusicWindows.songerTag.songerHeadPortraitViewer.scrollArea.verticalScrollBar()
+        self.albumViewer_vScrollBar = self.myMusicWindows.albumTag.albumViewer.scrollArea.verticalScrollBar()
+
+        # 实例化一个标签和三个竖直滚动条
+        self.myMusicLabel = QLabel(self)
+        self.song_scrollBar = ScrollBar(self.songCardList_vScrollBar, self)
+        self.songer_scrollBar = ScrollBar(self.songerViewer_vScrollBar, self)
+        self.album_scrollBar = ScrollBar(self.albumViewer_vScrollBar, self)
 
         # 实例化两个布局
         self.all_h_layout = QHBoxLayout()
@@ -63,10 +68,6 @@ class MusicGroupInterface(QWidget):
         self.setWindowIcon(QIcon('resource\\images\\Shoko.png'))
         self.setWindowTitle('Groove')
 
-        # 引用三个视图的滚动条
-        self.songCardList_vScrollBar = self.myMusicWindows.songTag.songCardListWidget.verticalScrollBar()
-        self.songerViewer_vScrollBar = self.myMusicWindows.songerTag.songerHeadPortraitViewer.scrollArea.verticalScrollBar()
-        self.albumViewer_vScrollBar = self.myMusicWindows.albumTag.albumViewer.scrollArea.verticalScrollBar()
 
         # 设置标签上的字
         self.myMusicLabel.setText('我的音乐')
@@ -74,31 +75,8 @@ class MusicGroupInterface(QWidget):
         self.myMusicWindows.songTag.songCardListWidget.setVerticalScrollBarPolicy(
             Qt.ScrollBarAlwaysOff)
 
-        # 设置滚动条的最大值
-        self.song_scrollBar.setMaximum(self.songCardList_vScrollBar.maximum())
-        self.songer_scrollBar.setMaximum(
-            self.songerViewer_vScrollBar.maximum())
-        self.album_scrollBar.setMaximum(
-            self.albumViewer_vScrollBar.maximum())
-
-        # 将信号连接到槽函数
-        self.song_scrollBar.valueChanged.connect(
-            lambda: self.songCardList_vScrollBar.setValue(self.song_scrollBar.value()))
-
-        self.songCardList_vScrollBar.valueChanged.connect(
-            lambda: self.song_scrollBar.setValue(self.songCardList_vScrollBar.value()))
-
-        self.songer_scrollBar.valueChanged.connect(
-            lambda: self.songerViewer_vScrollBar.setValue(self.songer_scrollBar.value()))
-
-        self.songerViewer_vScrollBar.valueChanged.connect(
-            lambda: self.songer_scrollBar.setValue(self.songerViewer_vScrollBar.value()))
-
-        self.album_scrollBar.valueChanged.connect(
-            lambda: self.albumViewer_vScrollBar.setValue(self.album_scrollBar.value()))
-
-        self.albumViewer_vScrollBar.valueChanged.connect(
-            lambda: self.album_scrollBar.setValue(self.albumViewer_vScrollBar.value()))
+        # 设置滚动条高度
+        self.adjustScrollBarHeight()
 
         # 先隐藏歌手视图的滚动条
         self.songer_scrollBar.hide()
@@ -113,6 +91,12 @@ class MusicGroupInterface(QWidget):
         self.songer_scrollBar.setObjectName('songerScrollBar')
         self.album_scrollBar.setObjectName('albumScrollBar')
 
+    def adjustScrollBarHeight(self):
+        """ 调整滚动条高度 """
+        self.song_scrollBar.adjustSrollBarHeight()
+        self.songer_scrollBar.adjustSrollBarHeight()
+        self.album_scrollBar.adjustSrollBarHeight()
+
     def setQss(self):
         """ 设置层叠样式表 """
         with open('resource\\css\\musicGroupInterface.qss', 'r', encoding='utf-8') as f:
@@ -122,7 +106,8 @@ class MusicGroupInterface(QWidget):
     def resizeEvent(self, e: QResizeEvent):
         """ 当窗口大小发生改变时隐藏小部件 """
         self.myMusicWindows.songTag.songCardListWidget.setLineWidth(
-            self.width()-33)
+            self.width() - 33)
+        self.adjustScrollBarHeight()
 
         if self.width() < 1156:
             # 窗口宽度大于956px且小于1156时显示年份标签，隐藏专辑按钮

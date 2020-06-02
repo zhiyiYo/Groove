@@ -1,0 +1,53 @@
+/*设置竖直滚动条样式*/
+QScrollBar#minScrollBar {
+    background: transparent;
+    width: 3px;
+}
+
+/*隐藏上箭头*/
+QScrollBarr#minScrollBar::sub-line {
+    background: transparent;
+}
+
+/*隐藏下箭头*/
+QScrollBar#minScrollBar::add-line {
+    background: transparent;
+}
+
+QScrollBar#minScrollBar::handle {
+    background: rgb(122, 122, 122);
+    border: 0px solid transparent;
+    min-height: 40px;
+}
+
+QScrollBar#maxScrollBar::handle {
+    min-height: 40px;
+}
+
+/* 
+QScrollBar::handle#maxScrollBar{
+    border:0px solid transparent;
+} */
+/* QScrollBar::handle:hover#maxScrollBar{
+    background: rgb(140, 140, 140);
+}
+
+QScrollBar::handle:pressed#maxScrollBar{
+    background: rgb(93, 93, 93);
+}
+ */
+QScrollBar#maxScrollBar::sub-line {
+    border-image:url(resource/images/滚动条上箭头_20_20.png);
+}
+
+QScrollBar#maxScrollBar::add-line {
+    border-image: url(resource/images/滚动条下箭头_20_20.png);
+}
+
+QScrollBar#maxScrollBar::sub-line:hover {
+    border-image: url(resource/images/滚动条上箭头_hover_20_20.png);
+}
+
+QScrollBa#maxScrollBarr::add-line:hover {
+    border-image: url(resource/images/滚动条下箭头_hover_20_20.png);
+}
