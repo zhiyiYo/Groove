@@ -5,7 +5,7 @@ from PyQt5.QtGui import QResizeEvent, QIcon
 from PyQt5.QtWidgets import (QApplication, QHBoxLayout, QSizePolicy,
                              QSpacerItem, QWidget)
 
-from my_button import CloseButton, MaximizeButton, MinimizeButton
+from .my_button import CloseButton, MaximizeButton, MinimizeButton
 
 
 class TitleBar(QWidget):

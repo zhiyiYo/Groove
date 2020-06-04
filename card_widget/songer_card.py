@@ -120,6 +120,7 @@ class SongerHeadPortrait(QWidget):
                               int(0.5*self.height() - 0.5*self.playButton.height()+1))
 
         # 隐藏按钮
+        #self.addToButton.getBackgroundPic()
         self.playButton.setHidden(True)
         self.addToButton.setHidden(True)
 

@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
 from my_music_windows import MyMusicWindows
 from my_dialog_box.window_mask import WindowMask
 from my_widget.my_scrollBar import ScrollBar
+from my_widget.title_bar import TitleBar
 
 
 class MusicGroupInterface(QWidget):
@@ -31,9 +32,13 @@ class MusicGroupInterface(QWidget):
         self.songer_scrollBar = ScrollBar(self.songerViewer_vScrollBar, self)
         self.album_scrollBar = ScrollBar(self.albumViewer_vScrollBar, self)
 
-        # 实例化两个布局
-        self.all_h_layout = QHBoxLayout()
+        # 实例化三个布局
+        self.h_layout = QHBoxLayout()
         self.v_layout = QVBoxLayout()
+        self.all_v_layout = QVBoxLayout()
+
+        # 实例化标题栏
+        self.titleBar = TitleBar(self)
 
         # 初始化布局
         self.initLayout()
@@ -45,19 +50,23 @@ class MusicGroupInterface(QWidget):
     def initLayout(self):
         """ 初始化布局 """
 
-        self.v_layout.addSpacing(40)
         self.v_layout.addWidget(self.myMusicLabel)
         self.v_layout.addSpacing(8)
         self.v_layout.addWidget(self.myMusicWindows)
 
-        self.all_h_layout.addLayout(self.v_layout)
-        self.all_h_layout.addSpacing(11)
-        self.all_h_layout.addWidget(self.song_scrollBar, 0, Qt.AlignRight)
-        self.all_h_layout.addWidget(self.songer_scrollBar, 0, Qt.AlignRight)
-        self.all_h_layout.addWidget(self.album_scrollBar, 0, Qt.AlignRight)
-        self.all_h_layout.setContentsMargins(20, 0, 1, 0)
+        self.h_layout.addLayout(self.v_layout)
+        self.h_layout.addSpacing(11)
+        self.h_layout.addWidget(self.song_scrollBar, 0, Qt.AlignRight)
+        self.h_layout.addWidget(self.songer_scrollBar, 0, Qt.AlignRight)
+        self.h_layout.addWidget(self.album_scrollBar, 0, Qt.AlignRight)
+        self.h_layout.setContentsMargins(20, 0, 1, 0)
 
-        self.setLayout(self.all_h_layout)
+        # 留下标题栏的占位空间
+        self.all_v_layout.addSpacing(40)
+        self.all_v_layout.addLayout(self.h_layout)
+        self.all_v_layout.setContentsMargins(0, 0, 0, 0)
+
+        self.setLayout(self.all_v_layout)
 
     def initWidget(self):
         """ 初始化小部件的属性 """
@@ -65,9 +74,11 @@ class MusicGroupInterface(QWidget):
         self.resize(1300, 852)
         self.setMinimumHeight(630)
         self.setMouseTracking(True)
-        self.setWindowIcon(QIcon('resource\\images\\Shoko.png'))
-        self.setWindowTitle('Groove')
+        # 隐藏边框
+        self.setWindowFlags(Qt.FramelessWindowHint)
 
+        # 调整标题栏的宽度
+        self.titleBar.setFixedWidth(self.width())
 
         # 设置标签上的字
         self.myMusicLabel.setText('我的音乐')

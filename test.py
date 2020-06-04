@@ -1,2 +1,3 @@
-a = [5]
-print(a[-1])
+import hello
+
+hello.say_hello_to('测试')

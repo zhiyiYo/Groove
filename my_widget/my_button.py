@@ -4,9 +4,11 @@
 
 import sys
 
-from PyQt5.QtCore import Qt, QEvent, QPoint, QTimer, QSize
-from PyQt5.QtGui import QBitmap, QPainter, QPixmap, QBrush, QEnterEvent, QIcon
-from PyQt5.QtWidgets import QApplication, QPushButton, QToolTip
+from PyQt5.QtCore import QEvent, QPoint, QSize, Qt, QTimer
+from PyQt5.QtGui import (QBitmap, QBrush, QEnterEvent, QIcon, QPainter,
+                         QPixmap, QScreen)
+from PyQt5.QtWidgets import (QApplication, QGraphicsBlurEffect, QPushButton, QLabel,
+                             QToolTip)
 
 
 class SongerPlayButton(QPushButton):
@@ -82,6 +84,22 @@ class SongerAddToButton(QPushButton):
 
         # 设置监听
         self.installEventFilter(self)
+
+    def getBackgroundPic(self):
+        """ 截取背景图 """
+        if self.parent():
+            # 实例化磨砂特效
+            self.blurEffect = QGraphicsBlurEffect(self)
+            self.blurEffect.setBlurRadius(50)
+            # 实例化背景图
+            self.screenPix = QApplication.primaryScreen().grabWindow(
+                QApplication.desktop().winId(), self.x(), self.y(), self.width(), self.height())
+            self.backgroundLabel = QLabel(self)
+            self.backgroundLabel.resize(self.width(), self.height())
+            self.backgroundLabel.setPixmap(self.screenPix)
+            self.backgroundLabel.setGraphicsEffect(self.blurEffect)
+            self.addToLabel = QLabel(self)
+            self.addToLabel.setPixmap(self.image)
 
     def paintEvent(self, e):
         """ 绘制背景 """
