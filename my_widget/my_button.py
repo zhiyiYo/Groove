@@ -5,7 +5,7 @@
 import sys
 
 from PyQt5.QtCore import QEvent, QPoint, QSize, Qt, QTimer
-from PyQt5.QtGui import (QBitmap, QBrush, QEnterEvent, QIcon, QPainter,
+from PyQt5.QtGui import ( QBrush, QEnterEvent, QIcon, QPainter,
                          QPixmap, QScreen)
 from PyQt5.QtWidgets import (QApplication, QGraphicsBlurEffect, QPushButton, QLabel,
                              QToolTip)

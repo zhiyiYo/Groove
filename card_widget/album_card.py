@@ -5,7 +5,7 @@ from PyQt5.QtCore import QEvent, QPoint, Qt
 from PyQt5.QtGui import (QBitmap, QBrush, QColor, QContextMenuEvent, QIcon,
                          QPainter, QPen, QPixmap)
 from PyQt5.QtWidgets import (
-    QAction, QApplication, QLabel, QMenu, QVBoxLayout, QWidget)
+    QAction, QApplication, QLabel, QMenu, QVBoxLayout, QWidget,QGraphicsBlurEffect)
     
 sys.path.append('..')
 
@@ -20,9 +20,11 @@ class AlbumCard(QWidget):
 
     def __init__(self, albumInfo, parent=None):
         super().__init__(parent)
+        self.albumInfo = albumInfo
 
-        # 实例化背景
-        self.backgroundLabel = QLabel(self)
+        # 实例化背景和磨砂效果
+        #self.backgroundLabel = QLabel(self)
+        #self.blurEffect=QGraphicsBlurEffect(self)
 
         # 实例化专辑名和歌手名
         self.albumName = ClickableLabel(albumInfo['album'], self)
@@ -41,6 +43,17 @@ class AlbumCard(QWidget):
         """ 初始化小部件 """
         self.setFixedSize(220, 290)
         self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setAttribute(Qt.WA_TranslucentBackground)
+
+        #设置背景磨砂图
+        """ if self.parent():
+            self.backgroundLabel.move(23,40)
+            self.blurEffect.setBlurRadius(25)
+            self.backgroundLabel.setFixedSize(180,180)
+            self.backgroundLabel.setScaledContents(True)
+            self.backgroundLabel.setPixmap(QPixmap(self.albumInfo['cover_path']))
+            self.backgroundLabel.setGraphicsEffect(self.blurEffect)
+            self.backgroundLabel.hide() """
 
         # 设置鼠标光标
         self.songerName.setCursor(Qt.PointingHandCursor)
@@ -53,10 +66,6 @@ class AlbumCard(QWidget):
         self.albumName.move(10, 218)
         self.songerName.move(10, 244)
         self.adjustLabel()
-
-        # 设置背景图片
-        self.backgroundLabel.setPixmap(
-            QPixmap('resource\\images\\专辑封面无阴影.png'))
 
         # 分配ID
         self.albumName.setObjectName('albumName')
@@ -123,13 +132,19 @@ class AlbumCard(QWidget):
         """ 鼠标进入窗口时显示阴影和按钮，否则不显示 """
         if obj == self:
             if e.type() == QEvent.Enter:
-                self.backgroundLabel.setPixmap(
-                    QPixmap('resource\\images\\专辑封面阴影.png'))
+                #self.backgroundLabel.show()
+                #显示磨砂背景
+                if self.parent():
+                    self.blurBackground = self.parent().albumBlurBackground
+                    self.blurBackground.move(self.x(), self.y())
+                    self.blurBackground.backgroundPic.setPixmap(QPixmap(self.albumInfo['cover_path']))
+                    self.blurBackground.show()
                 self.albumCover.addToButton.show()
                 self.albumCover.playButton.show()
             elif e.type() == QEvent.Leave:
-                self.backgroundLabel.setPixmap(
-                    QPixmap('resource\\images\\专辑封面无阴影.png'))
+                #隐藏磨砂背景
+                if self.parent():
+                    self.parent().albumBlurBackground.hide()
                 self.albumCover.addToButton.hide()
                 self.albumCover.playButton.hide()
 

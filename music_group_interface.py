@@ -10,7 +10,6 @@ from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
 from my_music_windows import MyMusicWindows
 from my_dialog_box.window_mask import WindowMask
 from my_widget.my_scrollBar import ScrollBar
-from my_widget.title_bar import TitleBar
 
 
 class MusicGroupInterface(QWidget):
@@ -36,9 +35,6 @@ class MusicGroupInterface(QWidget):
         self.h_layout = QHBoxLayout()
         self.v_layout = QVBoxLayout()
         self.all_v_layout = QVBoxLayout()
-
-        # 实例化标题栏
-        self.titleBar = TitleBar(self)
 
         # 初始化布局
         self.initLayout()
@@ -75,10 +71,7 @@ class MusicGroupInterface(QWidget):
         self.setMinimumHeight(630)
         self.setMouseTracking(True)
         # 隐藏边框
-        self.setWindowFlags(Qt.FramelessWindowHint)
-
-        # 调整标题栏的宽度
-        self.titleBar.setFixedWidth(self.width())
+        # self.setWindowFlags(Qt.FramelessWindowHint)
 
         # 设置标签上的字
         self.myMusicLabel.setText('我的音乐')

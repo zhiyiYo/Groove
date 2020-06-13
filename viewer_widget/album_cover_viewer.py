@@ -5,15 +5,16 @@ import sys
 
 import pinyin
 from PyQt5.QtCore import QPoint, Qt
-from PyQt5.QtGui import QBitmap, QImage, QPainter, QPixmap
+from PyQt5.QtGui import QPainter, QPixmap
 from PyQt5.QtWidgets import (
     QApplication, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QScrollArea,
     QVBoxLayout, QWidget)
 
 sys.path.append('..')
-from Groove.get_info import get_album_cover
-from Groove.get_info.get_album_info import AlbumInfo
 from Groove.card_widget.album_card import AlbumCard
+from Groove.get_info.get_album_info import AlbumInfo
+from Groove.get_info import get_album_cover
+from Groove.my_widget.album_blur_background import AlbumBlurBackground
 
 
 class AlbumCardViewer(QWidget):
@@ -41,6 +42,7 @@ class AlbumCardViewer(QWidget):
         # 实例化滚动区域和滚动区域的窗口
         self.scrollArea = QScrollArea(self)
         self.albumView = QWidget()
+        self.albumView.albumBlurBackground = AlbumBlurBackground(self.albumView)
 
         # 初始化小部件
         self.initWidget()
@@ -58,6 +60,9 @@ class AlbumCardViewer(QWidget):
             Qt.ScrollBarAlwaysOff)
         self.scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scrollArea.verticalScrollBar().setSingleStep(30)
+        self.albumView.albumBlurBackground.hide()
+        self.setObjectName('father')
+        self.albumView.setObjectName('albumView')
 
     def createAlbumCards(self):
         """ 将专辑卡添加到窗口中 """

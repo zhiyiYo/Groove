@@ -9,7 +9,7 @@ class WindowMask(QWidget):
 
     def __init__(self,  parent=None):
         super().__init__(parent)
-        self.setWindowFlag(Qt.FramelessWindowHint, True)
+        self.setWindowFlag(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_StyledBackground)
         self.setStyleSheet('background:rgba(255,255,255,172);')
 

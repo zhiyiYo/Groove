@@ -7,3 +7,7 @@
 6.m4a不存在某个键时需要先手动创建一个空列表，再将值添加到列表中
 7.songInfo.json文件的album列表存的是修改前和修改后的album名
 8.albumInfo.json的album存的是album原名,cover存的是修改专辑名后的路径
+7.如果widget是子窗口要设置背景颜色首先要添加一句：
+self.setAttribute(Qt::WA_StyledBackground,true);
+self.setStyleSheet("background-color: rgb(255,255, 255)");
+
