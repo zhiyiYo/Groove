@@ -3,15 +3,17 @@
 import json
 import re
 import sys
+from ctypes import cdll, c_bool
+from ctypes.wintypes import HWND
 
 from mutagen import File
-from PyQt5.QtCore import QEvent, QRect, QRegExp, QSize, Qt, QPoint, QTimer
-from PyQt5.QtGui import (QColor, QContextMenuEvent, QIcon, QPainter, QPen, QHelpEvent,
+from PyQt5.QtCore import QEvent, QRegExp, Qt
+from PyQt5.QtGui import (QColor, QContextMenuEvent,QPainter, QPen,
                          QPixmap, QRegExpValidator, QFont)
-from PyQt5.QtWidgets import (QAction, QApplication, QDialog,
-                             QGraphicsDropShadowEffect, QHBoxLayout, QLabel, QToolTip,
-                             QLineEdit, QMenu, QPushButton, QToolButton)
+from PyQt5.QtWidgets import (QApplication, QDialog,QLabel,
+                             QLineEdit,QPushButton)
 sys.path.append('..')
+
 from .modify_songInfo import modifySongInfo
 from Groove.my_widget.my_lineEdit import LineEdit
 from Groove.my_widget.my_label import ErrorLabel
@@ -24,7 +26,6 @@ class SongInfoEditPanel(QDialog):
 
         self.songInfo = songInfo
         # 设置画笔和阴影宽度
-        self.SHADOW_WIDTH = 25
         self.pen = QPen(QColor(0, 153, 188))
 
         # 实例化标签卡
@@ -82,16 +83,15 @@ class SongInfoEditPanel(QDialog):
         # 初始化小部件
         self.initWidget()
         self.initLayout()
+        self.setDropShadowEffect()
 
         # 设置层叠样式
         self.setQss()
 
     def initWidget(self):
         """ 初始化小部件的属性 """
-        self.setFixedSize(932+2*self.SHADOW_WIDTH, 652+2*self.SHADOW_WIDTH)
+        self.setFixedSize(932, 652)
         self.setWindowFlags(Qt.FramelessWindowHint)
-        self.setAttribute(Qt.WA_TranslucentBackground)
-        self.setFocusPolicy(Qt.StrongFocus)
 
         # 默认选中歌名编辑框
         self.songNameEditLine.setFocus()
@@ -114,8 +114,7 @@ class SongInfoEditPanel(QDialog):
         self.emptyTrackErrorLabel.setPixmap(
             QPixmap('resource\\images\\empty_lineEdit_error.png'))
         self.emptyTrackErrorLabel.setFixedSize(21, 21)
-        self.emptyTrackErrorLabel.move(
-            7 + self.SHADOW_WIDTH, 224 + self.SHADOW_WIDTH)
+        self.emptyTrackErrorLabel.move(7, 224)
         self.emptyTrackErrorLabel.setHidden(True)
         # self.emptyTrackErrorLabel.setToolTip('曲目必须是1000以下的数字')
         self.installEventFilter(self)
@@ -146,26 +145,26 @@ class SongInfoEditPanel(QDialog):
 
     def initLayout(self):
         """ 初始化小部件的排版 """
-        self.editInfoLabel.move(30+self.SHADOW_WIDTH, 30+self.SHADOW_WIDTH)
-        self.songPathLabel.move(30+self.SHADOW_WIDTH, 470+self.SHADOW_WIDTH)
-        self.songPath.move(30+self.SHADOW_WIDTH, 502+self.SHADOW_WIDTH)
-        self.saveButton.move(566+self.SHADOW_WIDTH, 595+self.SHADOW_WIDTH)
-        self.cancelButton.move(736+self.SHADOW_WIDTH, 595+self.SHADOW_WIDTH)
+        self.editInfoLabel.move(30, 30)
+        self.songPathLabel.move(30, 470)
+        self.songPath.move(30, 502)
+        self.saveButton.move(566, 595)
+        self.cancelButton.move(736, 595)
 
-        label_top_y = 95+self.SHADOW_WIDTH
+        label_top_y = 95
         i = 0
         for label_left, label_right in zip(self.leftLabel_list, self.rightLabel_list):
             label_left.setObjectName('infoTypeLabel')
             label_right.setObjectName('infoTypeLabel')
-            label_left.move(30+self.SHADOW_WIDTH, label_top_y + i * 87)
-            label_right.move(494+self.SHADOW_WIDTH, label_top_y + i*87)
+            label_left.move(30, label_top_y + i * 87)
+            label_right.move(494, label_top_y + i*87)
             i += 1
 
-        editLine_top_y = 127+self.SHADOW_WIDTH
+        editLine_top_y = 127
         i = 0
         for editLine_left, editLine_right in zip(self.leftEditLine_list, self.rightEditLine_list):
-            editLine_left.move(30+self.SHADOW_WIDTH, editLine_top_y + i * 87)
-            editLine_right.move(494+self.SHADOW_WIDTH, editLine_top_y + i * 87)
+            editLine_left.move(30, editLine_top_y + i * 87)
+            editLine_right.move(494, editLine_top_y + i * 87)
             i += 1
 
     def setQss(self):
@@ -173,66 +172,20 @@ class SongInfoEditPanel(QDialog):
         with open('resource\css\songInfoEditPanel.qss', encoding='utf-8') as f:
             self.setStyleSheet(f.read())
 
-    def drawShadow(self, painter):
-        # 绘制左上角、左下角、右上角、右下角、上、下、左、右边框
-        self.pixmaps = list()
-        self.pixmaps.append(
-            'resource\\images\\property_panel_shadow\\left_top.png')
-        self.pixmaps.append(
-            str("./resource/images/property_panel_shadow/left_bottom.png"))
-        self.pixmaps.append(
-            'resource\\images\\property_panel_shadow\\right_top.png')
-
-        self.pixmaps.append(
-            'resource\\images\\property_panel_shadow\\right_bottom.png')
-
-        self.pixmaps.append(
-            'resource\\images\\property_panel_shadow\\top_mid.png')
-
-        self.pixmaps.append(
-            'resource\\images\\property_panel_shadow\\bottom_mid.png')
-
-        self.pixmaps.append(
-            'resource\\images\\property_panel_shadow\\left_mid.png')
-
-        self.pixmaps.append(
-            'resource\\images\\property_panel_shadow\\right_mid.png')
-
-        painter.drawPixmap(0, 0, self.SHADOW_WIDTH,
-                           self.SHADOW_WIDTH, QPixmap(self.pixmaps[0]))  # 左上角
-
-        painter.drawPixmap(self.width()-self.SHADOW_WIDTH, 0, self.SHADOW_WIDTH,
-                           self.SHADOW_WIDTH, QPixmap(self.pixmaps[2]))  # 右上角
-
-        painter.drawPixmap(0, self.height()-self.SHADOW_WIDTH, self.SHADOW_WIDTH,
-                           self.SHADOW_WIDTH, QPixmap(self.pixmaps[1]))  # 左下角
-
-        painter.drawPixmap(self.width()-self.SHADOW_WIDTH, self.height()-self.SHADOW_WIDTH,
-                           self.SHADOW_WIDTH, self.SHADOW_WIDTH, QPixmap(self.pixmaps[3]))  # 右下角
-
-        painter.drawPixmap(0, self.SHADOW_WIDTH, self.SHADOW_WIDTH, self.height()-2*self.SHADOW_WIDTH,
-                           QPixmap(self.pixmaps[6]).scaled(self.SHADOW_WIDTH, self.height() - 2*self.SHADOW_WIDTH))  # 左
-
-        painter.drawPixmap(self.width()-self.SHADOW_WIDTH, self.SHADOW_WIDTH, self.SHADOW_WIDTH, self.height()-2 *
-                           self.SHADOW_WIDTH, QPixmap(self.pixmaps[7]).scaled(self.SHADOW_WIDTH, self.height() - 2*self.SHADOW_WIDTH))  # 右
-        painter.drawPixmap(self.SHADOW_WIDTH, 0, self.width()-2*self.SHADOW_WIDTH, self.SHADOW_WIDTH,
-                           QPixmap(self.pixmaps[4]).scaled(self.width() - 2*self.SHADOW_WIDTH, self.SHADOW_WIDTH))  # 上
-
-        painter.drawPixmap(self.SHADOW_WIDTH, self.height()-self.SHADOW_WIDTH, self.width()-2*self.SHADOW_WIDTH,
-                           self.SHADOW_WIDTH, QPixmap(self.pixmaps[5]).scaled(self.width()-2*self.SHADOW_WIDTH, self.SHADOW_WIDTH))  # 下
-
     def paintEvent(self, event):
         """ 绘制背景和阴影 """
         painter = QPainter(self)
-        self.drawShadow(painter)
         # 绘制边框
         painter.setPen(self.pen)
-        painter.drawRect(self.SHADOW_WIDTH, self.SHADOW_WIDTH, self.width(
-        ) - 2*self.SHADOW_WIDTH, self.height() - 2*self.SHADOW_WIDTH)
-        # 绘制背景
-        painter.setBrush(Qt.white)
-        painter.drawRect(QRect(self.SHADOW_WIDTH, self.SHADOW_WIDTH, self.width(
-        ) - 2*self.SHADOW_WIDTH, self.height() - 2*self.SHADOW_WIDTH))
+        painter.drawRect(0, 0, self.width()-1, self.height()-1)
+
+    def setDropShadowEffect(self):
+        """ 添加阴影 """
+        self.class_amended = c_bool(False)
+        self.hWnd = HWND(int(self.winId()))
+        dll = cdll.LoadLibrary('acrylic_dll\\acrylic.dll')
+        dll.addWindowShadow(c_bool(1), self.hWnd)
+        #dll.setShadow(self.class_amended,self.hWnd)
 
     def saveInfo(self):
         """ 保存标签卡信息 """

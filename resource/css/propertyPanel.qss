@@ -9,7 +9,7 @@ QLabel {
 }
 
 QLabel#propertyLabel {
-    font: 20px 'Microsoft YaHei';
+    font: 21px 'Microsoft YaHei';
 }
 
 QLabel#songPath,QLabel#songer{

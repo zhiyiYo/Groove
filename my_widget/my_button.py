@@ -10,6 +10,7 @@ from PyQt5.QtGui import ( QBrush, QEnterEvent, QIcon, QPainter,
 from PyQt5.QtWidgets import (QApplication, QGraphicsBlurEffect, QPushButton, QLabel,
                              QToolTip)
 
+from my_toolTip import ToolTip
 
 class SongerPlayButton(QPushButton):
     """ 歌手头像上的播放按钮 """
@@ -24,7 +25,8 @@ class SongerPlayButton(QPushButton):
 
         # 设置鼠标进入标志位
         self.enter = False
-        self.setToolTip('全部播放')
+        #设置悬浮提醒
+        #self.tip=ToolTip('全部播放')
 
         # 设置背景图
         self.image = QPixmap('resource\\images\\歌手播放按钮_67_67.png')

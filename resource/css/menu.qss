@@ -1,0 +1,90 @@
+/*设置菜单样式*/
+QMenu {
+    background-color: rgb(242, 242, 242);
+    /*background-color: white;*/
+    font-size: 18px;
+    font: 18px "Microsoft YaHei";
+    padding: 5px 0px 16px 0px;
+    border: 1px solid rgb(196, 199, 200);
+    /*border-radius: 5px;*/
+}
+
+QMenu::right-arrow {
+    border-image: url(resource/images/right_arrow.svg);
+
+}
+
+QMenu::separator {
+    height: 2px;
+    width: 140px;
+    background: rgb(145, 145, 145);
+    margin-right: 13px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: 13;
+}
+
+QMenu::item {
+    padding: 7px 20px 7px 13px;
+
+}
+
+QMenu::item:selected {
+    border-width: 1px;
+    border-color: rgb(212, 212, 212);
+    background: rgb(218, 218, 218);
+    color: black;
+}
+
+QMenu#addToMenu {
+    padding: 8px 3px 8px 3px;
+    border: 1px solid rgb(204, 204, 204);
+}
+
+QMenu#addToMenu::item {
+    padding-left: 0px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+
+}
+
+QMenu#addToMenu::separator {
+    height: 2px;
+    width: 140px;
+    background: rgb(145, 145, 145);
+    margin-right: 2px;
+    margin-left: 2px;
+}
+
+QMenu#sortModeMenu {
+    font-size: 17px;
+    width: 158px;
+    height: 114px;
+    border: 1px solid rgb(41, 41, 41);
+    border-bottom: none;
+    padding-top: 1px;
+    /*padding: 1px;*/
+
+}
+
+QMenu#sortModeMenu::item {
+    width: 57;
+    height: 14;
+    color: black;
+    padding: 11px 85px 11px 12px;
+    margin: 0px 1px 1px 1px;
+}
+
+QMenu#sortModeMenu::item:default {
+    background: rgba(9, 158, 220, 0.79);
+}
+
+QMenu#sortModeMenu::item:selected {
+    background: rgb(218, 218, 218);
+}
+
+QMenu#sortModeMenu::item:default:selected {
+    background: rgba(9, 158, 240, 0.79);
+}
+
+

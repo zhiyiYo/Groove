@@ -1,8 +1,10 @@
+import sys
 from PyQt5.QtCore import QEvent, QSize, Qt
 from PyQt5.QtGui import QContextMenuEvent, QFont, QIcon, QRegExpValidator
-from PyQt5.QtWidgets import (QAction, QHBoxLayout, QLineEdit, QMenu,
+from PyQt5.QtWidgets import (QAction, QHBoxLayout, QLineEdit,
                              QToolButton, QToolTip)
-
+sys.path.append('..')
+from Groove.my_widget.my_menu import Menu
 
 class LineEdit(QLineEdit):
     """ 定义一个被点击就全选文字的单行输入框 """
@@ -49,7 +51,7 @@ class LineEdit(QLineEdit):
 
     def createContextMenu(self):
         """ 创建右击菜单 """
-        self.menu = QMenu(self)
+        self.menu = Menu(parent=self)
         self.cutAct = QAction('剪切', self, shortcut='Ctrl+X')
         self.copyAct = QAction('复制', self, shortcut='Ctrl+C')
         self.pasteAct = QAction('粘贴', self, shortcut='Ctrl+V')

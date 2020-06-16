@@ -3,7 +3,7 @@ import sys
 from PyQt5.QtCore import QEvent, QPoint, Qt
 from PyQt5.QtGui import QContextMenuEvent, QIcon, QMouseEvent, QResizeEvent
 from PyQt5.QtWidgets import (QAction, QApplication, QCheckBox, QHBoxLayout,
-                             QLabel, QLayout, QMenu, QPushButton, QSizePolicy,
+                             QLabel, QLayout, QPushButton, QSizePolicy,
                              QSpacerItem, QToolButton, QWidget)
 
 from .songcard_sub_unit import SongNameCard, TconYearDurationCard

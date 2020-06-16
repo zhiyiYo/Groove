@@ -2,12 +2,12 @@ import sys
 
 from PyQt5.QtCore import QEvent, QPoint, Qt
 from PyQt5.QtGui import QBitmap, QBrush, QColor, QPainter, QPen, QPixmap,QIcon,QContextMenuEvent
-from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget,QAction,QMenu
+from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget,QAction
 
 sys.path.append('..')
 
 from Groove.my_widget.my_button import SongerAddToButton, SongerPlayButton
-
+from Groove.my_widget.my_menu import Menu
 
 class SongerCard(QWidget):
     """ 定义一个包含歌手头像和名字的类 """
@@ -62,8 +62,8 @@ class SongerCard(QWidget):
 
     def contextMenuEvent(self, event: QContextMenuEvent):
         """ 显示右击菜单 """
-        menu = QMenu(self)
-        addToMenu = QMenu('添加到', self)
+        menu = Menu(parent=self)
+        addToMenu = Menu('添加到', self)
         playAct = QAction('播放', self)
         chooseAct = QAction('选择', self)
         playingAct = QAction(QIcon('resource\\images\\正在播放.svg'), '正在播放', self)

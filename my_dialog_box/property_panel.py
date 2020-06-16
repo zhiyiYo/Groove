@@ -1,8 +1,10 @@
 import json
 import re
 import sys
+from ctypes import cdll, c_bool
+from ctypes.wintypes import HWND
 
-from PyQt5.QtCore import QRect, QSize, Qt
+from PyQt5.QtCore import QRect, QSize, Qt, QEvent
 from PyQt5.QtGui import QColor, QPainter, QPen, QPixmap
 from PyQt5.QtWidgets import (QAction, QApplication, QDialog, QHBoxLayout,
                              QLabel, QPushButton)
@@ -15,10 +17,8 @@ class PropertyPanel(QDialog):
         super().__init__()
 
         self.songInfo = songInfo
-        self.resize(942+50, 590+50)
-        self.setAttribute(Qt.WA_TranslucentBackground)
+        self.resize(942, 590)
         self.setWindowFlags(Qt.FramelessWindowHint)
-        self.SHADOW_WIDTH = 25
         self.pen = QPen(QColor(0, 153, 188))
 
         # 实例化标签
@@ -62,35 +62,36 @@ class PropertyPanel(QDialog):
         # 初始化小部件的位置
         self.initWidget()
         self.adjustHeight()
+        self.setDropShadowEffect()
 
         # 设置层叠样式
         self.setQss()
 
     def initWidget(self):
         """ 初始化小部件的属性 """
-        self.tconLabel.move(28+25, 330+25)
-        self.diskLabel.move(584+25, 168+25)
-        self.yearLabel.move(652+25, 330+25)
-        self.songerLabel.move(584+25, 90+25)
-        self.propertyLabel.move(28+25, 27+25)
-        self.songNameLabel.move(28+25, 90+25)
-        self.songPathLabel.move(28+25, 408+25)
-        self.albumNameLabel.move(28+25, 252+25)
-        self.durationLabel.move(584+25, 330+25)
-        self.trackNumberLabel.move(28+25, 168+25)
-        self.albumSongerLabel.move(584+25, 252+25)
+        self.tconLabel.move(28, 330)
+        self.diskLabel.move(584, 168)
+        self.yearLabel.move(652, 330)
+        self.songerLabel.move(584, 90)
+        self.propertyLabel.move(28, 27)
+        self.songNameLabel.move(28, 90)
+        self.songPathLabel.move(28, 408)
+        self.albumNameLabel.move(28, 252)
+        self.durationLabel.move(584, 330)
+        self.trackNumberLabel.move(28, 168)
+        self.albumSongerLabel.move(584, 252)
 
-        self.tcon.move(28+25, 362+25)
-        self.year.move(652+25, 362+25)
-        self.disk.move(584+25, 202+25)
-        self.songer.move(584+25, 122+25)
-        self.songName.move(28+25, 122+25)
-        self.songPath.move(28+25, 442+25)
-        self.albumName.move(28+25, 282+25)
-        self.duration.move(584+25, 362+25)
-        self.trackNumber.move(28+25, 202+25)
-        self.albumSonger.move(584+25, 282+25)
-        self.closeButton.move(732+25, 538+25)
+        self.tcon.move(28, 362)
+        self.year.move(652, 362)
+        self.disk.move(584, 202)
+        self.songer.move(584, 122)
+        self.songName.move(28, 122)
+        self.songPath.move(28, 442)
+        self.albumName.move(28, 282)
+        self.duration.move(584, 362)
+        self.trackNumber.move(28, 202)
+        self.albumSonger.move(584, 282)
+        self.closeButton.move(732, 535)
 
         # 设置按钮的大小
         self.closeButton.setFixedSize(170, 40)
@@ -144,66 +145,19 @@ class PropertyPanel(QDialog):
             qss = f.read()
             self.setStyleSheet(qss)
 
-    def drawShadow(self, painter):
-        # 绘制左上角、左下角、右上角、右下角、上、下、左、右边框
-        self.pixmaps = list()
-        self.pixmaps.append(
-            'resource\\images\\property_panel_shadow\\left_top.png')
-        self.pixmaps.append(
-            str("./resource/images/property_panel_shadow/left_bottom.png"))
-        self.pixmaps.append(
-            'resource\\images\\property_panel_shadow\\right_top.png')
-
-        self.pixmaps.append(
-            'resource\\images\\property_panel_shadow\\right_bottom.png')
-
-        self.pixmaps.append(
-            'resource\\images\\property_panel_shadow\\top_mid.png')
-
-        self.pixmaps.append(
-            'resource\\images\\property_panel_shadow\\bottom_mid.png')
-
-        self.pixmaps.append(
-            'resource\\images\\property_panel_shadow\\left_mid.png')
-
-        self.pixmaps.append(
-            'resource\\images\\property_panel_shadow\\right_mid.png')
-
-        painter.drawPixmap(0, 0, self.SHADOW_WIDTH,
-                           self.SHADOW_WIDTH, QPixmap(self.pixmaps[0]))  # 左上角
-
-        painter.drawPixmap(self.width()-self.SHADOW_WIDTH, 0, self.SHADOW_WIDTH,
-                           self.SHADOW_WIDTH, QPixmap(self.pixmaps[2]))  # 右上角
-
-        painter.drawPixmap(0, self.height()-self.SHADOW_WIDTH, self.SHADOW_WIDTH,
-                           self.SHADOW_WIDTH, QPixmap(self.pixmaps[1]))  # 左下角
-
-        painter.drawPixmap(self.width()-self.SHADOW_WIDTH, self.height()-self.SHADOW_WIDTH,
-                           self.SHADOW_WIDTH, self.SHADOW_WIDTH, QPixmap(self.pixmaps[3]))  # 右下角
-
-        painter.drawPixmap(0, self.SHADOW_WIDTH, self.SHADOW_WIDTH, self.height()-2*self.SHADOW_WIDTH,
-                           QPixmap(self.pixmaps[6]).scaled(self.SHADOW_WIDTH, self.height() - 2*self.SHADOW_WIDTH))  # 左
-
-        painter.drawPixmap(self.width()-self.SHADOW_WIDTH, self.SHADOW_WIDTH, self.SHADOW_WIDTH, self.height()-2 *
-                           self.SHADOW_WIDTH, QPixmap(self.pixmaps[7]).scaled(self.SHADOW_WIDTH, self.height() - 2*self.SHADOW_WIDTH))  # 右
-        painter.drawPixmap(self.SHADOW_WIDTH, 0, self.width()-2*self.SHADOW_WIDTH, self.SHADOW_WIDTH,
-                           QPixmap(self.pixmaps[4]).scaled(self.width() - 2*self.SHADOW_WIDTH, self.SHADOW_WIDTH))  # 上
-
-        painter.drawPixmap(self.SHADOW_WIDTH, self.height()-self.SHADOW_WIDTH, self.width()-2*self.SHADOW_WIDTH,
-                           self.SHADOW_WIDTH, QPixmap(self.pixmaps[5]).scaled(self.width()-2*self.SHADOW_WIDTH, self.SHADOW_WIDTH))  # 下
-
     def paintEvent(self, event):
         """ 绘制背景和阴影 """
         painter = QPainter(self)
-        self.drawShadow(painter)
         # 绘制边框
         painter.setPen(self.pen)
-        painter.drawRect(self.SHADOW_WIDTH, self.SHADOW_WIDTH, self.width(
-        ) - 2*self.SHADOW_WIDTH, self.height() - 2*self.SHADOW_WIDTH)
-        # 绘制背景
-        painter.setBrush(Qt.white)
-        painter.drawRect(QRect(self.SHADOW_WIDTH, self.SHADOW_WIDTH, self.width(
-        )-2*self.SHADOW_WIDTH, self.height()-2*self.SHADOW_WIDTH))
+        painter.drawRect(0, 0, self.width()-1, self.height()-1)
+
+    def setDropShadowEffect(self):
+        """ 添加阴影 """
+        dll = cdll.LoadLibrary('acrylic_dll\\acrylic.dll')
+        self.class_amanded = c_bool(False)
+        self.hWnd = HWND(int(self.winId()))
+        dll.addWindowShadow(c_bool(1), self.hWnd)
 
 
 if __name__ == "__main__":

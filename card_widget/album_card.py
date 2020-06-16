@@ -5,13 +5,13 @@ from PyQt5.QtCore import QEvent, QPoint, Qt
 from PyQt5.QtGui import (QBitmap, QBrush, QColor, QContextMenuEvent, QIcon,
                          QPainter, QPen, QPixmap)
 from PyQt5.QtWidgets import (
-    QAction, QApplication, QLabel, QMenu, QVBoxLayout, QWidget,QGraphicsBlurEffect)
+    QAction, QApplication, QLabel,QVBoxLayout, QWidget,QGraphicsBlurEffect)
     
 sys.path.append('..')
 
 from Groove.my_widget.my_button import SongerAddToButton, SongerPlayButton
 from Groove.my_widget.my_label import ClickableLabel
-
+from Groove.my_widget.my_menu import Menu
 
 
 
@@ -152,8 +152,8 @@ class AlbumCard(QWidget):
 
     def contextMenuEvent(self, event: QContextMenuEvent):
         """ 显示右击菜单 """
-        menu = QMenu(self)
-        addToMenu = QMenu('添加到', self)
+        menu = Menu(parent=self)
+        addToMenu = Menu('添加到', self)
         playAct = QAction('播放', self)
         deleteAct = QAction('删除', self)
         chooseAct = QAction('选择', self)

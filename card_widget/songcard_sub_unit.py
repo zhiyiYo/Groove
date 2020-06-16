@@ -8,7 +8,7 @@ from time import sleep
 from PyQt5.QtCore import QPoint, QSize, Qt
 from PyQt5.QtGui import QContextMenuEvent, QIcon, QMouseEvent
 from PyQt5.QtWidgets import (QAction, QApplication, QCheckBox, QHBoxLayout,
-                             QLabel, QMenu, QToolButton, QWidget)
+                             QLabel, QToolButton, QWidget)
 
 
 class SongNameCard(QWidget):

@@ -3,12 +3,12 @@ import sys
 from PyQt5.QtCore import QEvent, QSize, Qt, QPoint
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
-    QAction, QApplication, QHBoxLayout, QLabel, QMenu, QPushButton,
+    QAction, QApplication, QHBoxLayout, QLabel, QPushButton,
     QVBoxLayout, QWidget)
     
 sys.path.append('..')
 from Groove.viewer_widget.album_cover_viewer import AlbumCardViewer
-
+from Groove.my_widget.my_menu import Menu
 
 class AlbumTabInterface(QWidget):
     """ 定义专辑卡标签界面 """
@@ -26,7 +26,7 @@ class AlbumTabInterface(QWidget):
         self.randomPlayBt.setIconSize(QSize(130, 17))
 
         # 实例化排序依据标签、按钮和菜单
-        self.sortModeMenu = QMenu(self)
+        self.sortModeMenu = Menu(parent=self)
         self.sortModeLabel = QLabel('排序依据:', self)
         self.sortModeButton = QPushButton('添加日期', self)
 

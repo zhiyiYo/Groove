@@ -4,15 +4,14 @@ from json import dump
 from PyQt5.QtCore import QPoint, QSize, Qt, QEvent
 from PyQt5.QtGui import QContextMenuEvent, QIcon, QBrush, QColor, QPixmap
 from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
-                             QListWidget, QListWidgetItem, QMenu,
-                             QWidget)
+                             QListWidget, QListWidgetItem, QWidget)
 sys.path.append('..')
 from Groove.get_info.get_song_info import SongInfo
 from Groove.card_widget.songcard import SongCard
 from Groove.my_dialog_box.property_panel import PropertyPanel
 from Groove.my_dialog_box.song_info_edit_panel import SongInfoEditPanel
 from Groove.my_dialog_box.window_mask import WindowMask
-
+from Groove.my_widget.my_menu import Menu
 
 class SongCardListWidget(QListWidget):
     """ 定义一个歌曲卡列表视图 """
@@ -84,8 +83,8 @@ class SongCardListWidget(QListWidget):
             QIcon(QPixmap('resource\\images\\黑色加号.svg')), '新的播放列表', self)
 
         # 创建菜单和子菜单
-        self.contextMenu = QMenu(self)
-        self.addToMenu = QMenu('添加到', self)
+        self.contextMenu = Menu(parent=self)
+        self.addToMenu = Menu('添加到', self)
 
         # 将动作添加到菜单中
         self.contextMenu.addActions([self.playAct, self.nextSongAct])

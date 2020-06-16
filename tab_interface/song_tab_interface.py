@@ -3,11 +3,11 @@ import time
 from PyQt5.QtCore import QPoint, Qt, QSize, QEvent
 from PyQt5.QtGui import QContextMenuEvent, QIcon, QMouseEvent
 from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
-                             QLayout, QMenu, QPushButton, QVBoxLayout, QWidget)
+                             QLayout, QPushButton, QVBoxLayout, QWidget)
 
 sys.path.append('..')
 from Groove.viewer_widget.song_card_list_widget import SongCardListWidget
-
+from Groove.my_widget.my_menu import Menu
 
 class SongTabInterface(QWidget):
     """ 创建歌曲标签界面 """
@@ -24,7 +24,7 @@ class SongTabInterface(QWidget):
         self.all_v_layout = QVBoxLayout()
 
         # 实例化标签和下拉菜单
-        self.sortModeMenu = QMenu(self)
+        self.sortModeMenu = Menu(parent=self)
         self.sortModeLabel = QLabel('排序依据:', self)
         self.sortModeButton = QPushButton('添加日期', self)
         self.loopModeButton = QPushButton(
