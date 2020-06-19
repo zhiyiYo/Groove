@@ -10,7 +10,7 @@ from PyQt5.QtGui import ( QBrush, QEnterEvent, QIcon, QPainter,
 from PyQt5.QtWidgets import (QApplication, QGraphicsBlurEffect, QPushButton, QLabel,
                              QToolTip)
 
-from my_toolTip import ToolTip
+#from my_toolTip import ToolTip
 
 class SongerPlayButton(QPushButton):
     """ 歌手头像上的播放按钮 """

@@ -13,6 +13,7 @@ from Groove.my_dialog_box.song_info_edit_panel import SongInfoEditPanel
 from Groove.my_dialog_box.window_mask import WindowMask
 from Groove.my_widget.my_menu import Menu
 
+
 class SongCardListWidget(QListWidget):
     """ 定义一个歌曲卡列表视图 """
 
@@ -38,7 +39,7 @@ class SongCardListWidget(QListWidget):
         self.times = 0
 
         # 设置层叠样式
-        # self.setQss()
+        self.setQss()
 
     def initWidget(self):
         """ 初始化小部件 """
@@ -56,10 +57,8 @@ class SongCardListWidget(QListWidget):
         self.setObjectName('songCardList')
         self.verticalScrollBar().setObjectName('LWidgetVScrollBar')
 
-        # 将复选框状态改变的信号连接到槽函数
-        for song_card in self.song_card_list:
-            song_card.song_name_card.songName.stateChanged.connect(
-                self.refreshTextColor)
+        # 选中中的item改变时改变样式
+        #self.itemSelectionChanged.connect(self.updateItemQss)
 
     def initActions(self):
         """ 创建动作 """
@@ -213,7 +212,7 @@ class SongCardListWidget(QListWidget):
         self.songInfoEditPanel.exec_()
         mask.close()
 
-        #更新item的信息
+        # 更新item的信息
         self.selectedItems()[0].setWhatsThis(str(self.current_dict))
         # 将修改的信息存入json文件
         with open('Data\\songInfo.json', 'w', encoding='utf-8') as f:
@@ -225,37 +224,41 @@ class SongCardListWidget(QListWidget):
     def select_func(self):
         """ 点击选择时的槽函数 """
         # 显示复选框
-        time.sleep(0.4)
+        #time.sleep(0.4)
         for song_card in self.song_card_list:
             # 更改选中状态标志位
             song_card.song_name_card.contextMenuSelecting = True
-            song_card.song_name_card.showIndicator()
+            song_card.song_name_card.songNameCheckBox.setProperty(
+                'state','enter and unClicked')
+        # 显示所有的复选框
+        self.setStyle(QApplication.style())
         # 将选中的项目设置为checked状态
         for selectedItem in self.selectedItems():
             index = eval(selectedItem.whatsThis())['index']
-            self.song_card_list[index].song_name_card.songName.setChecked(
+            self.song_card_list[index].song_name_card.songNameCheckBox.setChecked(
                 Qt.Checked)
+
+    def updateItemQss(self):
+        """ 更新item样式 """
+        """ 需要更新一下算法 """
+        for item in self.item_list:
+            index = eval(item.whatsThis())['index']
+            currentSongCard = self.song_card_list[index]
+            if item not in self.selectedItems():
+                # 如果歌曲卡没被选中就更新state属性为未选中状态
+                currentSongCard.song_name_card.setWidgetState()
+                currentSongCard.yearTconDuration.setWidgetState()
+                currentSongCard.setClickableLabelState()
+            else:
+                currentSongCard.song_name_card.setWidgetState('clicked', 'clicked')
+                currentSongCard.yearTconDuration.setWidgetState('clicked')
+                currentSongCard.setClickableLabelState('clicked')
+        self.setStyle(QApplication.style())
 
     def setQss(self):
         """ 设置层叠样式 """
-        with open('resource\\css\\initSongCard.qss', 'r', encoding='utf-8') as f:
-            qss = f.read()
-            self.setStyleSheet(qss)
-
-    def setClickedQss(self):
-        """ 设置鼠标左键时的层叠样式 """
-        with open('resource\\css\\clickedSongCard.qss', 'r', encoding='utf-8') as f:
-            qss = f.read()
-            
-            self.setStyleSheet(qss)
-
-    def refreshTextColor(self):
-        """ 根据复选框的状态来改变文本颜色 """
-        sender = self.sender()
-
-        index = self.song_card_list.index(sender.parent().parent())
-        if not sender.isChecked():
-            self.setQss()
+        with open('resource\\css\\songCardListWidget.qss', 'r', encoding='utf-8') as f:
+            self.setStyleSheet(f.read())
 
 
 if __name__ == '__main__':

@@ -24,7 +24,7 @@ class SongNameCard(QWidget):
 
         # 实例化小部件
         self.setFixedWidth(342)
-        self.songName = QCheckBox(songName, self)
+        self.songNameCheckBox = QCheckBox(songName, self)
         self.maskButton = QToolButton(self)
         self.playButton = QToolButton(self)
         self.addToButton = QToolButton(self)
@@ -41,11 +41,13 @@ class SongNameCard(QWidget):
     def initLayout(self):
         """ 初始化布局 """
 
-        self.all_h_layout.addWidget(self.songName, Qt.AlignLeft)
+        self.all_h_layout.addWidget(self.songNameCheckBox, Qt.AlignLeft)
         self.setLayout(self.all_h_layout)
 
     def initWidget(self):
         """ 初始化小部件 """
+        self.widgetList=[self.songNameCheckBox,self.addToButton,self.playButton,self.maskButton]
+
         # 设置按钮大小和图标
         self.addToButton.setIcon(QIcon('resource\\images\\black_addTo_bt.png'))
         self.playButton.setIcon(QIcon('resource\\images\\black_play_bt.png'))
@@ -66,30 +68,29 @@ class SongNameCard(QWidget):
         self.maskButton.setHidden(True)
 
         # 分配ID
-        self.setObjectName('songNameCard')
-        self.songName.setObjectName('songNameCheckbox')
+        self.songNameCheckBox.setObjectName('songNameCheckbox')
         self.addToButton.setObjectName('addToButton')
         self.playButton.setObjectName('playButton')
         self.maskButton.setObjectName('maskButton')
+        self.setObjectName('songNameCard')
 
-    def showIndicator(self):
-        """ 当鼠标光标移动到歌曲卡上时显示复选框 """
+        # 设置初始属性
+        self.setWidgetState()
 
-        with open('resource\\css\\selectedSongCard.qss', 'r', encoding='utf-8') as f:
-            qss = f.read()
-        self.songName.setStyleSheet(qss)
+    def setWidgetState(self,checkBoxState='leave and unClicked',buttonState='unClicked'):
+        """ 设置widget的state属性的状态,按钮的state属性只有点击clicked和未被点击unClicked两种状态,
+            复选框的state属性有clicked、enter and unClicked、leave and unClicked三种状态"""
+        for widget in self.widgetList:
+            if widget != self.songNameCheckBox:
+                widget.setProperty('state', buttonState)
+            else:
+                widget.setProperty('state', checkBoxState)
 
-    def hideIndicator(self):
-        """ 当鼠标离开歌曲卡上时隐藏复选框 """
-        with open('resource\\css\\hideIndicator.qss', 'r', encoding='utf-8') as f:
-            qss = f.read()
-        self.songName.setStyleSheet(qss)
 
-
-class TconYearDurationCard(QWidget):
+class YearTconDurationCard(QWidget):
     """ 定义一个包含年份、流派、时长的类 """
 
-    def __init__(self, tcon, year, duration):
+    def __init__(self,year,tcon, duration):
         super().__init__()
 
         self.setFixedWidth(400)
@@ -103,6 +104,7 @@ class TconYearDurationCard(QWidget):
 
         # 初始化布局
         self.initLayout()
+        self.initWidget()
 
     def initLayout(self):
         """ 初始化布局 """
@@ -111,16 +113,21 @@ class TconYearDurationCard(QWidget):
         self.h_layout.addWidget(self.tconLabel, 0, Qt.AlignLeft)
         self.h_layout.addStretch(1)
         self.h_layout.addWidget(self.durationLabel, 0, Qt.AlignRight)
-
         self.setLayout(self.h_layout)
 
     def initWidget(self):
         """ 初始化小部件 """
-
+        self.widgetList=[self.tconLabel, self.yearLabel, self.durationLabel]
         # 分配ID
         self.tconLabel.setObjectName('tconLabel')
         self.yearLabel.setObjectName('yearLabel')
-
+        # 设置初始属性
+        self.setWidgetState()
+            
+    def setWidgetState(self, labelState='unClicked'):
+        """ 设置标签state属性的状态，流派、年份和时长三个标签的state属性只有点击和未点击两种状态 """
+        for widget in self.widgetList:
+            widget.setProperty('state', labelState)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

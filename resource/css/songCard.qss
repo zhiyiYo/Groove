@@ -1,0 +1,139 @@
+QWidget {
+    background-color: white;
+}
+
+QWidget#songCard {
+    border: 2px solid black;
+}
+
+
+/*设置复选框的样式，复选框只有三种状态*/
+QCheckBox {
+    background-color: transparent;
+    font: 18px 'Microsoft YaHei';
+}
+
+QCheckBox[state='leave and unClicked'] {
+    /*歌曲卡未被单击时标签颜色为黑色*/
+    spacing: 15px;
+    color:black;
+}
+
+QCheckBox[state='enter and unClicked']
+{
+    spacing: 13px;
+    color:black;
+}
+
+QCheckBox[state='clicked'] {
+    /*歌曲卡被点击时复选框的标签颜色为白色*/
+    spacing: 15px;
+    color: white;
+}
+
+QCheckBox::indicator {
+    width: 22px;
+    height: 22px;
+}
+
+QCheckBox::indicator:checked {
+    border-image: url(resource/images/white_ok_18_18.png);
+}
+
+
+QCheckBox[state='leave and unClicked']::indicator {
+    /*鼠标离开标签卡且歌曲卡未被点击时隐藏复选框*/
+    border: none;
+}
+
+QCheckBox[state='enter and unClicked']::indicator {
+    /*鼠标进入且且歌曲卡未被点击时时显示复选框*/
+    border: 1px solid black;
+}
+
+QCheckBox[state='clicked']::indicator {
+    /*鼠标点击歌曲卡时复选框为白色*/
+    border: 1px solid white;
+}
+
+
+
+/*设置标签和按钮样式*/
+QLabel,
+QPushButton{
+    text-align: left;
+    font-size: 16px;
+    background-color: transparent;
+    font-family: 'Microsoft YaHei';
+}
+
+QLabel[state='unClicked'],
+QPushButton[state='unClicked'] {
+    color: rgb(75, 75, 75);
+}
+
+QLabel[state='clicked'],
+QPushButton[state='clicked'] {
+    color: white
+}
+
+QToolButton {
+    background-color: transparent;
+}
+
+QLabel#albumLabel,
+QLabel#songerLabel {
+    border: none;
+    color:black;
+    background-color: transparent;
+}
+
+QLabel#songerLabel[state='clicked'],
+QLabel#albumLabel[state='clicked']{
+    color: white;
+}
+
+QLabel#songerLabel[state='clicked']:hover,
+QLabel#albumLabel[state='clicked']:hover {
+    color:rgb(170,206,214);
+}
+
+QLabel#songerLabel[state='unClicked']:hover,
+QLabel#albumLabel[state='unClicked']:hover {
+    color: rgb(80,80,80);
+}
+
+QToolButton#addToButton[state='unClicked'],
+QToolButton#playButton[state='unClicked'] {
+    background-color: rgb(217, 217, 217);
+    border: transparent;
+}
+
+QToolButton#maskButton[state='unClicked'] {
+    background-color: rgb(217, 217, 217);
+    border: transparent;
+}
+
+QToolButton#addToButton[state='unClicked']:hover,
+QToolButton#playButton[state='unClicked']:hover {
+    background-color: rgb(196, 196, 196);
+    border: transparent;
+}
+
+QToolButton#addToButton[state='clicked'],
+QToolButton#playButton[state='clicked'] {
+    background-color: rgb(0, 153, 188);
+    border: transparent;
+}
+
+QToolButton#maskButton[state='clicked'] {
+    background-color: rgb(0, 153, 188);
+    border: transparent;
+}
+
+QToolButton#addToButton[state='clicked']:hover,
+QToolButton#playButton[state='clicked']:hover {
+    background-color: rgb(0,97,118);
+    border: transparent;
+}
+

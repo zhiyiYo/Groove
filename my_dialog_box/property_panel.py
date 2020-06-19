@@ -154,10 +154,10 @@ class PropertyPanel(QDialog):
 
     def setDropShadowEffect(self):
         """ 添加阴影 """
-        dll = cdll.LoadLibrary('acrylic_dll\\acrylic.dll')
+        dll = cdll.LoadLibrary('dll\\windowEffect.dll')
         self.class_amanded = c_bool(False)
         self.hWnd = HWND(int(self.winId()))
-        dll.addWindowShadow(c_bool(1), self.hWnd)
+        dll.addShadowEffect(c_bool(1), self.hWnd)
 
 
 if __name__ == "__main__":

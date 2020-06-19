@@ -3,23 +3,26 @@ from ctypes import c_bool, cdll
 from ctypes.wintypes import HWND
 
 from PyQt5.QtCore import QEvent, Qt
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon,QPainter,QPen,QColor
 from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsDropShadowEffect,
                              QMenu, QWidget)
 sys.path.append('..')
-from Groove.effects.setEffect import setAcrylicEffect, setShadowEffect
+from Groove.effects.window_effect import WindowEffect
 
 
 
 
 class Menu(QMenu):
     """ 自定义菜单 """
+    windowEffect = WindowEffect()
 
     def __init__(self, string=None, parent=None):
         super().__init__(string,parent)
-        self.class_amanded = c_bool(False)
+        self.class_amended = c_bool(False)  
+        self.setWindowFlags(Qt.FramelessWindowHint | Qt.Popup|Qt.NoDropShadowWindowHint)
+        self.setAttribute(Qt.WA_TranslucentBackground|Qt.WA_StyledBackground)
+        self.setAutoFillBackground(False)
         self.setQss()
-        self.setAttribute(Qt.WA_TranslucentBackground | Qt.WA_StyledBackground)
 
     def event(self, e: QEvent):
         if e.type() == QEvent.WinIdChange:
@@ -29,13 +32,13 @@ class Menu(QMenu):
 
     def setMenuEffect(self):
         """ 开启特效 """
-        dll = cdll.LoadLibrary('acrylic_dll\\acrylic.dll')
-        # 添加阴影
-        self.class_amended = setShadowEffect(
-            dll, self.class_amended, self.hWnd)
-        # 设置磨砂效果
-        #setAcrylicEffect(dll,self.hWnd,0x16FF52F2)
-        #cdll.LoadLibrary('acrylic_dll\\aero.dll').setBlur(self.hWnd)
+        # 设置阴影效果
+        pass
+        #self.windowEffect.addShadowEffect(1,self.hWnd)
+        #self.windowEffect.setAcrylicEffect(self.hWnd, 0x10F2F2F2,1)
+        self.windowEffect.setAeroEffect(self.hWnd)
+        self.class_amended = c_bool(
+            self.windowEffect.setShadowEffect(self.class_amended, self.hWnd))
 
     def setQss(self):
         """ 设置层叠样式 """

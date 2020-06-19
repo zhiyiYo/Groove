@@ -183,8 +183,8 @@ class SongInfoEditPanel(QDialog):
         """ 添加阴影 """
         self.class_amended = c_bool(False)
         self.hWnd = HWND(int(self.winId()))
-        dll = cdll.LoadLibrary('acrylic_dll\\acrylic.dll')
-        dll.addWindowShadow(c_bool(1), self.hWnd)
+        dll = cdll.LoadLibrary('dll\\windowEffect.dll')
+        dll.addShadowEffect(c_bool(1), self.hWnd)
         #dll.setShadow(self.class_amended,self.hWnd)
 
     def saveInfo(self):

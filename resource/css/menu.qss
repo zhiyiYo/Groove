@@ -1,6 +1,6 @@
 /*设置菜单样式*/
 QMenu {
-    background-color: rgb(242, 242, 242);
+    background-color: rgba(242, 242, 242,0.7);
     /*background-color: white;*/
     font-size: 18px;
     font: 18px "Microsoft YaHei";
@@ -17,16 +17,16 @@ QMenu::right-arrow {
 QMenu::separator {
     height: 2px;
     width: 140px;
-    background: rgb(145, 145, 145);
+    background: rgba(145, 145, 145,0.8);
     margin-right: 13px;
     margin-top: 5px;
     margin-bottom: 5px;
     margin-left: 13;
 }
 
-QMenu::item {
+QMenu::item {  
     padding: 7px 20px 7px 13px;
-
+    /*background-color: transparent;*/
 }
 
 QMenu::item:selected {
@@ -34,6 +34,10 @@ QMenu::item:selected {
     border-color: rgb(212, 212, 212);
     background: rgb(218, 218, 218);
     color: black;
+}
+
+QMenu::item:has-siblings:selected {
+    background: rgba(9, 158, 240, 0.79);
 }
 
 QMenu#addToMenu {
@@ -64,7 +68,7 @@ QMenu#sortModeMenu {
     border-bottom: none;
     padding-top: 1px;
     /*padding: 1px;*/
-
+    border-radius: 0px;
 }
 
 QMenu#sortModeMenu::item {

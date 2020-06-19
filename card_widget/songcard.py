@@ -2,12 +2,11 @@ import sys
 
 from PyQt5.QtCore import QEvent, QPoint, Qt
 from PyQt5.QtGui import QContextMenuEvent, QIcon, QMouseEvent, QResizeEvent
-from PyQt5.QtWidgets import (QAction, QApplication, QCheckBox, QHBoxLayout,
-                             QLabel, QLayout, QPushButton, QSizePolicy,
-                             QSpacerItem, QToolButton, QWidget)
+from PyQt5.QtWidgets import QApplication, QHBoxLayout, QPushButton, QWidget
 
-from .songcard_sub_unit import SongNameCard, TconYearDurationCard
-
+sys.path.append('..')
+from Groove.card_widget.songcard_sub_unit import SongNameCard, YearTconDurationCard
+from Groove.my_widget.my_label import ClickableLabel
 
 class SongCard(QWidget):
     """ 定义一个歌曲卡类 """
@@ -15,15 +14,11 @@ class SongCard(QWidget):
     def __init__(self, songName, songer, album, tcon, year, duration):
         super().__init__()
 
-        # 将形参设置为属性
-        self.songer = songer
-        self.album = album
-
         # 实例化小部件
         self.song_name_card = SongNameCard(songName)
-        self.songerButton = QPushButton(self)
-        self.albumButton = QPushButton(self)
-        self.yearTconDuration = TconYearDurationCard(tcon, year, duration)
+        self.songerLabel = ClickableLabel(songer, self)
+        self.albumLabel = ClickableLabel(album, self)
+        self.yearTconDuration = YearTconDurationCard(year, tcon, duration)
 
         # 实例化布局
         self.all_h_layout = QHBoxLayout()
@@ -34,15 +29,15 @@ class SongCard(QWidget):
 
         # 初始化布局
         self.initLayout()
-        # self.setQss()
+        self.setQss()
 
     def initLayout(self):
         """ 初始化布局 """
 
         # 设置右侧的布局
-        self.right_h_layout.addWidget(self.songerButton, 0, Qt.AlignLeft)
+        self.right_h_layout.addWidget(self.songerLabel, 0, Qt.AlignLeft)
         self.right_h_layout.addSpacing(13)
-        self.right_h_layout.addWidget(self.albumButton, 0, Qt.AlignLeft)
+        self.right_h_layout.addWidget(self.albumLabel, 0, Qt.AlignLeft)
         self.right_h_layout.addWidget(self.yearTconDuration)
 
         # 设置全局布局
@@ -56,78 +51,67 @@ class SongCard(QWidget):
     def initWidget(self):
         """ 初始化小部件 """
 
-        self.songerButton.setFixedWidth(190)
-        self.albumButton.setFixedWidth(190)
-        self.songerButton.setText(self.songer)
-        self.albumButton.setText(self.album)
+        self.songerLabel.setFixedWidth(190)
+        self.albumLabel.setFixedWidth(190)
 
         # 设置鼠标的光标
-        self.songerButton.setCursor(Qt.PointingHandCursor)
-        self.albumButton.setCursor(Qt.PointingHandCursor)
+        self.songerLabel.setCursor(Qt.PointingHandCursor)
+        self.albumLabel.setCursor(Qt.PointingHandCursor)
 
-        # 分配按钮的ID
-        self.songerButton.setObjectName('songerLinkBt')
-        self.albumButton.setObjectName('albumLinkBt')
-
-        # 分配标签的ID
+        # 分配ID
+        self.songerLabel.setObjectName('songerLabel')
+        self.albumLabel.setObjectName('albumLabel')
         self.setObjectName('songCard')
 
         # 安装事件过滤器
         self.installEventFilter(self)
 
-        # 将复选框状态改变的信号连接到槽函数
-        """ self.song_name_card.songName.stateChanged.connect(
-            self.refreshTextColor) """
-
     def setQss(self):
         """ 设置初始层叠样式 """
-        with open('resource\\css\\initSongCard.qss', 'r', encoding='utf-8') as f:
+        with open('resource\\css\\songCard.qss', 'r', encoding='utf-8') as f:
             qss = f.read()
             self.setStyleSheet(qss)
 
-    def setClickedQss(self):
-        """ 设置点击后的样式 """
-        with open('resource\\css\\clickedSongCard.qss', 'r', encoding='utf-8') as f:
-            qss = f.read()
-            self.setStyleSheet(qss)
+    def setClickableLabelState(self,labelState='unClicked'):
+        """ 设置歌手和专辑这两个可点击标签state属性的状态 """
+        self.songerLabel.setProperty('state', labelState)
+        self.albumLabel.setProperty('state', labelState)
 
     def eventFilter(self, obj, event):
         """ 当鼠标点击歌曲卡时将文本换成白色 """
         if obj == self:
             if event.type() == QEvent.Enter and not self.song_name_card.contextMenuSelecting:
                 if not self.song_name_card.clicked:
-                    self.song_name_card.showIndicator()
+                    self.song_name_card.setWidgetState('enter and unClicked')
+                    self.yearTconDuration.setWidgetState()
+                    self.setClickableLabelState()
                     self.song_name_card.playButton.show()
                     self.song_name_card.addToButton.show()
-                    self.song_name_card.maskButton.show()
-                    return False
-                if self.song_name_card.clicked:
-                    pass
-            # 当歌曲卡不处于选择状态时使用hideIndicator.qss
-            elif event.type() == QEvent.Leave and not self.song_name_card.contextMenuSelecting and not self.song_name_card.clicked:
-                self.song_name_card.hideIndicator()
-                self.song_name_card.playButton.setHidden(True)
-                self.song_name_card.addToButton.setHidden(True)
-                self.song_name_card.maskButton.hide()
-
-            if event.type() == QEvent.MouseButtonPress:
+                    self.song_name_card.maskButton.show()  
+                    self.setStyle(QApplication.style())
+            elif event.type() == QEvent.Leave:
+                if not self.song_name_card.clicked:
+                    self.song_name_card.setWidgetState()
+                    self.yearTconDuration.setWidgetState()
+                    self.setClickableLabelState()
+                    self.song_name_card.playButton.hide()
+                    self.song_name_card.addToButton.hide()
+                    self.song_name_card.maskButton.hide()
+                    # 更新样式
+                    self.setStyle(QApplication.style())
+            elif event.type() == QEvent.MouseButtonPress:
                 self.song_name_card.clicked = True
+                self.song_name_card.setWidgetState('clicked', 'clicked')
+                self.yearTconDuration.setWidgetState('clicked')
+                self.setClickableLabelState('clicked')
                 self.song_name_card.addToButton.setIcon(
                     QIcon('resource\\images\\white_add_to_bt.png'))
                 self.song_name_card.playButton.setIcon(
                     QIcon('resource\\images\\white_play_bt.png'))
-                self.setClickedQss()
+                # 更新样式
+                self.setStyle(QApplication.style())
 
-            # 当歌曲卡不处于选择状态时使用showIndicator.qss
-
-        return QWidget.eventFilter(self, obj, event)
-
-    def refreshTextColor(self):
-        """ 根据复选框的状态来改变文本颜色 """
-        if self.song_name_card.songName.isChecked():
-            self.setClickedQss()
-        else:
-            self.setQss()
+        return False
 
     def resizeEvent(self, e: QResizeEvent):
         """ 窗口大小改变时就改变专辑和歌手名标签的长度 """
@@ -140,10 +124,10 @@ class SongCard(QWidget):
             deltaWidth = self.width() - self.originalWidth
             self.originalWidth = self.width()
             # 分配多出来的宽度
-            self.albumButton.setFixedWidth(
-                int(self.albumButton.width() + 0.7*deltaWidth))
-            self.songerButton.setFixedWidth(
-                int(self.songerButton.width() + 0.2*deltaWidth))
+            self.albumLabel.setFixedWidth(
+                int(self.albumLabel.width() + 0.7*deltaWidth))
+            self.songerLabel.setFixedWidth(
+                int(self.songerLabel.width() + 0.2*deltaWidth))
 
 
 if __name__ == '__main__':

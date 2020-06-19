@@ -1,0 +1,47 @@
+QWidget {
+    background-color: white;
+}
+
+/*设置标签文本左对齐*/
+QLabel,
+QPushButton{
+    text-align: left;
+    color: rgb(75, 75, 75);
+    font-size: 16px;
+    background-color: transparent;
+    font-family: 'Microsoft YaHei';
+}
+
+QLabel#sortModeLabel {
+    color: black;
+    font: 16px 'Microsoft YaHei';
+}
+
+/*设置按钮的样式*/
+QPushButton {
+    background-color: transparent;
+}
+
+QPushButton#sortModeButton {
+    color: rgb(81, 154, 170);
+}
+
+QPushButton#sortModeButton:hover {
+    color: rgb(59, 165, 194);
+}
+
+QPushButton#loopModeButton,
+QPushButton#sortModeButton {
+    font-weight: 500;
+    font-size: 16px;
+}
+
+QPushButton#loopModeButton {
+    font: 15px 'Microsoft YaHei';
+    /*padding-bottom: 2px;*/
+}
+
+QPushButton#loopModeButton:hover {
+    color: rgb(110, 110, 110);
+}
+

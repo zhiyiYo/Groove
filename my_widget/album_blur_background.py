@@ -1,30 +1,57 @@
 import sys
 
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QGraphicsBlurEffect,QGraphicsDropShadowEffect
+from PyQt5.QtWidgets import QApplication, QGraphicsBlurEffect, QLabel, QWidget,QGraphicsOpacityEffect
 
 
-class AlbumBlurBackground(QWidget):
+class SubWindow(QWidget):
     """ 定义专辑的磨砂背景 """
 
     def __init__(self, parent=None):
         super().__init__(parent)
 
         # 实例化背景和磨砂效果
-        self.backgroundPic = QLabel(self)
-        self.blurEffect = QGraphicsBlurEffect(self)
-        self.shadowEffect = QGraphicsDropShadowEffect(self)
+        self.pic = QLabel(self)
+        self.blurEffect = QGraphicsBlurEffect(self.pic)
         self.initWidget()
 
     def initWidget(self):
         """ 初始化小部件 """
-        self.setFixedSize(220,220)
-        self.backgroundPic.resize(215, 215)
-        self.shadowEffect.setBlurRadius(5)
-        self.shadowEffect.setOffset(0)
-        self.shadowEffect.setColor(QColor("#bbbbbb"))
-        self.backgroundPic.setScaledContents(True)
-        self.blurEffect.setBlurRadius(30)
-        self.backgroundPic.setGraphicsEffect(self.blurEffect)
-        self.setGraphicsEffect(self.shadowEffect)
+        self.resize(260, 303)
+        self.setStyleSheet('background:white')
+        # 设置背景图的样式
+        self.pic.move(25, 15)
+        self.blurEffect.setBlurRadius(25)
+        self.pic.setGraphicsEffect(self.blurEffect)
+
+    def setPic(self, pic_path):
+        """ 更换背景图 """
+        self.pic.setPixmap(QPixmap(pic_path).scaled(210, 210))
+        
+
+class AlbumBlurBackground(QWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.resize(260,303)
+        self.op = QGraphicsOpacityEffect(self)
+        self.subWindow = SubWindow(self)
+        self.op.setOpacity(0.7)
+        self.subWindow.setGraphicsEffect(self.op)
+
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    demo = AlbumBlurBackground()
+    pic_path = r'resource\Album Cover\流星ダイアリー\流星ダイアリー.jpg'
+    demo.subWindow.setPic(pic_path)
+    demo.album = QLabel(demo)
+    demo.albumName = QLabel('Assortrip\nHALCA', demo)
+    demo.album.setPixmap(QPixmap(pic_path).scaled(200, 200))
+    demo.album.move(30, 10)
+    demo.albumName.setStyleSheet(
+        'background:transparent;font:19px "Microsoft YaHei";font-weight:bold')
+    demo.albumName.move(30, 220)
+    demo.show()
+
+    sys.exit(app.exec_())

@@ -20,3 +20,7 @@ QGroupBox::title {
     subcontrol-position: top left;
 
 }
+
+QGridLayout{
+    background-color: transparent;
+}
