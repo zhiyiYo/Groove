@@ -33,6 +33,11 @@ QLineEdit:focus {
     border: 1px solid rgb(0, 153, 188);
 }
 
+QLineEdit[hasText='false'] {
+    border: 1px solid rgb(197, 5, 0);
+}
+
+
 QPushButton {
     background-color: rgb(204, 204, 204);
     padding: 11px 64px 11px 64px;

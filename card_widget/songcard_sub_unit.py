@@ -14,13 +14,11 @@ from PyQt5.QtWidgets import (QAction, QApplication, QCheckBox, QHBoxLayout,
 class SongNameCard(QWidget):
     """ 定义一个放置歌名和按钮的窗口 """
 
-    def __init__(self, songName):
-        super().__init__()
+    def __init__(self, songName,parent=None):
+        super().__init__(parent)
 
         # 设置右键菜单选择标志位
         self.contextMenuSelecting = False
-        # 设置单击标志位
-        self.clicked = False
 
         # 实例化小部件
         self.setFixedWidth(342)
@@ -86,12 +84,23 @@ class SongNameCard(QWidget):
             else:
                 widget.setProperty('state', checkBoxState)
 
+    def setAllButtonHidden(self,hide:bool=True):
+        """ 隐藏所有按钮 """
+        if hide:
+            self.playButton.hide()
+            self.addToButton.hide()
+            self.maskButton.hide()
+        else:
+            self.playButton.show()
+            self.addToButton.show()
+            self.maskButton.show()
+
 
 class YearTconDurationCard(QWidget):
     """ 定义一个包含年份、流派、时长的类 """
 
-    def __init__(self,year,tcon, duration):
-        super().__init__()
+    def __init__(self,year,tcon, duration,parent=None):
+        super().__init__(parent)
 
         self.setFixedWidth(400)
         # 实例化三个标签
@@ -123,6 +132,12 @@ class YearTconDurationCard(QWidget):
         self.yearLabel.setObjectName('yearLabel')
         # 设置初始属性
         self.setWidgetState()
+
+    def updateLabelText(self, songInfo_dict: dict):
+        """ 更新标签的信息 """
+        self.yearLabel.setText(songInfo_dict['year'])
+        self.tconLabel.setText(songInfo_dict['tcon'])
+        self.durationLabel.setText(songInfo_dict['duration'])
             
     def setWidgetState(self, labelState='unClicked'):
         """ 设置标签state属性的状态，流派、年份和时长三个标签的state属性只有点击和未点击两种状态 """

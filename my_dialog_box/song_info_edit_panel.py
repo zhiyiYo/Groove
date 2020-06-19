@@ -54,7 +54,7 @@ class SongInfoEditPanel(QDialog):
         self.tconEditLine = LineEdit(songInfo['tcon'], self)
         self.yearEditLine = LineEdit(songInfo['year'], self)
         self.albumNameEditLine = LineEdit(songInfo['album'][0], self)
-        self.songNameEditLine = LineEdit(songInfo['songname'], self)
+        self.songNameEditLine = LineEdit(songInfo['songName'], self)
         self.songerNameEditLine = LineEdit(songInfo['songer'], self)
         self.albumSongerEditLine = LineEdit(songInfo['songer'], self)
         if songInfo['suffix'] in ['.flac', '.mp3']:
@@ -106,18 +106,21 @@ class SongInfoEditPanel(QDialog):
         self.saveButton.setFixedSize(165, 41)
         self.cancelButton.setFixedSize(165, 41)
 
-        # 如果曲目为空就禁用保存按钮
-        if not self.trackNumEditLine.text():
-            self.saveButton.setEnabled(False)
-
         # 设置报警标签的大小和位置
         self.emptyTrackErrorLabel.setPixmap(
             QPixmap('resource\\images\\empty_lineEdit_error.png'))
         self.emptyTrackErrorLabel.setFixedSize(21, 21)
         self.emptyTrackErrorLabel.move(7, 224)
-        self.emptyTrackErrorLabel.setHidden(True)
+        self.emptyTrackErrorLabel.hide()
         # self.emptyTrackErrorLabel.setToolTip('曲目必须是1000以下的数字')
         self.installEventFilter(self)
+
+        # 如果曲目为空就禁用保存按钮并更改属性
+        self.trackNumEditLine.setProperty('hasText', 'true')
+        if not self.trackNumEditLine.text():
+            self.saveButton.setEnabled(False)
+            self.emptyTrackErrorLabel.show()
+            self.trackNumEditLine.setProperty('hasText', 'false')
 
         # 给输入框设置过滤器
         rex_trackNum = QRegExp(r'(\d)|([1-9]\d*)')
@@ -189,7 +192,7 @@ class SongInfoEditPanel(QDialog):
 
     def saveInfo(self):
         """ 保存标签卡信息 """
-        self.songInfo['songname'] = self.songNameEditLine.text()
+        self.songInfo['songName'] = self.songNameEditLine.text()
         self.songInfo['songer'] = self.songerNameEditLine.text()
         self.songInfo['album'][0] = self.albumNameEditLine.text()
         # 根据后缀名选择曲目标签的写入方式
@@ -211,21 +214,12 @@ class SongInfoEditPanel(QDialog):
         if not self.trackNumEditLine.text():
             self.emptyTrackErrorLabel.show()
             self.saveButton.setEnabled(False)
-            self.trackNumEditLine.setStyleSheet(
-                "QLineEdit{border:1px solid rgb(197,5,0)}")
+            self.trackNumEditLine.setProperty('hasText','false')
         else:
-            qss = """ QLineEdit {
-                            padding: 9px 14px 8px 14px;
-                            font: 16px 'Microsoft YaHei';
-                            selection-background-color: rgb(0, 153, 188);
-                        }
-                        QLineEdit:focus {
-                            border: 1px solid rgb(0, 153, 188);
-                        } """
-            self.trackNumEditLine.setStyleSheet(qss)
+            self.trackNumEditLine.setProperty('hasText','true')
             self.emptyTrackErrorLabel.setHidden(True)
             self.saveButton.setEnabled(True)
-
+        self.trackNumEditLine.setStyle(QApplication.style())
 
 
 if __name__ == "__main__":

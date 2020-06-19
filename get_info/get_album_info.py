@@ -65,7 +65,7 @@ class AlbumInfo():
 
     def sortByDictOrder(self):
         """ 以字典序排序文件信息列表 """
-        self.albumInfo_list.sort(key=lambda albumInfo: albumInfo['songname'])
+        self.albumInfo_list.sort(key=lambda albumInfo: albumInfo['songName'])
 
     def sortBySonger(self):
         """ 以歌手名排序文件信息列表 """

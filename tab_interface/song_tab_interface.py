@@ -119,6 +119,8 @@ class SongTabInterface(QWidget):
         self.songCardListWidget.clear()
         self.songCardListWidget.item_list.clear()
         self.songCardListWidget.song_card_list.clear()
+        # 清除选中item
+        self.songCardListWidget.preItem=None
         # 更新列表
         if sender == self.sortByCratedTime:
             self.sortModeButton.setText('添加时间')

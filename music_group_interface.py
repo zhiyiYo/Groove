@@ -116,13 +116,13 @@ class MusicGroupInterface(QWidget):
         if self.width() < 1156:
             # 窗口宽度大于956px且小于1156时显示年份标签，隐藏专辑按钮
             for song_card in self.myMusicWindows.songTag.songCardListWidget.song_card_list:
-                song_card.albumButton.hide()
+                song_card.albumLabel.hide()
                 song_card.yearTconDuration.durationLabel.hide()
 
         elif self.width() > 1156:
             # 窗口宽度大于1156时显示年份标签，显示专辑按钮
             for song_card in self.myMusicWindows.songTag.songCardListWidget.song_card_list:
-                song_card.albumButton.show()
+                song_card.albumLabel.show()
                 song_card.yearTconDuration.durationLabel.show()
 
     def changeTabEvent(self, index):

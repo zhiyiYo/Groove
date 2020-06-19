@@ -79,7 +79,7 @@ class SongInfo():
                     self.songInfo_list.append({'song': song,
                                                'song_path': song_path,
                                                'songer': songer,
-                                               'songname': songname,
+                                               'songName': songname,
                                                'album': album_list,
                                                'tcon': tcon,
                                                'year': year,
@@ -178,7 +178,7 @@ class SongInfo():
 
     def sortByDictOrder(self):
         """ 以字典序排序文件信息列表 """
-        self.songInfo_list.sort(key=lambda songInfo: songInfo['songname'])
+        self.songInfo_list.sort(key=lambda songInfo: songInfo['songName'])
 
     def sortBySonger(self):
         """ 以歌手名排序文件信息列表 """

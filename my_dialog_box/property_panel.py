@@ -40,7 +40,7 @@ class PropertyPanel(QDialog):
         self.songer = QLabel(songInfo['songer'], self)
         self.albumName = QLabel(songInfo['album'][0], self)
         self.duration = QLabel(songInfo['duration'], self)
-        self.songName = QLabel(songInfo['songname'], self)
+        self.songName = QLabel(songInfo['songName'], self)
         self.albumSonger = QLabel(songInfo['songer'], self)
         self.songPath = QLabel(songInfo['song_path'], self)
         if songInfo['suffix'] in ['.flac', '.mp3']:

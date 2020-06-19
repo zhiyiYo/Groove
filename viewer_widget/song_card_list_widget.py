@@ -25,6 +25,13 @@ class SongCardListWidget(QListWidget):
         # 创建一个项目列表
         self.song_card_list = []
         self.item_list = []
+        # 初始化之前选中的item
+        self.preItem = None
+        # 设置当前选中的歌曲卡
+        self.currentSongCard = None
+        # 设置是否处于批量操作模式状态位
+        self.isSelectingMode = False
+        
         # 将歌曲信息设置为属性
         self.songInfo = SongInfo(self.songs_folder)
         # 默认排序方式为添加时间
@@ -36,7 +43,6 @@ class SongCardListWidget(QListWidget):
         # 初始化小部件的属性
         self.initActions()
         self.initWidget()
-        self.times = 0
 
         # 设置层叠样式
         self.setQss()
@@ -58,7 +64,7 @@ class SongCardListWidget(QListWidget):
         self.verticalScrollBar().setObjectName('LWidgetVScrollBar')
 
         # 选中中的item改变时改变样式
-        #self.itemSelectionChanged.connect(self.updateItemQss)
+        self.itemSelectionChanged.connect(self.updateItemQss)
 
     def initActions(self):
         """ 创建动作 """
@@ -71,7 +77,7 @@ class SongCardListWidget(QListWidget):
         self.showPropertyAct = QAction(
             '属性', self, triggered=self.showPropertyPanel)
         self.deleteAct = QAction('删除', self, triggered=self.deleteItem)
-        self.selectAct = QAction('选择', self, triggered=self.select_func)
+        self.selectAct = QAction('选择', self, triggered=self.selectedModeEvent)
 
         # 创建子菜单的动作
 
@@ -119,20 +125,18 @@ class SongCardListWidget(QListWidget):
 
         for i in range(len(self.songInfo.songInfo_list)):
             # 添加空项目
-            songFile = self.songInfo.songInfo_list[i]
-            songFile['index'] = i
+            songInfo_dict = self.songInfo.songInfo_list[i]
+            songInfo_dict['index'] = i
             self.item = QListWidgetItem()
 
             # 将项目的内容重置为自定义类
-            self.song_card = SongCard(
-                songFile['songname'], songFile['songer'],
-                songFile['album'][0], songFile['tcon'], songFile['year'], songFile['duration'])
+            self.song_card = SongCard(songInfo_dict)
             self.song_card.resize(1150, 61)
             self.item.setSizeHint(QSize(self.song_card.width(), 61))
             self.addItem(self.item)
             self.setItemWidget(self.item, self.song_card)
             # 通过whatsthis记录每个项目对应的路径和下标
-            self.item.setWhatsThis(str(songFile))
+            self.item.setWhatsThis(str(songInfo_dict))
             # 将项目添加到项目列表中
             self.song_card_list.append(self.song_card)
             self.item_list.append(self.item)
@@ -214,6 +218,9 @@ class SongCardListWidget(QListWidget):
 
         # 更新item的信息
         self.selectedItems()[0].setWhatsThis(str(self.current_dict))
+        if self.currentSongCard:
+            self.currentSongCard.updateSongCard(self.current_dict)
+            self.update()
         # 将修改的信息存入json文件
         with open('Data\\songInfo.json', 'w', encoding='utf-8') as f:
             dump(self.songInfo.songInfo_list, f)
@@ -221,10 +228,12 @@ class SongCardListWidget(QListWidget):
         # 更新歌曲信息
         self.songInfo = SongInfo(self.songs_folder)
 
-    def select_func(self):
+    def selectedModeEvent(self):
         """ 点击选择时的槽函数 """
         # 显示复选框
         #time.sleep(0.4)
+        # 进入批量选中操作模式
+        self.isSelectingMode=True
         for song_card in self.song_card_list:
             # 更改选中状态标志位
             song_card.song_name_card.contextMenuSelecting = True
@@ -240,20 +249,15 @@ class SongCardListWidget(QListWidget):
 
     def updateItemQss(self):
         """ 更新item样式 """
-        """ 需要更新一下算法 """
-        for item in self.item_list:
-            index = eval(item.whatsThis())['index']
-            currentSongCard = self.song_card_list[index]
-            if item not in self.selectedItems():
-                # 如果歌曲卡没被选中就更新state属性为未选中状态
-                currentSongCard.song_name_card.setWidgetState()
-                currentSongCard.yearTconDuration.setWidgetState()
-                currentSongCard.setClickableLabelState()
-            else:
-                currentSongCard.song_name_card.setWidgetState('clicked', 'clicked')
-                currentSongCard.yearTconDuration.setWidgetState('clicked')
-                currentSongCard.setClickableLabelState('clicked')
-        self.setStyle(QApplication.style())
+        """ 有待更新批量操作的样式 """
+        if not self.isSelectingMode and not (self.preItem is self.currentItem()):
+            if self.preItem:
+                # 如果旧的item不为空，就更新样式
+                index = eval(self.preItem.whatsThis())['index']
+                self.currentSongCard = self.song_card_list[index]
+                self.currentSongCard.setLeaveStateQss()
+            self.preItem = self.currentItem()
+            
 
     def setQss(self):
         """ 设置层叠样式 """
