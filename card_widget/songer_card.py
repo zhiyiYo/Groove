@@ -66,11 +66,13 @@ class SongerCard(QWidget):
         addToMenu = Menu('添加到', self)
         playAct = QAction('播放', self)
         chooseAct = QAction('选择', self)
-        playingAct = QAction(QIcon('resource\\images\\正在播放.svg'), '正在播放', self)
+        playingAct = QAction(QIcon('resource\\images\\正在播放.png'), '正在播放', self)
         newPlayList = QAction(
-            QIcon('resource\\images\\黑色加号.svg'), '新的播放列表', self)
+            QIcon('resource\\images\\黑色加号.png'), '新的播放列表', self)
         nextToPlayAct = QAction('下一首播放', self)
         pinToStartMenuAct = QAction('固定到"开始"菜单', self)
+        # 设置ID
+        addToMenu.setObjectName('addToMenu')
         # 将动作添加到菜单中
         addToMenu.addAction(playingAct)
         addToMenu.addSeparator()

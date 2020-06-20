@@ -15,9 +15,9 @@ QMenu::right-arrow {
 }
 
 QMenu::separator {
-    height: 2px;
+    height: 1px;
     width: 140px;
-    background: rgba(145, 145, 145,0.8);
+    background: rgba(138,138,138,0.8);
     margin-right: 13px;
     margin-top: 5px;
     margin-bottom: 5px;
@@ -41,23 +41,30 @@ QMenu::item:has-siblings:selected {
 }
 
 QMenu#addToMenu {
-    padding: 8px 3px 8px 3px;
+    padding: 5px 0px 8px 0px;
     border: 1px solid rgb(204, 204, 204);
 }
 
 QMenu#addToMenu::item {
-    padding-left: 0px;
+    /*设置文字边距*/
+    padding-left: 20px;
     padding-top: 5px;
     padding-bottom: 5px;
 
 }
 
 QMenu#addToMenu::separator {
-    height: 2px;
+    height: 1px;
     width: 140px;
-    background: rgb(145, 145, 145);
-    margin-right: 2px;
-    margin-left: 2px;
+    background: rgba(138,138,138,0.8);
+    margin-right: 14px;
+    margin-left: 14px;
+}
+
+/*调整图标位置*/
+QMenu#addToMenu::icon {
+    position: absolute;
+    left: 14px;
 }
 
 QMenu#sortModeMenu {
@@ -91,4 +98,20 @@ QMenu#sortModeMenu::item:default:selected {
     background: rgba(9, 158, 240, 0.79);
 }
 
+QMenu#lineEditMenu{
+    width: 176px;
+}
 
+QMenu#lineEditMenu::icon{
+    position: absolute;
+    left: 16px;
+}
+
+QMenu#lineEditMenu::item {
+    padding-left: 26px;
+}
+
+QMenu#addToMenu {
+    padding: 5px 0px 8px 0px;
+    border: 1px solid rgb(204, 204, 204);
+}

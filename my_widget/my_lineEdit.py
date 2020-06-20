@@ -52,10 +52,13 @@ class LineEdit(QLineEdit):
     def createContextMenu(self):
         """ 创建右击菜单 """
         self.menu = Menu(parent=self)
-        self.cutAct = QAction('剪切', self, shortcut='Ctrl+X')
-        self.copyAct = QAction('复制', self, shortcut='Ctrl+C')
-        self.pasteAct = QAction('粘贴', self, shortcut='Ctrl+V')
+        self.cutAct = QAction(QIcon('resource\\images\\黑色剪刀.png'),'剪切', self, shortcut='Ctrl+X',triggered=self.cut)
+        self.copyAct = QAction(
+            QIcon('resource\\images\\黑色复制.png'), '复制', self, shortcut='Ctrl+C',triggered=self.copy)
+        self.pasteAct = QAction(
+            QIcon('resource\\images\\黑色粘贴.png'), '粘贴', self, shortcut='Ctrl+V',triggered=self.paste)
         self.menu.addActions([self.cutAct, self.copyAct, self.pasteAct])
+        self.menu.setObjectName('lineEditMenu')
 
     def mousePressEvent(self, e):
         self.selectAll()

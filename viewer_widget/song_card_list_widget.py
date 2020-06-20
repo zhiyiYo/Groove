@@ -82,10 +82,10 @@ class SongCardListWidget(QListWidget):
         # 创建子菜单的动作
 
         self.linkPalyingPageAct = QAction(
-            QIcon('resource\\images\\正在播放.svg'), '正在播放', self)
+            QIcon('resource\\images\\正在播放.png'), '正在播放', self)
 
         self.createPlaylistAct = QAction(
-            QIcon(QPixmap('resource\\images\\黑色加号.svg')), '新的播放列表', self)
+            QIcon(QPixmap('resource\\images\\黑色加号.png')), '新的播放列表', self)
 
         # 创建菜单和子菜单
         self.contextMenu = Menu(parent=self)
