@@ -67,7 +67,7 @@ class AlbumCard(QWidget):
                 #显示磨砂背景
                 if self.parent():
                     self.blurBackground = self.parent().albumBlurBackground
-                    self.blurBackground.move(self.x()-20, self.y()+3)
+                    self.blurBackground.move(self.x()-20, self.y()+8)
                     self.blurBackground.subWindow.setPic(self.albumInfo['cover_path'])
                     self.blurBackground.show()
                 self.albumCover.addToButton.show()

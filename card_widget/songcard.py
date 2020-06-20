@@ -1,5 +1,5 @@
 import sys
-
+from json import load
 from PyQt5.QtCore import QEvent, QPoint, Qt
 from PyQt5.QtGui import QContextMenuEvent, QIcon, QMouseEvent, QResizeEvent
 from PyQt5.QtWidgets import QApplication, QHBoxLayout, QPushButton, QWidget
@@ -94,46 +94,49 @@ class SongCard(QWidget):
 
     def setLeaveStateQss(self):
         """ 设置离开且未被点击时的样式 """
-        self.isClicked = False
+        if not self.isClicked:
+            
+            # 更新小部件样式
+            self.song_name_card.setWidgetState('leave and unClicked')
+            self.yearTconDuration.setWidgetState()
+            self.setClickableLabelState()
+            self.setStyle(QApplication.style())
+            # 隐藏按钮
+            self.song_name_card.setAllButtonHidden()
+            # 更新按钮图标
+            self.song_name_card.addToButton.setIcon(
+                QIcon('resource\\images\\black_addTo_bt.png'))
+            self.song_name_card.playButton.setIcon(
+                QIcon('resource\\images\\black_play_bt.png'))
+        else:
+            self.song_name_card.setWidgetState(
+                'leave and clicked', 'clicked', 'clicked')
+            self.setStyle(QApplication.style())
 
-        # 更新小部件样式
-        self.song_name_card.setWidgetState()
-        self.yearTconDuration.setWidgetState()
-        self.setClickableLabelState()
-        self.setStyle(QApplication.style())
-
-        # 隐藏按钮
-        self.song_name_card.setAllButtonHidden()
-        
-        # 更新按钮图标
-        self.song_name_card.addToButton.setIcon(
-            QIcon('resource\\images\\black_addTo_bt.png'))
-        self.song_name_card.playButton.setIcon(
-            QIcon('resource\\images\\black_play_bt.png'))
 
     def setEnterStateQss(self):
         """ 设置进入且未被点击时的样式 """
-        self.isClicked = False
-
-        # 更新小部件样式
-        self.song_name_card.setWidgetState('enter and unClicked')
-        self.yearTconDuration.setWidgetState()
-        self.setClickableLabelState()
-        self.setStyle(QApplication.style())
-
-        # 显示按钮
-        self.song_name_card.setAllButtonHidden(False)
-        
-        # 更新按钮图标
-        self.song_name_card.addToButton.setIcon(
-            QIcon('resource\\images\\black_addTo_bt.png'))
-        self.song_name_card.playButton.setIcon(
-            QIcon('resource\\images\\black_play_bt.png'))
+        if not self.isClicked:
+            self.song_name_card.setWidgetState('enter and unClicked',checkBoxState='enter and unClicked')
+            self.yearTconDuration.setWidgetState()
+            self.setClickableLabelState()
+            self.setStyle(QApplication.style())
+            # 显示按钮
+            self.song_name_card.setAllButtonHidden(False)
+            # 更新按钮图标
+            self.song_name_card.addToButton.setIcon(
+                QIcon('resource\\images\\black_addTo_bt.png'))
+            self.song_name_card.playButton.setIcon(
+                QIcon('resource\\images\\black_play_bt.png'))
+        else:
+            self.song_name_card.setWidgetState(
+                        'enter and clicked', 'clicked', 'clicked')
+            self.setStyle(QApplication.style())
 
     def setClickedStateQss(self):
         """ 设置选中状态时的样式 """
         self.isClicked = True
-        self.song_name_card.setWidgetState('clicked', 'clicked')
+        self.song_name_card.setWidgetState('enter and clicked','clicked', 'clicked')
         self.yearTconDuration.setWidgetState('clicked')
         self.setClickableLabelState('clicked')
         self.song_name_card.addToButton.setIcon(
@@ -147,17 +150,14 @@ class SongCard(QWidget):
         """ 当鼠标点击歌曲卡时将文本换成白色 """
         if obj == self:
             if event.type() == QEvent.Enter and not self.song_name_card.contextMenuSelecting:
-                # 如果歌曲卡没有被选中且鼠标进入歌曲卡就更新样式
-                if not self.isClicked:
-                    self.setEnterStateQss()
+                # 如果鼠标进入歌曲卡就更新样式
+                self.setEnterStateQss()  
             elif event.type() == QEvent.Leave:
-                # 如果歌曲卡没有被点击且鼠标移出歌曲卡就更新样式
-                if not self.isClicked:
-                    self.setLeaveStateQss()
+                # 如果鼠标移出歌曲卡就更新样式
+                self.setLeaveStateQss()
             elif event.type() == QEvent.MouseButtonPress:
                 if not self.isClicked:
                     self.setClickedStateQss()
-
         return False
 
     def resizeEvent(self, e: QResizeEvent):
@@ -188,7 +188,9 @@ class SongCard(QWidget):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    demo = SongCard('猫じゃらし', 'RADWIMPS', '泠鸢yousa、鹿乃、花丸晴琉、神楽七奈、物述有栖、白上吹雪、夏色祭',
-                    'ロック', '2020', '4:02')
+    with open('Data\\songInfo.json', 'r', encoding='utf-8') as f:
+        songInfo_list = load(f)
+    songInfo = songInfo_list[0]
+    demo = SongCard(songInfo)
     demo.show()
     sys.exit(app.exec_())

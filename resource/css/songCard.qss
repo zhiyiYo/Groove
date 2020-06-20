@@ -6,6 +6,21 @@ QWidget#songCard {
     border: 2px solid black;
 }
 
+QWidget#buttonGroup[state='leave and unClicked']{
+    background-color: transparent;
+}
+
+QWidget#buttonGroup[state='leave and clicked'] {
+    background-color: rgb(0, 153, 188);
+}
+
+QWidget#buttonGroup[state='enter and unClicked'] {
+    background-color: rgb(217, 217, 217);
+}
+
+QWidget#buttonGroup[state='enter and clicked'] {
+    background-color: rgb(0, 107, 131);
+}
 
 /*设置复选框的样式，复选框只有三种状态*/
 QCheckBox {
@@ -105,12 +120,7 @@ QLabel#albumLabel[state='unClicked']:hover {
 
 QToolButton#addToButton[state='unClicked'],
 QToolButton#playButton[state='unClicked'] {
-    background-color: rgb(217, 217, 217);
-    border: transparent;
-}
-
-QToolButton#maskButton[state='unClicked'] {
-    background-color: rgb(217, 217, 217);
+    background-color: transparent;
     border: transparent;
 }
 
@@ -122,12 +132,7 @@ QToolButton#playButton[state='unClicked']:hover {
 
 QToolButton#addToButton[state='clicked'],
 QToolButton#playButton[state='clicked'] {
-    background-color: rgb(0, 153, 188);
-    border: transparent;
-}
-
-QToolButton#maskButton[state='clicked'] {
-    background-color: rgb(0, 153, 188);
+    background-color: transparent;
     border: transparent;
 }
 

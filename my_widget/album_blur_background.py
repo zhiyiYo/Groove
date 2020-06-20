@@ -13,7 +13,7 @@ class SubWindow(QWidget):
 
         # 实例化背景和磨砂效果
         self.pic = QLabel(self)
-        self.blurEffect = QGraphicsBlurEffect(self.pic)
+        self.blurEffect = QGraphicsBlurEffect(self)
         self.initWidget()
 
     def initWidget(self):
@@ -21,13 +21,13 @@ class SubWindow(QWidget):
         self.resize(260, 303)
         self.setStyleSheet('background:white')
         # 设置背景图的样式
-        self.pic.move(25, 15)
-        self.blurEffect.setBlurRadius(25)
+        self.pic.move(30, 15)
+        self.blurEffect.setBlurRadius(20)
         self.pic.setGraphicsEffect(self.blurEffect)
 
     def setPic(self, pic_path):
         """ 更换背景图 """
-        self.pic.setPixmap(QPixmap(pic_path).scaled(210, 210))
+        self.pic.setPixmap(QPixmap(pic_path).scaled(200,202))
         
 
 class AlbumBlurBackground(QWidget):

@@ -138,7 +138,7 @@ class AlbumCardViewer(QWidget):
             for i in range(gridLayout.columnCount() - 1, self.column_num - 1, -1):
                 gridLayout.setColumnMinimumWidth(i, 0)
 
-        self.albumView.setFixedWidth(221 * self.column_num)
+        self.albumView.setFixedWidth(221 * self.column_num+20)
         if self.sortMode == '添加时间':
             self.albumView.setFixedHeight(303*self.total_row_num)
         else:
