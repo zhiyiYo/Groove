@@ -10,7 +10,11 @@ QMenu {
 }
 
 QMenu::right-arrow {
-    border-image: url(resource/images/right_arrow.svg);
+    /*position: relative;*/
+    width: 16px;
+    height: 16px;
+    right: 16px;
+    border-image: url(resource/images/子菜单右箭头2.png);
 
 }
 

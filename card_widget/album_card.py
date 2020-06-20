@@ -40,18 +40,18 @@ class AlbumCard(QWidget):
         self.setFixedSize(220, 290)
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
-
         # 设置鼠标光标
         self.songerName.setCursor(Qt.PointingHandCursor)
-
-        # 设置悬浮提示
-        self.songerName.setToolTip(self.songerName.text())
-        self.albumName.setToolTip(self.albumName.text())
-
+        # 设置部件位置
         self.albumCover.move(10, 10)
         self.albumName.move(10, 218)
         self.songerName.move(10, 244)
         self.adjustLabel()
+        # 设置提示条
+        try:
+            self.songerName.customToolTip = self.parent().customToolTip
+        except:
+            pass
 
         # 分配ID
         self.albumName.setObjectName('albumName')
@@ -83,10 +83,11 @@ class AlbumCard(QWidget):
 
     def contextMenuEvent(self, event: QContextMenuEvent):
         """ 显示右击菜单 """
+        # 创建菜单
         menu = Menu(parent=self)
         addToMenu = Menu('添加到', self)
-        addToMenu.setProperty('subMenu', 'true')
         addToMenu.setObjectName('addToMenu')
+        # 创建动作
         playAct = QAction('播放', self)
         deleteAct = QAction('删除', self)
         chooseAct = QAction('选择', self)
@@ -161,6 +162,13 @@ class AlbumCover(QWidget):
         # 隐藏按钮
         self.playButton.setHidden(True)
         self.addToButton.setHidden(True)
+
+        # 设置提示条
+        try:
+            self.playButton.customToolTip = self.parent().parent().customToolTip
+            self.addToButton.customToolTip = self.parent().parent().customToolTip
+        except:
+            pass
 
     def paintEvent(self, e):
         """ 绘制背景 """

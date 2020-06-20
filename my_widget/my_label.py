@@ -10,13 +10,31 @@ class ClickableLabel(QLabel):
     # 创建点击信号
     clicked = pyqtSignal()
 
-    def __init__(self, text, parent=None):
+    def __init__(self, text, parent=None,toolTip=None):
         super().__init__(text, parent)
+        self.customToolTip = toolTip 
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         """ 鼠标松开时发送信号 """
         if event.button() == Qt.LeftButton:
             self.clicked.emit()
+
+    def enterEvent(self, e):
+        """ 如果有设置提示条的话就显示提示条 """
+        if self.customToolTip:
+            self.customToolTip.setText(self.text())
+            try:
+                self.customToolTip.move(self.parent().x() + 10 + -self.customToolTip.width()/2,
+                                        self.parent().y() + 266 - 50)
+            except:
+                print('提示条定位失败')
+            else:
+                self.customToolTip.show()
+
+    def leaveEvent(self, e):
+        """ 鼠标离开按钮时减小按钮并隐藏提示条 """
+        if self.customToolTip:
+            self.customToolTip.hide()
 
 
 class ErrorLabel(QLabel):

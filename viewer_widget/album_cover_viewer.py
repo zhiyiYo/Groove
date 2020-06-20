@@ -15,6 +15,7 @@ from Groove.card_widget.album_card import AlbumCard
 from Groove.get_info.get_album_info import AlbumInfo
 from Groove.get_info import get_album_cover
 from Groove.my_widget.album_blur_background import AlbumBlurBackground
+from Groove.my_widget.my_toolTip import ToolTip
 
 
 class AlbumCardViewer(QWidget):
@@ -43,6 +44,9 @@ class AlbumCardViewer(QWidget):
         self.scrollArea = QScrollArea(self)
         self.albumView = QWidget()
         self.albumView.albumBlurBackground = AlbumBlurBackground(self.albumView)
+
+        # 实例化提示条
+        self.customToolTip=ToolTip('',self.albumView)
 
         # 初始化小部件
         self.initWidget()
