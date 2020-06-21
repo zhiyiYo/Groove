@@ -3,7 +3,7 @@ import sys
 from PyQt5.QtCore import QPoint, Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QMouseEvent,QEnterEvent
 from PyQt5.QtWidgets import QApplication, QLabel, QToolTip, QWidget
-from my_toolTip import ToolTip
+#from my_toolTip import ToolTip
 
 
 class ClickableLabel(QLabel):
@@ -34,7 +34,8 @@ class ClickableLabel(QLabel):
         """ 如果有设置提示条的话就显示提示条 """
         if self.customToolTip:
             self.customToolTip.setText(self.customToolTipText)
-            self.customToolTip.move(self.toolTipX + e.x(), self.toolTipY + e.y())
+            self.customToolTip.move(
+                self.toolTipX + e.x(), self.toolTipY + e.y() - self.customToolTip.isWordWrap * 30)
             self.customToolTip.show()
 
     def leaveEvent(self, e):
@@ -54,8 +55,9 @@ class ErrorLabel(QLabel):
     def enterEvent(self, e):
         """ 鼠标进入时显示提示条 """
         if self.customToolTip:
-            self.customToolTip.move(self.x() + e.x() + 7, self.y() + e.y() - 40)
             self.customToolTip.setText(self.customToolTipText)
+            # 有折叠发生时需要再加一个偏移量
+            self.customToolTip.move(self.x() + e.x() + 7,self.y() + e.y() - 40)
             self.customToolTip.show()
 
     def leaveEvent(self, e):

@@ -1,8 +1,9 @@
 import sys
 from random import choice
+import time
 from PyQt5.QtCore import Qt, QTimer,QPoint
 from PyQt5.QtGui import QBrush, QColor, QPainter, QPen
-from PyQt5.QtWidgets import (QApplication, QDialog, QGraphicsDropShadowEffect,
+from PyQt5.QtWidgets import (QApplication, QDialog, QGraphicsDropShadowEffect,QLayout,
                              QHBoxLayout, QLabel, QWidget)
 sys.path.append('..')
 from Groove.my_functions.auto_wrap import autoWrap
@@ -32,7 +33,7 @@ class ToolTip(QWidget):
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.label.setStyleSheet(""" QLabel{font:15px "Microsoft YaHei";
-                                            background:transparent;margin:0px 9px 0px 9px} """)
+                                            background:transparent} """)
         # 设置阴影
         self.dropShadowEffect.setBlurRadius(40)
         self.dropShadowEffect.setOffset(0,3)
@@ -44,15 +45,17 @@ class ToolTip(QWidget):
     def initLayout(self):
         """ 初始化布局 """
         self.all_h_layout.addWidget(self.label, 0, Qt.AlignCenter)
-        self.all_h_layout.setContentsMargins(0,0,0,0)
+        self.all_h_layout.setContentsMargins(9, 9, 9, 9)
+        # 根据布局的内小部件大小调整窗体大小
+        self.all_h_layout.setSizeConstraint(QLayout.SetFixedSize)
         self.setLayout(self.all_h_layout)
 
 
     def setText(self,text:str):
         """ 设置提示文字 """
-        newText, isWordWrap = autoWrap(text, 48)
+        newText, self.isWordWrap = autoWrap(text, 48)
         # 如果有换行发生就调整宽度
-        if isWordWrap:
+        if self.isWordWrap:
             self.setFixedHeight(60)
         else:
             self.setFixedHeight(38)
