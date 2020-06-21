@@ -17,6 +17,8 @@ sys.path.append('..')
 from .modify_songInfo import modifySongInfo
 from Groove.my_widget.my_lineEdit import LineEdit
 from Groove.my_widget.my_label import ErrorLabel
+from Groove.my_widget.my_toolTip import ToolTip
+
 
 class SongInfoEditPanel(QDialog):
     """ 定义一个用来编辑歌曲信息的对话框 """
@@ -48,6 +50,9 @@ class SongInfoEditPanel(QDialog):
         self.editInfoLabel = QLabel('编辑歌曲信息', self)
         self.songPath = QLabel(songInfo['song_path'], self)
         self.emptyTrackErrorLabel = ErrorLabel(self)
+        
+        # 实例化提示条
+        self.customToolTip = ToolTip(parent=self)
 
         # 实例化单行输入框
         self.diskEditLine = LineEdit('1', self)
@@ -146,6 +151,9 @@ class SongInfoEditPanel(QDialog):
         self.albumSongerEditLine.setObjectName('songer')
         self.songPath.setObjectName('songPath')
 
+        # 设置提示条
+        self.setWidgetsToolTip()
+
     def initLayout(self):
         """ 初始化小部件的排版 """
         self.editInfoLabel.move(30, 30)
@@ -169,6 +177,13 @@ class SongInfoEditPanel(QDialog):
             editLine_left.move(30, editLine_top_y + i * 87)
             editLine_right.move(494, editLine_top_y + i * 87)
             i += 1
+
+    def setWidgetsToolTip(self):
+        """ 设置小部件的提示条 """
+        self.emptyTrackErrorLabel.setCustomToolTip(
+            self.customToolTip, '曲目必须是1000以下的数字')
+        self.trackNumEditLine.setCustomToolTip(
+            self.customToolTip, '曲目必须是1000以下的数字')
 
     def setQss(self):
         """ 设置层叠样式表 """

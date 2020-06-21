@@ -32,9 +32,6 @@ class Menu(QMenu):
 
     def setMenuEffect(self):
         """ 开启特效 """
-        # 设置阴影效果
-        pass
-        #self.windowEffect.addShadowEffect(1,self.hWnd)
         #self.windowEffect.setAcrylicEffect(self.hWnd, 0x10F2F2F2,1)
         self.windowEffect.setAeroEffect(self.hWnd)
         self.class_amended = c_bool(

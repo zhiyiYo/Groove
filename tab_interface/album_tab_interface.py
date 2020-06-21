@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import (
     QVBoxLayout, QWidget)
     
 sys.path.append('..')
-from Groove.viewer_widget.album_cover_viewer import AlbumCardViewer
+from Groove.viewer_widget.album_card_viewer import AlbumCardViewer
 from Groove.my_widget.my_menu import Menu
 
 class AlbumTabInterface(QWidget):

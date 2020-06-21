@@ -14,3 +14,4 @@ self.setStyleSheet("background-color: rgb(255,255, 255)");
 11.直接添加阴影会有边框的出现，得想办法把边框掰弯
 12.如果需要指定无边框窗体，但是又需要保留操作系统的边框特性，可以自由拉伸边框，可以使用 setWindowFlags(Qt::CustomizeWindowHint);
 13.使用raise_()函数可以使子窗口置顶
+14.e.pos()返回的是事件相对小部件自己的位置

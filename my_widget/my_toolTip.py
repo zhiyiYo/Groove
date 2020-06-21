@@ -1,33 +1,38 @@
 import sys
-
+from random import choice
 from PyQt5.QtCore import Qt, QTimer,QPoint
 from PyQt5.QtGui import QBrush, QColor, QPainter, QPen
 from PyQt5.QtWidgets import (QApplication, QDialog, QGraphicsDropShadowEffect,
                              QHBoxLayout, QLabel, QWidget)
+sys.path.append('..')
+from Groove.my_functions.auto_wrap import autoWrap
 
 
-class ToolTip(QDialog):
+class ToolTip(QWidget):
     """ 自定义圆角提示气泡 """
 
-    def __init__(self,text,parent=None):
+    def __init__(self,text='',parent=None):
         super().__init__(parent)
-        # 设置窗口类型为ToolTip
-        self.setMaximumWidth(387)
-        self.setMinimumHeight(38)
-        self.setWindowFlags(Qt.FramelessWindowHint)
-        self.setAttribute(Qt.WA_TranslucentBackground)
+        
+        # 实例化小部件
         self.timer = QTimer(self)
-        self.text = QLabel(text, self)
-        self.h_layout = QHBoxLayout(self)
+        self.label = QLabel(text, self)
+        self.all_h_layout = QHBoxLayout()
         self.dropShadowEffect = QGraphicsDropShadowEffect(self)
-        self.initWidget()
+        # 初始化小部件
         self.initLayout()
+        self.initWidget()
+        self.setText(text)
+        self.hide()
 
     def initWidget(self):
         """ 初始化小部件 """
-        # 引用设置标签的方法
-        self.setText = self.text.setText
-        self.text.setStyleSheet(""" QLabel{font:15px "Microsoft YaHei";background:transparent} """)
+        self.setMaximumWidth(400)
+        self.setMinimumHeight(38)
+        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setAttribute(Qt.WA_TranslucentBackground)
+        self.label.setStyleSheet(""" QLabel{font:15px "Microsoft YaHei";
+                                            background:transparent;margin:0px 9px 0px 9px} """)
         # 设置阴影
         self.dropShadowEffect.setBlurRadius(40)
         self.dropShadowEffect.setOffset(0,3)
@@ -38,9 +43,21 @@ class ToolTip(QDialog):
 
     def initLayout(self):
         """ 初始化布局 """
-        self.h_layout.addWidget(self.text, 0, Qt.AlignCenter)
-        self.h_layout.setContentsMargins(0,0,0,0)
-        self.setLayout(self.h_layout)
+        self.all_h_layout.addWidget(self.label, 0, Qt.AlignCenter)
+        self.all_h_layout.setContentsMargins(0,0,0,0)
+        self.setLayout(self.all_h_layout)
+
+
+    def setText(self,text:str):
+        """ 设置提示文字 """
+        newText, isWordWrap = autoWrap(text, 48)
+        # 如果有换行发生就调整宽度
+        if isWordWrap:
+            self.setFixedHeight(60)
+        else:
+            self.setFixedHeight(38)
+        self.label.setText(newText)
+        
 
     def paintEvent(self, e):
         """ 绘制圆角背景 """
@@ -50,11 +67,11 @@ class ToolTip(QDialog):
         painter.setRenderHint(QPainter.Antialiasing)
         # 绘制边框
         painter.setPen(pen)
-        painter.drawRoundedRect(self.rect(), 10, 10)
+        painter.drawRoundedRect(self.rect(), 7, 7)
         # 绘制背景
         brush = QBrush(QColor(242, 242, 242))
         painter.setBrush(brush)
-        painter.drawRoundedRect(self.rect(), 10, 10)
+        painter.drawRoundedRect(self.rect(), 7, 7)
 
     def timeoutEvent(self):
         """ 定时器溢出时隐藏提示条 """
@@ -76,14 +93,19 @@ class ToolTip(QDialog):
 class Father(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.resize(500, 200)
-        self.toolTip = ToolTip('RADWIMPS 2 ～発展途上～', self)
+        self.resize(600, 200)
+        self.text_list = ['劇場版「ずっと前から好きでした。～告白実行委員会～」オリジナルサウンドトラック',
+                     '天气之子', 'RADWIMPS 2 ～発展途上～', '全部播放', '齐天周大圣之西游双记 电影歌乐游唱版',
+                          '', 'My Songs Know What You Did In the Dark (Light Em Up) – Single']
+        self.toolTip = ToolTip(parent=self)
         self.toolTip.hide()
+        self.toolTip.setText(choice(self.text_list))
         self.label = QLabel('测试', self)
         self.label.move(150, 100)
         self.setStyleSheet('background:white')
 
     def enterEvent(self, e):
+        self.toolTip.setText(choice(self.text_list))
         self.toolTip.move(150, 100)
         self.toolTip.show()
 

@@ -12,6 +12,9 @@ class LineEdit(QLineEdit):
     def __init__(self, string=None, parent=None):
         super().__init__(string, parent)
 
+        # 设置提示条
+        self.customToolTip = None
+
         # 创建右击菜单
         self.createContextMenu()
         # 实例化一个用于清空内容的按钮
@@ -34,7 +37,7 @@ class LineEdit(QLineEdit):
         self.clearButton.setIconSize(QSize(39, 39))
         self.clearButton.clicked.connect(self.clearText)
         self.clearButton.setHidden(True)
-        self.clearButton.installEventFilter(self)
+        #self.clearButton.installEventFilter(self)
 
     def initLayout(self):
         """ 初始化布局 """
@@ -87,3 +90,25 @@ class LineEdit(QLineEdit):
             self.clearButton.setIcon(
                 QIcon('resource\\images\\clearInfo_cross.png'))
         return False
+
+    def enterEvent(self, e):
+        """ 鼠标进入时显示提示条 """
+        self.clearButton.setIcon(
+            QIcon('resource\\images\\clearInfo_cross_hover.png'))
+        if self.customToolTip:
+            self.customToolTip.setText(self.customToolTipText)
+            self.customToolTip.move(
+                self.x() + e.x() + 10, self.y() + e.y() - 70)
+            self.customToolTip.show()
+
+    def leaveEvent(self, e):
+        """ 鼠标移出时隐藏提示条 """
+        self.clearButton.setIcon(
+            QIcon('resource\\images\\clearInfo_cross.png'))
+        if self.customToolTip:
+            self.customToolTip.hide()
+
+    def setCustomToolTip(self, toolTip, text: str):
+        """ 设置提示条和提示条内容 """
+        self.customToolTip = toolTip
+        self.customToolTipText = text

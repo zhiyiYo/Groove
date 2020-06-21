@@ -27,8 +27,10 @@ class SongCardListWidget(QListWidget):
         self.item_list = []
         # 初始化之前选中的item
         self.preItem = None
-        # 设置当前选中的歌曲卡
+        # 设置之前和当前选中的歌曲卡
         self.preSongCard = None
+        self.currentSongCard = None
+
         # 设置是否处于批量操作模式状态位
         self.isSelectingMode = False
         
@@ -218,8 +220,8 @@ class SongCardListWidget(QListWidget):
 
         # 更新item的信息
         self.selectedItems()[0].setWhatsThis(str(self.current_dict))
-        if self.preSongCard:
-            self.preSongCard.updateSongCard(self.current_dict)
+        if self.currentSongCard:
+            self.currentSongCard.updateSongCard(self.current_dict)
             self.update()
         # 将修改的信息存入json文件
         with open('Data\\songInfo.json', 'w', encoding='utf-8') as f:
@@ -252,12 +254,15 @@ class SongCardListWidget(QListWidget):
         """ 有待更新批量操作的样式 """
         if not self.isSelectingMode and not (self.preItem is self.currentItem()):
             if self.preItem:
-                # 如果旧的item不为空，就更新样式
+                # 如果旧的item不为空，就更新样式和之前选中的歌曲卡
                 index = eval(self.preItem.whatsThis())['index']
                 self.preSongCard = self.song_card_list[index]
                 self.preSongCard.isClicked=False
                 self.preSongCard.setLeaveStateQss()
             self.preItem = self.currentItem()
+        # 更新当前的歌曲卡
+        index = eval(self.currentItem().whatsThis())['index']
+        self.currentSongCard = self.song_card_list[index]
 
     def setQss(self):
         """ 设置层叠样式 """

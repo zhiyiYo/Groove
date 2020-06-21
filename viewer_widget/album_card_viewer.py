@@ -46,7 +46,7 @@ class AlbumCardViewer(QWidget):
         self.albumView.albumBlurBackground = AlbumBlurBackground(self.albumView)
 
         # 实例化提示条
-        self.customToolTip=ToolTip('',self.albumView)
+        self.albumView.customToolTip = ToolTip(parent=self.albumView)
 
         # 初始化小部件
         self.initWidget()
@@ -126,8 +126,8 @@ class AlbumCardViewer(QWidget):
                 y = index-self.column_num*x
                 gridLayout.addWidget(
                     albumCard, x, y, 1, 1)
-                # 获取当前的总行数
 
+            # 获取当前的总行数
             self.total_row_num += self.current_row_num
             # 如果专辑数小于设定的列数，就在右侧增加弹簧
             """ offset = self.column_num - len(self.albumCardDict_list)

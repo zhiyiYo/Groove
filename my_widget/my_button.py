@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import (QApplication, QGraphicsBlurEffect, QPushButton, QLa
 class SongerPlayButton(QPushButton):
     """ 歌手头像上的播放按钮 """
 
-    def __init__(self, parent=None, toolTip=None):
+    def __init__(self, parent=None):
         super().__init__(parent)
         self.resize(67, 67)
 
@@ -25,7 +25,7 @@ class SongerPlayButton(QPushButton):
         # 设置鼠标进入标志位
         self.enter = False
         # 设置悬浮提醒
-        self.customToolTip = toolTip
+        self.customToolTip = None
 
         # 设置背景图
         self.image = QPixmap('resource\\images\\歌手播放按钮_67_67.png')
@@ -34,33 +34,33 @@ class SongerPlayButton(QPushButton):
         """ 绘制背景 """
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing, True)
-
         # 设置画笔
         painter.setPen(Qt.NoPen)
-
         # 设置背景图
         brush = QBrush(self.image)
         painter.setBrush(brush)
-
         # 绘制背景图
         if not self.enter:
             painter.drawEllipse(5, 5, 57, 57)
         else:
             painter.drawEllipse(0, 0, 67, 67)
 
+    def setCustomToolTip(self, toolTip, toolTipText: str, x, y):
+        """ 设置提示条和提示条的位置 """
+        self.customToolTip = toolTip
+        self.customToolTipText = toolTipText
+        # 设置提示条的默认显示位置
+        self.toolTipX = x
+        self.toolTipY = y
+
     def enterEvent(self, e):
         """ 鼠标进入按钮时增大按钮并显示提示条 """
         self.enter = True
         self.update()
         if self.customToolTip:
-            self.customToolTip.setText('全部播放')
-            try:
-                self.customToolTip.move(self.parent().parent().x() + 10 + 30-self.customToolTip.width()/2,
-                                        self.parent().parent().y() + 10 + 67 - 33)
-            except:
-                print('提示条定位失败')
-            else:
-                self.customToolTip.show()
+            self.customToolTip.setText(self.customToolTipText)
+            self.customToolTip.move(self.toolTipX + e.x(), self.toolTipY + e.y())
+            self.customToolTip.show()
 
     def leaveEvent(self, e):
         """ 鼠标离开按钮时减小按钮并隐藏提示条 """
@@ -73,7 +73,7 @@ class SongerPlayButton(QPushButton):
 class SongerAddToButton(QPushButton):
     """ 歌手头像上的添加到按钮 """
 
-    def __init__(self, parent=None, toolTip=None):
+    def __init__(self, parent=None):
         super().__init__(parent)
         self.resize(65, 65)
 
@@ -84,7 +84,7 @@ class SongerAddToButton(QPushButton):
         # 设置鼠标进入标志位
         self.enter = False
         # 设置悬浮提醒
-        self.customToolTip = toolTip
+        self.customToolTip = None
 
         # 设置背景图
         self.image = QPixmap('resource\\images\\歌手添加到按钮_65_65.png')
@@ -104,19 +104,23 @@ class SongerAddToButton(QPushButton):
         else:
             painter.drawEllipse(0, 0, 65, 65)
 
+    def setCustomToolTip(self, toolTip, toolTipText: str, x, y):
+        """ 设置提示条和提示条的位置 """
+        self.customToolTip = toolTip
+        self.customToolTipText = toolTipText
+        # 设置提示条的默认显示位置
+        self.toolTipX = x
+        self.toolTipY = y
+
     def enterEvent(self, e):
         """ 鼠标进入按钮时增大按钮并显示提示条 """
         self.enter = True
         self.update()
         if self.customToolTip:
-            self.customToolTip.setText('添加到')
-            try:
-                self.customToolTip.move(self.parent().parent().x() + 10 + 102-self.customToolTip.width()/2,
-                                        self.parent().parent().y() + 10 + 67 - 33)
-            except:
-                print('提示条定位失败')
-            else:
-                self.customToolTip.show()
+            self.customToolTip.setText(self.customToolTipText)
+            self.customToolTip.move(
+                self.toolTipX + e.x(), self.toolTipY + e.y())
+            self.customToolTip.show()
 
     def leaveEvent(self, e):
         """ 鼠标离开按钮时减小按钮并隐藏提示条 """
