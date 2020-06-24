@@ -6,8 +6,8 @@ class WindowEffect():
     """ 调用windowEffect.dll来设置窗口外观 """
     dll = cdll.LoadLibrary('dll\\windowEffect.dll')
 
-    def setAcrylicEffect(self, hWnd: HWND, gradientColor: int, accentFlags: bool = False, animationId: int = 0):
-        """ 开启亚克力效果 """
+    def setAcrylicEffect(self, hWnd: HWND, gradientColor: str='FF000066', accentFlags: bool = False, animationId: int = 0):
+        """ 开启亚克力效果,gradientColor对应16进制的rgba四个分量 """
 
         # 设置阴影
         if accentFlags:
@@ -16,7 +16,8 @@ class WindowEffect():
             accentFlags = DWORD(0)
 
         # 设置和亚克力效果相叠加的背景颜色
-        gradientColor = DWORD(gradientColor)
+        gradientColor = gradientColor[::-1]
+        gradientColor = DWORD(int(gradientColor,base=16))
         animationId = DWORD(animationId)
         self.dll.setAcrylicEffect(
             hWnd, accentFlags, gradientColor, animationId)

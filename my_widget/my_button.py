@@ -5,10 +5,9 @@
 import sys
 
 from PyQt5.QtCore import QEvent, QPoint, QSize, Qt, QTimer
-from PyQt5.QtGui import (QBrush, QEnterEvent, QIcon, QPainter,
-                         QPixmap, QScreen)
-from PyQt5.QtWidgets import (QApplication, QGraphicsBlurEffect, QPushButton, QLabel,
-                             QToolTip)
+from PyQt5.QtGui import QBrush, QEnterEvent, QIcon, QPainter, QPixmap
+from PyQt5.QtWidgets import (QApplication, QGraphicsBlurEffect, QLabel,
+                             QPushButton, QToolButton)
 
 
 class SongerPlayButton(QPushButton):
@@ -45,21 +44,18 @@ class SongerPlayButton(QPushButton):
         else:
             painter.drawEllipse(0, 0, 67, 67)
 
-    def setCustomToolTip(self, toolTip, toolTipText: str, x, y):
+    def setCustomToolTip(self, toolTip, toolTipText: str):
         """ 设置提示条和提示条的位置 """
         self.customToolTip = toolTip
         self.customToolTipText = toolTipText
-        # 设置提示条的默认显示位置
-        self.toolTipX = x
-        self.toolTipY = y
 
-    def enterEvent(self, e):
+    def enterEvent(self, e:QEnterEvent):
         """ 鼠标进入按钮时增大按钮并显示提示条 """
         self.enter = True
         self.update()
         if self.customToolTip:
             self.customToolTip.setText(self.customToolTipText)
-            self.customToolTip.move(self.toolTipX + e.x(), self.toolTipY + e.y())
+            self.customToolTip.move(e.globalX() - int(self.customToolTip.width() / 2), e.globalY() - 100)
             self.customToolTip.show()
 
     def leaveEvent(self, e):
@@ -104,13 +100,10 @@ class SongerAddToButton(QPushButton):
         else:
             painter.drawEllipse(0, 0, 65, 65)
 
-    def setCustomToolTip(self, toolTip, toolTipText: str, x, y):
+    def setCustomToolTip(self, toolTip, toolTipText: str):
         """ 设置提示条和提示条的位置 """
         self.customToolTip = toolTip
         self.customToolTipText = toolTipText
-        # 设置提示条的默认显示位置
-        self.toolTipX = x
-        self.toolTipY = y
 
     def enterEvent(self, e):
         """ 鼠标进入按钮时增大按钮并显示提示条 """
@@ -119,7 +112,7 @@ class SongerAddToButton(QPushButton):
         if self.customToolTip:
             self.customToolTip.setText(self.customToolTipText)
             self.customToolTip.move(
-                self.toolTipX + e.x(), self.toolTipY + e.y())
+                e.globalX() - int(self.customToolTip.width() / 2), e.globalY() - 100)
             self.customToolTip.show()
 
     def leaveEvent(self, e):
@@ -128,6 +121,56 @@ class SongerAddToButton(QPushButton):
         self.update()
         if self.customToolTip:
             self.customToolTip.hide()
+
+
+class SongCardPlayButton(QToolButton):
+    """ 定义歌曲卡播放按钮 """
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setFixedSize(61, 61)
+        self.setObjectName('playButton')
+        self.setIcon(QIcon('resource\\images\\black_play_bt.png'))
+        self.setIconSize(QSize(61, 61))
+        
+
+class SongCardAddToButton(QToolButton):
+    """ 定义歌曲卡添加到按钮 """
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setFixedSize(61, 61)
+        self.setObjectName('addToButton')
+        self.setIcon(QIcon('resource\\images\\black_addTo_bt.png'))
+        self.setIconSize(QSize(61, 61))
+
+
+class RandomPlayButton(QPushButton):
+    """ 定义条形随机播放按钮 """
+    def __init__(self, text='', slot=None, parent=None):
+        super().__init__(text, parent)
+        self.setIcon(QIcon('resource\\images\\无序播放所有_130_17.png'))
+        self.setIconSize(QSize(130, 17))
+        self.setCursor(Qt.PointingHandCursor)
+        self.setObjectName('randomPlayButton')
+        self.clicked.connect(slot)
+        self.installEventFilter(self)
+
+    def eventFilter(self, obj, e):
+        """ 当鼠标移到播放模式按钮上时更换图标 """
+        if obj == self:
+            if e.type() == QEvent.Enter or e.type() == QEvent.HoverMove:
+                self.setIcon(QIcon('resource\\images\\无序播放所有_hover_130_17.png'))
+            elif e.type() == QEvent.Leave:
+                self.setIcon(QIcon('resource\\images\\无序播放所有_130_17.png'))
+        return False
+
+
+class SortModeButton(QPushButton):
+    """ 定义排序模式按钮 """
+    def __init__(self, text,slot, parent=None):
+        super().__init__(text, parent)
+        self.setCursor(Qt.PointingHandCursor)
+        self.setObjectName('sortModeButton')
+        self.clicked.connect(slot)
 
 
 class MinimizeButton(QPushButton):

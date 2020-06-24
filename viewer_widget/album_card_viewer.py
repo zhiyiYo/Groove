@@ -11,11 +11,11 @@ from PyQt5.QtWidgets import (
     QVBoxLayout, QWidget)
 
 sys.path.append('..')
-from Groove.card_widget.album_card import AlbumCard
-from Groove.get_info.get_album_info import AlbumInfo
-from Groove.get_info import get_album_cover
-from Groove.my_widget.album_blur_background import AlbumBlurBackground
 from Groove.my_widget.my_toolTip import ToolTip
+from Groove.my_widget.album_blur_background import AlbumBlurBackground
+from Groove.get_info import get_album_cover
+from Groove.get_info.get_album_info import AlbumInfo
+from Groove.card_widget.album_card import AlbumCard
 
 
 class AlbumCardViewer(QWidget):
@@ -32,21 +32,22 @@ class AlbumCardViewer(QWidget):
         self.sortMode = '添加时间'
 
         # 先扫描本地音乐的专辑封面
-        self.getAlbumCover = get_album_cover.AlbumCover(target_path)
+        self.getAlbumCover = get_album_cover.GetAlbumCover(target_path)
         # 获取专辑信息
         self.albumInfo = AlbumInfo()
 
         # 实例化布局
-        self.albumView_h_layout = QHBoxLayout()
+        self.albumView_hLayout = QHBoxLayout()
         self.all_h_layout = QHBoxLayout()
 
         # 实例化滚动区域和滚动区域的窗口
         self.scrollArea = QScrollArea(self)
-        self.albumView = QWidget()
-        self.albumView.albumBlurBackground = AlbumBlurBackground(self.albumView)
+        self.albumViewWidget = QWidget()
+        self.albumViewWidget.albumBlurBackground = AlbumBlurBackground(
+            self.albumViewWidget)
 
         # 实例化提示条
-        self.albumView.customToolTip = ToolTip(parent=self.albumView)
+        self.albumViewWidget.customToolTip = ToolTip(parent=self.albumViewWidget)
 
         # 初始化小部件
         self.initWidget()
@@ -59,14 +60,14 @@ class AlbumCardViewer(QWidget):
 
     def initWidget(self):
         """ 初始化小部件 """
-        self.resize(1267, 638)
+        self.resize(1267, 781-23)
         self.scrollArea.setVerticalScrollBarPolicy(
             Qt.ScrollBarAlwaysOff)
         self.scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scrollArea.verticalScrollBar().setSingleStep(30)
-        self.albumView.albumBlurBackground.hide()
+        self.albumViewWidget.albumBlurBackground.hide()
         self.setObjectName('father')
-        self.albumView.setObjectName('albumView')
+        self.albumViewWidget.setObjectName('albumViewWidget')
 
     def createAlbumCards(self):
         """ 将专辑卡添加到窗口中 """
@@ -93,10 +94,10 @@ class AlbumCardViewer(QWidget):
         self.gridLayout.setVerticalSpacing(11)
         self.gridLayout.setHorizontalSpacing(0)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
-        self.albumView_h_layout.setContentsMargins(0, 0, 0, 0)
+        self.albumView_hLayout.setContentsMargins(0, 0, 0, 0)
 
-        self.albumView.setLayout(self.albumView_h_layout)
-        self.scrollArea.setWidget(self.albumView)
+        self.albumViewWidget.setLayout(self.albumView_hLayout)
+        self.scrollArea.setWidget(self.albumViewWidget)
         # 设置全局布局
         self.all_h_layout.addWidget(self.scrollArea)
         self.all_h_layout.setContentsMargins(0, 0, 0, 0)
@@ -142,12 +143,12 @@ class AlbumCardViewer(QWidget):
             for i in range(gridLayout.columnCount() - 1, self.column_num - 1, -1):
                 gridLayout.setColumnMinimumWidth(i, 0)
 
-        self.albumView.setFixedWidth(221 * self.column_num+20)
+        self.albumViewWidget.setFixedWidth(221 * self.column_num)
         if self.sortMode == '添加时间':
-            self.albumView.setFixedHeight(303*self.total_row_num)
+            self.albumViewWidget.setFixedHeight(303*self.total_row_num)
         else:
             # 补上分组标题所占的高度
-            self.albumView.setFixedHeight(
+            self.albumViewWidget.setFixedHeight(
                 303*self.total_row_num+34*len(self.currentGroupDict_list))
 
     def resizeEvent(self, event):
@@ -179,10 +180,10 @@ class AlbumCardViewer(QWidget):
             currentGroup_dict['gridLayout'].deleteLater()
 
         # 先移除albumView_h_layout的当前分组
-        self.albumView_h_layout.removeItem(self.album_h_layout_clayout)
+        self.albumView_hLayout.removeItem(self.albumView_hLayout_cLayout)
         # 创建一个新的竖直布局再将其加到布局中
         self.v_layout = QVBoxLayout()
-        self.album_h_layout_clayout = self.v_layout
+        self.albumView_hLayout_cLayout = self.v_layout
 
     def __addGroupToLayout(self):
         """ 将当前的分组添加到箱式布局中 """
@@ -195,7 +196,7 @@ class AlbumCardViewer(QWidget):
             if index < len(self.currentGroupDict_list)-1:
                 self.v_layout.addSpacing(10)
 
-        self.albumView_h_layout.addLayout(self.v_layout)
+        self.albumView_hLayout.addLayout(self.v_layout)
 
     def sortByAddTimeGroup(self):
         """ 按照添加时间分组 """
@@ -205,16 +206,16 @@ class AlbumCardViewer(QWidget):
             self.sortMode = '添加时间'
             # 将组合框从布局中移除
             for currentGroup_dict in self.currentGroupDict_list:
-                self.album_h_layout_clayout.removeWidget(
+                self.albumView_hLayout_cLayout.removeWidget(
                     currentGroup_dict['group'])
                 # 删除groupBox和布局
                 currentGroup_dict['group'].deleteLater()
                 currentGroup_dict['gridLayout'].deleteLater()
             # 移除旧布局
-            self.albumView_h_layout.removeItem(self.album_h_layout_clayout)
+            self.albumView_hLayout.removeItem(self.albumView_hLayout_cLayout)
             self.update()
 
-        self.album_h_layout_clayout = self.gridLayout
+        self.albumView_hLayout_cLayout = self.gridLayout
         # 构造一个包含布局和小部件列表字典的列表
         self.addTimeGroup_list = [
             {'gridLayout': self.gridLayout, 'album_list': self.albumCard_list, 'group': QGroupBox()}]
@@ -223,7 +224,7 @@ class AlbumCardViewer(QWidget):
         # 更新网格
         self.__updateGridLayout()
         # 更新布局
-        self.albumView_h_layout.addLayout(self.gridLayout)
+        self.albumView_hLayout.addLayout(self.gridLayout)
 
     def __createFirstLetterGroup(self):
         """ 按照首字母对歌手创建分组 """

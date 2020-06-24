@@ -18,13 +18,11 @@ class SongerCard(QWidget):
         # 实例化歌手名标签和背景
         self.backgroundLabel = QLabel(self)
         self.songerNameLabel = SongerName(songer_name, self)
-
         # 实例化歌手头像
         self.songerHeadPortrait = SongerHeadPortrait(songer_pic_path, self)
-
+        
         # 初始化小部件
         self.initWidget()
-
         # 设置层叠样式
         self.setQss()
 

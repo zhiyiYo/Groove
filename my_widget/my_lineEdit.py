@@ -37,7 +37,6 @@ class LineEdit(QLineEdit):
         self.clearButton.setIconSize(QSize(39, 39))
         self.clearButton.clicked.connect(self.clearText)
         self.clearButton.setHidden(True)
-        #self.clearButton.installEventFilter(self)
 
     def initLayout(self):
         """ 初始化布局 """
@@ -81,28 +80,18 @@ class LineEdit(QLineEdit):
         super().focusOutEvent(e)
         self.clearButton.setHidden(True)
 
-    def eventFilter(self, obj, e):
-        """ 当鼠标进入或离开按钮时改变按钮的图片 """
-        if e.type() == QEvent.Enter:
-            self.clearButton.setIcon(
-                QIcon('resource\\images\\clearInfo_cross_hover.png'))
-        elif e.type() == QEvent.Leave:
-            self.clearButton.setIcon(
-                QIcon('resource\\images\\clearInfo_cross.png'))
-        return False
-
     def enterEvent(self, e):
-        """ 鼠标进入时显示提示条 """
+        """ 鼠标进入时显示提示条并改变按钮图片 """
         self.clearButton.setIcon(
             QIcon('resource\\images\\clearInfo_cross_hover.png'))
         if self.customToolTip:
             self.customToolTip.setText(self.customToolTipText)
-            self.customToolTip.move(
-                self.x() + e.x() + 10, self.y() + e.y() - 70)
+            self.customToolTip.move(e.globalX() - int(self.customToolTip.width() / 2),
+                                    e.globalY() - 90 - self.customToolTip.isWordWrap * 60)
             self.customToolTip.show()
 
     def leaveEvent(self, e):
-        """ 鼠标移出时隐藏提示条 """
+        """ 鼠标移出时隐藏提示条并改变按钮图片 """
         self.clearButton.setIcon(
             QIcon('resource\\images\\clearInfo_cross.png'))
         if self.customToolTip:

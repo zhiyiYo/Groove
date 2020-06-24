@@ -13,20 +13,20 @@ sys.path.append('..')
 from Groove.card_widget.songer_card import SongerCard
 
 
-class SongerHeadPortraitViewer(QWidget):
+class SongerCardViewer(QWidget):
     """ 创建一个包含所有歌手头像的界面 """
 
     def __init__(self):
         super().__init__()
 
-        self.resize(1267, 638)
+        self.resize(1267, 781-23)
         # 设置网格列数
         self.column_num = 5
         self.total_cow_num = 0
 
         # 实例化一个滚动区域
         self.scrollArea = QScrollArea(self)
-        self.songerHeadViewer = QWidget()
+        self.songerViewWidget = QWidget()
 
         # 实例化标题栏
         #self.firstLetterLabel = QLabel('A', self)
@@ -59,7 +59,7 @@ class SongerHeadPortraitViewer(QWidget):
 
         # 分配ID
         self.setObjectName('father')
-        self.songerHeadViewer.setObjectName('songerHeadViewer')
+        self.songerViewWidget.setObjectName('songerViewWidget')
         # self.firstLetterLabel.setObjectName('firstLetter')
 
     def createSongerHeadPortraits(self):
@@ -152,9 +152,9 @@ class SongerHeadPortraitViewer(QWidget):
             self.v_layout.addSpacing(10)
 
         # 设置歌手头像视图窗口的布局
-        self.songerHeadViewer.setLayout(self.v_layout)
+        self.songerViewWidget.setLayout(self.v_layout)
         # 将歌手头像窗口添加到滚动区域中
-        self.scrollArea.setWidget(self.songerHeadViewer)
+        self.scrollArea.setWidget(self.songerViewWidget)
         # 设置全局布局
         self.all_h_layout.addWidget(self.scrollArea)
         self.all_h_layout.setContentsMargins(0, 0, 0, 0)
@@ -162,7 +162,7 @@ class SongerHeadPortraitViewer(QWidget):
 
     def setQss(self):
         """ 设置层叠样式 """
-        with open(r'resource\css\songerHeadPortraitViewer.qss', encoding='utf-8') as f:
+        with open(r'resource\css\songerCardViewer.qss', encoding='utf-8') as f:
             qss = f.read()
             self.setStyleSheet(qss)
 
@@ -201,8 +201,8 @@ class SongerHeadPortraitViewer(QWidget):
                 gridLayout.setColumnMinimumWidth(i, 0)
 
         # 设置窗口的最小宽度
-        self.songerHeadViewer.setFixedWidth(self.column_num * 224)
-        self.songerHeadViewer.setFixedHeight(
+        self.songerViewWidget.setFixedWidth(self.column_num * 224)
+        self.songerViewWidget.setFixedHeight(
             284*self.total_cow_num+40*len(self.songerHeadGroup_dict_list))
 
     def resizeEvent(self, event):
@@ -226,6 +226,6 @@ class SongerHeadPortraitViewer(QWidget):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    demo = SongerHeadPortraitViewer()
+    demo = SongerCardViewer()
     demo.show()
     sys.exit(app.exec_())

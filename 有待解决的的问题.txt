@@ -2,5 +2,6 @@
 	5.歌手头像页面网格列数调整
 	8.子部件的磨砂
 	9.窗口圆角和磨砂的同时实现
-	10.ongCard的两个可点击标签太长了，需要加个mask
+	10.songCard的两个可点击标签太长了，需要加个mask
 	11.批量操作的样式
+	12.禁止ToolTip捕获enterEvent和leaveEvent

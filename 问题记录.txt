@@ -16,3 +16,4 @@ self.setStyleSheet("background-color: rgb(255,255, 255)");
 13.使用raise_()函数可以使子窗口置顶
 14.e.pos()返回的是事件相对小部件自己的位置
 15.可以通过设置最外层的布局self.all_h_layout.setSizeConstraint(QLayout.SetFixedSize)来自动调整大小
+16.要在小部件上使用磨砂效果只需将其设置成独立窗体，比如qt.window、Qt.popup

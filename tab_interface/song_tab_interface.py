@@ -8,6 +8,8 @@ from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
 sys.path.append('..')
 from Groove.viewer_widget.song_card_list_widget import SongCardListWidget
 from Groove.my_widget.my_menu import Menu
+from Groove.my_widget.my_button import RandomPlayButton,SortModeButton
+
 
 class SongTabInterface(QWidget):
     """ 创建歌曲标签界面 """
@@ -15,9 +17,7 @@ class SongTabInterface(QWidget):
     def __init__(self, songs_folder, parent=None):
         super().__init__(parent)
 
-        self.resize(1267, 684)
-        # 创建一个存储播放模式的标志位，4、3、1分别对应随机播放、列表循环、单曲循环
-        #self.loopMode = 4
+        self.resize(1267, 827-23)
 
         # 实例化布局
         self.h_layout = QHBoxLayout()
@@ -26,11 +26,9 @@ class SongTabInterface(QWidget):
         # 实例化标签和下拉菜单
         self.sortModeMenu = Menu(parent=self)
         self.sortModeLabel = QLabel('排序依据:', self)
-        self.sortModeButton = QPushButton('添加日期', self)
-        self.loopModeButton = QPushButton(
-            QIcon('resource\\images\\无序播放所有_130_17.png'), '', self)
-        self.loopModeButton.setIconSize(QSize(130,17))
-
+        self.sortModeButton = SortModeButton('添加日期', self.showSortModeMenu, self)
+        self.randomPlayButton = RandomPlayButton(slot=self.randomPlay, parent=self)
+        
         # 实例化歌曲列表视图
         self.songCardListWidget = SongCardListWidget(songs_folder)
 
@@ -39,7 +37,7 @@ class SongTabInterface(QWidget):
 
         # 设置初始排序方式
         self.currentSortMode = self.sortByCratedTime
-        self.sortModeNum_dict = {'添加日期': 0, 'A到Z': 1,'歌手': 2}
+        self.sortModeNum_dict = {'添加日期': 0, 'A到Z': 1, '歌手': 2}
         # 初始化UI界面
         self.initWidget()
         self.initLayout()
@@ -48,34 +46,23 @@ class SongTabInterface(QWidget):
     def initWidget(self):
         """ 初始化小部件的属性 """
 
-        #隐藏滚动条
-        self.songCardListWidget.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        # 隐藏滚动条
+        self.songCardListWidget.setVerticalScrollBarPolicy(
+            Qt.ScrollBarAlwaysOff)
 
-        #获取歌曲总数
-        songs_num = len(self.songCardListWidget.song_card_list)
-        self.loopModeButton.setText(f'({songs_num})')
-
-        # 设置鼠标光标
-        self.sortModeButton.setCursor(Qt.PointingHandCursor)
-        self.loopModeButton.setCursor(Qt.PointingHandCursor)
+        # 获取歌曲总数
+        songs_num = len(self.songCardListWidget.songCard_list)
+        self.randomPlayButton.setText(f'({songs_num})')
 
         # 分配ID
         self.sortModeMenu.setObjectName('sortModeMenu')
         self.sortModeLabel.setObjectName('sortModeLabel')
-        self.sortModeButton.setObjectName('sortModeButton')
-        self.loopModeButton.setObjectName('loopModeButton')
 
-        # 将信号连接到槽函数
-        self.loopModeButton.clicked.connect(self.changeLoopMode)
-        self.sortModeButton.clicked.connect(self.showSortModeMenu)
-
-        # 给loopModeButton设置监听
-        self.loopModeButton.installEventFilter(self)
 
     def initLayout(self):
         """ 初始化布局 """
 
-        self.h_layout.addWidget(self.loopModeButton, 0, Qt.AlignLeft)
+        self.h_layout.addWidget(self.randomPlayButton, 0, Qt.AlignLeft)
         self.h_layout.addSpacing(30)
         self.h_layout.addWidget(self.sortModeLabel, 0, Qt.AlignLeft)
         self.h_layout.addWidget(self.sortModeButton, 0, Qt.AlignLeft)
@@ -107,7 +94,7 @@ class SongTabInterface(QWidget):
         self.sortModeMenu.addActions(
             [self.sortByCratedTime, self.sortByDictOrder, self.sortBySonger])
 
-    def changeLoopMode(self):
+    def randomPlay(self):
         """ 改变播放的循环模式 """
         pass
 
@@ -118,9 +105,9 @@ class SongTabInterface(QWidget):
         # 清空旧的列表
         self.songCardListWidget.clear()
         self.songCardListWidget.item_list.clear()
-        self.songCardListWidget.song_card_list.clear()
+        self.songCardListWidget.songCard_list.clear()
         # 清除选中item
-        self.songCardListWidget.preItem=None
+        self.songCardListWidget.preItem = None
         # 更新列表
         if sender == self.sortByCratedTime:
             self.sortModeButton.setText('添加时间')
@@ -142,25 +129,13 @@ class SongTabInterface(QWidget):
         self.sortModeMenu.setDefaultAction(self.currentSortMode)
         self.sortModeMenu.exec(
             self.mapToGlobal(QPoint(self.sortModeButton.x(),
-                             self.sortModeButton.y() - 37*self.sortModeNum_dict[self.currentSortMode.text()]-1)))
+                                    self.sortModeButton.y() - 37*self.sortModeNum_dict[self.currentSortMode.text()]-1)))
 
     def setQss(self):
         """ 设置层叠样式 """
         with open('resource\\css\\songTabInterface.qss', 'r', encoding='utf-8') as f:
             qss = f.read()
             self.setStyleSheet(qss)
-
-    def eventFilter(self, obj, event):
-        """ 当鼠标移到播放模式按钮上时更换图标 """
-        if obj == self.loopModeButton:
-            if event.type() == QEvent.Enter or event.type() == QEvent.HoverMove:
-                self.loopModeButton.setIcon(
-                    QIcon('resource\\images\\无序播放所有_hover_130_17.png'))
-            elif event.type() == QEvent.Leave:
-                self.loopModeButton.setIcon(
-                    QIcon('resource\\images\\无序播放所有_130_17.png'))
-
-        return QWidget.eventFilter(self, obj, event)
 
 
 if __name__ == "__main__":

@@ -10,7 +10,7 @@ from mutagen.flac import Picture
 from .get_song_info import SongInfo
 
 
-class AlbumCover():
+class GetAlbumCover():
     """ 定义一个遍历音频文件和封面文件夹获取专辑封面的类 """
 
     def __init__(self, target_path):
@@ -146,4 +146,4 @@ class AlbumCover():
 
 
 if __name__ == "__main__":
-    albumCover = AlbumCover('D:\\KuGou')
+    getAlbumCover = GetAlbumCover('D:\\KuGou')

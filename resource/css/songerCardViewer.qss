@@ -1,5 +1,5 @@
 QWidget#father,
-QWidget#songerHeadViewer {
+QWidget#songerViewWidget {
     background-color: white;
 }
 
@@ -12,7 +12,7 @@ QScrollArea {
 QGroupBox {
     font: 18px 'Microsoft YaHei Light';
     font-weight: bold;
-    color: rgb(0,107,131);
+    color: rgb(0, 107, 131);
     border: none;
     margin-top: 20px;
 }
@@ -23,10 +23,10 @@ QGroupBox::title {
 
 }
 
-QLabel#firstLetter{
+QLabel#firstLetter {
     font: 18px 'Microsoft YaHei Light';
     font-weight: bold;
-    color: rgb(0,107,131);
+    color: rgb(0, 107, 131);
     padding-left: 22px;
     background-color: white;
 }

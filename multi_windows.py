@@ -11,7 +11,7 @@ class MultiWindows(QWidget):
 
     def __init__(self):
         super().__init__()
-        self.resize(1300,852)
+        self.resize(1300, 995)
         self.setStyleSheet('background:white')
 
         self.vbox = QVBoxLayout()
@@ -24,7 +24,7 @@ class MultiWindows(QWidget):
         self.vbox.addWidget(self.stackWidget)
         self.stackWidget.addWidget(self.musicGroup)
 
-        for albumCard in self.musicGroup.myMusicWindows.albumTag.albumViewer.albumCard_list:
+        for albumCard in self.musicGroup.myMusicTabWidget.albumTag.albumCardViewer.albumCard_list:
             albumCard.songerName.clicked.connect(self.showSubWindow)
 
         self.setLayout(self.vbox)

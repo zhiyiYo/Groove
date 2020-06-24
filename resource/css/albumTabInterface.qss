@@ -2,14 +2,14 @@ QWidget#albumTabInterface {
     background-color: white;
 }
 
-QPushButton#randomPlayBt {
+QPushButton#randomPlayButton {
     background-color: white;
     border: none;
     margin-left: 1px;
     font: 15px 'Microsoft YaHei';
 }
 
-QPushButton#randomPlayBt:hover {
+QPushButton#randomPlayButton:hover {
     color: rgb(110, 110, 110);
 }
 

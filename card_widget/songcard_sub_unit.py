@@ -9,7 +9,8 @@ from PyQt5.QtCore import QPoint, QSize, Qt
 from PyQt5.QtGui import QContextMenuEvent, QIcon, QMouseEvent,QEnterEvent
 from PyQt5.QtWidgets import (QAction, QApplication, QCheckBox, QHBoxLayout,
                              QLabel, QPushButton, QToolButton, QWidget)
-
+sys.path.append('..')
+from Groove.my_widget.my_button import SongCardPlayButton,SongCardAddToButton
 
 class SongNameCard(QWidget):
     """ 定义一个放置歌名和按钮的窗口 """
@@ -19,15 +20,12 @@ class SongNameCard(QWidget):
 
         # 设置右键菜单选择标志位
         self.contextMenuSelecting = False
-
         # 实例化小部件
-        self.setFixedWidth(342)
         self.songNameCheckBox = QCheckBox(songName, self)
         self.buttonGroup = ButtonGroup(self)
-        
+        # 引用按钮
         self.playButton = self.buttonGroup.playButton
         self.addToButton = self.buttonGroup.addToButton
-
         # 实例化布局
         self.all_h_layout = QHBoxLayout()
         # 初始化布局
@@ -43,6 +41,7 @@ class SongNameCard(QWidget):
 
     def initWidget(self):
         """ 初始化小部件 """
+        self.setFixedWidth(342)
         self.widgetList=[self.songNameCheckBox,self.addToButton,self.playButton]
         # 设置按钮的绝对坐标
         self.buttonGroup.move(195,0)
@@ -82,10 +81,8 @@ class YearTconDurationCard(QWidget):
         self.tconLabel = QLabel(tcon, self)
         self.yearLabel = QLabel(year, self)
         self.durationLabel = QLabel(duration, self)
-
         # 实例化布局
         self.h_layout = QHBoxLayout(self)
-
         # 初始化布局
         self.initLayout()
         self.initWidget()
@@ -126,8 +123,8 @@ class ButtonGroup(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.playButton = QToolButton(self)
-        self.addToButton = QToolButton(self)
+        self.playButton = SongCardPlayButton(self)
+        self.addToButton = SongCardAddToButton(self)
         self.initWidget()
         self.setQss()
 
@@ -135,26 +132,14 @@ class ButtonGroup(QWidget):
         """ 初始化小部件 """
         self.setAttribute(Qt.WA_StyledBackground)
         self.setFixedSize(147, 61)
-        self.addToButton.setFixedSize(61, 61)
-        self.playButton.setFixedSize(61, 61)
-        self.addToButton.setIcon(QIcon('resource\\images\\black_addTo_bt.png'))
-        self.playButton.setIcon(QIcon('resource\\images\\black_play_bt.png'))
-        self.addToButton.setIconSize(QSize(61, 61))
-        self.playButton.setIconSize(QSize(61, 61))
-        
         # 设置按钮的绝对坐标
         self.addToButton.move(86, 0)
         self.playButton.move(25, 0)
-
         # 分配ID
-        self.addToButton.setObjectName('addToButton')
-        self.playButton.setObjectName('playButton')
         self.setObjectName('buttonGroup')
-
         # 按钮窗口的state有四种状态:
         # leave and unClicked、leave and clicked、enter and unClicked、enter and clicked
         self.setProperty('state', 'leave and unClicked')
-
         # 隐藏按钮
         self.playButton.setHidden(True)
         self.addToButton.setHidden(True)
@@ -167,8 +152,6 @@ class ButtonGroup(QWidget):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    #demo = SongNameCard('何十年後に「君」と出会っていなかったアナタに向けた歌')
-    demo=ButtonGroup()
+    demo = SongNameCard('何十年後に「君」と出会っていなかったアナタに向けた歌')
     demo.show()
-    print(demo.objectName())
     sys.exit(app.exec_())

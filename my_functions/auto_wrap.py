@@ -1,6 +1,7 @@
 import re
 
-def autoWrap(text:str,maxCharactersNum:int):
+
+def autoWrap(text: str, maxCharactersNum: int):
     """ 根据专辑名的长度决定是否换行,maxCharactersNum是text换算为1个宽度字符的总宽度 """
     # 设置换行标志位
     isWordWrap = True
@@ -16,7 +17,7 @@ def autoWrap(text:str,maxCharactersNum:int):
                 # 记录上一个空格的下标
                 blank_index = index
             if alpha_num + 2 * not_alpha_num == maxCharactersNum:
-                # 发生异常就说明正好22个长度
+                # 发生异常就说明正好maxCharactersNum-1个长度
                 try:
                     if text[index + 1] == ' ':
                         # 插入换行符
@@ -50,6 +51,5 @@ def autoWrap(text:str,maxCharactersNum:int):
     else:
         isWordWrap = False
     newText = ''.join(text_list)
-    
-    return newText,isWordWrap
-    
+
+    return newText, isWordWrap

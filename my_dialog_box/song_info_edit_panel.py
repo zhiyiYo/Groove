@@ -112,12 +112,8 @@ class SongInfoEditPanel(QDialog):
         self.cancelButton.setFixedSize(165, 41)
 
         # 设置报警标签的大小和位置
-        self.emptyTrackErrorLabel.setPixmap(
-            QPixmap('resource\\images\\empty_lineEdit_error.png'))
-        self.emptyTrackErrorLabel.setFixedSize(21, 21)
         self.emptyTrackErrorLabel.move(7, 224)
         self.emptyTrackErrorLabel.hide()
-        # self.emptyTrackErrorLabel.setToolTip('曲目必须是1000以下的数字')
         self.installEventFilter(self)
 
         # 如果曲目为空就禁用保存按钮并更改属性

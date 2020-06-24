@@ -1,4 +1,4 @@
-QTabWidget#MyMusicWindows {
+QTabWidget#MyMusicTabWidget {
     background-color: white;
 }
 

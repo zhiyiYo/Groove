@@ -33,11 +33,11 @@ class AlbumCard(QWidget):
         self.songerName = ClickableLabel(albumInfo['songer'], self)
 
         # 实例化专辑封面
-        self.albumCover = AlbumCover(albumInfo['cover_path'], self)
+        self.albumCoverWindow = AlbumCoverWindow(albumInfo['cover_path'], self)
 
         # 引用两个按钮
-        self.playButton = self.albumCover.playButton
-        self.addToButton = self.albumCover.addToButton
+        self.playButton = self.albumCoverWindow.playButton
+        self.addToButton = self.albumCoverWindow.addToButton
 
         # 初始化小部件
         self.initWidget()
@@ -53,7 +53,7 @@ class AlbumCard(QWidget):
         # 设置鼠标光标
         self.songerName.setCursor(Qt.PointingHandCursor)
         # 设置部件位置
-        self.albumCover.move(10, 10)
+        self.albumCoverWindow.move(10, 10)
         self.albumName.move(10, 218)
         self.songerName.move(10, 244)
         self.adjustLabel()
@@ -62,60 +62,44 @@ class AlbumCard(QWidget):
         self.albumName.setObjectName('albumName')
         self.songerName.setObjectName('songerName')
 
-        # 设置监听
-        self.installEventFilter(self)
-
     def setWidgetsToolTip(self):
         """ 设置歌手名和专辑名的自定义提示条 """
         if self.parent():
             # 引用父级的提示条
             self.customToolTip = self.parent().customToolTip
             # 设置歌手名的提示条
-            x = self.x() + 10
-            self.__setWidgetToolTip(
-                self.songerName, self.songerName.text(), x, self.y() + 216 - 30)
+            self.songerName.setCustomToolTip(
+                self.customToolTip, self.songerName.text())
             # 设置专辑名的提示条
-            self.__setWidgetToolTip(
-                self.albumName, self.rawAlbumName, x, self.y() + 190 - 30)
+            self.albumName.setCustomToolTip(
+                self.customToolTip, self.rawAlbumName)
             # 设置两个按钮的提示条
-            y = self.y() + 10 + 67 - 50
-            self.__setWidgetToolTip(
-                self.playButton, '全部播放', self.x() + 40, y - 30)
-            self.__setWidgetToolTip(
-                self.addToButton, '添加到', self.x() + 112, y - 30)
+            self.playButton.setCustomToolTip(self.customToolTip, '全部播放')
+            self.addToButton.setCustomToolTip(self.customToolTip, '添加到')
 
-    def __setWidgetToolTip(self, widget, text: str, x: int, y: int):
-        """ 设置单个小部件的提示条 """
-        # 改变提示条宽度
-        self.customToolTip.setText(text)
-        # 更新x
-        x = x - self.customToolTip.width() / 2
-        widget.setCustomToolTip(self.customToolTip, text, x, y)
-            
-    def eventFilter(self, obj, e):
-        """ 鼠标进入窗口时显示阴影和按钮，否则不显示 """
-        if obj == self:
-            if e.type() == QEvent.Enter:
-                # 窗体移动就更新提示条
-                if self.hasMoved:
-                    self.setWidgetsToolTip()
-                    self.hasMoved = False  
-                #显示磨砂背景
-                if self.parent():
-                    self.blurBackground = self.parent().albumBlurBackground
-                    self.blurBackground.move(self.x()-20, self.y()+8)
-                    self.blurBackground.subWindow.setPic(self.albumInfo['cover_path'])
-                    self.blurBackground.show()
-                self.albumCover.addToButton.show()
-                self.albumCover.playButton.show()
-            elif e.type() == QEvent.Leave:
-                #隐藏磨砂背景
-                if self.parent():
-                    self.parent().albumBlurBackground.hide()
-                self.albumCover.addToButton.hide()
-                self.albumCover.playButton.hide()
+    def enterEvent(self, e):
+        """ 鼠标进入窗口时显示磨砂背景和按钮 """
+        # 窗体移动就更新提示条
+        if self.hasMoved:
+            self.setWidgetsToolTip()
+            self.hasMoved = False
+        #显示磨砂背景
+        if self.parent():
+            self.blurBackground = self.parent().albumBlurBackground
+            self.blurBackground.move(self.x()-20, self.y()+8)
+            self.blurBackground.subWindow.setPic(
+                self.albumInfo['cover_path'])
+            self.blurBackground.show()
+        self.addToButton.show()
+        self.playButton.show()
 
-        return False
+    def leaveEvent(self, e):
+        """ 鼠标离开时隐藏磨砂背景和按钮 """
+        #隐藏磨砂背景
+        if self.parent():
+            self.parent().albumBlurBackground.hide()
+        self.addToButton.hide()
+        self.playButton.hide()
 
     def contextMenuEvent(self, event: QContextMenuEvent):
         """ 显示右击菜单 """
@@ -163,7 +147,7 @@ class AlbumCard(QWidget):
         """ 检测窗体移动 """
         self.hasMoved = True
 
-class AlbumCover(QWidget):
+class AlbumCoverWindow(QWidget):
     """ 定义专辑封面 """
 
     def __init__(self, album_path, parent=None):
@@ -208,13 +192,11 @@ class AlbumCover(QWidget):
         # 设置无描边
         pen = Qt.NoPen
         painter.setPen(pen)
-        # 设置画刷的内容为封面图
+        # 设置画刷的内容为白底
         brush = QBrush(Qt.white)
         painter.setBrush(brush)
-        # 在指定区域画圆
+        # 在指定区域画图
         painter.drawRect(0, 0, self.width(), self.height())
-
-
 
 
 if __name__ == "__main__":

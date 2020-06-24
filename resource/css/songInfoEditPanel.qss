@@ -46,6 +46,10 @@ QPushButton {
     border-radius: 4px;
 }
 
+QPushButton:pressed:hover{
+    background-color: rgb(153,153,153);
+}
+
 QPushButton:hover {
     background-color: rgb(230, 230, 230);
 }
@@ -54,6 +58,7 @@ QToolButton {
     background: transparent;
 }
 
+/*
 QToolTip {
     border: 1px solid rgb(209, 209, 209);
     font: 15px 'Microsoft YaHei';
@@ -61,3 +66,4 @@ QToolTip {
     padding: 5px 5px 5px 5px;
     height:30px;
 }
+*/

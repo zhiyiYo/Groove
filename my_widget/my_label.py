@@ -1,7 +1,7 @@
 import sys
 
-from PyQt5.QtCore import QPoint, Qt, QTimer, pyqtSignal
-from PyQt5.QtGui import QMouseEvent,QEnterEvent
+from PyQt5.QtCore import QPoint, Qt, QTimer, pyqtSignal,QEvent
+from PyQt5.QtGui import QMouseEvent,QEnterEvent,QPixmap
 from PyQt5.QtWidgets import QApplication, QLabel, QToolTip, QWidget
 #from my_toolTip import ToolTip
 
@@ -15,50 +15,64 @@ class ClickableLabel(QLabel):
         super().__init__(text, parent)
         #储存原始的text
         self.rawText=text
-        self.customToolTip = None 
+        self.customToolTip = None
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         """ 鼠标松开时发送信号 """
         if event.button() == Qt.LeftButton:
             self.clicked.emit()
 
-    def setCustomToolTip(self,toolTip,toolTipText:str, x, y):
+    def setCustomToolTip(self,toolTip,toolTipText:str):
         """ 设置提示条和提示条出现的位置 """
         self.customToolTip = toolTip
         self.customToolTipText = toolTipText
-        # 设置提示条的默认显示位置
-        self.toolTipX = x
-        self.toolTipY = y
         
     def enterEvent(self, e:QEnterEvent):
         """ 如果有设置提示条的话就显示提示条 """
         if self.customToolTip:
             self.customToolTip.setText(self.customToolTipText)
+            # 有折叠发生时需要再加一个偏移量
             self.customToolTip.move(
-                self.toolTipX + e.x(), self.toolTipY + e.y() - self.customToolTip.isWordWrap * 30)
+                e.globalX() - int(self.customToolTip.width() / 2),
+                e.globalY() - 90 - self.customToolTip.isWordWrap * 80)
             self.customToolTip.show()
 
     def leaveEvent(self, e):
         """ 鼠标离开按钮时减小按钮并隐藏提示条 """
-        if self.customToolTip:
-            self.customToolTip.hide()
-
+        if self.parent():
+            if self.customToolTip:
+                self.customToolTip.hide()
+            # 计算全局坐标
+            """ self.globalX = self.parent().mapToGlobal(self.pos()).x()
+            self.globalY = self.parent().mapToGlobal(self.pos()).y()
+            # 判断事件是否发生在标签所占区域内
+            condX = (self.globalX <= self.cursor().pos().x() <= self.globalX + self.width())
+            condY = (self.globalY <= self.cursor().pos().y() <=self.globalY + self.height())
+            if self.customToolTip and not (condX and condY):
+                self.customToolTip.hide() """
+            
 
 class ErrorLabel(QLabel):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.enterTime = 0
+
         # 设置提示条
         self.customToolTip = None
+        self.setPixmap(
+            QPixmap('resource\\images\\empty_lineEdit_error.png'))
+        self.setFixedSize(21, 21)
 
     def enterEvent(self, e):
         """ 鼠标进入时显示提示条 """
         if self.customToolTip:
             self.customToolTip.setText(self.customToolTipText)
             # 有折叠发生时需要再加一个偏移量
-            self.customToolTip.move(self.x() + e.x() + 7,self.y() + e.y() - 40)
+            self.customToolTip.move(
+                e.globalX() - int(self.customToolTip.width() / 2),
+                e.globalY() - 90 - self.customToolTip.isWordWrap * 60)
             self.customToolTip.show()
+            self.hasEnter = True
 
     def leaveEvent(self, e):
         """ 鼠标移出时隐藏提示条 """

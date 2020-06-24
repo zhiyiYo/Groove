@@ -2,7 +2,7 @@ QWidget#songerTabInterface {
     background-color: white;
 }
 
-QPushButton#randomPlayBt {
+QPushButton#randomPlayButton {
     background-color: white;
     border: none;
     margin-top: 2px;
@@ -10,7 +10,7 @@ QPushButton#randomPlayBt {
     font:15px 'Microsoft YaHei';
 }
 
-QPushButton#randomPlayBt:hover {
+QPushButton#randomPlayButton:hover {
     color: rgb(110, 110, 110);
 }
 
