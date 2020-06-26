@@ -11,9 +11,9 @@ sys.path.append('..')
 
 from Groove.my_widget.my_button import SongerAddToButton, SongerPlayButton
 from Groove.my_widget.my_label import ClickableLabel
-from Groove.my_widget.my_menu import Menu
+from Groove.my_widget.my_menu import Menu,AddToMenu
 from Groove.my_functions.auto_wrap import autoWrap
-
+from Groove.my_functions.is_not_leave import isNotLeave
 
 class AlbumCard(QWidget):
     """ 定义包含专辑歌手名的窗口 """
@@ -80,6 +80,7 @@ class AlbumCard(QWidget):
     def enterEvent(self, e):
         """ 鼠标进入窗口时显示磨砂背景和按钮 """
         # 窗体移动就更新提示条
+        #print('鼠标进入专辑卡')
         if self.hasMoved:
             self.setWidgetsToolTip()
             self.hasMoved = False
@@ -95,9 +96,13 @@ class AlbumCard(QWidget):
 
     def leaveEvent(self, e):
         """ 鼠标离开时隐藏磨砂背景和按钮 """
-        #隐藏磨砂背景
         if self.parent():
+            #隐藏磨砂背景
             self.parent().albumBlurBackground.hide()
+            # 判断是否离开
+            notLeave = isNotLeave(self)
+            if notLeave:
+                return
         self.addToButton.hide()
         self.playButton.hide()
 
@@ -105,23 +110,17 @@ class AlbumCard(QWidget):
         """ 显示右击菜单 """
         # 创建菜单
         menu = Menu(parent=self)
-        addToMenu = Menu('添加到', self)
+        addToMenu = AddToMenu('添加到', self)
         addToMenu.setObjectName('addToMenu')
         # 创建动作
         playAct = QAction('播放', self)
         deleteAct = QAction('删除', self)
         chooseAct = QAction('选择', self)
-        playingAct = QAction(QIcon('resource\\images\\正在播放.png'), '正在播放', self)
         editInfoAct = QAction('编辑信息', self)
         showSongerAct = QAction('显示歌手', self)
-        newPlayList = QAction(
-            QIcon('resource\\images\\黑色加号.png'), '新的播放列表', self)
         nextToPlayAct = QAction('下一首播放', self)
         pinToStartMenuAct = QAction('固定到"开始"菜单', self)
-        # 将动作添加到菜单中
-        addToMenu.addAction(playingAct)
-        addToMenu.addSeparator()
-        addToMenu.addAction(newPlayList)
+        # 添加动作到菜单
         menu.addActions([playAct, nextToPlayAct])
         menu.addMenu(addToMenu)
         menu.addActions([showSongerAct, pinToStartMenuAct,

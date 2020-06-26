@@ -17,3 +17,4 @@ self.setStyleSheet("background-color: rgb(255,255, 255)");
 14.e.pos()返回的是事件相对小部件自己的位置
 15.可以通过设置最外层的布局self.all_h_layout.setSizeConstraint(QLayout.SetFixedSize)来自动调整大小
 16.要在小部件上使用磨砂效果只需将其设置成独立窗体，比如qt.window、Qt.popup
+17.可以通过设置已有的属性来直接改变小部件的状态，比如label.setProperty('text',str)可以将实例的text设置为想要的str

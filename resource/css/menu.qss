@@ -14,7 +14,7 @@ QMenu::right-arrow {
     width: 16px;
     height: 16px;
     right: 16px;
-    border-image: url(resource/images/子菜单右箭头2.png);
+    border-image: url(resource/images/menu/子菜单右箭头2.png);
 
 }
 
@@ -91,7 +91,7 @@ QMenu#sortModeMenu::item {
 }
 
 QMenu#sortModeMenu::item:default {
-    background: rgba(9, 158, 220, 0.79);
+    background-color: rgb(168,239,255);
 }
 
 QMenu#sortModeMenu::item:selected {
@@ -99,7 +99,7 @@ QMenu#sortModeMenu::item:selected {
 }
 
 QMenu#sortModeMenu::item:default:selected {
-    background: rgba(9, 158, 240, 0.79);
+    background: rgb(136,233,255);
 }
 
 QMenu#lineEditMenu{

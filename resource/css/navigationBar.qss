@@ -1,0 +1,13 @@
+/* QWidget#navigationBar{
+    background-color:transparent;
+} */
+
+QPushButton {
+    border: none;
+    margin: 0
+}
+
+QPushButton:hover {
+    background: rgb(223, 223, 223)
+}
+

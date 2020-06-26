@@ -3,7 +3,7 @@ from ctypes import c_bool, cdll
 from ctypes.wintypes import HWND
 
 from PyQt5.QtCore import QEvent, Qt
-from PyQt5.QtGui import QIcon,QPainter,QPen,QColor
+from PyQt5.QtGui import QIcon,QPainter,QPen,QColor,QIcon
 from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsDropShadowEffect,
                              QMenu, QWidget)
 sys.path.append('..')
@@ -41,3 +41,30 @@ class Menu(QMenu):
         """ 设置层叠样式 """
         with open('resource\\css\\menu.qss', encoding='utf-8') as f:
             self.setStyleSheet(f.read())
+
+
+class AddToMenu(Menu):
+    """ 添加到菜单 """
+    def __init__(self, string='添加到', parent=None):
+        super().__init__(string, parent)
+        # 创建动作
+        self.createActions()
+
+    def createActions(self):
+        """ 创建三个动作 """
+        self.playingAct = QAction(
+            QIcon('resource\\images\\menu\\正在播放.png'), '正在播放', self)
+        self.newPlayList = QAction(
+            QIcon('resource\\images\\menu\\黑色加号.png'), '新的播放列表', self)
+        self.myLove = QAction(
+            QIcon('resource\\images\\menu\\黑色我喜欢_20_20.png'), '我喜欢', self)
+        self.action_list = [self.playingAct, self.newPlayList, self.myLove]
+        self.addAction(self.playingAct)
+        self.addSeparator()
+        self.addActions([self.newPlayList, self.myLove])
+        
+    def connectToSlots(self, slot_list: list):
+        """ 将触发信号连接到槽函数 """
+        for i in range(3):
+            self.action_list[i].triggered.connect(slot_list[i])
+            

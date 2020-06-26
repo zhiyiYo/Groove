@@ -3,7 +3,10 @@ import sys
 from PyQt5.QtCore import QPoint, Qt, QTimer, pyqtSignal,QEvent
 from PyQt5.QtGui import QMouseEvent,QEnterEvent,QPixmap
 from PyQt5.QtWidgets import QApplication, QLabel, QToolTip, QWidget
-#from my_toolTip import ToolTip
+
+sys.path.append('..')
+from Groove.my_functions.is_not_leave import isNotLeave
+from Groove.my_widget.my_toolTip import ToolTip
 
 
 class ClickableLabel(QLabel):
@@ -29,28 +32,23 @@ class ClickableLabel(QLabel):
         
     def enterEvent(self, e:QEnterEvent):
         """ 如果有设置提示条的话就显示提示条 """
+        #print('鼠标进入标签事件触发')
         if self.customToolTip:
             self.customToolTip.setText(self.customToolTipText)
             # 有折叠发生时需要再加一个偏移量
             self.customToolTip.move(
                 e.globalX() - int(self.customToolTip.width() / 2),
-                e.globalY() - 90 - self.customToolTip.isWordWrap * 80)
+                e.globalY() - 100 - self.customToolTip.isWordWrap * 30)
             self.customToolTip.show()
 
     def leaveEvent(self, e):
-        """ 鼠标离开按钮时减小按钮并隐藏提示条 """
-        if self.parent():
-            if self.customToolTip:
-                self.customToolTip.hide()
-            # 计算全局坐标
-            """ self.globalX = self.parent().mapToGlobal(self.pos()).x()
-            self.globalY = self.parent().mapToGlobal(self.pos()).y()
-            # 判断事件是否发生在标签所占区域内
-            condX = (self.globalX <= self.cursor().pos().x() <= self.globalX + self.width())
-            condY = (self.globalY <= self.cursor().pos().y() <=self.globalY + self.height())
-            if self.customToolTip and not (condX and condY):
-                self.customToolTip.hide() """
-            
+        """ 判断鼠标是否离开标签 """
+        if self.parent() and self.customToolTip:
+            notLeave = isNotLeave(self)
+            if notLeave:
+                return
+            self.customToolTip.hide()
+
 
 class ErrorLabel(QLabel):
 
@@ -63,27 +61,31 @@ class ErrorLabel(QLabel):
             QPixmap('resource\\images\\empty_lineEdit_error.png'))
         self.setFixedSize(21, 21)
 
-    def enterEvent(self, e):
-        """ 鼠标进入时显示提示条 """
-        if self.customToolTip:
-            self.customToolTip.setText(self.customToolTipText)
-            # 有折叠发生时需要再加一个偏移量
-            self.customToolTip.move(
-                e.globalX() - int(self.customToolTip.width() / 2),
-                e.globalY() - 90 - self.customToolTip.isWordWrap * 60)
-            self.customToolTip.show()
-            self.hasEnter = True
-
-    def leaveEvent(self, e):
-        """ 鼠标移出时隐藏提示条 """
-        if self.customToolTip:
-            self.customToolTip.hide()
-
     def setCustomToolTip(self, toolTip, text:str):
         """ 设置提示条和提示条内容 """
         self.customToolTip = toolTip
         self.customToolTipText = text
 
+    def enterEvent(self, e):
+        """ 鼠标进入时显示提示条 """
+        #print('鼠标进入标签')
+        if self.customToolTip:
+            self.customToolTip.setText(self.customToolTipText)
+            # 有折叠发生时需要再加一个偏移量
+            self.customToolTip.move(
+                e.globalX() - int(self.customToolTip.width() / 2),
+                e.globalY() - 100 - self.customToolTip.isWordWrap * 30)
+            self.customToolTip.show()
+            self.hasEnter = True
+
+    def leaveEvent(self, e):
+        """ 判断鼠标是否离开标签 """
+        if self.parent() and self.customToolTip:
+            notLeave = isNotLeave(self)
+            if notLeave:
+                return
+            self.customToolTip.hide()
+        
 
 class Demo(QWidget):
     def __init__(self):

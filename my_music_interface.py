@@ -114,7 +114,6 @@ class MyMusicInterface(QWidget):
         self.myMusicTabWidget.songTag.songCardListWidget.setLineWidth(
             self.width() - 33)
         self.adjustScrollBarHeight()
-        self.playBar.setFixedWidth(self.width())
 
         if self.width() < 1156:
             # 窗口宽度大于956px且小于1156时显示年份标签，隐藏专辑按钮
@@ -154,5 +153,4 @@ if __name__ == "__main__":
 
     demo = MyMusicInterface('D:\\KuGou\\')
     demo.show()
-    demo.playBar.show()
     sys.exit(app.exec_())

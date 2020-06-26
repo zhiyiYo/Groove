@@ -1,17 +1,16 @@
 import sys
 import time
 from json import dump
-from PyQt5.QtCore import QPoint, QSize, Qt, QEvent
-from PyQt5.QtGui import QContextMenuEvent, QIcon, QBrush, QColor, QPixmap
-from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
+from PyQt5.QtCore import QAbstractAnimation,QPoint, QSize, Qt, QEvent,QPropertyAnimation,QEasingCurve
+from PyQt5.QtGui import QContextMenuEvent, QIcon, QBrush, QColor, QPixmap,QWheelEvent
+from PyQt5.QtWidgets import (QAbstractItemView, QAction, QApplication, QHBoxLayout, QLabel,
                              QListWidget, QListWidgetItem, QWidget)
 sys.path.append('..')
 from Groove.get_info.get_song_info import SongInfo
 from Groove.card_widget.songcard import SongCard
 from Groove.my_dialog_box.property_panel import PropertyPanel
 from Groove.my_dialog_box.song_info_edit_panel import SongInfoEditPanel
-from Groove.my_dialog_box.window_mask import WindowMask
-from Groove.my_widget.my_menu import Menu
+from Groove.my_widget.my_menu import Menu,AddToMenu
 
 
 class SongCardListWidget(QListWidget):
@@ -21,6 +20,8 @@ class SongCardListWidget(QListWidget):
         super().__init__()
         self.resize(1267, 781-23)
         self.songs_folder = songs_folder
+        # 实例化控制滚动效果的动画
+        self.animation = QPropertyAnimation(self.verticalScrollBar(), b'value')
 
         # 创建一个项目列表
         self.songCard_list = []
@@ -52,6 +53,15 @@ class SongCardListWidget(QListWidget):
         self.setMouseTracking(True)
         self.setAlternatingRowColors(True)
         self.setSelectionMode(QListWidget.ExtendedSelection)
+        # 将滚动模式改为以像素计算
+        self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
+        self.scrollStep = 50
+        self.verticalScrollBar().setSingleStep(self.scrollStep)
+        
+        # 初始化动画效果
+        self.animation.setDuration(300)
+        self.animation.setEasingCurve(QEasingCurve.OutQuad)
+        self.animation.finished.connect(self.aniFinishedEvent)
         # 分配ID
         self.setObjectName('songCardList')
         self.verticalScrollBar().setObjectName('LWidgetVScrollBar')
@@ -70,34 +80,18 @@ class SongCardListWidget(QListWidget):
             '属性', self, triggered=self.showPropertyPanel)
         self.deleteAct = QAction('删除', self, triggered=self.deleteItem)
         self.selectAct = QAction('选择', self, triggered=self.selectedModeEvent)
-
-        # 创建子菜单的动作
-
-        self.linkPalyingPageAct = QAction(
-            QIcon('resource\\images\\正在播放.png'), '正在播放', self)
-
-        self.createPlaylistAct = QAction(
-            QIcon(QPixmap('resource\\images\\黑色加号.png')), '新的播放列表', self)
-
         # 创建菜单和子菜单
         self.contextMenu = Menu(parent=self)
-        self.addToMenu = Menu('添加到', self)
-
+        self.addToMenu = AddToMenu('添加到', self)
         # 将动作添加到菜单中
         self.contextMenu.addActions([self.playAct, self.nextSongAct])
-        self.addToMenu.addActions(
-            [self.linkPalyingPageAct, self.createPlaylistAct])
-        self.addToMenu.insertSeparator(self.createPlaylistAct)
-
         # 将子菜单添加到主菜单
         self.contextMenu.addMenu(self.addToMenu)
-
         # 将其余动作添加到主菜单
         self.contextMenu.addActions(
             [self.showAlbumAct, self.editInfoAct, self.showPropertyAct, self.deleteAct])
         self.contextMenu.addSeparator()
         self.contextMenu.addAction(self.selectAct)
-
         # 设置菜单的ID
         self.addToMenu.setObjectName('addToMenu')
         self.contextMenu.setObjectName('songCardContextMenu')
@@ -164,23 +158,14 @@ class SongCardListWidget(QListWidget):
     def showPropertyPanel(self):
         """ 显示属性面板 """
         info = eval(self.selectedItems()[0].whatsThis())
-        propertyPanel = PropertyPanel(info)
-
         # 获取祖父级窗口的引用
         try:
             self.grandparent = self.parent().parent().parent().parent()
         except:
             self.grandparent = self.parent()
         # 在祖父窗口中居中显示
-        x = int(self.grandparent.geometry().x() + 0.5 *
-                self.grandparent.width() - 0.5 * propertyPanel.width())
-        y = int(self.grandparent.geometry().y() + 0.5*self.grandparent.height() -
-                0.5 * propertyPanel.height())
-        propertyPanel.move(x, y)
-        mask = WindowMask(self.grandparent)
-        mask.show()
+        propertyPanel = PropertyPanel(info,self.grandparent)
         propertyPanel.exec_()
-        mask.close()
 
     def showSongInfoEditPanel(self):
         """ 显示编辑歌曲信息面板 """
@@ -190,23 +175,15 @@ class SongCardListWidget(QListWidget):
             if info['song_path'] == info_dict['song_path']:
                 self.current_dict = info_dict
                 break
-        self.songInfoEditPanel = SongInfoEditPanel(self.current_dict)
 
         # 获取祖父级窗口的引用
         try:
             self.grandparent = self.parent().parent().parent().parent()
         except:
-            self.grandparent = self.parent()
+            self.grandparent = self
         # 在祖父窗口中居中显示
-        x = int(self.grandparent.geometry().x() + 0.5 *
-                self.grandparent.width() - 0.5 * self.songInfoEditPanel.width())
-        y = int(self.grandparent.geometry().y() + 0.5*self.grandparent.height() -
-                0.5 * self.songInfoEditPanel.height())
-        self.songInfoEditPanel.move(x, y)
-        mask = WindowMask(self.grandparent)
-        mask.show()
+        self.songInfoEditPanel = SongInfoEditPanel(self.current_dict,self.grandparent)
         self.songInfoEditPanel.exec_()
-        mask.close()
 
         # 更新item的信息
         self.selectedItems()[0].setWhatsThis(str(self.current_dict))
@@ -259,7 +236,32 @@ class SongCardListWidget(QListWidget):
         with open('resource\\css\\songCardListWidget.qss', 'r', encoding='utf-8') as f:
             self.setStyleSheet(f.read())
 
+    def wheelEvent(self, e:QWheelEvent):
+        """ 实现滚动动画效果 """
+        # 滚轮转动一次|angleDelta().y()|=120，为负表示向下，为正表示向上,120对应3个singleStep()
+        # 获取滚动前的值
+        super().wheelEvent(e)
+        """ preValue = self.verticalScrollBar().value()
+        deltaValue = int(e.angleDelta().y() / 120 * 3 * self.scrollStep)
+        newValue = preValue - deltaValue
+        if self.animation.state() == QAbstractAnimation.Stopped:
+            self.animation.setStartValue(self.verticalScrollBar().value())
+            self.animation.setEndValue(newValue)
+            # 开始滚动
+            self.animation.start()
+        else:
+            self.animation.pause()
+            self.animation.setDuration(self.animation.duration() + 300)
+            self.animation.setEndValue(newValue)
+            #self.verticalScrollBar().setValue(self.animation.endValue())
+            self.animation.start()
+            #self.animation.setStartValue(self.verticalScrollBar().value()) """
+            
+    def aniFinishedEvent(self):
+        if self.animation.duration() > 300:
+            self.animation.setDuration(300)
 
+            
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     demo = SongCardListWidget('D:\\KuGou')

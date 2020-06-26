@@ -1,7 +1,6 @@
-QDialog {
+QWidget {
     background-color: white;
     border: none;
-    /*border: 1px solid rgb(0, 153, 188);*/
 }
 
 QLabel {
@@ -24,10 +23,12 @@ QPushButton {
     border-radius: 4px;
 }
 
+QPushButton:pressed:hover {
+    background-color: rgb(153, 153, 153);
+}
+
 QPushButton:hover {
     background-color: rgb(230,230,230);
-    border:transparent;
     border-radius: 4px;
-    /*border: 2px solid rgb(122, 122, 122);*/
     padding: 7px 64px 7px 64px;
 }

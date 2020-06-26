@@ -5,3 +5,5 @@
 	10.songCard的两个可点击标签太长了，需要加个mask
 	11.批量操作的样式
 	12.禁止ToolTip捕获enterEvent和leaveEvent
+	13.平滑滚动
+	14.属性面板祖父级窗口的指定

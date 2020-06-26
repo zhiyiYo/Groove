@@ -29,7 +29,9 @@ class ToolTip(QWidget):
         # 设置自己为无边框窗口
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.Window)
         # 设置背景透明和鼠标穿透
-        self.setAttribute(Qt.WA_TranslucentBackground|Qt.WA_ForceDisabled)
+        self.setAttribute(Qt.WA_TranslucentBackground | Qt.WA_TransparentForMouseEvents|Qt.WA_StyledBackground)
+        self.setStyleSheet('background:transparent')
+        self.setAutoFillBackground(False)
         self.timer.setInterval(5000)
         self.timer.timeout.connect(self.timeoutEvent)
         # 引用子窗口的setText成员函数
@@ -39,7 +41,7 @@ class ToolTip(QWidget):
     def initLayout(self):
         """ 初始化布局 """
         self.all_h_layout.addWidget(self.subToolTip, 0, Qt.AlignCenter)
-        self.all_h_layout.setContentsMargins(20,20,20,20)
+        self.all_h_layout.setContentsMargins(40,40,40,40)
         # 根据布局的内小部件大小调整窗体大小
         self.all_h_layout.setSizeConstraint(QHBoxLayout.SetFixedSize)
         self.setLayout(self.all_h_layout)
@@ -58,9 +60,13 @@ class ToolTip(QWidget):
 
     def hide(self):
         """ 隐藏提示条并停止定时器 """
-        super().hide()
         if not self.timer.isActive():
             self.timer.stop()
+        super().hide()    
+
+    def leaveEvent(self, e):
+        # 由于自己会捕获leaveEvent，所以如果自己leaveEvent被触发说明兄弟部件的leaveEvent也被触发了
+        self.hide()
 
 
 class SubToolTip(QWidget):
@@ -89,11 +95,9 @@ class SubToolTip(QWidget):
         self.label.setStyleSheet(""" QLabel{font:15px "Microsoft YaHei";
                                             background:transparent} """)
         # 设置阴影
-        self.dropShadowEffect.setBlurRadius(20)
-        self.dropShadowEffect.setOffset(0,3)
+        self.dropShadowEffect.setBlurRadius(40)
+        self.dropShadowEffect.setOffset(0,5)
         self.setGraphicsEffect(self.dropShadowEffect)
-        # 设置定时器
-        self.timer.setInterval(5000)
 
     def initLayout(self):
         """ 初始化布局 """
@@ -139,17 +143,18 @@ class Demo(QWidget):
         self.toolTip.hide()
         self.toolTip.setText(choice(self.text_list))
         self.label = QLabel('测试', self)
-        self.label.move(150, 100)
+        self.label.move(250, 75)
         self.setStyleSheet('background:white')
-        self.installEventFilter(self)
+        self.label.installEventFilter(self)
 
-    def enterEvent(self, e: QEnterEvent):
-        self.toolTip.setText(choice(self.text_list))
-        self.toolTip.move(self.x()-50,self.y()+100)
-        self.toolTip.show()
-
-    def leaveEvent(self, e):
-        self.toolTip.hide()
+    def eventFilter(self, obj, e):
+        if obj == self.label:
+            if e.type() == QEvent.Enter:
+                self.toolTip.setText(choice(self.text_list))
+                self.toolTip.move(self.cursor().pos().x()-25,self.cursor().pos().y()-30)
+                self.toolTip.show()
+                return True
+        return super().eventFilter(obj,e)
 
 
 if __name__ == "__main__":

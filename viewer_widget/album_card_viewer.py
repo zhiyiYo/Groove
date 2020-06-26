@@ -4,7 +4,7 @@ import re
 import sys
 
 import pinyin
-from PyQt5.QtCore import QPoint, Qt
+from PyQt5.QtCore import QPoint, Qt, QEvent
 from PyQt5.QtGui import QPainter, QPixmap
 from PyQt5.QtWidgets import (
     QApplication, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QScrollArea,
@@ -45,9 +45,12 @@ class AlbumCardViewer(QWidget):
         self.albumViewWidget = QWidget()
         self.albumViewWidget.albumBlurBackground = AlbumBlurBackground(
             self.albumViewWidget)
+        # 引用滚动条
+        self.vScrollBar=self.scrollArea.verticalScrollBar()
 
-        # 实例化提示条
+        # 实例化并引用提示条
         self.albumViewWidget.customToolTip = ToolTip(parent=self.albumViewWidget)
+        self.customToolTip = self.albumViewWidget.customToolTip
 
         # 初始化小部件
         self.initWidget()
@@ -60,12 +63,15 @@ class AlbumCardViewer(QWidget):
 
     def initWidget(self):
         """ 初始化小部件 """
-        self.resize(1267, 781-23)
+        self.resize(1267, 781 - 23)
+        # 初始化滚动条
         self.scrollArea.setVerticalScrollBarPolicy(
             Qt.ScrollBarAlwaysOff)
         self.scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.scrollArea.verticalScrollBar().setSingleStep(30)
+        self.vScrollBar.setSingleStep(30)
+        # 隐藏磨砂背景
         self.albumViewWidget.albumBlurBackground.hide()
+        # 分配ID
         self.setObjectName('father')
         self.albumViewWidget.setObjectName('albumViewWidget')
 

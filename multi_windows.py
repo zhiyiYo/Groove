@@ -3,7 +3,7 @@ from PyQt5.QtCore import QPoint, Qt
 from PyQt5.QtWidgets import (
     QApplication, QGridLayout, QStackedWidget, QHBoxLayout, QVBoxLayout, QWidget, QPushButton)
 
-from music_group_interface import MusicGroupInterface
+from my_music_interface import MyMusicInterface
 
 
 class MultiWindows(QWidget):
@@ -11,12 +11,12 @@ class MultiWindows(QWidget):
 
     def __init__(self):
         super().__init__()
-        self.resize(1300, 995)
+        self.resize(1300, 890)
         self.setStyleSheet('background:white')
 
         self.vbox = QVBoxLayout()
         self.stackWidget = QStackedWidget(self)
-        self.musicGroup = MusicGroupInterface('D:\\KuGou\\', self)
+        self.musicGroup = MyMusicInterface('D:\\KuGou\\', self)
         self.initWidget()
 
     def initWidget(self):

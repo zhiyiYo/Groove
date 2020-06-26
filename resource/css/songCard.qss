@@ -52,7 +52,7 @@ QCheckBox::indicator {
 }
 
 QCheckBox::indicator:checked {
-    border-image: url(resource/images/white_ok_18_18.png);
+    border-image: url(resource/images/songCard/white_ok_18_18.png);
 }
 
 

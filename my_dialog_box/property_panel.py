@@ -7,21 +7,69 @@ from ctypes.wintypes import HWND
 from PyQt5.QtCore import QRect, QSize, Qt, QEvent
 from PyQt5.QtGui import QColor, QPainter, QPen, QPixmap
 from PyQt5.QtWidgets import (QAction, QApplication, QDialog, QHBoxLayout,
-                             QLabel, QPushButton)
+                             QLabel, QPushButton, QWidget, QGraphicsDropShadowEffect)
+                            
+sys.path.append('..')
+from Groove.my_functions.auto_wrap import autoWrap
 
 
 class PropertyPanel(QDialog):
-    """ 创建属性面板类 """
+    """ 父属性面板 """
+    def __init__(self, songInfo: dict, parent=None):
+        super().__init__(parent)
 
-    def __init__(self, songInfo):
-        super().__init__()
+        # 实例化子属性面板
+        self.subPropertyPanel = SubPropertyPanel(songInfo, self)
+        # 初始化
+        self.initWidget()
+        self.initLayout()
+
+    def initWidget(self):
+        """ 初始化小部件 """
+        self.resize(self.subPropertyPanel.size())
+        self.setAttribute(Qt.WA_TranslucentBackground)
+        self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
+        # deleteLater才能真正释放内存
+        self.subPropertyPanel.closeButton.clicked.connect(self.deleteLater)
+        if self.parent():
+            parent_rect = self.parent().geometry()
+            self.setGeometry(parent_rect.x(), parent_rect.y(),
+                             parent_rect.width(), parent_rect.height())
+            self.createWindowMask()
+
+    def initLayout(self):
+        """ 初始化布局 """
+        self.subPropertyPanel.move(int(self.width() / 2 - self.subPropertyPanel.width() / 2),
+                                   int(self.height() / 2 - self.subPropertyPanel.height() / 2))
+    
+    def createWindowMask(self):
+        """ 创建白色透明遮罩 """
+        self.windowMask = QWidget(self)
+        self.windowMask.setStyleSheet('background:rgba(255,255,255,177)')
+        self.windowMask.resize(self.size())
+        self.windowMask.lower()
+
+
+class SubPropertyPanel(QWidget):
+    """ 子属性面板 """
+
+    def __init__(self, songInfo:dict,parent=None):
+        super().__init__(parent)
 
         self.songInfo = songInfo
-        self.resize(942, 590)
-        self.setWindowFlags(Qt.FramelessWindowHint)
         self.pen = QPen(QColor(0, 153, 188))
 
-        # 实例化标签
+        # 实例化小部件
+        self.createWidgets()
+        # 初始化小部件的位置
+        self.initWidget()
+        self.setShadowEffect()
+        # 设置层叠样式
+        self.setQss()
+
+    def createWidgets(self):
+        """ 实例化标签 """
+        # 标题
         self.yearLabel = QLabel('年', self)
         self.diskLabel = QLabel('光盘', self)
         self.tconLabel = QLabel('类型', self)
@@ -33,25 +81,24 @@ class PropertyPanel(QDialog):
         self.songPathLabel = QLabel('文件位置', self)
         self.albumNameLabel = QLabel('专辑标题', self)
         self.albumSongerLabel = QLabel('专辑歌手', self)
-
+        # 内容
         self.disk = QLabel('1', self)
-        self.year = QLabel(songInfo['year'], self)
-        self.tcon = QLabel(songInfo['tcon'], self)
-        self.songer = QLabel(songInfo['songer'], self)
-        self.albumName = QLabel(songInfo['album'][0], self)
-        self.duration = QLabel(songInfo['duration'], self)
-        self.songName = QLabel(songInfo['songName'], self)
-        self.albumSonger = QLabel(songInfo['songer'], self)
-        self.songPath = QLabel(songInfo['song_path'], self)
-        if songInfo['suffix'] in ['.flac', '.mp3']:
-            self.trackNumber = QLabel(songInfo['tracknumber'], self)
-        elif songInfo['suffix'] == '.m4a':
-            trackNUm = str(eval(songInfo['tracknumber'])[0])
+        self.year = QLabel(self.songInfo['year'], self)
+        self.tcon = QLabel(self.songInfo['tcon'], self)
+        self.songer = QLabel(self.songInfo['songer'], self)
+        self.albumName = QLabel(self.songInfo['album'][0], self)
+        self.duration = QLabel(self.songInfo['duration'], self)
+        self.songName = QLabel(self.songInfo['songName'], self)
+        self.albumSonger = QLabel(self.songInfo['songer'], self)
+        self.songPath = QLabel(self.songInfo['song_path'], self)
+        if self.songInfo['suffix'] in ['.flac', '.mp3']:
+            self.trackNumber = QLabel(self.songInfo['tracknumber'], self)
+        elif self.songInfo['suffix'] == '.m4a':
+            trackNUm = str(eval(self.songInfo['tracknumber'])[0])
             self.trackNumber = QLabel(trackNUm, self)
-
         # 实例化关闭按钮
         self.closeButton = QPushButton('关闭', self)
-
+        # 创建小部件列表
         self.label_list_1 = [self.albumName, self.songName,
                              self.songPath, self.songer, self.albumSonger]
         self.label_list_2 = [self.trackNumberLabel, self.trackNumber, self.diskLabel,
@@ -59,16 +106,13 @@ class PropertyPanel(QDialog):
                              self.albumSonger, self.tconLabel, self.tcon, self.durationLabel, self.duration,
                              self.yearLabel, self.year, self.songPathLabel, self.songPath, self.closeButton]
 
-        # 初始化小部件的位置
-        self.initWidget()
-        self.adjustHeight()
-        self.setDropShadowEffect()
-
-        # 设置层叠样式
-        self.setQss()
 
     def initWidget(self):
         """ 初始化小部件的属性 """
+        self.resize(942, 590)
+        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setAttribute(Qt.WA_StyledBackground)
+        # 初始化抬头的位置
         self.tconLabel.move(28, 330)
         self.diskLabel.move(584, 168)
         self.yearLabel.move(652, 330)
@@ -80,7 +124,7 @@ class PropertyPanel(QDialog):
         self.durationLabel.move(584, 330)
         self.trackNumberLabel.move(28, 168)
         self.albumSongerLabel.move(584, 252)
-
+        # 初始化内容的位置
         self.tcon.move(28, 362)
         self.year.move(652, 362)
         self.disk.move(584, 202)
@@ -97,18 +141,19 @@ class PropertyPanel(QDialog):
         self.closeButton.setFixedSize(170, 40)
 
         # 将关闭信号连接到槽函数
-        self.closeButton.clicked.connect(self.close)
+        if not self.parent():
+            self.closeButton.clicked.connect(self.deleteLater)
 
-        # 设置自动折叠
+        # 设置宽度
         for label in self.label_list_1:
-            label.setWordWrap(True)
-            label.setScaledContents(True)
             if label in [self.songer, self.albumSonger]:
                 label.setFixedWidth(291)
             elif label in [self.albumName, self.songName]:
                 label.setFixedWidth(500)
             elif label == self.songPath:
                 label.setFixedWidth(847)
+        # 调整高度
+        self.adjustHeight()
 
         # 分配ID
         self.year.setObjectName('songer')
@@ -120,24 +165,28 @@ class PropertyPanel(QDialog):
 
     def adjustHeight(self):
         """ 如果有换行的发生就调整高度 """
-        rex = r'[\)\.a-zA-Z、\d\(\s]+$'
-        Match_1 = re.match(rex, self.songName.text())
-        Match_2 = re.match(rex, self.songer.text())
-        Match_3 = re.match(rex, self.albumName.text())
-        Match_4 = re.match(rex, self.albumSonger.text())
-        # 如果歌名或者歌手名不是全由英文和数字构成，只要长度大于16就会换行
-        if not Match_1 or not Match_2:
-            if len(self.songName.text()) > 16 or len(self.songer.text()) > 16:
-                # 后面的所有标签向下平移25px
-                for label in self.label_list_2:
-                    label.move(label.geometry().x(), label.geometry().y() + 25)
-                self.resize(self.width(), self.height() + 25)
-        if not Match_3 or not Match_4:
-            if len(self.albumName.text()) > 16 or len(self.albumSonger.text()) > 16:
-                # 后面的所有标签向下平移25px
-                for label in self.label_list_2[8:]:
-                    label.move(label.geometry().x(), label.geometry().y() + 25)
-                self.resize(self.width(), self.height() + 25)
+        newSongName, isSongNameWrap = autoWrap(self.songName.text(), 58)
+        newSonger, isSongerWrap = autoWrap(self.songer.text(), 33)
+        newAlbumName, isAlbumNameWrap = autoWrap(self.albumName.text(), 58)
+        newAlbumSonger, isAlbumSongerWrap = autoWrap(self.albumSonger.text(), 33)
+        newSongPath, isSongPathWrap = autoWrap(self.songPath.text(), 100)
+        if isSongNameWrap or isSongerWrap:
+            self.songName.setText(newSongName)
+            self.songer.setText(newSonger)
+            # 后面的所有标签向下平移25px
+            for label in self.label_list_2:
+                label.move(label.geometry().x(), label.geometry().y() + 25)
+            self.resize(self.width(), self.height() + 25)
+        if isAlbumNameWrap or isAlbumSongerWrap:
+            self.albumName.setText(newAlbumName)
+            self.albumSonger.setText(newAlbumSonger)
+            # 后面的所有标签向下平移25px
+            for label in self.label_list_2[8:]:
+                label.move(label.geometry().x(), label.geometry().y() + 25)
+            self.resize(self.width(), self.height() + 25)
+        if isSongPathWrap:
+            self.songPath.setText(newSongPath)
+            self.resize(self.width(), self.height() + 25)
 
     def setQss(self):
         """ 设置层叠样式表 """
@@ -158,13 +207,38 @@ class PropertyPanel(QDialog):
         self.class_amanded = c_bool(False)
         self.hWnd = HWND(int(self.winId()))
         dll.addShadowEffect(c_bool(1), self.hWnd)
+    
+    def setShadowEffect(self):
+        """ 添加阴影效果 """
+        self.shadowEffect = QGraphicsDropShadowEffect(self)
+        self.shadowEffect.setBlurRadius(50)
+        self.shadowEffect.setOffset(0, 5)
+        self.setGraphicsEffect(self.shadowEffect)
 
+
+class Demo(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.resize(1200, 800)
+        self.setStyleSheet('background:white')
+        self.label = QLabel('测试', self)
+        self.label.move(0,100)
+        self.bt = QPushButton('点击打开属性面板', self)
+        self.bt.move(550, 375)
+        self.bt.clicked.connect(self.showPanel)
+
+    def showPanel(self):
+        # 读取信息
+        with open('Data\\songInfo.json', 'r', encoding='utf-8') as f:
+            songInfo_list = json.load(f)
+        songInfo = songInfo_list[77]
+        panel = PropertyPanel(songInfo, self)
+        panel.exec_()
 
 if __name__ == "__main__":
-    with open('Data\\songInfo.json', 'r', encoding='utf-8') as f:
-        songInfo_list = json.load(f)
-    songInfo = songInfo_list[0]
+    
+    
     app = QApplication(sys.argv)
-    demo = PropertyPanel(songInfo)
+    demo = Demo()
     demo.show()
     sys.exit(app.exec_())

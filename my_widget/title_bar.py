@@ -71,11 +71,13 @@ class TitleBar(QWidget):
         if self.win.isMaximized():
             self.win.showNormal()
             self.maxBt.isMax = False
-            self.maxBt.setIcon(QIcon('resource\\images\\黑色最大化按钮_57_40.png'))
+            self.maxBt.setIcon(
+                QIcon('resource\\images\\titleBar\\黑色最大化按钮_57_40.png'))
         else:
             self.win.showMaximized()
             self.maxBt.isMax = True
-            self.maxBt.setIcon(QIcon('resource\\images\\黑色向下还原按钮_57_40.png'))
+            self.maxBt.setIcon(
+                QIcon('resource\\images\\titleBar\\黑色向下还原按钮_57_40.png'))
 
 
 class Demo(QWidget):

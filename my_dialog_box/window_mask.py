@@ -18,6 +18,5 @@ class WindowMask(QWidget):
         if self.parent() is None:
             return
         parent_rect = self.parent().geometry()
-
         self.setGeometry(0, 0, parent_rect.width(), parent_rect.height())
         super().show()

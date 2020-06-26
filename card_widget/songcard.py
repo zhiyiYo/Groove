@@ -106,9 +106,9 @@ class SongCard(QWidget):
             self.songNameCard.setAllButtonHidden()
             # 更新按钮图标
             self.songNameCard.addToButton.setIcon(
-                QIcon('resource\\images\\black_addTo_bt.png'))
+                QIcon('resource\\images\\songCard\\black_addTo_bt.png'))
             self.songNameCard.playButton.setIcon(
-                QIcon('resource\\images\\black_play_bt.png'))
+                QIcon('resource\\images\\songCard\\black_play_bt.png'))
         else:
             self.songNameCard.setWidgetState(
                 'leave and clicked', 'clicked', 'clicked')
@@ -126,9 +126,9 @@ class SongCard(QWidget):
             self.songNameCard.setAllButtonHidden(False)
             # 更新按钮图标
             self.songNameCard.addToButton.setIcon(
-                QIcon('resource\\images\\black_addTo_bt.png'))
+                QIcon('resource\\images\\songCard\\black_addTo_bt.png'))
             self.songNameCard.playButton.setIcon(
-                QIcon('resource\\images\\black_play_bt.png'))
+                QIcon('resource\\images\\songCard\\black_play_bt.png'))
         else:
             self.songNameCard.setWidgetState(
                 'enter and clicked', 'clicked', 'clicked')
@@ -142,9 +142,9 @@ class SongCard(QWidget):
         self.yearTconDuration.setWidgetState('clicked')
         self.setClickableLabelState('clicked')
         self.songNameCard.addToButton.setIcon(
-            QIcon('resource\\images\\white_add_to_bt.png'))
+            QIcon('resource\\images\\songCard\\white_add_to_bt.png'))
         self.songNameCard.playButton.setIcon(
-            QIcon('resource\\images\\white_play_bt.png'))
+            QIcon('resource\\images\\songCard\\white_play_bt.png'))
         # 更新样式
         self.setStyle(QApplication.style())
 

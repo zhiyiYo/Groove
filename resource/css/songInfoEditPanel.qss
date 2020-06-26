@@ -1,4 +1,4 @@
-QDialog {
+QWidget {
     background-color: white;
 }
 
@@ -55,7 +55,9 @@ QPushButton:hover {
 }
 
 QToolButton {
+    border:none;
     background: transparent;
+    margin:0px;
 }
 
 /*

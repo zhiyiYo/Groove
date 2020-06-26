@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget,QAction
 sys.path.append('..')
 
 from Groove.my_widget.my_button import SongerAddToButton, SongerPlayButton
-from Groove.my_widget.my_menu import Menu
+from Groove.my_widget.my_menu import Menu,AddToMenu
 
 class SongerCard(QWidget):
     """ 定义一个包含歌手头像和名字的类 """
@@ -61,20 +61,14 @@ class SongerCard(QWidget):
     def contextMenuEvent(self, event: QContextMenuEvent):
         """ 显示右击菜单 """
         menu = Menu(parent=self)
-        addToMenu = Menu('添加到', self)
+        addToMenu = AddToMenu('添加到', self)
+        # 创建动作
         playAct = QAction('播放', self)
         chooseAct = QAction('选择', self)
-        playingAct = QAction(QIcon('resource\\images\\正在播放.png'), '正在播放', self)
-        newPlayList = QAction(
-            QIcon('resource\\images\\黑色加号.png'), '新的播放列表', self)
         nextToPlayAct = QAction('下一首播放', self)
         pinToStartMenuAct = QAction('固定到"开始"菜单', self)
         # 设置ID
         addToMenu.setObjectName('addToMenu')
-        # 将动作添加到菜单中
-        addToMenu.addAction(playingAct)
-        addToMenu.addSeparator()
-        addToMenu.addAction(newPlayList)
         menu.addActions([playAct, nextToPlayAct])
         menu.addMenu(addToMenu)
         menu.addAction(pinToStartMenuAct)

@@ -7,6 +7,7 @@ from PyQt5.QtGui import QColor, QPainter, QPen, QPixmap,QEnterEvent,QBitmap,QReg
 from PyQt5.QtWidgets import (QPushButton,
                              QApplication, QWidget, QLabel, QGraphicsBlurEffect, QGraphicsOpacityEffect)
 from effects.window_effect import WindowEffect
+from my_widget.my_toolTip import ToolTip
 
 
 class Father(QWidget):
@@ -15,18 +16,27 @@ class Father(QWidget):
         self.resize(500, 500)
         self.move(500, 100)
         self.setWindowFlags(Qt.FramelessWindowHint)
-        self.widget=QWidget(self)
-        self.label = QLabel('测试', self.widget)
-        self.label.move(100, 100)
-        mask = QRegion(self.frameGeometry())
-        mask -= QRegion(self.geometry())
-        #mask+=QRegion(self.childrenRegion())
-        self.setMask(mask)
+        self.customToolTip = ToolTip('劇場版「ずっと前から好きでした。～告白実行委員会～」オリジナルサウンドトラック',self)
+        self.label = MyLabel('测试',self.customToolTip, self)
+        self.label.move(350, 250)
+        #self.installEventFilter(self)
         
-    def enterEvent(self, e):
-        print(f'窗口的全局坐标为：{self.mapToGlobal(self.label.pos())}')
+class MyLabel(QLabel):
+    def __init__(self, text,tp=None, parent=None):
+        super().__init__(text, parent)
+        self.setStyleSheet('font:20px "Microsoft YaHei"')
+        self.tp=tp
 
+    def enterEvent(self,e:QEnterEvent):
+        if self.tp and not self.tp.isVisible():
+            self.tp.move(e.globalX() -50, e.globalY() +80)
+            self.tp.show()
 
+    def leaveEvent(self, e):
+        #print('鼠标离开标签事件触发，',end='')
+        if self.tp and not self.tp.hasEnter:
+            self.tp.hide()
+    
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
