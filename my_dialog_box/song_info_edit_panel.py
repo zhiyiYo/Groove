@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import (QApplication, QDialog, QGraphicsDropShadowEffect, Q
                              QLineEdit, QPushButton)
 sys.path.append('..')
 
-from Groove.my_dialog_box.modify_songInfo import modifySongInfo
+from Groove.my_functions.modify_songInfo import modifySongInfo
 from Groove.my_widget.my_lineEdit import LineEdit
 from Groove.my_widget.my_label import ErrorLabel
 from Groove.my_widget.my_toolTip import ToolTip
@@ -268,7 +268,10 @@ class SubSongInfoEditPanel(QWidget):
         self.songInfo['year'] = self.yearEditLine.text()[:4]+'年'
         modifySongInfo(self.id_card, self.songInfo)
         self.id_card.save()
-        self.deleteLater()
+        if not self.parent():
+            self.deleteLater()
+        else:
+            self.parent().deleteLater()
 
     def checkTrackEditLine(self):
         """ 检查曲目输入框的内容是否为空 """
@@ -293,12 +296,13 @@ class SubSongInfoEditPanel(QWidget):
 class Demo(QWidget):
     def __init__(self):
         super().__init__()
-        self.resize(1200, 800)
-        self.setStyleSheet('background:white')
-        self.label = QLabel('测试', self)
-        self.label.move(0, 100)
+        self.resize(1280,800)
+        self.setQss()
+        self.label = QLabel(self)
+        self.label.setPixmap(QPixmap(r"D:\hzz\图片\硝子\硝子 (3).jpg").scaled(
+            1280, 800, Qt.KeepAspectRatio, Qt.SmoothTransformation))
         self.bt = QPushButton('点击打开歌曲信息编辑面板', self)
-        self.bt.move(550, 375)
+        self.bt.move(480, 355)
         self.bt.clicked.connect(self.showPanel)
 
     def showPanel(self):
@@ -308,6 +312,10 @@ class Demo(QWidget):
         songInfo = songInfo_list[77]
         panel = SongInfoEditPanel(songInfo, self)
         panel.exec_()
+
+    def setQss(self):
+        with open(r'resource\css\songInfoEditPanel.qss', encoding='utf-8') as f:
+            self.setStyleSheet(f.read())
 
 
 if __name__ == "__main__":

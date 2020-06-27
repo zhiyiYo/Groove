@@ -11,7 +11,7 @@ sys.path.append('..')
 
 from Groove.my_widget.my_button import SongerAddToButton, SongerPlayButton
 from Groove.my_widget.my_label import ClickableLabel
-from Groove.my_widget.my_menu import Menu,AddToMenu
+from Groove.my_widget.my_menu import AlbumCardContextMenu
 from Groove.my_functions.auto_wrap import autoWrap
 from Groove.my_functions.is_not_leave import isNotLeave
 
@@ -109,24 +109,7 @@ class AlbumCard(QWidget):
     def contextMenuEvent(self, event: QContextMenuEvent):
         """ 显示右击菜单 """
         # 创建菜单
-        menu = Menu(parent=self)
-        addToMenu = AddToMenu('添加到', self)
-        addToMenu.setObjectName('addToMenu')
-        # 创建动作
-        playAct = QAction('播放', self)
-        deleteAct = QAction('删除', self)
-        chooseAct = QAction('选择', self)
-        editInfoAct = QAction('编辑信息', self)
-        showSongerAct = QAction('显示歌手', self)
-        nextToPlayAct = QAction('下一首播放', self)
-        pinToStartMenuAct = QAction('固定到"开始"菜单', self)
-        # 添加动作到菜单
-        menu.addActions([playAct, nextToPlayAct])
-        menu.addMenu(addToMenu)
-        menu.addActions([showSongerAct, pinToStartMenuAct,
-                         editInfoAct, deleteAct])
-        menu.addSeparator()
-        menu.addAction(chooseAct)
+        menu = AlbumCardContextMenu(self)
         menu.exec_(event.globalPos())
 
     def adjustLabel(self):

@@ -1,6 +1,6 @@
 /*设置菜单样式*/
 QMenu {
-    background-color: rgba(242, 242, 242,0.7);
+    background-color: rgba(242, 242, 242,0.75);
     /*background-color: white;*/
     font-size: 18px;
     font: 18px "Microsoft YaHei";
@@ -40,9 +40,6 @@ QMenu::item:selected {
     color: black;
 }
 
-QMenu::item:has-siblings:selected {
-    background: rgba(9, 158, 240, 0.79);
-}
 
 QMenu#addToMenu {
     padding: 5px 0px 8px 0px;
@@ -103,7 +100,15 @@ QMenu#sortModeMenu::item:default:selected {
 }
 
 QMenu#lineEditMenu{
-    width: 176px;
+    /*width: 182px;*/
+    width: 1px;
+    border: 1px solid rgb(196, 199, 200);
+    border-radius: 0px;
+    padding: 5px 0px 5px 0px;
+}
+QMenu#lineEditMenu[hasCancelAct='true']{
+    /*width: 213px;*/
+    width: 1px;
 }
 
 QMenu#lineEditMenu::icon{
@@ -113,9 +118,4 @@ QMenu#lineEditMenu::icon{
 
 QMenu#lineEditMenu::item {
     padding-left: 26px;
-}
-
-QMenu#addToMenu {
-    padding: 5px 0px 8px 0px;
-    border: 1px solid rgb(204, 204, 204);
 }

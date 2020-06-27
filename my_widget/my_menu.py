@@ -1,8 +1,8 @@
 import sys
-from ctypes import c_bool, cdll
+
 from ctypes.wintypes import HWND
 
-from PyQt5.QtCore import QEvent, Qt
+from PyQt5.QtCore import QAbstractAnimation, QEasingCurve, QEvent, Qt, QPropertyAnimation, QRect
 from PyQt5.QtGui import QIcon,QPainter,QPen,QColor,QIcon
 from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsDropShadowEffect,
                              QMenu, QWidget)
@@ -16,12 +16,12 @@ class Menu(QMenu):
     """ 自定义菜单 """
     windowEffect = WindowEffect()
 
-    def __init__(self, string=None, parent=None):
+    def __init__(self, string='', parent=None):
         super().__init__(string,parent)
-        self.class_amended = c_bool(False)  
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.Popup|Qt.NoDropShadowWindowHint)
+        #self.class_amended = c_bool(False)  
+        self.setWindowFlags(Qt.FramelessWindowHint | Qt.Popup | Qt.NoDropShadowWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground|Qt.WA_StyledBackground)
-        self.setAutoFillBackground(False)
+        #self.setAutoFillBackground(False)
         self.setQss()
 
     def event(self, e: QEvent):
@@ -32,10 +32,11 @@ class Menu(QMenu):
 
     def setMenuEffect(self):
         """ 开启特效 """
-        #self.windowEffect.setAcrylicEffect(self.hWnd, 0x10F2F2F2,1)
+        #self.windowEffect.setAcrylicEffect(self.hWnd, 'F2F2F23F')
         self.windowEffect.setAeroEffect(self.hWnd)
-        self.class_amended = c_bool(
-            self.windowEffect.setShadowEffect(self.class_amended, self.hWnd))
+        self.windowEffect.addShadowEffect(True,self.hWnd)
+        """ self.class_amended = c_bool(
+            self.windowEffect.setShadowEffect(self.class_amended, self.hWnd)) """
 
     def setQss(self):
         """ 设置层叠样式 """
@@ -67,4 +68,122 @@ class AddToMenu(Menu):
         """ 将触发信号连接到槽函数 """
         for i in range(3):
             self.action_list[i].triggered.connect(slot_list[i])
-            
+
+
+class LineEditMenu(Menu):
+    """ 单行输入框右击菜单 """
+    def __init__(self, parent):
+        super().__init__('', parent)
+        # 不能直接改width
+        self.animation = QPropertyAnimation(self, b'geometry')
+        self.initWidget()
+    
+    def initWidget(self):
+        """ 初始化小部件 """
+        self.setObjectName('lineEditMenu')
+        self.animation.setDuration(300)
+        self.animation.setEasingCurve(QEasingCurve.OutQuad)
+
+    def createActions(self):
+        # 创建动作
+        self.cutAct = QAction(
+            QIcon('resource\\images\\menu\\黑色剪刀.png'), '剪切', self, shortcut='Ctrl+X', triggered=self.parent().cut)
+        self.copyAct = QAction(
+            QIcon('resource\\images\\menu\\黑色复制.png'), '复制', self, shortcut='Ctrl+C', triggered=self.parent().copy)
+        self.pasteAct = QAction(
+            QIcon('resource\\images\\menu\\黑色粘贴.png'), '粘贴', self, shortcut='Ctrl+V', triggered=self.parent().paste)
+        self.cancelAct = QAction(
+            QIcon('resource\\images\\menu\\黑色撤销.png'), '取消操作', self, shortcut='Ctrl+Z', triggered=self.parent().undo)
+        self.selectAllAct = QAction('全选', self, shortcut='Ctrl+A', triggered=self.parent().selectAll)
+        # 创建动作列表
+        self.action_list = [self.cutAct, self.copyAct, self.pasteAct, self.cancelAct, self.selectAllAct]
+        
+    def exec_(self, pos):
+        # 删除所有动作
+        self.clear()
+        # clear之后之前的动作已不再存在故需重新创建
+        self.createActions()
+        # 初始化属性
+        self.setProperty('hasCancelAct', 'false')
+        width = 176
+        actionNum = len(self.action_list)
+        # 访问系统剪贴板
+        self.clipboard = QApplication.clipboard()
+        # 根据剪贴板内容是否为text分两种情况讨论
+        if self.clipboard.mimeData().hasText():
+            # 再根据3种情况分类讨论
+            if self.parent().text():
+                self.setProperty('hasCancelAct', 'true')
+                width = 213
+                if self.parent().selectedText():
+                    self.addActions(self.action_list)
+                else:
+                    self.addActions(self.action_list[2:])
+                    actionNum -= 2
+            else:
+                self.addAction(self.pasteAct)
+                actionNum = 1
+        else:
+            if self.parent().text():
+                self.setProperty('hasCancelAct', 'true')
+                width = 213
+                if self.parent().selectedText():
+                    self.addActions(self.action_list[:2] + self.action_list[3:])
+                    actionNum -= 1
+                else:
+                    self.addActions(self.action_list[3:])
+                    actionNum -= 3
+            else:
+                return
+        # 每个item的高度为38px，10为上下的内边距和
+        height = actionNum * 38 + 10
+        # 不能把初始的宽度设置为0px，不然会报警
+        self.animation.setStartValue(
+            QRect(pos.x(), pos.y(), 1, height))
+        self.animation.setEndValue(
+            QRect(pos.x(), pos.y(), width, height))
+        self.setStyle(QApplication.style())
+        # 开始动画
+        self.animation.start()
+        super().exec_(pos)
+        
+
+class AlbumCardContextMenu(Menu):
+    """ 专辑卡右击菜单 """
+    def __init__(self,parent):
+        super().__init__('', parent)
+        self.createActions()
+        self.animation = QPropertyAnimation(self, b'geometry')
+        self.animation.setDuration(300)
+        self.animation.setEasingCurve(QEasingCurve.OutQuad)
+        
+    def createActions(self):
+        """ 创建动作 """
+        self.addToMenu = AddToMenu('添加到', self)
+        self.addToMenu.setObjectName('addToMenu')
+        # 创建动作
+        self.playAct = QAction('播放', self)
+        self.deleteAct = QAction('删除', self)
+        self.chooseAct = QAction('选择', self)
+        self.editInfoAct = QAction('编辑信息', self)
+        self.showSongerAct = QAction('显示歌手', self)
+        self.nextToPlayAct = QAction('下一首播放', self)
+        self.pinToStartMenuAct = QAction('固定到"开始"菜单', self)
+        # 添加动作到菜单
+        self.addActions([self.playAct, self.nextToPlayAct])
+        self.addMenu(self.addToMenu)
+        self.addActions([self.showSongerAct, self.pinToStartMenuAct,
+                         self.editInfoAct, self.deleteAct])
+        self.addSeparator()
+        self.addAction(self.chooseAct)
+
+    def exec_(self, pos):
+        """ 重写exec_() """
+        height = 38 * 9 + 10
+        width = 176
+        self.animation.setStartValue(
+            QRect(pos.x(), pos.y(), 1, height))
+        self.animation.setEndValue(
+            QRect(pos.x(), pos.y(), width, height))
+        self.animation.start()
+        super().exec_(pos)

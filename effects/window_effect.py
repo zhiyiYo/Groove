@@ -16,7 +16,8 @@ class WindowEffect():
             accentFlags = DWORD(0)
 
         # 设置和亚克力效果相叠加的背景颜色
-        gradientColor = gradientColor[::-1]
+        gradientColor = gradientColor[6:] + gradientColor[4:6] + \
+                        gradientColor[2:4] + gradientColor[:2]
         gradientColor = DWORD(int(gradientColor,base=16))
         animationId = DWORD(animationId)
         self.dll.setAcrylicEffect(

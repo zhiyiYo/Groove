@@ -151,6 +151,7 @@ class AlbumCardViewer(QWidget):
 
         self.albumViewWidget.setFixedWidth(221 * self.column_num)
         if self.sortMode == '添加时间':
+            # 还需要补上底部标题栏的位置
             self.albumViewWidget.setFixedHeight(303*self.total_row_num)
         else:
             # 补上分组标题所占的高度

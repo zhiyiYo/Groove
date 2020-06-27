@@ -36,7 +36,7 @@ class MyMusicInterface(QWidget):
         self.v_layout = QVBoxLayout()
         self.all_v_layout = QVBoxLayout()
 
-        # 初始化布局
+        # 初始化
         self.initLayout()
         self.initWidget()
 
@@ -66,14 +66,12 @@ class MyMusicInterface(QWidget):
 
     def initWidget(self):
         """ 初始化小部件的属性 """
-        # self.setWindowFlags(Qt.FramelessWindowHint)
         self.resize(1300, 995-23-40)
         self.setMinimumHeight(630)
         # 居中显示
         desktop = QApplication.desktop()
         self.move(int(desktop.width() / 2 - self.width() / 2),
                   int(desktop.height() / 2 - self.height() / 2)-20)
-        # self.setMouseTracking(True)
 
         # 设置标签上的字
         self.myMusicLabel.setText('我的音乐')
@@ -88,6 +86,7 @@ class MyMusicInterface(QWidget):
         self.songer_scrollBar.hide()
         self.album_scrollBar.hide()
 
+        # 标签窗口改变时也改变显示的滚动条
         self.myMusicTabWidget.currentChanged.connect(self.changeTabEvent)
 
         # 分配ID

@@ -1,6 +1,14 @@
-/* QWidget#navigationBar{
+QWidget#navigationMenu{
     background-color:transparent;
-} */
+}
+
+QLineEdit {
+    border: none;
+    padding: 10px 14px 10px 14px;
+    font: 18px 'Microsoft YaHei';
+    selection-background-color: rgb(0, 153, 188);
+    margin: 8px 16px 8px 16px;
+}
 
 QPushButton {
     border: none;
@@ -11,3 +19,6 @@ QPushButton:hover {
     background: rgb(223, 223, 223)
 }
 
+QLabel{
+    font:16px "Microsoft YaHei Light";
+}

@@ -29,7 +29,7 @@ class ToolTip(QWidget):
         # 设置自己为无边框窗口
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.Window)
         # 设置背景透明和鼠标穿透
-        self.setAttribute(Qt.WA_TranslucentBackground | Qt.WA_TransparentForMouseEvents|Qt.WA_StyledBackground)
+        self.setAttribute(Qt.WA_TranslucentBackground)
         self.setStyleSheet('background:transparent')
         self.setAutoFillBackground(False)
         self.timer.setInterval(5000)
@@ -67,6 +67,9 @@ class ToolTip(QWidget):
     def leaveEvent(self, e):
         # 由于自己会捕获leaveEvent，所以如果自己leaveEvent被触发说明兄弟部件的leaveEvent也被触发了
         self.hide()
+
+    def mousePressEvent(self, e):
+        print('父级接收到点击事件')
 
 
 class SubToolTip(QWidget):
@@ -129,6 +132,9 @@ class SubToolTip(QWidget):
         brush = QBrush(QColor(242, 242, 242))
         painter.setBrush(brush)
         painter.drawRoundedRect(self.rect(), 7, 7)
+
+    def mousePressEvent(self, e):
+        print('子级接收到点击事件')
         
 
 

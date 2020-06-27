@@ -281,12 +281,13 @@ class CloseButton(QPushButton):
 class NavigationButton(QPushButton):
     """ 侧边导航栏按钮 """
 
-    def __init__(self, icon_path, text='', parent=None, buttonSize: tuple = (60, 60)):
+    def __init__(self, icon_path, text='', parent=None, buttonSize: tuple = (60, 60), iconSize: tuple = (60, 60)):
         super().__init__(text, parent)
         self.image = QPixmap(icon_path)
+        self.iconSizeTuple = iconSize
         # 设置按钮的图标
         self.setFixedSize(buttonSize[0], buttonSize[1])
-        self.setIconSize(QSize(buttonSize[0], buttonSize[1]))
+        self.setIconSize(QSize(iconSize[0], iconSize[1]))
         # 设置属性防止qss不起作用
         self.setAttribute(Qt.WA_StyledBackground)
         # 初始化属性
@@ -296,21 +297,23 @@ class NavigationButton(QPushButton):
 
     def paintEvent(self, e):
         """ 选中时在左边绘制选中标志 """
+        super().paintEvent(e)
         painter = QPainter(self)
         painter.setPen(Qt.NoPen)
         brush = QBrush(self.image)
         painter.setBrush(brush)
-        painter.drawRect(0, 0, self.width(), self.height())
+        painter.drawRect(0, 0, self.iconSizeTuple[0], self.iconSizeTuple[1])
         if self.property('selected') == 'true':
             pen = QPen(QColor(0, 107, 133))
             pen.setWidth(10)
             painter.setPen(pen)
             """ 为什么总是差5 """
             painter.drawLine(0, 6, 0, self.height() - 6)
+        
             
 
-class ClearButton(QToolButton):
-    """ 清空按钮，iconPath_dict提供按钮normal、hover、selected三种状态下的图标地址 """
+class LineEditButton(QToolButton):
+    """ 单行编辑框按钮，iconPath_dict提供按钮normal、hover、selected三种状态下的图标地址 """
 
     def __init__(self, iconPath_dict:dict, parent=None,icon_size:tuple=(40,40)):
         super().__init__(parent)
@@ -320,13 +323,12 @@ class ClearButton(QToolButton):
         # 初始化小部件
         self.initWidget()
         
-
     def initWidget(self):
         """ 初始化小部件 """
         self.setCursor(Qt.ArrowCursor)
         self.setIcon(QIcon(self.iconPath_dict['normal']))
         self.setIconSize(QSize(self.width(),self.height()))
-        #self.setStyleSheet('border: none; margin: 0px')
+        self.setStyleSheet('border: none; margin: 0px')
 
     def enterEvent(self,e):
         """ hover时更换图标 """
@@ -337,14 +339,10 @@ class ClearButton(QToolButton):
         self.setIcon(QIcon(self.iconPath_dict['normal']))
 
     def mousePressEvent(self, e):
-        """ 按钮按下时更换图标并隐藏 """
+        """ 鼠标左键按下时更换图标 """
+        if e.button() == Qt.RightButton:
+            return
         self.setIcon(QIcon(self.iconPath_dict['selected']))
-
-    def mouseReleaseEvent(self, e):
-        if self.parent():
-            self.parent().clear()
-            self.hide()
-            
 
 
 if __name__ == "__main__":

@@ -39,9 +39,10 @@ class ScrollBar(QWidget):
         self.maxScrollBar.setObjectName('maxScrollBar')
 
     def adjustSrollBarHeight(self):
+        """ 根据父级窗口的高度调整滚动条高度 """
         if self.parent():
-            self.minScrollBar.setFixedHeight(self.parent().height())
-            self.maxScrollBar.setFixedHeight(self.parent().height())
+            self.minScrollBar.setFixedHeight(self.parent().height()-113)
+            self.maxScrollBar.setFixedHeight(self.parent().height()-113)
 
     def enterEvent(self, e: QEnterEvent):
         """ 鼠标进入界面时显示大滚动条并停止秒表 """
