@@ -165,9 +165,9 @@ class SubPropertyPanel(QWidget):
 
     def adjustHeight(self):
         """ 如果有换行的发生就调整高度 """
-        newSongName, isSongNameWrap = autoWrap(self.songName.text(), 58)
+        newSongName, isSongNameWrap = autoWrap(self.songName.text(), 57)
         newSonger, isSongerWrap = autoWrap(self.songer.text(), 33)
-        newAlbumName, isAlbumNameWrap = autoWrap(self.albumName.text(), 58)
+        newAlbumName, isAlbumNameWrap = autoWrap(self.albumName.text(), 57)
         newAlbumSonger, isAlbumSongerWrap = autoWrap(self.albumSonger.text(), 33)
         newSongPath, isSongPathWrap = autoWrap(self.songPath.text(), 100)
         if isSongNameWrap or isSongerWrap:

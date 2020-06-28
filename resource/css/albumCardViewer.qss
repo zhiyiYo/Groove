@@ -8,6 +8,7 @@ QScrollArea{
 }
 
 QGroupBox {
+    background-color: transparent;
     font: 21px 'Microsoft YaHei';
     color: rgb(0, 107, 131);
     border: none;

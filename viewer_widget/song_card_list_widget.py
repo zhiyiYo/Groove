@@ -10,7 +10,7 @@ from Groove.get_info.get_song_info import SongInfo
 from Groove.card_widget.songcard import SongCard
 from Groove.my_dialog_box.property_panel import PropertyPanel
 from Groove.my_dialog_box.song_info_edit_panel import SongInfoEditPanel
-from Groove.my_widget.my_menu import Menu,AddToMenu
+from Groove.my_widget.my_menu import Menu,AddToMenu,SongCardListContextMenu
 
 
 class SongCardListWidget(QListWidget):
@@ -36,12 +36,15 @@ class SongCardListWidget(QListWidget):
         
         # 将歌曲信息设置为属性
         self.songInfo = SongInfo(self.songs_folder)
+        self.songInfo_list = self.songInfo.songInfo_list
         # 默认排序方式为添加时间
         self.sortMode = '添加时间'
         # 添加项目
         self.addListWidgetItem()
+        # 动态改变item的尺寸
+        self.setResizeMode(QListWidget.Adjust)
         # 初始化小部件的属性
-        self.initActions()
+        self.createMenu()
         self.initWidget()
         # 设置层叠样式
         self.setQss()
@@ -59,42 +62,24 @@ class SongCardListWidget(QListWidget):
         self.verticalScrollBar().setSingleStep(self.scrollStep)
         
         # 初始化动画效果
-        self.animation.setDuration(300)
-        self.animation.setEasingCurve(QEasingCurve.OutQuad)
-        self.animation.finished.connect(self.aniFinishedEvent)
+        self.animation.setDuration(50)
+        self.animation.setEasingCurve(QEasingCurve.Linear)
         # 分配ID
         self.setObjectName('songCardList')
         self.verticalScrollBar().setObjectName('LWidgetVScrollBar')
         # 选中中的item改变时改变样式
         self.itemSelectionChanged.connect(self.updateItemQss)
+        
 
-    def initActions(self):
-        """ 创建动作 """
-        # 创建主菜单动作
-        self.playAct = QAction('播放', self)
-        self.nextSongAct = QAction('下一首播放', self)
-        self.showAlbumAct = QAction('显示专辑', self)
-        self.editInfoAct = QAction(
-            '编辑信息', self, triggered=self.showSongInfoEditPanel)
-        self.showPropertyAct = QAction(
-            '属性', self, triggered=self.showPropertyPanel)
-        self.deleteAct = QAction('删除', self, triggered=self.deleteItem)
-        self.selectAct = QAction('选择', self, triggered=self.selectedModeEvent)
-        # 创建菜单和子菜单
-        self.contextMenu = Menu(parent=self)
-        self.addToMenu = AddToMenu('添加到', self)
-        # 将动作添加到菜单中
-        self.contextMenu.addActions([self.playAct, self.nextSongAct])
-        # 将子菜单添加到主菜单
-        self.contextMenu.addMenu(self.addToMenu)
-        # 将其余动作添加到主菜单
-        self.contextMenu.addActions(
-            [self.showAlbumAct, self.editInfoAct, self.showPropertyAct, self.deleteAct])
-        self.contextMenu.addSeparator()
-        self.contextMenu.addAction(self.selectAct)
-        # 设置菜单的ID
-        self.addToMenu.setObjectName('addToMenu')
-        self.contextMenu.setObjectName('songCardContextMenu')
+    def createMenu(self):
+        """ 创建菜单并将动作触发信号连接到槽函数 """
+        # 菜单
+        self.contextMenu = SongCardListContextMenu(self)
+        # 信号连接到槽函数
+        self.contextMenu.editInfoAct.triggered.connect(self.showSongInfoEditPanel)
+        self.contextMenu.showPropertyAct.triggered.connect(self.showPropertyPanel)
+        self.contextMenu.deleteAct.triggered.connect(self.deleteItem)
+        self.contextMenu.selectAct.triggered.connect(self.selectedModeEvent)
 
     def addListWidgetItem(self):
         """ 在列表视图中添加项目 """
@@ -136,7 +121,7 @@ class SongCardListWidget(QListWidget):
     def deleteItem(self):
         """ 删除选中的歌曲卡 """
         copy_songInfo_list = self.songInfo.songInfo_list.copy()
-        copy_song_card_list = self.songCard_list.copy()
+        copy_songCard_list = self.songCard_list.copy()
         copy_item_list = self.item_list.copy()
 
         for selectedItem in self.selectedItems():
@@ -145,7 +130,7 @@ class SongCardListWidget(QListWidget):
             self.songInfo.songInfo_list.remove(
                 copy_songInfo_list[eval(selectedItem.whatsThis())['index']])
             self.songCard_list.remove(
-                copy_song_card_list[eval(selectedItem.whatsThis())['index']])
+                copy_songCard_list[eval(selectedItem.whatsThis())['index']])
             self.item_list.remove(
                 copy_item_list[eval(selectedItem.whatsThis())['index']])
 
@@ -158,31 +143,21 @@ class SongCardListWidget(QListWidget):
     def showPropertyPanel(self):
         """ 显示属性面板 """
         info = eval(self.selectedItems()[0].whatsThis())
-        # 获取祖父级窗口的引用
-        try:
-            self.grandparent = self.parent().parent().parent().parent()
-        except:
-            self.grandparent = self.parent()
+        # 获取对顶层窗口的引用
+        self.topWindow = self.window()
         # 在祖父窗口中居中显示
-        propertyPanel = PropertyPanel(info,self.grandparent)
+        propertyPanel = PropertyPanel(info,self.topWindow)
         propertyPanel.exec_()
 
     def showSongInfoEditPanel(self):
         """ 显示编辑歌曲信息面板 """
         info = eval(self.selectedItems()[0].whatsThis())
         # 创建一个指向当前字典的临时属性
-        for info_dict in self.songInfo.songInfo_list:
-            if info['song_path'] == info_dict['song_path']:
-                self.current_dict = info_dict
-                break
-
-        # 获取祖父级窗口的引用
-        try:
-            self.grandparent = self.parent().parent().parent().parent()
-        except:
-            self.grandparent = self
+        self.current_dict = self.songInfo_list[info['index']]
+        # 获取对顶层窗口的引用
+        self.topWindow = self.window()
         # 在祖父窗口中居中显示
-        self.songInfoEditPanel = SongInfoEditPanel(self.current_dict,self.grandparent)
+        self.songInfoEditPanel = SongInfoEditPanel(self.current_dict,self.topWindow)
         self.songInfoEditPanel.exec_()
 
         # 更新item的信息
@@ -257,9 +232,11 @@ class SongCardListWidget(QListWidget):
             self.animation.start()
             #self.animation.setStartValue(self.verticalScrollBar().value()) """
             
-    def aniFinishedEvent(self):
-        if self.animation.duration() > 300:
-            self.animation.setDuration(300)
+    def resizeEvent(self, e):
+        """ 更新item的尺寸 """
+        for item in self.item_list:
+            item.setSizeHint(QSize(self.width()-117, 61))
+        super().resizeEvent(e)
 
             
 if __name__ == '__main__':

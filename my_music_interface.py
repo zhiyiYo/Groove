@@ -45,7 +45,6 @@ class MyMusicInterface(QWidget):
 
     def initLayout(self):
         """ 初始化布局 """
-
         self.v_layout.addWidget(self.myMusicLabel)
         self.v_layout.addSpacing(8)
         self.v_layout.addWidget(self.myMusicTabWidget)
@@ -68,10 +67,12 @@ class MyMusicInterface(QWidget):
         """ 初始化小部件的属性 """
         self.resize(1300, 995-23-40)
         self.setMinimumHeight(630)
-        # 居中显示
-        desktop = QApplication.desktop()
-        self.move(int(desktop.width() / 2 - self.width() / 2),
-                  int(desktop.height() / 2 - self.height() / 2)-20)
+        self.setAttribute(Qt.WA_StyledBackground)
+        if not self.parent():
+            # 居中显示
+            desktop = QApplication.desktop()
+            self.move(int(desktop.width() / 2 - self.width() / 2),
+                    int(desktop.height() / 2 - self.height() / 2)-20)
 
         # 设置标签上的字
         self.myMusicLabel.setText('我的音乐')
@@ -114,17 +115,17 @@ class MyMusicInterface(QWidget):
             self.width() - 33)
         self.adjustScrollBarHeight()
 
-        if self.width() < 1156:
+        """ if self.width() < 1156:
             # 窗口宽度大于956px且小于1156时显示年份标签，隐藏专辑按钮
             for song_card in self.myMusicTabWidget.songTag.songCardListWidget.songCard_list:
-                song_card.albumLabel.hide()
+                #song_card.albumLabel.hide()
                 song_card.yearTconDuration.durationLabel.hide()
 
         elif self.width() > 1156:
             # 窗口宽度大于1156时显示年份标签，显示专辑按钮
             for song_card in self.myMusicTabWidget.songTag.songCardListWidget.songCard_list:
                 song_card.albumLabel.show()
-                song_card.yearTconDuration.durationLabel.show()
+                song_card.yearTconDuration.durationLabel.show() """
 
     def changeTabEvent(self, index):
         """ 当前标签窗口改变时更改滚动条的绑定对象 """

@@ -48,6 +48,8 @@ class SongTabInterface(QWidget):
         # 隐藏滚动条
         self.songCardListWidget.setVerticalScrollBarPolicy(
             Qt.ScrollBarAlwaysOff)
+        self.songCardListWidget.setHorizontalScrollBarPolicy(
+            Qt.ScrollBarAlwaysOff)
 
         # 获取歌曲总数
         songs_num = len(self.songCardListWidget.songCard_list)

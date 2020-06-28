@@ -49,8 +49,8 @@ class AlbumCardViewer(QWidget):
         self.vScrollBar=self.scrollArea.verticalScrollBar()
 
         # 实例化并引用提示条
-        self.albumViewWidget.customToolTip = ToolTip(parent=self.albumViewWidget)
-        self.customToolTip = self.albumViewWidget.customToolTip
+        """ self.albumViewWidget.customToolTip = ToolTip(parent=self.albumViewWidget)
+        self.customToolTip = self.albumViewWidget.customToolTip """
 
         # 初始化小部件
         self.initWidget()
@@ -81,7 +81,7 @@ class AlbumCardViewer(QWidget):
         self.albumCard_list = []
         for albumInfo_dict in self.albumInfo.albumInfo_list:
             # 实例化专辑卡
-            albumCard = AlbumCard(albumInfo_dict, self)
+            albumCard = AlbumCard(albumInfo_dict, self, self.albumViewWidget)
             album = albumInfo_dict['album']
             # 将含有专辑卡及其信息的字典插入列表
             self.albumCard_list.append(albumCard)
@@ -165,8 +165,10 @@ class AlbumCardViewer(QWidget):
             self.__updateColumnNum(6)
         elif 1115 < self.width() < 1335 and self.column_num != 5:
             self.__updateColumnNum(5)
-        elif self.width() <= 1115 and self.column_num != 4:
+        elif 895 < self.width() <= 1115 and self.column_num != 4:
             self.__updateColumnNum(4)
+        elif self.width() <= 895:
+            self.__updateColumnNum(3)
 
     def __updateColumnNum(self, new_column):
         """ 更新网格列数 """

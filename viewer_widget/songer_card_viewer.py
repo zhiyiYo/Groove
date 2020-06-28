@@ -211,8 +211,10 @@ class SongerCardViewer(QWidget):
             self.__updateColumnNum(6)
         elif 1135 < self.width() < 1337 and self.column_num != 5:
             self.__updateColumnNum(5)
-        elif self.width() <= 1135 and self.column_num != 4:
+        elif 913 < self.width() <= 1135 and self.column_num != 4:
             self.__updateColumnNum(4)
+        elif self.width() <= 913:
+            self.__updateColumnNum(3)
 
     def __updateColumnNum(self, new_column):
         """ 移除旧的布局中的小部件并更新布局 """

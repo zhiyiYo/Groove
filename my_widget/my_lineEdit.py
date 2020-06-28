@@ -15,8 +15,9 @@ class LineEdit(QLineEdit):
     def __init__(self, string=None, parent=None):
         super().__init__(string, parent)
 
-        # 设置提示条
+        # 设置提示条和鼠标点击次数
         self.customToolTip = None
+        self.clickedTime = 0
         iconPath_dict = {
             'normal': r'resource\images\lineEdit\clearInfo_cross_normal.png',
             'hover': r'resource\images\lineEdit\clearInfo_cross_hover.png',
@@ -45,15 +46,16 @@ class LineEdit(QLineEdit):
     def mousePressEvent(self, e):
         if e.button()==Qt.LeftButton:
             # 如果已经全选了再次点击就取消全选
-            if self.selectedText()==self.text():
-                self.setSelection(len(self.text()), len(self.text()))
+            if self.clickedTime == 0:
+                self.selectAll()
             else:
-                self.selectAll() 
+                # 需要调用父类的鼠标点击事件，不然无法部分选中
+                super().mousePressEvent(e)
             self.setFocus()
             # 如果输入框中有文本，就设置为只读并显示清空按钮
             if self.text():
                 self.clearButton.show()
-
+        self.clickedTime += 1
 
     def contextMenuEvent(self, e: QContextMenuEvent):
         """ 设置右击菜单 """
@@ -63,6 +65,7 @@ class LineEdit(QLineEdit):
         """ 当焦点移到别的输入框时隐藏按钮 """
         # 调用父类的函数，消除焦点
         super().focusOutEvent(e)
+        self.clickedTime = 0
         self.clearButton.hide()
 
     def enterEvent(self, e):
@@ -115,8 +118,8 @@ class SearchLineEdit(QLineEdit):
             'hover': r'resource\images\searchLineEdit\搜索框清空按钮_hover_45_45.png',
             'selected': r'resource\images\searchLineEdit\搜索框清空按钮_selected_45_45.png'}
         self.__search_iconPath_dict = {
-            'normal': r'resource\images\searchLineEdit\搜索框搜索按钮_normal_46_45.png',
-            'hover': r'resource\images\searchLineEdit\搜索框搜索按钮_hover_46_45.png',
+            'normal': r'resource\images\searchLineEdit\搜索框透明搜索按钮_normal_46_45.png',
+            'hover': r'resource\images\searchLineEdit\搜索框透明搜索按钮_hover_46_45.png',
             'selected': r'resource\images\searchLineEdit\搜索框搜索按钮_selected_46_45.png'}
         # 实例化按钮
         self.clearButton = LineEditButton(clear_iconPath_dict, self, (46, 45))
@@ -130,6 +133,7 @@ class SearchLineEdit(QLineEdit):
         """ 初始化小部件 """
         self.resize(300,45)
         self.clearButton.hide()
+        self.setAttribute(Qt.WA_StyledBackground)
         # 设置提示文字
         self.setPlaceholderText('搜索')
         self.textChanged.connect(self.textChangedEvent)
@@ -150,24 +154,26 @@ class SearchLineEdit(QLineEdit):
     def adjustButtonPos(self):
         """ 调整按钮的位置 """
         # 需要补上margin的位置
-        self.searchButton.move(self.width() - self.searchButton.width()-8-16, 8)
-        self.clearButton.move(self.searchButton.x() - self.clearButton.width(), 8)
+        self.searchButton.move(self.width() - self.searchButton.width()-8, 0)
+        self.clearButton.move(self.searchButton.x() - self.clearButton.width(), 0)
         
     def resizeEvent(self, e):
         """ 调整大小的同时改变按钮位置 """
         self.adjustButtonPos()
 
     def mousePressEvent(self, e):
-        if e.button()==Qt.LeftButton:
-            # 如果已经全选了再次点击就取消全选
-            if self.selectedText() == self.text():
-                self.setSelection(len(self.text()), len(self.text()))
-            else:
-                self.selectAll()
-            self.setFocus()
+        if e.button() == Qt.LeftButton:
+            # 需要调用父类的鼠标点击事件，不然无法部分选中
+            super().mousePressEvent(e)
             # 如果输入框中有文本，就设置为只读并显示清空按钮
             if self.text():
                 self.clearButton.show()
+
+    def focusOutEvent(self, e):
+        """ 当焦点移到别的输入框时隐藏按钮 """
+        # 调用父类的函数，消除焦点
+        super().focusOutEvent(e)
+        self.clearButton.hide()
 
     def eventFilter(self, obj, e):
         """ 过滤事件 """

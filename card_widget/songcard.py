@@ -23,14 +23,11 @@ class SongCard(QWidget):
         self.albumLabel = ClickableLabel(songInfo_dict['album'][0], self)
         self.yearTconDuration = YearTconDurationCard(
             songInfo_dict['year'], songInfo_dict['tcon'], songInfo_dict['duration'], self)
-
         # 实例化布局
         self.all_h_layout = QHBoxLayout()
         self.right_h_layout = QHBoxLayout()
-
         # 初始化小部件
         self.initWidget()
-
         # 初始化布局
         self.initLayout()
         self.setQss()
@@ -54,7 +51,7 @@ class SongCard(QWidget):
 
     def initWidget(self):
         """ 初始化小部件 """
-
+        #self.setFixedHeight(61)
         self.songerLabel.setFixedWidth(190)
         self.albumLabel.setFixedWidth(190)
 
@@ -166,7 +163,6 @@ class SongCard(QWidget):
         """ 窗口大小改变时就改变专辑和歌手名标签的长度 """
         # 初始化时会改变大小
         self.resizetimes += 1
-
         if self.resizetimes == 2:
             self.originalWidth = self.width()
         if self.resizetimes > 2:
@@ -177,6 +173,14 @@ class SongCard(QWidget):
                 int(self.albumLabel.width() + 0.7*deltaWidth))
             self.songerLabel.setFixedWidth(
                 int(self.songerLabel.width() + 0.2*deltaWidth))
+        # 根据尺寸隐藏或者显示标签
+        if self.width() < 1086:
+            if self.albumLabel.isVisible():
+                self.albumLabel.hide()
+        elif self.width() > 1086:
+            if not self.albumLabel.isVisible():
+                self.albumLabel.show()
+
 
     def checkStateChangeEvent(self):
         """ 复选框的状态改变时更改歌曲卡的样式 """

@@ -148,14 +148,18 @@ class LineEditMenu(Menu):
         super().exec_(pos)
         
 
-class AlbumCardContextMenu(Menu):
-    """ 专辑卡右击菜单 """
-    def __init__(self,parent):
+class CardContextMenu(Menu):
+    """ 专辑卡和歌手卡右击菜单,cardType用于指定卡片类型,0代表歌手卡,1代表专辑卡 """
+    def __init__(self,parent,cardType):
         super().__init__('', parent)
+        self.__cardType = cardType
+        # 创建动作
         self.createActions()
+        # 创建动画
         self.animation = QPropertyAnimation(self, b'geometry')
         self.animation.setDuration(300)
         self.animation.setEasingCurve(QEasingCurve.OutQuad)
+        self.setObjectName('cardContextMenu')
         
     def createActions(self):
         """ 创建动作 """
@@ -163,23 +167,33 @@ class AlbumCardContextMenu(Menu):
         self.addToMenu.setObjectName('addToMenu')
         # 创建动作
         self.playAct = QAction('播放', self)
-        self.deleteAct = QAction('删除', self)
         self.chooseAct = QAction('选择', self)
-        self.editInfoAct = QAction('编辑信息', self)
-        self.showSongerAct = QAction('显示歌手', self)
         self.nextToPlayAct = QAction('下一首播放', self)
         self.pinToStartMenuAct = QAction('固定到"开始"菜单', self)
+        # 如果是专辑卡需要多创建3个动作
+        if self.__cardType:
+            self.deleteAct = QAction('删除', self)
+            self.editInfoAct = QAction('编辑信息', self)
+            self.showSongerAct = QAction('显示歌手', self)
+        
         # 添加动作到菜单
         self.addActions([self.playAct, self.nextToPlayAct])
         self.addMenu(self.addToMenu)
-        self.addActions([self.showSongerAct, self.pinToStartMenuAct,
-                         self.editInfoAct, self.deleteAct])
+        if self.__cardType:
+            self.addActions([self.showSongerAct, self.pinToStartMenuAct,
+                            self.editInfoAct, self.deleteAct])
+            self.itemNum = 8                
+        else:
+            self.addAction(self.pinToStartMenuAct)
+            self.itemNum = 5
         self.addSeparator()
         self.addAction(self.chooseAct)
 
+
     def exec_(self, pos):
         """ 重写exec_() """
-        height = 38 * 9 + 10
+        # 补上separator的margin、高度和菜单的边框厚度
+        height = 38 * self.itemNum + 10 + 11 + 2
         width = 176
         self.animation.setStartValue(
             QRect(pos.x(), pos.y(), 1, height))
@@ -187,3 +201,38 @@ class AlbumCardContextMenu(Menu):
             QRect(pos.x(), pos.y(), width, height))
         self.animation.start()
         super().exec_(pos)
+
+
+class SongCardListContextMenu(Menu):
+    """ 歌曲卡列表右击菜单 """
+
+    def __init__(self, parent):
+        super().__init__('', parent)
+        # 创建动作
+        self.createActions()
+
+    def createActions(self):
+        """ 创建动作 """
+        # 创建主菜单动作
+        self.playAct = QAction('播放', self)
+        self.nextSongAct = QAction('下一首播放', self)
+        self.showAlbumAct = QAction('显示专辑', self)
+        self.editInfoAct = QAction('编辑信息', self)
+        self.showPropertyAct = QAction('属性', self)
+        self.deleteAct = QAction('删除', self)
+        self.selectAct = QAction('选择', self)
+        # 创建菜单和子菜单
+        self.addToMenu = AddToMenu('添加到', self)
+        # 将动作添加到菜单中
+        self.addActions([self.playAct, self.nextSongAct])
+        # 将子菜单添加到主菜单
+        self.addMenu(self.addToMenu)
+        # 将其余动作添加到主菜单
+        self.addActions(
+            [self.showAlbumAct, self.editInfoAct, self.showPropertyAct, self.deleteAct])
+        self.addSeparator()
+        self.addAction(self.selectAct)
+        self.itemNum = 8
+        # 设置菜单的ID
+        self.addToMenu.setObjectName('addToMenu')
+        self.setObjectName('songCardContextMenu')

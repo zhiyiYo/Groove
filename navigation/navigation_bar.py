@@ -13,10 +13,11 @@ class NavigationBar(QWidget):
         # 实例化按钮
         self.createButtons()
         # 实例化垂直布局
-        self.v_layout = QVBoxLayout(self)
+        self.v_layout = QVBoxLayout()
         # 初始化界面
         self.initWidget()
         self.initLayout()
+        self.setQss()
         
     def createButtons(self):
         """实例化按钮 """
@@ -32,26 +33,23 @@ class NavigationBar(QWidget):
             r'resource\images\navigationBar\黑色导航栏正在播放.png', parent=self, buttonSize=(60, 62))
         self.playListButton = NavigationButton(
             r'resource\images\navigationBar\黑色播放列表.png', parent=self)
-        self.createListButton = NavigationButton(
+        self.createPlayListButton = NavigationButton(
             r'resource\images\navigationBar\黑色新建播放列表.png', parent=self)
         self.settingButton = NavigationButton(
             r'resource\images\navigationBar\黑色设置按钮.png', parent=self)
         # 创建一个按钮列表
         self.button_list = [self.showMenuButton, self.searchButton, self.musicGroupButton,
                             self.historyButton, self.playingButton, self.playListButton,
-                            self.createListButton, self.settingButton]
+                            self.createPlayListButton, self.settingButton]
                             
     def initWidget(self):
         """ 初始化小部件 """
         self.setFixedWidth(60)
-        self.setMinimumHeight(700)
-        if self.parent():
-            self.setFixedHeight(self.parent().height())
+        self.setObjectName('navigationBar')  
         self.setWindowFlags(Qt.FramelessWindowHint)
-        self.setObjectName('navigationBar')
-        #self.setAttribute(Qt.WA_TranslucentBackground)
-        # 将按钮的点击信号连接到槽函数
-        for button in self.button_list:
+        self.setAttribute(Qt.WA_TranslucentBackground)    
+        # 将部分按钮的点击信号连接到槽函数
+        for button in self.button_list[2:6]+[self.settingButton]:
             button.clicked.connect(self.buttonClickedEvent)
         
     def initLayout(self):
@@ -65,7 +63,7 @@ class NavigationBar(QWidget):
         self.v_layout.addWidget(self.settingButton, 0, Qt.AlignBottom)
         # 留出底部播放栏的位置
         self.v_layout.addSpacing(123)
-        #self.setLayout(self.v_layout)
+        self.setLayout(self.v_layout)
 
     def buttonClickedEvent(self):
         """ 按钮点击时更新样式并更换界面 """
@@ -80,7 +78,7 @@ class NavigationBar(QWidget):
 
     def setQss(self):
         """ 设置层叠样式 """
-        with open(r'resource\css\navigationBar.qss', encoding='utf-8') as f:
+        with open(r'resource\css\navigation.qss', encoding='utf-8') as f:
             self.setStyleSheet(f.read())
 
 if __name__ == "__main__":

@@ -23,11 +23,11 @@ def modifySongInfo(id_card, songInfo_dict):
         id_card['year'] = songInfo_dict['year'][:4]
 
     elif songInfo_dict['suffix'] == '.m4a':
-        id_card['©nam'] = [songInfo_dict['songName']]
-        id_card['©ART'] = [songInfo_dict['songer']]
-        id_card['aART'] = [songInfo_dict['songer']]
-        id_card['©alb'] = [songInfo_dict['album']]
+        id_card['©nam'] = songInfo_dict['songName']
+        id_card['©ART'] = songInfo_dict['songer']
+        id_card['aART'] = songInfo_dict['songer']
+        id_card['©alb'] = songInfo_dict['album']
         track_tuple = eval(songInfo_dict['tracknumber'])
         id_card['trkn'] = [(track_tuple[0], track_tuple[1])]
-        id_card['©gen'] = [songInfo_dict['tcon']]
-        id_card['©day'] = [songInfo_dict['year'][:4]]
+        id_card['©gen'] = songInfo_dict['tcon']
+        id_card['©day'] = songInfo_dict['year'][:4]

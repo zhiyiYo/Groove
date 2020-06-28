@@ -1,25 +1,29 @@
 import sys
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QResizeEvent, QIcon
-from PyQt5.QtWidgets import (QApplication, QHBoxLayout, QSizePolicy,
-                             QSpacerItem, QWidget)
+from PyQt5.QtGui import QIcon, QResizeEvent
+from PyQt5.QtWidgets import QApplication, QHBoxLayout, QLabel, QWidget
 
-from .my_button import CloseButton, MaximizeButton, MinimizeButton
+from .title_bar_buttons import (CloseButton, MaximizeButton, MinimizeButton,
+                                ReturnButton)
 
 
 class TitleBar(QWidget):
     """ 定义标题栏 """
 
-    def __init__(self, parent=None):
+    def __init__(self, parent):
         super().__init__(parent)
         self.resize(1360, 40)
         self.win = parent
 
-        # 实例化按钮
+        # 实例化小部件
+        self.title = QLabel('Groove 音乐',self)
         self.minBt = MinimizeButton(self)
         self.maxBt = MaximizeButton(self)
         self.closeBt = CloseButton(self)
+        self.returnButton = ReturnButton(self)
+        # 记录鼠标按下的位置
+        self.startPos = None
 
         self.initWidget()
         self.adjustButtonPos()
@@ -28,15 +32,18 @@ class TitleBar(QWidget):
         """ 初始化小部件 """
         self.isPressed = False
         self.setFixedHeight(40)
-        self.setStyleSheet("background-color:transparent")
-
+        self.setStyleSheet("QWidget{background-color:transparent}\
+                            QLabel{font:14px 'Microsoft YaHei Light'; padding:10px 15px 10px 15px;}")
+        # 隐藏抬头
+        self.title.hide()
         # 将按钮的点击信号连接到槽函数
         self.minBt.clicked.connect(self.win.showMinimized)
         self.maxBt.clicked.connect(self.showRestoreWindow)
-        self.closeBt.clicked.connect(self.win.close)
+        self.closeBt.clicked.connect(self.win.deleteLater)
 
     def adjustButtonPos(self):
         """ 初始化小部件位置 """
+        self.title.move(self.returnButton.width(),0)
         self.closeBt.move(self.width() - 57, 0)
         self.maxBt.move(self.width() - 2 * 57, 0)
         self.minBt.move(self.width()-3*57, 0)
@@ -55,16 +62,13 @@ class TitleBar(QWidget):
 
     def mouseReleaseEvent(self, event):
         self.isPressed = False
-
-    def mouseMoveEvent(self, event):
-        if self.isPressed:
-            if self.win.isMaximized:
-                self.win.showNormal()
-
-                # 计算窗口应该移动的距离
+        if self.win.isMaximized():
+            self.win.resize(QApplication.desktop().width(),
+                            QApplication.desktop().height() - 50)
+        if self.startPos:
             movePos = event.globalPos() - self.startPos
-            self.startPos = event.globalPos()
             self.win.move(self.win.pos() + movePos)
+
 
     def showRestoreWindow(self):
         """ 复原窗口并更换最大化按钮的图标 """

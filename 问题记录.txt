@@ -6,7 +6,7 @@
 5.滚动条最好手动设置最小高度，不然可能太小而看不见
 6.m4a不存在某个键时需要先手动创建一个空列表，再将值添加到列表中
 7.songInfo.json文件的album列表存的是修改前和修改后的album名
-8.albumInfo.json的album存的是album原名,cover存的是修改专辑名后的路径
+8.albumInfo.json的album存的是album原名,cover_path存的是修改专辑名后的路径
 9.如果widget是子窗口要设置背景颜色首先要添加一句：
 self.setAttribute(Qt::WA_StyledBackground,true);
 self.setStyleSheet("background-color: rgb(255,255, 255)");
@@ -17,4 +17,9 @@ self.setStyleSheet("background-color: rgb(255,255, 255)");
 14.e.pos()返回的是事件相对小部件自己的位置
 15.可以通过设置最外层的布局self.all_h_layout.setSizeConstraint(QLayout.SetFixedSize)来自动调整大小
 16.要在小部件上使用磨砂效果只需将其设置成独立窗体，比如qt.window、Qt.popup
-17.可以通过设置已有的属性来直接改变小部件的状态，比如label.setProperty('text',str)可以将实例的text设置为想要的str
+17.可以通过设置已有的属性来直接改变小部件的状态，比如label.setProperty('text',str)可以将实例的text设置为想要的str,
+而且还可以在一个小部件上设置多个自定义的属性
+18.setContentsMargins的顺序为left、top、right、bottom
+17.使用self.window()可以直接获取顶层对象
+18.当把小部件添加到groupBox中时,groupBox会变成parent()
+19.要想动态更新QListWidget的Item的尺寸只需重写resizeEvent()的时候item.setSizeHint(QSize())

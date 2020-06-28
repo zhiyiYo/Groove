@@ -11,16 +11,17 @@ sys.path.append('..')
 
 from Groove.my_widget.my_button import SongerAddToButton, SongerPlayButton
 from Groove.my_widget.my_label import ClickableLabel
-from Groove.my_widget.my_menu import AlbumCardContextMenu
+from Groove.my_widget.my_menu import CardContextMenu
 from Groove.my_functions.auto_wrap import autoWrap
 from Groove.my_functions.is_not_leave import isNotLeave
 
 class AlbumCard(QWidget):
     """ 定义包含专辑歌手名的窗口 """
 
-    def __init__(self, albumInfo, parent=None):
+    def __init__(self, albumInfo, parent=None, albumViewWidget=None):
         super().__init__(parent)
         self.albumInfo = albumInfo
+        self.albumViewWidget = albumViewWidget
 
         # 设置窗体移动标志位
         self.hasMoved = False
@@ -64,7 +65,7 @@ class AlbumCard(QWidget):
 
     def setWidgetsToolTip(self):
         """ 设置歌手名和专辑名的自定义提示条 """
-        if self.parent():
+        if self.parent() and hasattr(self.parent(),'customToolTip'):
             # 引用父级的提示条
             self.customToolTip = self.parent().customToolTip
             # 设置歌手名的提示条
@@ -82,12 +83,14 @@ class AlbumCard(QWidget):
         # 窗体移动就更新提示条
         #print('鼠标进入专辑卡')
         if self.hasMoved:
-            self.setWidgetsToolTip()
+            #self.setWidgetsToolTip()
             self.hasMoved = False
         #显示磨砂背景
-        if self.parent():
-            self.blurBackground = self.parent().albumBlurBackground
-            self.blurBackground.move(self.x()-20, self.y()+8)
+        if self.albumViewWidget:
+            self.blurBackground = self.albumViewWidget.albumBlurBackground
+            # 需要补上groupBox()的y()
+            offsetY = 0 if self.parent() == self.albumViewWidget else self.parent().y()
+            self.blurBackground.move(self.x() - 20, self.y() + 8 + offsetY)
             self.blurBackground.subWindow.setPic(
                 self.albumInfo['cover_path'])
             self.blurBackground.show()
@@ -96,7 +99,7 @@ class AlbumCard(QWidget):
 
     def leaveEvent(self, e):
         """ 鼠标离开时隐藏磨砂背景和按钮 """
-        if self.parent():
+        if self.parent() and hasattr(self.parent(),'customToolTip'):
             #隐藏磨砂背景
             self.parent().albumBlurBackground.hide()
             # 判断是否离开
@@ -109,7 +112,7 @@ class AlbumCard(QWidget):
     def contextMenuEvent(self, event: QContextMenuEvent):
         """ 显示右击菜单 """
         # 创建菜单
-        menu = AlbumCardContextMenu(self)
+        menu = CardContextMenu(self, cardType=1)
         menu.exec_(event.globalPos())
 
     def adjustLabel(self):
