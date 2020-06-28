@@ -23,3 +23,4 @@ self.setStyleSheet("background-color: rgb(255,255, 255)");
 17.使用self.window()可以直接获取顶层对象
 18.当把小部件添加到groupBox中时,groupBox会变成parent()
 19.要想动态更新QListWidget的Item的尺寸只需重写resizeEvent()的时候item.setSizeHint(QSize())
+20.可以在样式表中用background:transparent来替代setAttribute(Qt.WA_TranslucentBackground)

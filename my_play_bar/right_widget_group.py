@@ -1,0 +1,50 @@
+import sys
+
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QApplication, QHBoxLayout, QSlider, QWidget
+from .play_bar_buttons import VolumeButton, SmallPlayModeButton, MoreActionsButton
+
+
+class RightWidgetGroup(QWidget):
+    """ 播放按钮组 """
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        # 创建小部件
+        self.volumeButton = VolumeButton(self)
+        self.volumeSlider = QSlider(Qt.Horizontal, self)
+        self.smallPlayModeButton = SmallPlayModeButton(self)
+        self.moreActionButton = MoreActionsButton(self)
+        self.widget_list = [self.volumeButton, self.volumeSlider,
+                            self.smallPlayModeButton, self.moreActionButton]
+        # 创建布局
+        self.h_layout = QHBoxLayout()
+        # 初始化界面
+        self.initUI()
+        #self.setQss()
+                            
+    def initUI(self):
+        """ 初始化界面 """
+        self.setFixedSize(301,16+67)
+        self.volumeSlider.setObjectName('volumeSlider')
+        self.__spacing_list = [7, 8, 8, 5, 7]
+        self.h_layout.setSpacing(0)
+        self.h_layout.setContentsMargins(0, 0, 0, 0)
+        # 将小部件添加到布局中
+        for i in range(4):
+            self.h_layout.addSpacing(self.__spacing_list[i])
+            self.h_layout.addWidget(self.widget_list[i])
+        else:
+            self.h_layout.addSpacing(self.__spacing_list[-1])
+        self.setLayout(self.h_layout)
+
+    def setQss(self):
+        with open(r'resource\css\playBar.qss', encoding='utf-8') as f:
+            self.setStyleSheet(f.read())
+
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    demo = RightWidgetGroup()
+    demo.show()
+    sys.exit(app.exec_())

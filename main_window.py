@@ -11,12 +11,14 @@ from my_music_interface import MyMusicInterface
 from my_title_bar.title_bar import TitleBar
 from navigation.navigation_bar import NavigationBar
 from navigation.navigation_menu import NavigationMenu
+from my_play_bar.play_bar import PlayBar
 
 
 class MainWindow(QWidget):
     """ 主窗口 """
     def __init__(self, songs_folder, parent=None):
         super().__init__(parent)
+        
         # 实例化窗口特效
         self.windowEffect = WindowEffect()
         # 实例化小部件
@@ -27,6 +29,7 @@ class MainWindow(QWidget):
         self.myMusicInterface = MyMusicInterface(songs_folder, self)
         self.currentRightWindow = self.myMusicInterface
         self.titleBar = TitleBar(self)
+        self.playBar = PlayBar(self)
         # 初始化界面
         self.initWidget()
 
@@ -34,7 +37,7 @@ class MainWindow(QWidget):
         """ 初始化小部件 """
         self.resize(1360, 970)
         self.setObjectName('mainWindow')
-        self.setWindowFlags(Qt.CustomizeWindowHint)
+        self.setWindowFlags(Qt.FramelessWindowHint)
         self.setStyleSheet('QWidget#mainWindow{background:transparent}')
         self.setAttribute(Qt.WA_TranslucentBackground|Qt.WA_StyledBackground)
         # 居中显示
@@ -71,7 +74,8 @@ class MainWindow(QWidget):
         self.navigationBar.resize(60, self.height())
         self.navigationMenu.resize(400, self.height())
         self.currentRightWindow.move(self.currentNavigation.width(), 0)
-        self.currentRightWindow.resize(self.width()-self.currentNavigation.width(),self.height())
+        self.currentRightWindow.resize(self.width() - self.currentNavigation.width(), self.height())
+        self.playBar.resize(self.width(),self.playBar.height())
 
     def resizeEvent(self, e: QResizeEvent):
         """ 调整尺寸时同时调整子窗口的尺寸 """
@@ -95,8 +99,18 @@ class MainWindow(QWidget):
         self.navigationBar.show()
         self.setWidgetGeometry()
 
+    def moveEvent(self, e):
+        if hasattr(self,'playBar'):
+            self.playBar.move(self.x()+1, self.y() + self.height() - self.playBar.height()+40)
+
+    def closeEvent(self, e):
+        self.playBar.close()
+        e.accept()
+        
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     demo = MainWindow('D:\\KuGou\\')
     demo.show()
+    demo.playBar.show()
     sys.exit(app.exec_())
