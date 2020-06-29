@@ -48,7 +48,7 @@ class AlbumInfo():
                 # 更新专辑的更新时间
                 if albumInfo_dict['updateTime'] < songInfo['createTime']:
                     albumInfo_dict['updateTime'] = songInfo['createTime']
-
+                # songInfo['album']的一个元素存的是原始专辑名
                 if albumInfo_dict['album'] == songInfo['album'][0]:
                     # 如果专辑名匹配就将歌曲信息插到字典的列表中
                     albumInfo_dict['songInfo_list'].append(songInfo)

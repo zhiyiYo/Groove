@@ -27,9 +27,12 @@ class MainWindow(QWidget):
         self.navigationMenu = NavigationMenu(self)
         self.currentNavigation = self.navigationBar
         self.myMusicInterface = MyMusicInterface(songs_folder, self)
+        songInfo = {
+            'songName': 'オーダーメイド (定制品)', 'songer': 'RADWIMPS',
+            'album': [r'resource\Album Cover\オーダーメイド\オーダーメイド.jpg']}
         self.currentRightWindow = self.myMusicInterface
         self.titleBar = TitleBar(self)
-        self.playBar = PlayBar(self)
+        self.playBar = PlayBar(songInfo,self)
         # 初始化界面
         self.initWidget()
 
@@ -104,7 +107,7 @@ class MainWindow(QWidget):
             self.playBar.move(self.x()+1, self.y() + self.height() - self.playBar.height()+40)
 
     def closeEvent(self, e):
-        self.playBar.close()
+        self.playBar.deleteLater()
         e.accept()
         
 

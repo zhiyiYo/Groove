@@ -51,7 +51,7 @@ class PlayButton(QToolButton):
         painter.setRenderHint(QPainter.Antialiasing, True)
         # 设置描边画笔
         #pen = QPen(QColor(153, 157, 169, 150))
-        pen = QPen(QColor(153, 157, 169, 250))
+        pen = QPen(QColor(153, 157, 169, 120))
         pen.setWidth(2)
         # 设置画笔
         painter.setPen(pen)

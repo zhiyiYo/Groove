@@ -20,12 +20,16 @@ class PlayProgressBar(QWidget):
 
     def initUI(self):
         """ 初始化小部件 """
-        self.setFixedSize(430,30)
+        self.setFixedSize(438,30)
         self.progressSlider.setObjectName('progressSlider')
+        self.currentTimeLabel.setObjectName('timeLabel')
+        self.totalTimeLabel.setObjectName('timeLabel')
+        # 将小部件添加到布局中
         self.h_layout.addWidget(self.currentTimeLabel,0,Qt.AlignHCenter)
         self.h_layout.addWidget(self.progressSlider,0,Qt.AlignHCenter)
         self.h_layout.addWidget(self.totalTimeLabel, 0, Qt.AlignHCenter)
         self.h_layout.setContentsMargins(0, 0, 0, 0)
+        self.h_layout.setSpacing(0)
         self.setLayout(self.h_layout)
 
         

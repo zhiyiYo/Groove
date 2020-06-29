@@ -7,7 +7,7 @@ from PyQt5.QtGui import QContextMenuEvent, QIcon, QFont, QResizeEvent
 from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
                              QScrollBar, QVBoxLayout, QWidget)
 
-from my_music_tab_widget import MyMusicTabWidget
+from tab_interface.my_music_tab_widget import MyMusicTabWidget
 from my_dialog_box.window_mask import WindowMask
 from my_widget.my_scrollBar import ScrollBar
 
@@ -114,18 +114,6 @@ class MyMusicInterface(QWidget):
         self.myMusicTabWidget.songTag.songCardListWidget.setLineWidth(
             self.width() - 33)
         self.adjustScrollBarHeight()
-
-        """ if self.width() < 1156:
-            # 窗口宽度大于956px且小于1156时显示年份标签，隐藏专辑按钮
-            for song_card in self.myMusicTabWidget.songTag.songCardListWidget.songCard_list:
-                #song_card.albumLabel.hide()
-                song_card.yearTconDuration.durationLabel.hide()
-
-        elif self.width() > 1156:
-            # 窗口宽度大于1156时显示年份标签，显示专辑按钮
-            for song_card in self.myMusicTabWidget.songTag.songCardListWidget.songCard_list:
-                song_card.albumLabel.show()
-                song_card.yearTconDuration.durationLabel.show() """
 
     def changeTabEvent(self, index):
         """ 当前标签窗口改变时更改滚动条的绑定对象 """

@@ -1,7 +1,7 @@
 import sys
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QHBoxLayout, QWidget
+from PyQt5.QtWidgets import QApplication, QHBoxLayout, QWidget,QVBoxLayout
 
 from .play_bar_buttons import (LastSongButton, LoopModeButton, NextSongButton,
                               PlayButton, RandomPlayButton)
@@ -15,6 +15,7 @@ class CentralButtonGroup(QWidget):
         self.createButtons()
         # 创建布局
         self.h_layout = QHBoxLayout()
+        self.all_v_layout=QVBoxLayout(self)
         # 初始化界面
         self.initUI()
 
@@ -30,14 +31,17 @@ class CentralButtonGroup(QWidget):
 
     def initUI(self):
         """ 初始化界面 """
-        self.setFixedSize(317,47+17*2)
+        self.setFixedSize(317,67+8+3)
         for i in range(5):
             self.h_layout.addWidget(self.button_list[i],0,Qt.AlignCenter)
             if i != 4:
                 self.h_layout.addSpacing(16)
         self.h_layout.setSpacing(0)
         self.h_layout.setContentsMargins(0, 0, 0, 0)
-        self.setLayout(self.h_layout)
+        self.all_v_layout.addSpacing(8)
+        self.all_v_layout.setSpacing(0)
+        self.all_v_layout.setContentsMargins(0, 0, 0, 0)
+        self.all_v_layout.addLayout(self.h_layout)
 
 
 if __name__ == "__main__":

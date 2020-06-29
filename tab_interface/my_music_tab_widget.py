@@ -7,7 +7,8 @@ from PyQt5.QtGui import QContextMenuEvent, QIcon, QMouseEvent
 from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
                              QTabWidget, QVBoxLayout, QWidget)
 
-from tab_interface import AlbumTabInterface, SongTabInterface, SongerTabInterface
+sys.path.append('..')
+from Groove.tab_interface import AlbumTabInterface, SongTabInterface, SongerTabInterface
 
 
 class MyMusicTabWidget(QTabWidget):
@@ -37,14 +38,11 @@ class MyMusicTabWidget(QTabWidget):
         self.resize(1276, 995-23)
         self.setUsesScrollButtons(False)
 
-        # 设置标签切换时的槽函数
-        # self.currentChanged.connect(self.changeTabEvent)
-
         # 分配ID
         self.setObjectName('MyMusicTabWidget')
 
         # 设置监听
-        # self.tabBar().installEventFilter(self)
+        #self.tabBar().installEventFilter(self)
 
     def initTagLayout(self):
         """ 初始化页面布局 """
@@ -76,9 +74,10 @@ class MyMusicTabWidget(QTabWidget):
             if event.type() == QEvent.MouseButtonPress and tabIndex != -1:
                 return True
             elif event.type() == QEvent.MouseButtonRelease and tabIndex != -1:
-                self.setCurrentIndex(tabIndex)
-
-        return False
+                event = QMouseEvent(QEvent.MouseButtonPress,
+                                event.pos(), Qt.LeftButton, Qt.LeftButton, Qt.NoModifier)
+                return False
+        return super().eventFilter(obj,event)
 
 
 if __name__ == "__main__":
