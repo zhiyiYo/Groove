@@ -6,11 +6,12 @@ import sys
 from time import sleep
 
 from PyQt5.QtCore import QPoint, QSize, Qt
-from PyQt5.QtGui import QContextMenuEvent, QIcon, QMouseEvent,QEnterEvent
+from PyQt5.QtGui import QContextMenuEvent, QIcon, QMouseEvent, QEnterEvent, QFontMetrics, QFont
 from PyQt5.QtWidgets import (QAction, QApplication, QCheckBox, QHBoxLayout,
                              QLabel, QPushButton, QToolButton, QWidget)
 sys.path.append('..')
-from Groove.my_widget.my_button import SongCardPlayButton,SongCardAddToButton
+from Groove.my_widget.my_button import SongCardPlayButton, SongCardAddToButton
+from Groove.my_widget.my_label import ClickableLabel
 
 class SongNameCard(QWidget):
     """ 定义一个放置歌名和按钮的窗口 """
@@ -35,16 +36,21 @@ class SongNameCard(QWidget):
 
     def initLayout(self):
         """ 初始化布局 """
-
         self.all_h_layout.addWidget(self.songNameCheckBox, Qt.AlignLeft)
         self.setLayout(self.all_h_layout)
 
     def initWidget(self):
         """ 初始化小部件 """
         self.setFixedWidth(342)
-        self.widgetList=[self.songNameCheckBox,self.addToButton,self.playButton]
+        self.widgetList = [self.songNameCheckBox, self.addToButton, self.playButton]
+        # 计算歌名的长度
+        self.getSongNameWidth()
         # 设置按钮的绝对坐标
-        self.buttonGroup.move(195,0)
+        #self.buttonGroup.move(195, 0)
+        if self.songNameWidth >= 140:
+            self.buttonGroup.move(195, 0)
+        else:
+            self.buttonGroup.move(self.songNameWidth + 51, 0)
         # 分配ID
         self.songNameCheckBox.setObjectName('songNameCheckBox')
         self.setObjectName('songNameCard')
@@ -68,6 +74,11 @@ class SongNameCard(QWidget):
         else:
             self.playButton.show()
             self.addToButton.show()
+
+    def getSongNameWidth(self):
+        """ 计算歌名的长度 """
+        fontMetrics = QFontMetrics(QFont('Microsoft YaHei', 11))
+        self.songNameWidth = sum([fontMetrics.width(i) for i in self.songNameCheckBox.text()])
 
 
 class YearTconDurationCard(QWidget):
@@ -150,8 +161,31 @@ class ButtonGroup(QWidget):
             self.setStyleSheet(f.read())
 
 
+class SongerLabelWidget(QWidget):
+    """ 放歌手名标签的窗口 """
+    def __init__(self,songerName, parent=None):
+        super().__init__(parent)
+        self.setFixedWidth(190)
+        self.resize(190,61)
+        #self.setAttribute(Qt.WA_TranslucentBackground)
+        self.songerLabel = ClickableLabel(songerName, self)
+        self.songerLabel.setCursor(Qt.PointingHandCursor)
+        self.songerLabel.move(0, 21)
+
+
+class AlbumLabelWidget(QWidget):
+    """ 放专辑名标签的窗口 """
+    def __init__(self, albumName, parent=None):
+        super().__init__(parent)
+        self.setFixedWidth(190)
+        self.setAttribute(Qt.WA_TranslucentBackground)
+        self.albumLabel = ClickableLabel(albumName, self)
+        self.albumLabel.setCursor(Qt.PointingHandCursor)
+        self.albumLabel.move(0,20)
+
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    demo = SongNameCard('何十年後に「君」と出会っていなかったアナタに向けた歌')
+    demo = SongerLabelWidget('RADWIMPS')
     demo.show()
     sys.exit(app.exec_())

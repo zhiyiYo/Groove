@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import (QAbstractItemView, QAction, QApplication, QHBoxLayo
                              QListWidget, QListWidgetItem, QWidget)
 sys.path.append('..')
 from Groove.get_info.get_song_info import SongInfo
-from Groove.card_widget.songcard import SongCard
+from Groove.card_widget.songcard_test import SongCard
 from Groove.my_dialog_box.property_panel import PropertyPanel
 from Groove.my_dialog_box.song_info_edit_panel import SongInfoEditPanel
 from Groove.my_widget.my_menu import Menu,AddToMenu,SongCardListContextMenu

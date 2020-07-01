@@ -24,6 +24,7 @@ QWidget#buttonGroup[state='enter and clicked'] {
 
 /*设置复选框的样式，复选框只有三种状态*/
 QCheckBox {
+    padding-left: 4px;
     background-color: transparent;
     font: 18px 'Microsoft YaHei';
 }
@@ -100,7 +101,12 @@ QLabel#albumLabel,
 QLabel#songerLabel {
     border: none;
     color:black;
+    font-family: 'Microsoft YaHei Light';
     background-color: transparent;
+}
+
+QLabel#songerLabel{
+    font:15px 'Microsoft YaHei Light';
 }
 
 QLabel#songerLabel[state='clicked'],

@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsDropShadowEffect,
                              QGridLayout, QLabel, QPushButton, QWidget,QSlider)
 
 from effects.window_effect import WindowEffect
-from my_widget.my_menu import Menu
+from my_play_bar.more_actions_menu import MoreActionsMenu
 
 
 class Window(QWidget):
@@ -22,10 +22,11 @@ class Window(QWidget):
         self.pic = QLabel(self)
         #实例化窗口特效
         self.winEffect = WindowEffect()
-        self.winEffect.setAcrylicEffect(self.hWnd)
-        self.setStyleSheet('background:transparent')
-        self.slider=QSlider(Qt.Horizontal,self)
-        self.slider.setStyleSheet('background:transparent')
+        """ self.winEffect.setAcrylicEffect(self.hWnd)
+        self.setStyleSheet('QWidget{background:transparent}') """
+        self.button=QPushButton('测试',self)
+        self.menu = MoreActionsMenu(parent=self, actionFlag=0)
+        self.menu.hide()
         
         #实例化菜单和动作
         self.initWidget()
@@ -35,14 +36,18 @@ class Window(QWidget):
         self.pic.move(130, 130)
         #self.setAttribute(Qt.WA_TranslucentBackground)
         self.pic.setPixmap(QPixmap('resource\\Album Cover\\人間開花\\人間開花.jpg'))
+        self.menu.savePlayListAct.triggered.connect(self.saveActEvent)
 
     def contextMenuEvent(self, e):
-        self.menu.exec(self.cursor().pos())
+        self.menu.show(self.cursor().pos())
+
+    def saveActEvent(self):
+        print(1)
+        self.menu.hide()
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    #app.setAttribute(Qt.AA_NativeWindows)
     demo = Window()
     demo.show()
     sys.exit(app.exec_())

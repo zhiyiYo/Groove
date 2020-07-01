@@ -110,12 +110,10 @@ class SongerHeadPortrait(QWidget):
         super(SongerHeadPortrait, self).paintEvent(e)
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing, True)  # 设置抗锯齿
-
         #设置描边画笔
         pen = QPen(QColor(253,253,253))
         pen.setWidth(1)
-        painter.setPen(pen)
-                                   		
+        painter.setPen(pen)           		
         #设置画刷的内容为歌手图
         brush = QBrush(self.circle_image)
         painter.setBrush(brush)								

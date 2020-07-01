@@ -6,7 +6,8 @@ from PyQt5.QtWidgets import QApplication, QHBoxLayout, QPushButton, QWidget
 
 sys.path.append('..')
 from Groove.my_widget.my_label import ClickableLabel
-from Groove.card_widget.songcard_sub_unit import SongNameCard, YearTconDurationCard
+from Groove.card_widget.songcard_sub_unit import SongNameCard, YearTconDurationCard, SongerLabelWidget, AlbumLabelWidget
+
 
 class SongCard(QWidget):
     """ 定义一个歌曲卡类 """
@@ -16,7 +17,6 @@ class SongCard(QWidget):
 
         # 设置item被点击标志位
         self.isClicked = False
-
         # 实例化小部件
         self.songNameCard = SongNameCard(songInfo_dict['songName'], self)
         self.songerLabel = ClickableLabel(songInfo_dict['songer'], self)

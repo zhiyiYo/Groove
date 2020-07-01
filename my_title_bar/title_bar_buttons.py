@@ -40,7 +40,7 @@ class MinimizeButton(QPushButton):
 
         self.resize(57, 40)
         self.setStyleSheet("QPushButton{border:none;margin:0}")
-        self.setIcon(QIcon('resource\\images\\titleBar\\黑色最小化按钮_57_40_2.png'))
+        self.setIcon(QIcon('resource\\images\\titleBar\\透明黑色最小化按钮_57_40.png'))
         self.setIconSize(QSize(57, 40))
         self.installEventFilter(self)
 
@@ -49,10 +49,10 @@ class MinimizeButton(QPushButton):
         if obj == self:
             if e.type() == QEvent.Enter:
                 self.setIcon(
-                    QIcon('resource\\images\\titleBar\\最小化按钮_hover_57_40.png'))
+                    QIcon('resource\\images\\titleBar\\绿色最小化按钮_hover_57_40.png'))
             elif e.type() == QEvent.Leave:
                 self.setIcon(
-                    QIcon('resource\\images\\titleBar\\黑色最小化按钮_57_40_2.png'))
+                    QIcon('resource\\images\\titleBar\\透明黑色最小化按钮_57_40.png'))
             elif e.type() == QEvent.MouseButtonPress and e.button() == Qt.LeftButton:
                 self.setIcon(
                     QIcon(r"resource\images\titleBar\黑色最小化按钮_selected_57_40.png"))
@@ -69,7 +69,7 @@ class MaximizeButton(QPushButton):
         # 设置最大化标志位
         self.isMax = False
         self.setStyleSheet("QPushButton{border:none;margin:0}")
-        self.setIcon(QIcon('resource\\images\\titleBar\\黑色最大化按钮_57_40_2.png'))
+        self.setIcon(QIcon('resource\\images\\titleBar\\透明黑色最大化按钮_57_40.png'))
         self.setIconSize(QSize(57, 40))
         self.installEventFilter(self)
 
@@ -79,20 +79,24 @@ class MaximizeButton(QPushButton):
             if e.type() == QEvent.Enter:
                 if not self.isMax:
                     self.setIcon(
-                        QIcon('resource\\images\\titleBar\\最大化按钮_hover_57_40.png'))
+                        QIcon('resource\\images\\titleBar\\绿色最大化按钮_hover_57_40.png'))
                 else:
                     self.setIcon(
-                        QIcon('resource\\images\\titleBar\\向下还原按钮_hover_57_40.png'))
+                        QIcon('resource\\images\\titleBar\\绿色向下还原按钮_hover_57_40.png'))
             elif e.type() == QEvent.Leave:
                 if not self.isMax:
                     self.setIcon(
-                        QIcon('resource\\images\\titleBar\\黑色最大化按钮_57_40_2.png'))
+                        QIcon('resource\\images\\titleBar\\透明黑色最大化按钮_57_40.png'))
                 else:
                     self.setIcon(
                         QIcon('resource\\images\\titleBar\\黑色向下还原按钮_57_40.png'))
             elif e.type() == QEvent.MouseButtonPress and e.button() == Qt.LeftButton:
-                self.setIcon(
-                    QIcon(r"resource\images\titleBar\黑色最大化按钮_selected_57_40.png"))
+                if not self.isMax:
+                    self.setIcon(
+                        QIcon(r"resource\images\titleBar\黑色最大化按钮_selected_57_40.png"))
+                else:
+                    self.setIcon(
+                        QIcon(r"resource\images\titleBar\向下还原按钮_selected_57_40.png"))
         return super().eventFilter(obj, e)
 
 
@@ -104,7 +108,7 @@ class CloseButton(QPushButton):
 
         self.setFixedSize(57, 40)
         self.setStyleSheet("QPushButton{border:none;margin:0}")
-        self.setIcon(QIcon('resource\\images\\titleBar\\黑色关闭按钮_57_40_2.png'))
+        self.setIcon(QIcon('resource\\images\\titleBar\\透明黑色关闭按钮_57_40.png'))
         self.setIconSize(QSize(57, 40))
         self.installEventFilter(self)
 
@@ -116,7 +120,7 @@ class CloseButton(QPushButton):
                     QIcon('resource\\images\\titleBar\\关闭按钮_hover_57_40.png'))
             elif e.type() == QEvent.Leave:
                 self.setIcon(
-                    QIcon('resource\\images\\titleBar\\黑色关闭按钮_57_40_2.png'))
+                    QIcon('resource\\images\\titleBar\\透明黑色关闭按钮_57_40.png'))
             elif e.type() == QEvent.MouseButtonPress and e.button() == Qt.LeftButton:
                 self.setIcon(
                     QIcon(r"resource\images\titleBar\关闭按钮_selected_57_40.png"))

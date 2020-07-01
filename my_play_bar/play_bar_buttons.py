@@ -50,8 +50,7 @@ class PlayButton(QToolButton):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing, True)
         # 设置描边画笔
-        #pen = QPen(QColor(153, 157, 169, 150))
-        pen = QPen(QColor(153, 157, 169, 120))
+        pen = QPen(QColor(255,255,255,100))
         pen.setWidth(2)
         # 设置画笔
         painter.setPen(pen)
@@ -262,11 +261,12 @@ class VolumeButton(QToolButton):
         self.isEnter = False
         self.isSelected = False
         # 当前音量等级及其各个图标地址
-        self.currentVolumeLevel = 0
+        self.currentVolumeLevel = 1
         self.__iconPath_list = [r'resource\images\playBar\音量按钮_无_45_45.png',
                                 r'resource\images\playBar\音量按钮_低_45_45.png',
                                 r'resource\images\playBar\音量按钮_中_45_45.png',
-                                r'resource\images\playBar\音量按钮_高_45_45.png']
+                                r'resource\images\playBar\音量按钮_高_45_45.png',
+                                r'resource\images\playBar\音量按钮_静音_45_45.png']
         self.setFixedSize(47, 47)
         self.installEventFilter(self)
 
@@ -293,13 +293,13 @@ class VolumeButton(QToolButton):
         """ 绘制背景 """
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing, True)
-        # 设置画笔
+        # 设置画笔和背景图
         painter.setPen(Qt.NoPen)
+        self.image = QPixmap(self.__iconPath_list[self.currentVolumeLevel])
         if self.isSelected:
-            bgBrush = QBrush(QColor(73, 76, 84, 180))
-            painter.setBrush(bgBrush)
-            painter.drawEllipse(1, 1, 44, 44)
-        elif self.isEnter:
+            # 如果被按下就换成静音按钮
+            self.image = QPixmap(self.__iconPath_list[-1])
+        if self.isEnter:
             # 设置画笔
             painter.setPen(QPen(QColor(101, 106, 116, 180)))
             bgBrush = QBrush(QColor(73, 76, 84, 80))
@@ -307,10 +307,15 @@ class VolumeButton(QToolButton):
             painter.drawEllipse(1, 1, 44, 44)
         # 绘制背景图
         painter.setPen(Qt.NoPen)
-        self.image = QPixmap(self.__iconPath_list[self.currentVolumeLevel])
         brush = QBrush(self.image)
         painter.setBrush(brush)
         painter.drawEllipse(1, 1, 45, 45)
+
+    def setVolumeLevel(self, volumeLevel):
+        """ 根据音量大小的不同来更换图标 """
+        if self.currentVolumeLevel != volumeLevel:
+            self.currentVolumeLevel = volumeLevel
+            self.update()
 
 
 class SmallPlayModeButton(BasicButton):

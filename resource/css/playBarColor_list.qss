@@ -1,0 +1,18 @@
+QWidget#playBar{
+    background-color: #9e1d14;
+    background-color: #554c06;
+    background-color: #83362b;
+    background-color: #6a431e;
+    background-color: #16545b;
+    background-color: #73242c;
+    background-color: #445020;
+    background-color: #185269;
+    background-color: #143d72;
+    background-color: #624626;
+    background-color: #0a517a;
+    background-color: #17222f;
+    background-color: #534a36;
+    background-color: #484b50;
+    background-color: #484b56;
+    background-color: #02125b;
+}

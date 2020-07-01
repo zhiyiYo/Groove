@@ -8,8 +8,7 @@ from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
                              QScrollBar, QVBoxLayout, QWidget)
 
 from tab_interface.my_music_tab_widget import MyMusicTabWidget
-from my_dialog_box.window_mask import WindowMask
-from my_widget.my_scrollBar import ScrollBar
+from my_widget.my_scroll_bar import ScrollBar
 
 
 class MyMusicInterface(QWidget):
@@ -54,7 +53,8 @@ class MyMusicInterface(QWidget):
         self.h_layout.addWidget(self.song_scrollBar, 0, Qt.AlignRight)
         self.h_layout.addWidget(self.songer_scrollBar, 0, Qt.AlignRight)
         self.h_layout.addWidget(self.album_scrollBar, 0, Qt.AlignRight)
-        self.h_layout.setContentsMargins(20, 0, 1, 0)
+        self.h_layout.addSpacing(1)
+        self.h_layout.setContentsMargins(20, 0, 0, 0)
 
         # 留下标题栏的占位空间
         self.all_v_layout.addSpacing(40)
@@ -136,9 +136,8 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
 
     font = QFont(QApplication.font())
-    font.setStyleStrategy(QFont.PreferAntialias)
-    app.setFont(font)
-
+    """ font.setStyleStrategy(QFont.PreferAntialias)
+    app.setFont(font) """
     demo = MyMusicInterface('D:\\KuGou\\')
     demo.show()
     sys.exit(app.exec_())

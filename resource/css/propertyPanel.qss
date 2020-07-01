@@ -5,6 +5,7 @@ QWidget {
 
 QLabel {
     font: 18px 'Microsoft YaHei';
+    selection-background-color: rgb(0, 153, 188);
 }
 
 QLabel#propertyLabel {

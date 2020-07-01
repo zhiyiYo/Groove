@@ -1,6 +1,6 @@
 import sys
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt,QEvent
 from PyQt5.QtWidgets import QApplication, QHBoxLayout, QSlider, QWidget
 from .play_bar_buttons import VolumeButton, SmallPlayModeButton, MoreActionsButton
 
@@ -14,19 +14,27 @@ class RightWidgetGroup(QWidget):
         self.volumeButton = VolumeButton(self)
         self.volumeSlider = QSlider(Qt.Horizontal, self)
         self.smallPlayModeButton = SmallPlayModeButton(self)
-        self.moreActionButton = MoreActionsButton(self)
+        self.moreActionsButton = MoreActionsButton(self)
         self.widget_list = [self.volumeButton, self.volumeSlider,
-                            self.smallPlayModeButton, self.moreActionButton]
+                            self.smallPlayModeButton, self.moreActionsButton]
         # 创建布局
         self.h_layout = QHBoxLayout()
         # 初始化界面
-        self.initUI()
+        self.initWidget()
+        self.initLayout()
         #self.setQss()
-                            
-    def initUI(self):
-        """ 初始化界面 """
-        self.setFixedSize(301,16+67)
+
+    def initWidget(self):
+        """ 初始化小部件 """
+        self.setFixedSize(301, 16 + 67)
+        self.volumeSlider.setRange(0,100)
         self.volumeSlider.setObjectName('volumeSlider')
+        # 将音量滑动条数值改变信号连接到槽函数
+        self.volumeSlider.valueChanged.connect(self.setVolume)
+        self.volumeSlider.setValue(20)
+                            
+    def initLayout(self):
+        """ 初始化布局 """
         self.__spacing_list = [7, 8, 8, 5, 7]
         self.h_layout.setSpacing(0)
         self.h_layout.setContentsMargins(0, 0, 0, 0)
@@ -37,6 +45,18 @@ class RightWidgetGroup(QWidget):
         else:
             self.h_layout.addSpacing(self.__spacing_list[-1])
         self.setLayout(self.h_layout)
+
+    def setVolume(self):
+        """ 调整音量并更换图标 """
+        if self.volumeSlider.value()==0:
+            self.volumeButton.setVolumeLevel(0)
+        elif 0 < self.volumeSlider.value() <= 32:
+            self.volumeButton.setVolumeLevel(1)
+        elif 32 < self.volumeSlider.value() <= 65:
+            self.volumeButton.setVolumeLevel(2)
+        else:
+            self.volumeButton.setVolumeLevel(3)
+        
 
     def setQss(self):
         with open(r'resource\css\playBar.qss', encoding='utf-8') as f:

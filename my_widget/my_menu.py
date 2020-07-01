@@ -3,8 +3,8 @@ import sys
 from ctypes.wintypes import HWND
 
 from PyQt5.QtCore import QAbstractAnimation, QEasingCurve, QEvent, Qt, QPropertyAnimation, QRect
-from PyQt5.QtGui import QIcon,QPainter,QPen,QColor,QIcon
-from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsDropShadowEffect,
+from PyQt5.QtGui import QIcon,QPainter,QPen,QColor,QBrush
+from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsDropShadowEffect,QHBoxLayout,
                              QMenu, QWidget)
 sys.path.append('..')
 from Groove.effects.window_effect import WindowEffect
@@ -236,3 +236,4 @@ class SongCardListContextMenu(Menu):
         # 设置菜单的ID
         self.addToMenu.setObjectName('addToMenu')
         self.setObjectName('songCardContextMenu')
+

@@ -11,14 +11,11 @@ class ScrollBar(QWidget):
     def __init__(self, externalScrollBar=None, parent=None):
         super().__init__(parent)
         self.externalScrollBar = externalScrollBar
-
         # 实例化两个滚动条
         self.minScrollBar = QScrollBar(Qt.Vertical, self)
         self.maxScrollBar = QScrollBar(Qt.Vertical, self)
-
         # 实例化一个控制滚动条显示的计时器
         self.timer = QTimer(self)
-
         # 初始化
         self.initWidget()
         self.associateScrollBar()
@@ -32,7 +29,10 @@ class ScrollBar(QWidget):
         self.timer.setInterval(2000)
         self.timer.timeout.connect(self.showMinScrollBar)
         self.setAttribute(Qt.WA_TranslucentBackground)
-
+        # 设置鼠标跟踪
+        self.setMouseTracking(True)
+        self.minScrollBar.setMouseTracking(True)
+        self.maxScrollBar.setMouseTracking(True)
         # 分配ID
         self.setObjectName('father')
         self.minScrollBar.setObjectName('minScrollBar')

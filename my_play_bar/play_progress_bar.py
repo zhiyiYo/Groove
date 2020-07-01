@@ -6,12 +6,12 @@ from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QSlider, QHBoxLayout
 
 class PlayProgressBar(QWidget):
     """ 歌曲播放进度条 """
-    def __init__(self, parent=None):
+    def __init__(self, duration:str,parent=None):
         super().__init__(parent)
         # 创建两个标签和一个进度条
         self.progressSlider = QSlider(Qt.Horizontal, self)
         self.currentTimeLabel = QLabel('0:00', self)
-        self.totalTimeLabel = QLabel('0:00', self)
+        self.totalTimeLabel = QLabel(duration, self)
         # 创建布局
         self.h_layout = QHBoxLayout()
         # 初始化界面
@@ -41,6 +41,6 @@ class PlayProgressBar(QWidget):
         
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    demo = PlayProgressBar()
+    demo = PlayProgressBar('3:50')
     demo.show()
     sys.exit(app.exec_())

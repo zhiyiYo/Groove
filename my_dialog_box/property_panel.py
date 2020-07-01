@@ -105,6 +105,8 @@ class SubPropertyPanel(QWidget):
                              self.disk, self.albumNameLabel, self.albumName, self.albumSongerLabel,
                              self.albumSonger, self.tconLabel, self.tcon, self.durationLabel, self.duration,
                              self.yearLabel, self.year, self.songPathLabel, self.songPath, self.closeButton]
+        self.label_list_3 = [self.disk, self.year, self.tcon, self.songer,self.albumName,
+                             self.duration,self.songName,self.albumSonger,self.songPath,self.trackNumber]
 
 
     def initWidget(self):
@@ -136,14 +138,11 @@ class SubPropertyPanel(QWidget):
         self.trackNumber.move(28, 202)
         self.albumSonger.move(584, 282)
         self.closeButton.move(732, 535)
-
         # 设置按钮的大小
         self.closeButton.setFixedSize(170, 40)
-
         # 将关闭信号连接到槽函数
         if not self.parent():
             self.closeButton.clicked.connect(self.deleteLater)
-
         # 设置宽度
         for label in self.label_list_1:
             if label in [self.songer, self.albumSonger]:
@@ -154,7 +153,9 @@ class SubPropertyPanel(QWidget):
                 label.setFixedWidth(847)
         # 调整高度
         self.adjustHeight()
-
+        # 允许鼠标选中
+        for label in self.label_list_3:
+            label.setTextInteractionFlags(Qt.TextSelectableByMouse)
         # 分配ID
         self.year.setObjectName('songer')
         self.songer.setObjectName('songer')

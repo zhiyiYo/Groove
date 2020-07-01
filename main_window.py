@@ -1,24 +1,28 @@
 # coding:utf-8
 
 import sys
-from ctypes.wintypes import HWND
+from ctypes.wintypes import HWND,MSG
+from enum import Enum
+
 from PyQt5.QtCore import QPoint, QRect, QSize, Qt
-from PyQt5.QtGui import QIcon, QResizeEvent,QPixmap
-from PyQt5.QtWidgets import QAction, QApplication, QWidget, QGraphicsDropShadowEffect
+from PyQt5.QtGui import QCloseEvent, QIcon, QPixmap, QResizeEvent
+from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsDropShadowEffect,
+                             QWidget)
 
 from effects.window_effect import WindowEffect
 from my_music_interface import MyMusicInterface
+from my_play_bar.play_bar import PlayBar
 from my_title_bar.title_bar import TitleBar
 from navigation.navigation_bar import NavigationBar
 from navigation.navigation_menu import NavigationMenu
-from my_play_bar.play_bar import PlayBar
 
 
 class MainWindow(QWidget):
     """ 主窗口 """
+
     def __init__(self, songs_folder, parent=None):
         super().__init__(parent)
-        
+
         # 实例化窗口特效
         self.windowEffect = WindowEffect()
         # 实例化小部件
@@ -28,21 +32,23 @@ class MainWindow(QWidget):
         self.currentNavigation = self.navigationBar
         self.myMusicInterface = MyMusicInterface(songs_folder, self)
         songInfo = {
-            'songName': 'オーダーメイド (定制品)', 'songer': 'RADWIMPS',
-            'album': [r'resource\Album Cover\オーダーメイド\オーダーメイド.jpg']}
+            'songName': 'オオカミと少女 (狼与少女)', 'songer': 'RADWIMPS', 'duration': '3:50',
+            'album': [r'resource\\Album Cover\\(un)sentimental spica\\(un)sentimental spica.jpg']}
         self.currentRightWindow = self.myMusicInterface
         self.titleBar = TitleBar(self)
-        self.playBar = PlayBar(songInfo,self)
+        self.playBar = PlayBar(songInfo, self)
         # 初始化界面
         self.initWidget()
 
     def initWidget(self):
         """ 初始化小部件 """
-        self.resize(1360, 970)
+        self.resize(1400, 970)
+        # 打开鼠标跟踪，用来检测鼠标是否位于边界处
+        self.setMouseTracking(True)
         self.setObjectName('mainWindow')
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setStyleSheet('QWidget#mainWindow{background:transparent}')
-        self.setAttribute(Qt.WA_TranslucentBackground|Qt.WA_StyledBackground)
+        self.setAttribute(Qt.WA_TranslucentBackground | Qt.WA_StyledBackground)
         # 居中显示
         desktop = QApplication.desktop()
         self.move(int(desktop.width() / 2 - self.width() / 2),
@@ -63,13 +69,11 @@ class MainWindow(QWidget):
         self.navigationMenu.showBarButton.clicked.connect(
             self.showNavigationBar)
 
-
     def setWindowEffect(self):
         """ 设置窗口特效 """
         # 开启亚克力效果和阴影效果
         self.hWnd = HWND(int(self.winId()))
         self.windowEffect.setAcrylicEffect(self.hWnd, 'F2F2F250', True)
-
 
     def setWidgetGeometry(self):
         """ 调整小部件的geometry """
@@ -103,13 +107,67 @@ class MainWindow(QWidget):
         self.setWidgetGeometry()
 
     def moveEvent(self, e):
-        if hasattr(self,'playBar'):
-            self.playBar.move(self.x()+1, self.y() + self.height() - self.playBar.height()+40)
+        if hasattr(self, 'playBar'):
+            if self.playBar.moveTime > 0:
+                self.playBar.move(self.x() - 8, self.y() +
+                                  self.height() - self.playBar.height())
+            else:
+                self.playBar.move(self.x() + 1, self.y() +
+                                  self.height() - self.playBar.height() + 40)
+            self.playBar.moveTime += 1
 
-    def closeEvent(self, e):
-        self.playBar.deleteLater()
+    def closeEvent(self, e: QCloseEvent):
+        self.playBar.close()
         e.accept()
-        
+
+    def GET_X_LPARAM(self, param):
+        return param & 0xffff
+
+    def GET_Y_LPARAM(self, param):
+        return param >> 16
+
+    def nativeEvent(self, eventType, message):
+        result = 0
+        msg2 = MSG.from_address(message.__int__())
+        #minV, maxV = 18, 22
+        minV, maxV = 2,6
+        if msg2.message == 0x0084:
+            xPos = self.GET_X_LPARAM(msg2.lParam) - self.frameGeometry().x()
+            yPos = self.GET_Y_LPARAM(msg2.lParam) - self.frameGeometry().y()
+            if(xPos > minV and xPos < maxV):
+                result = Flags.HTLEFT.value
+            elif(xPos > (self.width() - maxV) and xPos < (self.width() - minV)):
+                result = Flags.HTRIGHT.value
+            elif(yPos > minV and yPos < maxV):
+                result = Flags.HTTOP.value
+            elif(yPos > (self.height() - maxV) and yPos < (self.height() - minV)):
+                result = Flags.HTBOTTOM.value
+            elif(xPos > minV and xPos < maxV and yPos > minV and yPos < maxV):
+                result = Flags.HTTOPLEFT.value
+            elif(xPos > (self.width() - maxV) and xPos < (self.width() - minV) and yPos > minV and yPos < maxV):
+                result = Flags.HTTOPRIGHT.value
+            elif(xPos > minV and xPos < maxV and yPos > (self.height() - maxV) and yPos < (self.height() - minV)):
+                result = Flags.HTBOTTOMLEFT.value
+            elif(xPos > (self.width() - maxV) and xPos < (self.width() - minV) and yPos > (self.height() - maxV) and yPos < (self.height() - minV)):
+                result = Flags.HTBOTTOMRIGHT.value
+            if result!=0:
+                return (True, result)
+        return QWidget.nativeEvent(self, eventType, message)
+    
+
+class Flags(Enum):
+    """ 包含各宏定义的枚举类 """
+    HTCAPTION = 2
+    HTLEFT = 10
+    HTRIGHT = 11
+    HTTOP = 12
+    HTTOPLEFT = 13
+    HTTOPRIGHT = 14
+    HTBOTTOM = 15
+    HTBOTTOMLEFT = 16
+    HTBOTTOMRIGHT = 17
+    
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
