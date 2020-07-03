@@ -13,14 +13,14 @@ from .get_song_info import SongInfo
 class GetAlbumCover():
     """ 定义一个遍历音频文件和封面文件夹获取专辑封面的类 """
 
-    def __init__(self, target_path):
+    def __init__(self, target_path_list:list):
         """ 初始化类的属性 """
         self.cwd = os.getcwd()
         self.album_cover_folder = os.path.join(
             self.cwd, 'resource\\Album Cover')
-        self.target_path = target_path
+        self.target_path_list = target_path_list
         # 实例化一个用于获取歌曲信息的类
-        self.songInfo = SongInfo(target_path)
+        self.songInfo = SongInfo(target_path_list)
         # 获取封面
         self.get_album()
 
@@ -146,4 +146,4 @@ class GetAlbumCover():
 
 
 if __name__ == "__main__":
-    getAlbumCover = GetAlbumCover('D:\\KuGou')
+    getAlbumCover = GetAlbumCover(['D:\\KuGou'])

@@ -1,0 +1,128 @@
+import sys
+
+from PyQt5.QtCore import Qt, QPoint
+from PyQt5.QtGui import QPen, QPainter, QBrush, QColor, QMouseEvent, QPolygon
+from PyQt5.QtWidgets import QApplication, QWidget
+
+
+class FoldingWindow(QWidget):
+    """ 点击不同方位翻折效果不同的窗口 """
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setAttribute(Qt.WA_TranslucentBackground)
+        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.resize(365, 90)
+        # 设置标志位
+        self.pressedPos = None
+        self.isEnter = False
+
+    def enterEvent(self, e):
+        """ 鼠标进入界面就置位进入标志位 """
+        self.isEnter = True
+        self.update()
+
+    def leaveEvent(self, e):
+        """ 鼠标离开就清零置位标志位 """
+        self.isEnter = False
+        self.update()
+
+    def mouseReleaseEvent(self, e):
+        """ 鼠标松开时更新界面 """
+        self.pressedPos = None
+        self.update()
+
+    def mousePressEvent(self, e: QMouseEvent):
+        """ 根据鼠标的不同按下位置更新标志位 """
+        if 0 <= e.x() <= int(self.width() / 3) and 0 <= e.y() <= int(self.height() / 3):
+            self.pressedPos = 'left-top'
+        elif int(self.width() / 3) < e.x() <= int(self.width() * 2 / 3) and 0 <= e.y() <= int(self.height() / 3):
+            self.pressedPos = 'top'
+        elif int(self.width() * 2 / 3) < e.x() <= self.width() and 0 <= e.y() <= int(self.height() / 3):
+            self.pressedPos = 'right-top'
+        elif 0 <= e.x() <= int(self.width() / 3) and int(self.height() / 3) < e.y() <= int(self.height() * 2 / 3):
+            self.pressedPos = 'left'
+        elif int(self.width() / 3) < e.x() <= int(self.width()*2 / 3) and int(self.height() / 3) < e.y() <= int(self.height() * 2 / 3):
+            self.pressedPos = 'center'
+        elif int(self.width()*2 / 3) < e.x() <= self.width() and int(self.height() / 3) < e.y() <= int(self.height() * 2 / 3):
+            self.pressedPos = 'right'
+        elif 0 <= e.x() <= int(self.width() / 3) and int(self.height()*2 / 3) < e.y() <= self.height():
+            self.pressedPos = 'left-bottom'
+        elif int(self.width() / 3) < e.x() <= int(self.width()*2 / 3) and int(self.height()*2 / 3) < e.y() <= self.height():
+            self.pressedPos = 'bottom'
+        elif int(self.width() * 2 / 3) < e.x() <= self.width() and int(self.height() * 2 / 3) < e.y() <= self.height():
+            self.pressedPos = 'right-bottom'
+        self.update()
+
+    def paintEvent(self, e):
+        """ 根据不同的情况绘制不同的背景 """
+        # super().paintEvent(e)
+        painter = QPainter(self)
+        painter.setRenderHints(QPainter.Antialiasing)
+        brush = QBrush(QColor(204, 204, 204))
+        painter.setPen(Qt.NoPen)
+        if not self.isEnter:
+            painter.setBrush(brush)
+            painter.drawRoundedRect(self.rect(), 5, 5)
+        else:
+            pen = QPen(QColor(204, 204, 204))
+            pen.setWidth(3)
+            painter.setPen(pen)
+            painter.drawRect(self.rect())
+            painter.setPen(Qt.NoPen)
+            if not self.pressedPos:
+                brush.setColor(QColor(230, 230, 230))
+                painter.setBrush(brush)
+                painter.drawRect(self.rect())
+            else:
+                brush.setColor(QColor(153, 153, 153))
+                painter.setBrush(brush)
+                # 左上角
+                if self.pressedPos == 'left-top':
+                    points = [QPoint(6, 2), QPoint(self.width(
+                    ) - 1, 1), QPoint(self.width() - 1, self.height() - 1), QPoint(1, self.height() - 1)]
+                    painter.drawPolygon(QPolygon(points), 4)
+                # 左边
+                elif self.pressedPos == 'left':
+                    painter.drawRoundedRect(
+                        6, 1, self.width() - 7, self.height() - 2, 3, 3)
+                # 左下角
+                elif self.pressedPos == 'left-bottom':
+                    points = [QPoint(1, 1), QPoint(self.width(
+                    ) - 1, 1), QPoint(self.width() - 1, self.height() - 1), QPoint(6, self.height() - 2)]
+                    painter.drawPolygon(QPolygon(points), 4)
+                # 顶部
+                elif self.pressedPos == 'top':
+                    points = [QPoint(6, 2), QPoint(self.width(
+                    ) - 6, 2), QPoint(self.width() - 1, self.height() - 1), QPoint(1, self.height() - 1)]
+                    painter.drawPolygon(QPolygon(points), 4)
+                # 中间
+                elif self.pressedPos == 'center':
+                    painter.drawRoundedRect(
+                        6, 1, self.width() - 12, self.height() - 2, 3, 3)
+                # 底部
+                elif self.pressedPos == 'bottom':
+                    points = [QPoint(1, 1), QPoint(self.width(
+                    ) - 1, 1), QPoint(self.width() - 6, self.height() - 2), QPoint(6, self.height() - 2)]
+                    painter.drawPolygon(QPolygon(points), 4)
+                # 右上角
+                elif self.pressedPos == 'right-top':
+                    points = [QPoint(1, 1), QPoint(self.width(
+                    ) - 6, 2), QPoint(self.width() - 1, self.height() - 1), QPoint(1, self.height() - 1)]
+                    painter.drawPolygon(QPolygon(points), 4)
+                # 右边
+                elif self.pressedPos == 'right':
+                    painter.drawRoundedRect(
+                        1, 1, self.width() - 7, self.height() - 2, 3, 3)
+                # 右下角
+                elif self.pressedPos == 'right-bottom':
+                    points = [QPoint(1, 1), QPoint(self.width(
+                    ) - 1, 1), QPoint(self.width() - 6, self.height() - 2), QPoint(1, self.height() - 1)]
+                    painter.drawPolygon(QPolygon(points), 4)
+                
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    demo = FoldingWindow()
+    demo.show()
+    sys.exit(app.exec_())

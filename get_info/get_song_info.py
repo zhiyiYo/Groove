@@ -3,25 +3,31 @@ import json
 import os
 import re
 import time
+
 from mutagen import File
 
 
 class SongInfo():
     """ 创建一个获取和保存歌曲信息的类 """
 
-    def __init__(self, target_path):
-        self.target_path = target_path
+    def __init__(self, target_path_list:list):
+        # 获取音频文件夹列表
+        self.target_path_list = target_path_list
         self.songInfo_list = []
         self.getInfo()
 
     def getInfo(self):
         """ 从指定的目录读取符合匹配规则的歌曲的标签卡信息 """
+        filePath_list = []
+        for target_path in self.target_path_list:
+            for _, _, sub_filename_list in os.walk(target_path):
+                break
+            # 更新文件路径列表
+            filePath_list += [os.path.join(target_path, file_name)
+                              for file_name in sub_filename_list]
 
-        for home, dirs, filename_list in os.walk(self.target_path):
-            break
-
-        # 获取符合匹配音频文件名列表
-        self.split_song_list(filename_list, update_songList=True)
+        # 获取符合匹配音频文件名和路径列表
+        self.split_song_list(filePath_list)
         if os.path.exists('Data\\songInfo.json'):
             with open('Data\\songInfo.json', 'r', encoding='utf-8') as f:
                 try:
@@ -33,36 +39,33 @@ class SongInfo():
         else:
             oldData = [{}]
 
-        oldFilename_list = [oldFileInfo.get('song') for oldFileInfo in oldData]
+        oldSongPath_list = [oldFileInfo.get(
+            'song_path') for oldFileInfo in oldData]
 
-        # 判断旧文件名列表是否与新文件名列表相等
-        if set(self.song_list) == set(oldFilename_list):
-            # 如果文件名完全相等就直接获取以前的文件信息
+        # 判断旧文件路径列表是否与新文件名列表相等
+        if set(self.songPath_list) == set(oldSongPath_list):
+            # 如果文件路径完全相等就直接获取以前的文件信息
             self.songInfo_list = oldData.copy()
         else:
-            new_filename_set = set(self.song_list)
-            old_filename_set = set(oldFilename_list)
-            different_filename_list = list(new_filename_set - old_filename_set)
-            # 找出文件名的并集和新的文件名列表
-            common_filename_set = new_filename_set & old_filename_set
-
-            # 根据文件名获取文件信息字典
-            if common_filename_set:
-                self.songInfo_list = [old_songInfo_dict for old_songInfo_dict in oldData
-                                      if old_songInfo_dict['song'] in common_filename_set]
-
-            # 如果新的文件名集合是旧的子集，公共部分就是新的文件信息
-            if set(self.song_list) < set(oldFilename_list) and common_filename_set:
-                pass
-            else:
+            newSongPath_set = set(self.songPath_list)
+            oldSongPath_set = set(oldSongPath_list)
+            # 计算文件路径差集
+            diffSongPath_set = list(newSongPath_set - oldSongPath_set)
+            # 计算文件路径的并集
+            commonSongPath_set = newSongPath_set & oldSongPath_set
+            # 根据文件路径并集获取部分文件信息字典
+            if commonSongPath_set:
+                self.songInfo_list = [oldSongInfo_dict for oldSongInfo_dict in oldData
+                                      if oldSongInfo_dict['song_path'] in commonSongPath_set]
+            # 如果有差集的存在就需要更新json文件
+            if not (newSongPath_set < oldSongPath_set and commonSongPath_set):
                 # 获取后缀名，歌名，歌手名列表
-                self.split_song_list(different_filename_list,
-                                     flag=1, update_songList=True)
+                self.split_song_list(diffSongPath_set, flag=1)
                 # 获取符合匹配规则的歌曲的路径
-                self.song_path_list = [os.path.join(
-                    self.target_path, song) for song in self.song_list]
+                """ self.song_path_list = [os.path.join(
+                    self.target_path, song) for song in self.song_list] """
 
-                argZip = zip(self.song_list, self.song_path_list, self.songname_list,
+                argZip = zip(self.song_list, self.songPath_list, self.songname_list,
                              self.songer_list, self.suffix_list)
 
                 for song, song_path, songname, songer, suffix in argZip:
@@ -92,18 +95,20 @@ class SongInfo():
             with open('Data\\songInfo.json', 'w', encoding='utf-8') as f:
                 json.dump(self.songInfo_list, f)
 
-    def split_song_list(self, filename_list, flag=0, update_songList=False):
+    def split_song_list(self, filePath_list, flag=0):
         """分离歌手名，歌名和后缀名,flag用于表示是否将匹配到的音频文件拆开,
         flag = 1为拆开,flag=0为不拆开，update_songList用于更新歌曲文件列表"""
-
-        if update_songList:
-            self.song_list = filename_list.copy()
-
+        self.songPath_list = filePath_list.copy()
+        # 获取文件名列表
+        fileName_list = [filePath.split('\\')[-1]
+                         for filePath in filePath_list]
+        self.song_list = fileName_list.copy()
+        # 创建列表
         self.songer_list, self.songname_list, self.suffix_list = [], [], []
         rex = r'(.+) - (.+)(\.mp3)|(.+) - (.+)(\.flac)|(.+) - (.+)(\.m4a)'
 
-        for filename in filename_list:
-            Match = re.match(rex, filename)
+        for file_name, file_path in zip(fileName_list, filePath_list):
+            Match = re.match(rex, file_name)
             if Match and flag == 1:
                 if Match.group(1):
                     self.songer_list.append(Match.group(1))
@@ -118,7 +123,8 @@ class SongInfo():
                     self.songname_list.append(Match.group(8))
                     self.suffix_list.append(Match.group(9))
             elif not Match:
-                self.song_list.remove(filename)
+                self.song_list.remove(file_name)
+                self.songPath_list.remove(file_path)
 
     def fetch_album_tcon_year_trkn(self, suffix, id_card):
         """ 根据文件的后缀名来获取专辑信息及时长 """
@@ -157,17 +163,17 @@ class SongInfo():
         # album作为列表返回，最后元素是该过的专辑名，第一个是原名
         rex = r'[><:\\/\*\?]'
         album_list = []
-        #往列表中插入原名
+        # 往列表中插入原名
         album = re.sub(r'[\"]', "'", album)
         album = album.strip()
         album_list.append(album)
-        if re.search(rex, album):  
-            #替换不符合命名规则的专辑名
+        if re.search(rex, album):
+            # 替换不符合命名规则的专辑名
             album = re.sub(rex, ' ', album)
             album = re.sub(r'[\"]', "'", album)
             album = album.strip()
             album_list.append(album)
-            
+
         return album_list, tcon, year, duration, tracknumber
 
     def sortByCreateTime(self):
@@ -186,4 +192,4 @@ class SongInfo():
 
 
 if __name__ == "__main__":
-    songInfo = SongInfo('D:\\KuGou')
+    songInfo = SongInfo(['D:\\KuGou\\'])

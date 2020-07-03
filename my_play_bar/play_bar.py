@@ -24,14 +24,12 @@ class PlayBar(QWidget):
         self.hWnd = HWND(int(self.winId()))
         # 记录移动次数
         self.moveTime = 0
-
         # 实例化小部件
         self.playProgressBar = PlayProgressBar(songInfo['duration'],self)
         self.songInfoCard=SongInfoCard(songInfo,self)
         self.centralButtonGroup = CentralButtonGroup(self)
         self.rightWidgetGroup = RightWidgetGroup(self)
         self.moreActionsMenu = MoreActionsMenu(self)
-
         # 初始化小部件
         self.initWidget()
         self.setWidgetPos()
@@ -43,7 +41,8 @@ class PlayBar(QWidget):
         self.setFixedHeight(115)
         self.resize(1280,115)
         # 初始化亚克力背景色
-        self.setAcrylicColor('02125bC0')
+        #self.setAcrylicColor('02125bC0')
+        self.setAcrylicColor('143d72C0')
         # 引用小部件
         self.referenceWidgets()
         # 连接槽函数

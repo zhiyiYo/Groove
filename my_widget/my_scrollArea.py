@@ -31,3 +31,4 @@ class ScrollArea(QScrollArea):
             self.animation.setStartValue(self.verticalScrollBar().value())
             self.animation.setEndValue(newValue)
             self.animation.start()
+        

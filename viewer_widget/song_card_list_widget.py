@@ -16,10 +16,10 @@ from Groove.my_widget.my_menu import Menu,AddToMenu,SongCardListContextMenu
 class SongCardListWidget(QListWidget):
     """ 定义一个歌曲卡列表视图 """
 
-    def __init__(self, songs_folder):
+    def __init__(self, target_path_list:list):
         super().__init__()
         self.resize(1267, 781-23)
-        self.songs_folder = songs_folder
+        self.target_path_list = target_path_list
         # 实例化控制滚动效果的动画
         self.animation = QPropertyAnimation(self.verticalScrollBar(), b'value')
 
@@ -35,14 +35,14 @@ class SongCardListWidget(QListWidget):
         self.isSelectingMode = False
         
         # 将歌曲信息设置为属性
-        self.songInfo = SongInfo(self.songs_folder)
+        self.songInfo = SongInfo(self.target_path_list)
         self.songInfo_list = self.songInfo.songInfo_list
         # 默认排序方式为添加时间
         self.sortMode = '添加时间'
         # 添加项目
         self.addListWidgetItem()
         # 动态改变item的尺寸
-        self.setResizeMode(QListWidget.Adjust)
+        #self.setResizeMode(QListWidget.Adjust)
         # 初始化小部件的属性
         self.createMenu()
         self.initWidget()
@@ -53,7 +53,6 @@ class SongCardListWidget(QListWidget):
         """ 初始化小部件 """
         # 设置列表视图的属性
         self.setDragEnabled(True)
-        self.setMouseTracking(True)
         self.setAlternatingRowColors(True)
         self.setSelectionMode(QListWidget.ExtendedSelection)
         # 将滚动模式改为以像素计算
@@ -170,7 +169,7 @@ class SongCardListWidget(QListWidget):
             dump(self.songInfo.songInfo_list, f)
 
         # 更新歌曲信息
-        self.songInfo = SongInfo(self.songs_folder)
+        self.songInfo = SongInfo(self.target_path_list)
 
     def selectedModeEvent(self):
         """ 点击选择时的槽函数 """
@@ -241,7 +240,7 @@ class SongCardListWidget(QListWidget):
             
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    demo = SongCardListWidget('D:\\KuGou')
+    demo = SongCardListWidget(['D:\\KuGou'])
     demo.show()
 
     sys.exit(app.exec_())

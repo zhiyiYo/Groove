@@ -23,26 +23,21 @@ class SongerCardViewer(QWidget):
         # 设置网格列数
         self.column_num = 5
         self.total_cow_num = 0
-
         # 实例化一个滚动区域
         self.scrollArea = QScrollArea(self)
         self.songerViewWidget = QWidget()
-
         # 实例化标题栏
         #self.firstLetterLabel = QLabel('A', self)
-
         # 实例化布局
         self.all_h_layout = QHBoxLayout()
         self.gridLayout = QGridLayout()
         self.v_layout = QVBoxLayout()
-
         # 初始化歌手头像和布局
         self.createSongerHeadPortraits()
         self.createSongerGroup()
         self.addSongerToGroup()
         self.initLayout()
         self.initWidget()
-
         # 设置层叠样式
         self.setQss()
 
@@ -50,13 +45,10 @@ class SongerCardViewer(QWidget):
         """ 初始化歌手头像 """
         # 隐藏滚动区域的自带滚动条
         self.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
         # 设置滚动条的步长
         self.scrollArea.verticalScrollBar().setSingleStep(40)
-
         # 设置标题栏的位置
         #self.firstLetterLabel.setGeometry(0, 0, self.width(), 47)
-
         # 分配ID
         self.setObjectName('father')
         self.songerViewWidget.setObjectName('songerViewWidget')
@@ -65,8 +57,16 @@ class SongerCardViewer(QWidget):
     def createSongerHeadPortraits(self):
         """ 创建歌手头像窗口列表 """
         # 从json文件中读取歌手信息
+        self.songer_list=[]
         with open('Data\\songerInfo.json', encoding='utf-8') as f:
             self.songerInfo_list = json.load(f)
+        with open('Data\\songInfo.json', encoding='utf-8') as f:
+            self.songInfo_list = json.load(f)
+            # 根据歌曲列表来选择要显示出来的歌手
+            self.oldSonger_list = [songInfo_dict.get('songer') for songInfo_dict in self.songInfo_list]
+            # 将合唱歌手名拆开
+            for oldSonger in self.oldSonger_list:
+                self.songer_list += oldSonger.split('、')
 
         # 排序歌手名
         self.songerInfo_list.sort(
@@ -74,24 +74,30 @@ class SongerCardViewer(QWidget):
 
         # 创建歌手头像列表
         self.songerHeadPortrait_dict_list = []
-        for songerInfo_dict in self.songerInfo_list:
+        self.songerInfo_list_copy=self.songerInfo_list.copy()
+        for songerInfo_dict in self.songerInfo_list.copy():
             songerName = songerInfo_dict['songer']
-            try:
-                songerPicPath = os.path.join("resource\\Songer Photos\\"+songerName,
-                                             os.listdir('resource\\Songer Photos\\'+songerName)[0])
-            except:
-                songerPicPath = 'resource\\Songer Photos\\未知歌手.png'
-            # 实例化歌手头像窗口
-            songerCard = SongerCard(songerPicPath, songerName)
-            # 将包含头像窗口，歌手名，歌手名首字母的字典插入列表
-            self.songerHeadPortrait_dict_list.append({'index': 0,
-                                                      'songerCard': songerCard,
-                                                      'songerName': songerName,
-                                                      'firstLetter': pinyin.get_initial(songerName)[0].upper()})
+            # 只显示有在歌曲列表中的歌手
+            if songerName in self.songer_list:
+                try:
+                    songerPicPath = os.path.join("resource\\Songer Photos\\"+songerName,
+                                                os.listdir('resource\\Songer Photos\\'+songerName)[0])
+                except:
+                    songerPicPath = 'resource\\Songer Photos\\未知歌手.png'
+                # 实例化歌手头像窗口
+                songerCard = SongerCard(songerPicPath, songerName)
+                # 将包含头像窗口，歌手名，歌手名首字母的字典插入列表
+                self.songerHeadPortrait_dict_list.append({'songerCard': songerCard,
+                                                        'songerName': songerName,
+                                                        'firstLetter': pinyin.get_initial(songerName)[0].upper()})
+            else:
+                # 移除不在歌曲卡中的歌手
+                self.songerInfo_list.remove(songerInfo_dict)                                            
 
     def createSongerGroup(self):
         """ 按照首字母对歌手进行分组 """
         # 获取歌手名的第一个字符组成的集合
+        
         first_char_set = {songerInfo_dict['songer'][0]
                           for songerInfo_dict in self.songerInfo_list}
         # 获取第一个字符的大写首字母
@@ -140,7 +146,6 @@ class SongerCardViewer(QWidget):
 
     def initLayout(self):
         """ 初始化布局 """
-
         self.__updateGridLayout()
 
         for songerHeadGroup_dict in self.songerHeadGroup_dict_list:
@@ -175,7 +180,7 @@ class SongerCardViewer(QWidget):
             columns = range(self.column_num)
             rows = range(
                 (len(songerHeadGroup_dict['songer_list']) - 1) // self.column_num + 1)
-            self.current_row_num = max(rows)+1
+            self.current_row_num = max(rows) + 1
             self.total_cow_num += self.current_row_num
 
             gridLayout = songerHeadGroup_dict['gridLayout']

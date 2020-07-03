@@ -29,10 +29,6 @@ class ScrollBar(QWidget):
         self.timer.setInterval(2000)
         self.timer.timeout.connect(self.showMinScrollBar)
         self.setAttribute(Qt.WA_TranslucentBackground)
-        # 设置鼠标跟踪
-        self.setMouseTracking(True)
-        self.minScrollBar.setMouseTracking(True)
-        self.maxScrollBar.setMouseTracking(True)
         # 分配ID
         self.setObjectName('father')
         self.minScrollBar.setObjectName('minScrollBar')

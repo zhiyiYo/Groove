@@ -85,7 +85,7 @@ QMenu#addToMenu::icon {
 }
 
 QMenu#sortModeMenu {
-    font-size: 17px;
+    font-size: 16px;
     width: 158px;
     height: 114px;
     border: 1px solid rgb(41, 41, 41);
@@ -93,6 +93,10 @@ QMenu#sortModeMenu {
     padding-top: 1px;
     /*padding: 1px;*/
     border-radius: 0px;
+}
+
+QMenu#sortModeMenu[modeNumber='4'] {
+    height: 152px;
 }
 
 QMenu#sortModeMenu::item {

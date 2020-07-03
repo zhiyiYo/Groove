@@ -1,7 +1,7 @@
 # coding:utf-8
 
 import sys
-from ctypes.wintypes import HWND,MSG
+from ctypes.wintypes import HWND, MSG
 from enum import Enum
 
 from PyQt5.QtCore import QPoint, QRect, QSize, Qt
@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsDropShadowEffect,
                              QWidget)
 
 from effects.window_effect import WindowEffect
+from flags.wm_hittest import Flags
 from my_music_interface import MyMusicInterface
 from my_play_bar.play_bar import PlayBar
 from my_title_bar.title_bar import TitleBar
@@ -20,7 +21,7 @@ from navigation.navigation_menu import NavigationMenu
 class MainWindow(QWidget):
     """ 主窗口 """
 
-    def __init__(self, songs_folder, parent=None):
+    def __init__(self, target_path_list:list, parent=None):
         super().__init__(parent)
 
         # 实例化窗口特效
@@ -30,7 +31,7 @@ class MainWindow(QWidget):
         self.navigationBar = NavigationBar(self)
         self.navigationMenu = NavigationMenu(self)
         self.currentNavigation = self.navigationBar
-        self.myMusicInterface = MyMusicInterface(songs_folder, self)
+        self.myMusicInterface = MyMusicInterface(target_path_list, self)
         songInfo = {
             'songName': 'オオカミと少女 (狼与少女)', 'songer': 'RADWIMPS', 'duration': '3:50',
             'album': [r'resource\\Album Cover\\(un)sentimental spica\\(un)sentimental spica.jpg']}
@@ -44,7 +45,6 @@ class MainWindow(QWidget):
         """ 初始化小部件 """
         self.resize(1400, 970)
         # 打开鼠标跟踪，用来检测鼠标是否位于边界处
-        self.setMouseTracking(True)
         self.setObjectName('mainWindow')
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setStyleSheet('QWidget#mainWindow{background:transparent}')
@@ -128,17 +128,17 @@ class MainWindow(QWidget):
 
     def nativeEvent(self, eventType, message):
         result = 0
-        msg2 = MSG.from_address(message.__int__())
+        msg = MSG.from_address(message.__int__())
         #minV, maxV = 18, 22
-        minV, maxV = 2,6
-        if msg2.message == 0x0084:
-            xPos = self.GET_X_LPARAM(msg2.lParam) - self.frameGeometry().x()
-            yPos = self.GET_Y_LPARAM(msg2.lParam) - self.frameGeometry().y()
+        minV, maxV = 0, 4
+        if msg.message == 0x0084:
+            xPos = self.GET_X_LPARAM(msg.lParam) - self.frameGeometry().x()
+            yPos = self.GET_Y_LPARAM(msg.lParam) - self.frameGeometry().y()
             if(xPos > minV and xPos < maxV):
                 result = Flags.HTLEFT.value
             elif(xPos > (self.width() - maxV) and xPos < (self.width() - minV)):
                 result = Flags.HTRIGHT.value
-            elif(yPos > minV and yPos < maxV):
+            elif (yPos > minV and yPos < maxV):
                 result = Flags.HTTOP.value
             elif(yPos > (self.height() - maxV) and yPos < (self.height() - minV)):
                 result = Flags.HTBOTTOM.value
@@ -155,23 +155,11 @@ class MainWindow(QWidget):
         return QWidget.nativeEvent(self, eventType, message)
     
 
-class Flags(Enum):
-    """ 包含各宏定义的枚举类 """
-    HTCAPTION = 2
-    HTLEFT = 10
-    HTRIGHT = 11
-    HTTOP = 12
-    HTTOPLEFT = 13
-    HTTOPRIGHT = 14
-    HTBOTTOM = 15
-    HTBOTTOMLEFT = 16
-    HTBOTTOMRIGHT = 17
-    
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    demo = MainWindow('D:\\KuGou\\')
+    app.setAttribute(Qt.AA_DontCreateNativeWidgetSiblings)
+    demo = MainWindow(['D:\\KuGou\\test_audio'])
     demo.show()
     demo.playBar.show()
     sys.exit(app.exec_())

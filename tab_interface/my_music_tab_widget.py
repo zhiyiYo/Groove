@@ -14,50 +14,38 @@ from Groove.tab_interface import AlbumTabInterface, SongTabInterface, SongerTabI
 class MyMusicTabWidget(QTabWidget):
     """ 创建一个包含歌曲,歌手和专辑标签窗口的类 """
 
-    def __init__(self, songs_folder, parent=None):
+    def __init__(self, target_path_list:list, parent=None):
         super().__init__(parent)
-        self.songs_folder = songs_folder
+        self.target_path_list = target_path_list
 
         # 创建三个标签窗口
-        self.songTag = SongTabInterface(self.songs_folder)
+        self.songTag = SongTabInterface(self.target_path_list)
         self.songerTag = SongerTabInterface()
-        self.albumTag = AlbumTabInterface(self.songs_folder)
-
-        # 初始化MyMusicWindows的属性
-        self.initAttribute()
+        self.albumTag = AlbumTabInterface(self.target_path_list)
+        
         # 将标签界面添加到子类中
         self.addTab(self.songTag, '歌曲')
         self.addTab(self.songerTag, '歌手')
         self.addTab(self.albumTag, '专辑')
-        # 设置层叠样式表
+        # 初始化
+        self.initWidget()
         self.setQss()
 
-    def initAttribute(self):
+    def initWidget(self):
         """ 初始化子类的一些属性 """
         # 允许拖动标签
-        self.resize(1276, 995-23)
+        self.resize(1267, 800)
         self.setUsesScrollButtons(False)
-
         # 分配ID
         self.setObjectName('MyMusicTabWidget')
-
         # 设置监听
         #self.tabBar().installEventFilter(self)
 
-    def initTagLayout(self):
-        """ 初始化页面布局 """
-        self.songTagLayout = QHBoxLayout()
-        self.songTagLayout.setContentsMargins(0, 0, 0, 0)
-        self.songTag.setLayout(self.songTagLayout)
-        self.currentLayout = self.songTagLayout
-
-        self.songerTagLayout = QHBoxLayout()
-        self.songerTagLayout.setContentsMargins(0, 0, 0, 0)
-        self.songerTag.setLayout(self.songerTagLayout)
-
-        self.albumTagLayout = QHBoxLayout()
-        self.albumTagLayout.setContentsMargins(0, 0, 0, 0)
-        self.albumTag.setLayout(self.albumTagLayout)
+    def initLayout(self):
+        """ 初始化布局 """
+        self.h_Layout = QHBoxLayout()
+        self.h_Layout.addWidget(self.songTag)
+        self.setLayout(self.h_Layout)
 
     def setQss(self):
         """ 设置层叠样式表 """
@@ -77,13 +65,13 @@ class MyMusicTabWidget(QTabWidget):
                 event = QMouseEvent(QEvent.MouseButtonPress,
                                 event.pos(), Qt.LeftButton, Qt.LeftButton, Qt.NoModifier)
                 return False
-        return super().eventFilter(obj,event)
-
+        return super().eventFilter(obj, event)
+    
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     t1 = time.time()
-    demo = MyMusicTabWidget('D:\\KuGou')
+    demo = MyMusicTabWidget(['D:\\KuGou\\test_audio\\'])
     demo.show()
     t2 = time.time()
     print(f'启动耗时{t2-t1:.3f}s')

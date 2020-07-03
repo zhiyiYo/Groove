@@ -14,7 +14,7 @@ from Groove.my_widget.my_button import RandomPlayButton,SortModeButton
 class SongTabInterface(QWidget):
     """ 创建歌曲标签界面 """
 
-    def __init__(self, songs_folder, parent=None):
+    def __init__(self, target_path_list:list, parent=None):
         super().__init__(parent)
 
         self.resize(1267, 827-23)
@@ -30,7 +30,7 @@ class SongTabInterface(QWidget):
         self.randomPlayButton = RandomPlayButton(slot=self.randomPlay, parent=self)
         
         # 实例化歌曲列表视图
-        self.songCardListWidget = SongCardListWidget(songs_folder)
+        self.songCardListWidget = SongCardListWidget(target_path_list)
 
         # 将动作添加到菜单中
         self.addActionToMenu()
@@ -142,7 +142,7 @@ class SongTabInterface(QWidget):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
-    mySongTab = SongTabInterface('D:\\KuGou')
+    mySongTab = SongTabInterface(['D:\\KuGou\\test_audio\\'])
     mySongTab.show()
 
     sys.exit(app.exec_())

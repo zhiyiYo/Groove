@@ -1,9 +1,9 @@
 import sys
 
-from ctypes.wintypes import HWND,MSG,RECT
+from ctypes.wintypes import HWND,MSG
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon, QResizeEvent
+from PyQt5.QtGui import QIcon, QResizeEvent,QPixmap
 from PyQt5.QtWidgets import QApplication, QHBoxLayout, QLabel, QWidget
 
 sys.path.append('..')
@@ -11,16 +11,8 @@ from Groove.effects.frameless_window_func import FramelessWindowFunc
 from Groove.my_title_bar.title_bar_buttons import (CloseButton, MaximizeButton, MinimizeButton,
                                 ReturnButton)
 
+from Groove.flags.wm_hittest import Flags
 
-HTLEFT = 10
-HTRIGHT = 11
-HTTOP = 12
-HTTOPLEFT = 13
-HTTOPRIGHT = 14
-HTBOTTOM = 15
-HTBOTTOMLEFT = 16
-HTBOTTOMRIGHT = 17
-HTCAPTION = 2
 
 class TitleBar(QWidget):
     """ 定义标题栏 """
@@ -30,7 +22,8 @@ class TitleBar(QWidget):
         self.resize(1360, 40)
         self.win = parent
         # 实例化无边框窗口函数类
-        self.framelessWindowFunc=FramelessWindowFunc()
+        self.framelessWindowFunc = FramelessWindowFunc()
+        self.setAttribute(Qt.WA_TranslucentBackground)
         # 实例化小部件
         self.title = QLabel('Groove 音乐',self)
         self.createButtons()
@@ -57,9 +50,6 @@ class TitleBar(QWidget):
         self.minBt.clicked.connect(self.win.showMinimized)
         self.maxBt.clicked.connect(self.showRestoreWindow)
         self.closeBt.clicked.connect(self.win.close)
-        # 设置鼠标跟踪
-        for bt in self.button_list:
-            bt.setMouseTracking(True)
 
     def adjustButtonPos(self):
         """ 初始化小部件位置 """
@@ -102,56 +92,54 @@ class TitleBar(QWidget):
         condX = (60 < x < self.width() - 57 * 3)
         return condX
 
+
 class Demo(QWidget):
     """ 测试标题栏 """
 
     def __init__(self):
         super().__init__()
         self.setWindowFlags(Qt.FramelessWindowHint)
-        self.setStyleSheet("background-color:white")
         self.titleBar = TitleBar(self)
+        self.resize(1200,900)
 
+        
     def resizeEvent(self, e):
-        self.titleBar.resize(self.width(), 0)
-
+        self.titleBar.resize(self.width(), 40)
+        
     def GET_X_LPARAM(self, param):
         return param & 0xffff
 
     def GET_Y_LPARAM(self, param):
         return param >> 16
         
-    """ def nativeEvent(self, eventType, message):
+    def nativeEvent(self, eventType, message):
         result = 0
         msg2 = MSG.from_address(message.__int__())
         #minV, maxV = 18, 22
-        minV,maxV=2,6
+        minV,maxV=0,6
         if msg2.message == 0x0084:
             xPos = self.GET_X_LPARAM(msg2.lParam) - self.frameGeometry().x()
             yPos = self.GET_Y_LPARAM(msg2.lParam) - self.frameGeometry().y()
-#             if self.childAt(xPos,yPos) == 0:
-#                 result = HTCAPTION
-#             else:
-#                 return (False,result)
             if(xPos > minV and xPos < maxV):
-                result = HTLEFT
+                result = Flags.HTLEFT.value
             elif(xPos > (self.width() - maxV) and xPos < (self.width() - minV)):
-                result = HTRIGHT
-            elif(yPos > minV and yPos < maxV):
-                result = HTTOP
+                result = Flags.HTRIGHT.value
+            elif (yPos > minV and yPos < maxV):
+                result = Flags.HTTOP.value
             elif(yPos > (self.height() - maxV) and yPos < (self.height() - minV)):
-                result = HTBOTTOM
+                result = Flags.HTBOTTOM.value
             elif(xPos > minV and xPos < maxV and yPos > minV and yPos < maxV):
-                result = HTTOPLEFT
+                result = Flags.HTTOPLEFT.value
             elif(xPos > (self.width() - maxV) and xPos < (self.width() - minV) and yPos > minV and yPos < maxV):
-                result = HTTOPRIGHT
+                result = Flags.HTTOPRIGHT.value
             elif(xPos > minV and xPos < maxV and yPos > (self.height() - maxV) and yPos < (self.height() - minV)):
-                result = HTBOTTOMLEFT
+                result = Flags.HTBOTTOMLEFT.value
             elif(xPos > (self.width() - maxV) and xPos < (self.width() - minV) and yPos > (self.height() - maxV) and yPos < (self.height() - minV)):
-                result = HTBOTTOMRIGHT
-            else:
-                result = HTCAPTION
-            return (True, result)
-        return  QWidget.nativeEvent(self, eventType, message) """
+                result = Flags.HTBOTTOMRIGHT.value
+            if result!=0:
+                return (True, result)
+        return QWidget.nativeEvent(self, eventType, message)
+        
 
 
 if __name__ == "__main__":

@@ -5,3 +5,4 @@
 	12.禁止ToolTip捕获鼠标事件
 	13.平滑滚动
 	14.窗口拉伸
+	15.my_music_tabWidget中songCard的长度问题

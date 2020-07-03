@@ -101,7 +101,7 @@ class YearTconDurationCard(QWidget):
     def initLayout(self):
         """ 初始化布局 """
         self.h_layout.addWidget(self.yearLabel, 0, Qt.AlignLeft)
-        self.h_layout.addSpacing(5)
+        self.h_layout.addSpacing(10)
         self.h_layout.addWidget(self.tconLabel, 0, Qt.AlignLeft)
         self.h_layout.addStretch(1)
         self.h_layout.addWidget(self.durationLabel, 0, Qt.AlignRight)

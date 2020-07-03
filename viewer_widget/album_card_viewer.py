@@ -21,7 +21,7 @@ from Groove.card_widget.album_card import AlbumCard
 class AlbumCardViewer(QWidget):
     """ 定义一个专辑卡视图 """
 
-    def __init__(self, target_path, parent=None):
+    def __init__(self, target_path_list:list, parent=None):
         super().__init__(parent)
 
         # 初始化网格的列数
@@ -32,7 +32,7 @@ class AlbumCardViewer(QWidget):
         self.sortMode = '添加时间'
 
         # 先扫描本地音乐的专辑封面
-        self.getAlbumCover = get_album_cover.GetAlbumCover(target_path)
+        self.getAlbumCover = get_album_cover.GetAlbumCover(target_path_list)
         # 获取专辑信息
         self.albumInfo = AlbumInfo()
 
@@ -117,6 +117,7 @@ class AlbumCardViewer(QWidget):
             columns = range(self.column_num)
             rows = range(
                 (len(currentGroup_dict['album_list']) - 1) // self.column_num + 1)
+            
             self.current_row_num = max(rows) + 1
             # 引用当前分组的网格布局
             gridLayout = currentGroup_dict['gridLayout']
@@ -236,7 +237,7 @@ class AlbumCardViewer(QWidget):
         self.albumView_hLayout.addLayout(self.gridLayout)
 
     def __createFirstLetterGroup(self):
-        """ 按照首字母对歌手创建分组 """
+        """ 按照首字母对专辑创建分组 """
         # 获取专辑的第一个字符组成的集合
         first_char_set = {albumInfo_dict['albumName'][0]
                           for albumInfo_dict in self.albumCardDict_list}
@@ -393,6 +394,6 @@ class AlbumCardViewer(QWidget):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    demo = AlbumCardViewer('D:\\KuGou')
+    demo = AlbumCardViewer(['D:\\KuGou\\test_audio\\'])
     demo.show()
     sys.exit(app.exec_())

@@ -15,11 +15,11 @@ from .get_song_info import SongInfo
 class SongerInfo():
     """ 定义一个从酷狗爬取歌手信息的类 """
 
-    def __init__(self, target_path):
+    def __init__(self, target_path_list:list):
         """ 初始化属性 """
         self.cwd = os.getcwd()
 
-        self.songInfo = SongInfo(target_path)
+        self.songInfo = SongInfo(target_path_list)
         self.songer_pic_folder = os.path.join(
             self.cwd, 'resource\\Songer Photos')
         self.url = 'https://www.kugou.com/yy/html/search.html#searchType=song&searchKeyWord='
@@ -27,7 +27,7 @@ class SongerInfo():
     def getSongerInfo(self):
         """ 开始爬取歌手信息 """
         # 从json文件中读取歌手信息
-        with open('Data\songerInfo.json', encoding='utf-8') as f:
+        with open(r'Data\songerInfo.json', encoding='utf-8') as f:
             try:
                 self.songerInfo_list = load(f)
             except:
@@ -118,5 +118,5 @@ class SongerInfo():
 
 
 if __name__ == "__main__":
-    songerInfo = SongerInfo('D:\\KuGou')
+    songerInfo = SongerInfo(['D:\\KuGou'])
     songerInfo.getSongerInfo()

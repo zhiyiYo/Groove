@@ -14,11 +14,11 @@ from my_widget.my_scroll_bar import ScrollBar
 class MyMusicInterface(QWidget):
     """ 创建一个本地音乐分组界面 """
 
-    def __init__(self, songs_folder, parent=None):
+    def __init__(self, target_path_list:list, parent=None):
         super().__init__(parent)
 
         # 实例化一个包含三个标签界面的QTabWidget
-        self.myMusicTabWidget = MyMusicTabWidget(songs_folder, self)
+        self.myMusicTabWidget = MyMusicTabWidget(target_path_list, self)
         # 引用三个视图的滚动条
         self.songCardList_vScrollBar = self.myMusicTabWidget.songTag.songCardListWidget.verticalScrollBar()
         self.songerViewer_vScrollBar = self.myMusicTabWidget.songerTag.songerHeadPortraitViewer.scrollArea.verticalScrollBar()
@@ -138,6 +138,6 @@ if __name__ == "__main__":
     font = QFont(QApplication.font())
     """ font.setStyleStrategy(QFont.PreferAntialias)
     app.setFont(font) """
-    demo = MyMusicInterface('D:\\KuGou\\')
+    demo = MyMusicInterface(['D:\\KuGou\\'])
     demo.show()
     sys.exit(app.exec_())

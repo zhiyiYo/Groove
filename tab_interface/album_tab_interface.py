@@ -61,6 +61,7 @@ class AlbumTabInterface(QWidget):
         self.setObjectName('albumTabInterface')
         self.sortModeMenu.setObjectName('sortModeMenu')
         self.sortModeLabel.setObjectName('sortModeLabel')
+        self.sortModeMenu.setProperty('modeNumber','4')
 
     def initLayout(self):
         """ 初始化布局 """
@@ -140,6 +141,6 @@ class AlbumTabInterface(QWidget):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    demo = AlbumTabInterface('D:\\KuGou')
+    demo = AlbumTabInterface(['D:\\KuGou\\test_audio\\'])
     demo.show()
     sys.exit(app.exec_())

@@ -196,7 +196,7 @@ class SubPropertyPanel(QWidget):
             self.setStyleSheet(qss)
 
     def paintEvent(self, event):
-        """ 绘制背景和阴影 """
+        """ 绘制边框 """
         painter = QPainter(self)
         # 绘制边框
         painter.setPen(self.pen)
@@ -237,8 +237,6 @@ class Demo(QWidget):
         panel.exec_()
 
 if __name__ == "__main__":
-    
-    
     app = QApplication(sys.argv)
     demo = Demo()
     demo.show()

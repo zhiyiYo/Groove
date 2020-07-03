@@ -1,0 +1,26 @@
+
+QWidget{
+    background-color: white;
+}
+
+QLabel#titleLabel{
+    font:25px 'Microsoft YaHei';
+}
+
+QPushButton {
+    background-color: rgb(204, 204, 204);
+    padding: 11px 64px 11px 64px;
+    font: 19px 'Microsoft YaHei';
+    border: transparent;
+    border-radius: 4px;
+    height: 20px;
+    width: 55px;
+}
+
+QPushButton:pressed:hover {
+    background-color: rgb(153, 153, 153);
+}
+
+QPushButton:hover {
+    background-color: rgb(230, 230, 230);
+}
