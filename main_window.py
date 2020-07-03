@@ -7,7 +7,7 @@ from enum import Enum
 from PyQt5.QtCore import QPoint, QRect, QSize, Qt
 from PyQt5.QtGui import QCloseEvent, QIcon, QPixmap, QResizeEvent
 from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsDropShadowEffect,
-                             QWidget)
+                             QWidget,QStackedWidget)
 
 from effects.window_effect import WindowEffect
 from flags.wm_hittest import Flags
@@ -16,6 +16,7 @@ from my_play_bar.play_bar import PlayBar
 from my_title_bar.title_bar import TitleBar
 from navigation.navigation_bar import NavigationBar
 from navigation.navigation_menu import NavigationMenu
+from my_setting_interface.setting_interface import SettingInterface
 
 
 class MainWindow(QWidget):
@@ -23,23 +24,27 @@ class MainWindow(QWidget):
 
     def __init__(self, target_path_list:list, parent=None):
         super().__init__(parent)
-
         # 实例化窗口特效
         self.windowEffect = WindowEffect()
         # 实例化小部件
+        self.createWidgets()
+        # 初始化界面
+        self.initWidget()
+
+    def createWidgets(self):
+        """ 创建小部件 """
         self.titleBar = TitleBar(self)
+        self.stackedWidget = QStackedWidget(self)
+        self.settingInterface = SettingInterface(self)
         self.navigationBar = NavigationBar(self)
         self.navigationMenu = NavigationMenu(self)
         self.currentNavigation = self.navigationBar
-        self.myMusicInterface = MyMusicInterface(target_path_list, self)
+        self.myMusicInterface = MyMusicInterface(self.settingInterface.config['selected-folders'], self)
         songInfo = {
-            'songName': 'オオカミと少女 (狼与少女)', 'songer': 'RADWIMPS', 'duration': '3:50',
-            'album': [r'resource\\Album Cover\\(un)sentimental spica\\(un)sentimental spica.jpg']}
-        self.currentRightWindow = self.myMusicInterface
+            'songName': 'オオカミと少女 (狼与少女)', 'songer': '鎖那', 'duration': '3:50',
+            'album': ['resource\\Album Cover\\Hush a by little girl\\Hush a by little girl.jpg']}
         self.titleBar = TitleBar(self)
         self.playBar = PlayBar(songInfo, self)
-        # 初始化界面
-        self.initWidget()
 
     def initWidget(self):
         """ 初始化小部件 """
@@ -59,9 +64,14 @@ class MainWindow(QWidget):
         self.navigationMenu.hide()
         # 设置窗口特效
         self.setWindowEffect()
+        # 将窗口添加到stackedWidget中
+        self.stackedWidget.addWidget(self.myMusicInterface)
+        self.stackedWidget.addWidget(self.settingInterface)
+        self.stackedWidget.setCurrentWidget(self.myMusicInterface)
         # 设置右边子窗口的位置
         self.setWidgetGeometry()
         # 将按钮点击信号连接到槽函数
+        #self.titleBar.returnBt.clicked.connect()
         self.navigationBar.showMenuButton.clicked.connect(
             self.showNavigationMenu)
         self.navigationBar.searchButton.clicked.connect(
@@ -80,8 +90,8 @@ class MainWindow(QWidget):
         self.titleBar.resize(self.width(), 40)
         self.navigationBar.resize(60, self.height())
         self.navigationMenu.resize(400, self.height())
-        self.currentRightWindow.move(self.currentNavigation.width(), 0)
-        self.currentRightWindow.resize(self.width() - self.currentNavigation.width(), self.height())
+        self.stackedWidget.move(self.currentNavigation.width(), 0)
+        self.stackedWidget.resize(self.width() - self.currentNavigation.width(), self.height())
         self.playBar.resize(self.width(),self.playBar.height())
 
     def resizeEvent(self, e: QResizeEvent):
@@ -117,6 +127,8 @@ class MainWindow(QWidget):
             self.playBar.moveTime += 1
 
     def closeEvent(self, e: QCloseEvent):
+        """ 关闭窗口前更新json文件 """
+        self.settingInterface.writeConfig()
         self.playBar.close()
         e.accept()
 
@@ -159,7 +171,7 @@ class MainWindow(QWidget):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setAttribute(Qt.AA_DontCreateNativeWidgetSiblings)
-    demo = MainWindow(['D:\\KuGou\\test_audio'])
+    demo = MainWindow(['D:\\KuGou\\'])
     demo.show()
     demo.playBar.show()
     sys.exit(app.exec_())

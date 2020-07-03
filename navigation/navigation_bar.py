@@ -8,8 +8,10 @@ from Groove.my_widget.my_button import NavigationButton
 
 class NavigationBar(QWidget):
     """ 侧边导航栏 """
-    def __init__(self, parent=None):
+    def __init__(self, parent):
         super().__init__(parent)
+        # 引用配置文件数据
+        self.config = self.parent().settingInterface.config
         # 实例化按钮
         self.createButtons()
         # 实例化垂直布局
@@ -75,14 +77,21 @@ class NavigationBar(QWidget):
         # 更新按钮的样式
         for button in self.button_list:
             button.update()
+        # 切换界面
+        if self.sender() == self.musicGroupButton:
+            # 更新配置文件的下标
+            self.config['current-index'] = 0
+            self.config['pre-index'] = self.parent().stackedWidget.currentIndex()
+            self.parent().stackedWidget.setCurrentWidget(self.parent().myMusicInterface)
+        elif self.sender() == self.settingButton:
+            self.config['current-index'] = 1
+            self.config['pre-index'] = self.parent().stackedWidget.currentIndex()
+            self.parent().stackedWidget.setCurrentWidget(self.parent().settingInterface)
 
     def setQss(self):
         """ 设置层叠样式 """
         with open(r'resource\css\navigation.qss', encoding='utf-8') as f:
             self.setStyleSheet(f.read())
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = NavigationBar()
-    demo.show()
-    sys.exit(app.exec_())
+    
+

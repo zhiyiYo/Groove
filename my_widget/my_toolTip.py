@@ -68,9 +68,6 @@ class ToolTip(QWidget):
         # 由于自己会捕获leaveEvent，所以如果自己leaveEvent被触发说明兄弟部件的leaveEvent也被触发了
         self.hide()
 
-    def mousePressEvent(self, e):
-        print('父级接收到点击事件')
-
 
 class SubToolTip(QWidget):
     """ 自定义圆角提示气泡子窗口 """
@@ -132,11 +129,7 @@ class SubToolTip(QWidget):
         brush = QBrush(QColor(242, 242, 242))
         painter.setBrush(brush)
         painter.drawRoundedRect(self.rect(), 7, 7)
-
-    def mousePressEvent(self, e):
-        print('子级接收到点击事件')
         
-
 
 class Demo(QWidget):
     def __init__(self, parent=None):

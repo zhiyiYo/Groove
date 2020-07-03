@@ -1,13 +1,14 @@
 import sys
 
-from PyQt5.QtCore import Qt, QPoint
+from PyQt5.QtCore import Qt, QPoint, pyqtSignal
 from PyQt5.QtGui import QPen, QPainter, QBrush, QColor, QMouseEvent, QPolygon
 from PyQt5.QtWidgets import QApplication, QWidget
 
 
 class FoldingWindow(QWidget):
     """ 点击不同方位翻折效果不同的窗口 """
-
+    # 创建点击信号
+    clicked = pyqtSignal()
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setAttribute(Qt.WA_TranslucentBackground)
@@ -31,6 +32,8 @@ class FoldingWindow(QWidget):
         """ 鼠标松开时更新界面 """
         self.pressedPos = None
         self.update()
+        if e.button() == Qt.LeftButton:
+            self.clicked.emit()
 
     def mousePressEvent(self, e: QMouseEvent):
         """ 根据鼠标的不同按下位置更新标志位 """

@@ -1,6 +1,6 @@
 import sys
 
-from PyQt5.QtCore import QPoint, Qt, QTimer, pyqtSignal,QEvent
+from PyQt5.QtCore import QPoint, Qt, QTimer, pyqtSignal, QEvent
 from PyQt5.QtGui import QMouseEvent,QEnterEvent,QPixmap
 from PyQt5.QtWidgets import QApplication, QLabel, QToolTip, QWidget
 

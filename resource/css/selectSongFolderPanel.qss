@@ -7,6 +7,10 @@ QLabel#titleLabel{
     font:25px 'Microsoft YaHei';
 }
 
+QLabel#subTitleLabel {
+    font: 18px 'Microsoft YaHei';
+}
+
 QPushButton {
     background-color: rgb(204, 204, 204);
     padding: 11px 64px 11px 64px;

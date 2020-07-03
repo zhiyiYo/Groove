@@ -11,13 +11,13 @@ from PyQt5.QtWidgets import (QAction, QApplication, QDialog, QHBoxLayout,
                             
 sys.path.append('..')
 from Groove.my_functions.auto_wrap import autoWrap
+from Groove.my_dialog_box.sub_panel_frame import SubPanelFrame
 
 
-class PropertyPanel(QDialog):
+class PropertyPanel(SubPanelFrame):
     """ 父属性面板 """
     def __init__(self, songInfo: dict, parent=None):
         super().__init__(parent)
-
         # 实例化子属性面板
         self.subPropertyPanel = SubPropertyPanel(songInfo, self)
         # 初始化
@@ -26,28 +26,14 @@ class PropertyPanel(QDialog):
 
     def initWidget(self):
         """ 初始化小部件 """
-        self.resize(self.subPropertyPanel.size())
-        self.setAttribute(Qt.WA_TranslucentBackground)
-        self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
         # deleteLater才能真正释放内存
         self.subPropertyPanel.closeButton.clicked.connect(self.deleteLater)
-        if self.parent():
-            parent_rect = self.parent().geometry()
-            self.setGeometry(parent_rect.x(), parent_rect.y(),
-                             parent_rect.width(), parent_rect.height())
-            self.createWindowMask()
+        self.showMask()
 
     def initLayout(self):
         """ 初始化布局 """
         self.subPropertyPanel.move(int(self.width() / 2 - self.subPropertyPanel.width() / 2),
                                    int(self.height() / 2 - self.subPropertyPanel.height() / 2))
-    
-    def createWindowMask(self):
-        """ 创建白色透明遮罩 """
-        self.windowMask = QWidget(self)
-        self.windowMask.setStyleSheet('background:rgba(255,255,255,177)')
-        self.windowMask.resize(self.size())
-        self.windowMask.lower()
 
 
 class SubPropertyPanel(QWidget):
@@ -232,7 +218,7 @@ class Demo(QWidget):
         # 读取信息
         with open('Data\\songInfo.json', 'r', encoding='utf-8') as f:
             songInfo_list = json.load(f)
-        songInfo = songInfo_list[77]
+        songInfo = songInfo_list[0]
         panel = PropertyPanel(songInfo, self)
         panel.exec_()
 

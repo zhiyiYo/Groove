@@ -134,7 +134,6 @@ class MyMusicInterface(QWidget):
 if __name__ == "__main__":
 
     app = QApplication(sys.argv)
-
     font = QFont(QApplication.font())
     """ font.setStyleStrategy(QFont.PreferAntialias)
     app.setFont(font) """

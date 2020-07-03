@@ -1,4 +1,5 @@
 import sys
+from json import load,dump
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (QApplication, QCheckBox, QLabel, QRadioButton,
@@ -6,12 +7,15 @@ from PyQt5.QtWidgets import (QApplication, QCheckBox, QLabel, QRadioButton,
 sys.path.append('..')
 from Groove.my_widget.my_label import ClickableLabel
 from Groove.my_widget.my_scroll_bar import ScrollBar
+from Groove.my_setting_interface.select_song_folder_panel import SelectSongFolderPanel
 
 
 class SettingInterface(QWidget):
     """ 设置界面 """
     def __init__(self, parent=None):
         super().__init__(parent)
+        # 读入数据
+        self.readConfig()
         # 创建小部件
         self.createWidgets()
         # 初始化界面
@@ -27,9 +31,9 @@ class SettingInterface(QWidget):
         self.widget = QWidget()
         # 实例化标签
         self.appLabel = QLabel('应用', self.widget)
-        self.modeLabel = QLabel('模式', self.widget)
         self.playLabel = QLabel('播放', self.widget)
         self.settingLabel = QLabel('设置', self.widget)
+        self.colorModeLabel = QLabel('模式', self.widget)
         self.mediaInfoLabel = QLabel('媒体信息', self.widget)
         self.loginLabel = ClickableLabel('登录', self.widget)
         self.getMetaDataCheckBox = QCheckBox('关', self.widget)
@@ -38,8 +42,7 @@ class SettingInterface(QWidget):
         self.equalizerLabel = ClickableLabel('均衡器', self.widget)
         self.musicInThisPCLabel = QLabel('此PC上的音乐', self.widget)
         self.selectFolderLabel = ClickableLabel('选择查找音乐的位置', self.widget)
-        self.getMetaDataLabel = QLabel('自动检索并更新缺失的专辑封面和元数据', self.widget)
-        
+        self.getMetaDataLabel = QLabel('自动检索并更新缺失的专辑封面和元数据', self.widget)    
         
     def initWidget(self):
         """ 初始化小部件 """
@@ -48,6 +51,9 @@ class SettingInterface(QWidget):
         self.scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         # 将信号连接到槽函数
         self.getMetaDataCheckBox.stateChanged.connect(self.checkBoxStatedChangedEvent)
+        self.selectFolderLabel.clicked.connect(self.showSelectSongFolderPanel)
+        self.lightColorButton.clicked.connect(self.colorModeChangeEvent)
+        self.darkColorButton.clicked.connect(self.colorModeChangeEvent)
         # 设置鼠标光标
         self.selectFolderLabel.setCursor(Qt.PointingHandCursor)
         self.equalizerLabel.setCursor(Qt.PointingHandCursor)
@@ -55,18 +61,23 @@ class SettingInterface(QWidget):
         # 分配ID
         self.appLabel.setObjectName('titleLabel')
         self.playLabel.setObjectName('titleLabel')
-        self.modeLabel.setObjectName('titleLabel')
+        self.colorModeLabel.setObjectName('titleLabel')
         self.settingLabel.setObjectName('settingLabel')
         self.mediaInfoLabel.setObjectName('titleLabel')
-        self.musicInThisPCLabel.setObjectName('titleLabel')
         self.loginLabel.setObjectName('clickableLabel')
+        self.musicInThisPCLabel.setObjectName('titleLabel')
         self.equalizerLabel.setObjectName('clickableLabel')
         self.selectFolderLabel.setObjectName('clickableLabel')
+        # 设置选中的主题颜色
+        if self.config['color-mode'] == 'light-color':
+            self.lightColorButton.setChecked(True)
+        else:
+            self.darkColorButton.setChecked(True)
         
     def initLayout(self):
         """ 初始化布局 """
         self.playLabel.move(30, 247)
-        self.modeLabel.move(30, 483)
+        self.colorModeLabel.move(30, 483)
         self.settingLabel.move(30, 63)
         self.equalizerLabel.move(30, 292)
         self.mediaInfoLabel.move(30, 350)
@@ -88,7 +99,15 @@ class SettingInterface(QWidget):
             self.getMetaDataCheckBox.setText('开')
         else:
             self.getMetaDataCheckBox.setText('关')
-        
+
+    def colorModeChangeEvent(self):
+        """ 主题颜色改变时更新Json文件 """
+        if self.sender() == self.lightColorButton:
+            self.config['color-mode'] = 'light-color'
+        else:
+            self.config['color-mode'] = 'dark-color'
+        self.writeConfig()
+            
     def setQss(self):
         """ 设置层叠样式 """
         with open('resource\\css\\settingInterface.qss', encoding='utf-8') as f:
@@ -99,6 +118,30 @@ class SettingInterface(QWidget):
         self.loginLabel.move(self.width() - 400, 188)
         self.widget.resize(self.width(),self.widget.height())
         super().resizeEvent(e)
+
+    def showSelectSongFolderPanel(self):
+        """ 显示歌曲文件夹选择面板 """
+        selectSongFolderPanel = SelectSongFolderPanel(self.window())
+        selectSongFolderPanel.exec_()
+
+    def readConfig(self):
+        """ 读入配置文件数据 """
+        with open('Data\\config.json', encoding='utf-8') as f:
+            self.config = load(f)
+
+    def writeConfig(self):
+        """ 读入配置文件数据 """
+        # 重置下标
+        self.config['current-index'] = 0
+        self.config['pre-index'] = 1
+        with open('Data\\config.json','w', encoding='utf-8') as f:
+            dump(self.config, f)
+
+    def closeEvent(self, e):
+        """ 关闭窗口之前更新json文件 """
+        self.writeConfig()
+        e.accept()
+        
         
 
 if __name__ == "__main__":

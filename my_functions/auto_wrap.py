@@ -2,7 +2,7 @@ import re
 
 
 def autoWrap(text: str, maxCharactersNum: int):
-    """ 根据专辑名的长度决定是否换行,maxCharactersNum是text换算为1个宽度字符的总宽度 """
+    """ 根据专辑名的长度决定是否换行,maxCharactersNum是text换算为1个宽度字符的总长度 """
     # 设置换行标志位
     isWordWrap = True
     text_list = list(text)
@@ -10,7 +10,8 @@ def autoWrap(text: str, maxCharactersNum: int):
     not_alpha_num = 0
     blank_index = 0
     for index, i in enumerate(text):
-        Match = re.match(r'[A-Z0-9a-z:\+\-\{\}\d\(\)\*\.\s]', i)
+        # 大写字母按两个算
+        Match = re.match(r'[0-9a-z:\+\-\{\}\d\(\)\*\.\s]', i)
         if Match:
             alpha_num += 1
             if Match.group() == ' ':

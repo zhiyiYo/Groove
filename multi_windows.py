@@ -16,7 +16,7 @@ class MultiWindows(QWidget):
 
         self.vbox = QVBoxLayout()
         self.stackWidget = QStackedWidget(self)
-        self.musicGroup = MyMusicInterface('D:\\KuGou\\', self)
+        self.musicGroup = MyMusicInterface(['D:\\KuGou\\test_audio'], self)
         self.initWidget()
 
     def initWidget(self):

@@ -6,15 +6,15 @@ from PyQt5.QtGui import QIcon, QPainter, QPen, QColor
 from PyQt5.QtWidgets import QApplication, QVBoxLayout, QHBoxLayout, QWidget, QToolButton,QLabel
 sys.path.append('..')
 from Groove.my_widget.my_button import NavigationButton
-from Groove.effects.window_effect import WindowEffect
 from Groove.my_widget.my_lineEdit import SearchLineEdit
 
 
 class NavigationMenu(QWidget):
     """ 侧边导航菜单 """
-    def __init__(self, parent=None):
+    def __init__(self, parent):
         super().__init__(parent)
-
+        # 引用配置文件数据
+        self.config=self.parent().settingInterface.config
         # 创建搜索框
         self.searchLineEdit = SearchLineEdit(self)
         # 创建按钮
@@ -23,8 +23,6 @@ class NavigationMenu(QWidget):
         self.h_layout_1 = QHBoxLayout()
         self.h_layout_2 = QHBoxLayout()
         self.all_v_layout = QVBoxLayout()
-        # 实例化窗口特效
-        # self.windowEffect = WindowEffect()
         
         # 初始化界面
         self.initWidget()
@@ -61,12 +59,8 @@ class NavigationMenu(QWidget):
     def initWidget(self):
         """ 初始化小部件 """
         self.setFixedWidth(400)
-        #self.setWindowFlags(Qt.Window)
         self.setAttribute(Qt.WA_TranslucentBackground|Qt.WA_StyledBackground)
         self.setObjectName('navigationMenu')
-        # 开启亚克力效果
-        self.hWnd = HWND(int(self.winId()))
-        #self.windowEffect.setAcrylicEffect(self.hWnd, 'F2F2F25F')
         # 将按钮点击信号连接到槽函数
         for button in self.button_list[1:]:
             button.clicked.connect(self.buttonClickedEvent)
@@ -111,6 +105,16 @@ class NavigationMenu(QWidget):
             # 更新按钮的样式
             for button in self.button_list:
                 button.update()
+            # 切换界面
+            if sender == self.musicGroupButton:
+                # 更新配置文件的下标
+                self.config['current-index'] = 0
+                self.config['pre-index'] = self.parent().stackedWidget.currentIndex()
+                self.parent().stackedWidget.setCurrentWidget(self.parent().myMusicInterface)
+            elif sender == self.settingButton:
+                self.config['current-index'] = 1
+                self.config['pre-index'] = self.parent().stackedWidget.currentIndex()
+                self.parent().stackedWidget.setCurrentWidget(self.parent().settingInterface)
         
     def setQss(self):
         """ 设置层叠样式 """
@@ -128,12 +132,6 @@ class NavigationMenu(QWidget):
         painter.drawLine(15, self.height() - 123 - 62,
                         self.width() - 15, self.height() - 123 - 62)
         
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = NavigationMenu()
-    demo.show()
-    sys.exit(app.exec_())
 
 
     

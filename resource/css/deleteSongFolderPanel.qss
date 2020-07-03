@@ -1,0 +1,39 @@
+QLabel{
+    background-color: transparent;
+}
+
+QLabel#titleLabel{
+    padding: 10px 9px 12px 9px;
+    font:13px 'Microsoft YaHei';
+}
+
+QLabel#subTitleLabel {
+    color: white;
+    font: 33px 'Microsoft YaHei Light';
+    font-weight: bold;
+}
+
+QLabel#contentLabel {
+    color: white;
+    font: 18px 'Microsoft YaHei';
+    font-weight: 400;
+}
+
+QPushButton{
+    color: white;
+    border: 3px solid white;
+    border-radius: 0px;
+    padding: 7px 15px 7px 15px;
+    background: rgb(0,126,153);
+    font: 18px 'Microsoft YaHei';
+    font-weight: bold;
+}
+
+QPushButton:hover{
+    background: rgb(14,179,214);
+}
+
+QPushButton:pressed{
+    color: black;
+    background-color: white;
+}
