@@ -5,16 +5,18 @@ from PyQt5.QtCore import Qt,QAbstractAnimation,QPropertyAnimation
 from PyQt5.QtGui import QIcon, QPainter, QPen, QColor
 from PyQt5.QtWidgets import QApplication, QVBoxLayout, QHBoxLayout, QWidget, QToolButton,QLabel
 sys.path.append('..')
-from Groove.my_widget.my_button import NavigationButton
+
+from .navigation_button import PushButton
 from Groove.my_widget.my_lineEdit import SearchLineEdit
 
 
 class NavigationMenu(QWidget):
     """ 侧边导航菜单 """
-    def __init__(self, parent):
+    def __init__(self, navigationBar, parent):
         super().__init__(parent)
-        # 引用配置文件数据
-        self.config=self.parent().settingInterface.config
+        # 引用配置文件数据和导航栏
+        self.config = self.parent().settingInterface.config
+        self.navigationBar = navigationBar
         # 创建搜索框
         self.searchLineEdit = SearchLineEdit(self)
         # 创建按钮
@@ -31,41 +33,44 @@ class NavigationMenu(QWidget):
     
     def createButtons(self):
         """实例化按钮 """
-        self.showBarButton = NavigationButton(
+        self.showBarButton = PushButton(
             r'resource\images\navigationBar\黑色最大化导航栏.png', parent=self)
-        self.musicGroupButton = NavigationButton(
+        self.musicGroupButton = PushButton(
             r'resource\images\navigationBar\黑色我的音乐.png', '我的音乐', self, (400,60), (60, 62))
-        self.historyButton = NavigationButton(
+        self.historyButton = PushButton(
             r'resource\images\navigationBar\黑色最近播放.png','最近播放的内容', self, (400,62), (60, 62))
-        self.playingButton = NavigationButton(
+        self.playingButton = PushButton(
             r'resource\images\navigationBar\黑色导航栏正在播放.png', '正在播放', self, (400, 62), (60, 62))
-        self.playListButton = NavigationButton(
+        self.playListButton = PushButton(
             r'resource\images\navigationBar\黑色播放列表.png', '播放列表', self, (340, 60))
-        self.createPlayListButton = NavigationButton(
+        self.createPlayListButton = PushButton(
             r'resource\images\navigationBar\黑色新建播放列表.png', parent=self)
-        self.myLoveButton = NavigationButton(
+        self.myLoveButton = PushButton(
             r'resource\images\navigationBar\黑色我喜欢_60_62.png', '我喜欢', self, (400, 62), (60, 62))
-        self.settingButton = NavigationButton(
+        self.settingButton = PushButton(
             r'resource\images\navigationBar\黑色设置按钮.png', '设置', self, (400, 62), (60, 62))
         # 创建一个小部件列表
         self.widget_list = [self.showBarButton, self.searchLineEdit, self.musicGroupButton,
                             self.historyButton, self.playingButton, self.playListButton,
                             self.createPlayListButton, self.myLoveButton, self.settingButton]
-        # 创建按钮列表
-        self.button_list = [self.showBarButton, self.musicGroupButton, self.historyButton,
-                            self.playingButton, self.playListButton,
-                            self.myLoveButton, self.settingButton]
+        # 创建要更新样式的按钮列表
+        self.updatableButton_list = [self.musicGroupButton, self.historyButton, self.playingButton,
+                            self.playListButton,self.myLoveButton, self.settingButton]
                             
     def initWidget(self):
         """ 初始化小部件 """
         self.setFixedWidth(400)
         self.setAttribute(Qt.WA_TranslucentBackground|Qt.WA_StyledBackground)
         self.setObjectName('navigationMenu')
-        # 将按钮点击信号连接到槽函数
-        for button in self.button_list[1:]:
+        # 将按钮点击信号连接到槽函数并设置属性
+        name_list = ['musicGroupButton', 'historyButton', 'playingButton',
+                     'playListButton','myLoveButton', 'settingButton']
+        for button,name in zip(self.updatableButton_list,name_list):
+            button.setProperty('name',name)
             button.clicked.connect(self.buttonClickedEvent)
         # 分配ID
         self.myLoveButton.setObjectName('myLoveButton')
+        self.playListButton.setObjectName('playListButton')
 
     def initLayout(self):
         """ 初始化布局 """
@@ -96,25 +101,33 @@ class NavigationMenu(QWidget):
     def buttonClickedEvent(self):
         """ 按钮点击事件 """
         sender = self.sender()
-        if sender != self.createPlayListButton:
-            for button in self.button_list:
-                if sender == button:
-                    button.setProperty('selected', 'true')
-                else:
-                    button.setProperty('selected', 'false')
-            # 更新按钮的样式
-            for button in self.button_list:
-                button.update()
-            # 切换界面
-            if sender == self.musicGroupButton:
-                # 更新配置文件的下标
-                self.config['current-index'] = 0
-                self.config['pre-index'] = self.parent().stackedWidget.currentIndex()
-                self.parent().stackedWidget.setCurrentWidget(self.parent().myMusicInterface)
-            elif sender == self.settingButton:
-                self.config['current-index'] = 1
-                self.config['pre-index'] = self.parent().stackedWidget.currentIndex()
-                self.parent().stackedWidget.setCurrentWidget(self.parent().settingInterface)
+        # 更新自己按钮的标志位
+        for button in self.updatableButton_list:
+            if sender == button:
+                button.isSelected = True
+            else:
+                button.isSelected = False
+        # 更新绑定的任务栏的按钮的标志位
+        for button in self.navigationBar.updatableButton_list:
+            if button.property('name') == sender.property('name'):
+                button.isSelected = True
+            else:
+                button.isSelected = False
+        # 更新按钮的样式
+        for button in self.updatableButton_list:
+            button.update()
+        for button in self.navigationBar.updatableButton_list:
+            button.update()
+        # 切换界面
+        if sender == self.musicGroupButton:
+            # 更新配置文件的下标
+            self.config['current-index'] = 0
+            self.config['pre-index'] = self.parent().stackedWidget.currentIndex()
+            self.parent().stackedWidget.setCurrentWidget(self.parent().myMusicInterface)
+        elif sender == self.settingButton:
+            self.config['current-index'] = 1
+            self.config['pre-index'] = self.parent().stackedWidget.currentIndex()
+            self.parent().stackedWidget.setCurrentWidget(self.parent().settingInterface)
         
     def setQss(self):
         """ 设置层叠样式 """

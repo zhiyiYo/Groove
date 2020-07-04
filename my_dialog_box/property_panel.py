@@ -9,9 +9,8 @@ from PyQt5.QtGui import QColor, QPainter, QPen, QPixmap
 from PyQt5.QtWidgets import (QAction, QApplication, QDialog, QHBoxLayout,
                              QLabel, QPushButton, QWidget, QGraphicsDropShadowEffect)
                             
-sys.path.append('..')
-from Groove.my_functions.auto_wrap import autoWrap
-from Groove.my_dialog_box.sub_panel_frame import SubPanelFrame
+from ..my_functions.auto_wrap import autoWrap
+from .sub_panel_frame import SubPanelFrame
 
 
 class PropertyPanel(SubPanelFrame):

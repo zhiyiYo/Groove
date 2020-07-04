@@ -12,14 +12,13 @@ from PyQt5.QtGui import (QColor, QContextMenuEvent,QPainter, QPen,
                          QPixmap, QRegExpValidator, QFont)
 from PyQt5.QtWidgets import (QApplication, QDialog, QGraphicsDropShadowEffect, QLabel,QWidget,
                              QLineEdit, QPushButton)
-sys.path.append('..')
 
-from Groove.my_dialog_box.sub_panel_frame import SubPanelFrame
-from Groove.my_functions.modify_songInfo import modifySongInfo
-from Groove.my_widget.my_lineEdit import LineEdit
-from Groove.my_widget.my_label import ErrorLabel
-from Groove.my_widget.my_toolTip import ToolTip
-from Groove.my_functions.auto_wrap import autoWrap
+from .sub_panel_frame import SubPanelFrame
+from ..my_functions.modify_songInfo import modifySongInfo
+from ..my_widget.my_lineEdit import LineEdit
+from ..my_widget.my_label import ErrorLabel
+from ..my_widget.my_toolTip import ToolTip
+from ..my_functions.auto_wrap import autoWrap
 
 
 class SongInfoEditPanel(SubPanelFrame):

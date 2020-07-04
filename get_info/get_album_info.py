@@ -34,7 +34,7 @@ class AlbumInfo():
                 if pic_list:
                     cover_path = os.path.join(f'resource\\Album Cover\\{album_list[-1]}', pic_list[0])
                 else:
-                    cover_path = 'resource\\Album Cover\\未知专辑封面.png'
+                    cover_path = 'resource\\Album Cover\\未知专辑封面_200_200.png'
                 albumInfo_list.append(
                     {'album': album_list[0], 'songer': songInfo['songer'],
                      'songInfo_list': [], 'tcon': songInfo['tcon'],

@@ -8,8 +8,7 @@ from PyQt5.QtWidgets import (QAbstractItemView, QAction, QApplication, QHBoxLayo
 sys.path.append('..')
 from Groove.get_info.get_song_info import SongInfo
 from Groove.card_widget.songcard_test import SongCard
-from Groove.my_dialog_box.property_panel import PropertyPanel
-from Groove.my_dialog_box.song_info_edit_panel import SongInfoEditPanel
+from Groove.my_dialog_box import PropertyPanel,SongInfoEditPanel
 from Groove.my_widget.my_menu import Menu,AddToMenu,SongCardListContextMenu
 
 
@@ -240,7 +239,7 @@ class SongCardListWidget(QListWidget):
             
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    demo = SongCardListWidget(['D:\\KuGou'])
+    demo = SongCardListWidget(['D:\\KuGou\\test_audio\\'])
     demo.show()
 
     sys.exit(app.exec_())

@@ -17,7 +17,7 @@ class Demo(QWidget):
         painter.setRenderHint(QPainter.Antialiasing)
         #painter.setPen(Qt.NoPen)
         painter.setFont(QFont('Microsoft YaHei',12))
-        painter.shear(-0.2, 0)
+        painter.shear(0, 0)
         painter.drawText(50, 50, '这是一个测试')
         painter.setBrush(Qt.NoBrush)
 

@@ -4,9 +4,8 @@ from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QFont, QFontMetrics, QPainter, QPixmap
 from PyQt5.QtWidgets import QApplication, QLabel, QWidget
 
-sys.path.append('..')
-from Groove.my_functions.is_not_leave import isNotLeave
-from Groove.my_play_bar.window_mask import WindowMask
+from ..my_functions.is_not_leave import isNotLeave
+from .window_mask import WindowMask
 
 
 class SongInfoCard(QWidget):

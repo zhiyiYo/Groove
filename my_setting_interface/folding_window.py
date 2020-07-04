@@ -1,14 +1,17 @@
 import sys
 
-from PyQt5.QtCore import Qt, QPoint, pyqtSignal
-from PyQt5.QtGui import QPen, QPainter, QBrush, QColor, QMouseEvent, QPolygon
+from PyQt5.QtCore import QPoint, Qt, pyqtSignal
+from PyQt5.QtGui import QBrush, QColor, QMouseEvent, QPainter, QPen, QPolygon
 from PyQt5.QtWidgets import QApplication, QWidget
+
+from ..my_functions.get_pressed_pos import getPressedPos
 
 
 class FoldingWindow(QWidget):
     """ 点击不同方位翻折效果不同的窗口 """
     # 创建点击信号
     clicked = pyqtSignal()
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setAttribute(Qt.WA_TranslucentBackground)
@@ -37,24 +40,7 @@ class FoldingWindow(QWidget):
 
     def mousePressEvent(self, e: QMouseEvent):
         """ 根据鼠标的不同按下位置更新标志位 """
-        if 0 <= e.x() <= int(self.width() / 3) and 0 <= e.y() <= int(self.height() / 3):
-            self.pressedPos = 'left-top'
-        elif int(self.width() / 3) < e.x() <= int(self.width() * 2 / 3) and 0 <= e.y() <= int(self.height() / 3):
-            self.pressedPos = 'top'
-        elif int(self.width() * 2 / 3) < e.x() <= self.width() and 0 <= e.y() <= int(self.height() / 3):
-            self.pressedPos = 'right-top'
-        elif 0 <= e.x() <= int(self.width() / 3) and int(self.height() / 3) < e.y() <= int(self.height() * 2 / 3):
-            self.pressedPos = 'left'
-        elif int(self.width() / 3) < e.x() <= int(self.width()*2 / 3) and int(self.height() / 3) < e.y() <= int(self.height() * 2 / 3):
-            self.pressedPos = 'center'
-        elif int(self.width()*2 / 3) < e.x() <= self.width() and int(self.height() / 3) < e.y() <= int(self.height() * 2 / 3):
-            self.pressedPos = 'right'
-        elif 0 <= e.x() <= int(self.width() / 3) and int(self.height()*2 / 3) < e.y() <= self.height():
-            self.pressedPos = 'left-bottom'
-        elif int(self.width() / 3) < e.x() <= int(self.width()*2 / 3) and int(self.height()*2 / 3) < e.y() <= self.height():
-            self.pressedPos = 'bottom'
-        elif int(self.width() * 2 / 3) < e.x() <= self.width() and int(self.height() * 2 / 3) < e.y() <= self.height():
-            self.pressedPos = 'right-bottom'
+        self.pressedPos = getPressedPos(self, e)
         self.update()
 
     def paintEvent(self, e):
@@ -122,7 +108,7 @@ class FoldingWindow(QWidget):
                     points = [QPoint(1, 1), QPoint(self.width(
                     ) - 1, 1), QPoint(self.width() - 6, self.height() - 2), QPoint(1, self.height() - 1)]
                     painter.drawPolygon(QPolygon(points), 4)
-                
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

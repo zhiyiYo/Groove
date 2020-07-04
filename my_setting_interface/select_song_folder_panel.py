@@ -1,14 +1,16 @@
-import sys
 import json
+import sys
 
-from PyQt5.QtCore import Qt,QTimer,pyqtSignal
-from PyQt5.QtGui import QPen, QPainter, QBrush, QColor,QPixmap,QFont
-from PyQt5.QtWidgets import QApplication, QDialog, QLabel, QPushButton, QWidget,QGraphicsDropShadowEffect,QFileDialog
-sys.path.append('..')
-from Groove.my_widget.folding_window import FoldingWindow
-from Groove.my_dialog_box.sub_panel_frame import SubPanelFrame
-from Groove.my_setting_interface.delete_song_folder_panel import DeleteSongFolderPanel
-from Groove.my_setting_interface.folder_card import FolderCard
+from PyQt5.QtCore import Qt, QTimer, pyqtSignal
+from PyQt5.QtGui import QBrush, QColor, QFont, QPainter, QPen, QPixmap
+from PyQt5.QtWidgets import (QApplication, QDialog, QFileDialog,
+                             QGraphicsDropShadowEffect, QLabel, QPushButton,
+                             QWidget)
+
+from ..my_dialog_box.sub_panel_frame import SubPanelFrame
+from .delete_song_folder_panel import DeleteSongFolderPanel
+from .folder_card import FolderCard
+from .folding_window import FoldingWindow
 
 
 class SelectSongFolderPanel(SubPanelFrame):

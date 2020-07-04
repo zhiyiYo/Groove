@@ -7,22 +7,21 @@ from enum import Enum
 from PyQt5.QtCore import QPoint, QRect, QSize, Qt
 from PyQt5.QtGui import QCloseEvent, QIcon, QPixmap, QResizeEvent
 from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsDropShadowEffect,
-                             QWidget,QStackedWidget)
+                             QStackedWidget, QWidget)
 
-from effects.window_effect import WindowEffect
+from effects import WindowEffect
 from flags.wm_hittest import Flags
 from my_music_interface import MyMusicInterface
-from my_play_bar.play_bar import PlayBar
-from my_title_bar.title_bar import TitleBar
-from navigation.navigation_bar import NavigationBar
-from navigation.navigation_menu import NavigationMenu
-from my_setting_interface.setting_interface import SettingInterface
+from my_play_bar import PlayBar
+from my_setting_interface import SettingInterface
+from my_title_bar import TitleBar
+from navigation import NavigationBar, NavigationMenu
 
 
 class MainWindow(QWidget):
     """ 主窗口 """
 
-    def __init__(self, target_path_list:list, parent=None):
+    def __init__(self, parent=None):
         super().__init__(parent)
         # 实例化窗口特效
         self.windowEffect = WindowEffect()
@@ -37,9 +36,14 @@ class MainWindow(QWidget):
         self.stackedWidget = QStackedWidget(self)
         self.settingInterface = SettingInterface(self)
         self.navigationBar = NavigationBar(self)
-        self.navigationMenu = NavigationMenu(self)
+        # 需要先实例化导航栏，再将导航栏和导航菜单关联
+        self.navigationMenu = NavigationMenu(self.navigationBar, self)
+        # 关联两个导航部件
+        self.navigationBar.setBoundNavigationMenu(self.navigationMenu)
         self.currentNavigation = self.navigationBar
-        self.myMusicInterface = MyMusicInterface(self.settingInterface.config['selected-folders'], self)
+        # 从配置文件中的选择文件夹读取音频文件
+        self.myMusicInterface = MyMusicInterface(
+            self.settingInterface.config['selected-folders'], self)
         songInfo = {
             'songName': 'オオカミと少女 (狼与少女)', 'songer': '鎖那', 'duration': '3:50',
             'album': ['resource\\Album Cover\\Hush a by little girl\\Hush a by little girl.jpg']}
@@ -48,7 +52,7 @@ class MainWindow(QWidget):
 
     def initWidget(self):
         """ 初始化小部件 """
-        self.resize(1400, 970)
+        self.resize(1300, 970)
         # 打开鼠标跟踪，用来检测鼠标是否位于边界处
         self.setObjectName('mainWindow')
         self.setWindowFlags(Qt.FramelessWindowHint)
@@ -71,7 +75,6 @@ class MainWindow(QWidget):
         # 设置右边子窗口的位置
         self.setWidgetGeometry()
         # 将按钮点击信号连接到槽函数
-        #self.titleBar.returnBt.clicked.connect()
         self.navigationBar.showMenuButton.clicked.connect(
             self.showNavigationMenu)
         self.navigationBar.searchButton.clicked.connect(
@@ -91,8 +94,9 @@ class MainWindow(QWidget):
         self.navigationBar.resize(60, self.height())
         self.navigationMenu.resize(400, self.height())
         self.stackedWidget.move(self.currentNavigation.width(), 0)
-        self.stackedWidget.resize(self.width() - self.currentNavigation.width(), self.height())
-        self.playBar.resize(self.width(),self.playBar.height())
+        self.stackedWidget.resize(
+            self.width() - self.currentNavigation.width(), self.height())
+        self.playBar.resize(self.width(), self.playBar.height())
 
     def resizeEvent(self, e: QResizeEvent):
         """ 调整尺寸时同时调整子窗口的尺寸 """
@@ -123,7 +127,7 @@ class MainWindow(QWidget):
                                   self.height() - self.playBar.height())
             else:
                 self.playBar.move(self.x() + 1, self.y() +
-                                  self.height() - self.playBar.height() + 40)
+                                  self.height() - self.playBar.height() + 38)
             self.playBar.moveTime += 1
 
     def closeEvent(self, e: QCloseEvent):
@@ -162,16 +166,15 @@ class MainWindow(QWidget):
                 result = Flags.HTBOTTOMLEFT.value
             elif(xPos > (self.width() - maxV) and xPos < (self.width() - minV) and yPos > (self.height() - maxV) and yPos < (self.height() - minV)):
                 result = Flags.HTBOTTOMRIGHT.value
-            if result!=0:
+            if result != 0:
                 return (True, result)
         return QWidget.nativeEvent(self, eventType, message)
-    
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setAttribute(Qt.AA_DontCreateNativeWidgetSiblings)
-    demo = MainWindow(['D:\\KuGou\\'])
+    demo = MainWindow()
     demo.show()
     demo.playBar.show()
     sys.exit(app.exec_())

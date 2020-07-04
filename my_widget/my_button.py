@@ -189,54 +189,7 @@ class SortModeButton(QPushButton):
         self.setCursor(Qt.PointingHandCursor)
         self.setObjectName('sortModeButton')
         self.clicked.connect(slot)
-        
-class NavigationButton(QPushButton):
-    """ 侧边导航栏按钮 """
 
-    def __init__(self, icon_path, text='', parent=None, buttonSize: tuple = (60, 60), iconSize: tuple = (60, 60)):
-        super().__init__(text, parent)
-        self.image = QPixmap(icon_path)
-        self.iconSizeTuple = iconSize
-        self.buttonSizeTuple = buttonSize
-        self.initWidget()
-
-    def initWidget(self):
-        """ 初始化小部件 """
-        # 设置按钮的图标
-        self.setFixedSize(self.buttonSizeTuple[0], self.buttonSizeTuple[1])
-        self.setIconSize(QSize(self.iconSizeTuple[0], self.iconSizeTuple[1]))
-        # 设置属性防止qss不起作用
-        self.setAttribute(Qt.WA_StyledBackground | Qt.WA_TranslucentBackground)
-        
-        # 初始化属性
-        self.setProperty('selected', 'false')
-        self.setProperty('clickedAgain','false')
-
-                               
-    def mousePressEvent(self,e):
-        """ 鼠标点击时更新样式 """
-        if self.property('clickedAgain')=='true':
-            self.update()
-        super().mousePressEvent(e)
-
-    def paintEvent(self, e):
-        """ 选中时在左边绘制选中标志 """
-        super().paintEvent(e)
-        painter = QPainter(self)
-        painter.setPen(Qt.NoPen)
-        # 绘制图标
-        brush = QBrush(self.image)
-        painter.setBrush(brush)
-        painter.drawRect(0, 0, self.iconSizeTuple[0], self.iconSizeTuple[1])
-        if self.property('selected') == 'true':
-            pen = QPen(QColor(0, 107, 133))
-            pen.setWidth(10)
-            painter.setPen(pen)
-            if self.property('clickedAgain')=='false':
-                """ 为什么总是差5 """
-                painter.drawLine(0, 6, 0, self.height() - 6)
-            else:
-                painter.drawLine(1, 7, 1, self.height - 7)
 
         
 

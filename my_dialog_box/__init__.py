@@ -1,1 +1,2 @@
-__all__ = ['property_panel', 'song_info_edit_panel']
+from .property_panel import PropertyPanel
+from .song_info_edit_panel import SongInfoEditPanel

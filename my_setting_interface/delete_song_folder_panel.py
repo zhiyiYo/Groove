@@ -3,8 +3,8 @@ import sys
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter, QBrush, QColor, QPixmap
 from PyQt5.QtWidgets import QApplication, QDialog, QLabel, QPushButton, QWidget, QGraphicsDropShadowEffect
-sys.path.append('..')
-from Groove.my_functions.auto_wrap import autoWrap
+
+from ..my_functions.auto_wrap import autoWrap
 
 
 class DeleteSongFolderPanel(QDialog):

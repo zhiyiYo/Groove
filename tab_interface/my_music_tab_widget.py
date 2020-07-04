@@ -7,14 +7,13 @@ from PyQt5.QtGui import QContextMenuEvent, QIcon, QMouseEvent
 from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
                              QTabWidget, QVBoxLayout, QWidget)
 
-sys.path.append('..')
-from Groove.tab_interface import AlbumTabInterface, SongTabInterface, SongerTabInterface
+from ..tab_interface import AlbumTabInterface, SongTabInterface, SongerTabInterface
 
 
 class MyMusicTabWidget(QTabWidget):
     """ 创建一个包含歌曲,歌手和专辑标签窗口的类 """
 
-    def __init__(self, target_path_list:list, parent=None):
+    def __init__(self, target_path_list: list, parent=None):
         super().__init__(parent)
         self.target_path_list = target_path_list
 
@@ -22,7 +21,7 @@ class MyMusicTabWidget(QTabWidget):
         self.songTag = SongTabInterface(self.target_path_list)
         self.songerTag = SongerTabInterface()
         self.albumTag = AlbumTabInterface(self.target_path_list)
-        
+
         # 将标签界面添加到子类中
         self.addTab(self.songTag, '歌曲')
         self.addTab(self.songerTag, '歌手')
@@ -39,7 +38,7 @@ class MyMusicTabWidget(QTabWidget):
         # 分配ID
         self.setObjectName('MyMusicTabWidget')
         # 设置监听
-        #self.tabBar().installEventFilter(self)
+        # self.tabBar().installEventFilter(self)
 
     def initLayout(self):
         """ 初始化布局 """
@@ -63,10 +62,10 @@ class MyMusicTabWidget(QTabWidget):
                 return True
             elif event.type() == QEvent.MouseButtonRelease and tabIndex != -1:
                 event = QMouseEvent(QEvent.MouseButtonPress,
-                                event.pos(), Qt.LeftButton, Qt.LeftButton, Qt.NoModifier)
+                                    event.pos(), Qt.LeftButton, Qt.LeftButton, Qt.NoModifier)
                 return False
         return super().eventFilter(obj, event)
-    
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

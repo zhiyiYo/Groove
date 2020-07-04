@@ -2,8 +2,8 @@ import sys
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPen, QPainter, QBrush, QColor,QPixmap,QFont
-sys.path.append('..')
-from Groove.my_widget.folding_window import FoldingWindow
+
+from .folding_window import FoldingWindow
 
 
 class FolderCard(FoldingWindow):
@@ -20,7 +20,7 @@ class FolderCard(FoldingWindow):
         """ 绘制背景 """
         super().paintEvent(e)
         painter = QPainter(self)
-        painter.setRenderHint(QPainter.TextAntialiasing)
+        painter.setRenderHints(QPainter.TextAntialiasing | QPainter.SmoothPixmapTransform)
         # 绘制文字
         if self.pressedPos in ['left-top','top','right-bottom']:
             # 左右扭曲字体
