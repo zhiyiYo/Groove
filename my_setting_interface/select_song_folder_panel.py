@@ -120,7 +120,6 @@ class SubSelectSongFolderPanel(QWidget):
             self.deleteSongFolder)
         self.deleteSongFolderPanel.exec_()
         
-        
     def deleteSongFolder(self):
         """ 删除选中的文件卡 """
         sender = self.__clickedFolder
@@ -137,7 +136,6 @@ class SubSelectSongFolderPanel(QWidget):
         self.setFixedHeight(self.height() - 100)
         self.parent().setSubWindowPos()
         
-
     def setShadowEffect(self):
         """ 添加阴影 """
         self.shadowEffect = QGraphicsDropShadowEffect(self)

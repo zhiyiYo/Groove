@@ -15,8 +15,8 @@ from Groove.my_widget.my_menu import Menu,AddToMenu,SongCardListContextMenu
 class SongCardListWidget(QListWidget):
     """ 定义一个歌曲卡列表视图 """
 
-    def __init__(self, target_path_list:list):
-        super().__init__()
+    def __init__(self, target_path_list:list,parent=None):
+        super().__init__(parent)
         self.resize(1267, 781-23)
         self.target_path_list = target_path_list
         # 实例化控制滚动效果的动画

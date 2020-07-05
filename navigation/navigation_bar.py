@@ -5,6 +5,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QVBoxLayout, QWidget, QToolButton
 sys.path.append('..')
 from Groove.navigation.navigation_button import ToolButton
+from Groove.my_widget.button_group import ButtonGroup
 
 
 class NavigationBar(QWidget):
@@ -25,6 +26,8 @@ class NavigationBar(QWidget):
         
     def createButtons(self):
         """实例化按钮 """
+        # 实例化一个集中管理按钮的类
+        self.buttonGroup = ButtonGroup()
         self.showMenuButton = ToolButton(
             r'resource\images\navigationBar\黑色最大化导航栏.png', parent=self)
         self.searchButton = ToolButton(
@@ -47,6 +50,8 @@ class NavigationBar(QWidget):
                             self.createPlayListButton, self.settingButton]
         # 可变样式的按钮列表
         self.updatableButton_list = self.button_list[2:6] + [self.settingButton]
+        # 将按钮添加到按钮组中
+        self.buttonGroup.addButtons(self.updatableButton_list)
                             
     def initWidget(self):
         """ 初始化小部件 """
@@ -76,22 +81,10 @@ class NavigationBar(QWidget):
 
     def buttonClickedEvent(self):
         """ 按钮点击时更新样式并更换界面 """
-        for button in self.updatableButton_list:
-            if self.sender() == button:
-                button.isSelected=True
-            else:
-                button.isSelected=False
-        # 更新按钮的样式
-        for button in self.button_list:
-            button.update()
+        # 更新自己按钮的样式和标志位
+        self.buttonGroup.updateButtons(self.sender())
         if self.navigationMenu:
-            for button in self.navigationMenu.updatableButton_list:
-                if button.property('name') == self.sender().property('name'):
-                    button.isSelected = True
-                else:
-                    button.isSelected = False
-            for button in self.navigationMenu.updatableButton_list:
-                button.update()
+            self.navigationMenu.buttonGroup.updateButtons(self.sender())
         # 切换界面
         if self.sender() == self.musicGroupButton:
             # 更新配置文件的下标

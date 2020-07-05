@@ -5,7 +5,7 @@ from ctypes.wintypes import HWND, MSG
 from enum import Enum
 
 from PyQt5.QtCore import QPoint, QRect, QSize, Qt
-from PyQt5.QtGui import QCloseEvent, QIcon, QPixmap, QResizeEvent
+from PyQt5.QtGui import QCloseEvent, QIcon, QPixmap, QResizeEvent,QFont
 from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsDropShadowEffect,
                              QStackedWidget, QWidget)
 
@@ -174,6 +174,9 @@ class MainWindow(QWidget):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setAttribute(Qt.AA_DontCreateNativeWidgetSiblings)
+    font = QFont(QApplication.font())
+    font.setStyleStrategy(QFont.PreferAntialias)
+    app.setFont(font)
     demo = MainWindow()
     demo.show()
     demo.playBar.show()

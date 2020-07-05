@@ -16,8 +16,8 @@ from Groove.card_widget.songer_card import SongerCard
 class SongerCardViewer(QWidget):
     """ 创建一个包含所有歌手头像的界面 """
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self,parent=None):
+        super().__init__(parent)
 
         self.resize(1267, 781-23)
         # 设置网格列数

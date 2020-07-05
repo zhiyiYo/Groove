@@ -1,77 +1,93 @@
 # coding:utf-8
 
 import sys
-import time
-from PyQt5.QtCore import QPoint, QSize, Qt, QEvent
-from PyQt5.QtGui import QContextMenuEvent, QIcon, QMouseEvent
-from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
-                             QTabWidget, QVBoxLayout, QWidget)
 
-from ..tab_interface import AlbumTabInterface, SongTabInterface, SongerTabInterface
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QColor, QPainter, QPen
+from PyQt5.QtWidgets import QApplication, QVBoxLayout, QStackedWidget, QWidget
+
+from .album_tab_interface import AlbumTabInterface
+from .song_tab_interface import SongTabInterface
+from .songer_tab_interface import SongerTabInterface
+from tab_interface.tab_button import TabButton
+from my_widget.button_group import ButtonGroup
 
 
-class MyMusicTabWidget(QTabWidget):
-    """ 创建一个包含歌曲,歌手和专辑标签窗口的类 """
+class MyMusicTabWidget(QWidget):
+    """ 放置歌曲、歌手和专辑界面 """
 
-    def __init__(self, target_path_list: list, parent=None):
+    def __init__(self,target_path_list:list, parent=None):
         super().__init__(parent)
         self.target_path_list = target_path_list
-
-        # 创建三个标签窗口
-        self.songTag = SongTabInterface(self.target_path_list)
-        self.songerTag = SongerTabInterface()
-        self.albumTag = AlbumTabInterface(self.target_path_list)
-
-        # 将标签界面添加到子类中
-        self.addTab(self.songTag, '歌曲')
-        self.addTab(self.songerTag, '歌手')
-        self.addTab(self.albumTag, '专辑')
-        # 初始化
+        # 创建小部件
+        self.createWidgets()
+        # 初始化界面
         self.initWidget()
-        self.setQss()
-
+        self.initLayout()
+        
+    def createWidgets(self):
+        """ 创建小部件 """
+        # 实例化界面
+        self.stackedWidget = QStackedWidget(self)
+        self.songTab = SongTabInterface(self.target_path_list, self)
+        self.songerTab = SongerTabInterface(self)
+        self.albumTab = AlbumTabInterface(self.target_path_list, self)
+        # 实例化按钮和分组
+        self.songTabButton = TabButton('歌曲', self, 0)
+        self.songerTabButton = TabButton('歌手', self, 1)
+        self.albumTabButton = TabButton('专辑', self, 2)
+        self.buttonGroup = ButtonGroup()
+        self.button_list = [self.songTabButton, self.songerTabButton, self.albumTabButton]
+        self.buttonGroup.addButtons(self.button_list)
+        # 实例化布局
+        self.v_layout = QVBoxLayout(self)
+        
     def initWidget(self):
-        """ 初始化子类的一些属性 """
-        # 允许拖动标签
+        """ 初始化小部件 """
         self.resize(1267, 800)
-        self.setUsesScrollButtons(False)
+        self.setStyleSheet('background:white')
+        # 将页面添加到stackedWidget中
+        self.stackedWidget.addWidget(self.songTab)
+        self.stackedWidget.addWidget(self.songerTab)
+        self.stackedWidget.addWidget(self.albumTab)
         # 分配ID
-        self.setObjectName('MyMusicTabWidget')
-        # 设置监听
-        # self.tabBar().installEventFilter(self)
-
+        self.songTabButton.setProperty('name', 'songTabButton')
+        self.songerTabButton.setProperty('name', 'songerTabButton')
+        self.albumTabButton.setProperty('name', 'albumTabButton')
+        # 设置当前的界面
+        self.songTabButton.isSelected = True
+        # 将按钮点击信号连接到槽函数
+        for button in self.button_list:
+            button.clicked.connect(self.buttonClickedEvent)
+            
     def initLayout(self):
         """ 初始化布局 """
-        self.h_Layout = QHBoxLayout()
-        self.h_Layout.addWidget(self.songTag)
-        self.setLayout(self.h_Layout)
+        self.songTabButton.move(14, 0)
+        self.songerTabButton.move(117, 0)
+        self.albumTabButton.move(220, 0)
+        self.stackedWidget.move(0, 45)
+        
+    def resizeEvent(self, QResizeEvent):
+        """ 窗口大小改变时同时调整stackedWidget的大小 """
+        self.stackedWidget.resize(self.width(), self.height() - 45)
 
-    def setQss(self):
-        """ 设置层叠样式表 """
-        with open('resource\\css\\myMusicTabWidget.qss', 'r', encoding='utf-8') as f:
-            qss = f.read()
-            self.setStyleSheet(qss)
+    def buttonClickedEvent(self):
+        """ 按钮点击时切换界面 """
+        sender = self.sender()
+        self.buttonGroup.updateButtons(sender)
+        self.stackedWidget.setCurrentIndex(sender.tabIndex)
 
-    def eventFilter(self, obj, event):
-        """ 鼠标松开时才切换界面 """
-        event_cond = event.type() in [
-            QEvent.MouseButtonPress, QEvent.MouseButtonRelease] and event.button() == Qt.LeftButton
-        if obj == self.tabBar() and event_cond:
-            tabIndex = self.tabBar().tabAt(event.pos())
-            if event.type() == QEvent.MouseButtonPress and tabIndex != -1:
-                return True
-            elif event.type() == QEvent.MouseButtonRelease and tabIndex != -1:
-                event = QMouseEvent(QEvent.MouseButtonPress,
-                                    event.pos(), Qt.LeftButton, Qt.LeftButton, Qt.NoModifier)
-                return False
-        return super().eventFilter(obj, event)
-
-
+    def paintEvent(self, QPaintEvent):
+        """ 绘制背景 """
+        super().paintEvent(QPaintEvent)
+        painter = QPainter(self)
+        pen = QPen(QColor(229, 229, 229))
+        painter.setPen(pen)
+        painter.drawLine(10, 41, self.width() - 12, 41)
+        
+        
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    t1 = time.time()
     demo = MyMusicTabWidget(['D:\\KuGou\\test_audio\\'])
     demo.show()
-    t2 = time.time()
-    print(f'启动耗时{t2-t1:.3f}s')
     sys.exit(app.exec_())

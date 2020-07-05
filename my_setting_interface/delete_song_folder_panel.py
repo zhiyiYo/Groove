@@ -98,7 +98,7 @@ class SubDeleteSongFolderPanel(QWidget):
         brush = QBrush(Qt.white)
         painter.setBrush(brush)
         painter.drawRect(self.rect())
-        brush.setColor(QColor(0, 126, 153))
+        brush.setColor(QColor(0, 126, 153,255))
         painter.setBrush(brush)
         painter.drawRect(1, 37, self.width() - 2, self.height() - 37)
         super().paintEvent(e)

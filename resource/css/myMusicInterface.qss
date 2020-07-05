@@ -5,5 +5,5 @@ QWidget#musicGroupInterface {
 QLabel#myMusicLabel {
     font-family: 'Microsoft YaHei Light';
     font-size: 43px;
-    margin-left: 1px;
+    padding: 0px;
 }

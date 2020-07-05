@@ -8,6 +8,7 @@ sys.path.append('..')
 
 from .navigation_button import PushButton
 from Groove.my_widget.my_lineEdit import SearchLineEdit
+from Groove.my_widget.button_group import ButtonGroup
 
 
 class NavigationMenu(QWidget):
@@ -33,6 +34,8 @@ class NavigationMenu(QWidget):
     
     def createButtons(self):
         """实例化按钮 """
+        # 实例化一个集中管理按钮的类
+        self.buttonGroup = ButtonGroup()
         self.showBarButton = PushButton(
             r'resource\images\navigationBar\黑色最大化导航栏.png', parent=self)
         self.musicGroupButton = PushButton(
@@ -55,7 +58,9 @@ class NavigationMenu(QWidget):
                             self.createPlayListButton, self.myLoveButton, self.settingButton]
         # 创建要更新样式的按钮列表
         self.updatableButton_list = [self.musicGroupButton, self.historyButton, self.playingButton,
-                            self.playListButton,self.myLoveButton, self.settingButton]
+                            self.playListButton, self.myLoveButton, self.settingButton]
+        # 将按钮添加到按钮组中
+        self.buttonGroup.addButtons(self.updatableButton_list)
                             
     def initWidget(self):
         """ 初始化小部件 """
@@ -101,23 +106,10 @@ class NavigationMenu(QWidget):
     def buttonClickedEvent(self):
         """ 按钮点击事件 """
         sender = self.sender()
-        # 更新自己按钮的标志位
-        for button in self.updatableButton_list:
-            if sender == button:
-                button.isSelected = True
-            else:
-                button.isSelected = False
-        # 更新绑定的任务栏的按钮的标志位
-        for button in self.navigationBar.updatableButton_list:
-            if button.property('name') == sender.property('name'):
-                button.isSelected = True
-            else:
-                button.isSelected = False
-        # 更新按钮的样式
-        for button in self.updatableButton_list:
-            button.update()
-        for button in self.navigationBar.updatableButton_list:
-            button.update()
+        # 更新自己按钮的标志位和样式
+        self.buttonGroup.updateButtons(sender)
+        # 更新绑定的任务栏的按钮的标志位和样式
+        self.navigationBar.buttonGroup.updateButtons(sender)
         # 切换界面
         if sender == self.musicGroupButton:
             # 更新配置文件的下标

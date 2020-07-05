@@ -14,12 +14,12 @@ from Groove.my_widget.my_menu import Menu
 class AlbumTabInterface(QWidget):
     """ 定义专辑卡标签界面 """
 
-    def __init__(self, target_path, parent=None):
+    def __init__(self, target_path_list:list, parent=None):
         super().__init__(parent)
         self.resize(1267, 827-23)
 
         # 实例化专辑视图
-        self.albumCardViewer = AlbumCardViewer(target_path)
+        self.albumCardViewer = AlbumCardViewer(target_path_list)
 
         # 实例化无序播放所有按钮
         self.randomPlayButton = RandomPlayButton(

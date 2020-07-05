@@ -45,6 +45,7 @@ class SongTabInterface(QWidget):
 
     def initWidget(self):
         """ 初始化小部件的属性 """
+        #self.setWindowFlags(Qt.FramelessWindowHint)
         # 隐藏滚动条
         self.songCardListWidget.setVerticalScrollBarPolicy(
             Qt.ScrollBarAlwaysOff)

@@ -12,11 +12,11 @@ from Groove.my_widget.my_button import RandomPlayButton
 class SongerTabInterface(QWidget):
     """ 定义专辑标签界面 """
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self,parent=None):
+        super().__init__(parent)
 
         # 实例化歌手头像视图
-        self.songerHeadPortraitViewer = SongerCardViewer()
+        self.songerHeadPortraitViewer = SongerCardViewer(parent)
         # 实例化随机播放按钮
         self.randomPlayButton = RandomPlayButton(slot=self.randomPlay,parent=self)
         # 实例化排序依据标签
