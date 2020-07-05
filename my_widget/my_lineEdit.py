@@ -21,7 +21,7 @@ class LineEdit(QLineEdit):
         iconPath_dict = {
             'normal': r'resource\images\lineEdit\clearInfo_cross_normal.png',
             'hover': r'resource\images\lineEdit\clearInfo_cross_hover.png',
-            'selected': r'resource\images\lineEdit\clearInfo_cross_selected.png'}
+            'pressed': r'resource\images\lineEdit\clearInfo_cross_pressed.png'}
 
         # 实例化一个用于清空内容的按钮
         self.clearButton = LineEditButton(iconPath_dict, self)
@@ -107,93 +107,6 @@ class LineEdit(QLineEdit):
                 return True
         return super().eventFilter(obj,e)
 
-class SearchLineEdit(QLineEdit):
-    """ 单行搜索框 """
-    def __init__(self, parent=None):
-        super().__init__(parent)
-
-        # 按钮图标位置
-        clear_iconPath_dict = {
-            'normal': r'resource\images\searchLineEdit\搜索框清空按钮_normal_45_45.png',
-            'hover': r'resource\images\searchLineEdit\搜索框清空按钮_hover_45_45.png',
-            'selected': r'resource\images\searchLineEdit\搜索框清空按钮_selected_45_45.png'}
-        self.__search_iconPath_dict = {
-            'normal': r'resource\images\searchLineEdit\搜索框透明搜索按钮_normal_46_45.png',
-            'hover': r'resource\images\searchLineEdit\搜索框透明搜索按钮_hover_46_45.png',
-            'selected': r'resource\images\searchLineEdit\搜索框搜索按钮_selected_46_45.png'}
-        # 实例化按钮
-        self.clearButton = LineEditButton(clear_iconPath_dict, self, (46, 45))
-        self.searchButton = LineEditButton(self.__search_iconPath_dict, self, (46, 45))
-        # 实例化右击菜单
-        self.menu = LineEditMenu(self)
-        # 初始化界面
-        self.initWidget()
-
-    def initWidget(self):
-        """ 初始化小部件 """
-        self.resize(300,45)
-        self.clearButton.hide()
-        self.setAttribute(Qt.WA_StyledBackground)
-        # 设置提示文字
-        self.setPlaceholderText('搜索')
-        self.textChanged.connect(self.textChangedEvent)
-        self.setWindowFlags(Qt.FramelessWindowHint)
-        # 调整按钮位置
-        self.adjustButtonPos()
-        # 安装监听
-        self.clearButton.installEventFilter(self)
-        self.searchButton.installEventFilter(self)
-
-    def textChangedEvent(self):
-        """ 编辑框的文本改变时选择是否显示清空按钮 """
-        if self.text():
-            self.clearButton.show()
-        else:
-            self.clearButton.hide()
-
-    def adjustButtonPos(self):
-        """ 调整按钮的位置 """
-        # 需要补上margin的位置
-        self.searchButton.move(self.width() - self.searchButton.width()-8, 0)
-        self.clearButton.move(self.searchButton.x() - self.clearButton.width(), 0)
-        
-    def resizeEvent(self, e):
-        """ 调整大小的同时改变按钮位置 """
-        self.adjustButtonPos()
-
-    def mousePressEvent(self, e):
-        if e.button() == Qt.LeftButton:
-            # 需要调用父类的鼠标点击事件，不然无法部分选中
-            super().mousePressEvent(e)
-            # 如果输入框中有文本，就设置为只读并显示清空按钮
-            if self.text():
-                self.clearButton.show()
-
-    def focusOutEvent(self, e):
-        """ 当焦点移到别的输入框时隐藏按钮 """
-        # 调用父类的函数，消除焦点
-        super().focusOutEvent(e)
-        self.clearButton.hide()
-
-    def eventFilter(self, obj, e):
-        """ 过滤事件 """
-        if obj == self.clearButton:
-            if e.type() == QEvent.MouseButtonRelease and e.button() == Qt.LeftButton:
-                self.clear()
-                self.clearButton.hide()
-                return True
-        elif obj == self.searchButton:
-            if e.type() == QEvent.MouseButtonRelease and e.button() == Qt.LeftButton:
-                self.searchButton.setIcon(QIcon(self.__search_iconPath_dict['hover']))
-                """ 搜索槽函数有待补充 """
-                pass
-                return True
-        return super().eventFilter(obj, e)
-
-    def contextMenuEvent(self, e: QContextMenuEvent):
-        """ 设置右击菜单 """
-        self.menu.exec_(e.globalPos())
-        
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

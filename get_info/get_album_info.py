@@ -27,13 +27,16 @@ class AlbumInfo():
             songInfo_list = json.load(f)
         # 先将专辑信息字典插到列表中
         for songInfo in songInfo_list:
+            # songInfo的'album'对应的值是一个列表，可能包含修改前和修改后的专辑名
             album_list = songInfo['album']
             # 如果专辑名不在集合中，就往列表中插入专辑信息字典
             if album_list[0] not in album_set:
-                pic_list=os.listdir(f'resource\\Album Cover\\{album_list[-1]}')
+                pic_list = os.listdir(f'resource\\Album Cover\\{album_list[-1]}')
                 if pic_list:
+                    # 如果目录下有封面就用这个封面作为albumCard的背景
                     cover_path = os.path.join(f'resource\\Album Cover\\{album_list[-1]}', pic_list[0])
                 else:
+                    # 否则用默认的封面
                     cover_path = 'resource\\Album Cover\\未知专辑封面_200_200.png'
                 albumInfo_list.append(
                     {'album': album_list[0], 'songer': songInfo['songer'],

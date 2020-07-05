@@ -7,8 +7,9 @@ from PyQt5.QtWidgets import QApplication, QVBoxLayout, QHBoxLayout, QWidget, QTo
 sys.path.append('..')
 
 from .navigation_button import PushButton
-from Groove.my_widget.my_lineEdit import SearchLineEdit
+from .search_line_edit import SearchLineEdit
 from Groove.my_widget.button_group import ButtonGroup
+from Groove.my_create_playlist_interface.create_playlist_button import CreatePlaylistButton
 
 
 class NavigationMenu(QWidget):
@@ -46,8 +47,7 @@ class NavigationMenu(QWidget):
             r'resource\images\navigationBar\黑色导航栏正在播放.png', '正在播放', self, (400, 62), (60, 62))
         self.playListButton = PushButton(
             r'resource\images\navigationBar\黑色播放列表.png', '播放列表', self, (340, 60))
-        self.createPlayListButton = PushButton(
-            r'resource\images\navigationBar\黑色新建播放列表.png', parent=self)
+        self.createPlaylistButton = CreatePlaylistButton(self)
         self.myLoveButton = PushButton(
             r'resource\images\navigationBar\黑色我喜欢_60_62.png', '我喜欢', self, (400, 62), (60, 62))
         self.settingButton = PushButton(
@@ -55,7 +55,7 @@ class NavigationMenu(QWidget):
         # 创建一个小部件列表
         self.widget_list = [self.showBarButton, self.searchLineEdit, self.musicGroupButton,
                             self.historyButton, self.playingButton, self.playListButton,
-                            self.createPlayListButton, self.myLoveButton, self.settingButton]
+                            self.createPlaylistButton, self.myLoveButton, self.settingButton]
         # 创建要更新样式的按钮列表
         self.updatableButton_list = [self.musicGroupButton, self.historyButton, self.playingButton,
                             self.playListButton, self.myLoveButton, self.settingButton]
@@ -95,7 +95,7 @@ class NavigationMenu(QWidget):
             self.all_v_layout.addWidget(widget)
         # 添加剩下的按钮
         self.h_layout_2.addWidget(self.playListButton)
-        self.h_layout_2.addWidget(self.createPlayListButton)
+        self.h_layout_2.addWidget(self.createPlaylistButton)
         self.all_v_layout.addLayout(self.h_layout_2)
         self.all_v_layout.addWidget(self.myLoveButton)
         self.all_v_layout.addWidget(self.settingButton, 0, Qt.AlignBottom)

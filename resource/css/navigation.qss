@@ -20,21 +20,6 @@ QLineEdit:hover:!focus {
     background: rgb(250,250,250);
 }
 
-/* QPushButton {
-    border: none;
-    margin: 0;
-    text-align:left;
-    font-size: 18px;
-    background-color: transparent;
-    font-family: 'Microsoft YaHei';
-    padding-left: 60px;
-}
-
-QPushButton#myLoveButton {
-    padding-top: 3px;
-}
- */
-
 QLabel{
     font:16px "Microsoft YaHei Light";
 }

@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QApplication, QVBoxLayout, QWidget, QToolButton
 sys.path.append('..')
 from Groove.navigation.navigation_button import ToolButton
 from Groove.my_widget.button_group import ButtonGroup
+from Groove.my_create_playlist_interface.create_playlist_button import CreatePlaylistButton
 
 
 class NavigationBar(QWidget):
@@ -40,14 +41,13 @@ class NavigationBar(QWidget):
             r'resource\images\navigationBar\黑色导航栏正在播放.png', parent=self, buttonSize=(60, 62))
         self.playListButton = ToolButton(
             r'resource\images\navigationBar\黑色播放列表.png', parent=self)
-        self.createPlayListButton = ToolButton(
-            r'resource\images\navigationBar\黑色新建播放列表.png', parent=self)
+        self.createPlaylistButton = CreatePlaylistButton(self)
         self.settingButton = ToolButton(
             r'resource\images\navigationBar\黑色设置按钮.png', parent=self)
         # 创建一个按钮列表
         self.button_list = [self.showMenuButton, self.searchButton, self.musicGroupButton,
                             self.historyButton, self.playingButton, self.playListButton,
-                            self.createPlayListButton, self.settingButton]
+                            self.createPlaylistButton, self.settingButton]
         # 可变样式的按钮列表
         self.updatableButton_list = self.button_list[2:6] + [self.settingButton]
         # 将按钮添加到按钮组中

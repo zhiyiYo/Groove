@@ -194,7 +194,7 @@ class SortModeButton(QPushButton):
         
 
 class LineEditButton(QToolButton):
-    """ 单行编辑框按钮，iconPath_dict提供按钮normal、hover、selected三种状态下的图标地址 """
+    """ 单行编辑框按钮，iconPath_dict提供按钮normal、hover、pressed三种状态下的图标地址 """
 
     def __init__(self, iconPath_dict:dict, parent=None,icon_size:tuple=(40,40)):
         super().__init__(parent)
@@ -223,7 +223,7 @@ class LineEditButton(QToolButton):
         """ 鼠标左键按下时更换图标 """
         if e.button() == Qt.RightButton:
             return
-        self.setIcon(QIcon(self.iconPath_dict['selected']))
+        self.setIcon(QIcon(self.iconPath_dict['pressed']))
 
 
 if __name__ == "__main__":

@@ -25,25 +25,19 @@ class AlbumCard(QWidget):
 
         # 设置窗体移动标志位
         self.hasMoved = False
-
         # 储存未被更改过的专辑名
         self.rawAlbumName = albumInfo['album']
-
         # 实例化专辑名和歌手名
         self.albumName = ClickableLabel(albumInfo['album'], self)
         self.songerName = ClickableLabel(albumInfo['songer'], self)
-
         # 实例化专辑封面
         self.albumCoverWindow = AlbumCoverWindow(albumInfo['cover_path'], self)
-
         # 引用两个按钮
         self.playButton = self.albumCoverWindow.playButton
         self.addToButton = self.albumCoverWindow.addToButton
 
-        # 初始化小部件
+        # 初始化
         self.initWidget()
-
-        # 初始化样式
         self.setQss()
 
     def initWidget(self):

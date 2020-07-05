@@ -17,6 +17,7 @@ class ButtonGroup():
 
     def updateButtons(self,sender):
         """ 更新按钮样式 """
+        # 如果已经被选中然后再次点击时直接返回
         for button in self.button_list:
             if button.property('name') == sender.property('name'):
                 button.isSelected = True

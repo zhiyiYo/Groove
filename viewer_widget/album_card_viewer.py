@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import (
 sys.path.append('..')
 from Groove.my_widget.my_toolTip import ToolTip
 from Groove.my_widget.album_blur_background import AlbumBlurBackground
-from Groove.get_info import get_album_cover
+from Groove.get_info.get_album_cover import GetAlbumCover
 from Groove.get_info.get_album_info import AlbumInfo
 from Groove.card_widget.album_card import AlbumCard
 
@@ -27,15 +27,13 @@ class AlbumCardViewer(QWidget):
         # 初始化网格的列数
         self.column_num = 5
         self.total_row_num = 0
-
         # 设置当前排序方式
         self.sortMode = '添加时间'
 
         # 先扫描本地音乐的专辑封面
-        self.getAlbumCover = get_album_cover.GetAlbumCover(target_path_list)
+        self.getAlbumCover = GetAlbumCover(target_path_list)
         # 获取专辑信息
         self.albumInfo = AlbumInfo()
-
         # 实例化布局
         self.albumView_hLayout = QHBoxLayout()
         self.all_h_layout = QHBoxLayout()
@@ -47,11 +45,9 @@ class AlbumCardViewer(QWidget):
             self.albumViewWidget)
         # 引用滚动条
         self.vScrollBar=self.scrollArea.verticalScrollBar()
-
         # 实例化并引用提示条
         """ self.albumViewWidget.customToolTip = ToolTip(parent=self.albumViewWidget)
         self.customToolTip = self.albumViewWidget.customToolTip """
-
         # 初始化小部件
         self.initWidget()
         # 创建专辑卡并将其添加到布局中
@@ -394,6 +390,6 @@ class AlbumCardViewer(QWidget):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    demo = AlbumCardViewer(['D:\\KuGou\\test_audio\\'])
+    demo = AlbumCardViewer(['D:\\KuGou\\'])
     demo.show()
     sys.exit(app.exec_())

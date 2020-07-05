@@ -107,6 +107,7 @@ class AlbumTabInterface(QWidget):
         """ 根据所选的排序方式对歌曲卡进行重新排序 """
         sender = self.sender()
         self.currentSortMode = sender
+        self.albumCardViewer.albumViewWidget.albumBlurBackground.hide()
         # 更新分组
         if sender == self.sortByCratedTime and self.albumCardViewer.sortMode != '添加时间':
             self.sortModeButton.setText('添加时间')
@@ -141,6 +142,6 @@ class AlbumTabInterface(QWidget):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    demo = AlbumTabInterface(['D:\\KuGou\\test_audio\\'])
+    demo = AlbumTabInterface(['D:\\KuGou\\'])
     demo.show()
     sys.exit(app.exec_())
