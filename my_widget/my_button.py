@@ -191,10 +191,8 @@ class SortModeButton(QPushButton):
         self.clicked.connect(slot)
 
 
-        
-
-class LineEditButton(QToolButton):
-    """ 单行编辑框按钮，iconPath_dict提供按钮normal、hover、pressed三种状态下的图标地址 """
+class ThreeStateButton(QToolButton):
+    """ 三种状态对应三种图标的按钮，iconPath_dict提供按钮normal、hover、pressed三种状态下的图标地址 """
 
     def __init__(self, iconPath_dict:dict, parent=None,icon_size:tuple=(40,40)):
         super().__init__(parent)
@@ -224,6 +222,7 @@ class LineEditButton(QToolButton):
         if e.button() == Qt.RightButton:
             return
         self.setIcon(QIcon(self.iconPath_dict['pressed']))
+        super().mousePressEvent(e)
 
 
 if __name__ == "__main__":

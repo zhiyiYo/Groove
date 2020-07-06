@@ -1,0 +1,497 @@
+1594028089532	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofiletk8FhC"
+*** You are running in headless mode.
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594028091476	Marionette	INFO	Listening on port 62241
+1594028091644	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594028215987	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofileLOCbvk"
+*** You are running in headless mode.
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594028217935	Marionette	INFO	Listening on port 62305
+1594028218036	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594028261402	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofileAZ9Y85"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594028263852	Marionette	INFO	Listening on port 62366
+1594028264074	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594028264132	Marionette	INFO	Stopped listening on port 62366
+console.error: services.settings: 
+  main/messaging-experiments Signature failed  TypeError: NetworkError when attempting to fetch resource.
+console.error: services.settings: 
+  main/cfr-fxa Signature failed  TypeError: NetworkError when attempting to fetch resource.
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1594028310390	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofileII0qMl"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594028312391	Marionette	INFO	Listening on port 62418
+1594028312432	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594028312493	Marionette	INFO	Stopped listening on port 62418
+console.warn: services.settings: main/fxmonitor-breaches sync interrupted by shutdown
+console.warn: services.settings: main/cfr-fxa sync interrupted by shutdown
+console.error: Region.jsm: "Failed to fetch region" (new TypeError("NetworkError when attempting to fetch resource.", ""))
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1594028346592	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofilepxFPX8"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594028348608	Marionette	INFO	Listening on port 62462
+1594028348652	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594028354788	Marionette	INFO	Stopped listening on port 62462
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1594028586878	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofile5LaesN"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594028588916	Marionette	INFO	Listening on port 62838
+1594028589012	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594028598036	Marionette	INFO	Stopped listening on port 62838
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1594028647860	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofiley6VfKe"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594028649933	Marionette	INFO	Listening on port 62897
+1594028650034	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594028906599	Marionette	INFO	Stopped listening on port 62897
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+odules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594028753416	Marionette	INFO	Listening on port 62963
+1594028753787	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594028905495	Marionette	INFO	Stopped listening on port 62963
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+odules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594028851287	Marionette	INFO	Listening on port 63033
+1594028851354	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+1594028857607	Marionette	INFO	Stopped listening on port 63033
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1594028902635	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofilectleKV"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594028904653	Marionette	INFO	Listening on port 63114
+1594028904690	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+console.error: services.settings: 
+  main/whats-new-panel Signature failed  TypeError: NetworkError when attempting to fetch resource.
+console.error: services.settings: 
+  main/fxmonitor-breaches Signature failed  TypeError: NetworkError when attempting to fetch resource.
+1594028971562	Marionette	INFO	Stopped listening on port 63114
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1594028977173	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofileKtu4XJ"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594028979509	Marionette	INFO	Listening on port 63204
+1594028979823	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+console.error: services.settings: 
+  Message: TypeError: NetworkError when attempting to fetch resource.
+console.warn: services.settings: main/fxmonitor-breaches sync interrupted by shutdown
+console.warn: services.settings: main/search-default-override-allowlist sync interrupted by shutdown
+console.warn: services.settings: main/cfr-fxa sync interrupted by shutdown
+console.warn: services.settings: blocklists/plugins sync interrupted by shutdown
+console.warn: services.settings: main/public-suffix-list sync interrupted by shutdown
+console.warn: services.settings: main/hijack-blocklists sync interrupted by shutdown
+1594029510630	Marionette	INFO	Stopped listening on port 63204
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1594029763905	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofileO26LHp"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594029765939	Marionette	INFO	Listening on port 63714
+1594029765951	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+1594029779924	Marionette	INFO	Stopped listening on port 63714
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1594029871849	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofileRcKhVl"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594029873971	Marionette	INFO	Listening on port 63789
+1594029874002	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594029874103	Marionette	INFO	Stopped listening on port 63789
+console.error: services.settings: 
+  main/cfr-fxa Signature failed  TypeError: NetworkError when attempting to fetch resource.
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1594030041719	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofileFx165A"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594030043706	Marionette	INFO	Listening on port 63871
+1594030043750	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+1594030053010	Marionette	INFO	Stopped listening on port 63871
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1594030094651	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofilexBcLB8"
+*** You are running in headless mode.
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594030096535	Marionette	INFO	Listening on port 63950
+1594030096689	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594030096738	Marionette	INFO	Stopped listening on port 63950
+console.error: Region.jsm: "Failed to fetch region" (new TypeError("NetworkError when attempting to fetch resource.", ""))
+1594030246339	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofileRYL7dy"
+*** You are running in headless mode.
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594030248123	Marionette	INFO	Listening on port 64004
+1594030248368	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594030248428	Marionette	INFO	Stopped listening on port 64004
+1594033555995	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofiled6XSHa"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594033561134	Marionette	INFO	Listening on port 64643
+1594033561410	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594033561659	Marionette	INFO	Stopped listening on port 64643
+console.error: services.settings: 
+  main/cfr-fxa Signature failed  TypeError: NetworkError when attempting to fetch resource.
+console.error: services.settings: 
+  main/fxmonitor-breaches Signature failed  TypeError: NetworkError when attempting to fetch resource.
+console.error: services.settings: 
+  main/messaging-experiments Signature failed  TypeError: NetworkError when attempting to fetch resource.
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1594034529039	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofilemO3rpW"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594034534233	Marionette	INFO	Listening on port 64730
+1594034534346	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594034534610	Marionette	INFO	Stopped listening on port 64730
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1594037896188	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofileWTaujf"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594037901064	Marionette	INFO	Listening on port 49794
+1594037901083	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594037901373	Marionette	INFO	Stopped listening on port 49794
+console.error: services.settings: 
+  main/messaging-experiments Signature failed  TypeError: NetworkError when attempting to fetch resource.
+console.error: services.settings: 
+  main/cfr-fxa Signature failed  TypeError: NetworkError when attempting to fetch resource.
+console.error: services.settings: 
+  main/fxmonitor-breaches Signature failed  TypeError: NetworkError when attempting to fetch resource.
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1594038346909	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofilex2Tpwq"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594038348940	Marionette	INFO	Listening on port 49898
+1594038348951	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594038374325	Marionette	INFO	Stopped listening on port 49898
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1594038380092	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofilebi1ctT"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594038382242	Marionette	INFO	Listening on port 49957
+1594038382725	Marionette	WARN	TLS certificate errors will be ignored for this session
+console.error: services.settings: 
+  main/whats-new-panel Signature failed  TypeError: NetworkError when attempting to fetch resource.
+1594038388788	Marionette	INFO	Stopped listening on port 49957
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1594038525193	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofilecoocTo"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594038527271	Marionette	INFO	Listening on port 50120
+1594038527348	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594038529765	Marionette	INFO	Stopped listening on port 50120
+JavaScript error: https://y.gtimg.cn/c/=/music/portal/js/common/map.js,/music/portal/js/common/music/mod.js?r=2656730, line 1: NS_ERROR_NOT_INITIALIZED: 
+console.error: services.settings: 
+  main/cfr-fxa Signature failed  TypeError: NetworkError when attempting to fetch resource.
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1594038752272	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofilem203Pg"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594038754334	Marionette	INFO	Listening on port 50204
+1594038754418	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594038756279	Marionette	INFO	Stopped listening on port 50204
+console.warn: services.settings: main/cfr-fxa sync interrupted by shutdown
+JavaScript error: , line 0: InvalidStateError: An attempt was made to use an object that is not, or is no longer, usable
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1594038855952	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofilehPwyiV"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594038857885	Marionette	INFO	Listening on port 50281
+1594038858018	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594038859933	Marionette	INFO	Stopped listening on port 50281
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1594039213724	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofileuLOvZk"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594039215811	Marionette	INFO	Listening on port 50375
+1594039215882	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594039218376	Marionette	INFO	Stopped listening on port 50375
+console.error: services.settings: 
+  main/fxmonitor-breaches Signature failed  TypeError: NetworkError when attempting to fetch resource.
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1594039857639	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofilePXLpzH"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594039859757	Marionette	INFO	Listening on port 50497
+1594039859792	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594039892774	Marionette	INFO	Stopped listening on port 50497
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1594039897924	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofileQgvn3Y"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594039900149	Marionette	INFO	Listening on port 50555
+1594039900600	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594039922968	Marionette	INFO	Stopped listening on port 50555
+JavaScript error: https://y.gtimg.cn/c/=/music/portal/js/common/map.js,/music/portal/js/common/music/mod.js?r=2656733, line 1: NS_ERROR_NOT_INITIALIZED: 
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1594040027572	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofileqklVS5"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594040029512	Marionette	INFO	Listening on port 50645
+1594040029607	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594040031418	Marionette	INFO	Stopped listening on port 50645
+console.error: services.settings: 
+  main/cfr-fxa Signature failed  TypeError: NetworkError when attempting to fetch resource.
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1594040281630	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofilec503tm"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594040283559	Marionette	INFO	Listening on port 50830
+1594040283672	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript error: , line 0: InvalidStateError: An attempt was made to use an object that is not, or is no longer, usable
+1594040289454	Marionette	INFO	Stopped listening on port 50830
+console.error: services.settings: 
+  main/messaging-experiments Signature failed  TypeError: NetworkError when attempting to fetch resource.
+console.error: services.settings: 
+  main/cfr-fxa Signature failed  TypeError: NetworkError when attempting to fetch resource.
+
+###!!! [Child][MessageChannel] Error: (msgtype=0x5A000D,name=PHttpChannel::Msg_DeletingChannel) Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1594040425091	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofile7Y81uL"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594040427138	Marionette	INFO	Listening on port 51346
+1594040427226	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594040427320	Marionette	INFO	Stopped listening on port 51346
+console.error: Region.jsm: "Failed to fetch region" (new TypeError("NetworkError when attempting to fetch resource.", ""))
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1594045192436	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofileyS5dPC"
+*** You are running in headless mode.
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594045194451	Marionette	INFO	Listening on port 53591
+1594045194565	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+1594045201555	Marionette	INFO	Stopped listening on port 53591
+console.error: services.settings: 
+  main/cfr-fxa Signature failed  TypeError: NetworkError when attempting to fetch resource.
+console.error: services.settings: 
+  main/fxmonitor-breaches Signature failed  TypeError: NetworkError when attempting to fetch resource.
+1594045205510	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofileIWqt73"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594045207521	Marionette	INFO	Listening on port 53763
+1594045207539	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594045207703	Marionette	INFO	Stopped listening on port 53763
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1594047366746	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofileFRwYmF"
+*** You are running in headless mode.
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594047372140	Marionette	INFO	Listening on port 55432
+1594047372256	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+1594047378131	Marionette	INFO	Stopped listening on port 55432
+console.error: services.settings: 
+  main/fxmonitor-breaches Signature failed  TypeError: NetworkError when attempting to fetch resource.
+1594047751423	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofilevLRDZN"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594047755598	Marionette	INFO	Listening on port 55539
+1594047755612	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+1594047774219	Marionette	INFO	Stopped listening on port 55539
+console.error: services.settings: 
+  main/whats-new-panel Signature failed  TypeError: NetworkError when attempting to fetch resource.
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1594047779261	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofile0TNeLv"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594047783580	Marionette	INFO	Listening on port 55606
+1594047784080	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594047797779	Marionette	INFO	Stopped listening on port 55606
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+

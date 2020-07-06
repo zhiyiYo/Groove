@@ -13,22 +13,26 @@ from my_widget.my_scroll_bar import ScrollBar
 
 class MyMusicInterface(QWidget):
     """ 创建一个本地音乐分组界面 """
-
-    def __init__(self, target_path_list:list, parent=None):
+    def __init__(self, target_path_list: list, parent=None):
         super().__init__(parent)
 
         # 实例化一个包含三个标签界面的QTabWidget
         self.myMusicTabWidget = MyMusicTabWidget(target_path_list, self)
         # 引用三个视图的滚动条
-        self.songCardList_vScrollBar = self.myMusicTabWidget.songTab.songCardListWidget.verticalScrollBar()
-        self.songerViewer_vScrollBar = self.myMusicTabWidget.songerTab.songerHeadPortraitViewer.scrollArea.verticalScrollBar()
-        self.albumViewer_vScrollBar = self.myMusicTabWidget.albumTab.albumCardViewer.scrollArea.verticalScrollBar()
+        self.songCardList_vScrollBar = self.myMusicTabWidget.songTab.songCardListWidget.verticalScrollBar(
+        )
+        self.songerViewer_vScrollBar = self.myMusicTabWidget.songerTab.songerHeadPortraitViewer.scrollArea.verticalScrollBar(
+        )
+        self.albumViewer_vScrollBar = self.myMusicTabWidget.albumTab.albumCardViewer.scrollArea.verticalScrollBar(
+        )
         # 实例化一个标签和三个竖直滚动条
         self.myMusicLabel = QLabel(self)
         self.song_scrollBar = ScrollBar(self.songCardList_vScrollBar, self)
         self.songer_scrollBar = ScrollBar(self.songerViewer_vScrollBar, self)
         self.album_scrollBar = ScrollBar(self.albumViewer_vScrollBar, self)
-        self.scrollBar_list = [self.song_scrollBar,self.songer_scrollBar,self.album_scrollBar]
+        self.scrollBar_list = [
+            self.song_scrollBar, self.songer_scrollBar, self.album_scrollBar
+        ]
         # 初始化
         self.initLayout()
         self.initWidget()
@@ -43,14 +47,14 @@ class MyMusicInterface(QWidget):
 
     def initWidget(self):
         """ 初始化小部件的属性 """
-        self.resize(1300, 995-23-40)
+        self.resize(1300, 995 - 23 - 40)
         self.setMinimumHeight(630)
         self.setAttribute(Qt.WA_StyledBackground)
         if not self.parent():
             # 居中显示
             desktop = QApplication.desktop()
             self.move(int(desktop.width() / 2 - self.width() / 2),
-                    int(desktop.height() / 2 - self.height() / 2)-20)
+                      int(desktop.height() / 2 - self.height() / 2) - 20)
 
         # 设置标签上的字
         self.myMusicLabel.setText('我的音乐')
@@ -66,7 +70,8 @@ class MyMusicInterface(QWidget):
         self.album_scrollBar.hide()
 
         # 标签窗口改变时也改变显示的滚动条
-        self.myMusicTabWidget.stackedWidget.currentChanged.connect(self.changeTabEvent)
+        self.myMusicTabWidget.stackedWidget.currentChanged.connect(
+            self.changeTabEvent)
 
         # 分配ID
         self.setObjectName('musicGroupInterface')
@@ -83,7 +88,8 @@ class MyMusicInterface(QWidget):
 
     def setQss(self):
         """ 设置层叠样式表 """
-        with open('resource\\css\\myMusicInterface.qss', 'r', encoding='utf-8') as f:
+        with open('resource\\css\\myMusicInterface.qss', 'r',
+                  encoding='utf-8') as f:
             qss = f.read()
             self.setStyleSheet(qss)
 
@@ -92,7 +98,7 @@ class MyMusicInterface(QWidget):
         self.myMusicTabWidget.songTab.songCardListWidget.setLineWidth(
             self.width() - 33)
         self.adjustScrollBarHeight()
-        self.myMusicTabWidget.resize(self.width()-37,self.height()-136)
+        self.myMusicTabWidget.resize(self.width() - 37, self.height() - 136)
         for scrollBar in self.scrollBar_list:
             scrollBar.move(self.width() - scrollBar.width(), 40)
 

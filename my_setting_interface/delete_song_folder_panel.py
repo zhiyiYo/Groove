@@ -9,7 +9,7 @@ from ..my_functions.auto_wrap import autoWrap
 
 class DeleteSongFolderPanel(QDialog):
     """ 删除文件夹卡对话框 """
-    def __init__(self,folderName, parent):
+    def __init__(self, folderName, parent):
         super().__init__(parent)
         self.subWindow = SubDeleteSongFolderPanel(folderName, self)
         self.deleteButton = self.subWindow.deleteButton
@@ -21,19 +21,23 @@ class DeleteSongFolderPanel(QDialog):
         """ 初始化小部件 """
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
-        self.resize(self.subWindow.width() + 100, self.subWindow.height() + 100)
-        self.subWindow.move(int(self.width() / 2 - self.subWindow.width() / 2),
-                                           int(self.height() / 2 - self.subWindow.height() / 2))
-                                           
+        self.resize(self.subWindow.width() + 100,
+                    self.subWindow.height() + 100)
+        self.subWindow.move(
+            int(self.width() / 2 - self.subWindow.width() / 2),
+            int(self.height() / 2 - self.subWindow.height() / 2))
+
     def exec_(self):
-        self.move(int(self.parent().x()+self.parent().width() / 2 - self.width() / 2),
-                  int(self.parent().y()+self.parent().height() / 2 - self.height() / 2))
+        self.move(
+            int(self.parent().x() + self.parent().width() / 2 -
+                self.width() / 2),
+            int(self.parent().y() + self.parent().height() / 2 -
+                self.height() / 2))
         super().exec_()
 
 
 class SubDeleteSongFolderPanel(QWidget):
     """ 子删除文件夹卡对话框 """
-
     def __init__(self, folderName, parent):
         super().__init__(parent)
         self.folderName = folderName
@@ -49,7 +53,8 @@ class SubDeleteSongFolderPanel(QWidget):
         self.titleLabel = QLabel('删除此文件夹吗？', self)
         self.subTitleLabel = QLabel('删除此文件夹吗？', self)
         self.contentLabel = QLabel(
-            '如果将"' + self.folderName + '"文件夹从音乐中移除，则该文件夹不会再出现在音乐中，但不会被删除。', self)
+            '如果将"' + self.folderName + '"文件夹从音乐中移除，则该文件夹不会再出现在音乐中，但不会被删除。',
+            self)
         self.deleteButton = QPushButton('删除文件夹', self)
         self.cancelButton = QPushButton('取消', self)
 
@@ -57,8 +62,8 @@ class SubDeleteSongFolderPanel(QWidget):
         """ 初始化小部件 """
         self.resize(852, 235)
         self.adjustHeight()
-        
-        self.setAttribute(Qt.WA_TranslucentBackground|Qt.WA_StyledBackground)
+
+        self.setAttribute(Qt.WA_TranslucentBackground | Qt.WA_StyledBackground)
         self.setShadowEffect()
         # 初始化按钮
         self.deleteButton.resize(126, 40)
@@ -98,13 +103,13 @@ class SubDeleteSongFolderPanel(QWidget):
         brush = QBrush(Qt.white)
         painter.setBrush(brush)
         painter.drawRect(self.rect())
-        brush.setColor(QColor(0, 126, 153,255))
+        brush.setColor(QColor(0, 126, 153, 255))
         painter.setBrush(brush)
         painter.drawRect(1, 37, self.width() - 2, self.height() - 37)
         super().paintEvent(e)
 
     def setQss(self):
         """ 设置层叠样式 """
-        with open(r'resource\css\deleteSongFolderPanel.qss', encoding='utf-8') as f:
+        with open(r'resource\css\deleteSongFolderPanel.qss',
+                  encoding='utf-8') as f:
             self.setStyleSheet(f.read())
-   

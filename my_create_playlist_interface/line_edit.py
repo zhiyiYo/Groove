@@ -6,7 +6,7 @@ from PyQt5.QtCore import Qt,QEvent
 from PyQt5.QtGui import QEnterEvent, QPixmap
 from PyQt5.QtWidgets import QApplication, QLineEdit, QWidget, QLabel
 
-from ..my_widget.my_button import LineEditButton
+from ..my_widget.my_button import ThreeStateButton
 from ..my_widget.my_menu import LineEditMenu
 
 
@@ -20,7 +20,7 @@ class LineEdit(QLineEdit):
                          'pressed': r'resource\images\createPlaylistPanel\清空按钮_pressed_50_50.png'}
 
         # 创建小部件
-        self.clearButton = LineEditButton(iconPath_dict, self, (50,50))
+        self.clearButton = ThreeStateButton(iconPath_dict, self, (50,50))
         self.pencilPic = QLabel(self)
         self.menu = LineEditMenu(self)
         # 初始化

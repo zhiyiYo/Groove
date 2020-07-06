@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QAction, QHBoxLayout, QLineEdit, QToolButton,QApplic
 
 sys.path.append('..')
 from Groove.my_widget.my_menu import Menu,LineEditMenu
-from Groove.my_widget.my_button import LineEditButton
+from Groove.my_widget.my_button import ThreeStateButton
 from Groove.my_functions.is_not_leave import isNotLeave
 
 
@@ -24,7 +24,7 @@ class LineEdit(QLineEdit):
             'pressed': r'resource\images\lineEdit\clearInfo_cross_pressed.png'}
 
         # 实例化一个用于清空内容的按钮
-        self.clearButton = LineEditButton(iconPath_dict, self)
+        self.clearButton = ThreeStateButton(iconPath_dict, self)
         # 实例化右击菜单
         self.menu = LineEditMenu(self)
 

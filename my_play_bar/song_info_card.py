@@ -10,14 +10,13 @@ from .window_mask import WindowMask
 
 class SongInfoCard(QWidget):
     """ 播放栏左侧歌曲信息卡 """
-
     def __init__(self, songInfo: dict, parent=None):
         super().__init__(parent)
         # 保存信息
         self.setSongInfo(songInfo)
         # 实例化小部件
         self.albumPic = QLabel(self)
-        self.windowMask=WindowMask(self,(0,0,0,50))
+        self.windowMask = WindowMask(self, (0, 0, 0, 50))
         self.scrollTextWindow = ScrollTextWindow(songInfo, self)
         # 初始化界面
         self.initWidget()
@@ -28,8 +27,9 @@ class SongInfoCard(QWidget):
         self.setFixedWidth(115 + 15 + self.scrollTextWindow.width() + 25)
         self.setAttribute(Qt.WA_StyledBackground | Qt.WA_TranslucentBackground)
         self.scrollTextWindow.move(130, 0)
-        self.albumPic.setPixmap(QPixmap(self.songInfo['album'][-1]).scaled(
-                                115, 115, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        self.albumPic.setPixmap(
+            QPixmap(self.songInfo['album'][-1]).scaled(
+                115, 115, Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
     def setSongInfo(self, songInfo: dict):
         """ 设置歌曲信息 """
@@ -42,14 +42,17 @@ class SongInfoCard(QWidget):
         self.setSongInfo(songInfo)
         self.scrollTextWindow.initUI(songInfo)
         self.setFixedWidth(115 + 15 + self.scrollTextWindow.width() + 25)
-        self.albumPic.setPixmap(QPixmap(self.songInfo['album'][-1]).scaled(
-                                115, 115, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        self.albumPic.setPixmap(
+            QPixmap(self.songInfo['album'][-1]).scaled(
+                115, 115, Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
     def enterEvent(self, e):
         """ 鼠标进入时显示遮罩 """
-        if self.scrollTextWindow.isSongNameTooLong and not self.scrollTextWindow.songNameTimer.isActive():
+        if self.scrollTextWindow.isSongNameTooLong and not self.scrollTextWindow.songNameTimer.isActive(
+        ):
             self.scrollTextWindow.songNameTimer.start()
-        if self.scrollTextWindow.isSongerNameTooLong and not self.scrollTextWindow.songerNameTimer.isActive():
+        if self.scrollTextWindow.isSongerNameTooLong and not self.scrollTextWindow.songerNameTimer.isActive(
+        ):
             self.scrollTextWindow.songerNameTimer.start()
         self.windowMask.show()
 
@@ -59,7 +62,6 @@ class SongInfoCard(QWidget):
 
 class ScrollTextWindow(QWidget):
     """ 滚动字幕 """
-
     def __init__(self, songInfo: dict, parent=None):
         super().__init__(parent)
         # 实例化定时器
@@ -107,7 +109,7 @@ class ScrollTextWindow(QWidget):
         self.songerNameTimer.timeout.connect(self.updateSongerIndex)
         self.songPauseTimer.timeout.connect(self.restartTextTimer)
         self.songerPauseTimer.timeout.connect(self.restartTextTimer)
-        
+
         # 根据字符串宽度是否大于窗口宽度开启滚动：
         if self.songNameTimer.isActive():
             self.songNameTimer.stop()
@@ -121,8 +123,8 @@ class ScrollTextWindow(QWidget):
     def getTextWidth(self):
         """ 计算文本的总宽度 """
         songFontMetrics = QFontMetrics(QFont('Microsoft YaHei', 14, 400))
-        self.songNameWidth = sum([songFontMetrics.width(i)
-                                  for i in self.songName])
+        self.songNameWidth = sum(
+            [songFontMetrics.width(i) for i in self.songName])
         songerFontMetrics = QFontMetrics(QFont('Microsoft YaHei', 12, 500))
         self.songerNameWidth = sum(
             [songerFontMetrics.width(i) for i in self.songerName])
@@ -148,7 +150,7 @@ class ScrollTextWindow(QWidget):
         if resetSongIndexCond:
             self.songCurrentIndex = 0
             self.isSongNameAllOut = True
-        
+
     def updateSongerIndex(self):
         """ 更新歌手名下标 """
         self.update()
@@ -194,7 +196,7 @@ class ScrollTextWindow(QWidget):
                 self.songerCurrentIndex
             x4 = self.songerNameWidth - self.moveStep * self.songerCurrentIndex + \
                 self.spacing * (1 + self.isSongerNameAllOut)
-            painter.drawText(x3, 82, self.songerName)    
+            painter.drawText(x3, 82, self.songerName)
             painter.drawText(x4, 82, self.songerName)
             if self.isSongerNameAllOut and not (x3 and x4):
                 notLeave = isNotLeave(self)
@@ -225,8 +227,10 @@ class ScrollTextWindow(QWidget):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     songInfo = {
-        'songName': 'ハッピーでバッドな眠りは浅い', 'songer': '鎖那',
-        'album': [r'resource\Album Cover\ハッピーでバッドな眠りは浅い\ハッピーでバッドな眠りは浅い.png']}
+        'songName': 'ハッピーでバッドな眠りは浅い',
+        'songer': '鎖那',
+        'album': [r'resource\Album Cover\ハッピーでバッドな眠りは浅い\ハッピーでバッドな眠りは浅い.png']
+    }
     demo = SongInfoCard(songInfo)
     demo.setStyleSheet('background:rgb(129,133,137)')
     demo.show()

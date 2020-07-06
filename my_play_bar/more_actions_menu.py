@@ -2,13 +2,12 @@ import sys
 
 from PyQt5.QtCore import QEasingCurve, QEvent, Qt, QPropertyAnimation, QRect
 from PyQt5.QtGui import QIcon, QPainter, QPen, QColor, QBrush
-from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsDropShadowEffect, QHBoxLayout,
-                             QMenu, QWidget)
+from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsDropShadowEffect,
+                             QHBoxLayout, QMenu, QWidget)
 
 
 class SubMoreActionsMenu(QMenu):
     """ 子更多操作圆角菜单，flag用来指示动作的类型，flag=0有四个动作，flag=1有三个动作 """
-
     def __init__(self, text='', parent=None, actionFlag=0):
         super().__init__(parent)
         self.actionFlag = actionFlag
@@ -37,18 +36,24 @@ class SubMoreActionsMenu(QMenu):
         self.savePlayListAct = QAction(
             QIcon('resource\\images\\menu\\保存为播放列表.png'), '保存为播放列表', self)
         self.clearPlayListAct = QAction(
-            QIcon('resource\\images\\menu\\清空正在播放_16_16.png'), '清空"正在播放"', self)
+            QIcon('resource\\images\\menu\\清空正在播放_16_16.png'), '清空"正在播放"',
+            self)
         if self.actionFlag:
             self.showPlayListAct = QAction(
-                QIcon('resource\\images\\menu\\显示正在播放列表.png'), '显示正在播放列表', self)
+                QIcon('resource\\images\\menu\\显示正在播放列表.png'), '显示正在播放列表',
+                self)
             self.fillScreenAct = QAction(
                 QIcon('resource\\images\\menu\\转到全屏.png'), '转到全屏', self)
-            self.action_list = [self.showPlayListAct, self.fillScreenAct,
-                                self.savePlayListAct, self.clearPlayListAct]
+            self.action_list = [
+                self.showPlayListAct, self.fillScreenAct, self.savePlayListAct,
+                self.clearPlayListAct
+            ]
         else:
             self.showSongerCover = QAction('显示歌手封面', self)
-            self.action_list = [self.savePlayListAct,
-                                self.showSongerCover, self.clearPlayListAct]
+            self.action_list = [
+                self.savePlayListAct, self.showSongerCover,
+                self.clearPlayListAct
+            ]
         # 将动作添加到菜单中
         self.clear()
         self.addActions(self.action_list)
@@ -72,15 +77,14 @@ class SubMoreActionsMenu(QMenu):
 
 class MoreActionsMenu(QWidget):
     """ 更多操作圆角菜单，flag用来指示动作的类型，flag=1有四个动作，flag=0有三个动作 """
-
     def __init__(self, parent=None, actionFlag=1):
         super().__init__(parent)
         self.actionFlag = actionFlag
         # 创建动画
         self.animation = QPropertyAnimation(self, b'geometry')
         # 实例化子窗口
-        self.subMenu = SubMoreActionsMenu(
-            parent=self, actionFlag=self.actionFlag)
+        self.subMenu = SubMoreActionsMenu(parent=self,
+                                          actionFlag=self.actionFlag)
         # 实例化布局
         self.all_h_layout = QHBoxLayout(self)
         self.initWidget()
@@ -90,8 +94,8 @@ class MoreActionsMenu(QWidget):
     def initWidget(self):
         """ 初始化小部件 """
         self.setAttribute(Qt.WA_TranslucentBackground)
-        self.setWindowFlags(Qt.Popup | Qt.FramelessWindowHint |
-                            Qt.NoDropShadowWindowHint)
+        self.setWindowFlags(Qt.Popup | Qt.FramelessWindowHint
+                            | Qt.NoDropShadowWindowHint)
         # 初始化动画
         self.animation.setDirection(300)
         self.animation.setEasingCurve(QEasingCurve.OutQuad)

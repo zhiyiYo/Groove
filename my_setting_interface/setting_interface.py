@@ -8,6 +8,9 @@ sys.path.append('..')
 from Groove.my_widget.my_label import ClickableLabel
 from Groove.my_widget.my_scroll_bar import ScrollBar
 from Groove.my_setting_interface.select_song_folder_panel import SelectSongFolderPanel
+from Groove.my_setting_interface.get_meta_data_thread import GetMetaDataThread
+from Groove.my_setting_interface.state_tool_tip import StateToolTip
+
 
 
 class SettingInterface(QWidget):
@@ -97,8 +100,12 @@ class SettingInterface(QWidget):
         """ 复选框状态改变对应的槽函数 """
         if self.getMetaDataCheckBox.isChecked():
             self.getMetaDataCheckBox.setText('开')
+            self.getMetaDataCheckBox.setEnabled((False))
+            # 创建一个爬虫线程
+            self.createCrawlThread()
         else:
             self.getMetaDataCheckBox.setText('关')
+            self.getMetaDataCheckBox.setEnabled(True)
 
     def colorModeChangeEvent(self):
         """ 主题颜色改变时更新Json文件 """
@@ -141,8 +148,28 @@ class SettingInterface(QWidget):
         """ 关闭窗口之前更新json文件 """
         self.writeConfig()
         e.accept()
-        
-        
+
+    def createCrawlThread(self):
+        """ 创建一个爬虫线程 """
+        self.getMetaDataThread = GetMetaDataThread(
+            self.config['selected-folders'])
+        self.stateToolTip = StateToolTip('正在爬取专辑信息', '', self.window())
+        self.getMetaDataThread.crawlSignal.connect(self.updateStateToolTip)
+        self.getMetaDataThread.finished.connect(self.getMetaDataThread.deleteLater)
+        self.stateToolTip.show()
+        self.getMetaDataThread.start()
+
+    def updateStateToolTip(self, crawlState):
+        """ 根据爬取进度更新进度提示框 """
+        if crawlState == '酷狗爬取完成':
+            self.stateToolTip.setTitle('正在爬取流派信息')
+        elif crawlState == '全部完成':
+            self.stateToolTip.setState(True)
+            self.getMetaDataCheckBox.setCheckState(Qt.Unchecked)
+            self.getMetaDataThread.requestInterruption()
+            self.getMetaDataThread.wait()
+        else:
+            self.stateToolTip.setContent(crawlState)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

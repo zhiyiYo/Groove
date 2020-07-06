@@ -1,9 +1,9 @@
 import sys
 from ctypes.wintypes import HWND
 
-from PyQt5.QtCore import Qt,QAbstractAnimation,QPropertyAnimation
+from PyQt5.QtCore import Qt, QAbstractAnimation, QPropertyAnimation
 from PyQt5.QtGui import QIcon, QPainter, QPen, QColor
-from PyQt5.QtWidgets import QApplication, QVBoxLayout, QHBoxLayout, QWidget, QToolButton,QLabel
+from PyQt5.QtWidgets import QApplication, QVBoxLayout, QHBoxLayout, QWidget, QToolButton, QLabel
 sys.path.append('..')
 
 from .navigation_button import PushButton
@@ -27,12 +27,12 @@ class NavigationMenu(QWidget):
         self.h_layout_1 = QHBoxLayout()
         self.h_layout_2 = QHBoxLayout()
         self.all_v_layout = QVBoxLayout()
-        
+
         # 初始化界面
         self.initWidget()
         self.initLayout()
         self.setQss()
-    
+
     def createButtons(self):
         """实例化按钮 """
         # 实例化一个集中管理按钮的类
@@ -40,38 +40,50 @@ class NavigationMenu(QWidget):
         self.showBarButton = PushButton(
             r'resource\images\navigationBar\黑色最大化导航栏.png', parent=self)
         self.musicGroupButton = PushButton(
-            r'resource\images\navigationBar\黑色我的音乐.png', '我的音乐', self, (400,60), (60, 62))
+            r'resource\images\navigationBar\黑色我的音乐.png', '我的音乐', self,
+            (400, 60), (60, 62))
         self.historyButton = PushButton(
-            r'resource\images\navigationBar\黑色最近播放.png','最近播放的内容', self, (400,62), (60, 62))
+            r'resource\images\navigationBar\黑色最近播放.png', '最近播放的内容', self,
+            (400, 62), (60, 62))
         self.playingButton = PushButton(
-            r'resource\images\navigationBar\黑色导航栏正在播放.png', '正在播放', self, (400, 62), (60, 62))
+            r'resource\images\navigationBar\黑色导航栏正在播放.png', '正在播放', self,
+            (400, 62), (60, 62))
         self.playListButton = PushButton(
-            r'resource\images\navigationBar\黑色播放列表.png', '播放列表', self, (340, 60))
+            r'resource\images\navigationBar\黑色播放列表.png', '播放列表', self,
+            (340, 60))
         self.createPlaylistButton = CreatePlaylistButton(self)
         self.myLoveButton = PushButton(
-            r'resource\images\navigationBar\黑色我喜欢_60_62.png', '我喜欢', self, (400, 62), (60, 62))
+            r'resource\images\navigationBar\黑色我喜欢_60_62.png', '我喜欢', self,
+            (400, 62), (60, 62))
         self.settingButton = PushButton(
-            r'resource\images\navigationBar\黑色设置按钮.png', '设置', self, (400, 62), (60, 62))
+            r'resource\images\navigationBar\黑色设置按钮.png', '设置', self, (400, 62),
+            (60, 62))
         # 创建一个小部件列表
-        self.widget_list = [self.showBarButton, self.searchLineEdit, self.musicGroupButton,
-                            self.historyButton, self.playingButton, self.playListButton,
-                            self.createPlaylistButton, self.myLoveButton, self.settingButton]
+        self.widget_list = [
+            self.showBarButton, self.searchLineEdit, self.musicGroupButton,
+            self.historyButton, self.playingButton, self.playListButton,
+            self.createPlaylistButton, self.myLoveButton, self.settingButton
+        ]
         # 创建要更新样式的按钮列表
-        self.updatableButton_list = [self.musicGroupButton, self.historyButton, self.playingButton,
-                            self.playListButton, self.myLoveButton, self.settingButton]
+        self.updatableButton_list = [
+            self.musicGroupButton, self.historyButton, self.playingButton,
+            self.playListButton, self.myLoveButton, self.settingButton
+        ]
         # 将按钮添加到按钮组中
         self.buttonGroup.addButtons(self.updatableButton_list)
-                            
+
     def initWidget(self):
         """ 初始化小部件 """
         self.setFixedWidth(400)
-        self.setAttribute(Qt.WA_TranslucentBackground|Qt.WA_StyledBackground)
+        self.setAttribute(Qt.WA_TranslucentBackground | Qt.WA_StyledBackground)
         self.setObjectName('navigationMenu')
         # 将按钮点击信号连接到槽函数并设置属性
-        name_list = ['musicGroupButton', 'historyButton', 'playingButton',
-                     'playListButton','myLoveButton', 'settingButton']
-        for button,name in zip(self.updatableButton_list,name_list):
-            button.setProperty('name',name)
+        name_list = [
+            'musicGroupButton', 'historyButton', 'playingButton',
+            'playListButton', 'myLoveButton', 'settingButton'
+        ]
+        for button, name in zip(self.updatableButton_list, name_list):
+            button.setProperty('name', name)
             button.clicked.connect(self.buttonClickedEvent)
         # 分配ID
         self.myLoveButton.setObjectName('myLoveButton')
@@ -114,13 +126,17 @@ class NavigationMenu(QWidget):
         if sender == self.musicGroupButton:
             # 更新配置文件的下标
             self.config['current-index'] = 0
-            self.config['pre-index'] = self.parent().stackedWidget.currentIndex()
-            self.parent().stackedWidget.setCurrentWidget(self.parent().myMusicInterface)
+            self.config['pre-index'] = self.parent(
+            ).stackedWidget.currentIndex()
+            self.parent().stackedWidget.setCurrentWidget(
+                self.parent().myMusicInterface)
         elif sender == self.settingButton:
             self.config['current-index'] = 1
-            self.config['pre-index'] = self.parent().stackedWidget.currentIndex()
-            self.parent().stackedWidget.setCurrentWidget(self.parent().settingInterface)
-        
+            self.config['pre-index'] = self.parent(
+            ).stackedWidget.currentIndex()
+            self.parent().stackedWidget.setCurrentWidget(
+                self.parent().settingInterface)
+
     def setQss(self):
         """ 设置层叠样式 """
         with open(r'resource\css\navigation.qss', encoding='utf-8') as f:
@@ -134,9 +150,7 @@ class NavigationMenu(QWidget):
         painter.setPen(pen)
         # 前两个参数为第一个坐标，后两个为第二个坐标
         painter.drawLine(15, 346, self.width() - 15, 346)
-        painter.drawLine(15, self.height() - 123 - 62,
-                        self.width() - 15, self.height() - 123 - 62)
-        
-
-
-    
+        painter.drawLine(15,
+                         self.height() - 123 - 62,
+                         self.width() - 15,
+                         self.height() - 123 - 62)

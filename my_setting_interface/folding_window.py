@@ -68,45 +68,84 @@ class FoldingWindow(QWidget):
                 painter.setBrush(brush)
                 # 左上角
                 if self.pressedPos == 'left-top':
-                    points = [QPoint(6, 2), QPoint(self.width(
-                    ) - 1, 1), QPoint(self.width() - 1, self.height() - 1), QPoint(1, self.height() - 1)]
+                    points = [
+                        QPoint(6, 2),
+                        QPoint(self.width() - 1, 1),
+                        QPoint(self.width() - 1,
+                               self.height() - 1),
+                        QPoint(1,
+                               self.height() - 1)
+                    ]
                     painter.drawPolygon(QPolygon(points), 4)
                 # 左边
                 elif self.pressedPos == 'left':
-                    painter.drawRoundedRect(
-                        6, 1, self.width() - 7, self.height() - 2, 3, 3)
+                    painter.drawRoundedRect(6, 1,
+                                            self.width() - 7,
+                                            self.height() - 2, 3, 3)
                 # 左下角
                 elif self.pressedPos == 'left-bottom':
-                    points = [QPoint(1, 1), QPoint(self.width(
-                    ) - 1, 1), QPoint(self.width() - 1, self.height() - 1), QPoint(6, self.height() - 2)]
+                    points = [
+                        QPoint(1, 1),
+                        QPoint(self.width() - 1, 1),
+                        QPoint(self.width() - 1,
+                               self.height() - 1),
+                        QPoint(6,
+                               self.height() - 2)
+                    ]
                     painter.drawPolygon(QPolygon(points), 4)
                 # 顶部
                 elif self.pressedPos == 'top':
-                    points = [QPoint(6, 2), QPoint(self.width(
-                    ) - 6, 2), QPoint(self.width() - 1, self.height() - 1), QPoint(1, self.height() - 1)]
+                    points = [
+                        QPoint(6, 2),
+                        QPoint(self.width() - 6, 2),
+                        QPoint(self.width() - 1,
+                               self.height() - 1),
+                        QPoint(1,
+                               self.height() - 1)
+                    ]
                     painter.drawPolygon(QPolygon(points), 4)
                 # 中间
                 elif self.pressedPos == 'center':
-                    painter.drawRoundedRect(
-                        6, 1, self.width() - 12, self.height() - 2, 3, 3)
+                    painter.drawRoundedRect(6, 1,
+                                            self.width() - 12,
+                                            self.height() - 2, 3, 3)
                 # 底部
                 elif self.pressedPos == 'bottom':
-                    points = [QPoint(1, 1), QPoint(self.width(
-                    ) - 1, 1), QPoint(self.width() - 6, self.height() - 2), QPoint(6, self.height() - 2)]
+                    points = [
+                        QPoint(1, 1),
+                        QPoint(self.width() - 1, 1),
+                        QPoint(self.width() - 6,
+                               self.height() - 2),
+                        QPoint(6,
+                               self.height() - 2)
+                    ]
                     painter.drawPolygon(QPolygon(points), 4)
                 # 右上角
                 elif self.pressedPos == 'right-top':
-                    points = [QPoint(1, 1), QPoint(self.width(
-                    ) - 6, 2), QPoint(self.width() - 1, self.height() - 1), QPoint(1, self.height() - 1)]
+                    points = [
+                        QPoint(1, 1),
+                        QPoint(self.width() - 6, 2),
+                        QPoint(self.width() - 1,
+                               self.height() - 1),
+                        QPoint(1,
+                               self.height() - 1)
+                    ]
                     painter.drawPolygon(QPolygon(points), 4)
                 # 右边
                 elif self.pressedPos == 'right':
-                    painter.drawRoundedRect(
-                        1, 1, self.width() - 7, self.height() - 2, 3, 3)
+                    painter.drawRoundedRect(1, 1,
+                                            self.width() - 7,
+                                            self.height() - 2, 3, 3)
                 # 右下角
                 elif self.pressedPos == 'right-bottom':
-                    points = [QPoint(1, 1), QPoint(self.width(
-                    ) - 1, 1), QPoint(self.width() - 6, self.height() - 2), QPoint(1, self.height() - 1)]
+                    points = [
+                        QPoint(1, 1),
+                        QPoint(self.width() - 1, 1),
+                        QPoint(self.width() - 6,
+                               self.height() - 2),
+                        QPoint(1,
+                               self.height() - 1)
+                    ]
                     painter.drawPolygon(QPolygon(points), 4)
 
 

@@ -7,28 +7,35 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QLineEdit
 
 from my_widget.my_menu import LineEditMenu
-from my_widget.my_button import LineEditButton
+from my_widget.my_button import ThreeStateButton
 
 
 class SearchLineEdit(QLineEdit):
     """ 单行搜索框 """
-
     def __init__(self, parent=None):
         super().__init__(parent)
 
         # 按钮图标位置
         clear_iconPath_dict = {
-            'normal': r'resource\images\searchLineEdit\搜索框清空按钮_normal_45_45.png',
+            'normal':
+            r'resource\images\searchLineEdit\搜索框清空按钮_normal_45_45.png',
             'hover': r'resource\images\searchLineEdit\搜索框清空按钮_hover_45_45.png',
-            'pressed': r'resource\images\searchLineEdit\搜索框清空按钮_pressed_45_45.png'}
+            'pressed':
+            r'resource\images\searchLineEdit\搜索框清空按钮_pressed_45_45.png'
+        }
         self.__search_iconPath_dict = {
-            'normal': r'resource\images\searchLineEdit\搜索框透明搜索按钮_normal_46_45.png',
-            'hover': r'resource\images\searchLineEdit\搜索框透明搜索按钮_hover_46_45.png',
-            'pressed': r'resource\images\searchLineEdit\搜索框搜索按钮_pressed_46_45.png'}
+            'normal':
+            r'resource\images\searchLineEdit\搜索框透明搜索按钮_normal_46_45.png',
+            'hover':
+            r'resource\images\searchLineEdit\搜索框透明搜索按钮_hover_46_45.png',
+            'pressed':
+            r'resource\images\searchLineEdit\搜索框搜索按钮_pressed_46_45.png'
+        }
         # 实例化按钮
-        self.clearButton = LineEditButton(clear_iconPath_dict, self, (46, 45))
-        self.searchButton = LineEditButton(
-            self.__search_iconPath_dict, self, (46, 45))
+        self.clearButton = ThreeStateButton(clear_iconPath_dict, self,
+                                            (46, 45))
+        self.searchButton = ThreeStateButton(self.__search_iconPath_dict, self,
+                                             (46, 45))
         # 实例化右击菜单
         self.menu = LineEditMenu(self)
         # 初始化界面
@@ -44,8 +51,9 @@ class SearchLineEdit(QLineEdit):
         self.textChanged.connect(self.textChangedEvent)
         self.setWindowFlags(Qt.FramelessWindowHint)
         # 设置外边距
-        self.setTextMargins(0, 0, self.clearButton.width() +
-                            self.searchButton.width(), 0)
+        self.setTextMargins(
+            0, 0,
+            self.clearButton.width() + self.searchButton.width(), 0)
         # 调整按钮位置
         self.adjustButtonPos()
         # 安装监听
@@ -62,9 +70,9 @@ class SearchLineEdit(QLineEdit):
     def adjustButtonPos(self):
         """ 调整按钮的位置 """
         # 需要补上margin的位置
-        self.searchButton.move(self.width() - self.searchButton.width()-8, 0)
-        self.clearButton.move(self.searchButton.x() -
-                              self.clearButton.width(), 0)
+        self.searchButton.move(self.width() - self.searchButton.width() - 8, 0)
+        self.clearButton.move(self.searchButton.x() - self.clearButton.width(),
+                              0)
 
     def resizeEvent(self, e):
         """ 调整大小的同时改变按钮位置 """
@@ -87,12 +95,14 @@ class SearchLineEdit(QLineEdit):
     def eventFilter(self, obj, e):
         """ 过滤事件 """
         if obj == self.clearButton:
-            if e.type() == QEvent.MouseButtonRelease and e.button() == Qt.LeftButton:
+            if e.type() == QEvent.MouseButtonRelease and e.button(
+            ) == Qt.LeftButton:
                 self.clear()
                 self.clearButton.hide()
                 return True
         elif obj == self.searchButton:
-            if e.type() == QEvent.MouseButtonRelease and e.button() == Qt.LeftButton:
+            if e.type() == QEvent.MouseButtonRelease and e.button(
+            ) == Qt.LeftButton:
                 self.searchButton.setIcon(
                     QIcon(self.__search_iconPath_dict['hover']))
                 """ 搜索槽函数有待补充 """
