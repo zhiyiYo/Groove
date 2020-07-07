@@ -82,22 +82,14 @@ class SongCardListWidget(QListWidget):
     def addListWidgetItem(self):
         """ 在列表视图中添加项目 """
         # 对歌曲进行排序
-        if self.sortMode == '添加时间':
-            # 按文件创建时间排序项目
-            self.songInfo.sortByCreateTime()
-        elif self.sortMode == 'A到Z':
-            # 按字典序排序
-            self.songInfo.sortByDictOrder()
-        elif self.sortMode == '歌手':
-            # 按歌手名排序
-            self.songInfo.sortBySonger()
+        self.sortSongCards()
 
         for i in range(len(self.songInfo.songInfo_list)):
             # 添加空项目
             songInfo_dict = self.songInfo.songInfo_list[i]
+            # 需要记录下item的位置
             songInfo_dict['index'] = i
             self.item = QListWidgetItem()
-
             # 将项目的内容重置为自定义类
             self.songCard = SongCard(songInfo_dict)
             self.songCard.resize(1150, 61)
@@ -235,6 +227,28 @@ class SongCardListWidget(QListWidget):
         for item in self.item_list:
             item.setSizeHint(QSize(self.width()-117, 61))
         super().resizeEvent(e)
+
+    def updateSongCardInfo(self):
+        """ 更新歌曲卡信息 """
+        self.songInfo = SongInfo(self.target_path_list)
+        self.sortSongCards()
+        for i in range(len(self.songInfo.songInfo_list)):
+            songInfo_dict = self.songInfo.songInfo_list[i]
+            self.item_list[i].setWhatsThis(str(songInfo_dict))
+            self.songCard_list[i].updateSongCard(songInfo_dict)
+
+    def sortSongCards(self):
+        """ 根据当前的排序模式来排序歌曲开 """
+        if self.sortMode == '添加时间':
+            # 按文件创建时间排序项目
+            self.songInfo.sortByCreateTime()
+        elif self.sortMode == 'A到Z':
+            # 按字典序排序
+            self.songInfo.sortByDictOrder()
+        elif self.sortMode == '歌手':
+            # 按歌手名排序
+            self.songInfo.sortBySonger()
+
 
             
 if __name__ == '__main__':

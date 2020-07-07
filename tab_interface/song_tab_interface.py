@@ -79,19 +79,12 @@ class SongTabInterface(QWidget):
 
     def addActionToMenu(self):
         """ 将动作添加到菜单里 """
-
         # 创建排序列表项目的动作
         self.sortBySonger = QAction('歌手', self, triggered=self.sortSongCard)
         self.sortByDictOrder = QAction(
             'A到Z', self, triggered=self.sortSongCard)
         self.sortByCratedTime = QAction(
             '添加日期', self, triggered=self.sortSongCard)
-
-        # 设置动作的悬浮提醒
-        self.sortByCratedTime.setToolTip('添加时间')
-        self.sortByDictOrder.setToolTip('A到Z')
-        self.sortBySonger.setToolTip('歌手')
-
         # 将动作添加到菜单中
         self.sortModeMenu.addActions(
             [self.sortByCratedTime, self.sortByDictOrder, self.sortBySonger])

@@ -11,6 +11,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 
+
 class KuGouCrawler():
     """ 酷狗爬虫 """
 
@@ -188,3 +189,6 @@ class KuGouCrawler():
             self.id_card.add_picture(picture)
         elif self.suffix == 'mp4':
             self.id_card['covr'] = [pic_data]
+
+
+

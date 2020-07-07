@@ -5,7 +5,7 @@ from ctypes.wintypes import HWND, MSG
 from enum import Enum
 
 from PyQt5.QtCore import QPoint, QRect, QSize, Qt
-from PyQt5.QtGui import QCloseEvent, QIcon, QPixmap, QResizeEvent,QFont
+from PyQt5.QtGui import QCloseEvent, QIcon, QPixmap, QResizeEvent, QFont
 from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsDropShadowEffect,
                              QStackedWidget, QWidget)
 
@@ -74,13 +74,11 @@ class MainWindow(QWidget):
         self.stackedWidget.setCurrentWidget(self.myMusicInterface)
         # 设置右边子窗口的位置
         self.setWidgetGeometry()
+        # 引用小部件
+        self.referenceWidgets()
         # 将按钮点击信号连接到槽函数
-        self.navigationBar.showMenuButton.clicked.connect(
-            self.showNavigationMenu)
-        self.navigationBar.searchButton.clicked.connect(
-            self.showNavigationMenu)
-        self.navigationMenu.showBarButton.clicked.connect(
-            self.showNavigationBar)
+        self.connectSignalToSlot()
+        
 
     def setWindowEffect(self):
         """ 设置窗口特效 """
@@ -118,7 +116,7 @@ class MainWindow(QWidget):
         self.navigationMenu.hide()
         self.titleBar.title.hide()
         self.navigationBar.show()
-        self.setWidgetGeometry()
+        self.setWidgetGeometry() 
 
     def moveEvent(self, e):
         if hasattr(self, 'playBar'):
@@ -169,6 +167,22 @@ class MainWindow(QWidget):
             if result != 0:
                 return (True, result)
         return QWidget.nativeEvent(self, eventType, message)
+
+    def connectSignalToSlot(self):
+        """ 将信号连接到槽 """
+        self.settingInterface.crawlComplete.connect(self.songCardListWidget.updateSongCardInfo)
+        self.navigationBar.showMenuButton.clicked.connect(
+            self.showNavigationMenu)
+        self.navigationBar.searchButton.clicked.connect(
+            self.showNavigationMenu)
+        self.navigationMenu.showBarButton.clicked.connect(
+            self.showNavigationBar)
+
+    def referenceWidgets(self):
+        """ 引用小部件 """
+        self.songCardListWidget = self.myMusicInterface.myMusicTabWidget.songTab.songCardListWidget
+        self.songerCardViewer=self.myMusicInterface.myMusicTabWidget.songerTab.songerHeadPortraitViewer
+        self.albumCardViewer=self.myMusicInterface.myMusicTabWidget.albumTab.albumCardViewer
 
 
 if __name__ == "__main__":

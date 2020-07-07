@@ -14,9 +14,11 @@ class GetMetaDataThread(QThread):
     """ 爬取元数据的线程 """
     # 负责传递状态的信号
     crawlSignal = pyqtSignal(str)
-
+    
     def __init__(self, targetPath_list=None, parent=None):
         super().__init__(parent=parent)
+        # 循环标志位
+        self.keepRunning=True
         # 确保路径为列表
         if not targetPath_list:
             targetPath_list = []
@@ -31,23 +33,39 @@ class GetMetaDataThread(QThread):
         self.kuGouCrawler = KuGouCrawler(
             self.albumCover_set, self.albumCoverFolder)
         for index, (songer, songname, songPath) in enumerate(zip(self.songer_list, self.songname_list, self.songPath_list)):
+            if not self.keepRunning:
+                break
             self.crawlSignal.emit(f'当前进度：{index}/{len(self.songPath_list)}')
             self.id_card = File(songPath)
             isTextModified = self.modifyTextPart(songname, songer)
             isAlbumModified = self.fetchAlbum(songer, songname)
             if isTextModified or isAlbumModified:
                 self.id_card.save()
+        else:
+            self.crawlSignal.emit(f'当前进度：{index+1}/{len(self.songPath_list)}')
+            
         self.kuGouCrawler.browser.quit()
-        self.crawlSignal.emit('酷狗爬取完成')
         # 爬取流派
         albumTcon_dict = {}
+        if not self.keepRunning:
+            return
         self.qqMusicCrawler = QQMusicCrawler(albumTcon_dict)
+        self.crawlSignal.emit('酷狗爬取完成')
         for index, (songname, songPath) in enumerate(zip(self.songname_list, self.songPath_list)):
+            if not self.keepRunning:
+                break
             self.crawlSignal.emit(f'当前进度：{index}/{len(self.songPath_list)}')
             song = os.path.basename(songPath)
             self.qqMusicCrawler.get_tcon(song, songname, songPath)
+        else:
+            self.crawlSignal.emit(f'当前进度：{index+1}/{len(self.songPath_list)}')
+            self.crawlSignal.emit('全部完成')
         self.qqMusicCrawler.browser.quit()
-        self.crawlSignal.emit('全部完成')
+
+    def stop(self):
+        """ 停止爬取 """
+        self.keepRunning = False
+        self.crawlSignal.emit('强制退出')
 
     def splitText(self):
         """ 扫描文件夹，提取符合匹配条件的音频文件的信息 """
@@ -67,7 +85,7 @@ class GetMetaDataThread(QThread):
             os.mkdir(self.albumCoverFolder)
         for _, _, albumCover_list in os.walk(self.albumCoverFolder):
             break
-
+        
         self.albumCover_set = set(albumCover_list)
 
     def filterAudioFile(self, filePath_list):

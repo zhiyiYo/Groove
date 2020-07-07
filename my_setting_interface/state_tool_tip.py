@@ -11,10 +11,11 @@ from ..my_widget.my_button import ThreeStateButton
 
 class StateToolTip(QWidget):
     """ 进度提示框 """
-    def __init__(self, title='', content='', parent=None):
+    def __init__(self, title='', content='',associatedThread=None, parent=None):
         super().__init__(parent)
         self.title = title
         self.content = content
+        self.associatedThread = associatedThread
         # 实例化小部件
         self.createWidgets()
         # 初始化参数
@@ -41,6 +42,7 @@ class StateToolTip(QWidget):
         self.titleLabel = QLabel(self.title, self)
         self.contentLabel = QLabel(self.content, self)
         self.rotateTimer = QTimer(self)
+        self.closeTimer = QTimer(self)
         self.animation = QPropertyAnimation(self, b'windowOpacity')
         self.busyImage = QPixmap(
             r'resource\images\createPlaylistPanel\running_22_22.png')
@@ -52,12 +54,15 @@ class StateToolTip(QWidget):
         self.setFixedSize(370, 60)
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.Window)
         self.rotateTimer.setInterval(50)
+        self.closeTimer.setInterval(3000)
+        self.contentLabel.setMinimumWidth(200)
         # 分配ID
         self.titleLabel.setObjectName('titleLabel')
         self.contentLabel.setObjectName('contentLabel')
         # 将信号连接到槽函数
-        self.closeButton.clicked.connect(self.deleteLater)
+        self.closeButton.clicked.connect(self.closeButtonEvent)
         self.rotateTimer.timeout.connect(self.timeOutEvent)
+        self.closeTimer.timeout.connect(self.slowlyClose)
         # 打开定时器
         self.rotateTimer.start()
 
@@ -88,7 +93,16 @@ class StateToolTip(QWidget):
         self.update()
         # 运行完成后主动关闭窗口
         if self.isDone:
-            self.slowlyClose()
+            self.closeTimer.start()
+
+    def closeButtonEvent(self):
+        """ 按下关闭按钮前摧毁相关线程 """
+        if self.associatedThread:
+            self.associatedThread.stop()
+            self.associatedThread.requestInterruption()
+            self.associatedThread.wait()
+        self.deleteLater()
+
 
     def slowlyClose(self):
         """ 缓慢关闭窗口 """
@@ -112,7 +126,6 @@ class StateToolTip(QWidget):
         painter = QPainter(self)
         painter.setRenderHints(QPainter.SmoothPixmapTransform)
         painter.setPen(Qt.NoPen)
-        #painter.setBrush(Qt.NoBrush)
         if not self.isDone:
             painter.translate(24, 20)  # 原点平移到旋转中心
             painter.rotate(self.rotateAngle)  # 坐标系旋转
@@ -126,7 +139,7 @@ class StateToolTip(QWidget):
     def show(self):
         """ 重写show()函数 """
         if self.parent():
-            self.move(self.parent().x() + self.parent().width() - 30,
+            self.move(self.parent().x() + self.parent().width()-self.width() - 30,
                       self.parent().y() + 70)
         super().show()
 
