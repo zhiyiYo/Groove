@@ -169,6 +169,8 @@ class SettingInterface(QWidget):
     def showSelectSongFolderPanel(self):
         """ 显示歌曲文件夹选择面板 """
         selectSongFolderPanel = SelectSongFolderPanel(self.window())
+        # 如果歌曲文件夹选择面板更新了json文件那么自己也得更新
+        selectSongFolderPanel.updateConfigSignal.connect(self.readConfig)
         selectSongFolderPanel.exec_()
 
     def readConfig(self):

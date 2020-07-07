@@ -17,7 +17,7 @@ class GetAlbumCover():
         """ 初始化类的属性 """
         self.cwd = os.getcwd()
         self.album_cover_folder = os.path.join(
-            self.cwd, 'resource\\Album Cover')
+            self.cwd, r'resource\Album Cover')
         self.target_path_list = target_path_list
         # 实例化一个用于获取歌曲信息的类
         self.songInfo = SongInfo(target_path_list)

@@ -24,7 +24,7 @@ class GetMetaDataThread(QThread):
             targetPath_list = []
         self.targetPath_list = targetPath_list
         # 存放专辑封面的文件夹
-        self.albumCoverFolder = 'resource\\crawl_albums\\'
+        self.albumCoverFolder = r'resource\crawl_albums'
         # 拆分音频文件路径
         self.splitText()
 
@@ -94,9 +94,8 @@ class GetMetaDataThread(QThread):
         self.songPath_list = filePath_list.copy()
         # 获取文件名列表
         fileName_list = [
-            filePath.split('\\')[-1] for filePath in filePath_list
+            os.path.basename(filePath) for filePath in filePath_list
         ]
-        #self.song_list = fileName_list.copy()
         # 创建列表
         self.songer_list, self.songname_list = [], []
         rex = r'(.+) - (.+)(\.mp3)|(.+) - (.+)(\.flac)|(.+) - (.+)(\.m4a)'
@@ -113,8 +112,7 @@ class GetMetaDataThread(QThread):
                 else:
                     self.songer_list.append(Match.group(7))
                     self.songname_list.append(Match.group(8))
-            elif not Match:
-                # self.song_list.remove(file_name)
+            else:
                 self.songPath_list.remove(file_path)
 
     def modifyTextPart(self, songname, songer) -> bool:

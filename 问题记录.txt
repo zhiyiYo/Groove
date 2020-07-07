@@ -25,3 +25,4 @@ self.setStyleSheet("background-color: rgb(255,255, 255)");
 19.要想动态更新QListWidget的Item的尺寸只需重写resizeEvent()的时候item.setSizeHint(QSize())
 20.可以在样式表中用background:transparent来替代setAttribute(Qt.WA_TranslucentBackground)
 21.画图用drawPixmap别用drawRect(),要写字的时候不能painter.setPen(Qt.NoPen)
+22.文件夹的最后一个字符绝对不能是/，不然会出错

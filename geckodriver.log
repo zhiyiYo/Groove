@@ -1043,3 +1043,194 @@ console.error: services.settings:
   main/fxmonitor-breaches Signature failed  TypeError: NetworkError when attempting to fetch resource.
 console.error: services.settings: 
   main/cfr-fxa Signature failed  TypeError: NetworkError when attempting to fetch resource.
+1594124318273	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofilemFE7ST"
+*** You are running in headless mode.
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594124322785	Marionette	INFO	Listening on port 62756
+1594124323190	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594124545037	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofile1HX61G"
+*** You are running in headless mode.
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594124548801	Marionette	INFO	Listening on port 62871
+1594124549235	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594124731932	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofileLTx0ZH"
+*** You are running in headless mode.
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594124735554	Marionette	INFO	Listening on port 62952
+1594124735638	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594124747866	Marionette	INFO	Stopped listening on port 62952
+1594124752498	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofileg184FJ"
+*** You are running in headless mode.
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594124756060	Marionette	INFO	Listening on port 63021
+1594124756185	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594124771985	Marionette	INFO	Stopped listening on port 63021
+1594125247323	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofileavRVVj"
+*** You are running in headless mode.
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594125251018	Marionette	INFO	Listening on port 63231
+1594125251516	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+1594125267651	Marionette	INFO	Stopped listening on port 63231
+1594125272342	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofilege2hg4"
+*** You are running in headless mode.
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594125276943	Marionette	INFO	Listening on port 63304
+1594125277226	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594125293256	Marionette	INFO	Stopped listening on port 63304
+1594125491695	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofilelkwSLT"
+*** You are running in headless mode.
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594125493281	Marionette	INFO	Listening on port 63440
+1594125493731	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594125509069	Marionette	INFO	Stopped listening on port 63440
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+1594125512976	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofilewlqt9q"
+*** You are running in headless mode.
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594125514459	Marionette	INFO	Listening on port 63505
+1594125514508	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594125551032	Marionette	INFO	Stopped listening on port 63505
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+[Parent 15548, Gecko_IOThread] WARNING: pipe error: 232: file /builds/worker/checkouts/gecko/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 522
+1594128273108	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofilejfjhK0"
+*** You are running in headless mode.
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594128274995	Marionette	INFO	Listening on port 64406
+1594128275218	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+1594128290858	Marionette	INFO	Stopped listening on port 64406
+1594128294773	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofileE4zrso"
+*** You are running in headless mode.
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594128296243	Marionette	INFO	Listening on port 64473
+1594128296315	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594128304158	Marionette	INFO	Stopped listening on port 64473
+
+###!!! [Child][MessageChannel] Error: (msgtype=0x5A000D,name=PHttpChannel::Msg_DeletingChannel) Channel closing: too late to send/recv, messages will be lost
+
+1594129133790	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofileEHldkc"
+*** You are running in headless mode.
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594129135490	Marionette	INFO	Listening on port 64682
+1594129135828	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594129135875	Marionette	INFO	Stopped listening on port 64682
+console.error: services.settings: 
+  main/messaging-experiments Signature failed  TypeError: NetworkError when attempting to fetch resource.
+console.error: Region.jsm: "Failed to fetch region" (new TypeError("NetworkError when attempting to fetch resource.", ""))
+1594129139541	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofileOBNvAC"
+*** You are running in headless mode.
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594129141061	Marionette	INFO	Listening on port 64717
+1594129141574	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594129141618	Marionette	INFO	Stopped listening on port 64717
+1594129230821	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofile3BxLWZ"
+*** You are running in headless mode.
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594129232395	Marionette	INFO	Listening on port 64765
+1594129232877	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: WebGL warning: <Create>: Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://staticssl.kugou.com/verify/static/js/registerDev.v1.min.js?appid=1014&20190408, line 1: Failed to create WebGL context: WebGL creation failed: 
+* Can't use WebGL in headless mode (https://bugzil.la/1375585).
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://www.kugou.com/common/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+1594129271050	Marionette	INFO	Stopped listening on port 64765
+[Child 2420, Chrome_ChildThread] WARNING: pipe error: 232: file /builds/worker/checkouts/gecko/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 522
+1594129274991	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\hzz\\AppData\\Local\\Temp\\rust_mozprofilecaMp2w"
+*** You are running in headless mode.
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+1594129276502	Marionette	INFO	Listening on port 64843
+1594129276526	Marionette	WARN	TLS certificate errors will be ignored for this session
+1594129300219	Marionette	INFO	Stopped listening on port 64843
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.
+JavaScript error: , line 0: TypeError: NetworkError when attempting to fetch resource.

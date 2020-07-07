@@ -19,6 +19,7 @@ class SelectSongFolderPanel(SubPanelFrame):
         super().__init__(parent)
         # 实例化子属性面板
         self.subSelectSongFolderPanel = SubSelectSongFolderPanel(self)
+        self.updateConfigSignal = self.subSelectSongFolderPanel.updateConfigSignal
         # 初始化
         self.showMask()
         self.setSubWindowPos()
@@ -33,6 +34,9 @@ class SelectSongFolderPanel(SubPanelFrame):
 
 class SubSelectSongFolderPanel(QWidget):
     """ 子选择歌曲文件夹面板 """
+    # 创建一个更新json文件的信号
+    updateConfigSignal = pyqtSignal()
+    
     def __init__(self, parent):
         super().__init__(parent)
         # 读入配置文件
@@ -166,6 +170,7 @@ class SubSelectSongFolderPanel(QWidget):
         """ 关闭前将更新json文件 """
         with open('Data\\config.json', 'w', encoding='utf-8') as f:
             json.dump(self.__config, f)
+        self.updateConfigSignal.emit()
         self.parent().deleteLater()
 
     def resizeEvent(self, e):

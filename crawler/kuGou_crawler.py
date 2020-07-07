@@ -75,15 +75,14 @@ class KuGouCrawler():
                         break
 
             # 没有mp3匹配到APIC间则写入封面，如果是flac和m4a则直接尝试写入封面
-            extraction_cond = (self.suffix == 'mp3' and (not Match)) or (
-                self.suffix == 'flac'
+            extraction_cond = (self.suffix == 'mp3' and (not Match)) or (self.suffix == 'flac'
                 and not self.id_card.pictures) or (self.suffix == 'mp4'
                                                    and not self.id_card.get('covr'))
             if extraction_cond:
                 album_name = None
                 if self.suffix == 'mp3':
                     album_name = str(self.id_card.get("TALB"))
-                elif self.suffix == 'flac':
+                elif self.suffix == 'flac' and self.id_card.get("album"):
                     album_name = self.id_card.get("album")[0]
                 elif self.suffix == 'mp4' and self.id_card.get("©alb"):
                     album_name = self.id_card.get("©alb")[0]
@@ -105,6 +104,7 @@ class KuGouCrawler():
     def writeAlbumInfo(self, album_card_element):
         """ 写入专辑文字信息 """
         album_card = album_card_element.text
+        print(album_card)
         # 创建正则表达式来匹配所需信息
         rex1 = r'专辑名：(.+)\n'
         rex2 = r'发行时间：(.{4})-'
@@ -138,7 +138,7 @@ class KuGouCrawler():
         # 发送请求
         resp = requests.get(image_url)
         if resp.status_code == 200:
-            album_cover = self.albumCoverFolder + album_name + '.jpg '
+            album_cover = os.path.join(self.albumCoverFolder, album_name + '.jpg')
 
             # 将提取到封面储存到本地
             try:
@@ -169,7 +169,7 @@ class KuGouCrawler():
 
     def fetchFromLocal(self, album_name):
         """ 从本地获取封面 """
-        img_path = self.albumCoverFolder + album_name + '.jpg'
+        img_path = os.path.join(self.albumCoverFolder, album_name + '.jpg')
         with open(img_path, 'rb') as f:
             pic_data = f.read()
 

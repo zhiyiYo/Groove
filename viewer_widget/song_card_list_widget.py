@@ -234,6 +234,7 @@ class SongCardListWidget(QListWidget):
         self.sortSongCards()
         for i in range(len(self.songInfo.songInfo_list)):
             songInfo_dict = self.songInfo.songInfo_list[i]
+            songInfo_dict['index'] = i
             self.item_list[i].setWhatsThis(str(songInfo_dict))
             self.songCard_list[i].updateSongCard(songInfo_dict)
 

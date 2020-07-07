@@ -21,7 +21,7 @@ class StateToolTip(QWidget):
         # 初始化参数
         self.isDone = False
         self.rotateAngle = 0
-        self.deltaAngle = 12
+        self.deltaAngle = 18
         # 初始化
         self.initWidget()
         self.initLayout()
