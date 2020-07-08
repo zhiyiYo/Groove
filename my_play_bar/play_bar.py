@@ -74,7 +74,7 @@ class PlayBar(QWidget):
         self.moreActionsMenu.show(QPoint(x, y))
 
     def referenceWidgets(self):
-        """ 引用小部件 """
+        """ 引用小部件及其方法 """
         self.randomPlayButton = self.centralButtonGroup.randomPlayButton
         self.lastSongButton = self.centralButtonGroup.lastSongButton
         self.playButton = self.centralButtonGroup.playButton
@@ -85,6 +85,9 @@ class PlayBar(QWidget):
         self.volumeSlider = self.rightWidgetGroup.volumeSlider
         self.smallPlayModeButton = self.rightWidgetGroup.smallPlayModeButton
         self.moreActionsButton = self.rightWidgetGroup.moreActionsButton
+        # 引用方法
+        self.setCurrentTime = self.playProgressBar.setCurrentTime
+        self.setTotalTime = self.playProgressBar.setTotalTime
 
 
 if __name__ == "__main__":

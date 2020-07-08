@@ -3,6 +3,7 @@ import sys
 from PyQt5.QtCore import QEvent, QSize, Qt
 from PyQt5.QtGui import QBrush, QColor, QEnterEvent, QIcon, QPainter, QPen, QPixmap
 from PyQt5.QtWidgets import QApplication, QToolButton, QWidget, QSlider
+from PyQt5.QtMultimedia import QMediaPlaylist
 
 
 class PlayButton(QToolButton):
@@ -19,6 +20,11 @@ class PlayButton(QToolButton):
         self.setStyleSheet(
             "QToolButton{border:none;margin:0;background:transparent}")
         self.installEventFilter(self)
+
+    def setPlay(self, play: bool = True):
+        """ 根据播放状态设置按钮图标 """
+        self.isPlaying = play
+        self.update()
 
     def eventFilter(self, obj, e):
         """ 按钮按下时更换按钮 """
@@ -50,7 +56,7 @@ class PlayButton(QToolButton):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing, True)
         # 设置描边画笔
-        pen = QPen(QColor(255,255,255,100))
+        pen = QPen(QColor(255, 255, 255, 100))
         pen.setWidth(2)
         # 设置画笔
         painter.setPen(pen)
@@ -140,6 +146,7 @@ class RandomPlayButton(QToolButton):
         painter.setBrush(brush)
         painter.drawEllipse(1, 1, 45, 45)
 
+
 class BasicButton(QToolButton):
     """ 基本圆形按钮 """
 
@@ -184,7 +191,7 @@ class LastSongButton(BasicButton):
 
     def __init__(self, parent=None):
         self.icon_path = r'resource\images\playBar\上一首_45_45.png'
-        super().__init__(self.icon_path,parent)
+        super().__init__(self.icon_path, parent)
 
 
 class NextSongButton(BasicButton):
@@ -202,8 +209,12 @@ class LoopModeButton(QToolButton):
         super().__init__(parent)
         # 设置进入标志位
         self.isEnter = False
-        # 设置点击次数以及对应的图标
+        # 设置点击次数以及对应的循环模式和的图标
         self.clickedTime = 0
+        self.loopMode = QMediaPlaylist.Sequential
+        self.__loopMode_list = [QMediaPlaylist.Sequential,
+                         QMediaPlaylist.Loop, QMediaPlaylist.CurrentItemInLoop]
+
         self.__iconPath_list = [r'resource\images\playBar\循环播放_45_45.png',
                                 r'resource\images\playBar\循环播放_45_45.png',
                                 r'resource\images\playBar\单曲循环_45_45.png']
@@ -215,6 +226,7 @@ class LoopModeButton(QToolButton):
         if obj == self:
             if e.type() == QEvent.MouseButtonRelease and e.button() == Qt.LeftButton:
                 self.clickedTime = (self.clickedTime + 1) % 3
+                self.loopMode = self.__loopMode_list[self.clickedTime]
                 self.update()
                 return False
         return super().eventFilter(obj, e)
@@ -255,6 +267,7 @@ class LoopModeButton(QToolButton):
 
 class VolumeButton(QToolButton):
     """ 音量按钮 """
+
     def __init__(self, parent=None):
         super().__init__(parent)
         # 设置标志位

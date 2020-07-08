@@ -11,7 +11,7 @@ class FolderCard(FoldingWindow):
     def __init__(self, folderPath: str, parent=None):
         super().__init__(parent)
         self.folderPath = folderPath
-        self.folderName = self.folderPath.split('/')[-1]
+        self.folderName = self.folderPath.split('\\')[-1]
         self.image = QPixmap('resource\\images\\setting_interface\\黑色叉号.png')
         self.show()
 

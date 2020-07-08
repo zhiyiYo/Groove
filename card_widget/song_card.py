@@ -13,7 +13,7 @@ class SongCard(QWidget):
 
     def __init__(self, songInfo_dict: dict):
         super().__init__()
-
+        self.songPath=songInfo_dict['songPath']
         # 设置item被点击标志位
         self.isClicked = False
         # 实例化小部件

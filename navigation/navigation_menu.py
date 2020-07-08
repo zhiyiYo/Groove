@@ -6,7 +6,7 @@ from PyQt5.QtGui import QIcon, QPainter, QPen, QColor
 from PyQt5.QtWidgets import QApplication, QVBoxLayout, QHBoxLayout, QWidget, QToolButton, QLabel
 sys.path.append('..')
 
-from .navigation_button import PushButton
+from .navigation_button import PushButton,ToolButton
 from .search_line_edit import SearchLineEdit
 from Groove.my_widget.button_group import ButtonGroup
 from Groove.my_create_playlist_interface.create_playlist_button import CreatePlaylistButton
@@ -37,7 +37,7 @@ class NavigationMenu(QWidget):
         """实例化按钮 """
         # 实例化一个集中管理按钮的类
         self.buttonGroup = ButtonGroup()
-        self.showBarButton = PushButton(
+        self.showBarButton = ToolButton(
             r'resource\images\navigationBar\黑色最大化导航栏.png', parent=self)
         self.musicGroupButton = PushButton(
             r'resource\images\navigationBar\黑色我的音乐.png', '我的音乐', self,

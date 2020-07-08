@@ -6,6 +6,7 @@ from enum import Enum
 
 from PyQt5.QtCore import QPoint, QRect, QSize, Qt
 from PyQt5.QtGui import QCloseEvent, QIcon, QPixmap, QResizeEvent, QFont
+from PyQt5.QtMultimedia import QMediaPlayer
 from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsDropShadowEffect,
                              QStackedWidget, QWidget)
 
@@ -16,6 +17,7 @@ from my_play_bar import PlayBar
 from my_setting_interface import SettingInterface
 from my_title_bar import TitleBar
 from navigation import NavigationBar, NavigationMenu
+from media_player import MediaPlaylist
 
 
 class MainWindow(QWidget):
@@ -32,6 +34,10 @@ class MainWindow(QWidget):
 
     def createWidgets(self):
         """ 创建小部件 """
+        # 实例化播放器和播放列表
+        self.player = QMediaPlayer(self)
+        self.playlist = MediaPlaylist(self)
+        # 实例化小部件
         self.titleBar = TitleBar(self)
         self.stackedWidget = QStackedWidget(self)
         self.settingInterface = SettingInterface(self)
@@ -76,9 +82,10 @@ class MainWindow(QWidget):
         self.setWidgetGeometry()
         # 引用小部件
         self.referenceWidgets()
+        # 初始化播放列表
+        self.initPlaylist()
         # 将按钮点击信号连接到槽函数
         self.connectSignalToSlot()
-        
 
     def setWindowEffect(self):
         """ 设置窗口特效 """
@@ -116,7 +123,7 @@ class MainWindow(QWidget):
         self.navigationMenu.hide()
         self.titleBar.title.hide()
         self.navigationBar.show()
-        self.setWidgetGeometry() 
+        self.setWidgetGeometry()
 
     def moveEvent(self, e):
         if hasattr(self, 'playBar'):
@@ -170,19 +177,93 @@ class MainWindow(QWidget):
 
     def connectSignalToSlot(self):
         """ 将信号连接到槽 """
-        self.settingInterface.crawlComplete.connect(self.songCardListWidget.updateSongCardInfo)
+        # 爬虫完成工作时更新歌曲卡信息
+        self.settingInterface.crawlComplete.connect(
+            self.songCardListWidget.updateSongCardInfo)
+        # 导航栏按钮功能
         self.navigationBar.showMenuButton.clicked.connect(
             self.showNavigationMenu)
         self.navigationBar.searchButton.clicked.connect(
             self.showNavigationMenu)
         self.navigationMenu.showBarButton.clicked.connect(
             self.showNavigationBar)
+        # 播放栏各部件功能
+        self.playBar.nextSongButton.clicked.connect(self.playlist.next)
+        self.playBar.lastSongButton.clicked.connect(self.playlist.previous)
+        self.playBar.playButton.clicked.connect(self.playButtonEvent)
+        self.playBar.volumeButton.clicked.connect(self.volumeButtonEvent)
+        self.playBar.loopModeButton.clicked.connect(
+            lambda: self.playlist.setPlaybackMode(self.playBar.loopModeButton.loopMode))
+        self.playBar.volumeSlider.valueChanged.connect(self.volumeChangedEvent)
+        self.playBar.progressSlider.sliderMoved.connect(
+            self.progressSliderMoveEvent)
+        # 将播放器的信号连接到槽函数
+        self.player.positionChanged.connect(self.playerPositionChangeEvent)
+        self.player.durationChanged.connect(self.playerDurationChangeEvent)
+        # 歌曲卡的信号连接到槽函数
+        self.songCardListWidget.doubleClicked.connect(self.playSelectedSong)
 
     def referenceWidgets(self):
         """ 引用小部件 """
         self.songCardListWidget = self.myMusicInterface.myMusicTabWidget.songTab.songCardListWidget
-        self.songerCardViewer=self.myMusicInterface.myMusicTabWidget.songerTab.songerHeadPortraitViewer
-        self.albumCardViewer=self.myMusicInterface.myMusicTabWidget.albumTab.albumCardViewer
+        self.songerCardViewer = self.myMusicInterface.myMusicTabWidget.songerTab.songerHeadPortraitViewer
+        self.albumCardViewer = self.myMusicInterface.myMusicTabWidget.albumTab.albumCardViewer
+
+    def initPlaylist(self):
+        """ 初始化播放列表 """
+        self.player.setPlaylist(self.playlist)
+        # 添加播放列表
+        songPath_list = [songInfo_dict['songPath']
+                         for songInfo_dict in self.songCardListWidget.songInfo_list]
+        self.playlist.addMedias(songPath_list)
+
+    def playButtonEvent(self):
+        """ 播放按钮按下时根据播放器的状态来决定是暂停还是播放 """
+        if self.player.state() == QMediaPlayer.PlayingState:
+            self.player.pause()
+        else:
+            self.player.play()
+
+    def volumeButtonEvent(self):
+        """ 静音按钮按下时决定是否静音 """
+        if self.player.isMuted():
+            self.player.setMuted(False)
+        else:
+            self.player.setMuted(True)
+
+    def volumeChangedEvent(self):
+        """ 音量滑动条数值改变时更换图标并设置音量 """
+        self.player.setVolume(self.playBar.volumeSlider.value())
+        if self.playBar.volumeSlider.value() == 0:
+            self.playBar.volumeButton.setVolumeLevel(0)
+        elif 0 < self.playBar.volumeSlider.value() <= 32:
+            self.playBar.volumeButton.setVolumeLevel(1)
+        elif 32 < self.playBar.volumeSlider.value() <= 65:
+            self.playBar.volumeButton.setVolumeLevel(2)
+        else:
+            self.playBar.volumeButton.setVolumeLevel(3)
+
+    def playerPositionChangeEvent(self):
+        """ 播放器的播放进度改变时更新当前播放进度标签和进度条的值 """
+        self.playBar.progressSlider.setValue(self.player.position())
+        self.playBar.setCurrentTime(self.player.position())
+
+    def playerDurationChangeEvent(self):
+        """ 播放器当前播放的歌曲变化时更新进度条的范围和总时长标签 """
+        self.playBar.progressSlider.setRange(0, self.player.duration())
+        self.playBar.setTotalTime(self.player.duration())
+
+    def progressSliderMoveEvent(self):
+        """ 手动拖动进度条时改变当前播放进度标签和播放器的值 """
+        self.player.setPosition(self.playBar.progressSlider.value())
+        self.playBar.setCurrentTime(self.player.position())
+
+    def playSelectedSong(self):
+        """ 播放选中的歌 """
+        songPath = self.songCardListWidget.currentSongCard.songPath
+        self.playlist.playThisSong(songPath)
+        self.player.play()
+        self.playBar.playButton.setPlay(True)
 
 
 if __name__ == "__main__":

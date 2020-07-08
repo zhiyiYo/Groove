@@ -50,7 +50,7 @@ class ClickableLabel(QLabel):
             self.customToolTip.hide()
 
 
-class ErrorLabel(QLabel):
+class ErrorIcon(QLabel):
 
     def __init__(self, parent=None):
         super().__init__(parent)

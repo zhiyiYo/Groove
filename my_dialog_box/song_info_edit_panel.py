@@ -6,7 +6,7 @@ import sys
 from ctypes import cdll, c_bool
 from ctypes.wintypes import HWND
 
-from mutagen import File
+from mutagen import File,MutagenError
 from PyQt5.QtCore import QEvent, QRegExp, Qt
 from PyQt5.QtGui import (QColor, QContextMenuEvent,QPainter, QPen,
                          QPixmap, QRegExpValidator, QFont)
@@ -16,7 +16,7 @@ from PyQt5.QtWidgets import (QApplication, QDialog, QGraphicsDropShadowEffect, Q
 from .sub_panel_frame import SubPanelFrame
 from ..my_functions.modify_songInfo import modifySongInfo
 from ..my_widget.my_lineEdit import LineEdit
-from ..my_widget.my_label import ErrorLabel
+from ..my_widget.my_label import ErrorIcon
 from ..my_widget.my_toolTip import ToolTip
 from ..my_functions.auto_wrap import autoWrap
 
@@ -50,16 +50,14 @@ class SubSongInfoEditPanel(QWidget):
         super().__init__(parent)
 
         self.songInfo = songInfo
-
         # 实例化标签卡
-        self.id_card = File(songInfo['song_path'])
+        self.id_card = File(songInfo['songPath'])
         # 实例化小部件
         self.createWidgets()
         # 初始化小部件
         self.initWidget()
         self.initLayout()
         self.setShadowEffect()
-        #self.setDropShadowEffect()
         # 设置层叠样式
         self.setQss()
 
@@ -79,8 +77,10 @@ class SubSongInfoEditPanel(QWidget):
         self.songerNameLabel = QLabel('歌曲歌手', self)
         self.albumSongerLabel = QLabel('专辑歌手', self)
         self.editInfoLabel = QLabel('编辑歌曲信息', self)
-        self.songPath = QLabel(self.songInfo['song_path'], self)
-        self.emptyTrackErrorLabel = ErrorLabel(self)
+        self.songPath = QLabel(self.songInfo['songPath'], self)
+        self.emptyTrackErrorIcon = ErrorIcon(self)
+        self.bottomErrorIcon = ErrorIcon(self)
+        self.bottomErrorLabel = QLabel(self)
 
         # 实例化提示条
         self.customToolTip = ToolTip(parent=self)
@@ -127,8 +127,6 @@ class SubSongInfoEditPanel(QWidget):
         # 默认选中歌名编辑框
         self.songNameEditLine.setFocus()
         self.songNameEditLine.clearButton.show()
-        """ if self.songerNameLabel.text():
-            self.songerNameEditLine.setReadOnly(True) """
         # 给每个单行输入框设置大小
         for editLine in self.editLine_list:
             editLine.setFixedSize(408, 40)
@@ -137,16 +135,19 @@ class SubSongInfoEditPanel(QWidget):
         self.saveButton.setFixedSize(165, 41)
         self.cancelButton.setFixedSize(165, 41)
 
-        # 设置报警标签的大小和位置
-        self.emptyTrackErrorLabel.move(7, 224)
-        self.emptyTrackErrorLabel.hide()
+        # 设置报警标签位置
+        self.bottomErrorLabel.setMinimumWidth(100)
+        self.emptyTrackErrorIcon.move(7, 224)
+        self.bottomErrorIcon.hide()
+        self.bottomErrorLabel.hide()
+        self.emptyTrackErrorIcon.hide()
         self.installEventFilter(self)
 
         # 如果曲目为空就禁用保存按钮并更改属性
         self.trackNumEditLine.setProperty('hasText', 'true')
         if not self.trackNumEditLine.text():
             self.saveButton.setEnabled(False)
-            self.emptyTrackErrorLabel.show()
+            self.emptyTrackErrorIcon.show()
             self.trackNumEditLine.setProperty('hasText', 'false')
 
         # 给输入框设置过滤器
@@ -173,9 +174,10 @@ class SubSongInfoEditPanel(QWidget):
         self.songerNameEditLine.setObjectName('songer')
         self.albumSongerEditLine.setObjectName('songer')
         self.songPath.setObjectName('songPath')
+        self.bottomErrorLabel.setObjectName('bottomErrorLabel')
 
         # 设置提示条
-        self.setWidgetsToolTip()
+        #self.setWidgetsToolTip()
 
     def initLayout(self):
         """ 初始化小部件的排版 """
@@ -185,19 +187,19 @@ class SubSongInfoEditPanel(QWidget):
         self.saveButton.move(566, 595)
         self.cancelButton.move(736, 595)
         label_top_y = 95
-        i = 0
-        for label_left, label_right in zip(self.leftLabel_list, self.rightLabel_list):
+
+        for i,(label_left, label_right) in enumerate(zip(self.leftLabel_list, self.rightLabel_list)):
             label_left.setObjectName('infoTypeLabel')
             label_right.setObjectName('infoTypeLabel')
             label_left.move(30, label_top_y + i * 87)
             label_right.move(494, label_top_y + i*87)
-            i += 1
+            
         editLine_top_y = 127
-        i = 0
-        for editLine_left, editLine_right in zip(self.leftEditLine_list, self.rightEditLine_list):
+        
+        for i,(editLine_left, editLine_right) in enumerate(zip(self.leftEditLine_list, self.rightEditLine_list)):
             editLine_left.move(30, editLine_top_y + i * 87)
             editLine_right.move(494, editLine_top_y + i * 87)
-            i += 1
+
         # 调整高度
         newSongPath, isWordWrap = autoWrap(self.songPath.text(), 100)
         if isWordWrap:
@@ -205,10 +207,14 @@ class SubSongInfoEditPanel(QWidget):
             self.resize(self.width(), self.height() + 25)
             self.cancelButton.move(self.cancelButton.x(), self.cancelButton.y() + 25)
             self.saveButton.move(self.saveButton.x(), self.saveButton.y() + 25)
+        # 调整报错标签的位置
+        self.bottomErrorIcon.move(30, self.height() - 110)
+        self.bottomErrorLabel.move(55, self.height() - 112)
+        
 
     def setWidgetsToolTip(self):
         """ 设置小部件的提示条 """
-        self.emptyTrackErrorLabel.setCustomToolTip(
+        self.emptyTrackErrorIcon.setCustomToolTip(
             self.customToolTip, '曲目必须是1000以下的数字')
         self.trackNumEditLine.setCustomToolTip(
             self.customToolTip, '曲目必须是1000以下的数字')
@@ -227,14 +233,6 @@ class SubSongInfoEditPanel(QWidget):
         painter.setPen(self.pen)
         painter.drawRect(0, 0, self.width()-1, self.height()-1)
 
-    def setDropShadowEffect(self):
-        """ 添加阴影 """
-        self.class_amended = c_bool(False)
-        self.hWnd = HWND(int(self.winId()))
-        dll = cdll.LoadLibrary('dll\\windowEffect.dll')
-        dll.addShadowEffect(c_bool(1), self.hWnd)
-        #dll.setShadow(self.class_amended,self.hWnd)
-
     def saveInfo(self):
         """ 保存标签卡信息 """
         self.songInfo['songName'] = self.songNameEditLine.text()
@@ -251,21 +249,32 @@ class SubSongInfoEditPanel(QWidget):
         self.songInfo['tcon'] = self.tconEditLine.text()
         self.songInfo['year'] = self.yearEditLine.text()[:4]+'年'
         modifySongInfo(self.id_card, self.songInfo)
-        self.id_card.save()
-        if not self.parent():
-            self.deleteLater()
+        try:
+            self.id_card.save()
+        except MutagenError:
+            self.bottomErrorLabel.setText('遇到未知错误，请稍后再试')
+            self.bottomErrorLabel.show()
+            self.bottomErrorIcon.show() 
         else:
-            self.parent().deleteLater()
+            if not self.parent():
+                self.deleteLater()
+            else:
+                self.parent().deleteLater()
 
     def checkTrackEditLine(self):
         """ 检查曲目输入框的内容是否为空 """
         if not self.trackNumEditLine.text():
-            self.emptyTrackErrorLabel.show()
+            self.bottomErrorLabel.setText('曲目必须是1000以下的数字')
+            self.bottomErrorLabel.show()
+            self.emptyTrackErrorIcon.show()
+            self.bottomErrorIcon.show()
             self.saveButton.setEnabled(False)
             self.trackNumEditLine.setProperty('hasText','false')
         else:
-            self.trackNumEditLine.setProperty('hasText','true')
-            self.emptyTrackErrorLabel.setHidden(True)
+            self.trackNumEditLine.setProperty('hasText', 'true')
+            self.bottomErrorLabel.hide()
+            self.bottomErrorIcon.hide()
+            self.emptyTrackErrorIcon.hide()
             self.saveButton.setEnabled(True)
         self.trackNumEditLine.setStyle(QApplication.style())
 

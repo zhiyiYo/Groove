@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import (QAbstractItemView, QAction, QApplication, QHBoxLayo
                              QListWidget, QListWidgetItem, QWidget)
 sys.path.append('..')
 from Groove.get_info.get_song_info import SongInfo
-from Groove.card_widget.songcard_test import SongCard
+from Groove.card_widget.song_card import SongCard
 from Groove.my_dialog_box import PropertyPanel,SongInfoEditPanel
 from Groove.my_widget.my_menu import Menu,AddToMenu,SongCardListContextMenu
 
@@ -35,7 +35,6 @@ class SongCardListWidget(QListWidget):
         
         # 将歌曲信息设置为属性
         self.songInfo = SongInfo(self.target_path_list)
-        self.songInfo_list = self.songInfo.songInfo_list
         # 默认排序方式为添加时间
         self.sortMode = '添加时间'
         # 添加项目
@@ -67,7 +66,7 @@ class SongCardListWidget(QListWidget):
         self.verticalScrollBar().setObjectName('LWidgetVScrollBar')
         # 选中中的item改变时改变样式
         self.itemSelectionChanged.connect(self.updateItemQss)
-        
+              
 
     def createMenu(self):
         """ 创建菜单并将动作触发信号连接到槽函数 """
@@ -83,6 +82,8 @@ class SongCardListWidget(QListWidget):
         """ 在列表视图中添加项目 """
         # 对歌曲进行排序
         self.sortSongCards()
+        # 引用排序完的字典
+        self.songInfo_list = self.songInfo.songInfo_list
 
         for i in range(len(self.songInfo.songInfo_list)):
             # 添加空项目

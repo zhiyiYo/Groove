@@ -32,7 +32,7 @@ class GetAlbumCover():
         # 开始获取封面
         for info_dict in self.songInfo.songInfo_list:
             # 实例化一个File实例
-            id_card = File(info_dict['song_path'])
+            id_card = File(info_dict['songPath'])
             # 根据后缀名选择获取封面的方式
             if id_card.mime[0].split('/')[-1] == 'mp3':
                 self.getID3AlbumCover(info_dict, id_card)

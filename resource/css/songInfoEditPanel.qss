@@ -18,6 +18,10 @@ QLabel#infoTypeLabel {
     font: 18px 'Microsoft YaHei';
 }
 
+QLabel#bottomErrorLabel{
+    color: rgb(197, 5, 0);
+}
+
 
 QLineEdit {
     padding: 9px 14px 8px 14px;

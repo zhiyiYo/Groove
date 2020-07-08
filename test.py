@@ -12,11 +12,9 @@ class Demo(QWidget):
         #self.setWindowFlags(Qt.FramelessWindowHint)
         self.image=QPixmap('resource\\Album Cover\\Attention\\Attention.jpg').scaled(
                 self.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        self.effect = QGraphicsBlurEffect(self)
-        self.effect.setBlurRadius(30)
-        self.setGraphicsEffect(self.effect)
-        """ self.blurButton = BlurButton(self)
-        self.blurButton.move(200,175) """
+
+        self.blurButton = BlurButton(self)
+        self.blurButton.move(200,175)
 
     def paintEvent(self, e):
         painter = QPainter(self)
@@ -31,14 +29,14 @@ class Demo(QWidget):
 class BlurButton(QWidget):
     def __init__(self,parent):
         super().__init__(parent)
-        self.resize(100, 100)
+        self.resize(65,65)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.image = QLabel(self)
         self.image.setPixmap(self.parent().image)
         self.image.resize(self.parent().image.size())
         # 添加磨砂效果
         self.effect = QGraphicsBlurEffect(self)
-        self.effect.setBlurRadius(20)
+        self.effect.setBlurRadius(30)
         self.image.setGraphicsEffect(self.effect)
         self.image.hide()
         # 获取磨砂后的pixmap
@@ -66,7 +64,7 @@ class BlurButton(QWidget):
         painter = QPainter(mask)
         painter.setBrush(Qt.black)
         painter.setPen(Qt.NoPen)
-        painter.drawRoundedRect(mask.rect(), 100,100)
+        painter.drawRoundedRect(mask.rect(), self.width(),self.height())
         self.setMask(mask)
         
 

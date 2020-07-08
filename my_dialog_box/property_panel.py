@@ -75,7 +75,7 @@ class SubPropertyPanel(QWidget):
         self.duration = QLabel(self.songInfo['duration'], self)
         self.songName = QLabel(self.songInfo['songName'], self)
         self.albumSonger = QLabel(self.songInfo['songer'], self)
-        self.songPath = QLabel(self.songInfo['song_path'], self)
+        self.songPath = QLabel(self.songInfo['songPath'], self)
         if self.songInfo['suffix'] in ['.flac', '.mp3']:
             self.trackNumber = QLabel(self.songInfo['tracknumber'], self)
         elif self.songInfo['suffix'] == '.m4a':

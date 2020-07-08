@@ -105,6 +105,8 @@ class SubSelectSongFolderPanel(QWidget):
         self.addFolderTimer.stop()
         path = QFileDialog.getExistingDirectory(self, '选择文件夹', './')
         if path and path not in self.__config['selected-folders']:
+            # 将斜杠替换为反斜杠
+            path = path.replace('/','\\')
             # 将选择的文件夹路径插入列表
             self.__config['selected-folders'].append(path)
             # 创建文件路径卡

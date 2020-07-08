@@ -48,7 +48,7 @@ class SongInfo():
             oldData = [{}]
 
         oldSongPath_list = [
-            oldFileInfo.get('song_path') for oldFileInfo in oldData
+            oldFileInfo.get('songPath') for oldFileInfo in oldData
         ]
 
         # 判断旧文件路径列表是否与新文件名列表相等
@@ -69,7 +69,7 @@ class SongInfo():
             if commonSongPath_set:
                 self.songInfo_list = [
                     oldSongInfo_dict for oldSongInfo_dict in oldData
-                    if oldSongInfo_dict['song_path'] in commonSongPath_set
+                    if oldSongInfo_dict['songPath'] in commonSongPath_set
                 ]
             # 如果有差集的存在就需要更新json文件
             if not (newSongPath_set < oldSongPath_set and commonSongPath_set):
@@ -80,10 +80,10 @@ class SongInfo():
                              self.songname_list, self.songer_list,
                              self.suffix_list)
 
-                for index,(song, song_path, songname, songer, suffix) in enumerate(argZip):
-                    id_card = File(song_path)
+                for index,(song, songPath, songname, songer, suffix) in enumerate(argZip):
+                    id_card = File(songPath)
                     # 获取时间戳
-                    createTime = os.path.getctime(song_path)
+                    createTime = os.path.getctime(songPath)
                     # 将时间戳转换为时间结构
                     timeStruct = time.localtime(createTime)
                     # 格式化时间结构
@@ -93,7 +93,7 @@ class SongInfo():
                     # 将歌曲信息字典插入列表
                     self.songInfo_list.append({
                         'song': song,
-                        'song_path': song_path,
+                        'songPath': songPath,
                         'songer': songer,
                         'songName': songname,
                         'album': album_list,
@@ -194,7 +194,6 @@ class SongInfo():
 
     def sortByCreateTime(self):
         """ 依据文件创建日期排序文件信息列表 """
-
         self.songInfo_list.sort(
             key=lambda songInfo: songInfo['createTime'], reverse=True)
 

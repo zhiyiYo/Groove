@@ -32,6 +32,23 @@ class PlayProgressBar(QWidget):
         self.h_layout.setSpacing(0)
         self.setLayout(self.h_layout)
 
+    def setCurrentTime(self, currentTime):
+        """ 更新当前时间标签，currentTime的单位为ms """
+        seconds, minutes = self.getSecondMinute(currentTime)
+        self.currentTimeLabel.setText(f'{minutes}:{str(seconds).rjust(2,"0")}')
+
+    def setTotalTime(self, totalTime):
+        """ 更新总时长标签，totalTime的单位为ms """
+        seconds, minutes = self.getSecondMinute(totalTime)
+        self.totalTimeLabel.setText(f'{minutes}:{str(seconds).rjust(2,"0")}')
+
+    def getSecondMinute(self, time):
+        """ 将毫秒转换为分和秒 """
+        seconds = int(time / 1000)
+        minutes = seconds // 60
+        seconds -= minutes * 60
+        return seconds,minutes
+
     def setQss(self):
         """ 设置层叠样式 """
         with open('resource\\css\\playBar.qss', encoding='utf-8') as f:

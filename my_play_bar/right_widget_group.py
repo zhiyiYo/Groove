@@ -30,7 +30,7 @@ class RightWidgetGroup(QWidget):
         self.volumeSlider.setRange(0,100)
         self.volumeSlider.setObjectName('volumeSlider')
         # 将音量滑动条数值改变信号连接到槽函数
-        self.volumeSlider.valueChanged.connect(self.setVolume)
+        #self.volumeSlider.valueChanged.connect(self.setVolume)
         self.volumeSlider.setValue(20)
                             
     def initLayout(self):
