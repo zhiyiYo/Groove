@@ -8,7 +8,8 @@ from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
 sys.path.append('..')
 from Groove.viewer_widget.song_card_list_widget import SongCardListWidget
 from Groove.my_widget.my_menu import Menu
-from Groove.my_widget.my_button import RandomPlayButton,SortModeButton
+from Groove.my_widget.my_button import RandomPlayButton, SortModeButton
+from Groove.my_splash_screen.splash_screen import SplashScreen
 
 
 class SongTabInterface(QWidget):
@@ -17,7 +18,7 @@ class SongTabInterface(QWidget):
     def __init__(self, target_path_list:list, parent=None):
         super().__init__(parent)
 
-        self.resize(1267, 827-23)
+        self.resize(1267, 804)
 
         # 实例化布局
         self.h_layout = QHBoxLayout()
@@ -138,5 +139,4 @@ if __name__ == "__main__":
 
     mySongTab = SongTabInterface(['D:\\KuGou\\test_audio\\'])
     mySongTab.show()
-
     sys.exit(app.exec_())

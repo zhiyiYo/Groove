@@ -1,6 +1,6 @@
 import re
 
-import mutagen
+from mutagen import File,MutagenError
 from mutagen.id3 import TALB, TCON, TDRC
 from selenium.webdriver import Firefox, FirefoxOptions
 from selenium.webdriver.common.by import By
@@ -22,7 +22,7 @@ class QQMusicCrawler():
         """从QQ音乐提取专辑流派"""
         self.song = song
         self.songname = songname
-        self.id_card = mutagen.File(songPath)
+        self.id_card = File(songPath)
         self.suffix = self.id_card.mime[0].split('/')[-1]
 
         isModified = False
@@ -47,7 +47,10 @@ class QQMusicCrawler():
 
         # 有修改信息的话就保存
         if isModified:
-            self.id_card.save()
+            try:
+                self.id_card.save()
+            except MutagenError:
+                pass
 
     def crawl(self) -> bool:
         """只要有部分专辑信息缺失就去QQ音乐爬取并返回爬取标志位"""

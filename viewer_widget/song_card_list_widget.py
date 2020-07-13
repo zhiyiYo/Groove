@@ -1,7 +1,7 @@
 import sys
 import time
 from json import dump
-from PyQt5.QtCore import QAbstractAnimation,QPoint, QSize, Qt, QEvent,QPropertyAnimation,QEasingCurve
+from PyQt5.QtCore import QAbstractAnimation,QPoint, QSize, Qt, QEvent,QPropertyAnimation,QEasingCurve,pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent, QIcon, QBrush, QColor, QPixmap,QWheelEvent
 from PyQt5.QtWidgets import (QAbstractItemView, QAction, QApplication, QHBoxLayout, QLabel,
                              QListWidget, QListWidgetItem, QWidget)
@@ -14,7 +14,8 @@ from Groove.my_widget.my_menu import Menu,AddToMenu,SongCardListContextMenu
 
 class SongCardListWidget(QListWidget):
     """ 定义一个歌曲卡列表视图 """
-
+    # 播放按钮点击时发送播放信号
+    playSignal = pyqtSignal(dict)
     def __init__(self, target_path_list:list,parent=None):
         super().__init__(parent)
         self.resize(1267, 781-23)
@@ -56,8 +57,7 @@ class SongCardListWidget(QListWidget):
         # 将滚动模式改为以像素计算
         self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
         self.scrollStep = 50
-        self.verticalScrollBar().setSingleStep(self.scrollStep)
-        
+        self.verticalScrollBar().setSingleStep(self.scrollStep)     
         # 初始化动画效果
         self.animation.setDuration(50)
         self.animation.setEasingCurve(QEasingCurve.Linear)
@@ -66,6 +66,12 @@ class SongCardListWidget(QListWidget):
         self.verticalScrollBar().setObjectName('LWidgetVScrollBar')
         # 选中中的item改变时改变样式
         self.itemSelectionChanged.connect(self.updateItemQss)
+        # 右击菜单的播放动作触发时发送信号
+        self.contextMenu.playAct.triggered.connect(
+            lambda: self.playSignal.emit(self.currentSongCard.songInfo_dict))
+        # 播放按钮点击时发送信号
+        for songCard in self.songCard_list:
+            songCard.playSignal.connect(lambda songInfo_dict:self.playSignal.emit(songInfo_dict))
               
 
     def createMenu(self):

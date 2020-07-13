@@ -1,7 +1,7 @@
 import sys
 from ctypes.wintypes import HWND,MSG
 
-from PyQt5.QtCore import Qt,QPoint
+from PyQt5.QtCore import Qt,QPoint,pyqtSignal
 from PyQt5.QtWidgets import QApplication, QWidget,QSlider,QHBoxLayout,QLineEdit,QVBoxLayout
 
 sys.path.append('..')
@@ -17,7 +17,7 @@ from Groove.flags.wm_hittest import Flags
 class PlayBar(QWidget):
     """ 底部播放栏 """
 
-    def __init__(self, songInfo, parent=None):
+    def __init__(self, songInfo:dict, parent=None):
         super().__init__(parent)
         # 实例化窗口特效
         self.windowEffect = WindowEffect()
@@ -25,8 +25,8 @@ class PlayBar(QWidget):
         # 记录移动次数
         self.moveTime = 0
         # 实例化小部件
-        self.playProgressBar = PlayProgressBar(songInfo['duration'],self)
-        self.songInfoCard=SongInfoCard(songInfo,self)
+        self.playProgressBar = PlayProgressBar(songInfo.get('duration','0:00'),self)
+        self.songInfoCard = SongInfoCard(songInfo, self)
         self.centralButtonGroup = CentralButtonGroup(self)
         self.rightWidgetGroup = RightWidgetGroup(self)
         self.moreActionsMenu = MoreActionsMenu(self)
@@ -41,8 +41,8 @@ class PlayBar(QWidget):
         self.setFixedHeight(115)
         self.resize(1280,115)
         # 初始化亚克力背景色
-        #self.setAcrylicColor('02125bC0')
-        self.setAcrylicColor('143d72C0')
+        self.setAcrylicColor('9e1d14C0')
+        #self.setAcrylicColor('143d72C0')
         # 引用小部件
         self.referenceWidgets()
         # 连接槽函数
@@ -88,13 +88,14 @@ class PlayBar(QWidget):
         # 引用方法
         self.setCurrentTime = self.playProgressBar.setCurrentTime
         self.setTotalTime = self.playProgressBar.setTotalTime
+        self.updateSongInfoCard = self.songInfoCard.updateSongInfoCard
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     songInfo = {
         'songName': 'オオカミと少女 (狼与少女)', 'songer': 'RADWIMPS', 'duration': '3:50',
-        'album': [r'resource\Album Cover\オーダーメイド\オーダーメイド.jpg']}
+        'album': [r'オーダーメイド']}
     demo = PlayBar(songInfo)
     demo.move(500,400)
     demo.show()

@@ -1,4 +1,6 @@
 import sys
+import os
+import re
 
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QFont, QFontMetrics, QPainter, QPixmap
@@ -27,24 +29,27 @@ class SongInfoCard(QWidget):
         self.setFixedWidth(115 + 15 + self.scrollTextWindow.width() + 25)
         self.setAttribute(Qt.WA_StyledBackground | Qt.WA_TranslucentBackground)
         self.scrollTextWindow.move(130, 0)
-        self.albumPic.setPixmap(
-            QPixmap(self.songInfo['album'][-1]).scaled(
-                115, 115, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        self.albumPic.setFixedSize(115,115)
+        # 获取封面路径
+        self.setAlbumCover()
+        # 如果传入的歌曲信息为空，就隐藏
+        if not self.songInfo:
+            self.hide()
 
     def setSongInfo(self, songInfo: dict):
         """ 设置歌曲信息 """
         self.songInfo = songInfo
-        self.songName = self.songInfo['songName']
-        self.songerName = self.songInfo['songer']
+        self.songName = self.songInfo.get('songName','')
+        self.songerName = self.songInfo.get('songer','')
 
     def updateSongInfoCard(self, songInfo: dict):
         """ 更新歌曲信息卡 """
+        if songInfo:
+            self.show()
         self.setSongInfo(songInfo)
         self.scrollTextWindow.initUI(songInfo)
         self.setFixedWidth(115 + 15 + self.scrollTextWindow.width() + 25)
-        self.albumPic.setPixmap(
-            QPixmap(self.songInfo['album'][-1]).scaled(
-                115, 115, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        self.setAlbumCover()
 
     def enterEvent(self, e):
         """ 鼠标进入时显示遮罩 """
@@ -59,11 +64,35 @@ class SongInfoCard(QWidget):
     def leaveEvent(self, e):
         self.windowMask.hide()
 
+    def getAlbumCoverPath(self):
+        """ 获取封面路径 """
+        albumName = self.songInfo.get('album')
+        coverFolder = f"resource\\Album Cover\\{albumName[-1]}"
+        pic_list = os.listdir(coverFolder)
+        if pic_list:
+            # 如果目录下有封面就用这个封面作为albumCard的背景
+            self.coverPath = os.path.join(coverFolder, pic_list[0])
+        else:
+            # 否则用默认的封面
+            self.coverPath = 'resource\\Album Cover\\未知专辑封面_200_200.png'
+
+    def setAlbumCover(self):
+        """ 设置封面 """
+        # 如果专辑信息为空就直接隐藏
+        if not self.songInfo.get('album'):
+            self.hide()
+            return
+        self.getAlbumCoverPath()
+        self.albumPic.setPixmap(
+            QPixmap(self.coverPath).scaled(
+                115, 115, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+
 
 class ScrollTextWindow(QWidget):
     """ 滚动字幕 """
     def __init__(self, songInfo: dict, parent=None):
         super().__init__(parent)
+        self.hasInitWidget = False
         # 实例化定时器
         self.songPauseTimer = QTimer(self)
         self.songNameTimer = QTimer(self)
@@ -75,8 +104,8 @@ class ScrollTextWindow(QWidget):
     def setSongInfo(self, songInfo: dict):
         """ 更新歌曲信息 """
         self.songInfo = songInfo
-        self.songName = self.songInfo['songName']
-        self.songerName = self.songInfo['songer']
+        self.songName = self.songInfo.get('songName','')
+        self.songerName = self.songInfo.get('songer','')
 
     def initUI(self, songInfo: dict):
         """ 重置所有属性 """
@@ -96,20 +125,19 @@ class ScrollTextWindow(QWidget):
 
     def initWidget(self):
         """ 初始化界面 """
-        self.setFixedHeight(115)
-        self.setAttribute(Qt.WA_StyledBackground)
-        # 调整窗口宽度
         self.adjustWindowWidth()
-        # 初始化定时器
-        self.songPauseTimer.setInterval(400)
-        self.songerPauseTimer.setInterval(400)
-        self.songNameTimer.setInterval(self.timeStep)
-        self.songerNameTimer.setInterval(self.timeStep)
-        self.songNameTimer.timeout.connect(self.updateSongIndex)
-        self.songerNameTimer.timeout.connect(self.updateSongerIndex)
-        self.songPauseTimer.timeout.connect(self.restartTextTimer)
-        self.songerPauseTimer.timeout.connect(self.restartTextTimer)
-
+        if not self.hasInitWidget:
+            self.setFixedHeight(115)
+            self.setAttribute(Qt.WA_StyledBackground)
+            # 初始化定时器
+            self.songPauseTimer.setInterval(400)
+            self.songerPauseTimer.setInterval(400)
+            self.songNameTimer.setInterval(self.timeStep)
+            self.songerNameTimer.setInterval(self.timeStep)
+            self.songNameTimer.timeout.connect(self.updateSongIndex)
+            self.songerNameTimer.timeout.connect(self.updateSongerIndex)
+            self.songPauseTimer.timeout.connect(self.restartTextTimer)
+            self.songerPauseTimer.timeout.connect(self.restartTextTimer)
         # 根据字符串宽度是否大于窗口宽度开启滚动：
         if self.songNameTimer.isActive():
             self.songNameTimer.stop()
@@ -119,15 +147,22 @@ class ScrollTextWindow(QWidget):
             self.songNameTimer.start()
         if self.isSongerNameTooLong:
             self.songerNameTimer.start()
+        self.hasInitWidget=True
 
     def getTextWidth(self):
         """ 计算文本的总宽度 """
         songFontMetrics = QFontMetrics(QFont('Microsoft YaHei', 14, 400))
         self.songNameWidth = sum(
             [songFontMetrics.width(i) for i in self.songName])
-        songerFontMetrics = QFontMetrics(QFont('Microsoft YaHei', 12, 500))
+        # 检测歌手名是否全是英文
+        self.isMatch = re.match(r'^[a-zA-Z]+$', self.songerName)
+        if not self.isMatch:
+            songerFontMetrics = QFontMetrics(QFont('Microsoft YaHei', 12, 500))
+        else:
+            songerFontMetrics = QFontMetrics(QFont('Microsoft YaHei', 11, 500))
+        # 总是会少一个字符的长度
         self.songerNameWidth = sum(
-            [songerFontMetrics.width(i) for i in self.songerName])
+            [songerFontMetrics.width(i) for i in self.songerName])+8
 
     def adjustWindowWidth(self):
         """ 根据字符串长度调整窗口宽度 """
@@ -190,7 +225,10 @@ class ScrollTextWindow(QWidget):
             painter.drawText(0, 54, self.songName)
 
         # 绘制歌手名
-        painter.setFont(QFont('Microsoft YaHei', 12, 75))
+        if not self.isMatch:
+            painter.setFont(QFont('Microsoft YaHei', 12, 75))
+        else:
+            painter.setFont(QFont('Microsoft YaHei', 11, 75))
         if self.isSongerNameTooLong:
             x3 = self.spacing * self.isSongerNameAllOut - self.moveStep * \
                 self.songerCurrentIndex

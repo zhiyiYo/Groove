@@ -44,7 +44,7 @@ class MinimizeButton(QPushButton):
         self.setIconSize(QSize(57, 40))
         self.installEventFilter(self)
 
-    def eventFilter(self, obj, e:QEvent):
+    def eventFilter(self, obj, e: QEvent):
         """ hover或leave时更换图标 """
         if obj == self:
             if e.type() == QEvent.Enter:
@@ -105,12 +105,20 @@ class CloseButton(QPushButton):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-
         self.setFixedSize(57, 40)
         self.setStyleSheet("QPushButton{border:none;margin:0}")
-        self.setIcon(QIcon('resource\\images\\titleBar\\透明黑色关闭按钮_57_40.png'))
+        self.blackIcon_list = [
+            'resource\\images\\titleBar\\透明黑色关闭按钮_57_40.png',
+            'resource\\images\\titleBar\\透明黑色关闭按钮_57_40_2.png']
+        self.blackIconIndex = 1
+        self.setIcon(QIcon(self.blackIcon_list[self.blackIconIndex]))
         self.setIconSize(QSize(57, 40))
         self.installEventFilter(self)
+
+    def setBlackCloseIcon(self, blackIconIndex: int):
+        """ 设置黑色关闭图标 """
+        self.blackIconIndex = blackIconIndex
+        self.setIcon(QIcon(self.blackIcon_list[self.blackIconIndex]))
 
     def eventFilter(self, obj, e):
         """ hover或leave时更换图标 """
@@ -120,9 +128,8 @@ class CloseButton(QPushButton):
                     QIcon('resource\\images\\titleBar\\关闭按钮_hover_57_40.png'))
             elif e.type() == QEvent.Leave:
                 self.setIcon(
-                    QIcon('resource\\images\\titleBar\\透明黑色关闭按钮_57_40.png'))
+                    QIcon(self.blackIcon_list[self.blackIconIndex]))
             elif e.type() == QEvent.MouseButtonPress and e.button() == Qt.LeftButton:
                 self.setIcon(
                     QIcon(r"resource\images\titleBar\关闭按钮_selected_57_40.png"))
         return super().eventFilter(obj, e)
-        

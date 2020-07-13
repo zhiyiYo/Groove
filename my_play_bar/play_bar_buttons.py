@@ -14,12 +14,15 @@ class PlayButton(QToolButton):
         # 设置标志位
         self.isPlaying = False
         self.isEnter = False
-        self.isPressed = True
+        self.isPressed = False
         # 设置图标
         self.setFixedSize(65, 65)
         self.setStyleSheet(
             "QToolButton{border:none;margin:0;background:transparent}")
         self.installEventFilter(self)
+        # 设置快捷键
+        self.setShortcut(Qt.Key_F5)
+        self.setFocusPolicy(Qt.StrongFocus)
 
     def setPlay(self, play: bool = True):
         """ 根据播放状态设置按钮图标 """
@@ -54,29 +57,35 @@ class PlayButton(QToolButton):
         """ 绘制背景 """
         # super().paintEvent(e)
         painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing, True)
+        painter.setRenderHints(QPainter.Antialiasing |
+                               QPainter.SmoothPixmapTransform)
         # 设置描边画笔
         pen = QPen(QColor(255, 255, 255, 100))
         pen.setWidth(2)
         # 设置画笔
         painter.setPen(pen)
         painter.drawEllipse(1, 1, 62, 62)
-        # 绘制背景
-        if not self.isPressed and self.isEnter:
-            painter.setPen(QPen(QColor(101, 106, 116, 180)))
-            bgBrush = QBrush(QColor(73, 76, 84, 80))
-            painter.setBrush(bgBrush)
-            painter.drawEllipse(1, 1, 62, 62)
         # 设置背景图
         painter.setPen(Qt.NoPen)
         if not self.isPlaying:
             self.image = QPixmap(r'resource\images\playBar\播放_63_63.png')
         else:
             self.image = QPixmap(r'resource\images\playBar\暂停_63_63.png')
-        brush = QBrush(self.image)
-        painter.setBrush(brush)
+        # 绘制背景
+        if self.isPressed:
+            self.image.scaled(58, 58, Qt.KeepAspectRatio,
+                              Qt.SmoothTransformation)
+            painter.drawPixmap(2, 2, 59, 59, self.image)
+        elif self.isEnter:
+            painter.setPen(QPen(QColor(101, 106, 116, 180)))
+            bgBrush = QBrush(QColor(73, 76, 84, 70))
+            painter.setBrush(bgBrush)
+            painter.drawEllipse(1, 1, 62, 62)
         # 绘制背景图
-        painter.drawEllipse(1, 1, 63, 63)
+        if not self.isPressed:
+            brush = QBrush(self.image)
+            painter.setBrush(brush)
+            painter.drawEllipse(1, 1, 63, 63)
 
 
 class RandomPlayButton(QToolButton):
@@ -121,30 +130,33 @@ class RandomPlayButton(QToolButton):
         """ 绘制背景 """
         super().paintEvent(e)
         painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing, True)
-        painter.setPen(Qt.NoPen)
-        if self.isSelected:
-            bgBrush = QBrush(QColor(73, 76, 84, 180))
-            painter.setBrush(bgBrush)
-            painter.drawEllipse(1, 1, 44, 44)
-        else:
-            if self.isPressed:
-                painter.setPen(QPen(QColor(101, 106, 116, 80)))
-                bgBrush = QBrush(QColor(73, 76, 84, 110))
-                painter.setBrush(bgBrush)
-                painter.drawEllipse(1, 1, 44, 44)
-            elif self.isEnter:
-                # 设置画笔
-                painter.setPen(QPen(QColor(101, 106, 116, 180)))
-                bgBrush = QBrush(QColor(73, 76, 84, 80))
-                painter.setBrush(bgBrush)
-                painter.drawEllipse(1, 1, 44, 44)
-        # 绘制背景图
+        painter.setRenderHints(QPainter.Antialiasing |
+                               QPainter.SmoothPixmapTransform)
         painter.setPen(Qt.NoPen)
         self.image = QPixmap(r'resource\images\playBar\随机播放_45_45.png')
-        brush = QBrush(self.image)
-        painter.setBrush(brush)
-        painter.drawEllipse(1, 1, 45, 45)
+        if self.isSelected:
+            bgBrush = QBrush(QColor(73, 76, 84, 120))
+            painter.setBrush(bgBrush)
+            painter.drawEllipse(1, 1, 44, 44)
+        if self.isPressed:
+            painter.setPen(QPen(QColor(101, 106, 116, 80)))
+            bgBrush = QBrush(QColor(73, 76, 84, 110))
+            painter.setBrush(bgBrush)
+            painter.drawEllipse(1, 1, 44, 44)
+            self.image = self.image.scaled(44, 44, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            painter.drawPixmap(1,1,44,44,self.image)
+        elif self.isEnter:
+            # 设置画笔
+            painter.setPen(QPen(QColor(101, 106, 116, 180)))
+            bgBrush = QBrush(QColor(73, 76, 84, 80))
+            painter.setBrush(bgBrush)
+            painter.drawEllipse(1, 1, 44, 44)
+        # 绘制背景图
+        if not self.isPressed:
+            painter.setPen(Qt.NoPen)
+            brush = QBrush(self.image)
+            painter.setBrush(brush)
+            painter.drawEllipse(1, 1, 45, 45)
 
 
 class BasicButton(QToolButton):
@@ -154,6 +166,7 @@ class BasicButton(QToolButton):
         super().__init__(parent)
         # 设置标志位
         self.isEnter = False
+        self.isPressed = False
         self.icon_path = icon_path
         self.setFixedSize(47, 47)
 
@@ -167,23 +180,43 @@ class BasicButton(QToolButton):
         self.isEnter = False
         self.update()
 
+    def mousePressEvent(self, e):
+        """ 鼠标按下更新背景 """
+        super().mousePressEvent(e)
+        self.isPressed = True
+        self.update()
+
+    def mouseReleaseEvent(self, e):
+        """ 鼠标按下更新背景 """
+        super().mouseReleaseEvent(e)
+        self.isPressed = False
+        self.update()
+
     def paintEvent(self, e):
         """ 绘制背景 """
+        self.image = QPixmap(self.icon_path)
         painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing, True)
+        painter.setRenderHints(QPainter.Antialiasing |
+                               QPainter.SmoothPixmapTransform)
         # 设置画笔
         painter.setPen(Qt.NoPen)
-        if self.isEnter:
+        if self.isPressed:
+            bgBrush = QBrush(QColor(73, 76, 84, 100))
+            painter.setBrush(bgBrush)
+            painter.drawEllipse(2, 2, 42, 42)
+            self.image = self.image.scaled(
+                43, 43, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        elif self.isEnter:
             painter.setPen(QPen(QColor(101, 106, 116, 180)))
-            bgBrush = QBrush(QColor(73, 76, 84, 80))
+            bgBrush = QBrush(QColor(73, 76, 84, 70))
             painter.setBrush(bgBrush)
             painter.drawEllipse(1, 1, 44, 44)
         painter.setPen(Qt.NoPen)
-        self.image = QPixmap(self.icon_path)
-        brush = QBrush(self.image)
-        painter.setBrush(brush)
         # 绘制背景图
-        painter.drawEllipse(1, 1, 45, 45)
+        if not self.isPressed:
+            painter.drawPixmap(1, 1, 45, 45, self.image)
+        else:
+            painter.drawPixmap(2, 2, 42, 42, self.image)
 
 
 class LastSongButton(BasicButton):
@@ -192,6 +225,9 @@ class LastSongButton(BasicButton):
     def __init__(self, parent=None):
         self.icon_path = r'resource\images\playBar\上一首_45_45.png'
         super().__init__(self.icon_path, parent)
+        # 设置快捷键
+        self.setShortcut(Qt.Key_F4)
+        self.setFocusPolicy(Qt.StrongFocus)
 
 
 class NextSongButton(BasicButton):
@@ -200,6 +236,9 @@ class NextSongButton(BasicButton):
     def __init__(self, parent=None):
         self.icon_path = r'resource\images\playBar\下一首_45_45.png'
         super().__init__(self.icon_path, parent)
+        # 设置快捷键
+        self.setShortcut(Qt.Key_F6)
+        self.setFocusPolicy(Qt.StrongFocus)
 
 
 class LoopModeButton(QToolButton):
@@ -213,7 +252,7 @@ class LoopModeButton(QToolButton):
         self.clickedTime = 0
         self.loopMode = QMediaPlaylist.Sequential
         self.__loopMode_list = [QMediaPlaylist.Sequential,
-                         QMediaPlaylist.Loop, QMediaPlaylist.CurrentItemInLoop]
+                                QMediaPlaylist.Loop, QMediaPlaylist.CurrentItemInLoop]
 
         self.__iconPath_list = [r'resource\images\playBar\循环播放_45_45.png',
                                 r'resource\images\playBar\循环播放_45_45.png',
@@ -254,7 +293,7 @@ class LoopModeButton(QToolButton):
             painter.drawEllipse(1, 1, 44, 44)
         # 绘制背景色
         if self.clickedTime != 0:
-            brush = QBrush(QColor(73, 76, 84, 180))
+            brush = QBrush(QColor(73, 76, 84, 120))
             painter.setBrush(brush)
             painter.drawEllipse(1, 1, 44, 44)
         # 绘制背景图
@@ -273,6 +312,7 @@ class VolumeButton(QToolButton):
         # 设置标志位
         self.isEnter = False
         self.isSelected = False
+        self.isPressed = False
         # 当前音量等级及其各个图标地址
         self.currentVolumeLevel = 1
         self.__iconPath_list = [r'resource\images\playBar\音量按钮_无_45_45.png',
@@ -281,7 +321,20 @@ class VolumeButton(QToolButton):
                                 r'resource\images\playBar\音量按钮_高_45_45.png',
                                 r'resource\images\playBar\音量按钮_静音_45_45.png']
         self.setFixedSize(47, 47)
-        self.installEventFilter(self)
+        # self.installEventFilter(self)
+
+    def mousePressEvent(self, e):
+        """ 鼠标按下更新背景 """
+        super().mousePressEvent(e)
+        self.isPressed = True
+        self.update()
+
+    def mouseReleaseEvent(self, e):
+        """ 鼠标按下更新背景 """
+        super().mouseReleaseEvent(e)
+        self.isPressed = False
+        self.isSelected = not self.isSelected
+        self.update()
 
     def eventFilter(self, obj, e):
         """ 按钮按下时变为静音图标 """
@@ -305,24 +358,33 @@ class VolumeButton(QToolButton):
     def paintEvent(self, e):
         """ 绘制背景 """
         painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing, True)
+        painter.setRenderHints(QPainter.Antialiasing |
+                               QPainter.SmoothPixmapTransform)
         # 设置画笔和背景图
         painter.setPen(Qt.NoPen)
         self.image = QPixmap(self.__iconPath_list[self.currentVolumeLevel])
         if self.isSelected:
             # 如果被按下就换成静音按钮
             self.image = QPixmap(self.__iconPath_list[-1])
-        if self.isEnter:
+        if self.isPressed:
+            bgBrush = QBrush(QColor(73, 76, 84, 90))
+            painter.setBrush(bgBrush)
+            painter.drawEllipse(1, 1, 44, 44)
+            self.image = self.image.scaled(
+                44, 44, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            painter.drawPixmap(1,1,44,44,self.image)
+        elif self.isEnter:
             # 设置画笔
             painter.setPen(QPen(QColor(101, 106, 116, 180)))
-            bgBrush = QBrush(QColor(73, 76, 84, 80))
+            bgBrush = QBrush(QColor(73, 76, 84, 70))
             painter.setBrush(bgBrush)
             painter.drawEllipse(1, 1, 44, 44)
         # 绘制背景图
-        painter.setPen(Qt.NoPen)
-        brush = QBrush(self.image)
-        painter.setBrush(brush)
-        painter.drawEllipse(1, 1, 45, 45)
+        if not self.isPressed:
+            painter.setPen(Qt.NoPen)
+            brush = QBrush(self.image)
+            painter.setBrush(brush)
+            painter.drawEllipse(1, 1, 45, 45)
 
     def setVolumeLevel(self, volumeLevel):
         """ 根据音量大小的不同来更换图标 """
@@ -345,30 +407,3 @@ class MoreActionsButton(BasicButton):
     def __init__(self, parent=None):
         self.icon_path = r'resource\images\playBar\更多操作_45_45.png'
         super().__init__(self.icon_path, parent)
-
-
-class Demo(QWidget):
-    """ 测试 """
-
-    def __init__(self):
-        super().__init__()
-        self.resize(400, 200)
-        self.setObjectName('demo')
-        self.setAttribute(Qt.WA_StyledBackground)
-        self.playButton = MoreActionsButton(self)
-        self.playButton.move(170, 20)
-        self.slider = QSlider(Qt.Horizontal, self)
-        self.slider.move(50, 100)
-        self.slider.setObjectName('slider')
-        self.setQss()
-
-    def setQss(self):
-        with open(r'resource\css\playBar.qss', encoding='utf-8') as f:
-            self.setStyleSheet(f.read())
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = Demo()
-    demo.show()
-    sys.exit(app.exec_())

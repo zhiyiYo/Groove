@@ -77,7 +77,7 @@ class SongNameCard(QWidget):
 
     def getSongNameWidth(self):
         """ 计算歌名的长度 """
-        fontMetrics = QFontMetrics(QFont('Microsoft YaHei', 11))
+        fontMetrics = QFontMetrics(QFont('Microsoft YaHei', 12))
         self.songNameWidth = sum([fontMetrics.width(i) for i in self.songNameCheckBox.text()])
 
 

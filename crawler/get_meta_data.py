@@ -3,7 +3,7 @@
 import os
 import re
 
-from mutagen import File
+from mutagen import File, MutagenError
 from mutagen.flac import Picture, FLAC
 from mutagen.id3 import TPE1, TPE2, TIT2, TCON, TALB, TDRC
 
@@ -26,17 +26,21 @@ class GetMetaData():
         """ 去酷狗爬取信息 """
         self.kuGouCrawler = KuGouCrawler(
             self.albumCover_set, self.albumCoverFolder)
-        for songer, songname,songPath in zip(self.songer_list, self.songname_list,self.songPath_list):
+        for songer, songname, songPath in zip(self.songer_list, self.songname_list, self.songPath_list):
             self.id_card = File(songPath)
             isTextModified = self.modifyTextPart(songname, songer)
             isAlbumModified = self.fetchAlbum(songer, songname)
             if isTextModified or isAlbumModified:
-                self.id_card.save()
+                try:
+                    # 歌曲在播放时保存会失败
+                    self.id_card.save()
+                except MutagenError:
+                    pass
         self.kuGouCrawler.browser.quit()
 
     def runQQMusicCrawler(self):
         """ 去QQ音乐爬取信息 """
-        albumTcon_dict={}
+        albumTcon_dict = {}
         self.qqMusicCrawler = QQMusicCrawler(albumTcon_dict)
         for songname, songPath in zip(self.songname_list, self.songPath_list):
             song = os.path.basename(songPath)
@@ -61,7 +65,7 @@ class GetMetaData():
             os.mkdir(self.albumCoverFolder)
         for _, _, albumCover_list in os.walk(self.albumCoverFolder):
             break
-        
+
         self.albumCover_set = set(albumCover_list)
 
     def filterAudioFile(self, filePath_list):
@@ -135,7 +139,7 @@ class GetMetaData():
                 isModified = True
         return isModified
 
-    def fetchAlbum(self,songer,songname) -> bool:
+    def fetchAlbum(self, songer, songname) -> bool:
         """ 修改专辑信息并返回修改标志位 """
         isModified = False
         suffix = self.id_card.mime[0].split('/')[-1]
@@ -165,13 +169,11 @@ class GetMetaData():
                 '©alb') or not self.id_card.get('©day') or self.id_card.get(
                     '©day')[0][0] == '0'
             if album_get_cond:
-                self.kuGouCrawler.get_album(songer,songname,self.id_card)
+                self.kuGouCrawler.get_album(songer, songname, self.id_card)
         return isModified
 
-            
+
 if __name__ == "__main__":
     targetPath_list = [r'D:\Python_Study\label_card\resource']
     getMetaData = GetMetaData(targetPath_list)
     getMetaData.runQQMusicCrawler()
-    
-    

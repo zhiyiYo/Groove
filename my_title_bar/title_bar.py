@@ -105,41 +105,6 @@ class Demo(QWidget):
         
     def resizeEvent(self, e):
         self.titleBar.resize(self.width(), 40)
-        
-    def GET_X_LPARAM(self, param):
-        return param & 0xffff
-
-    def GET_Y_LPARAM(self, param):
-        return param >> 16
-        
-    def nativeEvent(self, eventType, message):
-        result = 0
-        msg2 = MSG.from_address(message.__int__())
-        #minV, maxV = 18, 22
-        minV,maxV=0,6
-        if msg2.message == 0x0084:
-            xPos = self.GET_X_LPARAM(msg2.lParam) - self.frameGeometry().x()
-            yPos = self.GET_Y_LPARAM(msg2.lParam) - self.frameGeometry().y()
-            if(xPos > minV and xPos < maxV):
-                result = Flags.HTLEFT.value
-            elif(xPos > (self.width() - maxV) and xPos < (self.width() - minV)):
-                result = Flags.HTRIGHT.value
-            elif (yPos > minV and yPos < maxV):
-                result = Flags.HTTOP.value
-            elif(yPos > (self.height() - maxV) and yPos < (self.height() - minV)):
-                result = Flags.HTBOTTOM.value
-            elif(xPos > minV and xPos < maxV and yPos > minV and yPos < maxV):
-                result = Flags.HTTOPLEFT.value
-            elif(xPos > (self.width() - maxV) and xPos < (self.width() - minV) and yPos > minV and yPos < maxV):
-                result = Flags.HTTOPRIGHT.value
-            elif(xPos > minV and xPos < maxV and yPos > (self.height() - maxV) and yPos < (self.height() - minV)):
-                result = Flags.HTBOTTOMLEFT.value
-            elif(xPos > (self.width() - maxV) and xPos < (self.width() - minV) and yPos > (self.height() - maxV) and yPos < (self.height() - minV)):
-                result = Flags.HTBOTTOMRIGHT.value
-            if result!=0:
-                return (True, result)
-        return QWidget.nativeEvent(self, eventType, message)
-        
 
 
 if __name__ == "__main__":

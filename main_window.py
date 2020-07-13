@@ -4,7 +4,7 @@ import sys
 from ctypes.wintypes import HWND, MSG
 from enum import Enum
 
-from PyQt5.QtCore import QPoint, QRect, QSize, Qt
+from PyQt5.QtCore import QPoint, QRect, QSize, Qt, QUrl
 from PyQt5.QtGui import QCloseEvent, QIcon, QPixmap, QResizeEvent, QFont
 from PyQt5.QtMultimedia import QMediaPlayer
 from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsDropShadowEffect,
@@ -18,6 +18,7 @@ from my_setting_interface import SettingInterface
 from my_title_bar import TitleBar
 from navigation import NavigationBar, NavigationMenu
 from media_player import MediaPlaylist
+from my_thumbnail_tool_bar import ThumbnailToolBar
 
 
 class MainWindow(QWidget):
@@ -50,18 +51,22 @@ class MainWindow(QWidget):
         # 从配置文件中的选择文件夹读取音频文件
         self.myMusicInterface = MyMusicInterface(
             self.settingInterface.config['selected-folders'], self)
-        songInfo = {
-            'songName': 'オオカミと少女 (狼与少女)', 'songer': '鎖那', 'duration': '3:50',
-            'album': ['resource\\Album Cover\\Hush a by little girl\\Hush a by little girl.jpg']}
+        # 将最后一首歌作为playBar初始化时用的songInfo
+        self.lastSongInfo = self.settingInterface.config.get('last-song', {})
         self.titleBar = TitleBar(self)
-        self.playBar = PlayBar(songInfo, self)
+        self.playBar = PlayBar(self.lastSongInfo, self)
+        # 实例化缩略图任务栏
+        self.thumbnailToolBar = ThumbnailToolBar(self)
+        self.thumbnailToolBar.setWindow(self.windowHandle())
 
     def initWidget(self):
         """ 初始化小部件 """
         self.resize(1300, 970)
         # 打开鼠标跟踪，用来检测鼠标是否位于边界处
         self.setObjectName('mainWindow')
+        self.setWindowTitle('Groove音乐')
         self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setWindowIcon(QIcon('resource\\images\\透明icon.png'))
         self.setStyleSheet('QWidget#mainWindow{background:transparent}')
         self.setAttribute(Qt.WA_TranslucentBackground | Qt.WA_StyledBackground)
         # 居中显示
@@ -70,6 +75,7 @@ class MainWindow(QWidget):
                   int((desktop.height()-120) / 2 - self.height() / 2))
         # 标题栏置顶
         self.titleBar.raise_()
+        self.titleBar.closeBt.setBlackCloseIcon(0)  # 更换图标
         # 隐藏导航菜单
         self.navigationMenu.hide()
         # 设置窗口特效
@@ -86,6 +92,8 @@ class MainWindow(QWidget):
         self.initPlaylist()
         # 将按钮点击信号连接到槽函数
         self.connectSignalToSlot()
+        # 初始化播放栏
+        self.initPlayBar()
 
     def setWindowEffect(self):
         """ 设置窗口特效 """
@@ -137,6 +145,14 @@ class MainWindow(QWidget):
 
     def closeEvent(self, e: QCloseEvent):
         """ 关闭窗口前更新json文件 """
+        self.settingInterface.config['last-song'] = self.playlist.currentPlaylist[
+            self.playlist.currentIndex()]
+        self.settingInterface.config['volume'] = self.playBar.volumeSlider.value(
+        )
+        self.settingInterface.config['position'] = self.playBar.progressSlider.value(
+        )
+        self.settingInterface.config['duration'] = self.playBar.progressSlider.maximum(
+        )
         self.settingInterface.writeConfig()
         self.playBar.close()
         e.accept()
@@ -150,7 +166,6 @@ class MainWindow(QWidget):
     def nativeEvent(self, eventType, message):
         result = 0
         msg = MSG.from_address(message.__int__())
-        #minV, maxV = 18, 22
         minV, maxV = 0, 4
         if msg.message == 0x0084:
             xPos = self.GET_X_LPARAM(msg.lParam) - self.frameGeometry().x()
@@ -188,6 +203,7 @@ class MainWindow(QWidget):
         self.navigationMenu.showBarButton.clicked.connect(
             self.showNavigationBar)
         # 播放栏各部件功能
+        # self.playBar.randomPlayButton.clicked.connect(self.setRandomPlay)
         self.playBar.nextSongButton.clicked.connect(self.playlist.next)
         self.playBar.lastSongButton.clicked.connect(self.playlist.previous)
         self.playBar.playButton.clicked.connect(self.playButtonEvent)
@@ -197,11 +213,22 @@ class MainWindow(QWidget):
         self.playBar.volumeSlider.valueChanged.connect(self.volumeChangedEvent)
         self.playBar.progressSlider.sliderMoved.connect(
             self.progressSliderMoveEvent)
+        # 缩略图任务栏各按钮的功能
+        self.thumbnailToolBar.playButton.clicked.connect(self.playButtonEvent)
+        self.thumbnailToolBar.lastSongButton.clicked.connect(
+            self.playlist.previous)
+        self.thumbnailToolBar.nextSongButton.clicked.connect(
+            self.playlist.next)
         # 将播放器的信号连接到槽函数
         self.player.positionChanged.connect(self.playerPositionChangeEvent)
         self.player.durationChanged.connect(self.playerDurationChangeEvent)
+        # 将播放列表的信号连接到槽函数
+        self.playlist.switchSongSignal.connect(
+            lambda songInfo_dict: self.playBar.updateSongInfoCard(songInfo_dict))
         # 歌曲卡的信号连接到槽函数
         self.songCardListWidget.doubleClicked.connect(self.playSelectedSong)
+        self.songCardListWidget.playSignal.connect(
+            self.songCardPlayButtonEvent)
 
     def referenceWidgets(self):
         """ 引用小部件 """
@@ -213,16 +240,23 @@ class MainWindow(QWidget):
         """ 初始化播放列表 """
         self.player.setPlaylist(self.playlist)
         # 添加播放列表
-        songPath_list = [songInfo_dict['songPath']
-                         for songInfo_dict in self.songCardListWidget.songInfo_list]
-        self.playlist.addMedias(songPath_list)
+        songInfo_list = self.songCardListWidget.songInfo_list.copy()
+        if self.lastSongInfo.keys() == songInfo_list[0].keys():
+            songInfo_list = [self.lastSongInfo] + \
+                self.songCardListWidget.songInfo_list
+        self.playlist.addMedias(songInfo_list)
 
     def playButtonEvent(self):
-        """ 播放按钮按下时根据播放器的状态来决定是暂停还是播放 """
+        """ 播放栏或者缩略图任务栏的播放按钮按下时根据播放器的状态来决定是暂停还是播放 """
         if self.player.state() == QMediaPlayer.PlayingState:
             self.player.pause()
+            self.playBar.playButton.setPlay(False)
+            self.thumbnailToolBar.playButton.setPlay(False)
+            self.thumbnailToolBar.setButtonsEnabled(True)
         else:
             self.player.play()
+            self.playBar.playButton.setPlay(True)
+            self.thumbnailToolBar.playButton.setPlay(True)
 
     def volumeButtonEvent(self):
         """ 静音按钮按下时决定是否静音 """
@@ -250,8 +284,10 @@ class MainWindow(QWidget):
 
     def playerDurationChangeEvent(self):
         """ 播放器当前播放的歌曲变化时更新进度条的范围和总时长标签 """
-        self.playBar.progressSlider.setRange(0, self.player.duration())
-        self.playBar.setTotalTime(self.player.duration())
+        if self.player.duration() >= 1:
+            # 刚切换时得到的时长为0，所以需要先判断一下
+            self.playBar.progressSlider.setRange(0, self.player.duration())
+            self.playBar.setTotalTime(self.player.duration())
 
     def progressSliderMoveEvent(self):
         """ 手动拖动进度条时改变当前播放进度标签和播放器的值 """
@@ -260,19 +296,46 @@ class MainWindow(QWidget):
 
     def playSelectedSong(self):
         """ 播放选中的歌 """
-        songPath = self.songCardListWidget.currentSongCard.songPath
-        self.playlist.playThisSong(songPath)
-        self.player.play()
+        songInfo_dict = self.songCardListWidget.currentSongCard.songInfo_dict
+        # 更新歌曲信息卡
+        self.switchCurrentSong(songInfo_dict)
+        self.thumbnailToolBar.setButtonsEnabled(True)
+
+    def songCardPlayButtonEvent(self, songInfo_dict):
+        """ 歌曲卡的播放按钮按下时播放这首歌 """
+        self.switchCurrentSong(songInfo_dict)
+        self.thumbnailToolBar.setButtonsEnabled(True)
+
+    def switchCurrentSong(self, songInfo_dict: dict):
+        """ 切换当前播放的歌曲 """
+        # 更新歌曲信息卡
+        self.playBar.updateSongInfoCard(songInfo_dict)
+        # 播放歌曲
+        self.playlist.playThisSong(songInfo_dict)
         self.playBar.playButton.setPlay(True)
+        self.player.play()
 
+    def setRandomPlay(self):
+        """ 选择随机播放模式 """
+        if self.playBar.randomPlayButton.isSelected:
+            self.playlist.setRandomPlay(True)
+        else:
+            self.playlist.setRandomPlay(False)
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    app.setAttribute(Qt.AA_DontCreateNativeWidgetSiblings)
-    font = QFont(QApplication.font())
-    font.setStyleStrategy(QFont.PreferAntialias)
-    app.setFont(font)
-    demo = MainWindow()
-    demo.show()
-    demo.playBar.show()
-    sys.exit(app.exec_())
+    def initPlayBar(self):
+        """ 从配置文件中读取配置数据来初始化播放栏 """
+        # 初始化音量
+        self.playBar.volumeSlider.setValue(
+            self.settingInterface.config.get('volume', 20))
+
+        # 根据配置文件初始化播放器
+        """ if self.playlist.currentPlaylist:
+            self.playlist.setCurrentIndex(0)
+            self.player.pause()
+            # 根据配置文件初始化进度条
+            self.playBar.progressSlider.setValue(
+                self.settingInterface.config.get('position', 0))
+            self.playBar.progressSlider.setRange(
+                0, self.settingInterface.config.get('duration', 0))
+            self.player.setPosition(
+                self.settingInterface.config.get('duration', 0)) """

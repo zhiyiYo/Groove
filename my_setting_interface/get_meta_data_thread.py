@@ -2,7 +2,7 @@ import os
 import re
 import sys
 
-from mutagen import File
+from mutagen import File,MutagenError
 from mutagen.flac import FLAC, Picture
 from mutagen.id3 import TALB, TCON, TDRC, TIT2, TPE1, TPE2
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
@@ -40,7 +40,11 @@ class GetMetaDataThread(QThread):
             isTextModified = self.modifyTextPart(songname, songer)
             isAlbumModified = self.fetchAlbum(songer, songname)
             if isTextModified or isAlbumModified:
-                self.id_card.save()
+                try:
+                    # 歌曲播放时会导致保存失败
+                    self.id_card.save()
+                except:
+                    pass
         else:
             self.crawlSignal.emit(f'当前进度：{index+1}/{len(self.songPath_list)}')
             

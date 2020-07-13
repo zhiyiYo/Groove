@@ -1,6 +1,6 @@
 import sys
 from json import load
-from PyQt5.QtCore import QEvent, QPoint, Qt
+from PyQt5.QtCore import QEvent, QPoint, Qt,pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent, QIcon, QMouseEvent, QResizeEvent
 from PyQt5.QtWidgets import QApplication, QHBoxLayout, QPushButton, QWidget
 
@@ -10,10 +10,13 @@ from Groove.my_widget.my_label import ClickableLabel
 
 class SongCard(QWidget):
     """ 定义一个歌曲卡类 """
+    # 播放按钮点击时发送播放信号
+    playSignal = pyqtSignal(dict)
 
     def __init__(self, songInfo_dict: dict):
         super().__init__()
-        self.songPath=songInfo_dict['songPath']
+        self.songPath = songInfo_dict['songPath']
+        self.songInfo_dict = songInfo_dict
         # 设置item被点击标志位
         self.isClicked = False
         # 实例化小部件
@@ -56,21 +59,21 @@ class SongCard(QWidget):
         self.setFixedHeight(61)
         # 引用小部件
         self.referenceWidgets()
-
         # 分配ID
         self.songerLabel.setObjectName('songerLabel')
         self.albumLabel.setObjectName('albumLabel')
         self.setObjectName('songCard')
 
-        # 将复选框的选中信号连接到槽函数
+        # 将信号连接到槽函数
         self.songNameCheckBox.stateChanged.connect(
             self.checkStateChangeEvent)
-
+        self.playButton.clicked.connect(lambda:self.playSignal.emit(self.songInfo_dict))
         # 安装事件过滤器
         self.installEventFilter(self)
 
     def updateSongCard(self, songInfo_dict: dict):
         """ 更新songCard的信息 """
+        self.songInfo_dict = songInfo_dict
         self.songNameCheckBox.setText(songInfo_dict['songName'])
         self.songerLabel.setText(songInfo_dict['songer'])
         self.albumLabel.setText(songInfo_dict['album'][0])
