@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import (
 
 sys.path.append('..')
 from Groove.my_widget.my_toolTip import ToolTip
+from Groove.my_widget.my_scrollArea import ScrollArea
 from Groove.my_widget.album_blur_background import AlbumBlurBackground
 from Groove.get_info.get_album_cover import GetAlbumCover
 from Groove.get_info.get_album_info import AlbumInfo
@@ -39,7 +40,7 @@ class AlbumCardViewer(QWidget):
         self.all_h_layout = QHBoxLayout()
 
         # 实例化滚动区域和滚动区域的窗口
-        self.scrollArea = QScrollArea(self)
+        self.scrollArea = ScrollArea(self)
         self.albumViewWidget = QWidget()
         self.albumViewWidget.albumBlurBackground = AlbumBlurBackground(
             self.albumViewWidget)
@@ -70,6 +71,7 @@ class AlbumCardViewer(QWidget):
         # 分配ID
         self.setObjectName('father')
         self.albumViewWidget.setObjectName('albumViewWidget')
+
 
     def createAlbumCards(self):
         """ 将专辑卡添加到窗口中 """

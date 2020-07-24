@@ -34,14 +34,16 @@ class PlayBar(QWidget):
         self.initWidget()
         self.setWidgetPos()
         self.setQss()
+        self.move(100,500)
 
     def initWidget(self):
         """ 初始化小部件 """
         self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
         self.setFixedHeight(115)
-        self.resize(1280,115)
+        self.resize(1280, 115)
+        
         # 初始化亚克力背景色
-        self.setAcrylicColor('9e1d14C0')
+        self.setAcrylicColor('0a517aC0')
         #self.setAcrylicColor('143d72C0')
         # 引用小部件
         self.referenceWidgets()
@@ -69,9 +71,9 @@ class PlayBar(QWidget):
     def showMoreActionsMenu(self):
         """ 显示更多操作菜单 """
         globalPos = self.rightWidgetGroup.mapToGlobal(self.moreActionsButton.pos())
-        x = globalPos.x() + self.moreActionsButton.width() - 16
+        x = globalPos.x() + self.moreActionsButton.width()+16
         y = int(globalPos.y() + self.moreActionsButton.height() / 2 - self.moreActionsMenu.height()/2)
-        self.moreActionsMenu.show(QPoint(x, y))
+        self.moreActionsMenu.exec(QPoint(x, y))
 
     def referenceWidgets(self):
         """ 引用小部件及其方法 """

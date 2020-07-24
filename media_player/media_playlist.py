@@ -31,7 +31,6 @@ class MediaPlaylist(QMediaPlaylist):
         self.currentPlaylist = self.playlist
         self.currentIndexChanged.connect(
             lambda index: self.switchSongSignal.emit(self.currentPlaylist[index]))
-        
 
     def addMedia(self, songInfo_dict: dict):
         """ 重载addMedia,一次向尾部添加一首歌 """
@@ -49,6 +48,12 @@ class MediaPlaylist(QMediaPlaylist):
         for songInfo_dict in songInfoDict_list:
             self.addMedia(songInfo_dict)
 
+    def insertMedia(self, index, songInfo_dict: dict):
+        """ 在指定位置插入要播放的歌曲 """
+        super().insertMedia(index, QMediaContent(
+            QUrl.fromLocalFile(songInfo_dict['songPath'])))
+        self.playlist.insert(index,songInfo_dict)
+
     def insertMedias(self, index: int, songInfoDict_list: list):
         """ 插入播放列表,updatePlaylist用来决定是否更新播放列表 """
         if not songInfoDict_list:
@@ -56,7 +61,7 @@ class MediaPlaylist(QMediaPlaylist):
         self.playlist.insert(index, songInfoDict_list)
         mediaContent_list = [QMediaContent(
             QUrl.fromLocalFile(songInfo_dict['songPath'])) for songInfo_dict in songInfoDict_list]
-        self.insertMedia(index, mediaContent_list)
+        super().insertMedia(index, mediaContent_list)
 
     def clear(self):
         """ 清空播放列表 """
@@ -70,6 +75,7 @@ class MediaPlaylist(QMediaPlaylist):
             self.setCurrentIndex(0)
         else:
             super().next()
+        # 切换歌曲时发出信号
         self.switchSongSignal.emit(self.currentPlaylist[self.currentIndex()])
 
     def previous(self):
@@ -89,7 +95,7 @@ class MediaPlaylist(QMediaPlaylist):
 
     def setRandomPlay(self, isRandomPlay=False):
         """ 按下随机播放按钮设置随机播放模式 """
-        
+
         if self.playlist:
             if isRandomPlay:
                 self.randomPlaylist = self.playlist.copy()
@@ -101,8 +107,3 @@ class MediaPlaylist(QMediaPlaylist):
                 self.currentPlaylist = self.randomPlaylist
             else:
                 self.currentPlaylist = self.playlist
-                
-
-    
-
-    

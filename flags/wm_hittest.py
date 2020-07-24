@@ -13,4 +13,6 @@ class Flags(Enum):
     HTBOTTOMRIGHT = 17
 
 if __name__ == "__main__":
-    print(Flags.HTBOTTOM.value)
+    flags = Flags(Flags.HTBOTTOMRIGHT)
+    flags=Flags.HTBOTTOM
+    print(flags==Flags.HTBOTTOM)

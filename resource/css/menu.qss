@@ -139,3 +139,22 @@ QMenu#lineEditMenu::icon{
 QMenu#lineEditMenu::item {
     padding-left: 26px;
 }
+
+QMenu#moreActionsMenu{
+    background-color: rgba(242, 242, 242, 0.5);
+    border-radius: 0px;
+    width: 1px;
+}
+
+QMenu#moreActionsMenu::icon {
+    position: absolute;
+    left: 14px;
+}
+
+QMenu#moreActionsMenu::item {
+    /*设置文字边距*/
+    padding-left: 20px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+
+}

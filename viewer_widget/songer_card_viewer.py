@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import (
 
 sys.path.append('..')
 from Groove.card_widget.songer_card import SongerCard
+from Groove.my_widget.my_scrollArea import ScrollArea
 
 
 class SongerCardViewer(QWidget):
@@ -24,7 +25,7 @@ class SongerCardViewer(QWidget):
         self.column_num = 5
         self.total_cow_num = 0
         # 实例化一个滚动区域
-        self.scrollArea = QScrollArea(self)
+        self.scrollArea = ScrollArea(self)
         self.songerViewWidget = QWidget()
         # 实例化标题栏
         #self.firstLetterLabel = QLabel('A', self)

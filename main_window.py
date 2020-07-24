@@ -4,6 +4,7 @@ import sys
 from ctypes.wintypes import HWND, MSG
 from enum import Enum
 
+from system_hotkey import SystemHotkey
 from PyQt5.QtCore import QPoint, QRect, QSize, Qt, QUrl
 from PyQt5.QtGui import QCloseEvent, QIcon, QPixmap, QResizeEvent, QFont
 from PyQt5.QtMultimedia import QMediaPlayer
@@ -94,6 +95,18 @@ class MainWindow(QWidget):
         self.connectSignalToSlot()
         # 初始化播放栏
         self.initPlayBar()
+        # 设置全局热键
+        self.setHotKey()
+
+    def setHotKey(self):
+        """ 设置全局热键 """
+        self.nextSongHotKey = SystemHotkey()
+        self.lastSongHotKey = SystemHotkey()
+        self.playHotKey = SystemHotkey()
+        #callback会返回一个event参数，所以需要用lambda
+        self.nextSongHotKey.register(('f6',), callback=lambda x: self.playlist.next())
+        self.lastSongHotKey.register(('f4',), callback=lambda x: self.playlist.previous())
+        self.playHotKey.register(('f5',),callback=lambda x: self.playButtonEvent())
 
     def setWindowEffect(self):
         """ 设置窗口特效 """
@@ -229,6 +242,7 @@ class MainWindow(QWidget):
         self.songCardListWidget.doubleClicked.connect(self.playSelectedSong)
         self.songCardListWidget.playSignal.connect(
             self.songCardPlayButtonEvent)
+        self.songCardListWidget.nextPlaySignal.connect(self.nextPlayEvent)
 
     def referenceWidgets(self):
         """ 引用小部件 """
@@ -241,7 +255,8 @@ class MainWindow(QWidget):
         self.player.setPlaylist(self.playlist)
         # 添加播放列表
         songInfo_list = self.songCardListWidget.songInfo_list.copy()
-        if self.lastSongInfo.keys() == songInfo_list[0].keys():
+        # 如果上次关闭时的最后一首歌与播放列表的第一首不同就将最后一首歌插入开头
+        if self.lastSongInfo.keys() == songInfo_list[0].keys() and self.lastSongInfo.get('songPath') != songInfo_list[0].get('songPath'):
             songInfo_list = [self.lastSongInfo] + \
                 self.songCardListWidget.songInfo_list
         self.playlist.addMedias(songInfo_list)
@@ -300,6 +315,11 @@ class MainWindow(QWidget):
         # 更新歌曲信息卡
         self.switchCurrentSong(songInfo_dict)
         self.thumbnailToolBar.setButtonsEnabled(True)
+
+    def nextPlayEvent(self, songInfo_dict):
+        """ 下一首播放动作触发对应的槽函数 """
+        self.playlist.insertMedia(
+            self.playlist.currentIndex() + 1, songInfo_dict)
 
     def songCardPlayButtonEvent(self, songInfo_dict):
         """ 歌曲卡的播放按钮按下时播放这首歌 """

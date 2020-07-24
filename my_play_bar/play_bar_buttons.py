@@ -20,9 +20,7 @@ class PlayButton(QToolButton):
         self.setStyleSheet(
             "QToolButton{border:none;margin:0;background:transparent}")
         self.installEventFilter(self)
-        # 设置快捷键
-        self.setShortcut(Qt.Key_F5)
-        self.setFocusPolicy(Qt.StrongFocus)
+
 
     def setPlay(self, play: bool = True):
         """ 根据播放状态设置按钮图标 """
@@ -225,9 +223,6 @@ class LastSongButton(BasicButton):
     def __init__(self, parent=None):
         self.icon_path = r'resource\images\playBar\上一首_45_45.png'
         super().__init__(self.icon_path, parent)
-        # 设置快捷键
-        self.setShortcut(Qt.Key_F4)
-        self.setFocusPolicy(Qt.StrongFocus)
 
 
 class NextSongButton(BasicButton):
@@ -236,9 +231,6 @@ class NextSongButton(BasicButton):
     def __init__(self, parent=None):
         self.icon_path = r'resource\images\playBar\下一首_45_45.png'
         super().__init__(self.icon_path, parent)
-        # 设置快捷键
-        self.setShortcut(Qt.Key_F6)
-        self.setFocusPolicy(Qt.StrongFocus)
 
 
 class LoopModeButton(QToolButton):

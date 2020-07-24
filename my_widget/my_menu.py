@@ -11,7 +11,6 @@ from Groove.effects.window_effect import WindowEffect
 
 
 
-
 class Menu(QMenu):
     """ 自定义菜单 """
     windowEffect = WindowEffect()
@@ -32,11 +31,8 @@ class Menu(QMenu):
 
     def setMenuEffect(self):
         """ 开启特效 """
-        #self.windowEffect.setAcrylicEffect(self.hWnd, 'F2F2F23F')
         self.windowEffect.setAeroEffect(self.hWnd)
         self.windowEffect.addShadowEffect(True,self.hWnd)
-        """ self.class_amended = c_bool(
-            self.windowEffect.setShadowEffect(self.class_amended, self.hWnd)) """
 
     def setQss(self):
         """ 设置层叠样式 """

@@ -10,12 +10,16 @@ from Groove.get_info.get_song_info import SongInfo
 from Groove.card_widget.song_card import SongCard
 from Groove.my_dialog_box import PropertyPanel,SongInfoEditPanel
 from Groove.my_widget.my_menu import Menu,AddToMenu,SongCardListContextMenu
+from Groove.my_widget.my_listWidget import ListWidget
 
 
-class SongCardListWidget(QListWidget):
+
+class SongCardListWidget(ListWidget):
     """ 定义一个歌曲卡列表视图 """
     # 播放按钮点击时发送播放信号
     playSignal = pyqtSignal(dict)
+    # 下一首播放信号
+    nextPlaySignal=pyqtSignal(dict)
     def __init__(self, target_path_list:list,parent=None):
         super().__init__(parent)
         self.resize(1267, 781-23)
@@ -66,9 +70,11 @@ class SongCardListWidget(QListWidget):
         self.verticalScrollBar().setObjectName('LWidgetVScrollBar')
         # 选中中的item改变时改变样式
         self.itemSelectionChanged.connect(self.updateItemQss)
-        # 右击菜单的播放动作触发时发送信号
+        # 右击菜单的动作触发时发送信号
         self.contextMenu.playAct.triggered.connect(
             lambda: self.playSignal.emit(self.currentSongCard.songInfo_dict))
+        self.contextMenu.nextSongAct.triggered.connect(
+            lambda: self.nextPlaySignal.emit(self.currentSongCard.songInfo_dict))
         # 播放按钮点击时发送信号
         for songCard in self.songCard_list:
             songCard.playSignal.connect(lambda songInfo_dict:self.playSignal.emit(songInfo_dict))
@@ -207,27 +213,6 @@ class SongCardListWidget(QListWidget):
         """ 设置层叠样式 """
         with open('resource\\css\\songCardListWidget.qss', 'r', encoding='utf-8') as f:
             self.setStyleSheet(f.read())
-
-    def wheelEvent(self, e:QWheelEvent):
-        """ 实现滚动动画效果 """
-        # 滚轮转动一次|angleDelta().y()|=120，为负表示向下，为正表示向上,120对应3个singleStep()
-        # 获取滚动前的值
-        super().wheelEvent(e)
-        """ preValue = self.verticalScrollBar().value()
-        deltaValue = int(e.angleDelta().y() / 120 * 3 * self.scrollStep)
-        newValue = preValue - deltaValue
-        if self.animation.state() == QAbstractAnimation.Stopped:
-            self.animation.setStartValue(self.verticalScrollBar().value())
-            self.animation.setEndValue(newValue)
-            # 开始滚动
-            self.animation.start()
-        else:
-            self.animation.pause()
-            self.animation.setDuration(self.animation.duration() + 300)
-            self.animation.setEndValue(newValue)
-            #self.verticalScrollBar().setValue(self.animation.endValue())
-            self.animation.start()
-            #self.animation.setStartValue(self.verticalScrollBar().value()) """
             
     def resizeEvent(self, e):
         """ 更新item的尺寸 """
@@ -258,10 +243,11 @@ class SongCardListWidget(QListWidget):
             self.songInfo.sortBySonger()
 
 
+
             
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    demo = SongCardListWidget(['D:\\KuGou\\test_audio\\'])
+    demo = SongCardListWidget(['D:\\KuGou'])
     demo.show()
 
     sys.exit(app.exec_())

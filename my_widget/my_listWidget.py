@@ -5,18 +5,18 @@ from math import cos, pi
 
 from PyQt5.QtCore import QDateTime, Qt, QTimer
 from PyQt5.QtGui import QWheelEvent
-from PyQt5.QtWidgets import QApplication, QScrollArea
+from PyQt5.QtWidgets import QApplication, QListWidget
 
 
-class ScrollArea(QScrollArea):
-    """ 一个可以平滑滚动的区域 """
+class ListWidget(QListWidget):
+    """ 一个可以平滑滚动的列表控件"""
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.fps = 60
         self.duration = 400
         self.stepsTotal = 0
-        self.stepRatio = 1.5
+        self.stepRatio = 1
         self.acceleration = 1
         self.lastWheelEvent = None
         self.scrollStamps = deque()

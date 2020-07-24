@@ -122,6 +122,7 @@ class ScrollTextWindow(QWidget):
         # 初始化界面
         self.setSongInfo(songInfo)
         self.initWidget()
+        self.update()
 
     def initWidget(self):
         """ 初始化界面 """
@@ -147,7 +148,7 @@ class ScrollTextWindow(QWidget):
             self.songNameTimer.start()
         if self.isSongerNameTooLong:
             self.songerNameTimer.start()
-        self.hasInitWidget=True
+        self.hasInitWidget = True
 
     def getTextWidth(self):
         """ 计算文本的总宽度 """
