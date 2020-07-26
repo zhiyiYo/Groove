@@ -1,8 +1,18 @@
+#coding:utf-8
+
+""" 
+按钮优先级：单曲循环>随机播放>列表循环/顺序播放：
+    处于循环播放状态时，按下随机播放按钮，记录下随机按钮的按下状态，但不改变播放模式；
+    当循环模式按钮的状态不是单曲循环时，如果随机播放按下或者已经按下，切换为随机播放模式;
+    如果取消随机播放，恢复之前的循环模式;
+    随机播放的按钮没有按下时，根据循环模式按钮的状态决定播放方式
+"""
+
 import sys
 
 from PyQt5.QtCore import QEvent, QSize, Qt
 from PyQt5.QtGui import QBrush, QColor, QEnterEvent, QIcon, QPainter, QPen, QPixmap
-from PyQt5.QtWidgets import QApplication, QToolButton, QWidget, QSlider
+from PyQt5.QtWidgets import QApplication, QToolButton, QWidget
 from PyQt5.QtMultimedia import QMediaPlaylist
 
 

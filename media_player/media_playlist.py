@@ -22,15 +22,18 @@ class MediaPlaylist(QMediaPlaylist):
         """ 初始化播放列表 """
         # 设置播放模式为列表顺序播放
         self.setPlaybackMode(QMediaPlaylist.Sequential)
+        # 记录下随机播放前的循环模式
+        self.prePlayMode = self.playbackMode()
+        # 初始化随机播放按钮按下状态
+        self.randPlayBtPressed = False
         # 确保播放列表是个列表
         if not self.playlist:
             self.playlist = []
         else:
             for songInfo_dict in self.playlist:
                 self.addMedia(songInfo_dict)
-        self.currentPlaylist = self.playlist
         self.currentIndexChanged.connect(
-            lambda index: self.switchSongSignal.emit(self.currentPlaylist[index]))
+            lambda index: self.switchSongSignal.emit(self.playlist[index]))
 
     def addMedia(self, songInfo_dict: dict):
         """ 重载addMedia,一次向尾部添加一首歌 """
@@ -76,7 +79,7 @@ class MediaPlaylist(QMediaPlaylist):
         else:
             super().next()
         # 切换歌曲时发出信号
-        self.switchSongSignal.emit(self.currentPlaylist[self.currentIndex()])
+        self.switchSongSignal.emit(self.playlist[self.currentIndex()])
 
     def previous(self):
         """ 播放上一首 """
@@ -85,7 +88,7 @@ class MediaPlaylist(QMediaPlaylist):
             self.setCurrentIndex(self.mediaCount() - 1)
         else:
             super().previous()
-        self.switchSongSignal.emit(self.currentPlaylist[self.currentIndex()])
+        self.switchSongSignal.emit(self.playlist[self.currentIndex()])
 
     def playThisSong(self, songInfo_dict: dict):
         """ 按下歌曲卡的播放按钮或者双击歌曲卡时立即在当前的播放列表中播放这首歌 """
@@ -94,16 +97,20 @@ class MediaPlaylist(QMediaPlaylist):
         self.setCurrentIndex(self.playlist.index(songInfo_dict))
 
     def setRandomPlay(self, isRandomPlay=False):
-        """ 按下随机播放按钮设置随机播放模式 """
+        """ 按下随机播放按钮时根据循环模式决定是否设置随机播放模式 """
+        if isRandomPlay:
+            self.randPlayBtPressed = True
+            # 记录按下随机播放前的循环模式
+            self.prePlayMode = self.playbackMode()
+            # 不处于单曲循环模式时就设置为随机播放
+            if self.playbackMode() != QMediaPlaylist.CurrentItemInLoop:
+                self.setPlaybackMode(QMediaPlaylist.Random)
+        else:
+            self.randPlayBtPressed = False
+            # 恢复之前的循环模式
+            self.setPlaybackMode(self.prePlayMode)    
+            
 
-        if self.playlist:
-            if isRandomPlay:
-                self.randomPlaylist = self.playlist.copy()
-                currentSong = self.randomPlaylist.pop(self.currentIndex())
-                self.currentRandomPlayIndex = self.currentIndex()
-                # 打乱剩下的列表然后重新组合
-                shuffle(self.randomPlaylist)
-                self.randomPlaylist.insert(self.currentIndex(), currentSong)
-                self.currentPlaylist = self.randomPlaylist
-            else:
-                self.currentPlaylist = self.playlist
+    def setMedias(self, songInfoDict_list: list):
+        """ 重置播放列表 """
+        self.clear()

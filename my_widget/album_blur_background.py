@@ -1,6 +1,6 @@
 import sys
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt,QPropertyAnimation,QEasingCurve
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QGraphicsBlurEffect, QLabel, QWidget,QGraphicsOpacityEffect
 
@@ -33,12 +33,29 @@ class SubWindow(QWidget):
 class AlbumBlurBackground(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.resize(260,303)
-        self.op = QGraphicsOpacityEffect(self)
         self.subWindow = SubWindow(self)
-        self.op.setOpacity(0.7)
-        self.subWindow.setGraphicsEffect(self.op)
+        self.opacityEffect = QGraphicsOpacityEffect(self)
+        self.subWindowOpacityEffect = QGraphicsOpacityEffect(self)
+        self.showAni = QPropertyAnimation(self.opacityEffect, b'opacity')
+        self.initWidget()
 
+    def initWidget(self):
+        """ 初始化小部件 """
+        self.resize(260,303)
+        # 设置子窗口透明度
+        self.subWindowOpacityEffect.setOpacity(0.7)
+        self.subWindow.setGraphicsEffect(self.subWindowOpacityEffect)
+        # 设置动画
+        self.showAni.setDuration(100)
+        self.showAni.setStartValue(0)
+        self.showAni.setEndValue(1)
+        self.showAni.setEasingCurve(QEasingCurve.InQuad)
+    
+    def show(self):
+        """ 淡入 """
+        self.opacityEffect.setOpacity(0)
+        super().show()
+        self.showAni.start()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

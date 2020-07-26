@@ -24,6 +24,10 @@ class ScrollArea(QScrollArea):
         self.smoothMoveTimer = QTimer(self)
         self.smoothMode = SmoothMode(SmoothMode.COSINE)
         self.smoothMoveTimer.timeout.connect(self.smoothMove)
+    
+    def setSMoothMode(self, smoothMode):
+        """ 设置滚动模式 """
+        self.smoothMode = smoothMode
 
     def wheelEvent(self, e: QWheelEvent):
         """ 实现平滑滚动效果 """

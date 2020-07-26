@@ -9,11 +9,12 @@ from PyQt5.QtWidgets import (
     
 sys.path.append('..')
 
-from Groove.my_widget.my_button import SongerAddToButton, SongerPlayButton
+from Groove.my_widget.blur_button import BlurButton
 from Groove.my_widget.my_label import ClickableLabel
 from Groove.my_widget.my_menu import CardContextMenu
 from Groove.my_functions.auto_wrap import autoWrap
 from Groove.my_functions.is_not_leave import isNotLeave
+
 
 class AlbumCard(QWidget):
     """ 定义包含专辑歌手名的窗口 """
@@ -93,13 +94,9 @@ class AlbumCard(QWidget):
 
     def leaveEvent(self, e):
         """ 鼠标离开时隐藏磨砂背景和按钮 """
-        if self.parent() and hasattr(self.parent(),'customToolTip'):
+        if self.parent() and hasattr(self,'blurBackground'):
             #隐藏磨砂背景
-            self.parent().albumBlurBackground.hide()
-            # 判断是否离开
-            notLeave = isNotLeave(self)
-            if notLeave:
-                return
+            self.blurBackground.hide()
         self.addToButton.hide()
         self.playButton.hide()
 
@@ -129,11 +126,11 @@ class AlbumCard(QWidget):
 class AlbumCoverWindow(QWidget):
     """ 定义专辑封面 """
 
-    def __init__(self, album_path, parent=None):
+    def __init__(self, picPath, parent=None):
         super().__init__(parent)
 
         self.resize(200, 200)
-        self.album_path = album_path
+        self.picPath = picPath
 
         # 隐藏边框并将背景设置为透明
         self.setWindowFlags(Qt.FramelessWindowHint)
@@ -141,16 +138,17 @@ class AlbumCoverWindow(QWidget):
 
         # 实例化封面和按钮
         self.albumPic = QLabel(self)
-        self.playButton = SongerPlayButton(self)
-        self.addToButton = SongerAddToButton(self)
-
+        self.playButton = BlurButton(
+            self, (29, 66), 'resource\\images\\播放按钮_70_70.png', self.picPath,blurRadius=50)
+        self.addToButton = BlurButton(
+            self, (101, 66), 'resource\\images\\添加到按钮_70_70.png', self.picPath,blurRadius=50)
         # 初始化小部件
         self.initWidget()
 
     def initWidget(self):
         """ 初始化小部件 """
         self.albumPic.setPixmap(
-            QPixmap(self.album_path).scaled(self.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            QPixmap(self.picPath).scaled(self.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
         # 专辑图居中
         self.albumPic.move(int(self.width() / 2 - self.albumPic.pixmap().width() / 2),
                            int(self.height() / 2 - self.albumPic.pixmap().height() / 2))
@@ -162,8 +160,8 @@ class AlbumCoverWindow(QWidget):
                               int(0.5*self.height() - 0.5*self.playButton.height()+1))
 
         # 隐藏按钮
-        self.playButton.setHidden(True)
-        self.addToButton.setHidden(True)
+        self.playButton.hide()
+        self.addToButton.hide()
 
     def paintEvent(self, e):
         """ 绘制背景 """

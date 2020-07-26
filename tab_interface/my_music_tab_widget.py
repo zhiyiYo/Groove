@@ -83,7 +83,7 @@ class MyMusicTabWidget(QWidget):
         painter = QPainter(self)
         pen = QPen(QColor(229, 229, 229))
         painter.setPen(pen)
-        painter.drawLine(10, 41, self.width() - 12, 41)
+        painter.drawLine(10, 40, self.width() - 12, 40)
         
         
 if __name__ == "__main__":

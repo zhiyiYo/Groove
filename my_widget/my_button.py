@@ -14,8 +14,8 @@ sys.path.append('..')
 from Groove.my_functions.is_not_leave import isNotLeave
 
 
-class SongerPlayButton(QPushButton):
-    """ 歌手头像上的播放按钮 """
+class CardPlayButton(QPushButton):
+    """ 歌手头像和专辑封面卡上的播放按钮 """
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -75,8 +75,8 @@ class SongerPlayButton(QPushButton):
             self.customToolTip.hide()
 
 
-class SongerAddToButton(QPushButton):
-    """ 歌手头像上的添加到按钮 """
+class CardAddToButton(QPushButton):
+    """ 歌手头像和专辑封面卡上的添加到按钮 """
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -223,6 +223,14 @@ class ThreeStateButton(QToolButton):
             return
         self.setIcon(QIcon(self.iconPath_dict['pressed']))
         super().mousePressEvent(e)
+
+    def mouseReleaseEvent(self, e):
+        """ 鼠标左键按下时更换图标 """
+        if e.button() == Qt.RightButton:
+            return
+        self.setIcon(QIcon(self.iconPath_dict['normal']))
+        super().mouseReleaseEvent(e)
+    
 
 
 if __name__ == "__main__":

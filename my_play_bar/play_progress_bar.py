@@ -1,15 +1,17 @@
 import sys
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QSlider, QHBoxLayout
+from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QHBoxLayout
 
+sys.path.append('..')
+from Groove.my_widget.my_slider import Slider
 
 class PlayProgressBar(QWidget):
     """ 歌曲播放进度条 """
     def __init__(self, duration: str, parent=None):
         super().__init__(parent)
         # 创建两个标签和一个进度条
-        self.progressSlider = QSlider(Qt.Horizontal, self)
+        self.progressSlider = Slider(Qt.Horizontal, self)
         self.currentTimeLabel = QLabel('0:00', self)
         self.totalTimeLabel = QLabel(duration, self)
         # 创建布局

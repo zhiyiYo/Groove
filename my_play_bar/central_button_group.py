@@ -18,6 +18,7 @@ class CentralButtonGroup(QWidget):
         self.all_v_layout=QVBoxLayout(self)
         # 初始化界面
         self.initUI()
+        
 
     def createButtons(self):
         """ 创建按钮 """

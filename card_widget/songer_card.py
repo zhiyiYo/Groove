@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget,QAction
 
 sys.path.append('..')
 
-from Groove.my_widget.my_button import SongerAddToButton, SongerPlayButton
+from Groove.my_widget.my_button import CardAddToButton, CardPlayButton
 from Groove.my_widget.my_menu import CardContextMenu
 
 class SongerCard(QWidget):
@@ -76,14 +76,15 @@ class SongerHeadPortrait(QWidget):
         super().__init__(parent)
 
         self.resize(200, 200)
+        self.picPath = songer_pic_path
 
         # 隐藏边框并将背景设置为透明
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
 
         # 实例化播放按钮和添加到按钮
-        self.playButton = SongerPlayButton(self)
-        self.addToButton = SongerAddToButton(self)
+        self.playButton = CardPlayButton(self)
+        self.addToButton = CardAddToButton(self)
 
         # 设置背景图片
         self.circle_image = QPixmap(songer_pic_path).scaled(

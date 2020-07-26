@@ -1,8 +1,8 @@
 import sys
-from ctypes.wintypes import HWND,MSG
+from ctypes.wintypes import HWND
 
-from PyQt5.QtCore import Qt,QPoint,pyqtSignal
-from PyQt5.QtWidgets import QApplication, QWidget,QSlider,QHBoxLayout,QLineEdit,QVBoxLayout
+from PyQt5.QtCore import Qt,QPoint
+from PyQt5.QtWidgets import QApplication, QWidget
 
 sys.path.append('..')
 from Groove.effects.window_effect import WindowEffect
@@ -11,7 +11,6 @@ from Groove.my_play_bar.central_button_group import CentralButtonGroup
 from Groove.my_play_bar.right_widget_group import RightWidgetGroup
 from Groove.my_play_bar.song_info_card import SongInfoCard
 from Groove.my_play_bar.more_actions_menu import MoreActionsMenu
-from Groove.flags.wm_hittest import Flags
 
 
 class PlayBar(QWidget):
@@ -96,7 +95,7 @@ class PlayBar(QWidget):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     songInfo = {
-        'songName': 'オオカミと少女 (狼与少女)', 'songer': 'RADWIMPS', 'duration': '3:50',
+        'songName': '星見る頃を過ぎても (即使观星时节已过)', 'songer': 'RADWIMPS', 'duration': '3:50',
         'album': [r'オーダーメイド']}
     demo = PlayBar(songInfo)
     demo.move(500,400)

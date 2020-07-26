@@ -1,0 +1,69 @@
+
+/*音量滑动条*/
+QSlider:vertical {
+    height: 99px;
+    width: 14px;
+    background-color: transparent;
+    /*padding:10px 0px 10px 0px;*/
+}
+
+
+QSlider::groove:vertical {
+    width: 14px;
+    border: none;
+    background-color: transparent;
+}
+
+QSlider::handle:vertical {
+    width: 14px;
+    height: 14px;
+    border-image: url(resource/images/sub_play_window/volumeSlider_handle_14_14.png);
+}
+
+
+QSlider::add-page:vertical {
+    /*已划过部分的颜色*/
+    background: rgb(0,154,187);
+}
+
+QSlider::sub-page:vertical {
+    background-color: rgb(106,106,106);
+}
+
+QSlider:hover::add-page:vertical {
+    /*已划过部分的颜色*/
+    background: rgb(14,179,214);
+}
+
+QSlider::sub-page:vertical:hover {
+    background-color: rgb(113,113,113);
+}
+
+QSlider::add-page:vertical:pressed {
+    /*已划过部分的颜色*/
+    background: rgb(100, 219, 244);
+}
+
+QSlider::sub-page:vertical:pressed {
+    background-color: rgb(125,125,125);
+}
+
+
+/*标签*/
+QLabel#songNameLabel{
+    color: white;
+    font: 31px 'Microsoft YaHei';
+
+}
+
+QLabel#songerNameLabel {
+    color: white;
+    font: 14px 'Microsoft YaHei';
+    font-weight: 500;
+}
+
+QLabel#volumeLabel {
+    color: white;
+    font: 15px 'Microsoft YaHei Light';
+    font-weight: 500;
+}

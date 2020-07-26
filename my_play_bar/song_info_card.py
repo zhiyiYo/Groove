@@ -7,6 +7,7 @@ from PyQt5.QtGui import QFont, QFontMetrics, QPainter, QPixmap
 from PyQt5.QtWidgets import QApplication, QLabel, QWidget
 
 from ..my_functions.is_not_leave import isNotLeave
+from ..my_functions.get_album_cover_path import getAlbumCoverPath
 from .window_mask import WindowMask
 
 
@@ -64,25 +65,13 @@ class SongInfoCard(QWidget):
     def leaveEvent(self, e):
         self.windowMask.hide()
 
-    def getAlbumCoverPath(self):
-        """ 获取封面路径 """
-        albumName = self.songInfo.get('album')
-        coverFolder = f"resource\\Album Cover\\{albumName[-1]}"
-        pic_list = os.listdir(coverFolder)
-        if pic_list:
-            # 如果目录下有封面就用这个封面作为albumCard的背景
-            self.coverPath = os.path.join(coverFolder, pic_list[0])
-        else:
-            # 否则用默认的封面
-            self.coverPath = 'resource\\Album Cover\\未知专辑封面_200_200.png'
-
     def setAlbumCover(self):
         """ 设置封面 """
         # 如果专辑信息为空就直接隐藏
         if not self.songInfo.get('album'):
             self.hide()
             return
-        self.getAlbumCoverPath()
+        self.coverPath = getAlbumCoverPath(self.songInfo.get('album',' ')[-1])
         self.albumPic.setPixmap(
             QPixmap(self.coverPath).scaled(
                 115, 115, Qt.KeepAspectRatio, Qt.SmoothTransformation))

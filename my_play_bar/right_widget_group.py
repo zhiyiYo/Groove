@@ -1,8 +1,11 @@
 import sys
 
 from PyQt5.QtCore import Qt,QEvent
-from PyQt5.QtWidgets import QApplication, QHBoxLayout, QSlider, QWidget
+from PyQt5.QtWidgets import QApplication, QHBoxLayout, QWidget
 from .play_bar_buttons import VolumeButton, SmallPlayModeButton, MoreActionsButton
+
+sys.path.append('..')
+from Groove.my_widget.my_slider import Slider
 
 
 class RightWidgetGroup(QWidget):
@@ -12,7 +15,7 @@ class RightWidgetGroup(QWidget):
         super().__init__(parent)
         # 创建小部件
         self.volumeButton = VolumeButton(self)
-        self.volumeSlider = QSlider(Qt.Horizontal, self)
+        self.volumeSlider = Slider(Qt.Horizontal, self)
         self.smallPlayModeButton = SmallPlayModeButton(self)
         self.moreActionsButton = MoreActionsButton(self)
         self.widget_list = [self.volumeButton, self.volumeSlider,
