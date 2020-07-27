@@ -4,7 +4,7 @@ import re
 import sys
 
 import pinyin
-from PyQt5.QtCore import QPoint, Qt, QEvent
+from PyQt5.QtCore import QPoint, Qt, QEvent, pyqtSignal
 from PyQt5.QtGui import QPainter, QPixmap
 from PyQt5.QtWidgets import (
     QApplication, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QScrollArea,
@@ -21,10 +21,11 @@ from Groove.card_widget.album_card import AlbumCard
 
 class AlbumCardViewer(QWidget):
     """ 定义一个专辑卡视图 """
-
+    playSignal = pyqtSignal(list)
+    nextPlaySignal = pyqtSignal(list)
+    
     def __init__(self, target_path_list:list, parent=None):
         super().__init__(parent)
-
         # 初始化网格的列数
         self.column_num = 5
         self.total_row_num = 0
@@ -54,7 +55,7 @@ class AlbumCardViewer(QWidget):
         # 创建专辑卡并将其添加到布局中
         self.createAlbumCards()
         self.initLayout()
-
+        self.connectSignalToSlot()
         # 设置样式
         self.setQss()
 
@@ -72,7 +73,6 @@ class AlbumCardViewer(QWidget):
         self.setObjectName('father')
         self.albumViewWidget.setObjectName('albumViewWidget')
 
-
     def createAlbumCards(self):
         """ 将专辑卡添加到窗口中 """
         self.albumCardDict_list = []
@@ -88,6 +88,16 @@ class AlbumCardViewer(QWidget):
                                             'year': albumInfo_dict['year'][:4],
                                             'songer': albumInfo_dict['songer'],
                                             'firstLetter': pinyin.get_initial(album[0])[0].upper()})
+
+    def connectSignalToSlot(self):
+        """ 将信号连接到槽函数 """
+        for albumCard in self.albumCard_list:
+            # 播放
+            albumCard.playSignal.connect(
+                lambda playlist: self.playSignal.emit(playlist))
+            # 下一首播放
+            albumCard.nextPlaySignal.connect(
+                lambda playlist: self.nextPlaySignal.emit(playlist))
 
     def initLayout(self):
         """ 初始化布局 """

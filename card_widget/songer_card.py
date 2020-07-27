@@ -5,7 +5,7 @@ from PyQt5.QtGui import QBitmap, QBrush, QColor, QPainter, QPen, QPixmap,QIcon,Q
 from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget,QAction
 
 sys.path.append('..')
-
+from Groove.my_widget.blur_button import BlurButton
 from Groove.my_widget.my_button import CardAddToButton, CardPlayButton
 from Groove.my_widget.my_menu import CardContextMenu
 
@@ -83,8 +83,10 @@ class SongerHeadPortrait(QWidget):
         self.setAttribute(Qt.WA_TranslucentBackground)
 
         # 实例化播放按钮和添加到按钮
-        self.playButton = CardPlayButton(self)
-        self.addToButton = CardAddToButton(self)
+        self.playButton = BlurButton(
+            self, (29, 66), 'resource\\images\\播放按钮_70_70.png', self.picPath, blurRadius=50)
+        self.addToButton = BlurButton(
+            self, (101, 66), 'resource\\images\\添加到按钮_70_70.png', self.picPath, blurRadius=50)
 
         # 设置背景图片
         self.circle_image = QPixmap(songer_pic_path).scaled(
@@ -95,16 +97,9 @@ class SongerHeadPortrait(QWidget):
 
     def initWidget(self):
         """ 初始化小部件 """
-        self.playButton.move(int(0.5 * self.width() - 36 - 0.5 * self.playButton.width()),
-                             int(0.5*self.height() - 0.5*self.playButton.height()+1))
-
-        self.addToButton.move(int(0.5*self.width()+36-0.5*self.playButton.width()),
-                              int(0.5*self.height() - 0.5*self.playButton.height()+1))
-
         # 隐藏按钮
-        #self.addToButton.getBackgroundPic()
-        self.playButton.setHidden(True)
-        self.addToButton.setHidden(True)
+        self.playButton.hide()
+        self.addToButton.hide()
 
 
     def paintEvent(self, e):
@@ -137,7 +132,6 @@ class SongerName(QWidget):
         self.v_layout = QVBoxLayout()
 
         # 初始化布局
-
         self.v_layout.addWidget(self.songerNameLabel, 0, Qt.AlignHCenter)
         self.setLayout(self.v_layout)
 

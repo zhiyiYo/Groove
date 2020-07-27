@@ -3,24 +3,25 @@
 import sys
 from ctypes.wintypes import HWND, MSG
 from enum import Enum
+from random import shuffle
 
-from system_hotkey import SystemHotkey
-from PyQt5.QtCore import QPoint, QRect, QSize, Qt, QUrl,pyqtSignal
-from PyQt5.QtGui import QCloseEvent, QIcon, QPixmap, QResizeEvent, QFont
-from PyQt5.QtMultimedia import QMediaPlayer,QMediaPlaylist
+from PyQt5.QtCore import QPoint, QRect, QSize, Qt, QUrl, pyqtSignal
+from PyQt5.QtGui import QCloseEvent, QFont, QIcon, QPixmap, QResizeEvent
+from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist
 from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsDropShadowEffect,
                              QStackedWidget, QWidget)
+from system_hotkey import SystemHotkey
 
 from effects import WindowEffect
 from flags.wm_hittest import Flags
+from media_player import MediaPlaylist, PlaylistType
 from my_music_interface import MyMusicInterface
 from my_play_bar import PlayBar
 from my_setting_interface import SettingInterface
+from my_sub_play_window import SubPlayWindow
+from my_thumbnail_tool_bar import ThumbnailToolBar
 from my_title_bar import TitleBar
 from navigation import NavigationBar, NavigationMenu
-from media_player import MediaPlaylist
-from my_thumbnail_tool_bar import ThumbnailToolBar
-from my_sub_play_window import SubPlayWindow
 
 
 class MainWindow(QWidget):
@@ -109,10 +110,13 @@ class MainWindow(QWidget):
         self.nextSongHotKey = SystemHotkey()
         self.lastSongHotKey = SystemHotkey()
         self.playHotKey = SystemHotkey()
-        #callback会返回一个event参数，所以需要用lambda
-        self.nextSongHotKey.register(('f6',), callback=lambda x: self.hotKeySlot(self.playlist.next))
-        self.lastSongHotKey.register(('f4',), callback=lambda x: self.hotKeySlot(self.playlist.previous))
-        self.playHotKey.register(('f5',),callback=lambda x: self.hotKeySlot(self.playButtonSlot))
+        # callback会返回一个event参数，所以需要用lambda
+        self.nextSongHotKey.register(
+            ('f6',), callback=lambda x: self.hotKeySlot(self.playlist.next))
+        self.lastSongHotKey.register(
+            ('f4',), callback=lambda x: self.hotKeySlot(self.playlist.previous))
+        self.playHotKey.register(
+            ('f5',), callback=lambda x: self.hotKeySlot(self.switchPlayState))
 
     def setWindowEffect(self):
         """ 设置窗口特效 """
@@ -175,6 +179,7 @@ class MainWindow(QWidget):
         self.settingInterface.writeConfig()
         self.playBar.close()
         self.subPlayWindow.close()
+        self.playlist.save()
         e.accept()
 
     def GET_X_LPARAM(self, param):
@@ -226,7 +231,7 @@ class MainWindow(QWidget):
         self.playBar.randomPlayButton.clicked.connect(self.setRandomPlay)
         self.playBar.nextSongButton.clicked.connect(self.playlist.next)
         self.playBar.lastSongButton.clicked.connect(self.playlist.previous)
-        self.playBar.playButton.clicked.connect(self.playButtonSlot)
+        self.playBar.playButton.clicked.connect(self.switchPlayState)
         self.playBar.volumeButton.clicked.connect(self.volumeButtonSlot)
         self.playBar.loopModeButton.clicked.connect(self.switchLoopMode)
         self.playBar.volumeSlider.valueChanged.connect(self.volumeChangedSlot)
@@ -235,7 +240,7 @@ class MainWindow(QWidget):
         self.playBar.progressSlider.clicked.connect(
             self.progressSliderMoveSlot)
         # todo:缩略图任务栏各按钮的功能
-        self.thumbnailToolBar.playButton.clicked.connect(self.playButtonSlot)
+        self.thumbnailToolBar.playButton.clicked.connect(self.switchPlayState)
         self.thumbnailToolBar.lastSongButton.clicked.connect(
             self.playlist.previous)
         self.thumbnailToolBar.nextSongButton.clicked.connect(
@@ -246,16 +251,25 @@ class MainWindow(QWidget):
         # todo:将播放列表的信号连接到槽函数
         self.playlist.switchSongSignal.connect(self.updateWindow)
         # todo:歌曲卡的信号连接到槽函数
-        self.songCardListWidget.doubleClicked.connect(self.playSelectedSong)
+        self.songCardListWidget.doubleClicked.connect(
+            self.songCardDoubleClickedSlot)
         self.songCardListWidget.playSignal.connect(
             self.songCardPlayButtonSlot)
-        self.songCardListWidget.nextPlaySignal.connect(self.nextPlayEvent)
-        #todo:将子播放窗口的信号连接槽槽函数
+        self.songCardListWidget.nextPlaySignal.connect(
+            self.songCardNextPlaySlot)
+        # todo:将专辑卡的信号连接到槽函数
+        self.albumCardViewer.playSignal.connect(self.playAlbum)
+        self.albumCardViewer.nextPlaySignal.connect(self.albumCardNextPlaySlot)
+        # todo:将子播放窗口的信号连接槽槽函数
         self.subPlayWindow.nextSongButton.clicked.connect(self.playlist.next)
-        self.subPlayWindow.lastSongButton.clicked.connect(self.playlist.previous)
-        self.subPlayWindow.playButton.clicked.connect(self.playButtonSlot)
-        #todo:将自己的信号连接到槽函数
-        self.showSubPlayWindowSig.connect(lambda:self.subPlayWindow.show())
+        self.subPlayWindow.lastSongButton.clicked.connect(
+            self.playlist.previous)
+        self.subPlayWindow.playButton.clicked.connect(self.switchPlayState)
+        # todo:将无序播放所有信号连接到槽函数
+        self.myMusicInterface.myMusicTabWidget.randomPlayAllSig.connect(self.disorderPlayAll)
+        # todo:将自己的信号连接到槽函数
+        self.showSubPlayWindowSig.connect(lambda: self.subPlayWindow.show())
+        
 
     def referenceWidgets(self):
         """ 引用小部件 """
@@ -266,27 +280,31 @@ class MainWindow(QWidget):
     def initPlaylist(self):
         """ 初始化播放列表 """
         self.player.setPlaylist(self.playlist)
-        # 添加播放列表
-        songInfo_list = self.songCardListWidget.songInfo_list.copy()
-        # 如果上次关闭时的最后一首歌与播放列表的第一首不同就将最后一首歌插入开头
-        if self.lastSongInfo.keys() == songInfo_list[0].keys() and self.lastSongInfo.get('songPath') != songInfo_list[0].get('songPath'):
-            songInfo_list = [self.lastSongInfo] + \
-                self.songCardListWidget.songInfo_list
-        self.playlist.addMedias(songInfo_list)
+        # 如果没有上一次的播放列表数据，就设置默认的播放列表
+        if not self.playlist.playlist:
+            songInfo_list = self.songCardListWidget.songInfo_list.copy()
+            # 如果上次关闭时的最后一首歌与播放列表的第一首不同就将最后一首歌插入开头
+            self.playlist.setMedias(songInfo_list)
+            self.playlist.playlistType = PlaylistType.SONG_CARD_PLAYLIST
 
-    def playButtonSlot(self):
-        """ 播放栏或者缩略图任务栏的播放按钮按下时根据播放器的状态来决定是暂停还是播放 """
+        if self.lastSongInfo.get('songPath') != self.playlist.playlist[0].get('songPath'):
+            self.playlist.insertMedia(0, self.lastSongInfo)
+            self.playlist.setCurrentIndex(0)
+
+    def switchPlayState(self):
+        """ 播放按钮按下时根据播放器的状态来决定是暂停还是播放 """
         if self.player.state() == QMediaPlayer.PlayingState:
             self.player.pause()
-            self.playBar.playButton.setPlay(False)
-            self.thumbnailToolBar.playButton.setPlay(False)
-            self.subPlayWindow.setPlay(False)
+            self.setPlayButtonState(False)
             self.thumbnailToolBar.setButtonsEnabled(True)
         else:
-            self.player.play()
-            self.subPlayWindow.setPlay(True)
-            self.playBar.playButton.setPlay(True)
-            self.thumbnailToolBar.playButton.setPlay(True)
+            self.play()
+
+    def setPlayButtonState(self, isPlay: bool):
+        """ 设置播放按钮状态 """
+        self.subPlayWindow.setPlay(isPlay)
+        self.playBar.playButton.setPlay(isPlay)
+        self.thumbnailToolBar.playButton.setPlay(isPlay)
 
     def volumeButtonSlot(self):
         """ 静音按钮按下时决定是否静音 """
@@ -324,31 +342,32 @@ class MainWindow(QWidget):
         self.player.setPosition(self.playBar.progressSlider.value())
         self.playBar.setCurrentTime(self.player.position())
 
-    def playSelectedSong(self):
-        """ 播放选中的歌 """
+    def songCardDoubleClickedSlot(self):
+        """ 播放选中的歌曲卡 """
         songInfo_dict = self.songCardListWidget.currentSongCard.songInfo_dict
         # 更新歌曲信息卡
         self.switchCurrentSong(songInfo_dict)
-        self.thumbnailToolBar.setButtonsEnabled(True)
-
-    def nextPlayEvent(self, songInfo_dict):
-        """ 下一首播放动作触发对应的槽函数 """
-        self.playlist.insertMedia(
-            self.playlist.currentIndex() + 1, songInfo_dict)
 
     def songCardPlayButtonSlot(self, songInfo_dict):
         """ 歌曲卡的播放按钮按下时播放这首歌 """
         self.switchCurrentSong(songInfo_dict)
-        self.thumbnailToolBar.setButtonsEnabled(True)
+
+    def songCardNextPlaySlot(self, songInfo_dict):
+        """ 下一首播放动作触发对应的槽函数 """
+        self.playlist.insertMedia(
+            self.playlist.currentIndex() + 1, songInfo_dict)
 
     def switchCurrentSong(self, songInfo_dict: dict):
         """ 切换当前播放的歌曲 """
-        # 更新歌曲信息卡
-        self.playBar.updateSongInfoCard(songInfo_dict)
-        # 播放歌曲
-        self.playlist.playThisSong(songInfo_dict)
-        self.playBar.playButton.setPlay(True)
-        self.player.play()
+        # 如果当前播放列表模式不是歌曲界面的歌曲卡模式，就刷新播放列表
+        newPlaylist = None
+        if self.playlist.playlistType != PlaylistType.SONG_CARD_PLAYLIST:
+            index = self.songCardListWidget.songInfo_list.index(songInfo_dict)
+            newPlaylist = self.songCardListWidget.songInfo_list[index:] + \
+                self.songCardListWidget.songInfo_list[0:index]
+        self.playlist.playThisSong(
+            songInfo_dict, newPlaylist, PlaylistType.SONG_CARD_PLAYLIST.value)
+        self.play()
 
     def switchLoopMode(self):
         """ 根据随机播放按钮的状态和循环模式的状态决定播放器的播放模式 """
@@ -371,31 +390,41 @@ class MainWindow(QWidget):
         else:
             self.playlist.setRandomPlay(False)
 
-    def updateWindow(self,songInfo):
+    def updateWindow(self, songInfo):
         """ 切换歌曲时更新播放栏和子播放窗口 """
         self.playBar.updateSongInfoCard(songInfo)
         self.subPlayWindow.updateWindow(songInfo)
-        #self.subPlayWindow.show()
 
-    def hotKeySlot(self,funcObj):
-        """ 热键按下时显示子播放窗口 """
+    def hotKeySlot(self, funcObj):
+        """ 热键按下时显示子播放窗口并执行对应操作 """
         funcObj()
         self.showSubPlayWindowSig.emit()
+
+    def playAlbum(self, playlist):
+        """ 播放专辑中的歌曲 """
+        self.playlist.playAlbum(playlist)
+        self.play()
+
+    def albumCardNextPlaySlot(self, songInfoDict_list):
+        """ 下一首播放动作触发对应的槽函数 """
+        self.playlist.insertMedias(
+            self.playlist.currentIndex() + 1, songInfoDict_list)
+
+    def disorderPlayAll(self):
+        """ 无序播放所有 """
+        self.playlist.playlistType = PlaylistType.SONG_CARD_PLAYLIST
+        newPlaylist = self.songCardListWidget.songInfo_list.copy()
+        shuffle(newPlaylist)
+        self.playlist.setMedias(newPlaylist)
+        self.play()
+
+    def play(self):
+        """ 播放歌曲并改变按钮样式 """
+        self.player.play()
+        self.setPlayButtonState(True)
 
     def initPlayBar(self):
         """ 从配置文件中读取配置数据来初始化播放栏 """
         # 初始化音量
         self.playBar.volumeSlider.setValue(
             self.settingInterface.config.get('volume', 20))
-
-        # 根据配置文件初始化播放器
-        """ if self.playlist.currentPlaylist:
-            self.playlist.setCurrentIndex(0)
-            self.player.pause()
-            # 根据配置文件初始化进度条
-            self.playBar.progressSlider.setValue(
-                self.settingInterface.config.get('position', 0))
-            self.playBar.progressSlider.setRange(
-                0, self.settingInterface.config.get('duration', 0))
-            self.player.setPosition(
-                self.settingInterface.config.get('duration', 0)) """

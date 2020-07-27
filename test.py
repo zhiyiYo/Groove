@@ -1,10 +1,5 @@
-class Demo():
-    def callFunc(self,funcObj):
-        funcObj()
+from random import shuffle
 
-    def print(self):
-        print('hzz')
-
-
-demo = Demo()
-demo.callFunc(demo.print)
+a = [2]
+b = a if a else 1
+print(b)

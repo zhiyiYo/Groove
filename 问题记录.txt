@@ -27,3 +27,4 @@ self.setStyleSheet("background-color: rgb(255,255, 255)");
 21.画图用drawPixmap别用drawRect(),要写字的时候不能painter.setPen(Qt.NoPen)
 22.文件夹的最后一个字符绝对不能是/，不然会出错
 23.如果出现主界面卡顿，可以通过信号提前结束此时进行的槽函数，将信号连到另一个槽函数来处理
+24.font-weight=500时会变为好康的楷体

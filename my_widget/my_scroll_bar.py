@@ -24,7 +24,7 @@ class ScrollBar(QWidget):
     def initWidget(self):
         """ 初始化小部件 """
         self.setFixedWidth(20)
-        self.minScrollBar.move(17,0)
+        self.minScrollBar.move(15,0)
         self.maxScrollBar.hide()
         self.timer.setInterval(2000)
         self.timer.timeout.connect(self.showMinScrollBar)

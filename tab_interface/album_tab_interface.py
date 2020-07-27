@@ -1,6 +1,6 @@
 import sys
 
-from PyQt5.QtCore import QEvent, QSize, Qt, QPoint
+from PyQt5.QtCore import QEvent, QSize, Qt, QPoint,pyqtSignal
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
     QAction, QApplication, QHBoxLayout, QLabel, QPushButton,
@@ -13,6 +13,7 @@ from Groove.my_widget.my_menu import Menu
 
 class AlbumTabInterface(QWidget):
     """ 定义专辑卡标签界面 """
+    randomPlayAllSig = pyqtSignal()
 
     def __init__(self, target_path_list:list, parent=None):
         super().__init__(parent)
@@ -100,8 +101,8 @@ class AlbumTabInterface(QWidget):
             [self.sortByCratedTime, self.sortByDictOrder, self.sortByYear, self.sortBySonger])
 
     def randomPlay(self):
-        """ 改变播放的循环模式 """
-        pass
+        """ 刷新并随机排列播放列表 """
+        self.randomPlayAllSig.emit()
 
     def sortAlbumCard(self):
         """ 根据所选的排序方式对歌曲卡进行重新排序 """

@@ -14,8 +14,8 @@ QScrollBar#minScrollBar::add-line {
 }
 
 QScrollBar#minScrollBar::handle {
-    background: rgb(122, 122, 122);
-    border: 2px solid rgb(122, 122, 122);
+    background: rgb(128, 128, 128);
+    border: 2px solid rgb(128, 128, 128);
     border-radius: 1px;
     min-height: 40px;
 }

@@ -1,6 +1,6 @@
 import sys
 import time
-from PyQt5.QtCore import QPoint, Qt, QSize, QEvent
+from PyQt5.QtCore import QPoint, Qt, QSize, QEvent,pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent, QIcon, QMouseEvent
 from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
                              QLayout, QPushButton, QVBoxLayout, QWidget)
@@ -14,28 +14,23 @@ from Groove.my_splash_screen.splash_screen import SplashScreen
 
 class SongTabInterface(QWidget):
     """ 创建歌曲标签界面 """
+    randomPlayAllSig = pyqtSignal()
 
     def __init__(self, target_path_list:list, parent=None):
         super().__init__(parent)
-
         self.resize(1267, 804)
-
         # 实例化布局
         self.h_layout = QHBoxLayout()
         self.all_v_layout = QVBoxLayout()
-
         # 实例化标签和下拉菜单
         self.sortModeMenu = Menu(parent=self)
         self.sortModeLabel = QLabel('排序依据:', self)
         self.sortModeButton = SortModeButton('添加日期', self.showSortModeMenu, self)
         self.randomPlayButton = RandomPlayButton(slot=self.randomPlay, parent=self)
-        
         # 实例化歌曲列表视图
         self.songCardListWidget = SongCardListWidget(target_path_list)
-
         # 将动作添加到菜单中
         self.addActionToMenu()
-
         # 设置初始排序方式
         self.currentSortMode = self.sortByCratedTime
         self.sortModeNum_dict = {'添加日期': 0, 'A到Z': 1, '歌手': 2}
@@ -52,11 +47,9 @@ class SongTabInterface(QWidget):
             Qt.ScrollBarAlwaysOff)
         self.songCardListWidget.setHorizontalScrollBarPolicy(
             Qt.ScrollBarAlwaysOff)
-
         # 获取歌曲总数
         songs_num = len(self.songCardListWidget.songCard_list)
         self.randomPlayButton.setText(f'({songs_num})')
-
         # 分配ID
         self.sortModeMenu.setObjectName('sortModeMenu')
         self.sortModeLabel.setObjectName('sortModeLabel')
@@ -64,7 +57,6 @@ class SongTabInterface(QWidget):
 
     def initLayout(self):
         """ 初始化布局 """
-
         self.h_layout.addWidget(self.randomPlayButton, 0, Qt.AlignLeft)
         self.h_layout.addSpacing(30)
         self.h_layout.addWidget(self.sortModeLabel, 0, Qt.AlignLeft)
@@ -91,8 +83,8 @@ class SongTabInterface(QWidget):
             [self.sortByCratedTime, self.sortByDictOrder, self.sortBySonger])
 
     def randomPlay(self):
-        """ 改变播放的循环模式 """
-        pass
+        """ 刷新并随机排列播放列表 """
+        self.randomPlayAllSig.emit()
 
     def sortSongCard(self):
         """ 根据所选的排序方式对歌曲卡进行重新排序 """

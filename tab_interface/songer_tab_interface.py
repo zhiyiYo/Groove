@@ -1,6 +1,6 @@
 import sys
 
-from PyQt5.QtCore import  Qt, QEvent,QSize
+from PyQt5.QtCore import  Qt, QEvent,QSize,pyqtSignal
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (QApplication, QHBoxLayout, QLabel, QVBoxLayout, QPushButton,
                              QWidget)
@@ -11,6 +11,7 @@ from Groove.my_widget.my_button import RandomPlayButton
 
 class SongerTabInterface(QWidget):
     """ 定义专辑标签界面 """
+    randomPlayAllSig = pyqtSignal()
 
     def __init__(self,parent=None):
         super().__init__(parent)
@@ -61,8 +62,8 @@ class SongerTabInterface(QWidget):
         self.setLayout(self.v_layout)
 
     def randomPlay(self):
-        """ 刷新播放列表并随机播放 """
-        pass
+        """ 刷新并随机排列播放列表 """
+        self.randomPlayAllSig.emit()
 
     def setQss(self):
         """ 设置层叠样式表 """

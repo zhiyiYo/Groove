@@ -141,9 +141,11 @@ class ScrollTextWindow(QWidget):
 
     def getTextWidth(self):
         """ 计算文本的总宽度 """
+        # 计算大写字母个数
+        self.__countCapitalLetters()
         songFontMetrics = QFontMetrics(QFont('Microsoft YaHei', 14, 400))
         self.songNameWidth = sum(
-            [songFontMetrics.width(i) for i in self.songName])
+            [songFontMetrics.width(i) for i in self.songName]) + 7 * self.songCapLetterNum
         # 检测歌手名是否全是英文
         self.isMatch = re.match(r'^[a-zA-Z]+$', self.songerName)
         if not self.isMatch:
@@ -152,17 +154,17 @@ class ScrollTextWindow(QWidget):
             songerFontMetrics = QFontMetrics(QFont('Microsoft YaHei', 11, 500))
         # 总是会少一个字符的长度
         self.songerNameWidth = sum(
-            [songerFontMetrics.width(i) for i in self.songerName])+8
+            [songerFontMetrics.width(i) for i in self.songerName]) + 8 + 4 * self.songerCapLetterNum
 
     def adjustWindowWidth(self):
         """ 根据字符串长度调整窗口宽度 """
         self.getTextWidth()
         maxWidth = max(self.songNameWidth, self.songerNameWidth)
         # 判断是否有字符串宽度超过窗口的最大宽度
-        self.isSongNameTooLong = self.songNameWidth > 253
-        self.isSongerNameTooLong = self.songerNameWidth > 253
+        self.isSongNameTooLong = self.songNameWidth > 250
+        self.isSongerNameTooLong = self.songerNameWidth > 250
         # 设置窗口的宽度
-        self.setFixedWidth(min(maxWidth, 253))
+        self.setFixedWidth(min(maxWidth, 250))
 
     def updateSongIndex(self):
         """ 更新歌名下标 """
@@ -251,6 +253,14 @@ class ScrollTextWindow(QWidget):
         else:
             self.songerNameTimer.start()
 
+    def __countCapitalLetters(self):
+        """ 计算大写字母个数 """
+        # 特殊字符按大写字母算
+        specialCharacters="（）()！!"
+        self.songerCapLetterNum = sum(
+            [1 for i in self.songerName if i.isupper() or i in specialCharacters])
+        self.songCapLetterNum = sum(
+            [1 for i in self.songName if i.isupper() or i in specialCharacters])
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

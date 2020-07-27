@@ -52,18 +52,26 @@ QSlider::sub-page:vertical:pressed {
 /*标签*/
 QLabel#songNameLabel{
     color: white;
-    font: 31px 'Microsoft YaHei';
-
+    font: 32px 'Microsoft YaHei';
+    font-weight: 500;
 }
 
 QLabel#songerNameLabel {
     color: white;
-    font: 14px 'Microsoft YaHei';
-    font-weight: 500;
+    font: 15px 'Microsoft YaHei';
+    /*font-weight: 500;*/
 }
 
 QLabel#volumeLabel {
     color: white;
     font: 15px 'Microsoft YaHei Light';
     font-weight: 500;
+}
+
+QToolTip{
+    height: 39px;
+    padding: 9px 16px 11px 16px;
+    font: 15px "Microsoft YaHei";
+    border: 2px solid rgb(128, 128, 128);
+    background-color: white;
 }

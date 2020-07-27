@@ -173,11 +173,13 @@ class RandomPlayButton(QPushButton):
     def eventFilter(self, obj, e):
         """ 当鼠标移到播放模式按钮上时更换图标 """
         if obj == self:
-            if e.type() == QEvent.Enter or e.type() == QEvent.HoverMove:
+            if e.type() in [QEvent.Enter, QEvent.HoverMove]:
                 self.setIcon(
                     QIcon('resource\\images\\无序播放所有_hover_130_17.png'))
-            elif e.type() == QEvent.Leave:
+            elif e.type() in [QEvent.Leave,QEvent.MouseButtonRelease] :
                 self.setIcon(QIcon('resource\\images\\无序播放所有_130_17.png'))
+            elif e.type() == QEvent.MouseButtonPress:
+                self.setIcon(QIcon('resource\\images\\无序播放所有_pressed_130_17.png'))
         return False
 
 

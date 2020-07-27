@@ -14,7 +14,7 @@ class ClickableLabel(QLabel):
     # 创建点击信号
     clicked = pyqtSignal()
 
-    def __init__(self, text, parent=None):
+    def __init__(self, text='', parent=None):
         super().__init__(text, parent)
         #储存原始的text
         self.rawText=text

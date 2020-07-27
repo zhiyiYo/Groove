@@ -45,3 +45,6 @@ QPushButton#randomPlayButton:hover {
     color: rgb(110, 110, 110);
 }
 
+QPushButton#randomPlayButton:pressed {
+    color: rgb(153,153,153);
+}

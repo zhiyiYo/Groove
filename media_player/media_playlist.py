@@ -1,4 +1,6 @@
 from random import shuffle
+from enum import Enum
+from json import dump,load
 
 from PyQt5.Qt import QUrl, pyqtSignal
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlaylist
@@ -9,12 +11,14 @@ class MediaPlaylist(QMediaPlaylist):
     # 当点击上一首和下一首时发送信号
     switchSongSignal = pyqtSignal(dict)
 
-    def __init__(self, parent=None, songInfoDict_list: list = None):
+    def __init__(self, parent=None):
         super().__init__(parent=parent)
         # 创建一个用于存储顺序播放列表的列表
-        self.playlist = songInfoDict_list
+        self.playlist = []
         # 保存当前的歌曲在随机播放列表中的下标
         self.currentRandomPlayIndex = 0
+        # 初始化播放列表种类
+        self.playlistType = PlaylistType(PlaylistType.LAST_PLAYLIST)
         # 初始化播放列表
         self.__initPlaylist()
 
@@ -26,12 +30,12 @@ class MediaPlaylist(QMediaPlaylist):
         self.prePlayMode = self.playbackMode()
         # 初始化随机播放按钮按下状态
         self.randPlayBtPressed = False
-        # 确保播放列表是个列表
-        if not self.playlist:
-            self.playlist = []
-        else:
+        # 读入上次的播放列表
+        self.readLastPlaylist()
+        if self.playlist:
             for songInfo_dict in self.playlist:
-                self.addMedia(songInfo_dict)
+                super().addMedia(QMediaContent(
+                    QUrl.fromLocalFile(songInfo_dict['songPath'])))
         self.currentIndexChanged.connect(
             lambda index: self.switchSongSignal.emit(self.playlist[index]))
 
@@ -49,26 +53,28 @@ class MediaPlaylist(QMediaPlaylist):
             return
         self.playlist.extend(songInfoDict_list)
         for songInfo_dict in songInfoDict_list:
-            self.addMedia(songInfo_dict)
+            super().addMedia(QMediaContent(
+                QUrl.fromLocalFile(songInfo_dict['songPath'])))
 
     def insertMedia(self, index, songInfo_dict: dict):
         """ 在指定位置插入要播放的歌曲 """
         super().insertMedia(index, QMediaContent(
             QUrl.fromLocalFile(songInfo_dict['songPath'])))
-        self.playlist.insert(index,songInfo_dict)
+        self.playlist.insert(index, songInfo_dict)
 
     def insertMedias(self, index: int, songInfoDict_list: list):
-        """ 插入播放列表,updatePlaylist用来决定是否更新播放列表 """
+        """ 插入播放列表 """
         if not songInfoDict_list:
             return
-        self.playlist.insert(index, songInfoDict_list)
+        self.playlist = self.playlist[:index] + \
+            songInfoDict_list + self.playlist[index:]
         mediaContent_list = [QMediaContent(
             QUrl.fromLocalFile(songInfo_dict['songPath'])) for songInfo_dict in songInfoDict_list]
         super().insertMedia(index, mediaContent_list)
 
     def clear(self):
         """ 清空播放列表 """
-        self.playlist.clear()
+        self.playlist = []
         super().clear()
 
     def next(self):
@@ -90,11 +96,26 @@ class MediaPlaylist(QMediaPlaylist):
             super().previous()
         self.switchSongSignal.emit(self.playlist[self.currentIndex()])
 
-    def playThisSong(self, songInfo_dict: dict):
+    def playThisSong(self, songInfo_dict: dict, newSongInfoDict_list: list = None, playlistType=0):
         """ 按下歌曲卡的播放按钮或者双击歌曲卡时立即在当前的播放列表中播放这首歌 """
         if not songInfo_dict:
             return
-        self.setCurrentIndex(self.playlist.index(songInfo_dict))
+        # 更新播放列表种类和播放列表
+        self.playlistType = PlaylistType(playlistType)
+        if newSongInfoDict_list:
+            self.setMedias(newSongInfoDict_list)
+        # 设置当前播放歌曲
+        if songInfo_dict in self.playlist:
+            self.setCurrentIndex(self.playlist.index(songInfo_dict))
+        else:
+            # 如果这首歌不在播放列表中，就将其插入播放列表的表头
+            self.insertMedia(0, songInfo_dict)
+            self.setCurrentIndex(0)
+
+    def playAlbum(self, songInfoDict_list: list):
+        """ 播放专辑中的歌曲 """
+        self.playlistType = PlaylistType.ALBUM_CARD_PLAYLIST
+        self.setMedias(songInfoDict_list)
 
     def setRandomPlay(self, isRandomPlay=False):
         """ 按下随机播放按钮时根据循环模式决定是否设置随机播放模式 """
@@ -108,9 +129,36 @@ class MediaPlaylist(QMediaPlaylist):
         else:
             self.randPlayBtPressed = False
             # 恢复之前的循环模式
-            self.setPlaybackMode(self.prePlayMode)    
-            
+            self.setPlaybackMode(self.prePlayMode)
 
     def setMedias(self, songInfoDict_list: list):
         """ 重置播放列表 """
         self.clear()
+        self.addMedias(songInfoDict_list)
+        self.setCurrentIndex(0)
+
+    def save(self):
+        """ 保存关闭前的播放列表到json文件中 """
+        with open('Data\\lastPlaylist.json', 'w', encoding='utf-8') as f:
+            dump(self.playlist, f)
+            
+    def readLastPlaylist(self):
+        """ 从json文件中读取播放列表 """
+        try:
+            with open('Data\\lastPlaylist.json',encoding='utf-8') as f:
+                self.playlist = load(f)
+        except:
+            self.playlist = []
+            
+
+class PlaylistType(Enum):
+    """ 播放列表种类枚举 """
+    SONG_CARD_PLAYLIST = 0    # 播放列表为所有歌曲
+    SONGER_CARD_PLAYLIST = 1  # 播放列表为选中歌手的歌
+    ALBUM_CARD_PLAYLIST = 2   # 播放列表为选中专辑的歌
+    LAST_PLAYLIST = 3         # 上一次的播放列表
+
+
+if __name__ == "__main__":
+    playlistType = PlaylistType(0)
+    print(playlistType)

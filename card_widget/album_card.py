@@ -1,7 +1,7 @@
 import re
 import sys
 
-from PyQt5.QtCore import QEvent, QPoint, Qt
+from PyQt5.QtCore import QEvent, QPoint, Qt,pyqtSignal
 from PyQt5.QtGui import (QBitmap, QBrush, QColor, QContextMenuEvent, QIcon,
                          QPainter, QPen, QPixmap,QMoveEvent)
 from PyQt5.QtWidgets import (
@@ -18,8 +18,10 @@ from Groove.my_functions.is_not_leave import isNotLeave
 
 class AlbumCard(QWidget):
     """ 定义包含专辑歌手名的窗口 """
+    playSignal = pyqtSignal(list)
+    nextPlaySignal = pyqtSignal(list)
 
-    def __init__(self, albumInfo, parent=None, albumViewWidget=None):
+    def __init__(self, albumInfo:dict, parent=None, albumViewWidget=None):
         super().__init__(parent)
         self.albumInfo = albumInfo
         self.albumViewWidget = albumViewWidget
@@ -53,10 +55,11 @@ class AlbumCard(QWidget):
         self.albumName.move(10, 218)
         self.songerName.move(10, 244)
         self.adjustLabel()
-
         # 分配ID
         self.albumName.setObjectName('albumName')
         self.songerName.setObjectName('songerName')
+        # 将信号连接到槽函数
+        self.playButton.clicked.connect(lambda : self.playSignal.emit(self.albumInfo['songInfo_list']))
 
     def setWidgetsToolTip(self):
         """ 设置歌手名和专辑名的自定义提示条 """
@@ -104,6 +107,10 @@ class AlbumCard(QWidget):
         """ 显示右击菜单 """
         # 创建菜单
         menu = CardContextMenu(self, cardType=1)
+        menu.playAct.triggered.connect(
+            lambda: self.playSignal.emit(self.albumInfo['songInfo_list']))
+        menu.nextToPlayAct.triggered.connect(
+            lambda: self.nextPlaySignal.emit(self.albumInfo['songInfo_list']))
         menu.exec_(event.globalPos())
 
     def adjustLabel(self):
@@ -152,13 +159,6 @@ class AlbumCoverWindow(QWidget):
         # 专辑图居中
         self.albumPic.move(int(self.width() / 2 - self.albumPic.pixmap().width() / 2),
                            int(self.height() / 2 - self.albumPic.pixmap().height() / 2))
-                           
-        self.playButton.move(int(0.5 * self.width() - 36 - 0.5 * self.playButton.width()),
-                             int(0.5*self.height() - 0.5*self.playButton.height()+1))
-
-        self.addToButton.move(int(0.5*self.width()+36-0.5*self.playButton.width()),
-                              int(0.5*self.height() - 0.5*self.playButton.height()+1))
-
         # 隐藏按钮
         self.playButton.hide()
         self.addToButton.hide()

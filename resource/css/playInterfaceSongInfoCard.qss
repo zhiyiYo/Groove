@@ -1,0 +1,11 @@
+QLabel#songNameLabel{
+    color: white;
+    font: 34px "Microsoft YaHei";
+    font-weight: bold;
+}
+
+QLabel#songerAlbumLabel {
+    color: white;
+    font: 22px "Microsoft YaHei";
+    font-weight: 400;
+}

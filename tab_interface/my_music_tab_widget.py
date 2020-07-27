@@ -2,7 +2,7 @@
 
 import sys
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt,pyqtSignal
 from PyQt5.QtGui import QColor, QPainter, QPen
 from PyQt5.QtWidgets import QApplication, QVBoxLayout, QStackedWidget, QWidget
 
@@ -15,6 +15,7 @@ from my_widget.button_group import ButtonGroup
 
 class MyMusicTabWidget(QWidget):
     """ 放置歌曲、歌手和专辑界面 """
+    randomPlayAllSig = pyqtSignal()
 
     def __init__(self,target_path_list:list, parent=None):
         super().__init__(parent)
@@ -59,6 +60,11 @@ class MyMusicTabWidget(QWidget):
         # 将按钮点击信号连接到槽函数
         for button in self.button_list:
             button.clicked.connect(self.buttonClickedEvent)
+        # 将随机播放信号连接到槽函数
+        slot = lambda: self.randomPlayAllSig.emit()
+        self.songTab.randomPlayAllSig.connect(slot)
+        self.songerTab.randomPlayAllSig.connect(slot)
+        self.albumTab.randomPlayAllSig.connect(slot)
             
     def initLayout(self):
         """ 初始化布局 """
