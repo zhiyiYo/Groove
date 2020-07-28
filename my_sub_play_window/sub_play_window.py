@@ -5,8 +5,8 @@ from system_hotkey import SystemHotkey
 from PyQt5.QtCore import QEasingCurve, QPropertyAnimation, Qt, QTimer,QAbstractAnimation,pyqtSignal
 from PyQt5.QtGui import QBrush, QPainter,QPixmap,QFontMetrics,QFont
 from PyQt5.QtWidgets import QApplication, QLabel, QWidget
-from play_button import PlayButton
-from system_volume import SystemVolume
+from .play_button import PlayButton
+from .system_volume import SystemVolume
 
 sys.path.append('..')
 from Groove.my_functions.is_not_leave import isNotLeave

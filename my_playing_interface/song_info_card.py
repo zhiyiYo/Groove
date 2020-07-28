@@ -1,6 +1,6 @@
 import sys
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt,QEvent
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel
 
@@ -32,8 +32,14 @@ class SongInfoCard(QWidget):
         # 分配ID
         self.songNameLabel.setObjectName('songNameLabel')
         self.songerAlbumLabel.setObjectName('songerAlbumLabel')
+        # 设置属性
+        self.songNameLabel.setProperty('state', 'normal')
+        self.songerAlbumLabel.setProperty('state', 'normal')
         self.__initLayout()
         self.__setQss()
+        # 安装事件过滤器
+        self.songNameLabel.installEventFilter(self)
+        self.songerAlbumLabel.installEventFilter(self)
 
     def __initLayout(self):
         """ 初始化布局 """
@@ -64,7 +70,22 @@ class SongInfoCard(QWidget):
         with open(r'resource\css\playInterfaceSongInfoCard.qss', encoding='utf-8') as f:
             self.setStyleSheet(f.read())
 
-        
+    def eventFilter(self, obj, e: QEvent):
+        """ 重写事件过滤器 """
+        if obj in [self.songNameLabel, self.songerAlbumLabel]:
+            if e.type() == QEvent.MouseButtonPress:
+                self.songNameLabel.setProperty('state', 'pressed')
+                self.songerAlbumLabel.setProperty('state', 'pressed')
+                self.setStyle(QApplication.style())
+            elif e.type() == QEvent.Enter:
+                self.songNameLabel.setProperty('state', 'hover')
+                self.songerAlbumLabel.setProperty('state', 'hover')
+                self.setStyle(QApplication.style())
+            elif e.type() in [QEvent.MouseButtonRelease,QEvent.Leave]:
+                self.songNameLabel.setProperty('state', 'normal')
+                self.songerAlbumLabel.setProperty('state', 'normal')
+                self.setStyle(QApplication.style())
+        return super().eventFilter(obj, e)
         
 
 if __name__ == "__main__":

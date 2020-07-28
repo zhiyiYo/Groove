@@ -1,11 +1,22 @@
-QLabel#songNameLabel{
+QLabel[state='normal'] {
     color: white;
+}
+
+QLabel[state='hover']{
+    color: rgb(223,223,223);
+}
+
+QLabel[state='pressed'] {
+    color: rgba(223, 223, 223,0.7);
+}
+
+QLabel#songNameLabel{
+    
     font: 34px "Microsoft YaHei";
     font-weight: bold;
 }
 
 QLabel#songerAlbumLabel {
-    color: white;
     font: 22px "Microsoft YaHei";
     font-weight: 400;
 }

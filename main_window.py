@@ -64,6 +64,9 @@ class MainWindow(QWidget):
         self.thumbnailToolBar.setWindow(self.windowHandle())
         # 实例化左上角播放窗口
         self.subPlayWindow = SubPlayWindow(self, self.lastSongInfo)
+        # 创建快捷键
+        self.playAct = QAction(parent=self, shortcut=Qt.Key_Space, triggered=self.switchPlayState)
+        
 
     def initWidget(self):
         """ 初始化小部件 """

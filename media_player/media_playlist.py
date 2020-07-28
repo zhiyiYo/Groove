@@ -74,27 +74,33 @@ class MediaPlaylist(QMediaPlaylist):
 
     def clear(self):
         """ 清空播放列表 """
-        self.playlist = []
+        self.playlist.clear()
         super().clear()
 
     def next(self):
         """ 播放下一首 """
         # 如果已经是最后一首就转到第一首歌开始播放
         if self.currentIndex() == self.mediaCount() - 1:
-            self.setCurrentIndex(0)
+            # 列表循环时切换到第一首
+            if self.playbackMode() == QMediaPlaylist.Loop:
+                self.setCurrentIndex(0)
+                # 切换歌曲时发出信号
+                self.switchSongSignal.emit(self.playlist[self.currentIndex()])
         else:
             super().next()
-        # 切换歌曲时发出信号
-        self.switchSongSignal.emit(self.playlist[self.currentIndex()])
+            # 切换歌曲时发出信号
+            self.switchSongSignal.emit(self.playlist[self.currentIndex()])
 
     def previous(self):
         """ 播放上一首 """
         # 如果是第一首就转到最后一首歌开始播放
         if self.currentIndex() == 0:
-            self.setCurrentIndex(self.mediaCount() - 1)
+            if self.playbackMode() == QMediaPlaylist.Loop:
+                self.setCurrentIndex(self.mediaCount() - 1)
+                self.switchSongSignal.emit(self.playlist[self.currentIndex()])
         else:
             super().previous()
-        self.switchSongSignal.emit(self.playlist[self.currentIndex()])
+            self.switchSongSignal.emit(self.playlist[self.currentIndex()])
 
     def playThisSong(self, songInfo_dict: dict, newSongInfoDict_list: list = None, playlistType=0):
         """ 按下歌曲卡的播放按钮或者双击歌曲卡时立即在当前的播放列表中播放这首歌 """
