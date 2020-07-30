@@ -394,6 +394,22 @@ class VolumeButton(QToolButton):
             self.currentVolumeLevel = volumeLevel
             self.update()
 
+    def setVolumeLevel(self, volume):
+        """ 根据音量来设置 """
+        if volume == 0:
+            self.__updateIcon(0)
+        elif volume <= 32 and self.currentVolumeLevel != 1:
+            self.__updateIcon(1)
+        elif volume <= 65 and self.currentVolumeLevel != 2:
+            self.__updateIcon(2)
+        elif volume > 65 and self.currentVolumeLevel != 3:
+            self.__updateIcon(3)
+
+    def __updateIcon(self, iconIndex):
+        """ 更新图标 """
+        self.currentVolumeLevel = iconIndex
+        self.update()
+
 
 class SmallPlayModeButton(BasicButton):
     """ 最小播放模式按钮 """

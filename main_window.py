@@ -316,17 +316,10 @@ class MainWindow(QWidget):
         else:
             self.player.setMuted(True)
 
-    def volumeChangedSlot(self):
+    def volumeChangedSlot(self,value):
         """ 音量滑动条数值改变时更换图标并设置音量 """
-        self.player.setVolume(self.playBar.volumeSlider.value())
-        if self.playBar.volumeSlider.value() == 0:
-            self.playBar.volumeButton.setVolumeLevel(0)
-        elif 0 < self.playBar.volumeSlider.value() <= 32:
-            self.playBar.volumeButton.setVolumeLevel(1)
-        elif 32 < self.playBar.volumeSlider.value() <= 65:
-            self.playBar.volumeButton.setVolumeLevel(2)
-        else:
-            self.playBar.volumeButton.setVolumeLevel(3)
+        self.player.setVolume(value)
+        self.playBar.volumeButton.setVolumeLevel(value)
 
     def playerPositionChangeSlot(self):
         """ 播放器的播放进度改变时更新当前播放进度标签和进度条的值 """

@@ -4,7 +4,7 @@ import sys
 from enum import Enum
 
 from PyQt5.QtCore import (QEasingCurve, QParallelAnimationGroup, QPoint,
-                          QPropertyAnimation, Qt, QRect, QDateTime)
+                          QPropertyAnimation, Qt, QRect, QDateTime, pyqtSignal)
 from PyQt5.QtGui import QMouseEvent
 from PyQt5.QtWidgets import QApplication, QWidget
 
@@ -16,6 +16,12 @@ class SongInfoCardChute(QWidget):
         歌曲卡滑槽，有三个歌曲卡在循环滑动，当前歌曲卡切换时就切换歌曲
         当前下标为0时，不能换到上一首， 当前下标为len-1时，不能换到下一首
     """
+
+    # 当前歌曲切换信号
+    currentSongChanged = pyqtSignal([int], [str])
+    # 显示和隐藏播放栏信号
+    showPlayBarSignal = pyqtSignal()
+    hidePlayBarSignal = pyqtSignal()
 
     def __init__(self, parent=None, playlist=None):
         super().__init__(parent)
@@ -37,7 +43,12 @@ class SongInfoCardChute(QWidget):
         self.__createWidgets()
         for songInfoCard in self.songInfoCard_list:
             songInfoCard.resize(self.width(), 136)
+        # 将信号连接到槽函数
         self.parallelAniGroup.finished.connect(self.switchSongInfoCard)
+        self.curSongInfoCard.showPlayBarSignal.connect(
+            lambda: self.showPlayBarSignal.emit())
+        self.curSongInfoCard.hidePlayBarSignal.connect(
+            lambda: self.hidePlayBarSignal.emit())
 
     def __createWidgets(self):
         """ 创建小部件 """
@@ -111,6 +122,13 @@ class SongInfoCardChute(QWidget):
                         else:
                             self.__cycleShift()
             self.parallelAniGroup.start()
+            # 发送更新背景图片的信号
+            if self.loopMode == SongInfoCardLoopMode.CYCLE_LEFT_SHIFT:
+                self.currentSongChanged[str].emit(
+                    self.nextSongInfoCard.albumCoverPath)
+            elif self.loopMode == SongInfoCardLoopMode.CYCLE_RIGHT_SHIFT:
+                self.currentSongChanged[str].emit(
+                    self.lastSongInfoCard.albumCoverPath)
 
     def switchSongInfoCard(self):
         """ 交换对底层歌曲卡对象的引用 """
@@ -130,7 +148,8 @@ class SongInfoCardChute(QWidget):
                 self.nextSongInfoCard.show()
             else:
                 self.nextSongInfoCard.hide()
-
+            # 发送信号
+            self.currentSongChanged[int].emit(self.currentIndex)
         # 循环右移
         elif self.loopMode == SongInfoCardLoopMode.CYCLE_RIGHT_SHIFT:
             self.__resetRef(moveDirection=1)
@@ -146,6 +165,8 @@ class SongInfoCardChute(QWidget):
                 self.lastSongInfoCard.show()
             else:
                 self.lastSongInfoCard.hide()
+            # 发送信号
+            self.currentSongChanged[int].emit(self.currentIndex)
 
     def __cycleShift(self):
         """ 三卡片移动 """
@@ -204,8 +225,10 @@ class SongInfoCardChute(QWidget):
         super().resizeEvent(e)
         for i in range(3):
             self.songInfoCard_list[i].resize(self.width(), 136)
-            self.songInfoCard_list[i].move(
-                self.songInfoCard_list[i].x(), self.height() - 204)
+            self.songInfoCard_list[i].adjustText()
+        self.curSongInfoCard.move(0, self.height() - 204)
+        self.lastSongInfoCard.move(-self.width(), self.height() - 204)
+        self.nextSongInfoCard.move(self.width(), self.height() - 204)
 
     def __moveObject(self, songInfoCardObj, x):
         """ 移动底层对象 """
@@ -260,9 +283,9 @@ if __name__ == "__main__":
                 {'songName': '猫じゃらし',
                  'songer': 'RADWIMPS',
                  'album': ['猫じゃらし - Single']},
-                {'songName': 'ぐるぐるワンダーランド',
-                 'songer': 'SILENT SIREN',
-                 'album': ['Silent Siren Collection']},
+                {'songName': '歩いても歩いても、夜空は僕を追いかけてくる (步履不停，夜空追逐着我)',
+                 'songer': '鎖那',
+                 'album': ['(un)sentimental spica']},
                 {'songName': 'one another',
                  'songer': 'HALCA',
                  'album': ['Assortrip']},

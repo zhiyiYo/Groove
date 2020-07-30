@@ -11,12 +11,15 @@ QLabel[state='pressed'] {
 }
 
 QLabel#songNameLabel{
-    
-    font: 34px "Microsoft YaHei";
+
+    /*font-size: 34px;*/
+    font-size: 21pt;
+    font-family: "Microsoft YaHei";
     font-weight: bold;
 }
 
 QLabel#songerAlbumLabel {
-    font: 22px "Microsoft YaHei";
+    /*font-size:22px*/
+    font: 13pt "Microsoft YaHei";
     font-weight: 400;
 }
