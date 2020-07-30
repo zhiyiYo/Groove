@@ -45,10 +45,11 @@ class SongInfoCardChute(QWidget):
             songInfoCard.resize(self.width(), 136)
         # 将信号连接到槽函数
         self.parallelAniGroup.finished.connect(self.switchSongInfoCard)
-        self.curSongInfoCard.showPlayBarSignal.connect(
-            lambda: self.showPlayBarSignal.emit())
-        self.curSongInfoCard.hidePlayBarSignal.connect(
-            lambda: self.hidePlayBarSignal.emit())
+        for songInfoCard in self.songInfoCard_list:
+            songInfoCard.showPlayBarSignal.connect(
+                self.__showPlayBar)
+            songInfoCard.hidePlayBarSignal.connect(
+                self.__hidePlayBar)
 
     def __createWidgets(self):
         """ 创建小部件 """
@@ -121,14 +122,32 @@ class SongInfoCardChute(QWidget):
                             self.__restoreCardPosition()
                         else:
                             self.__cycleShift()
-            self.parallelAniGroup.start()
-            # 发送更新背景图片的信号
-            if self.loopMode == SongInfoCardLoopMode.CYCLE_LEFT_SHIFT:
-                self.currentSongChanged[str].emit(
-                    self.nextSongInfoCard.albumCoverPath)
-            elif self.loopMode == SongInfoCardLoopMode.CYCLE_RIGHT_SHIFT:
-                self.currentSongChanged[str].emit(
-                    self.lastSongInfoCard.albumCoverPath)
+
+    def cycleLeftShift(self):
+        """ 循环左移 """
+        self.loopMode = SongInfoCardLoopMode.CYCLE_LEFT_SHIFT
+        self.__setAnimation(self.curSongInfoCardAni,
+                            self.curSongInfoCard, -self.width())
+        self.__setAnimation(self.nextSongInfoCardAni,
+                            self.nextSongInfoCard, 0)
+        self.parallelAniGroup.removeAnimation(self.lastSongInfoCardAni)
+        self.parallelAniGroup.start()
+        # 发送更新背景信号
+        self.currentSongChanged[str].emit(
+            self.nextSongInfoCard.albumCoverPath)
+
+    def cycleRightShift(self):
+        """ 循环右移 """
+        self.loopMode = SongInfoCardLoopMode.CYCLE_RIGHT_SHIFT
+        self.__setAnimation(self.curSongInfoCardAni,
+                            self.curSongInfoCard, self.width())
+        self.__setAnimation(self.lastSongInfoCardAni,
+                            self.lastSongInfoCard, 0)
+        self.parallelAniGroup.removeAnimation(self.nextSongInfoCardAni)
+        self.parallelAniGroup.start()
+        # 发送更新背景信号
+        self.currentSongChanged[str].emit(
+            self.lastSongInfoCard.albumCoverPath)
 
     def switchSongInfoCard(self):
         """ 交换对底层歌曲卡对象的引用 """
@@ -148,7 +167,7 @@ class SongInfoCardChute(QWidget):
                 self.nextSongInfoCard.show()
             else:
                 self.nextSongInfoCard.hide()
-            # 发送信号
+            # 发送下标更新信号
             self.currentSongChanged[int].emit(self.currentIndex)
         # 循环右移
         elif self.loopMode == SongInfoCardLoopMode.CYCLE_RIGHT_SHIFT:
@@ -170,22 +189,12 @@ class SongInfoCardChute(QWidget):
 
     def __cycleShift(self):
         """ 三卡片移动 """
+        # 播放播放列表的上一首(右移歌曲卡)
         if self.mouseDeltaX > 0:
-            # 播放播放列表的上一首(右移歌曲卡)
-            self.loopMode = SongInfoCardLoopMode.CYCLE_RIGHT_SHIFT
-            self.__setAnimation(self.curSongInfoCardAni,
-                                self.curSongInfoCard, self.width())
-            self.__setAnimation(self.lastSongInfoCardAni,
-                                self.lastSongInfoCard, 0)
-            self.parallelAniGroup.removeAnimation(self.nextSongInfoCardAni)
+            self.cycleRightShift()
+        # 播放播放列表的下一首(左移歌曲卡)
         elif self.mouseDeltaX < 0:
-            # 播放播放列表的下一首(左移歌曲卡)
-            self.loopMode = SongInfoCardLoopMode.CYCLE_LEFT_SHIFT
-            self.__setAnimation(self.curSongInfoCardAni,
-                                self.curSongInfoCard, -self.width())
-            self.__setAnimation(self.nextSongInfoCardAni,
-                                self.nextSongInfoCard, 0)
-            self.parallelAniGroup.removeAnimation(self.lastSongInfoCardAni)
+            self.cycleLeftShift()
 
     def __setAnimation(self, animation: QPropertyAnimation, songInfoCard, endX):
         """ 设置动画 """
@@ -207,6 +216,7 @@ class SongInfoCardChute(QWidget):
                             self.nextSongInfoCard, self.width())
         self.__setAnimation(self.lastSongInfoCardAni,
                             self.lastSongInfoCard, -self.width())
+        self.parallelAniGroup.start()
 
     def updateCards(self):
         """ 更新三个歌曲信息卡 """
@@ -264,6 +274,27 @@ class SongInfoCardChute(QWidget):
         self.curSongInfoCard = self.songInfoCard_list[curIndex]
         self.lastSongInfoCard = self.songInfoCard_list[lastIndex]
         self.nextSongInfoCard = self.songInfoCard_list[nextIndex]
+
+    def __showPlayBar(self):
+        """ 显示播放栏 """
+        self.showPlayBarSignal.emit()
+        for songInfoCard in self.songInfoCard_list:
+            songInfoCard.isPlayBarVisible = True
+        
+    def __hidePlayBar(self):
+        """ 隐藏播放栏 """
+        self.hidePlayBarSignal.emit()
+        for songInfoCard in self.songInfoCard_list:
+            songInfoCard.isPlayBarVisible = False
+
+    def stopSongInfoCardTimer(self):
+        """ 停止歌曲信息卡的计时器 """
+        for songInfoCard in self.songInfoCard_list:
+            songInfoCard.timer.stop()
+
+    def startSongInfoCardTimer(self):
+        """ 打开歌曲信息卡的计时器 """
+        self.curSongInfoCard.timer.start()
 
 
 class SongInfoCardLoopMode(Enum):

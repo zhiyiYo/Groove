@@ -22,6 +22,8 @@ class SongInfoCard(QWidget):
         self.albumCoverLabel = QLabel(self)
         self.songNameLabel = ClickableLabel(parent=self)
         self.songerAlbumLabel = ClickableLabel(parent=self)
+        # 初始化标志位
+        self.isPlayBarVisible = False
         # 初始化
         self.__initWidget()
 
@@ -98,14 +100,15 @@ class SongInfoCard(QWidget):
 
     def enterEvent(self, e):
         """ 鼠标进入时打开计时器并显示播放栏 """
-        if not self.timer.isActive():
-            # 显示播放栏
-            self.timer.start()
-            self.showPlayBarSignal.emit()
-        else:
-            # 重置定时器
-            self.timer.stop()
-            self.timer.start()
+        if not self.isPlayBarVisible:
+            if not self.timer.isActive():
+                # 显示播放栏
+                self.timer.start()
+                self.showPlayBarSignal.emit()
+            else:
+                # 重置定时器
+                self.timer.stop()
+                self.timer.start()
 
     def timerSlot(self):
         """ 定时器溢出时隐藏播放栏 """

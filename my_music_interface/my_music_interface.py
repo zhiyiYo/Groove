@@ -7,7 +7,7 @@ from PyQt5.QtGui import QContextMenuEvent, QIcon, QFont, QResizeEvent
 from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
                              QScrollBar, QVBoxLayout, QWidget)
 
-from tab_interface.my_music_tab_widget import MyMusicTabWidget
+from .my_music_tab_widget import MyMusicTabWidget
 from my_widget.my_scroll_bar import ScrollBar
 
 

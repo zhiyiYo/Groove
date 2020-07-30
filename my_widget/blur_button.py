@@ -59,7 +59,7 @@ class BlurButton(QToolButton):
             channelNum=blurImageArray.shape[-1]
             for i in range(channelNum):
                 blurImageArray[:, :, i] = gaussian_filter(
-                    image[:, :, i], self.blurRadius)
+                    image[:, :, i], self.blurRadius) * 0.75
             # 将narray转换为QImage
             height, width, bytesPerComponent = blurImageArray.shape
             bytesPerLine = channelNum * width  # 每行的字节数

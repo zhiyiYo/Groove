@@ -1,6 +1,6 @@
 import sys
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt,pyqtSignal
 from PyQt5.QtWidgets import QApplication, QWidget
 
 from play_bar_buttons import (BasicCircleButton, PlayButton, PullUpArrow,
@@ -10,6 +10,10 @@ from play_progress_bar import PlayProgressBar
 
 class PlayBar(QWidget):
     """ 播放栏 """
+    
+    # 鼠标进入信号
+    enterSignal = pyqtSignal()
+    leaveSignal = pyqtSignal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -66,13 +70,16 @@ class PlayBar(QWidget):
 
     def __showVolumeSlider(self):
         """ 显示音量滑动条 """
-        if self.parent():
-            self.volumeSlider.move(self.window().geometry().x() + 166,
-                                   self.window().geometry().y() + self.y())
+        # 显示播放栏
+        if not self.volumeSlider.isVisible():
+            if self.parent():
+                self.volumeSlider.move(166, self.y())
+            else:
+                self.volumeSlider.move(166, 0)
+            self.volumeSlider.show()
         else:
-            self.volumeSlider.move(
-                self.geometry().x() + 166, self.geometry().y())
-        self.volumeSlider.show()
+            # 隐藏音量条
+            self.volumeSlider.hide()
 
     def __moveButtons(self):
         """ 移动按钮 """
@@ -88,6 +95,13 @@ class PlayBar(QWidget):
         self.playProgressBar.resize(self.width(), 38)
         self.__moveButtons()
 
+    def enterEvent(self, e):
+        """ 鼠标进入时发出进入信号 """
+        self.enterSignal.emit()
+
+    def leaveEvent(self, e):
+        """ 鼠标离开时发出离开信号 """
+        self.leaveSignal.emit()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

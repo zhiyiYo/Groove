@@ -1,0 +1,1 @@
+from .album_tab_interface import AlbumTabInterface

@@ -12,10 +12,11 @@ from Groove.my_widget.my_slider import Slider
 
 class VolumeSlider(QWidget):
     """ 音量滑动条 """
+
     # 静音状态改变信号
     muteStateChanged = pyqtSignal(bool)
     volumeLevelChanged = pyqtSignal(int)
-
+    
     def __init__(self, parent=None):
         super().__init__(parent)
         self.volumeButton = VolumeButton(self)
@@ -28,7 +29,7 @@ class VolumeSlider(QWidget):
         self.setFixedSize(345, 78)
         self.volumeButton.move(25, 15)
         self.volumeSlider.move(108, 25)
-        self.setWindowFlags(Qt.Popup)
+        self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.__setQss()
         self.__setShadowEffect()
