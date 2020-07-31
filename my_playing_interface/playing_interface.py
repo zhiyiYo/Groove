@@ -1,14 +1,15 @@
 import sys
-
+from json import load
 from PyQt5.QtCore import (QEasingCurve, QParallelAnimationGroup,
-                          QPropertyAnimation, QRect, Qt)
-from PyQt5.QtGui import QImage, QPixmap, QPalette,QColor
+                          QPropertyAnimation, QRect, Qt, QTimer)
+from PyQt5.QtGui import QImage, QPixmap, QPalette, QColor
 from PyQt5.QtWidgets import QApplication, QGraphicsBlurEffect, QLabel, QWidget
 
 from blur_cover_thread import BlurCoverThread
 from play_bar import PlayBar
 
 from song_info_card_chute import SongInfoCardChute
+from song_list_widget import SongCardListWidget
 
 
 class PlayingInterface(QWidget):
@@ -28,7 +29,13 @@ class PlayingInterface(QWidget):
         self.songInfoCardChuteAni = QPropertyAnimation(
             self.songInfoCardChute, b'geometry')
         self.playBar = PlayBar(self)
+        self.songListWidget = SongCardListWidget(playlist,self)
         self.playBarAni = QPropertyAnimation(self.playBar, b'geometry')
+        self.songListWidgetAni = QPropertyAnimation(
+            self.songListWidget, b'geometry')
+        # 创建定时器
+        self.showPlaylistTimer = QTimer(self)
+        self.hidePlaylistTimer = QTimer(self)
         # 初始化
         self.__initWidget()
 
@@ -46,9 +53,16 @@ class PlayingInterface(QWidget):
         self.__connectSignalToSlot()
         # 初始化动画
         self.playBarAni.setDuration(500)
+        self.songListWidgetAni.setDuration(300)
+        self.songListWidgetAni.setEasingCurve(QEasingCurve.InQuad)
         self.playBarAni.setEasingCurve(QEasingCurve.InExpo)
         self.parallelAniGroup.addAnimation(self.playBarAni)
         self.parallelAniGroup.addAnimation(self.songInfoCardChuteAni)
+        # 初始化定时器
+        self.showPlaylistTimer.setInterval(400)
+        self.hidePlaylistTimer.setInterval(50)
+        self.showPlaylistTimer.timeout.connect(self.showPlayListTimerSlot)
+        self.hidePlaylistTimer.timeout.connect(self.hidePlayListTimerSlot)
         # 设置背景色
         palette = QPalette()
         palette.setColor(QPalette.Background, QColor(Qt.black))
@@ -79,7 +93,13 @@ class PlayingInterface(QWidget):
         self.songInfoCardChute.resize(self.size())
         self.blurBackgroundPic.setFixedSize(self.size())
         self.playBar.resize(self.width(), self.playBar.height())
-        self.playBar.move(0, self.height()-self.playBar.height())
+        self.songListWidget.resize(self.width()-60,self.height()-382)
+        if self.isPlaylistVisible:
+            self.playBar.move(0, 190)
+            self.songListWidget.move(30, 382)
+        else:
+            self.playBar.move(0, self.height() - self.playBar.height())
+            self.songListWidget.move(30, self.height())
 
     def showPlayBar(self):
         """ 显示播放栏 """
@@ -116,9 +136,28 @@ class PlayingInterface(QWidget):
             QRect(0, self.height()-self.playBar.height(), self.width(), self.playBar.height()))
         self.playBarAni.setEndValue(
             QRect(0, 190, self.width(), self.playBar.height()))
+        self.songListWidgetAni.setStartValue(
+            QRect(self.songListWidget.x(), self.songListWidget.y(),
+                  self.songListWidget.width(), self.songListWidget.height()))
+        self.songListWidgetAni.setEndValue(
+            QRect(self.songListWidget.x(), 382,
+                  self.songListWidget.width(), self.songListWidget.height()))
+        if self.sender() == self.playBar.showPlaylistButton:
+            self.playBar.pullUpArrowButton.timer.start()
         self.parallelAniGroup.start()
         self.blurBackgroundPic.hide()
         self.isPlaylistVisible = True
+        self.showPlaylistTimer.start()
+
+    def showPlayListTimerSlot(self):
+        """ 显示播放列表定时器溢出槽函数 """
+        self.showPlaylistTimer.stop()
+        self.songListWidgetAni.start()
+
+    def hidePlayListTimerSlot(self):
+        """ 显示播放列表定时器溢出槽函数 """
+        self.hidePlaylistTimer.stop()
+        self.parallelAniGroup.start()
 
     def hidePlaylist(self):
         """ 隐藏播放列表 """
@@ -131,8 +170,18 @@ class PlayingInterface(QWidget):
         self.playBarAni.setStartValue(
             QRect(0, 190, self.width(), self.playBar.height()))
         self.playBarAni.setEndValue(
-            QRect(0, self.height()-self.playBar.height(), self.width(), self.playBar.height()))
-        self.parallelAniGroup.start()
+            QRect(0, self.height() - self.playBar.height(), self.width(), self.playBar.height()))
+        self.songListWidgetAni.setStartValue(
+            QRect(self.songListWidget.x(), self.songListWidget.y(),
+                  self.songListWidget.width(), self.songListWidget.height()))
+        self.songListWidgetAni.setEndValue(
+            QRect(self.songListWidget.x(), self.height(),
+                  self.songListWidget.width(), self.songListWidget.height()))
+        if self.sender() == self.playBar.showPlaylistButton:
+            self.playBar.pullUpArrowButton.timer.start()
+        #self.parallelAniGroup.start()
+        self.songListWidgetAni.start()
+        self.hidePlaylistTimer.start()
         self.blurBackgroundPic.show()
         self.isPlaylistVisible = False
 
@@ -193,21 +242,8 @@ class PlayingInterface(QWidget):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    playlist = [{'songName': 'ハッピーでバッドな眠りは浅い',
-                 'songer': '鎖那',
-                 'album': ['ハッピーでバッドな眠りは浅い']},
-                {'songName': '猫じゃらし',
-                 'songer': 'RADWIMPS',
-                 'album': ['猫じゃらし - Single']},
-                {'songName': '歩いても歩いても、夜空は僕を追いかけてくる (步履不停，夜空追逐着我)',
-                 'songer': '鎖那',
-                 'album': ['(un)sentimental spica']},
-                {'songName': 'one another',
-                 'songer': 'HALCA',
-                 'album': ['Assortrip']},
-                {'songName': 'オーダーメイド',
-                 'songer': 'RADWIMPS',
-                 'album': ['オーダーメイド']}, ]
-    demo = PlayingInterface(playlist=playlist)
+    with open('Data\\songInfo.json', 'r', encoding='utf-8') as f:
+        songInfo_list = load(f)
+    demo = PlayingInterface(playlist=songInfo_list)
     demo.show()
     sys.exit(app.exec_())

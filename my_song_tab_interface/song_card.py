@@ -1,6 +1,6 @@
 import sys
 from json import load
-from PyQt5.QtCore import QEvent, QPoint, Qt,pyqtSignal
+from PyQt5.QtCore import QEvent, QPoint, Qt,pyqtSignal,QParallelAnimationGroup,QPropertyAnimation,QEasingCurve
 from PyQt5.QtGui import QContextMenuEvent, QIcon, QMouseEvent, QResizeEvent
 from PyQt5.QtWidgets import QApplication, QHBoxLayout, QPushButton, QWidget
 from .songcard_sub_unit import SongNameCard, YearTconDurationCard, SongerLabelWidget, AlbumLabelWidget
@@ -38,7 +38,6 @@ class SongCard(QWidget):
 
     def initLayout(self):
         """ 初始化布局 """
-
         # 设置右侧的布局
         self.right_h_layout.addWidget(self.songerLabelWidget, 0, Qt.AlignLeft)
         self.right_h_layout.addSpacing(13)
@@ -156,6 +155,16 @@ class SongCard(QWidget):
                 # 如果鼠标移出歌曲卡就更新样式
                 self.setLeaveStateQss()
             elif event.type() == QEvent.MouseButtonPress:
+                # 移动小部件位置
+                """ self.songNameCheckBox.move(self.songNameCheckBox.x() + 15,
+                                           self.songNameCheckBox.y())
+                self.playButton.move(self.playButton.x() + 10, self.playButton.y())
+                self.addToButton.move(self.addToButton.x() + 10, self.addToButton.y())
+                self.songerLabel.move(self.songerLabel.x() + 6, self.songerLabel.y())
+                self.yearLabel.move(self.yearLabel.x() - 6, self.yearLabel.y())
+                self.tconLabel.move(self.tconLabel.x() - 8, self.tconLabel.y())
+                self.durationLabel.move(self.durationLabel.x() - 14, self.durationLabel.y()) """
+                # 更新样式
                 if not self.isClicked:
                     self.setClickedStateQss()
         return False
@@ -166,7 +175,7 @@ class SongCard(QWidget):
         self.resizetimes += 1
         if self.resizetimes == 2:
             self.originalWidth = self.width()
-        if self.resizetimes > 2:
+        elif self.resizetimes > 2:
             deltaWidth = self.width() - self.originalWidth
             self.originalWidth = self.width()
             # 分配多出来的宽度

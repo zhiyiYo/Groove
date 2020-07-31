@@ -1,0 +1,15 @@
+QListWidget {
+    /*selection-color:white;*/
+    border: transparent;
+    outline: none;
+    background:transparent;
+    padding: 0px;
+}
+
+/*设置鼠标悬浮时的颜色*/
+QListWidget::item {
+    background-color: transparent;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+

@@ -6,7 +6,6 @@ from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget,QAction
 
 sys.path.append('..')
 from Groove.my_widget.blur_button import BlurButton
-from Groove.my_widget.my_button import CardAddToButton, CardPlayButton
 from Groove.my_widget.my_menu import CardContextMenu
 
 class SongerCard(QWidget):

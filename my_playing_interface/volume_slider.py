@@ -16,7 +16,7 @@ class VolumeSlider(QWidget):
     # 静音状态改变信号
     muteStateChanged = pyqtSignal(bool)
     volumeLevelChanged = pyqtSignal(int)
-    
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.volumeButton = VolumeButton(self)
@@ -72,11 +72,11 @@ class VolumeButton(BasicCircleButton):
     def __init__(self, parent=None):
         # 按钮图标地址列表
         self.__iconPath_list = [
-            r'resource\images\playing_play_bar\volume_black_level_0_47_47.png',
-            r'resource\images\playing_play_bar\volume_black_level_1_47_47.png',
-            r'resource\images\playing_play_bar\volume_black_level_2_47_47.png',
-            r'resource\images\playing_play_bar\volume_black_level_3_47_47.png',
-            r'resource\images\playing_play_bar\volume_black_level_mute_47_47.png']
+            r'resource\images\playing_interface\volume_black_level_0_47_47.png',
+            r'resource\images\playing_interface\volume_black_level_1_47_47.png',
+            r'resource\images\playing_interface\volume_black_level_2_47_47.png',
+            r'resource\images\playing_interface\volume_black_level_3_47_47.png',
+            r'resource\images\playing_interface\volume_black_level_mute_47_47.png']
         self.pixmap_list = [QPixmap(i) for i in self.__iconPath_list]
         super().__init__(self.__iconPath_list[0], parent)
         # 初始化标志位

@@ -20,15 +20,15 @@ QSlider::groove:horizontal {
 QSlider::handle:horizontal {
     width: 25px;
     height: 25px;
-    border-image: url(resource/images/playing_play_bar/volume_slider_handle_normal_25_25.png);
+    border-image: url(resource/images/playing_interface/volume_slider_handle_normal_25_25.png);
 }
 
 QSlider::handle:horizontal:hover {
-    border-image: url(resource/images/playing_play_bar/volume_slider_handle_hover_25_25.png);
+    border-image: url(resource/images/playing_interface/volume_slider_handle_hover_25_25.png);
 }
 
 QSlider::handle:horizontal:pressed {
-    border-image: url(resource/images/playing_play_bar/volume_slider_handle_pressed_25_25.png);
+    border-image: url(resource/images/playing_interface/volume_slider_handle_pressed_25_25.png);
 }
 
 

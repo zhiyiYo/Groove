@@ -53,7 +53,7 @@ class BasicCircleButton(QToolButton):
         # 鼠标按下时绘制圆形背景，pressed的优先级比hover的优先级高
         if self.isPressed:
             #brush = QBrush(QColor(162, 162, 162, 120))
-            brush=QBrush(QColor(255,255,255,70))
+            brush = QBrush(QColor(255, 255, 255, 70))
             painter.setBrush(brush)
             painter.drawEllipse(0, 0, self.iconWidth, self.iconHeight)
             iconPixmap = self.iconPixmap.scaled(
@@ -147,7 +147,7 @@ class PullUpArrow(BasicCircleButton):
         self.totalRotateAngle = 0
         # 实例化定时器
         self.timer = QTimer(self)
-        self.timer.setInterval(25)
+        self.timer.setInterval(24)
         self.timer.timeout.connect(self.timerSlot)
 
     def timerSlot(self):
@@ -171,8 +171,8 @@ class PullUpArrow(BasicCircleButton):
                                QPainter.SmoothPixmapTransform)
         painter.setPen(Qt.NoPen)
         # 鼠标按下时绘制圆形背景，pressed的优先级比hover的优先级高
-        if self.isPressed and self.rotateDirection==1:
-            brush = QBrush(QColor(162, 162, 162, 120))
+        if self.isPressed and self.rotateDirection == 1:
+            brush = QBrush(QColor(0, 0, 0, 50))
             painter.setBrush(brush)
             painter.drawEllipse(0, 0, self.iconWidth, self.iconHeight)
         # 鼠标进入时更换图标透明度
@@ -216,8 +216,8 @@ class PlayButton(TwoStateButton):
 
     def __init__(self, parent=None):
         self.iconPath_list = [
-            r'resource\images\playing_play_bar\play_47_47.png',
-            r'resource\images\playing_play_bar\pause_47_47.png']
+            r'resource\images\playing_interface\play_47_47.png',
+            r'resource\images\playing_interface\pause_47_47.png']
         super().__init__(self.iconPath_list, parent)
         # 设置暂停标志位
         self.__isPaused = True
@@ -227,13 +227,14 @@ class PlayButton(TwoStateButton):
         self.__isPaused = not isPlay
         self.setState(self.__isPaused)
 
+
 class FillScreenButton(TwoStateButton):
     """ 转到全屏按钮 """
 
     def __init__(self, parent=None):
         self.iconPath_list = [
-            r'resource\images\playing_play_bar\转到全屏_47_47.png',
-            r'resource\images\playing_play_bar\退出全屏_47_47.png']
+            r'resource\images\playing_interface\转到全屏_47_47.png',
+            r'resource\images\playing_interface\退出全屏_47_47.png']
         super().__init__(self.iconPath_list, parent, False)
         # 设置暂停标志位
         self.__isFillScreen = False
@@ -250,11 +251,11 @@ class VolumeButton(BasicCircleButton):
     def __init__(self, parent=None):
         # 按钮图标地址列表
         self.__iconPath_list = [
-            r'resource\images\playing_play_bar\volume_white_level_0_47_47.png',
-            r'resource\images\playing_play_bar\volume_white_level_1_47_47.png',
-            r'resource\images\playing_play_bar\volume_white_level_2_47_47.png',
-            r'resource\images\playing_play_bar\volume_white_level_3_47_47.png',
-            r'resource\images\playing_play_bar\volume_white_level_mute_47_47.png']
+            r'resource\images\playing_interface\volume_white_level_0_47_47.png',
+            r'resource\images\playing_interface\volume_white_level_1_47_47.png',
+            r'resource\images\playing_interface\volume_white_level_2_47_47.png',
+            r'resource\images\playing_interface\volume_white_level_3_47_47.png',
+            r'resource\images\playing_interface\volume_white_level_mute_47_47.png']
         self.pixmap_list = [QPixmap(i) for i in self.__iconPath_list]
         super().__init__(self.__iconPath_list[0], parent)
         # 初始化标志位

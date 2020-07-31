@@ -66,6 +66,7 @@ class MainWindow(QWidget):
         self.subPlayWindow = SubPlayWindow(self, self.lastSongInfo)
         # 创建快捷键
         self.playAct = QAction(parent=self, shortcut=Qt.Key_Space, triggered=self.switchPlayState)
+        self.addAction(self.playAct)
         
 
     def initWidget(self):

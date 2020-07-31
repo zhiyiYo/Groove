@@ -13,13 +13,13 @@ QSlider::groove:horizontal {
 QSlider::handle:horizontal {
     width: 38px;
     height: 38px;
-    border-image: url(resource/images/playing_play_bar/progressSlider_handle_normal_38_38.png);
+    border-image: url(resource/images/playing_interface/progressSlider_handle_normal_38_38.png);
 }
 
 QSlider::handle:horizontal:pressed {
     width: 38px;
     height: 38px;
-    border-image: url(resource/images/playing_play_bar/progressSlider_handle_pressed_38_38_2.png);
+    border-image: url(resource/images/playing_interface/progressSlider_handle_pressed_38_38_2.png);
 }
 
 QSlider::sub-page:horizontal {

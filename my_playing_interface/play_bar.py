@@ -1,6 +1,6 @@
 import sys
 
-from PyQt5.QtCore import Qt,pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QApplication, QWidget
 
 from play_bar_buttons import (BasicCircleButton, PlayButton, PullUpArrow,
@@ -8,9 +8,10 @@ from play_bar_buttons import (BasicCircleButton, PlayButton, PullUpArrow,
 from volume_slider import VolumeSlider
 from play_progress_bar import PlayProgressBar
 
+
 class PlayBar(QWidget):
     """ 播放栏 """
-    
+
     # 鼠标进入信号
     enterSignal = pyqtSignal()
     leaveSignal = pyqtSignal()
@@ -28,24 +29,24 @@ class PlayBar(QWidget):
         self.volumeButton = VolumeButton(self)
         self.volumeSlider = VolumeSlider(self.window())
         self.fillScreenButton = FillScreenButton(self)
-        self.playProgressBar = PlayProgressBar('3:10',parent=self)
+        self.playProgressBar = PlayProgressBar('3:10', parent=self)
         self.pullUpArrowButton = PullUpArrow(
-            r'resource\images\playing_play_bar\上拉箭头_27_27.png', self)
+            r'resource\images\playing_interface\上拉箭头_27_27.png', self)
         self.lastSongButton = BasicCircleButton(
-            r'resource\images\playing_play_bar\lastSong_47_47.png', self)
+            r'resource\images\playing_interface\lastSong_47_47.png', self)
         self.nextSongButton = BasicCircleButton(
-            r'resource\images\playing_play_bar\nextSong_47_47.png', self)
+            r'resource\images\playing_interface\nextSong_47_47.png', self)
         self.randomPlayButton = SelectableButton(
-            [r'resource\images\playing_play_bar\randomPlay_47_47.png'], self)
+            [r'resource\images\playing_interface\randomPlay_47_47.png'], self)
         self.loopModeButton = SelectableButton(
-            [r'resource\images\playing_play_bar\列表循环_47_47.png',
-             r'resource\images\playing_play_bar\单曲循环_47_47.png'], self)
+            [r'resource\images\playing_interface\列表循环_47_47.png',
+             r'resource\images\playing_interface\单曲循环_47_47.png'], self)
         self.moreActionsButton = BasicCircleButton(
-            r'resource\images\playing_play_bar\更多操作_47_47.png', self)
+            r'resource\images\playing_interface\更多操作_47_47.png', self)
         self.showPlaylistButton = BasicCircleButton(
-            r'resource\images\playing_play_bar\显示播放列表_47_47.png', self)
+            r'resource\images\playing_interface\显示播放列表_47_47.png', self)
         self.smallPlayModeButton = BasicCircleButton(
-            r'resource\images\playing_play_bar\最小模式播放_47_47.png', self)
+            r'resource\images\playing_interface\最小模式播放_47_47.png', self)
 
     def __initWidget(self):
         """ 初始化小部件 """
@@ -102,6 +103,7 @@ class PlayBar(QWidget):
     def leaveEvent(self, e):
         """ 鼠标离开时发出离开信号 """
         self.leaveSignal.emit()
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
