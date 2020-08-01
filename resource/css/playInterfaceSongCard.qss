@@ -5,6 +5,7 @@ QWidget#songNameCard{
 QLabel{
     font-family: 'Microsoft YaHei';
     font-size: 9pt;
+    background-color: transparent;
 }
 
 QLabel#songNameLabel{

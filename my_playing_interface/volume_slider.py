@@ -4,10 +4,8 @@ from PyQt5.QtCore import Qt, QEvent, pyqtSignal
 from PyQt5.QtGui import QPixmap, QPainter, QBrush, QPen, QColor
 from PyQt5.QtWidgets import QApplication, QWidget, QGraphicsDropShadowEffect
 
-from play_bar_buttons import BasicCircleButton
-
-sys.path.append('..')
-from Groove.my_widget.my_slider import Slider
+from .play_bar_buttons import BasicCircleButton
+from my_widget.my_slider import Slider
 
 
 class VolumeSlider(QWidget):
@@ -29,6 +27,8 @@ class VolumeSlider(QWidget):
         self.setFixedSize(345, 78)
         self.volumeButton.move(25, 15)
         self.volumeSlider.move(108, 25)
+        self.volumeSlider.setSingleStep(1)
+        self.volumeSlider.setRange(0,100)
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.__setQss()
@@ -61,6 +61,11 @@ class VolumeSlider(QWidget):
         painter.setPen(QPen(QColor(190, 190, 190, 150)))
         painter.setBrush(QBrush(QColor(227, 227, 227)))
         painter.drawRoundedRect(self.rect(), 8, 8)
+
+    def setValue(self, value):
+        """ 设置音量 """
+        self.volumeSlider.setValue(value)
+        self.volumeButton.setVolumeLevel(value)
 
 
 class VolumeButton(BasicCircleButton):

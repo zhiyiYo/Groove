@@ -10,7 +10,7 @@
 
 import sys
 
-from PyQt5.QtCore import QEvent, QSize, Qt
+from PyQt5.QtCore import QEvent, QSize, Qt,pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QEnterEvent, QIcon, QPainter, QPen, QPixmap
 from PyQt5.QtWidgets import QApplication, QToolButton, QWidget
 from PyQt5.QtMultimedia import QMediaPlaylist
@@ -109,6 +109,11 @@ class RandomPlayButton(QToolButton):
         self.setStyleSheet(
             "QToolButton{border:none;margin:0;background:transparent}")
         self.installEventFilter(self)
+
+    def setRandomPlay(self, isRandomPlay: bool):
+        """ 设置随机播放状态 """
+        self.isSelected = isRandomPlay
+        self.update()
 
     def eventFilter(self, obj, e):
         """ 按钮按下时更换按钮 """
@@ -245,6 +250,7 @@ class NextSongButton(BasicButton):
 
 class LoopModeButton(QToolButton):
     """ 循环播放模式按钮 """
+    loopModeChanged = pyqtSignal(int)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -262,6 +268,12 @@ class LoopModeButton(QToolButton):
         self.setFixedSize(47, 47)
         self.installEventFilter(self)
 
+    def setLoopMode(self, loopMode):
+        """ 设置循环模式 """
+        self.loopMode = loopMode
+        self.clickedTime = self.__loopMode_list.index(loopMode)
+        self.update()
+
     def eventFilter(self, obj, e):
         """ 按钮按下时更换图标 """
         if obj == self:
@@ -269,6 +281,7 @@ class LoopModeButton(QToolButton):
                 self.clickedTime = (self.clickedTime + 1) % 3
                 self.loopMode = self.__loopMode_list[self.clickedTime]
                 self.update()
+                self.loopModeChanged.emit(self.loopMode)
                 return False
         return super().eventFilter(obj, e)
 
@@ -308,13 +321,14 @@ class LoopModeButton(QToolButton):
 
 class VolumeButton(QToolButton):
     """ 音量按钮 """
+    muteStateChanged = pyqtSignal(bool)
 
     def __init__(self, parent=None):
         super().__init__(parent)
         # 设置标志位
         self.isEnter = False
-        self.isSelected = False
         self.isPressed = False
+        self.isMute = False
         # 当前音量等级及其各个图标地址
         self.currentVolumeLevel = 1
         self.__iconPath_list = [r'resource\images\playBar\音量按钮_无_45_45.png',
@@ -322,8 +336,9 @@ class VolumeButton(QToolButton):
                                 r'resource\images\playBar\音量按钮_中_45_45.png',
                                 r'resource\images\playBar\音量按钮_高_45_45.png',
                                 r'resource\images\playBar\音量按钮_静音_45_45.png']
+        self.pixmap_list = [QPixmap(i) for i in self.__iconPath_list]
+        self.iconPixmap = self.pixmap_list[1]
         self.setFixedSize(47, 47)
-        # self.installEventFilter(self)
 
     def mousePressEvent(self, e):
         """ 鼠标按下更新背景 """
@@ -332,20 +347,13 @@ class VolumeButton(QToolButton):
         self.update()
 
     def mouseReleaseEvent(self, e):
-        """ 鼠标按下更新背景 """
+        """ 鼠标松开更新背景 """
         super().mouseReleaseEvent(e)
         self.isPressed = False
-        self.isSelected = not self.isSelected
+        self.isMute = not self.isMute
+        self.setMute(self.isMute)
         self.update()
-
-    def eventFilter(self, obj, e):
-        """ 按钮按下时变为静音图标 """
-        if obj == self:
-            if e.type() == QEvent.MouseButtonRelease and e.button() == Qt.LeftButton:
-                self.isSelected = not self.isSelected
-                self.update()
-                return False
-        return super().eventFilter(obj, e)
+        self.muteStateChanged.emit(self.isMute)
 
     def enterEvent(self, e):
         """ 鼠标进入时更新背景 """
@@ -364,17 +372,13 @@ class VolumeButton(QToolButton):
                                QPainter.SmoothPixmapTransform)
         # 设置画笔和背景图
         painter.setPen(Qt.NoPen)
-        self.image = QPixmap(self.__iconPath_list[self.currentVolumeLevel])
-        if self.isSelected:
-            # 如果被按下就换成静音按钮
-            self.image = QPixmap(self.__iconPath_list[-1])
         if self.isPressed:
             bgBrush = QBrush(QColor(73, 76, 84, 90))
             painter.setBrush(bgBrush)
             painter.drawEllipse(1, 1, 44, 44)
-            self.image = self.image.scaled(
+            iconPixmap = self.iconPixmap.scaled(
                 44, 44, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            painter.drawPixmap(1,1,44,44,self.image)
+            painter.drawPixmap(1,1,44,44,iconPixmap)
         elif self.isEnter:
             # 设置画笔
             painter.setPen(QPen(QColor(101, 106, 116, 180)))
@@ -384,15 +388,18 @@ class VolumeButton(QToolButton):
         # 绘制背景图
         if not self.isPressed:
             painter.setPen(Qt.NoPen)
-            brush = QBrush(self.image)
+            brush = QBrush(self.iconPixmap)
             painter.setBrush(brush)
             painter.drawEllipse(1, 1, 45, 45)
 
-    def setVolumeLevel(self, volumeLevel):
-        """ 根据音量大小的不同来更换图标 """
-        if self.currentVolumeLevel != volumeLevel:
-            self.currentVolumeLevel = volumeLevel
-            self.update()
+    def setMute(self, isMute:bool):
+        """ 设置静音状态 """
+        self.isMute = isMute
+        if isMute:
+            self.iconPixmap = self.pixmap_list[-1]
+        else:
+            self.iconPixmap = self.pixmap_list[self.currentVolumeLevel]
+        self.update()
 
     def setVolumeLevel(self, volume):
         """ 根据音量来设置 """
@@ -400,7 +407,7 @@ class VolumeButton(QToolButton):
             self.__updateIcon(0)
         elif volume <= 32 and self.currentVolumeLevel != 1:
             self.__updateIcon(1)
-        elif volume <= 65 and self.currentVolumeLevel != 2:
+        elif 33 <= volume <= 65 and self.currentVolumeLevel != 2:
             self.__updateIcon(2)
         elif volume > 65 and self.currentVolumeLevel != 3:
             self.__updateIcon(3)
@@ -408,7 +415,9 @@ class VolumeButton(QToolButton):
     def __updateIcon(self, iconIndex):
         """ 更新图标 """
         self.currentVolumeLevel = iconIndex
-        self.update()
+        if not self.isMute:
+            self.iconPixmap = self.pixmap_list[iconIndex]
+            self.update()
 
 
 class SmallPlayModeButton(BasicButton):

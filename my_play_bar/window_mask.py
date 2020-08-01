@@ -22,13 +22,6 @@ class WindowMask(QWidget):
         self.setGeometry(0, 0, parent_rect.width(), parent_rect.height())
         self.raise_()
         super().show()
-
-    def mousePressEvent(self, e):
-        """ 将鼠标事件转发给parent() """
-        QApplication.sendEvent(self.parent(), e)
-            
-    def mouseReleaseEvent(self, e):
-        QApplication.sendEvent(self.parent(), e)
         
     
 class Demo(QWidget):

@@ -3,10 +3,12 @@ import sys
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QApplication, QWidget
 
-from play_bar_buttons import (BasicCircleButton, PlayButton, PullUpArrow,
-                              SelectableButton, TwoStateButton, VolumeButton, FillScreenButton)
-from volume_slider import VolumeSlider
-from play_progress_bar import PlayProgressBar
+from .play_bar_buttons import (BasicCircleButton, FillScreenButton,
+                               LoopModeButton, PlayButton, PullUpArrow,
+                               RandomPlayButton, SelectableButton,
+                               TwoStateButton, VolumeButton)
+from .play_progress_bar import PlayProgressBar
+from .volume_slider import VolumeSlider
 
 
 class PlayBar(QWidget):
@@ -36,9 +38,9 @@ class PlayBar(QWidget):
             r'resource\images\playing_interface\lastSong_47_47.png', self)
         self.nextSongButton = BasicCircleButton(
             r'resource\images\playing_interface\nextSong_47_47.png', self)
-        self.randomPlayButton = SelectableButton(
+        self.randomPlayButton = RandomPlayButton(
             [r'resource\images\playing_interface\randomPlay_47_47.png'], self)
-        self.loopModeButton = SelectableButton(
+        self.loopModeButton = LoopModeButton(
             [r'resource\images\playing_interface\列表循环_47_47.png',
              r'resource\images\playing_interface\单曲循环_47_47.png'], self)
         self.moreActionsButton = BasicCircleButton(
@@ -68,6 +70,8 @@ class PlayBar(QWidget):
             lambda muteState: self.volumeButton.setMute(muteState))
         self.volumeSlider.volumeLevelChanged.connect(
             lambda volumeLevel: self.volumeButton.updateIcon(volumeLevel))
+        # 引用小部件及其方法
+        self.__referenceWidget()
 
     def __showVolumeSlider(self):
         """ 显示音量滑动条 """
@@ -103,6 +107,12 @@ class PlayBar(QWidget):
     def leaveEvent(self, e):
         """ 鼠标离开时发出离开信号 """
         self.leaveSignal.emit()
+
+    def __referenceWidget(self):
+        """ 引用小部件及其方法 """
+        self.progressSlider = self.playProgressBar.progressSlider
+        self.setCurrentTime = self.playProgressBar.setCurrentTime
+        self.setTotalTime = self.playProgressBar.setTotalTime
 
 
 if __name__ == "__main__":

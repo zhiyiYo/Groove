@@ -71,4 +71,5 @@ QLabel#timeLabel{
     font:14px "Microsoft YaHei";
     padding-left: 10px;
     padding-right: 10px;
+    background-color: transparent;
 }

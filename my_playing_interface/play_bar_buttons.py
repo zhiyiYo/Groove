@@ -1,8 +1,9 @@
 import sys
 
-from PyQt5.QtCore import Qt, QEvent, QTimer
+from PyQt5.QtCore import Qt, QEvent, QTimer,pyqtSignal
 from PyQt5.QtGui import QPainter, QPixmap, QBrush, QColor, QPen
 from PyQt5.QtWidgets import QApplication, QToolButton, QWidget
+from PyQt5.QtMultimedia import QMediaPlaylist
 
 
 class BasicCircleButton(QToolButton):
@@ -74,24 +75,25 @@ class SelectableButton(BasicCircleButton):
         super().__init__(iconPath_list[0], parent, iconSize, buttonSize)
         self.iconPath_list = iconPath_list
         # 设置选中标志位
-        self.__isSelected = False
+        self.isSelected = False
         # 设置可选中的次数
         self.selectableTime = len(self.iconPath_list)
-        self.__clickedTime = 0
+        self.clickedTime = 0
 
     def mouseReleaseEvent(self, e):
         """ 鼠标松开时更新点击次数和图标 """
-        if not self.__clickedTime:
-            self.__isSelected = True
-        self.__clickedTime += 1
-        if self.__clickedTime == self.selectableTime + 1:
-            self.__isSelected = False
-            self.__clickedTime = 0
+        if not self.clickedTime:
+            self.isSelected = True
+        self.clickedTime += 1
+        if self.clickedTime == self.selectableTime + 1:
+            self.isSelected = False
+            self.clickedTime = 0
             # 更新图标
             self.iconPixmap = QPixmap(self.iconPath_list[0])
         else:
-            self.iconPixmap = QPixmap(self.iconPath_list[self.__clickedTime-1])
+            self.iconPixmap = QPixmap(self.iconPath_list[self.clickedTime-1])
         self.update()
+        super().mouseReleaseEvent(e)
 
     def paintEvent(self, e):
         """ 绘制背景 """
@@ -102,7 +104,7 @@ class SelectableButton(BasicCircleButton):
                                QPainter.SmoothPixmapTransform)
         painter.setPen(Qt.NoPen)
         if self.isPressed:
-            if not self.__isSelected:
+            if not self.isSelected:
                 brush = QBrush(QColor(162, 162, 162, 120))
                 pen = Qt.NoPen
             else:
@@ -116,7 +118,7 @@ class SelectableButton(BasicCircleButton):
                 self.iconPixmap.width() - 4, self.iconPixmap.height() - 4, Qt.KeepAspectRatio, Qt.SmoothTransformation)
             px, py = self._pixPos_list[1]
         else:
-            if self.__isSelected:
+            if self.isSelected:
                 pen = QPen(QColor(255, 255, 255, 100))
                 pen.setWidthF(1.4)
                 self.__drawCircle(painter, pen, QBrush(QColor(0, 0, 0, 60)))
@@ -133,7 +135,51 @@ class SelectableButton(BasicCircleButton):
         painter.setBrush(brush)
         painter.drawEllipse(1, 1, self.iconWidth-2, self.iconHeight-2)
         painter.setPen(pen)
-        painter.drawEllipse(1, 1, self.iconWidth-2, self.iconHeight-2)
+        painter.drawEllipse(1, 1, self.iconWidth - 2, self.iconHeight - 2)
+        
+
+class RandomPlayButton(SelectableButton):
+    """ 随机播放按钮 """
+
+    def __init__(self, iconPath_list: list, parent=None, iconSize=(47, 47), buttonSize=(47, 47)):
+        super().__init__(iconPath_list, parent, iconSize, buttonSize)
+        
+    def setRandomPlay(self, isRandomPlay: bool):
+        """ 设置随机播放状态 """
+        self.isSelected = isRandomPlay
+        self.clickedTime = int(isRandomPlay)
+        self.update()
+
+
+class LoopModeButton(SelectableButton):
+    """ 循环模式按钮 """
+    loopModeChanged = pyqtSignal(int)
+
+    def __init__(self, iconPath_list: list, parent=None, iconSize=(47, 47), buttonSize=(47, 47)):
+        super().__init__(iconPath_list, parent, iconSize, buttonSize)
+        self.loopMode = QMediaPlaylist.Sequential
+        self.__loopMode_list = [QMediaPlaylist.Sequential,
+                                QMediaPlaylist.Loop, QMediaPlaylist.CurrentItemInLoop]
+
+    def mouseReleaseEvent(self,e):
+        """ 更新循环模式 """
+        super().mouseReleaseEvent(e)
+        self.loopMode = self.__loopMode_list[self.clickedTime]
+        self.loopModeChanged.emit(self.loopMode)
+        
+    def setLoopMode(self, loopMode):
+        """ 设置循环模式 """
+        self.loopMode = loopMode
+        if self.loopMode in [QMediaPlaylist.Loop, QMediaPlaylist.CurrentItemInLoop]:
+            self.isSelected = True
+        else:
+            self.isSelected = False
+        self.clickedTime = self.__loopMode_list.index(loopMode)
+        if self.clickedTime == 2:
+            self.iconPixmap = QPixmap(self.iconPath_list[1])
+        else:
+            self.iconPixmap = QPixmap(self.iconPath_list[0])
+        self.update()
 
 
 class PullUpArrow(BasicCircleButton):
@@ -200,9 +246,8 @@ class TwoStateButton(BasicCircleButton):
 
     def mouseReleaseEvent(self, e):
         """ 鼠标松开时更换图标 """
-        self._isState_1 = not self._isState_1
-        self.iconPixmap = self.pixmap_list[self._isState_1]
-        self.update()
+        self.setState(not self._isState_1)
+        super().mouseReleaseEvent(e)
 
     def setState(self, isState_1: bool):
         """ 设置按钮状态 """
@@ -226,7 +271,7 @@ class PlayButton(TwoStateButton):
         """ 设置按钮状态 """
         self.__isPaused = not isPlay
         self.setState(self.__isPaused)
-
+        self.update()
 
 class FillScreenButton(TwoStateButton):
     """ 转到全屏按钮 """

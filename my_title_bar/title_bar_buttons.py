@@ -2,61 +2,59 @@ import sys
 
 from PyQt5.QtCore import QEvent, QSize, Qt
 from PyQt5.QtGui import QEnterEvent, QIcon, QPixmap
-from PyQt5.QtWidgets import QApplication, QPushButton
+from PyQt5.QtWidgets import QApplication, QPushButton,QToolButton
 
 
-class ReturnButton(QPushButton):
-    """ 返回按钮 """
 
-    def __init__(self, parent=None):
-        super().__init__(parent)
+class BasicButton(QToolButton):
+    """ 基本六态按钮 """
 
-        self.resize(57, 40)
-        self.setStyleSheet("QPushButton{border:none;margin:0}")
-        self.setIcon(QIcon('resource\\images\\titleBar\\黑色返回按钮_60_40.png'))
-        self.setIconSize(QSize(60, 40))
-        self.installEventFilter(self)
+    def __init__(self, iconPathDict_list: list, parent=None, iconSize_tuple: tuple = (57, 40)):
+        super().__init__(parent=parent)
+        self.iconPathDict_list = iconPathDict_list
+        self.iconWidth, self.iconHeight = iconSize_tuple
+        # 图标颜色标志位
+        self.isWhiteIcon = False
+        # 初始化
+        self.__initWidget()
 
-    def eventFilter(self, obj, e: QEvent):
-        """ hover或leave时更换图标 """
-        if obj == self:
-            if e.type() == QEvent.Enter:
-                self.setIcon(
-                    QIcon('resource\\images\\titleBar\\黑色返回按钮_hover_60_40.png'))
-            elif e.type() == QEvent.Leave:
-                self.setIcon(
-                    QIcon('resource\\images\\titleBar\\黑色返回按钮_60_40.png'))
-            elif e.type() == QEvent.MouseButtonPress and e.button() == Qt.LeftButton:
-                self.setIcon(
-                    QIcon(r"resource\images\titleBar\黑色返回按钮_selected_60_40.png"))
-        return super().eventFilter(obj, e)
+    def __initWidget(self):
+        """ 初始化小部件 """
+        self.resize(self.iconWidth, self.iconHeight)
+        self.setIconSize(QSize(self.width(), self.height()))
+        self.setStyleSheet('border: none; margin: 0px')
+        self.__updateIcon('normal')
 
+    def enterEvent(self, e):
+        """ hover时更换图标 """
+        self.__updateIcon('hover')
 
-class MinimizeButton(QPushButton):
-    """ 定义最小化按钮 """
+    def leaveEvent(self, e):
+        """ leave时更换图标 """
+        self.__updateIcon('normal')
 
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def mousePressEvent(self, e):
+        """ 鼠标左键按下时更换图标 """
+        if e.button() == Qt.RightButton:
+            return
+        self.__updateIcon('pressed')
+        super().mousePressEvent(e)
 
-        self.resize(57, 40)
-        self.setStyleSheet("QPushButton{border:none;margin:0}")
-        self.setIcon(QIcon('resource\\images\\titleBar\\透明黑色最小化按钮_57_40.png'))
-        self.setIconSize(QSize(57, 40))
-        self.installEventFilter(self)
+    def mouseReleaseEvent(self, e):
+        """ 鼠标松开时更换按钮图标 """
+        if e.button() == Qt.RightButton:
+            return
+        self.__updateIcon('normal')
+        super().mouseReleaseEvent(e)
 
-    def eventFilter(self, obj, e: QEvent):
-        """ hover或leave时更换图标 """
-        if obj == self:
-            if e.type() == QEvent.Enter:
-                self.setIcon(
-                    QIcon('resource\\images\\titleBar\\绿色最小化按钮_hover_57_40.png'))
-            elif e.type() == QEvent.Leave:
-                self.setIcon(
-                    QIcon('resource\\images\\titleBar\\透明黑色最小化按钮_57_40.png'))
-            elif e.type() == QEvent.MouseButtonPress and e.button() == Qt.LeftButton:
-                self.setIcon(
-                    QIcon(r"resource\images\titleBar\黑色最小化按钮_selected_57_40.png"))
-        return super().eventFilter(obj, e)
+    def setWhiteIcon(self, isWhite:bool):
+        """ 设置图标颜色 """
+        self.isWhiteIcon = isWhite
+        self.__updateIcon('normal')
+
+    def __updateIcon(self, iconState: str):
+        """ 更新图标 """
+        self.setIcon(QIcon(self.iconPathDict_list[self.isWhiteIcon][iconState]))
 
 
 class MaximizeButton(QPushButton):
@@ -64,72 +62,56 @@ class MaximizeButton(QPushButton):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-
+        self.iconPathDict_list = [
+            [{'normal':r'resource\images\titleBar\透明黑色最大化按钮_57_40.png',
+              'hover':r'resource\images\titleBar\绿色最大化按钮_hover_57_40.png',
+              'pressed':r'resource\images\titleBar\黑色最大化按钮_pressed_57_40.png'},
+             {'normal': r'resource\images\titleBar\白色最大化按钮_57_40.png',
+              'hover': r'resource\images\titleBar\绿色最大化按钮_hover_57_40.png',
+              'pressed': r'resource\images\titleBar\黑色最大化按钮_pressed_57_40.png'}],
+            [{'normal': r'resource\images\titleBar\\黑色向下还原按钮_57_40.png',
+              'hover': r'resource\\images\titleBar\绿色向下还原按钮_hover_57_40.png',
+              'pressed': r'resource\images\titleBar\向下还原按钮_pressed_57_40.png'},
+             {'normal': r'resource\images\titleBar\白色向下还原按钮_57_40.png',
+              'hover': r'resource\images\titleBar\绿色向下还原按钮_hover_57_40.png',
+              'pressed': r'resource\images\titleBar\向下还原按钮_pressed_57_40.png'}]]
         self.resize(57, 40)
-        # 设置最大化标志位
+        # 设置标志位
         self.isMax = False
+        self.isWhiteIcon = False
         self.setStyleSheet("QPushButton{border:none;margin:0}")
         self.setIcon(QIcon('resource\\images\\titleBar\\透明黑色最大化按钮_57_40.png'))
         self.setIconSize(QSize(57, 40))
-        self.installEventFilter(self)
 
-    def eventFilter(self, obj, e):
-        """ hover或leave时更换图标 """
-        if obj == self:
-            if e.type() == QEvent.Enter:
-                if not self.isMax:
-                    self.setIcon(
-                        QIcon('resource\\images\\titleBar\\绿色最大化按钮_hover_57_40.png'))
-                else:
-                    self.setIcon(
-                        QIcon('resource\\images\\titleBar\\绿色向下还原按钮_hover_57_40.png'))
-            elif e.type() == QEvent.Leave:
-                if not self.isMax:
-                    self.setIcon(
-                        QIcon('resource\\images\\titleBar\\透明黑色最大化按钮_57_40.png'))
-                else:
-                    self.setIcon(
-                        QIcon('resource\\images\\titleBar\\黑色向下还原按钮_57_40.png'))
-            elif e.type() == QEvent.MouseButtonPress and e.button() == Qt.LeftButton:
-                if not self.isMax:
-                    self.setIcon(
-                        QIcon(r"resource\images\titleBar\黑色最大化按钮_selected_57_40.png"))
-                else:
-                    self.setIcon(
-                        QIcon(r"resource\images\titleBar\向下还原按钮_selected_57_40.png"))
-        return super().eventFilter(obj, e)
+    def setWhiteIcon(self, isWhite: bool):
+        """ 设置图标颜色 """
+        self.isWhiteIcon = isWhite
+        self.__updateIcon('normal')
 
+    def __updateIcon(self, iconState: str):
+        """ 更新图标 """
+        self.setIcon(
+            QIcon(self.iconPathDict_list[self.isMax][self.isWhiteIcon][iconState]))
 
-class CloseButton(QPushButton):
-    """ 定义关闭按钮 """
+    def enterEvent(self, e):
+        """ hover时更换图标 """
+        self.__updateIcon('hover')
 
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setFixedSize(57, 40)
-        self.setStyleSheet("QPushButton{border:none;margin:0}")
-        self.blackIcon_list = [
-            'resource\\images\\titleBar\\透明黑色关闭按钮_57_40.png',
-            'resource\\images\\titleBar\\透明黑色关闭按钮_57_40_2.png']
-        self.blackIconIndex = 1
-        self.setIcon(QIcon(self.blackIcon_list[self.blackIconIndex]))
-        self.setIconSize(QSize(57, 40))
-        self.installEventFilter(self)
+    def leaveEvent(self, e):
+        """ leave时更换图标 """
+        self.__updateIcon('normal')
 
-    def setBlackCloseIcon(self, blackIconIndex: int):
-        """ 设置黑色关闭图标 """
-        self.blackIconIndex = blackIconIndex
-        self.setIcon(QIcon(self.blackIcon_list[self.blackIconIndex]))
+    def mousePressEvent(self, e):
+        """ 鼠标左键按下时更换图标 """
+        if e.button() == Qt.RightButton:
+            return
+        self.__updateIcon('pressed')
+        super().mousePressEvent(e)
 
-    def eventFilter(self, obj, e):
-        """ hover或leave时更换图标 """
-        if obj == self:
-            if e.type() == QEvent.Enter:
-                self.setIcon(
-                    QIcon('resource\\images\\titleBar\\关闭按钮_hover_57_40.png'))
-            elif e.type() == QEvent.Leave:
-                self.setIcon(
-                    QIcon(self.blackIcon_list[self.blackIconIndex]))
-            elif e.type() == QEvent.MouseButtonPress and e.button() == Qt.LeftButton:
-                self.setIcon(
-                    QIcon(r"resource\images\titleBar\关闭按钮_selected_57_40.png"))
-        return super().eventFilter(obj, e)
+    def mouseReleaseEvent(self, e):
+        """ 鼠标松开时更换按钮图标 """
+        if e.button() == Qt.RightButton:
+            return
+        self.isMax = not self.isMax
+        self.__updateIcon('normal')
+        super().mouseReleaseEvent(e)

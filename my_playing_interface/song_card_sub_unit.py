@@ -100,16 +100,14 @@ class SongNameCard(QWidget):
         # 计算歌名的长度
         self.__getSongNameWidth()
         self.__initLayout()
-        #self.__setQss()
+        self.__setQss()
 
     def __initLayout(self):
         """ 初始化布局 """
         self.checkBox.move(8, 17)
         self.playingLabel.move(43, 22)
         self.songNameLabel.move(41, 18)
-        x = self.width() - 140 if self.songNameWidth >= self.width() - \
-            140 else self.songNameWidth + self.songNameLabel.x() + 3
-        self.buttonGroup.move(x, 0)
+        self.__moveButtonGroup()
 
     def __getSongNameWidth(self):
         """ 计算歌名的长度 """
@@ -118,35 +116,51 @@ class SongNameCard(QWidget):
 
     def __setQss(self):
         """ 初始化样式 """
-        with open(r'resource\css\playingInterfaceSongCard.qss', encoding='utf-8') as f:
+        with open(r'resource\css\playInterfaceSongCard.qss', encoding='utf-8') as f:
             self.setStyleSheet(f.read())
 
     def setPlay(self, isPlay: bool):
-        """ 设置播放状态 """
+        """ 设置播放状态并移动小部件 """
         self.buttonGroup.setPlay(isPlay)
         self.checkBox.setProperty('isPlay', str(isPlay))
         self.songNameLabel.setProperty('isPlay', str(isPlay))
-        # 显示/隐藏正在播放图标
+        # 显示/隐藏正在播放图标并根据情况移动歌名标签
+        self.playingLabel.setHidden(not isPlay)
         if isPlay:
-            self.playingLabel.show()
             self.songNameLabel.move(68, self.songNameLabel.y())
         else:
-            self.playingLabel.hide()
             self.songNameLabel.move(41, self.songNameLabel.y())
+        # 更新按钮位置
+        self.__moveButtonGroup()
         # 更新样式
         self.setStyle(QApplication.style())
 
     def resizeEvent(self, e):
         """ 改变尺寸时移动按钮 """
         super().resizeEvent(e)
-        x = self.width() - 140 if self.songNameWidth >= self.width() - \
-            140 else self.songNameWidth + self.songNameLabel.x() + 3
-        self.buttonGroup.move(x, 0)
+        self.__moveButtonGroup()
 
     def setWidgetHidden(self, isHidden: bool):
         """ 显示/隐藏小部件 """
         self.buttonGroup.setButtonHidden(isHidden)
         self.checkBox.setHidden(isHidden)
+
+    def __moveButtonGroup(self):
+        """ 移动按钮组 """
+        x = self.width() - 140 if self.songNameWidth >= self.width() - \
+            140 else self.songNameWidth + self.songNameLabel.x()
+        self.buttonGroup.move(x, 0)
+
+    def setSongName(self, songName: str):
+        """ 更新歌手名标签的文本并调整宽度 """
+        self.songName = songName
+        self.songNameLabel.setText(songName)
+        # 重新计算歌名宽度并移动按钮
+        self.__getSongNameWidth()
+        self.__moveButtonGroup()
+        self.songNameLabel.resize(
+            self.songNameWidth, self.songNameLabel.height())
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

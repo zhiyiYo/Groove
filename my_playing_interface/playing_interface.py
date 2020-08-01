@@ -1,19 +1,22 @@
+# coding:utf-8
+
 import sys
 from json import load
-from PyQt5.QtCore import (QEasingCurve, QParallelAnimationGroup,
-                          QPropertyAnimation, QRect, Qt, QTimer)
-from PyQt5.QtGui import QImage, QPixmap, QPalette, QColor
+from PyQt5.QtCore import (QEasingCurve, QParallelAnimationGroup,QAbstractAnimation,
+                          QPropertyAnimation, QRect, Qt, QTimer,pyqtSignal)
+from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QGraphicsBlurEffect, QLabel, QWidget
 
-from blur_cover_thread import BlurCoverThread
-from play_bar import PlayBar
+from .blur_cover_thread import BlurCoverThread
+from .play_bar import PlayBar
 
-from song_info_card_chute import SongInfoCardChute
-from song_list_widget import SongCardListWidget
+from .song_info_card_chute import SongInfoCardChute
+from .song_list_widget import SongCardListWidget
 
 
 class PlayingInterface(QWidget):
     """ 正在播放界面 """
+    currentIndexChanged = pyqtSignal(int)
 
     def __init__(self, playlist: list = None, parent=None):
         super().__init__(parent)
@@ -29,7 +32,7 @@ class PlayingInterface(QWidget):
         self.songInfoCardChuteAni = QPropertyAnimation(
             self.songInfoCardChute, b'geometry')
         self.playBar = PlayBar(self)
-        self.songListWidget = SongCardListWidget(playlist,self)
+        self.songListWidget = SongCardListWidget(playlist, self)
         self.playBarAni = QPropertyAnimation(self.playBar, b'geometry')
         self.songListWidgetAni = QPropertyAnimation(
             self.songListWidget, b'geometry')
@@ -42,8 +45,10 @@ class PlayingInterface(QWidget):
     def __initWidget(self):
         """ 初始化小部件 """
         self.resize(1100, 870)
+        self.setAttribute(Qt.WA_StyledBackground)
         self.playBar.move(0, self.height()-self.playBar.height())
         self.playBar.hide()
+        self.setStyleSheet('QWidget{background:black}')
         # 开启磨砂线程
         self.blurCoverThread.start()
         if self.playlist:
@@ -63,10 +68,6 @@ class PlayingInterface(QWidget):
         self.hidePlaylistTimer.setInterval(50)
         self.showPlaylistTimer.timeout.connect(self.showPlayListTimerSlot)
         self.hidePlaylistTimer.timeout.connect(self.hidePlayListTimerSlot)
-        # 设置背景色
-        palette = QPalette()
-        palette.setColor(QPalette.Background, QColor(Qt.black))
-        self.setPalette(palette)
 
     def setBlurPixmap(self, blurPixmap):
         """ 设置磨砂pixmap """
@@ -93,7 +94,7 @@ class PlayingInterface(QWidget):
         self.songInfoCardChute.resize(self.size())
         self.blurBackgroundPic.setFixedSize(self.size())
         self.playBar.resize(self.width(), self.playBar.height())
-        self.songListWidget.resize(self.width()-60,self.height()-382)
+        self.songListWidget.resize(self.width()-60, self.height()-382)
         if self.isPlaylistVisible:
             self.playBar.move(0, 190)
             self.songListWidget.move(30, 382)
@@ -126,28 +127,29 @@ class PlayingInterface(QWidget):
 
     def showPlaylist(self):
         """ 显示播放列表 """
-        self.songInfoCardChuteAni.setDuration(500)
-        self.songInfoCardChuteAni.setEasingCurve(QEasingCurve.InExpo)
-        self.songInfoCardChuteAni.setStartValue(
-            QRect(0, self.songInfoCardChute.y(), self.width(), self.height()))
-        self.songInfoCardChuteAni.setEndValue(
-            QRect(0, 258 - self.height(), self.width(), self.height()))
-        self.playBarAni.setStartValue(
-            QRect(0, self.height()-self.playBar.height(), self.width(), self.playBar.height()))
-        self.playBarAni.setEndValue(
-            QRect(0, 190, self.width(), self.playBar.height()))
-        self.songListWidgetAni.setStartValue(
-            QRect(self.songListWidget.x(), self.songListWidget.y(),
-                  self.songListWidget.width(), self.songListWidget.height()))
-        self.songListWidgetAni.setEndValue(
-            QRect(self.songListWidget.x(), 382,
-                  self.songListWidget.width(), self.songListWidget.height()))
-        if self.sender() == self.playBar.showPlaylistButton:
-            self.playBar.pullUpArrowButton.timer.start()
-        self.parallelAniGroup.start()
-        self.blurBackgroundPic.hide()
-        self.isPlaylistVisible = True
-        self.showPlaylistTimer.start()
+        if self.songListWidgetAni.state() != QAbstractAnimation.Running:
+            self.songInfoCardChuteAni.setDuration(500)
+            self.songInfoCardChuteAni.setEasingCurve(QEasingCurve.InExpo)
+            self.songInfoCardChuteAni.setStartValue(
+                QRect(0, self.songInfoCardChute.y(), self.width(), self.height()))
+            self.songInfoCardChuteAni.setEndValue(
+                QRect(0, 258 - self.height(), self.width(), self.height()))
+            self.playBarAni.setStartValue(
+                QRect(0, self.height()-self.playBar.height(), self.width(), self.playBar.height()))
+            self.playBarAni.setEndValue(
+                QRect(0, 190, self.width(), self.playBar.height()))
+            self.songListWidgetAni.setStartValue(
+                QRect(self.songListWidget.x(), self.songListWidget.y(),
+                    self.songListWidget.width(), self.songListWidget.height()))
+            self.songListWidgetAni.setEndValue(
+                QRect(self.songListWidget.x(), 382,
+                    self.songListWidget.width(), self.songListWidget.height()))
+            if self.sender() == self.playBar.showPlaylistButton:
+                self.playBar.pullUpArrowButton.timer.start()
+            self.parallelAniGroup.start()
+            self.blurBackgroundPic.hide()
+            self.isPlaylistVisible = True
+            self.showPlaylistTimer.start()
 
     def showPlayListTimerSlot(self):
         """ 显示播放列表定时器溢出槽函数 """
@@ -158,32 +160,33 @@ class PlayingInterface(QWidget):
         """ 显示播放列表定时器溢出槽函数 """
         self.hidePlaylistTimer.stop()
         self.parallelAniGroup.start()
-
+        
     def hidePlaylist(self):
         """ 隐藏播放列表 """
-        self.songInfoCardChuteAni.setDuration(500)
-        self.songInfoCardChuteAni.setEasingCurve(QEasingCurve.InExpo)
-        self.songInfoCardChuteAni.setStartValue(
-            QRect(0, self.songInfoCardChute.y(), self.width(), self.height()))
-        self.songInfoCardChuteAni.setEndValue(
-            QRect(0, -self.playBar.height() + 68, self.width(), self.height()))
-        self.playBarAni.setStartValue(
-            QRect(0, 190, self.width(), self.playBar.height()))
-        self.playBarAni.setEndValue(
-            QRect(0, self.height() - self.playBar.height(), self.width(), self.playBar.height()))
-        self.songListWidgetAni.setStartValue(
-            QRect(self.songListWidget.x(), self.songListWidget.y(),
-                  self.songListWidget.width(), self.songListWidget.height()))
-        self.songListWidgetAni.setEndValue(
-            QRect(self.songListWidget.x(), self.height(),
-                  self.songListWidget.width(), self.songListWidget.height()))
-        if self.sender() == self.playBar.showPlaylistButton:
-            self.playBar.pullUpArrowButton.timer.start()
-        #self.parallelAniGroup.start()
-        self.songListWidgetAni.start()
-        self.hidePlaylistTimer.start()
-        self.blurBackgroundPic.show()
-        self.isPlaylistVisible = False
+        if self.parallelAniGroup.state() != QAbstractAnimation.Running:
+            self.songInfoCardChuteAni.setDuration(500)
+            self.songInfoCardChuteAni.setEasingCurve(QEasingCurve.InExpo)
+            self.songInfoCardChuteAni.setStartValue(
+                QRect(0, self.songInfoCardChute.y(), self.width(), self.height()))
+            self.songInfoCardChuteAni.setEndValue(
+                QRect(0, -self.playBar.height() + 68, self.width(), self.height()))
+            self.playBarAni.setStartValue(
+                QRect(0, 190, self.width(), self.playBar.height()))
+            self.playBarAni.setEndValue(
+                QRect(0, self.height() - self.playBar.height(), self.width(), self.playBar.height()))
+            self.songListWidgetAni.setStartValue(
+                QRect(self.songListWidget.x(), self.songListWidget.y(),
+                    self.songListWidget.width(), self.songListWidget.height()))
+            self.songListWidgetAni.setEndValue(
+                QRect(self.songListWidget.x(), self.height(),
+                    self.songListWidget.width(), self.songListWidget.height()))
+            if self.sender() == self.playBar.showPlaylistButton:
+                self.playBar.pullUpArrowButton.timer.start()
+            # self.parallelAniGroup.start()
+            self.songListWidgetAni.start()
+            self.hidePlaylistTimer.start()
+            self.blurBackgroundPic.show()
+            self.isPlaylistVisible = False
 
     def showPlaylistButtonSlot(self):
         """ 显示或隐藏播放列表 """
@@ -192,19 +195,19 @@ class PlayingInterface(QWidget):
         else:
             self.hidePlaylist()
 
-    def next(self):
-        """ 播放下一首 """
-        if self.currentIndex != len(self.playlist) - 1:
-            self.songInfoCardChute.cycleLeftShift()
-
-    def previous(self):
-        """ 播放上一首 """
-        if self.currentIndex != 0:
-            self.songInfoCardChute.cycleRightShift()
-
     def setCurrentIndex(self, index):
         """ 更新播放列表下标 """
-        self.currentIndex = index
+        if self.currentIndex != index:
+            self.currentIndex = index
+            self.songListWidget.setCurrentIndex(index)
+            self.songInfoCardChute.setCurrentIndex(index)
+
+    def setPlaylist(self, playlist):
+        """ 更新播放列表 """
+        self.playlist = playlist
+        self.currentIndex = 0
+        self.songListWidget.updateSongCards(playlist)
+        self.songInfoCardChute.setPlaylist(playlist)
 
     def __settleDownPlayBar(self):
         """ 定住播放栏 """
@@ -216,20 +219,30 @@ class PlayingInterface(QWidget):
             # 只有音量滑动条不可见才打开计时器
             self.songInfoCardChute.startSongInfoCardTimer()
 
+    def __songListWidgetCurrentChangedSlot(self,index):
+        """ 歌曲列表当前下标改变插槽 """
+        self.currentIndex = index
+        self.songInfoCardChute.setCurrentIndex(index)
+        self.currentIndexChanged.emit(index)
+
+    def __songInfoCardChuteCurrentChangedSlot(self, index):
+        """ 歌曲列表当前下标改变插槽 """
+        self.currentIndex = index
+        self.songListWidget.setCurrentIndex(index)
+        self.currentIndexChanged.emit(index)
+
     def __connectSignalToSlot(self):
         """ 将信号连接到槽 """
         self.blurCoverThread.blurDone.connect(self.setBlurPixmap)
         # 更新背景封面和下标
-        self.songInfoCardChute.currentSongChanged[int].connect(
-            self.setCurrentIndex)
-        self.songInfoCardChute.currentSongChanged[str].connect(
+        self.songInfoCardChute.currentIndexChanged[int].connect(
+            self.__songInfoCardChuteCurrentChangedSlot)
+        self.songInfoCardChute.currentIndexChanged[str].connect(
             self.startBlurThread)
         # 显示和隐藏播放栏
         self.songInfoCardChute.showPlayBarSignal.connect(self.showPlayBar)
         self.songInfoCardChute.hidePlayBarSignal.connect(self.hidePlayBar)
         # 将播放栏的信号连接到槽
-        self.playBar.nextSongButton.clicked.connect(self.next)
-        self.playBar.lastSongButton.clicked.connect(self.previous)
         self.playBar.pullUpArrowButton.clicked.connect(
             self.showPlaylistButtonSlot)
         self.playBar.showPlaylistButton.clicked.connect(
@@ -238,6 +251,9 @@ class PlayingInterface(QWidget):
             self.__settleDownPlayBar)
         self.playBar.leaveSignal.connect(
             self.__startSongInfoCardTimer)
+        # 将歌曲列表的信号连接到槽函数
+        self.songListWidget.currentIndexChanged.connect(
+            self.__songListWidgetCurrentChangedSlot)
 
 
 if __name__ == "__main__":

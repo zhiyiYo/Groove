@@ -14,7 +14,7 @@ class NavigationBar(QWidget):
     def __init__(self, parent, navigationMenu=None):
         super().__init__(parent)
         # 引用配置文件数据并设置绑定菜单
-        self.config = self.parent().settingInterface.config
+        self.config = self.window().settingInterface.config
         self.navigationMenu = navigationMenu
         # 实例化按钮
         self.createButtons()
@@ -103,16 +103,14 @@ class NavigationBar(QWidget):
         if self.sender() == self.musicGroupButton:
             # 更新配置文件的下标
             self.config['current-index'] = 0
-            self.config['pre-index'] = self.parent(
-            ).stackedWidget.currentIndex()
-            self.parent().stackedWidget.setCurrentWidget(
-                self.parent().myMusicInterface)
+            self.config['pre-index'] = self.window().stackedWidget.currentIndex()
+            self.window().stackedWidget.setCurrentWidget(
+                self.window().myMusicInterface)
         elif self.sender() == self.settingButton:
             self.config['current-index'] = 1
-            self.config['pre-index'] = self.parent(
-            ).stackedWidget.currentIndex()
-            self.parent().stackedWidget.setCurrentWidget(
-                self.parent().settingInterface)
+            self.config['pre-index'] = self.window().stackedWidget.currentIndex()
+            self.window().stackedWidget.setCurrentWidget(
+                self.window().settingInterface)
 
     def setQss(self):
         """ 设置层叠样式 """

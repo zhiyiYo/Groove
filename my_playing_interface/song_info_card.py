@@ -53,7 +53,7 @@ class SongInfoCard(QWidget):
 
     def __initLayout(self):
         """ 初始化布局 """
-        self.songNameLabel.move(186, 33)
+        self.songNameLabel.move(186, 30)
         self.songerAlbumLabel.move(186, 82)
 
     def setSongInfo(self, songInfo: dict):
@@ -139,14 +139,14 @@ class SongInfoCard(QWidget):
             self.songerAlbumLabel.move(186, 101)
             self.songNameLabel.setFixedSize(maxWidth,83)
         else:
-            self.songNameLabel.move(186, 33)
+            self.songNameLabel.move(186, 30)
             self.songerAlbumLabel.move(186, 82)
             self.songNameLabel.setFixedSize(totalWidth,36)
         
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    songInfo = {'songName': '歩いても歩いても、夜空は僕を追いかけてくる (步履不停，夜空追逐着我)',
+    songInfo = {'songName': 'be Your XXX',
                 'songer': '鎖那',
                 'album': ['(un)sentimental spica']}
     demo = SongInfoCard(songInfo=songInfo)

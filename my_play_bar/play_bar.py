@@ -1,7 +1,7 @@
 import sys
 from ctypes.wintypes import HWND
 
-from PyQt5.QtCore import Qt,QPoint
+from PyQt5.QtCore import Qt,QPoint,QPropertyAnimation,QEasingCurve,QRect,QEvent
 from PyQt5.QtWidgets import QApplication, QWidget
 
 sys.path.append('..')
@@ -29,6 +29,7 @@ class PlayBar(QWidget):
         self.centralButtonGroup = CentralButtonGroup(self)
         self.rightWidgetGroup = RightWidgetGroup(self)
         self.moreActionsMenu = MoreActionsMenu(self)
+        self.songInfoCardAni=QPropertyAnimation(self.songInfoCard,b'geometry')
         # 初始化小部件
         self.initWidget()
         self.setWidgetPos()
@@ -40,14 +41,22 @@ class PlayBar(QWidget):
         self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
         self.setFixedHeight(115)
         self.resize(1280, 115)
-        
         # 初始化亚克力背景色
         self.setAcrylicColor('0a517aC0')
         #self.setAcrylicColor('143d72C0')
+        # 初始化动画
+        self.songInfoCardAni.setDuration(200)
+        self.songInfoCardAni.setStartValue(
+            self.songInfoCard.rect())
+        self.songInfoCardAni.setEndValue(
+            QRect(0, 0, self.songInfoCard.width() + 4, 115))
         # 引用小部件
         self.referenceWidgets()
         # 连接槽函数
+        self.songInfoCardAni.finished.connect(lambda:self.songInfoCard.clicked.emit())
         self.moreActionsButton.clicked.connect(self.showMoreActionsMenu)
+        # 安装事件过滤器
+        self.songInfoCard.installEventFilter(self)
 
     def setWidgetPos(self):
         """ 初始化布局 """
@@ -91,6 +100,19 @@ class PlayBar(QWidget):
         self.setTotalTime = self.playProgressBar.setTotalTime
         self.updateSongInfoCard = self.songInfoCard.updateSongInfoCard
 
+    def eventFilter(self, obj, e:QEvent):
+        """ 事件过滤器 """
+        if obj == self.songInfoCard:
+            if e.type() == QEvent.MouseButtonPress and e.button() == Qt.LeftButton:
+                self.songInfoCard.setGeometry(
+                    2, 2, self.songInfoCard.width() - 4, 111)
+                self.songInfoCard.albumPic.resize(111, 111)
+                
+                return False
+            elif e.type() == QEvent.MouseButtonRelease and e.button() == Qt.LeftButton:
+                self.songInfoCardAni.start()
+                return False
+        return super().eventFilter(obj,e)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

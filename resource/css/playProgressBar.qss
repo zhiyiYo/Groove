@@ -41,4 +41,5 @@ QSlider::add-page:horizontal {
 QLabel#timeLabel {
     color: white;
     font: 14px "Microsoft YaHei";
+    background-color: transparent;
 }

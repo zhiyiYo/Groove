@@ -8,7 +8,7 @@ from PyQt5.QtCore import (QEasingCurve, QParallelAnimationGroup, QPoint,
 from PyQt5.QtGui import QMouseEvent
 from PyQt5.QtWidgets import QApplication, QWidget
 
-from song_info_card import SongInfoCard
+from .song_info_card import SongInfoCard
 
 
 class SongInfoCardChute(QWidget):
@@ -18,7 +18,7 @@ class SongInfoCardChute(QWidget):
     """
 
     # 当前歌曲切换信号
-    currentSongChanged = pyqtSignal([int], [str])
+    currentIndexChanged = pyqtSignal([int], [str])
     # 显示和隐藏播放栏信号
     showPlayBarSignal = pyqtSignal()
     hidePlayBarSignal = pyqtSignal()
@@ -31,6 +31,8 @@ class SongInfoCardChute(QWidget):
         self.playlist = playlist
         self.currentIndex = 0
         self.songInfoCard_list = []
+        # 设置发送信号标志位
+        self.needToEmitSignal = True
         # 创建并行动画组
         self.parallelAniGroup = QParallelAnimationGroup(self)
         self.__initWidget()
@@ -115,7 +117,7 @@ class SongInfoCardChute(QWidget):
                 if (self.currentIndex == 0 and self.mouseDeltaX > 0) or (self.currentIndex == len(self.playlist)-1 and self.mouseDeltaX < 0):
                     self.__restoreCardPosition()
                 else:
-                    if mouseDeltaTime < 1000 and abs(self.mouseDeltaX) >= 120:
+                    if mouseDeltaTime < 360 and abs(self.mouseDeltaX) >= 120:
                         self.__cycleShift()
                     else:
                         if abs(self.mouseDeltaX) < int(self.width() / 2):
@@ -133,7 +135,7 @@ class SongInfoCardChute(QWidget):
         self.parallelAniGroup.removeAnimation(self.lastSongInfoCardAni)
         self.parallelAniGroup.start()
         # 发送更新背景信号
-        self.currentSongChanged[str].emit(
+        self.currentIndexChanged[str].emit(
             self.nextSongInfoCard.albumCoverPath)
 
     def cycleRightShift(self):
@@ -146,7 +148,7 @@ class SongInfoCardChute(QWidget):
         self.parallelAniGroup.removeAnimation(self.nextSongInfoCardAni)
         self.parallelAniGroup.start()
         # 发送更新背景信号
-        self.currentSongChanged[str].emit(
+        self.currentIndexChanged[str].emit(
             self.lastSongInfoCard.albumCoverPath)
 
     def switchSongInfoCard(self):
@@ -167,8 +169,11 @@ class SongInfoCardChute(QWidget):
                 self.nextSongInfoCard.show()
             else:
                 self.nextSongInfoCard.hide()
-            # 发送下标更新信号
-            self.currentSongChanged[int].emit(self.currentIndex)
+            # 根据标志位决定是否发送下标更新信号
+            if self.needToEmitSignal:
+                self.currentIndexChanged[int].emit(self.currentIndex)
+            else:
+                self.needToEmitSignal = True
         # 循环右移
         elif self.loopMode == SongInfoCardLoopMode.CYCLE_RIGHT_SHIFT:
             self.__resetRef(moveDirection=1)
@@ -184,8 +189,11 @@ class SongInfoCardChute(QWidget):
                 self.lastSongInfoCard.show()
             else:
                 self.lastSongInfoCard.hide()
-            # 发送信号
-            self.currentSongChanged[int].emit(self.currentIndex)
+            # 根据标志位决定是否发送下标更新信号
+            if self.needToEmitSignal:
+                self.currentIndexChanged[int].emit(self.currentIndex)
+            else:
+                self.needToEmitSignal = True
 
     def __cycleShift(self):
         """ 三卡片移动 """
@@ -230,6 +238,36 @@ class SongInfoCardChute(QWidget):
             self.nextSongInfoCard.updateCard(
                 self.playlist[self.currentIndex + 1])
 
+    def setCurrentIndex(self, index):
+        """ 更新当前下标并更新歌曲信息卡 """
+        # 移位完成后不发送信号
+        self.needToEmitSignal = False
+        # 新的下标大于当前下标时，歌曲卡左移
+        if index > self.currentIndex:
+            self.currentIndex = index - 1
+            self.nextSongInfoCard.updateCard(
+                self.playlist[index])
+            self.cycleLeftShift()
+        # 新的下标小于当前下标时，歌曲卡右移
+        elif index < self.currentIndex:
+            self.currentIndex = index + 1
+            self.lastSongInfoCard.updateCard(
+                self.playlist[index])
+            self.cycleRightShift()
+            
+    def setPlaylist(self, playlist):
+        """ 更新播放列表 """
+        self.playlist = playlist
+        self.currentIndex = 0
+        self.curSongInfoCard.updateCard(self.playlist[0])
+        self.currentIndexChanged[str].emit(self.curSongInfoCard.albumCoverPath)
+        self.lastSongInfoCard.hide()
+        if len(self.playlist) <= 1:
+            self.nextSongInfoCard.hide()
+        else:
+            self.nextSongInfoCard.show()
+            self.nextSongInfoCard.updateCard(self.playlist[1])
+            
     def resizeEvent(self, e):
         """ 改变窗口大小时也改变歌曲卡的大小 """
         super().resizeEvent(e)

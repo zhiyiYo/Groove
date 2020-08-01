@@ -19,10 +19,10 @@ class ClickableLabel(QLabel):
         #储存原始的text
         self.rawText=text
         self.customToolTip = None
-        
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         """ 鼠标松开时发送信号 """
+        super().mouseReleaseEvent(event)
         if event.button() == Qt.LeftButton:
             self.clicked.emit()
 

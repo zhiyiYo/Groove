@@ -1,3 +1,7 @@
+QLabel{
+    background-color: transparent;
+}
+
 QLabel[state='normal'] {
     color: white;
 }

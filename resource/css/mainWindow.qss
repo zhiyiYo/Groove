@@ -1,0 +1,12 @@
+QWidget#mainWindow,
+QWidget#subMainWindow{
+    background-color: transparent;
+}
+
+QWidget#playingInterface{
+    background-color: black;
+}
+
+QLabel{
+    background-color: transparent;
+}

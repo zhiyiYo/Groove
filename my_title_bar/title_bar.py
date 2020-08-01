@@ -1,17 +1,14 @@
 import sys
-
-from ctypes.wintypes import HWND,MSG
+from ctypes.wintypes import HWND
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon, QResizeEvent,QPixmap
+from PyQt5.QtGui import QIcon, QPixmap, QResizeEvent
 from PyQt5.QtWidgets import QApplication, QHBoxLayout, QLabel, QWidget
 
-sys.path.append('..')
-from Groove.effects.frameless_window_func import FramelessWindowFunc
-from Groove.my_title_bar.title_bar_buttons import (CloseButton, MaximizeButton, MinimizeButton,
-                                ReturnButton)
+from effects.frameless_window_func import FramelessWindowFunc
+from flags.wm_hittest import Flags
 
-from Groove.flags.wm_hittest import Flags
+from .title_bar_buttons import BasicButton, MaximizeButton
 
 
 class TitleBar(QWidget):
@@ -33,10 +30,28 @@ class TitleBar(QWidget):
 
     def createButtons(self):
         """ 创建各按钮 """
-        self.minBt = MinimizeButton(self)
+        self.minBt = BasicButton([
+            {'normal': r'resource\images\titleBar\透明黑色最小化按钮_57_40.png',
+             'hover': r'resource\images\titleBar\绿色最小化按钮_hover_57_40.png',
+             'pressed': r'resource\images\titleBar\黑色最小化按钮_pressed_57_40.png'},
+            {'normal': r'resource\images\titleBar\白色最小化按钮_57_40.png',
+             'hover': r'resource\images\titleBar\绿色最小化按钮_hover_57_40.png',
+             'pressed': r'resource\images\titleBar\黑色最小化按钮_pressed_57_40.png'}],self)
+        self.closeBt = BasicButton([
+            {'normal': r'resource\images\titleBar\透明黑色关闭按钮_57_40.png',
+             'hover': r'resource\images\titleBar\关闭按钮_hover_57_40.png',
+             'pressed': r'resource\images\titleBar\关闭按钮_pressed_57_40.png'},
+            {'normal': r'resource\images\titleBar\透明白色关闭按钮_57_40.png',
+             'hover': r'resource\images\titleBar\关闭按钮_hover_57_40.png',
+             'pressed': r'resource\images\titleBar\关闭按钮_pressed_57_40.png'}],self)
+        self.returnBt = BasicButton([
+            {'normal': r'resource\images\titleBar\黑色返回按钮_60_40.png',
+             'hover': r'resource\images\titleBar\黑色返回按钮_hover_60_40.png',
+             'pressed': r'resource\images\titleBar\黑色返回按钮_pressed_60_40.png'},
+            {'normal': r'resource\images\titleBar\白色返回按钮_60_40.png',
+             'hover': r'resource\images\titleBar\白色返回按钮_hover_60_40.png',
+             'pressed': r'resource\images\titleBar\白色返回按钮_pressed_60_40.png'}], self, iconSize_tuple=(60, 40))
         self.maxBt = MaximizeButton(self)
-        self.closeBt = CloseButton(self)
-        self.returnBt = ReturnButton(self)
         self.button_list=[self.minBt,self.maxBt,self.closeBt,self.returnBt]
 
     def initWidget(self):
@@ -68,9 +83,7 @@ class TitleBar(QWidget):
 
     def mousePressEvent(self, event):
         if self.isPointInDragRegion(event.pos()):
-            pass
             self.framelessWindowFunc.moveWindow(HWND(int(self.parent().winId())))
-
 
     def showRestoreWindow(self):
         """ 复原窗口并更换最大化按钮的图标 """
@@ -91,6 +104,11 @@ class TitleBar(QWidget):
         x = pos.x()
         condX = (60 < x < self.width() - 57 * 3)
         return condX
+
+    def setWhiteIcon(self, isWhiteIcon):
+        """ 设置图标颜色 """
+        for button in self.button_list:
+            button.setWhiteIcon(isWhiteIcon)
 
 
 class Demo(QWidget):

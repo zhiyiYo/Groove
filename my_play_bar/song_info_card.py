@@ -2,7 +2,7 @@ import sys
 import os
 import re
 
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QFont, QFontMetrics, QPainter, QPixmap
 from PyQt5.QtWidgets import QApplication, QLabel, QWidget
 
@@ -13,6 +13,9 @@ from .window_mask import WindowMask
 
 class SongInfoCard(QWidget):
     """ 播放栏左侧歌曲信息卡 """
+    clicked = pyqtSignal()
+    pressed = pyqtSignal()
+
     def __init__(self, songInfo: dict, parent=None):
         super().__init__(parent)
         # 保存信息
@@ -26,11 +29,11 @@ class SongInfoCard(QWidget):
 
     def initWidget(self):
         """ 初始化小部件 """
-        self.setFixedHeight(115)
-        self.setFixedWidth(115 + 15 + self.scrollTextWindow.width() + 25)
+        self.resize(115 + 15 + self.scrollTextWindow.width() + 25,115)
         self.setAttribute(Qt.WA_StyledBackground | Qt.WA_TranslucentBackground)
         self.scrollTextWindow.move(130, 0)
-        self.albumPic.setFixedSize(115,115)
+        self.albumPic.resize(115, 115)
+        self.albumPic.setScaledContents(True)
         # 获取封面路径
         self.setAlbumCover()
         # 如果传入的歌曲信息为空，就隐藏
@@ -49,7 +52,7 @@ class SongInfoCard(QWidget):
             self.show()
         self.setSongInfo(songInfo)
         self.scrollTextWindow.initUI(songInfo)
-        self.setFixedWidth(115 + 15 + self.scrollTextWindow.width() + 25)
+        self.resize(115 + 15 + self.scrollTextWindow.width() + 25,115)
         self.setAlbumCover()
 
     def enterEvent(self, e):
@@ -75,6 +78,11 @@ class SongInfoCard(QWidget):
         self.albumPic.setPixmap(
             QPixmap(self.coverPath).scaled(
                 115, 115, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+
+    def resizeEvent(self, e):
+        """ 改变大小时也改变标签的大小 """
+        super().resizeEvent(e)
+        self.albumPic.resize(self.height(), self.height())
 
 
 class ScrollTextWindow(QWidget):
@@ -117,7 +125,7 @@ class ScrollTextWindow(QWidget):
         """ 初始化界面 """
         self.adjustWindowWidth()
         if not self.hasInitWidget:
-            self.setFixedHeight(115)
+            #self.setFixedHeight(115)
             self.setAttribute(Qt.WA_StyledBackground)
             # 初始化定时器
             self.songPauseTimer.setInterval(400)
@@ -164,7 +172,7 @@ class ScrollTextWindow(QWidget):
         self.isSongNameTooLong = self.songNameWidth > 250
         self.isSongerNameTooLong = self.songerNameWidth > 250
         # 设置窗口的宽度
-        self.setFixedWidth(min(maxWidth, 250))
+        self.resize(min(maxWidth, 250), 115)
 
     def updateSongIndex(self):
         """ 更新歌名下标 """
@@ -261,6 +269,7 @@ class ScrollTextWindow(QWidget):
             [1 for i in self.songerName if i.isupper() or i in specialCharacters])
         self.songCapLetterNum = sum(
             [1 for i in self.songName if i.isupper() or i in specialCharacters])
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

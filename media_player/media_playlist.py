@@ -8,7 +8,7 @@ from PyQt5.QtMultimedia import QMediaContent, QMediaPlaylist
 
 class MediaPlaylist(QMediaPlaylist):
     """ 播放列表类 """
-    # 当点击上一首和下一首时发送信号
+    # 当播放列表的当前下标变化时发送信号，用于更新主界面
     switchSongSignal = pyqtSignal(dict)
 
     def __init__(self, parent=None):
@@ -86,6 +86,8 @@ class MediaPlaylist(QMediaPlaylist):
                 self.setCurrentIndex(0)
                 # 切换歌曲时发出信号
                 self.switchSongSignal.emit(self.playlist[self.currentIndex()])
+            elif self.playbackMode() == QMediaPlaylist.Random:
+                super().next()
         else:
             super().next()
             # 切换歌曲时发出信号
