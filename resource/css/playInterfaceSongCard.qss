@@ -17,7 +17,8 @@ QLabel[state='leave-notPlay']{
 }
 
 QLabel[state='leave-play'] {
-    color: rgb(72,210,242);
+    /*color: rgb(72,210,242);*/
+    color:rgb(121, 230, 255);
 }
 
 QLabel[state='enter-notPlay'] {
@@ -25,7 +26,8 @@ QLabel[state='enter-notPlay'] {
 }
 
 QLabel[state='enter-play']{
-    color: rgb(67, 178, 204);
+    /*color: rgb(67, 178, 204);*/
+    color:rgb(72, 210, 242);
 }
 
 QLabel#clickableLabel[state='enter-play']:hover{
@@ -41,7 +43,8 @@ QLabel#songNameLabel[isPlay='False']{
 }
 
 QLabel#songNameLabel[isPlay='True'] {
-    color: rgb(72, 210, 242);
+    /*color: rgb(72, 210, 242);*/
+    color:rgb(121, 230, 255)
 }
 
 

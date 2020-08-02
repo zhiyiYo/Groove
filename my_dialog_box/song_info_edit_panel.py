@@ -14,11 +14,11 @@ from PyQt5.QtWidgets import (QApplication, QDialog, QGraphicsDropShadowEffect, Q
                              QLineEdit, QPushButton)
 
 from .sub_panel_frame import SubPanelFrame
-from ..my_functions.modify_songInfo import modifySongInfo
-from ..my_widget.my_lineEdit import LineEdit
-from ..my_widget.my_label import ErrorIcon
-from ..my_widget.my_toolTip import ToolTip
-from ..my_functions.auto_wrap import autoWrap
+from my_functions.modify_songInfo import modifySongInfo
+from my_widget.my_lineEdit import LineEdit
+from my_widget.my_label import ErrorIcon
+from my_widget.my_toolTip import ToolTip
+from my_functions.auto_wrap import autoWrap
 
 
 class SongInfoEditPanel(SubPanelFrame):

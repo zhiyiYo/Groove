@@ -157,7 +157,16 @@ class MediaPlaylist(QMediaPlaylist):
                 self.playlist = load(f)
         except:
             self.playlist = []
-            
+
+    def removeMedia(self, index):
+        """ 在播放列表中移除歌曲 """
+        currentIndex = self.currentIndex()
+        if currentIndex > index:
+            currentIndex -= 1
+        self.playlist.pop(index)
+        super().removeMedia(index)
+        self.setCurrentIndex(currentIndex)
+
 
 class PlaylistType(Enum):
     """ 播放列表种类枚举 """

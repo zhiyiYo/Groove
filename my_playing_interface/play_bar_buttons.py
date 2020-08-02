@@ -35,14 +35,20 @@ class BasicCircleButton(QToolButton):
     def eventFilter(self, obj, e: QEvent):
         """ 根据鼠标动作更新标志位和图标 """
         if obj == self:
-            if e.type() in [QEvent.Enter, QEvent.Leave]:
-                self.isEnter = not self.isEnter
+            if e.type() == QEvent.Enter:
+                self.isEnter = True
                 self.update()
-            elif e.type() in [QEvent.MouseButtonPress, QEvent.MouseButtonRelease]:
+                return False
+            elif e.type() == QEvent.Leave:
+                self.isEnter = False
+                self.update()
+                return False
+            elif e.type() in [QEvent.MouseButtonPress, QEvent.MouseButtonDblClick, QEvent.MouseButtonRelease]:
                 self.isPressed = not self.isPressed
                 self.update()
+                return False
         return super().eventFilter(obj, e)
-
+        
     def paintEvent(self, e):
         """ 绘制图标 """
         iconPixmap = self.iconPixmap
@@ -305,7 +311,7 @@ class VolumeButton(BasicCircleButton):
         super().__init__(self.__iconPath_list[0], parent)
         # 初始化标志位
         self.isMute = False
-        self.__volumeLevel = 2
+        self.__volumeLevel = 0
 
     def setMute(self, isMute):
         """ 设置静音 """

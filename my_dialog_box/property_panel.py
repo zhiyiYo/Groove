@@ -9,7 +9,7 @@ from PyQt5.QtGui import QColor, QPainter, QPen, QPixmap
 from PyQt5.QtWidgets import (QAction, QApplication, QDialog, QHBoxLayout,
                              QLabel, QPushButton, QWidget, QGraphicsDropShadowEffect)
                             
-from ..my_functions.auto_wrap import autoWrap
+from my_functions.auto_wrap import autoWrap
 from .sub_panel_frame import SubPanelFrame
 
 

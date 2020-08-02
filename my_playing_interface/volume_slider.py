@@ -86,7 +86,7 @@ class VolumeButton(BasicCircleButton):
         super().__init__(self.__iconPath_list[0], parent)
         # 初始化标志位
         self.isMute = False
-        self.__volumeLevel = 2
+        self.__volumeLevel = 0
 
     def setVolumeLevel(self, volume):
         """ 根据音量来设置对应图标 """
@@ -138,7 +138,11 @@ class Demo(QWidget):
         super().__init__()
         self.resize(500, 500)
         self.volumeSlider = VolumeSlider(self)
-        self.volumeSlider.move(78, 211)
+        
+    def showVolumeSlider(self):
+        """ 显示音量条 """
+        self.volumeSlider.move(78+self.x(), 211+self.y())
+        self.volumeSlider.show()
 
 
 if __name__ == "__main__":

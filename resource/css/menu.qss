@@ -62,7 +62,8 @@ QMenu#addToMenu {
     border: 1px solid rgb(204, 204, 204);
 }
 
-QMenu#addToMenu::item {
+QMenu#addToMenu::item,
+QMenu#blackAddToMenu::item {
     /*设置文字边距*/
     padding-left: 20px;
     padding-top: 5px;
@@ -79,7 +80,8 @@ QMenu#addToMenu::separator {
 }
 
 /*调整图标位置*/
-QMenu#addToMenu::icon {
+QMenu#addToMenu::icon,
+QMenu#blackAddToMenu::icon {
     position: absolute;
     left: 14px;
 }
@@ -158,3 +160,67 @@ QMenu#moreActionsMenu::item {
     padding-bottom: 5px;
 
 }
+
+QMenu#playingInterfaceMenu::right-arrow {
+    border-image: url(resource/images/playing_interface/子菜单右箭头_15_15.png);
+}
+
+QMenu#playingInterfaceMenu,
+QMenu#blackAddToMenu{
+    color:white;
+    background-color: rgb(31, 31, 31);
+    border: 1px solid rgb(20, 20, 20);
+    border-radius: 5px;
+    font-size: 18px;
+    font: 18px "Microsoft YaHei";
+}
+
+QMenu#playingInterfaceMenu{
+    width: 130px;
+}
+
+QMenu#blackAddToMenu{
+    width: 170px;
+}
+
+QMenu#playingInterfaceMenu::separator,
+QMenu#blackAddToMenu::separator {
+    background-color: rgb(120, 120, 120);
+}
+
+QMenu#playingInterfaceMenu::item,
+QMenu#blackAddToMenu::item {
+    color: white;
+}
+
+QMenu#playingInterfaceMenu::item:disabled{
+    color: rgb(120,120,120);
+    background:transparent;
+}
+
+QMenu#playingInterfaceMenu::item:disabled:selected{
+    color: rgb(120, 120, 120);
+    background:transparent;
+}
+
+QMenu#playingInterfaceMenu::item:disabled:pressed {
+    color: rgb(120, 120, 120);
+    background: transparent;
+}
+
+QMenu#playingInterfaceMenu::item:selected,
+QMenu#blackAddToMenu::item:selected {
+    background: rgb(54, 54, 54);
+    color: white;
+}
+
+QMenu#playingInterfaceMenu::item:pressed,
+QMenu#blackAddToMenu::item:pressed{
+    background: rgb(77,77,77);
+    color: white;
+}
+
+QMenu#blackAddToMenu {
+    padding: 5px 0px 8px 0px;
+}
+

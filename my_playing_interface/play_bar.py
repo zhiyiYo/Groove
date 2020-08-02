@@ -49,6 +49,11 @@ class PlayBar(QWidget):
             r'resource\images\playing_interface\显示播放列表_47_47.png', self)
         self.smallPlayModeButton = BasicCircleButton(
             r'resource\images\playing_interface\最小模式播放_47_47.png', self)
+        # 创建小部件列表
+        self.__widget_list = [self.playButton, self.fillScreenButton, self.playProgressBar.progressSlider,
+                              self.pullUpArrowButton, self.lastSongButton, self.nextSongButton,
+                              self.randomPlayButton, self.loopModeButton, self.moreActionsButton,
+                              self.showPlaylistButton, self.smallPlayModeButton]
 
     def __initWidget(self):
         """ 初始化小部件 """
@@ -70,6 +75,8 @@ class PlayBar(QWidget):
             lambda muteState: self.volumeButton.setMute(muteState))
         self.volumeSlider.volumeLevelChanged.connect(
             lambda volumeLevel: self.volumeButton.updateIcon(volumeLevel))
+        for widget in self.__widget_list:
+            widget.clicked.connect(self.volumeSlider.hide)
         # 引用小部件及其方法
         self.__referenceWidget()
 

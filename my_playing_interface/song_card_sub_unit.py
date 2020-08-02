@@ -147,8 +147,10 @@ class SongNameCard(QWidget):
 
     def __moveButtonGroup(self):
         """ 移动按钮组 """
-        x = self.width() - 140 if self.songNameWidth >= self.width() - \
-            140 else self.songNameWidth + self.songNameLabel.x()
+        if self.songNameWidth + self.songNameLabel.x() >= self.width() - 140:
+            x = self.width() - 140
+        else:
+            x = self.songNameWidth + self.songNameLabel.x()
         self.buttonGroup.move(x, 0)
 
     def setSongName(self, songName: str):
@@ -158,8 +160,7 @@ class SongNameCard(QWidget):
         # 重新计算歌名宽度并移动按钮
         self.__getSongNameWidth()
         self.__moveButtonGroup()
-        self.songNameLabel.resize(
-            self.songNameWidth, self.songNameLabel.height())
+        self.songNameLabel.setFixedWidth(self.songNameWidth)
 
 
 if __name__ == '__main__':

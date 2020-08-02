@@ -22,7 +22,7 @@ from my_sub_play_window import SubPlayWindow
 from my_thumbnail_tool_bar import ThumbnailToolBar
 from my_title_bar import TitleBar
 from navigation import NavigationBar, NavigationMenu
-from my_playing_interface import PlayingInterface
+from my_playing_interface import PlayingInterface, CreateSongCardsThread
 
 
 class MainWindow(QWidget):
@@ -67,10 +67,14 @@ class MainWindow(QWidget):
         self.thumbnailToolBar.setWindow(self.windowHandle())
         # 实例化左上角播放窗口
         self.subPlayWindow = SubPlayWindow(self, self.lastSongInfo)
+        # 创建正在播放界面和创建歌曲卡线程
+        self.playingInterface = PlayingInterface(self.playlist.playlist, self)
+        #self.createSongCardThread = CreateSongCardsThread(self.playingInterface.songListWidget, self)
         # 创建快捷键
         self.playAct = QAction(
             parent=self, shortcut=Qt.Key_Space, triggered=self.switchPlayState)
-        self.showNormalAct = QAction(parent=self, shortcut=Qt.Key_Escape, triggered=self.setFullScreen)
+        self.showNormalAct = QAction(
+            parent=self, shortcut=Qt.Key_Escape, triggered=self.setFullScreen)
         self.addAction(self.playAct)
         self.addAction(self.showNormalAct)
 
@@ -88,7 +92,7 @@ class MainWindow(QWidget):
                   int((desktop.height()-120) / 2 - self.height() / 2))
         # 标题栏置顶
         self.titleBar.raise_()
-        #self.titleBar.closeBt.setBlackCloseIcon(0)  # 更换图标
+        # self.titleBar.closeBt.setBlackCloseIcon(0)  # 更换图标
         # 隐藏导航菜单
         self.navigationMenu.hide()
         self.navigationBar.musicGroupButton.isSelected = True
@@ -108,8 +112,6 @@ class MainWindow(QWidget):
         self.initPlaylist()
         # 设置全局热键
         self.setHotKey()
-        # 创建正在播放界面
-        self.playingInterface = PlayingInterface(self.playlist.playlist, self)
         self.totalStackWidget.addWidget(self.playingInterface)
         # 设置层叠样式
         self.setObjectName('mainWindow')
@@ -120,6 +122,10 @@ class MainWindow(QWidget):
         self.connectSignalToSlot()
         # 初始化播放栏
         self.initPlayBar()
+        # 显示主界面
+        self.show()
+        # 创建正在播放界面的歌曲卡
+        self.playingInterface.createSongCardThread.run()
 
     def setHotKey(self):
         """ 设置全局热键 """
@@ -144,6 +150,7 @@ class MainWindow(QWidget):
         """ 调整小部件的geometry """
         self.subMainWindow.resize(self.size())
         self.totalStackWidget.resize(self.size())
+        self.playingInterface.resize(self.size())
         self.titleBar.resize(self.width(), 40)
         self.navigationBar.resize(60, self.height())
         self.navigationMenu.resize(400, self.height())
@@ -151,8 +158,6 @@ class MainWindow(QWidget):
         self.stackedWidget.resize(
             self.width() - self.currentNavigation.width(), self.height())
         self.playBar.resize(self.width(), self.playBar.height())
-        if hasattr(self, 'playingInterface'):
-            self.playingInterface.resize(self.size())
 
     def resizeEvent(self, e: QResizeEvent):
         """ 调整尺寸时同时调整子窗口的尺寸 """
@@ -188,8 +193,11 @@ class MainWindow(QWidget):
 
     def closeEvent(self, e: QCloseEvent):
         """ 关闭窗口前更新json文件 """
-        self.settingInterface.config['last-song'] = self.playlist.playlist[
-            self.playlist.currentIndex()]
+        if self.playlist.currentIndex()>=0:
+            self.settingInterface.config['last-song'] = self.playlist.playlist[
+                self.playlist.currentIndex()]
+        else:
+            self.settingInterface.config['last-song'] = {}
         self.settingInterface.config['volume'] = self.playBar.volumeSlider.value(
         )
         self.settingInterface.config['position'] = self.playBar.progressSlider.value(
@@ -267,13 +275,14 @@ class MainWindow(QWidget):
         self.playBar.lastSongButton.clicked.connect(self.playlist.previous)
         self.playBar.playButton.clicked.connect(self.switchPlayState)
         self.playBar.volumeButton.muteStateChanged.connect(self.setMute)
-        #self.playBar.loopModeButton.clicked.connect(self.switchLoopMode)
         self.playBar.volumeSlider.valueChanged.connect(self.volumeChangedSlot)
         self.playBar.progressSlider.sliderMoved.connect(
             self.progressSliderMoveSlot)
         self.playBar.progressSlider.clicked.connect(
             self.progressSliderMoveSlot)
-        self.playBar.loopModeButton.loopModeChanged.connect(self.switchLoopMode)
+        self.playBar.loopModeButton.loopModeChanged.connect(
+            self.switchLoopMode)
+        self.playBar.songInfoCard.clicked.connect(self.showPlayingInterface)
         # todo:将播放器的信号连接到槽函数
         self.player.positionChanged.connect(self.playerPositionChangeSlot)
         self.player.durationChanged.connect(self.playerDurationChangeSlot)
@@ -290,7 +299,8 @@ class MainWindow(QWidget):
             self.playlist.previous)
         self.playingInterface.playBar.nextSongButton.clicked.connect(
             self.playlist.next)
-        self.playingInterface.playBar.randomPlayButton.clicked.connect(self.setRandomPlay)
+        self.playingInterface.playBar.randomPlayButton.clicked.connect(
+            self.setRandomPlay)
         self.playingInterface.playBar.volumeSlider.muteStateChanged.connect(
             self.setMute)
         self.playingInterface.playBar.volumeSlider.volumeSlider.valueChanged.connect(
@@ -299,9 +309,14 @@ class MainWindow(QWidget):
             self.progressSliderMoveSlot)
         self.playingInterface.playBar.progressSlider.clicked.connect(
             self.progressSliderMoveSlot)
-        self.playingInterface.playBar.fillScreenButton.clicked.connect(self.setFullScreen)
+        self.playingInterface.playBar.fillScreenButton.clicked.connect(
+            self.setFullScreen)
         self.playingInterface.playBar.loopModeButton.loopModeChanged.connect(
             self.switchLoopMode)
+        self.playingInterface.createSongCardThread.createDone.connect(
+            lambda: self.playingInterface.setCurrentIndex(self.playlist.currentIndex()))
+        self.playingInterface.removeMediaSignal.connect(self.playlist.removeMedia)
+        self.playingInterface.randomPlayAllSignal.connect(self.disorderPlayAll)
         # todo:歌曲卡的信号连接到槽函数
         self.songCardListWidget.doubleClicked.connect(
             self.songCardDoubleClickedSlot)
@@ -335,13 +350,13 @@ class MainWindow(QWidget):
         # 如果没有上一次的播放列表数据，就设置默认的播放列表
         if not self.playlist.playlist:
             songInfo_list = self.songCardListWidget.songInfo_list.copy()
-            # 如果上次关闭时的最后一首歌与播放列表的第一首不同就将最后一首歌插入开头
+            self.playingInterface.setPlaylist(songInfo_list)
             self.playlist.setMedias(songInfo_list)
             self.playlist.playlistType = PlaylistType.SONG_CARD_PLAYLIST
-
-        if self.lastSongInfo.get('songPath') != self.playlist.playlist[0].get('songPath'):
-            self.playlist.insertMedia(0, self.lastSongInfo)
-            self.playlist.setCurrentIndex(0)
+        # 将当前歌曲设置为上次关闭前播放的歌曲
+        if self.lastSongInfo in self.playlist.playlist:
+            self.playlist.setCurrentIndex(
+                self.playlist.playlist.index(self.lastSongInfo))
 
     def switchPlayState(self):
         """ 播放按钮按下时根据播放器的状态来决定是暂停还是播放 """
@@ -408,6 +423,11 @@ class MainWindow(QWidget):
 
     def songCardNextPlaySlot(self, songInfo_dict):
         """ 下一首播放动作触发对应的槽函数 """
+        # 直接更新正在播放界面的播放列表
+        newPlaylist = self.playlist.playlist[:self.playlist.currentIndex(
+            ) + 1] + [songInfo_dict] + self.playlist.playlist[self.playlist.currentIndex() + 1 :]
+        self.playingInterface.setPlaylist(newPlaylist)
+        self.playingInterface.setCurrentIndex(self.playlist.currentIndex())
         self.playlist.insertMedia(
             self.playlist.currentIndex() + 1, songInfo_dict)
 
@@ -424,7 +444,7 @@ class MainWindow(QWidget):
             songInfo_dict, newPlaylist, PlaylistType.SONG_CARD_PLAYLIST.value)
         self.play()
 
-    def switchLoopMode(self,loopMode):
+    def switchLoopMode(self, loopMode):
         """ 根据随机播放按钮的状态和循环模式的状态决定播放器的播放模式 """
         # 记录按下随机播放前的循环模式
         self.playlist.prePlayMode = loopMode
@@ -466,12 +486,16 @@ class MainWindow(QWidget):
     def playAlbum(self, playlist):
         """ 播放专辑中的歌曲 """
         # 直接更新播放列表
-        self.playlist.playAlbum(playlist)
         self.playingInterface.setPlaylist(playlist)
+        self.playlist.playAlbum(playlist)
         self.play()
 
     def albumCardNextPlaySlot(self, songInfoDict_list):
         """ 下一首播放动作触发对应的槽函数 """
+        newPlaylist = self.playlist.playlist[:self.playlist.currentIndex(
+        ) + 1] + songInfoDict_list + self.playlist.playlist[self.playlist.currentIndex() + 1 :]
+        self.playingInterface.setPlaylist(newPlaylist)
+        self.playingInterface.setCurrentIndex(self.playlist.currentIndex())
         self.playlist.insertMedias(
             self.playlist.currentIndex() + 1, songInfoDict_list)
 
@@ -480,14 +504,17 @@ class MainWindow(QWidget):
         self.playlist.playlistType = PlaylistType.SONG_CARD_PLAYLIST
         newPlaylist = self.songCardListWidget.songInfo_list.copy()
         shuffle(newPlaylist)
-        self.playlist.setMedias(newPlaylist)
         self.playingInterface.setPlaylist(newPlaylist)
+        self.playlist.setMedias(newPlaylist)
         self.play()
 
     def play(self):
         """ 播放歌曲并改变按钮样式 """
         self.player.play()
         self.setPlayButtonState(True)
+        if not self.playBar.songInfoCard.isVisible():
+            self.playBar.songInfoCard.show()
+            self.playBar.songInfoCard.updateSongInfoCard(self.playlist.playlist[0])
 
     def initPlayBar(self):
         """ 从配置文件中读取配置数据来初始化播放栏 """
@@ -495,6 +522,7 @@ class MainWindow(QWidget):
         volume = self.settingInterface.config.get('volume', 20)
         self.playBar.volumeSlider.setValue(volume)
         self.playingInterface.playBar.volumeSlider.setValue(volume)
+        
 
     def showPlayingInterface(self):
         """ 显示正在播放界面 """

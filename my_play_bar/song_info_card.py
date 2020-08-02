@@ -14,7 +14,6 @@ from .window_mask import WindowMask
 class SongInfoCard(QWidget):
     """ 播放栏左侧歌曲信息卡 """
     clicked = pyqtSignal()
-    pressed = pyqtSignal()
 
     def __init__(self, songInfo: dict, parent=None):
         super().__init__(parent)
@@ -33,7 +32,6 @@ class SongInfoCard(QWidget):
         self.setAttribute(Qt.WA_StyledBackground | Qt.WA_TranslucentBackground)
         self.scrollTextWindow.move(130, 0)
         self.albumPic.resize(115, 115)
-        self.albumPic.setScaledContents(True)
         # 获取封面路径
         self.setAlbumCover()
         # 如果传入的歌曲信息为空，就隐藏
@@ -50,10 +48,12 @@ class SongInfoCard(QWidget):
         """ 更新歌曲信息卡 """
         if songInfo:
             self.show()
-        self.setSongInfo(songInfo)
-        self.scrollTextWindow.initUI(songInfo)
-        self.resize(115 + 15 + self.scrollTextWindow.width() + 25,115)
-        self.setAlbumCover()
+            self.setSongInfo(songInfo)
+            self.scrollTextWindow.initUI(songInfo)
+            self.resize(115 + 15 + self.scrollTextWindow.width() + 25,115)
+            self.setAlbumCover()
+        else:
+            self.hide()
 
     def enterEvent(self, e):
         """ 鼠标进入时显示遮罩 """
@@ -79,10 +79,9 @@ class SongInfoCard(QWidget):
             QPixmap(self.coverPath).scaled(
                 115, 115, Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
-    def resizeEvent(self, e):
-        """ 改变大小时也改变标签的大小 """
-        super().resizeEvent(e)
-        self.albumPic.resize(self.height(), self.height())
+    def mouseReleaseEvent(self, e):
+        """ 鼠标松开发送信号 """
+        self.clicked.emit()
 
 
 class ScrollTextWindow(QWidget):

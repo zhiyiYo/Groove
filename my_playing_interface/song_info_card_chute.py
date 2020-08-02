@@ -85,6 +85,7 @@ class SongInfoCardChute(QWidget):
 
     def mousePressEvent(self, e: QMouseEvent):
         """ 按钮按下时记录鼠标位置 """
+        super().mousePressEvent(e)
         self.mousePressPosX = e.pos().x()
         self.lastMousePosX = e.pos().x()
         # 记下按下的时间
@@ -231,10 +232,10 @@ class SongInfoCardChute(QWidget):
         if self.curSongInfoCard:
             self.curSongInfoCard.updateCard(
                 self.playlist[self.currentIndex])
-        if self.lastSongInfoCard:
+        if self.lastSongInfoCard and self.currentIndex >= 1:
             self.lastSongInfoCard.updateCard(
                 self.playlist[self.currentIndex - 1])
-        if self.nextSongInfoCard:
+        if self.nextSongInfoCard and self.currentIndex <= len(self.playlist)-2:
             self.nextSongInfoCard.updateCard(
                 self.playlist[self.currentIndex + 1])
 
@@ -254,7 +255,10 @@ class SongInfoCardChute(QWidget):
             self.lastSongInfoCard.updateCard(
                 self.playlist[index])
             self.cycleRightShift()
-            
+        elif index == self.currentIndex:
+            self.updateCards()
+            self.needToEmitSignal=True
+
     def setPlaylist(self, playlist):
         """ 更新播放列表 """
         self.playlist = playlist
@@ -262,12 +266,17 @@ class SongInfoCardChute(QWidget):
         self.curSongInfoCard.updateCard(self.playlist[0])
         self.currentIndexChanged[str].emit(self.curSongInfoCard.albumCoverPath)
         self.lastSongInfoCard.hide()
-        if len(self.playlist) <= 1:
-            self.nextSongInfoCard.hide()
+        if self.playlist:
+            self.curSongInfoCard.show()
+            if len(self.playlist) == 1:
+                self.nextSongInfoCard.hide()
+            else:
+                self.nextSongInfoCard.show()
+                self.nextSongInfoCard.updateCard(self.playlist[1])
         else:
-            self.nextSongInfoCard.show()
-            self.nextSongInfoCard.updateCard(self.playlist[1])
-            
+            self.curSongInfoCard.hide()
+            self.nextSongInfoCard.hide()
+
     def resizeEvent(self, e):
         """ 改变窗口大小时也改变歌曲卡的大小 """
         super().resizeEvent(e)
@@ -318,7 +327,7 @@ class SongInfoCardChute(QWidget):
         self.showPlayBarSignal.emit()
         for songInfoCard in self.songInfoCard_list:
             songInfoCard.isPlayBarVisible = True
-        
+
     def __hidePlayBar(self):
         """ 隐藏播放栏 """
         self.hidePlayBarSignal.emit()

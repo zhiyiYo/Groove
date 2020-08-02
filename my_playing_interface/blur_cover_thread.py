@@ -3,8 +3,7 @@ import sys
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtGui import QPixmap, QImage
 
-sys.path.append('..')
-from Groove.my_functions.gaussian_blur import getBlurPixmap
+from my_functions.gaussian_blur import getBlurPixmap
 
 class BlurCoverThread(QThread):
     """ 磨砂专辑封面线程 """
@@ -18,12 +17,13 @@ class BlurCoverThread(QThread):
 
     def __blurAlbumCover(self):
         """ 得到磨砂后的pixmap """
-        self.blurPixmap = getBlurPixmap(self.__albumCoverPath, 12, 0.8)
+        self.blurPixmap = getBlurPixmap(self.__albumCoverPath, 16, 0.8)
 
     def run(self):
         """ 开始磨砂 """
-        self.__blurAlbumCover()
-        self.blurDone.emit(self.blurPixmap)
+        if self.__albumCoverPath:
+            self.__blurAlbumCover()
+            self.blurDone.emit(self.blurPixmap)
 
     def setTargetCover(self,albumCoverPath):
         """ 设置磨砂的目标图片 """

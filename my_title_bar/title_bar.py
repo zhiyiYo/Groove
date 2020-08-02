@@ -90,14 +90,10 @@ class TitleBar(QWidget):
         if self.win.isMaximized():
             self.win.showNormal()
             # 更新标志位用于更换图标
-            self.maxBt.isMax = False
-            self.maxBt.setIcon(
-                QIcon('resource\\images\\titleBar\\黑色最大化按钮_57_40.png'))
+            self.maxBt.setMaxState(False)
         else:
             self.win.showMaximized()
-            self.maxBt.isMax = True
-            self.maxBt.setIcon(
-                QIcon('resource\\images\\titleBar\\黑色向下还原按钮_57_40.png'))
+            self.maxBt.setMaxState(True)
 
     def isPointInDragRegion(self, pos)->bool:
         """ 检查鼠标按下的点是否属于允许拖动的区域 """

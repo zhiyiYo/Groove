@@ -115,3 +115,8 @@ class MaximizeButton(QPushButton):
         self.isMax = not self.isMax
         self.__updateIcon('normal')
         super().mouseReleaseEvent(e)
+
+    def setMaxState(self, isMax: bool):
+        """ 更新最大化标志位和图标 """
+        self.isMax = isMax
+        self.__updateIcon('normal')

@@ -59,6 +59,9 @@ class SongCard(QWidget):
         self.__setQss()
         # 安装事件过滤器
         self.installEventFilter(self)
+        # 信号连接到槽
+        self.playButton.clicked.connect(
+            lambda: self.clicked.emit(self.itemIndex))
 
     def __setQss(self):
         """ 设置层叠样式 """
@@ -178,9 +181,9 @@ class SongCard(QWidget):
         # if self.songNameCard.songNameWidth + 41 > self.__maxSongNameCardWidth:
         self.songNameCard.resize(self.__maxSongNameCardWidth, 60)
         if self.songerWidth > self.__maxSongerLabelWidth:
-            self.songerLabel.resize(self.__maxSongerLabelWidth, 20)
+            self.songerLabel.setFixedWidth(self.__maxSongerLabelWidth)
         if self.albumWidth > self.__maxAlbumLabelWidth:
-            self.albumLabel.resize(self.__maxAlbumLabelWidth, 20)
+            self.albumLabel.setFixedWidth(self.__maxAlbumLabelWidth)
 
     def __createAnimations(self):
         """ 创建动画 """
@@ -214,6 +217,7 @@ class SongCard(QWidget):
 
     def updateSongCard(self, songInfo):
         """ 更新歌曲卡信息 """
+        self.resize(self.size())
         self.songInfo = songInfo
         self.songNameCard.setSongName(songInfo['songName'])
         self.songerLabel.setText(songInfo['songer'])
@@ -222,10 +226,10 @@ class SongCard(QWidget):
         self.durationLabel.setText(songInfo['duration'])
         # 调整宽度
         self.__getLabelWidth()
-        songerWidth = self.songerWidth if self.songerWidth <= self.__maxSongerLabelWidth else self.__maxSongNameCardWidth
+        songerWidth = self.songerWidth if self.songerWidth <= self.__maxSongerLabelWidth else self.__maxSongerLabelWidth
         albumWidth = self.albumWidth if self.albumWidth <= self.__maxAlbumLabelWidth else self.__maxAlbumLabelWidth
-        self.songerLabel.resize(songerWidth, 20)
-        self.albumLabel.resize(albumWidth, 20)
+        self.songerLabel.setFixedWidth(songerWidth)
+        self.albumLabel.setFixedWidth(albumWidth)
 
 
 if __name__ == '__main__':

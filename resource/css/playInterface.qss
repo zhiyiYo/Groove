@@ -1,0 +1,13 @@
+QWidget#playingInterface {
+    /*background-color: rgb(27, 28, 29);*/
+    background-color: black;
+}
+
+QLabel {
+    background-color: transparent;
+}
+
+QLabel#guideLabel{
+    color:white;
+    font: 25px 'Microsoft YaHei';
+}
