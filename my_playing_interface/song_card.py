@@ -70,7 +70,7 @@ class SongCard(QWidget):
 
     def __getLabelWidth(self):
         """ 计算标签的长度 """
-        fontMetrics = QFontMetrics(QFont('Microsoft YaHei', 10))
+        fontMetrics = QFontMetrics(QFont('Microsoft YaHei', 9))
         self.songerWidth = sum([fontMetrics.width(i)
                                 for i in self.songInfo['songer']])
         self.albumWidth = sum([fontMetrics.width(i)

@@ -105,7 +105,7 @@ class PlayingInterface(QWidget):
         maxWidth = max(self.width(), self.height())
         if self.blurPixmap:
             self.blurBackgroundPic.setPixmap(self.blurPixmap.scaled(
-                maxWidth, maxWidth, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+                maxWidth, maxWidth, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
 
     def startBlurThread(self, albumCoverPath):
         """ 开启磨砂线程 """
@@ -243,11 +243,12 @@ class PlayingInterface(QWidget):
         """ 更新播放列表 """
         self.playlist = playlist.copy()
         self.currentIndex = 0
-        self.songInfoCardChute.setPlaylist(self.playlist)
-        self.createSongCardThread.setPlaylist(self.playlist)
-        self.createSongCardThread.run()
+        if playlist:
+            self.songInfoCardChute.setPlaylist(self.playlist)
+            self.createSongCardThread.setPlaylist(self.playlist)
+            self.createSongCardThread.run()
         # 如果小部件不可见就显示
-        if playlist and not self.playBar.isVisible():
+        if playlist and not self.songListWidget.isVisible():
             self.songInfoCardChute.show()
             self.playBar.show()
             self.songListWidget.show()

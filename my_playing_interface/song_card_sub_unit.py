@@ -100,18 +100,18 @@ class SongNameCard(QWidget):
         # 计算歌名的长度
         self.__getSongNameWidth()
         self.__initLayout()
-        self.__setQss()
+        # self.__setQss()
 
     def __initLayout(self):
         """ 初始化布局 """
         self.checkBox.move(8, 17)
         self.playingLabel.move(43, 22)
-        self.songNameLabel.move(41, 18)
+        self.songNameLabel.move(41, 20)
         self.__moveButtonGroup()
 
     def __getSongNameWidth(self):
         """ 计算歌名的长度 """
-        fontMetrics = QFontMetrics(QFont('Microsoft YaHei', 10))
+        fontMetrics = QFontMetrics(QFont('Microsoft YaHei', 9))
         self.songNameWidth = sum([fontMetrics.width(i) for i in self.songName])
 
     def __setQss(self):

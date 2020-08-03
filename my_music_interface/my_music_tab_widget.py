@@ -9,8 +9,8 @@ from PyQt5.QtWidgets import QApplication, QVBoxLayout, QStackedWidget, QWidget
 from .tab_button import TabButton
 from my_album_tab_interface import AlbumTabInterface
 from my_song_tab_interface import SongTabInterface
-from my_songer_tab_interface import SongerTabInterface
 from my_widget.button_group import ButtonGroup
+# from my_songer_tab_interface import SongerTabInterface
 
 
 class MyMusicTabWidget(QWidget):
@@ -31,12 +31,12 @@ class MyMusicTabWidget(QWidget):
         # 实例化界面
         self.stackedWidget = QStackedWidget(self)
         self.songTab = SongTabInterface(self.target_path_list, self)
-        self.songerTab = SongerTabInterface(self)
+        # self.songerTab = SongerTabInterface(self)
         self.albumTab = AlbumTabInterface(self.target_path_list, self)
         # 实例化按钮和分组
         self.songTabButton = TabButton('歌曲', self, 0)
         self.songerTabButton = TabButton('歌手', self, 1)
-        self.albumTabButton = TabButton('专辑', self, 2)
+        self.albumTabButton = TabButton('专辑', self, 1)
         self.buttonGroup = ButtonGroup()
         self.button_list = [self.songTabButton, self.songerTabButton, self.albumTabButton]
         self.buttonGroup.addButtons(self.button_list)
@@ -49,21 +49,21 @@ class MyMusicTabWidget(QWidget):
         self.setStyleSheet('background:white')
         # 将页面添加到stackedWidget中
         self.stackedWidget.addWidget(self.songTab)
-        self.stackedWidget.addWidget(self.songerTab)
+        # self.stackedWidget.addWidget(self.songerTab)
         self.stackedWidget.addWidget(self.albumTab)
         # 分配ID
         self.songTabButton.setProperty('name', 'songTabButton')
-        self.songerTabButton.setProperty('name', 'songerTabButton')
+        # self.songerTabButton.setProperty('name', 'songerTabButton')
         self.albumTabButton.setProperty('name', 'albumTabButton')
         # 设置当前的界面
         self.songTabButton.isSelected = True
         # 将按钮点击信号连接到槽函数
-        for button in self.button_list:
+        for button in [self.songTabButton,self.albumTabButton]:
             button.clicked.connect(self.buttonClickedEvent)
         # 将随机播放信号连接到槽函数
         slot = lambda: self.randomPlayAllSig.emit()
         self.songTab.randomPlayAllSig.connect(slot)
-        self.songerTab.randomPlayAllSig.connect(slot)
+        # self.songerTab.randomPlayAllSig.connect(slot)
         self.albumTab.randomPlayAllSig.connect(slot)
             
     def initLayout(self):

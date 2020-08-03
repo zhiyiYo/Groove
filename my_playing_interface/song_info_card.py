@@ -139,9 +139,9 @@ class SongInfoCard(QWidget):
             self.songerAlbumLabel.move(186, 101)
             self.songNameLabel.setFixedSize(maxWidth,83)
         else:
-            self.songNameLabel.move(186, 30)
+            self.songNameLabel.move(186, 26)
             self.songerAlbumLabel.move(186, 82)
-            self.songNameLabel.setFixedSize(totalWidth,36)
+            self.songNameLabel.setFixedSize(totalWidth,46)
         
 
 if __name__ == "__main__":

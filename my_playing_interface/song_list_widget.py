@@ -29,7 +29,7 @@ class SongListWidget(ListWidget):
         # 创建右击菜单
         self.menu = Menu(self)
         # 创建歌曲卡
-        self.createSongCards()
+        # self.createSongCards()
         # 初始化
         self.__initWidget()
 
@@ -122,7 +122,8 @@ class SongListWidget(ListWidget):
         # 记录下当前播放列表长度
         playlistLen=len(self.playlist)
         self.playlist.pop(index)
-        self.songCard_list.pop(index)
+        songCard = self.songCard_list.pop(index)
+        songCard.deleteLater()
         self.item_list.pop(index)
         self.takeItem(index)
         # 更新下标
@@ -151,10 +152,10 @@ class SongListWidget(ListWidget):
             self.songCard_list[index].setPlay(True)
 
     def setPlaylist(self, playlist: list):
-        """ 更新播放列表 """
+        """ 直接清空并更新播放列表 """
         self.playlist = playlist
-        self.clear()
         self.item_list.clear()
+        self.clear()
         # 释放内存
         for songCard in self.songCard_list:
             songCard.deleteLater()
@@ -194,7 +195,8 @@ class SongListWidget(ListWidget):
             # 删除多余的item
             for i in range(len(self.playlist) - 1, len(self.playlist) + deltaLen - 1, -1):
                 self.item_list.pop()
-                self.songCard_list.pop()
+                songCard = self.songCard_list.pop()
+                songCard.deleteLater()
                 self.takeItem(i)
         # 更新部分歌曲卡
         self.playlist = songInfoDict_list

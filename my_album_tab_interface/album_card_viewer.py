@@ -4,19 +4,18 @@ import re
 import sys
 
 import pinyin
-from PyQt5.QtCore import QPoint, Qt, QEvent, pyqtSignal
+from PyQt5.QtCore import QEvent, QPoint, Qt, pyqtSignal
 from PyQt5.QtGui import QPainter, QPixmap
 from PyQt5.QtWidgets import (
     QApplication, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QScrollArea,
     QVBoxLayout, QWidget)
 
-sys.path.append('..')
-from Groove.my_widget.my_toolTip import ToolTip
-from Groove.my_widget.my_scrollArea import ScrollArea
-from Groove.my_widget.album_blur_background import AlbumBlurBackground
-from Groove.get_info.get_album_cover import GetAlbumCover
-from Groove.get_info.get_album_info import AlbumInfo
-from Groove.my_album_tab_interface.album_card import AlbumCard
+from get_info.get_album_cover import GetAlbumCover
+from get_info.get_album_info import AlbumInfo
+from my_album_tab_interface.album_card import AlbumCard
+from my_widget.album_blur_background import AlbumBlurBackground
+from my_widget.my_scrollArea import ScrollArea
+from my_widget.my_toolTip import ToolTip
 
 
 class AlbumCardViewer(QWidget):
@@ -29,9 +28,10 @@ class AlbumCardViewer(QWidget):
         # 初始化网格的列数
         self.column_num = 5
         self.total_row_num = 0
+        # 设置专辑为空标志位
+        self.isAlbumEmpty = False
         # 设置当前排序方式
         self.sortMode = '添加时间'
-
         # 先扫描本地音乐的专辑封面
         self.getAlbumCover = GetAlbumCover(target_path_list)
         # 获取专辑信息
@@ -45,35 +45,34 @@ class AlbumCardViewer(QWidget):
         self.albumViewWidget = QWidget()
         self.albumViewWidget.albumBlurBackground = AlbumBlurBackground(
             self.albumViewWidget)
-        # 引用滚动条
-        self.vScrollBar=self.scrollArea.verticalScrollBar()
         # 实例化并引用提示条
         """ self.albumViewWidget.customToolTip = ToolTip(parent=self.albumViewWidget)
         self.customToolTip = self.albumViewWidget.customToolTip """
         # 初始化小部件
-        self.initWidget()
+        self.__initWidget()
         # 创建专辑卡并将其添加到布局中
-        self.createAlbumCards()
+        self.__createAlbumCards()
         self.initLayout()
         self.connectSignalToSlot()
         # 设置样式
-        self.setQss()
+        self.__setQss()
 
-    def initWidget(self):
+    def __initWidget(self):
         """ 初始化小部件 """
-        self.resize(1267, 781 - 23)
+        self.resize(1270, 760)
         # 初始化滚动条
         self.scrollArea.setVerticalScrollBarPolicy(
             Qt.ScrollBarAlwaysOff)
-        self.scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.vScrollBar.setSingleStep(30)
+        self.scrollArea.setHorizontalScrollBarPolicy(
+            Qt.ScrollBarAlwaysOff)
+        # self.vScrollBar.setSingleStep(30)
         # 隐藏磨砂背景
         self.albumViewWidget.albumBlurBackground.hide()
         # 分配ID
         self.setObjectName('father')
         self.albumViewWidget.setObjectName('albumViewWidget')
 
-    def createAlbumCards(self):
+    def __createAlbumCards(self):
         """ 将专辑卡添加到窗口中 """
         self.albumCardDict_list = []
         self.albumCard_list = []
@@ -101,7 +100,11 @@ class AlbumCardViewer(QWidget):
 
     def initLayout(self):
         """ 初始化布局 """
-
+        # 如果没有专辑，就置位专辑为空标志位并直接返回
+        if not self.albumCard_list:
+            self.isAlbumEmpty = True
+            self.hide()
+            return
         # 创建添加时间分组
         self.sortByAddTimeGroup()
         self.__updateGridLayout()
@@ -393,7 +396,7 @@ class AlbumCardViewer(QWidget):
         self.__updateGridLayout()
         self.__addGroupToLayout()
 
-    def setQss(self):
+    def __setQss(self):
         """ 设置层叠样式 """
         with open('resource\\css\\albumCardViewer.qss', encoding='utf-8') as f:
             qss = f.read()

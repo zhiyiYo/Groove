@@ -243,39 +243,41 @@ class SongInfoCardChute(QWidget):
         """ 更新当前下标并更新歌曲信息卡 """
         # 移位完成后不发送信号
         self.needToEmitSignal = False
-        # 新的下标大于当前下标时，歌曲卡左移
-        if index > self.currentIndex:
-            self.currentIndex = index - 1
-            self.nextSongInfoCard.updateCard(
-                self.playlist[index])
-            self.cycleLeftShift()
-        # 新的下标小于当前下标时，歌曲卡右移
-        elif index < self.currentIndex:
-            self.currentIndex = index + 1
-            self.lastSongInfoCard.updateCard(
-                self.playlist[index])
-            self.cycleRightShift()
-        elif index == self.currentIndex:
-            self.updateCards()
-            self.needToEmitSignal=True
+        if self.playlist:
+            # 新的下标大于当前下标时，歌曲卡左移
+            if index > self.currentIndex:
+                self.currentIndex = index - 1
+                self.nextSongInfoCard.updateCard(
+                    self.playlist[index])
+                self.cycleLeftShift()
+            # 新的下标小于当前下标时，歌曲卡右移
+            elif index < self.currentIndex:
+                self.currentIndex = index + 1
+                self.lastSongInfoCard.updateCard(
+                    self.playlist[index])
+                self.cycleRightShift()
+            elif index == self.currentIndex:
+                self.updateCards()
+                self.needToEmitSignal=True
 
     def setPlaylist(self, playlist):
         """ 更新播放列表 """
         self.playlist = playlist
         self.currentIndex = 0
-        self.curSongInfoCard.updateCard(self.playlist[0])
-        self.currentIndexChanged[str].emit(self.curSongInfoCard.albumCoverPath)
-        self.lastSongInfoCard.hide()
-        if self.playlist:
-            self.curSongInfoCard.show()
-            if len(self.playlist) == 1:
-                self.nextSongInfoCard.hide()
+        if playlist:
+            self.curSongInfoCard.updateCard(self.playlist[0])
+            self.currentIndexChanged[str].emit(self.curSongInfoCard.albumCoverPath)
+            self.lastSongInfoCard.hide()
+            if self.playlist:
+                self.curSongInfoCard.show()
+                if len(self.playlist) == 1:
+                    self.nextSongInfoCard.hide()
+                else:
+                    self.nextSongInfoCard.show()
+                    self.nextSongInfoCard.updateCard(self.playlist[1])
             else:
-                self.nextSongInfoCard.show()
-                self.nextSongInfoCard.updateCard(self.playlist[1])
-        else:
-            self.curSongInfoCard.hide()
-            self.nextSongInfoCard.hide()
+                self.curSongInfoCard.hide()
+                self.nextSongInfoCard.hide()
 
     def resizeEvent(self, e):
         """ 改变窗口大小时也改变歌曲卡的大小 """

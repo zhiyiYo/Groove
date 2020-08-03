@@ -193,7 +193,7 @@ class MainWindow(QWidget):
 
     def closeEvent(self, e: QCloseEvent):
         """ 关闭窗口前更新json文件 """
-        if self.playlist.currentIndex()>=0:
+        if self.playlist.currentIndex() >= 0:
             self.settingInterface.config['last-song'] = self.playlist.playlist[
                 self.playlist.currentIndex()]
         else:
@@ -290,6 +290,8 @@ class MainWindow(QWidget):
         self.playlist.switchSongSignal.connect(self.updateWindow)
         self.playlist.currentIndexChanged.connect(
             self.playingInterface.setCurrentIndex)
+        self.playlist.currentIndexChanged.connect(
+            self.songCardListWidget.setPlay)
         # todo:将正在播放界面信号连接到槽函数
         self.playingInterface.currentIndexChanged.connect(
             self.playingInterfaceCurrrentIndexChangedSlot)
@@ -315,7 +317,8 @@ class MainWindow(QWidget):
             self.switchLoopMode)
         self.playingInterface.createSongCardThread.createDone.connect(
             lambda: self.playingInterface.setCurrentIndex(self.playlist.currentIndex()))
-        self.playingInterface.removeMediaSignal.connect(self.playlist.removeMedia)
+        self.playingInterface.removeMediaSignal.connect(
+            self.playlist.removeMedia)
         self.playingInterface.randomPlayAllSignal.connect(self.disorderPlayAll)
         # todo:歌曲卡的信号连接到槽函数
         self.songCardListWidget.doubleClicked.connect(
@@ -341,7 +344,7 @@ class MainWindow(QWidget):
     def referenceWidgets(self):
         """ 引用小部件 """
         self.songCardListWidget = self.myMusicInterface.myMusicTabWidget.songTab.songCardListWidget
-        self.songerCardViewer = self.myMusicInterface.myMusicTabWidget.songerTab.songerHeadPortraitViewer
+        # self.songerCardViewer = self.myMusicInterface.myMusicTabWidget.songerTab.songerHeadPortraitViewer
         self.albumCardViewer = self.myMusicInterface.myMusicTabWidget.albumTab.albumCardViewer
 
     def initPlaylist(self):
@@ -413,7 +416,8 @@ class MainWindow(QWidget):
 
     def songCardDoubleClickedSlot(self):
         """ 播放选中的歌曲卡 """
-        songInfo_dict = self.songCardListWidget.currentSongCard.songInfo_dict
+        songInfo_dict = self.songCardListWidget.songCard_list[self.songCardListWidget.currentRow(
+        )].songInfo
         # 更新歌曲信息卡
         self.switchCurrentSong(songInfo_dict)
 
@@ -425,7 +429,7 @@ class MainWindow(QWidget):
         """ 下一首播放动作触发对应的槽函数 """
         # 直接更新正在播放界面的播放列表
         newPlaylist = self.playlist.playlist[:self.playlist.currentIndex(
-            ) + 1] + [songInfo_dict] + self.playlist.playlist[self.playlist.currentIndex() + 1 :]
+        ) + 1] + [songInfo_dict] + self.playlist.playlist[self.playlist.currentIndex() + 1:]
         self.playingInterface.setPlaylist(newPlaylist)
         self.playingInterface.setCurrentIndex(self.playlist.currentIndex())
         self.playlist.insertMedia(
@@ -493,7 +497,7 @@ class MainWindow(QWidget):
     def albumCardNextPlaySlot(self, songInfoDict_list):
         """ 下一首播放动作触发对应的槽函数 """
         newPlaylist = self.playlist.playlist[:self.playlist.currentIndex(
-        ) + 1] + songInfoDict_list + self.playlist.playlist[self.playlist.currentIndex() + 1 :]
+        ) + 1] + songInfoDict_list + self.playlist.playlist[self.playlist.currentIndex() + 1:]
         self.playingInterface.setPlaylist(newPlaylist)
         self.playingInterface.setCurrentIndex(self.playlist.currentIndex())
         self.playlist.insertMedias(
@@ -512,9 +516,11 @@ class MainWindow(QWidget):
         """ 播放歌曲并改变按钮样式 """
         self.player.play()
         self.setPlayButtonState(True)
-        if not self.playBar.songInfoCard.isVisible():
-            self.playBar.songInfoCard.show()
-            self.playBar.songInfoCard.updateSongInfoCard(self.playlist.playlist[0])
+        if self.playlist.playlist:
+            if not self.playBar.songInfoCard.isVisible():
+                self.playBar.songInfoCard.show()
+                self.playBar.songInfoCard.updateSongInfoCard(
+                    self.playlist.playlist[0])
 
     def initPlayBar(self):
         """ 从配置文件中读取配置数据来初始化播放栏 """
@@ -522,7 +528,6 @@ class MainWindow(QWidget):
         volume = self.settingInterface.config.get('volume', 20)
         self.playBar.volumeSlider.setValue(volume)
         self.playingInterface.playBar.volumeSlider.setValue(volume)
-        
 
     def showPlayingInterface(self):
         """ 显示正在播放界面 """
@@ -535,6 +540,7 @@ class MainWindow(QWidget):
         self.playBar.show()
         self.totalStackWidget.setCurrentIndex(0)
         self.titleBar.setWhiteIcon(False)
+        self.playingInterface.playBar.hide()
 
     def setQss(self):
         """ 设置层叠样式 """

@@ -17,6 +17,11 @@ QLabel#sortModeLabel {
     font: 16px 'Microsoft YaHei';
 }
 
+QLabel#guideLabel {
+    color: black;
+    font: 25px 'Microsoft YaHei';
+}
+
 /*设置按钮的样式*/
 QPushButton {
     background-color: transparent;

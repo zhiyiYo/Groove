@@ -9,7 +9,7 @@ QLabel{
 }
 
 QLabel#songNameLabel{
-    font-size: 10pt;
+    font-size: 9pt;
 }
 
 QLabel[state='leave-notPlay']{

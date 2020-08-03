@@ -13,6 +13,7 @@ from my_widget.my_scroll_bar import ScrollBar
 
 class MyMusicInterface(QWidget):
     """ 创建一个本地音乐分组界面 """
+
     def __init__(self, target_path_list: list, parent=None):
         super().__init__(parent)
 
@@ -21,18 +22,16 @@ class MyMusicInterface(QWidget):
         # 引用三个视图的滚动条
         self.songCardList_vScrollBar = self.myMusicTabWidget.songTab.songCardListWidget.verticalScrollBar(
         )
-        self.songerViewer_vScrollBar = self.myMusicTabWidget.songerTab.songerHeadPortraitViewer.scrollArea.verticalScrollBar(
-        )
+        """ self.songerViewer_vScrollBar = self.myMusicTabWidget.songerTab.songerHeadPortraitViewer.scrollArea.verticalScrollBar(
+        ) """
         self.albumViewer_vScrollBar = self.myMusicTabWidget.albumTab.albumCardViewer.scrollArea.verticalScrollBar(
         )
         # 实例化一个标签和三个竖直滚动条
         self.myMusicLabel = QLabel(self)
         self.song_scrollBar = ScrollBar(self.songCardList_vScrollBar, self)
-        self.songer_scrollBar = ScrollBar(self.songerViewer_vScrollBar, self)
+        # self.songer_scrollBar = ScrollBar(self.songerViewer_vScrollBar, self)
         self.album_scrollBar = ScrollBar(self.albumViewer_vScrollBar, self)
-        self.scrollBar_list = [
-            self.song_scrollBar, self.songer_scrollBar, self.album_scrollBar
-        ]
+        self.scrollBar_list = [self.song_scrollBar, self.album_scrollBar]
         # 初始化
         self.initLayout()
         self.initWidget()
@@ -66,7 +65,7 @@ class MyMusicInterface(QWidget):
         self.adjustScrollBarHeight()
 
         # 先隐藏歌手视图的滚动条
-        self.songer_scrollBar.hide()
+        # self.songer_scrollBar.hide()
         self.album_scrollBar.hide()
 
         # 标签窗口改变时也改变显示的滚动条
@@ -77,13 +76,13 @@ class MyMusicInterface(QWidget):
         self.setObjectName('musicGroupInterface')
         self.myMusicLabel.setObjectName('myMusicLabel')
         self.song_scrollBar.setObjectName('songScrollBar')
-        self.songer_scrollBar.setObjectName('songerScrollBar')
+        # self.songer_scrollBar.setObjectName('songerScrollBar')
         self.album_scrollBar.setObjectName('albumScrollBar')
 
     def adjustScrollBarHeight(self):
         """ 调整滚动条高度 """
         self.song_scrollBar.adjustSrollBarHeight()
-        self.songer_scrollBar.adjustSrollBarHeight()
+        # self.songer_scrollBar.adjustSrollBarHeight()
         self.album_scrollBar.adjustSrollBarHeight()
 
     def setQss(self):
@@ -106,15 +105,11 @@ class MyMusicInterface(QWidget):
         """ 当前标签窗口改变时更改滚动条的绑定对象 """
         if index == 0:
             self.song_scrollBar.show()
-            self.songer_scrollBar.hide()
+            # self.songer_scrollBar.hide()
             self.album_scrollBar.hide()
         elif index == 1:
             self.song_scrollBar.hide()
-            self.songer_scrollBar.show()
-            self.album_scrollBar.hide()
-        elif index == 2:
-            self.song_scrollBar.hide()
-            self.songer_scrollBar.hide()
+            # self.songer_scrollBar.hide()
             self.album_scrollBar.show()
 
 

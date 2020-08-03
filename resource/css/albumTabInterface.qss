@@ -30,6 +30,13 @@ QLabel#sortModeLabel {
     font: 16px 'Microsoft YaHei';
 }
 
+QLabel#guideLabel{
+    color: black;
+    font: 25px 'Microsoft YaHei';
+    height: 26px;
+    width: 500px;
+}
+
 QMenu#sortModeMenu {
     font-size: 17px;
     width: 158px;
