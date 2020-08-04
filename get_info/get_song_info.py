@@ -35,6 +35,9 @@ class SongInfo():
 
         # 获取符合匹配音频文件名和路径列表
         self.split_song_list(filePath_list)
+        # 如果数据文件夹不存在就创建一个
+        if not os.path.exists('Data'):
+            os.mkdir('Data')
         # 从json文件读取旧信息
         if os.path.exists('Data\\songInfo.json'):
             with open('Data\\songInfo.json', 'r', encoding='utf-8') as f:

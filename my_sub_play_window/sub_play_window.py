@@ -1,18 +1,19 @@
 import sys
 
+from PyQt5.QtCore import (
+    QAbstractAnimation, QEasingCurve, QPropertyAnimation, Qt, QTimer,
+    pyqtSignal)
+from PyQt5.QtGui import QBrush, QFont, QFontMetrics, QPainter, QPixmap
+from PyQt5.QtWidgets import QApplication, QLabel, QWidget
 from system_hotkey import SystemHotkey
 
-from PyQt5.QtCore import QEasingCurve, QPropertyAnimation, Qt, QTimer,QAbstractAnimation,pyqtSignal
-from PyQt5.QtGui import QBrush, QPainter,QPixmap,QFontMetrics,QFont
-from PyQt5.QtWidgets import QApplication, QLabel, QWidget
+from my_functions.get_album_cover_path import getAlbumCoverPath
+from my_functions.is_not_leave import isNotLeave
+from my_widget.my_button import ThreeStateButton
+from my_widget.my_slider import Slider
+
 from .play_button import PlayButton
 from .system_volume import SystemVolume
-
-sys.path.append('..')
-from Groove.my_functions.is_not_leave import isNotLeave
-from Groove.my_functions.get_album_cover_path import getAlbumCoverPath
-from Groove.my_widget.my_button import ThreeStateButton
-from Groove.my_widget.my_slider import Slider
 
 
 class SubPlayWindow(QWidget):

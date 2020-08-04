@@ -125,26 +125,43 @@ class AlbumCardViewer(QWidget):
         self.total_row_num = 0
         self.vertical_spacing_count = len(self.currentGroupDict_list)-1
         for currentGroup_dict in self.currentGroupDict_list:
-            columns = range(self.column_num)
-            rows = range(
-                (len(currentGroup_dict['album_list']) - 1) // self.column_num + 1)
-            
-            self.current_row_num = max(rows) + 1
             # 引用当前分组的网格布局
-            gridLayout = currentGroup_dict['gridLayout']
-
+            gridLayout = currentGroup_dict['gridLayout']  # type:QGridLayout
+            gridIndex = self.currentGroupDict_list.index(currentGroup_dict)
+            columns = range(self.column_num)
+            if gridIndex!=len(self.currentGroupDict_list)-1:
+                rows = range(
+                    (len(currentGroup_dict['album_list']) - 1) // self.column_num + 1)
+            else:
+                # 补上底部播放栏所占的位置
+                rows = range(
+                    (len(currentGroup_dict['album_list']) - 1) // self.column_num + 2)
+            self.current_row_num = max(rows) + 1 
             # 设置网格大小
             for column in columns:
                 gridLayout.setColumnMinimumWidth(
                     column, 221)
             for row in rows:
-                gridLayout.setRowMinimumHeight(
-                    row, 292)
+                if row!=max(rows):
+                    gridLayout.setRowMinimumHeight(
+                        row, 292)
+                else:
+                    if gridIndex != len(self.currentGroupDict_list) - 1:
+                        gridLayout.setRowMinimumHeight(
+                            row, 292)
+                    else:
+                        gridLayout.setRowMinimumHeight(
+                            row, 140)    
             for index, albumCard in enumerate(currentGroup_dict['album_list']):
                 x = index // self.column_num
-                y = index-self.column_num*x
-                gridLayout.addWidget(
-                    albumCard, x, y, 1, 1)
+                y = index - self.column_num * x
+                if x != max(rows) - 1:
+                    gridLayout.addWidget(albumCard, x, y, 1, 1)
+                else:
+                    if gridIndex == len(self.currentGroupDict_list) - 1:
+                        gridLayout.addWidget(albumCard, x, y, 2, 1,Qt.AlignTop)
+                    else:
+                        gridLayout.addWidget(albumCard, x, y, 1, 1)
 
             # 获取当前的总行数
             self.total_row_num += self.current_row_num
@@ -160,10 +177,9 @@ class AlbumCardViewer(QWidget):
             # 如果现在的总列数小于网格的总列数，就将多出来的列的宽度的最小值设置为0
             for i in range(gridLayout.columnCount() - 1, self.column_num - 1, -1):
                 gridLayout.setColumnMinimumWidth(i, 0)
-
+                
         self.albumViewWidget.setFixedWidth(221 * self.column_num)
         if self.sortMode == '添加时间':
-            # 还需要补上底部标题栏的位置
             self.albumViewWidget.setFixedHeight(303*self.total_row_num)
         else:
             # 补上分组标题所占的高度
@@ -172,6 +188,7 @@ class AlbumCardViewer(QWidget):
 
     def resizeEvent(self, event):
         """ 根据宽度调整网格的列数 """
+        super().resizeEvent(event)
         # 如果第一次超过1337就调整网格的列数
         if self.width() >= 1335 and self.column_num != 6:
             self.__updateColumnNum(6)

@@ -32,10 +32,10 @@ class SongCard(QWidget):
         self.isDoubleClicked = False
         self.__currentState = 'notSelected-leave'
         # 记录下每个小部件所占的最大宽度
-        self.__maxSongNameCardWidth = 0
-        self.__maxSongerLabelWidth = 0
-        self.__maxAlbumLabelWidth = 0
-        self.__maxTconLabelWidth = 0
+        self.__maxSongNameCardWidth = 326
+        self.__maxSongerLabelWidth = 191
+        self.__maxAlbumLabelWidth = 191
+        self.__maxTconLabelWidth = 178
         # 记录songCard对应的item的下标
         self.itemIndex = None
         # 创建小部件
@@ -58,6 +58,7 @@ class SongCard(QWidget):
     def __initWidget(self):
         """ 初始化小部件 """
         self.__getLabelWidth()
+        self.resize(1154, 60)
         self.resize(1154, 60)
         self.setFixedHeight(60)
         self.albumLabel.setCursor(Qt.PointingHandCursor)
@@ -144,10 +145,16 @@ class SongCard(QWidget):
         self.songNameCard.resize(self.__maxSongNameCardWidth, 60)
         if self.songerWidth > self.__maxSongerLabelWidth:
             self.songerLabel.setFixedWidth(self.__maxSongerLabelWidth)
+        else:
+            self.songerLabel.setFixedWidth(self.songerWidth)
         if self.albumWidth > self.__maxAlbumLabelWidth:
             self.albumLabel.setFixedWidth(self.__maxAlbumLabelWidth)
+        else:
+            self.albumLabel.setFixedWidth(self.albumWidth)
         if self.tconWidth > self.__maxTconLabelWidth:
             self.tconLabel.setFixedWidth(self.__maxTconLabelWidth)
+        else:
+            self.tconLabel.setFixedWidth(self.tconWidth)
 
     def __createAnimations(self):
         """ 创建动画 """
@@ -192,15 +199,15 @@ class SongCard(QWidget):
     def setPlay(self, isPlay):
         """ 设置播放状态并更新样式 """
         self.isPlaying = isPlay
-        self.songNameCard.setPlay(isPlay)
+        self.isSelected = isPlay
         if isPlay:
             self.isSelected = True
-            self.setCheckBoxBtLabelState('notSelected-play')
             self.setCheckBoxBtLabelState('selected')
-            self.setWidgetState('selected-enter')
+            self.setWidgetState('selected-leave')
         else:
             self.setCheckBoxBtLabelState('notSelected-notPlay')
             self.setWidgetState('notSelected-leave')
+        self.songNameCard.setPlay(isPlay)
         self.setStyle(QApplication.style())
 
     def eventFilter(self, obj, e: QEvent):
@@ -259,13 +266,6 @@ class SongCard(QWidget):
             if not self.isPlaying:
                 # 发送点击信号
                 self.doubleClicked.emit(self.itemIndex)
-                # self.aniGroup.finished.connect(self.aniFinishedSlot)
-
-    def aniFinishedSlot(self):
-        """ 动画完成时更新样式 """
-        self.setPlay(True)
-        # 动画完成后需要断开连接，为下一次样式更新做准备
-        self.aniGroup.disconnect()
 
     def setSelected(self, isSelected:bool):
         """ 设置选中状态 """

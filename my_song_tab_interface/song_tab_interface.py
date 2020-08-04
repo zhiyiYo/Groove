@@ -99,7 +99,7 @@ class SongTabInterface(QWidget):
             self.songCardListWidget.setSortMode('A到Z')
         else:
             self.sortModeButton.setText('歌手')
-            self.songCardListWidget.setSortMode('A到Z')
+            self.songCardListWidget.setSortMode('歌手')
 
     def showSortModeMenu(self):
         """ 显示排序方式菜单 """

@@ -30,7 +30,10 @@ class SongCardListWidget(ListWidget):
         self.songInfo = SongInfo(self.target_path_list)
         self.currentIndex = 0
         self.previousIndex = 0
-        self.playingIndex = 0       # 正在播放的歌曲卡下标
+        self.playingIndex = 0  # 正在播放的歌曲卡下标
+        self.playingSongInfo = None
+        if self.songInfo.songInfo_list:
+            self.playingSongInfo = self.songInfo.songInfo_list[0]
         self.sortMode = '添加时间'
         self.resize(1267, 758)
         # 初始化列表
@@ -46,6 +49,7 @@ class SongCardListWidget(ListWidget):
     def __initWidget(self):
         """ 初始化小部件 """
         # self.setDragEnabled(True)
+        self.__adjustHeight()
         self.setAlternatingRowColors(True)
         # self.setSelectionMode(QListWidget.ExtendedSelection)
         # 将滚动模式改为以像素计算
@@ -67,7 +71,7 @@ class SongCardListWidget(ListWidget):
         # 对歌曲进行排序
         self.songInfo.sortByCreateTime()
         # 引用排序完的字典
-        self.songInfo_list = self.songInfo.songInfo_list
+        # self.songInfo_list = self.songInfo.songInfo_list
         for i in range(len(self.songInfo.songInfo_list)):
             # 添加空项目
             songInfo_dict = self.songInfo.songInfo_list[i]
@@ -96,7 +100,8 @@ class SongCardListWidget(ListWidget):
 
     def setCurrentIndex(self, index):
         """ 设置当前下标 """
-        self.songCard_list[self.currentIndex].setSelected(False)
+        if index != self.currentIndex:
+            self.songCard_list[self.currentIndex].setSelected(False)
         self.currentIndex = index
         self.songCard_list[index].setSelected(True)
 
@@ -120,6 +125,8 @@ class SongCardListWidget(ListWidget):
             self.currentIndex -= 1
         # 发送信号
         self.removeItemSignal.emit(index)
+        # 如果歌曲卡太少就调整高度
+        self.__adjustHeight()
 
     def __emitCurrentChangedSignal(self, index):
         """ 发送当前播放的歌曲卡变化信号，同时更新样式和歌曲信息卡 """
@@ -131,9 +138,11 @@ class SongCardListWidget(ListWidget):
         """ 设置播放状态 """
         if self.songCard_list:
             self.songCard_list[self.playingIndex].setPlay(False)
-            self.currentIndex = index
-            self.playingIndex = index   # 更新正在播放的下标
+            self.songCard_list[self.currentIndex].setSelected(False)
             self.songCard_list[index].setPlay(True)
+            self.currentIndex = index
+            self.playingIndex = index  # 更新正在播放的下标
+            self.playingSongInfo = self.songInfo.songInfo_list[index]
         
     def showPropertyPanel(self):
         """ 显示属性面板 """
@@ -180,6 +189,8 @@ class SongCardListWidget(ListWidget):
         elif self.sortMode == '歌手':
             self.songInfo.sortBySonger()
         self.updateSongCards(self.songInfo.songInfo_list)
+        if self.playingSongInfo in self.songInfo.songInfo_list:
+            self.setPlay(self.songInfo.songInfo_list.index(self.playingSongInfo))
 
     def updateSongCards(self, songInfoDict_list: list):
         """ 更新所有歌曲卡的信息 """
@@ -199,6 +210,12 @@ class SongCardListWidget(ListWidget):
             self.showPropertyPanel)
         self.contextMenu.deleteAct.triggered.connect(
             lambda: self.__removeSongCard(self.currentRow()))
+
+    def __adjustHeight(self):
+        """ 如果歌曲卡数量太少就调整自己的高度 """
+        if self.parent():
+            if len(self.songCard_list) * 60 < self.parent().height() - 60:
+                self.resize(self.width(), len(self.songCard_list) * 60)
     
 
 if __name__ == '__main__':

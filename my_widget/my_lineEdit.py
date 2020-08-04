@@ -1,12 +1,13 @@
 import sys
+
 from PyQt5.QtCore import QEvent, QSize, Qt
 from PyQt5.QtGui import QContextMenuEvent, QFont, QIcon
-from PyQt5.QtWidgets import QAction, QHBoxLayout, QLineEdit, QToolButton,QApplication   
+from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLineEdit,
+                             QToolButton)
 
-sys.path.append('..')
-from Groove.my_widget.my_menu import Menu,LineEditMenu
-from Groove.my_widget.my_button import ThreeStateButton
-from Groove.my_functions.is_not_leave import isNotLeave
+from my_functions.is_not_leave import isNotLeave
+from my_widget.my_button import ThreeStateButton
+from my_widget.my_menu import LineEditMenu, Menu
 
 
 class LineEdit(QLineEdit):

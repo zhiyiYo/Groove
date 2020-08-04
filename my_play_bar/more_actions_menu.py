@@ -1,10 +1,10 @@
 import sys
 
-from PyQt5.QtCore import QEasingCurve, QEvent, Qt, QPropertyAnimation, QRect
+from PyQt5.QtCore import QEasingCurve, QEvent, QPropertyAnimation, QRect, Qt
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction
-sys.path.append('..')
-from Groove.my_widget.my_menu import Menu
+
+from my_widget.my_menu import Menu
 
 
 class MoreActionsMenu(Menu):

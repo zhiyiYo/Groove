@@ -2,7 +2,7 @@
 import os
 import re
 import imghdr
-from shutil import copyfile,rmtree
+from shutil import copyfile, rmtree
 
 from mutagen import File
 from mutagen.flac import Picture
@@ -17,7 +17,7 @@ class GetAlbumCover():
         """ 初始化类的属性 """
         self.cwd = os.getcwd()
         self.album_cover_folder = os.path.join(
-            self.cwd, r'resource\Album Cover')
+            self.cwd, r'resource\Album_Cover')
         self.target_path_list = target_path_list
         # 实例化一个用于获取歌曲信息的类
         self.songInfo = SongInfo(target_path_list)
@@ -50,7 +50,7 @@ class GetAlbumCover():
                 sub_album_cover_folder, info_dict['album'][-1] + '.png')
             if not os.path.exists(sub_album_cover_folder):
                 os.mkdir(sub_album_cover_folder)
-                copyfile('resource\\Album Cover\\未知专辑封面_200_200.png', pic_path)
+                copyfile('resource\\Album_Cover\\未知专辑封面_200_200.png', pic_path)
 
     def getID3AlbumCover(self, info_dict, id_card):
         """ 获取mp3文件的封面并写入文件夹 """
@@ -66,7 +66,7 @@ class GetAlbumCover():
                 os.mkdir(sub_album_cover_folder)
                 # 提取封面数据
                 pic_data = id_card[Match.group()].data
-                self.__savePic(sub_album_cover_folder,info_dict,pic_data)
+                self.__savePic(sub_album_cover_folder, info_dict, pic_data)
                 break
 
     def getFlacAlbumCover(self, info_dict, id_card):
@@ -94,7 +94,7 @@ class GetAlbumCover():
             pic_data = bytes(id_card['covr'][0])
             self.__savePic(sub_album_cover_folder, info_dict, pic_data)
 
-    def __isPicExist(self,info_dict):
+    def __isPicExist(self, info_dict):
         """ 检测封面是否存在 """
         sub_album_cover_folder = os.path.join(
             self.album_cover_folder, info_dict['album'][-1])
@@ -115,8 +115,8 @@ class GetAlbumCover():
                     isPicExist = False
         else:
             isPicExist = False
-        return isPicExist,sub_album_cover_folder
-                
+        return isPicExist, sub_album_cover_folder
+
     def __getPicSuffix(self, pic_data):
         """ 获取二进制数据的后缀名 """
         try:
@@ -127,7 +127,7 @@ class GetAlbumCover():
             suffix = '.jpg'
         return suffix
 
-    def __savePic(self, sub_album_cover_folder,info_dict, pic_data):
+    def __savePic(self, sub_album_cover_folder, info_dict, pic_data):
         """ 储存提取到的专辑封面 """
         # 获取后缀名
         suffix = self.__getPicSuffix(pic_data)
@@ -137,6 +137,7 @@ class GetAlbumCover():
         # 写入封面
         with open(pic_path, 'wb') as f:
             f.write(pic_data)
+
 
 if __name__ == "__main__":
     getAlbumCover = GetAlbumCover(['D:\\KuGou'])

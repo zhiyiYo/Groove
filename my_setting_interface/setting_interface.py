@@ -1,17 +1,16 @@
 import sys
-from json import load,dump
+from json import dump, load
 
-from PyQt5.QtCore import Qt,pyqtSignal
-from PyQt5.QtWidgets import (QApplication, QCheckBox, QLabel, QRadioButton,
-                             QWidget,QScrollArea,QHBoxLayout)
-sys.path.append('..')
-from Groove.my_widget.my_label import ClickableLabel
-from Groove.my_widget.my_scroll_bar import ScrollBar
-from Groove.my_setting_interface.select_song_folder_panel import SelectSongFolderPanel
-from Groove.my_setting_interface.get_meta_data_thread import GetMetaDataThread
-from Groove.my_setting_interface.state_tool_tip import StateToolTip
-from Groove.get_info.get_song_info import SongInfo
+from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtWidgets import (QApplication, QCheckBox, QHBoxLayout, QLabel,
+                             QRadioButton, QScrollArea, QWidget)
 
+from get_info.get_song_info import SongInfo
+from my_setting_interface.get_meta_data_thread import GetMetaDataThread
+from my_setting_interface.select_song_folder_panel import SelectSongFolderPanel
+from my_setting_interface.state_tool_tip import StateToolTip
+from my_widget.my_label import ClickableLabel
+from my_widget.my_scroll_bar import ScrollBar
 
 
 class SettingInterface(QWidget):
@@ -175,7 +174,7 @@ class SettingInterface(QWidget):
 
     def readConfig(self):
         """ 读入配置文件数据 """
-        with open('Data\\config.json', encoding='utf-8') as f:
+        with open('config\\config.json', encoding='utf-8') as f:
             self.config = load(f)
 
     def writeConfig(self):
@@ -183,7 +182,7 @@ class SettingInterface(QWidget):
         # 重置下标
         self.config['current-index'] = 0
         self.config['pre-index'] = 1
-        with open('Data\\config.json','w', encoding='utf-8') as f:
+        with open('config\\config.json','w', encoding='utf-8') as f:
             dump(self.config, f)
 
     def closeEvent(self, e):

@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
                              QScrollBar, QVBoxLayout, QWidget)
 
 from .my_music_tab_widget import MyMusicTabWidget
-from my_widget.my_scroll_bar import ScrollBar
+from .scroll_bar import ScrollBar
 
 
 class MyMusicInterface(QWidget):
@@ -54,24 +54,21 @@ class MyMusicInterface(QWidget):
             desktop = QApplication.desktop()
             self.move(int(desktop.width() / 2 - self.width() / 2),
                       int(desktop.height() / 2 - self.height() / 2) - 20)
-
         # 设置标签上的字
         self.myMusicLabel.setText('我的音乐')
         # 隐藏列表视图的滚动条
         self.myMusicTabWidget.songTab.songCardListWidget.setVerticalScrollBarPolicy(
             Qt.ScrollBarAlwaysOff)
-
         # 设置滚动条高度
         self.adjustScrollBarHeight()
-
         # 先隐藏歌手视图的滚动条
         # self.songer_scrollBar.hide()
         self.album_scrollBar.hide()
-
         # 标签窗口改变时也改变显示的滚动条
         self.myMusicTabWidget.stackedWidget.currentChanged.connect(
             self.changeTabEvent)
-
+        self.myMusicTabWidget.albumTab.sortModeChanged.connect(
+            self.album_scrollBar.associateScrollBar)
         # 分配ID
         self.setObjectName('musicGroupInterface')
         self.myMusicLabel.setObjectName('myMusicLabel')
@@ -92,10 +89,8 @@ class MyMusicInterface(QWidget):
             qss = f.read()
             self.setStyleSheet(qss)
 
-    def resizeEvent(self, e: QResizeEvent):
+    def resizeEvent(self, e):
         """ 当窗口大小发生改变时隐藏小部件 """
-        self.myMusicTabWidget.songTab.songCardListWidget.setLineWidth(
-            self.width() - 33)
         self.adjustScrollBarHeight()
         self.myMusicTabWidget.resize(self.width() - 37, self.height() - 136)
         for scrollBar in self.scrollBar_list:

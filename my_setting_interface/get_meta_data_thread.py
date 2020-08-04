@@ -7,7 +7,7 @@ from mutagen.flac import FLAC, Picture
 from mutagen.id3 import TALB, TCON, TDRC, TIT2, TPE1, TPE2
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
 
-from ..crawler import KuGouCrawler, QQMusicCrawler
+from crawler import KuGouCrawler, QQMusicCrawler
 
 
 class GetMetaDataThread(QThread):

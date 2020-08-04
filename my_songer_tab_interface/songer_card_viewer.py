@@ -1,17 +1,18 @@
 import json
-import sys
-import re
 import os
+import re
+import sys
+
 import pinyin
 from PyQt5.QtCore import QPoint, Qt
 from PyQt5.QtGui import QBitmap, QPainter, QPixmap
 from PyQt5.QtWidgets import (
     QApplication, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QScrollArea,
     QScrollBar, QVBoxLayout, QWidget)
-from .songer_card import SongerCard
 
-sys.path.append('..')
-from Groove.my_widget.my_scrollArea import ScrollArea
+from my_widget.my_scrollArea import ScrollArea
+
+from .songer_card import SongerCard
 
 
 class SongerCardViewer(QWidget):

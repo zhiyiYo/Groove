@@ -1,13 +1,13 @@
 import sys
 
-from PyQt5.QtCore import  Qt, QEvent,QSize,pyqtSignal
+from PyQt5.QtCore import QEvent, QSize, Qt, pyqtSignal
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import (QApplication, QHBoxLayout, QLabel, QVBoxLayout, QPushButton,
-                             QWidget)
-from .songer_card_viewer import SongerCardViewer
+from PyQt5.QtWidgets import (QApplication, QHBoxLayout, QLabel, QPushButton,
+                             QVBoxLayout, QWidget)
 
-sys.path.append('..')
-from Groove.my_widget.my_button import RandomPlayButton
+from my_widget.my_button import RandomPlayButton
+
+from .songer_card_viewer import SongerCardViewer
 
 
 class SongerTabInterface(QWidget):

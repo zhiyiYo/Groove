@@ -231,7 +231,8 @@ class PlayingInterface(QWidget):
 
     def setCurrentIndex(self, index):
         """ 更新播放列表下标 """
-        if self.currentIndex != index:
+        # 下标大于等于0时才更新
+        if self.currentIndex != index and index > -1:
             # 在播放列表的最后一首歌被移除时不更新样式
             if index >= len(self.playlist):
                 return

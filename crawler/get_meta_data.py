@@ -19,6 +19,8 @@ class GetMetaData():
         self.targetPath_list = targetPath_list
         # 存放专辑封面的文件夹
         self.albumCoverFolder = r'resource\crawl_albums'
+        if not os.path.exists(self.albumCoverFolder):
+            os.mkdir(self.albumCoverFolder)
         # 拆分音频文件路径
         self.splitText()
 

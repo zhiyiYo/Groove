@@ -6,19 +6,21 @@ from PyQt5.QtCore import Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QFont, QFontMetrics, QPainter, QPixmap
 from PyQt5.QtWidgets import QApplication, QLabel, QWidget
 
-from ..my_functions.is_not_leave import isNotLeave
-from ..my_functions.get_album_cover_path import getAlbumCoverPath
+from my_functions.is_not_leave import isNotLeave
+from my_functions.get_album_cover_path import getAlbumCoverPath
 from .window_mask import WindowMask
 
 
 class SongInfoCard(QWidget):
     """ 播放栏左侧歌曲信息卡 """
     clicked = pyqtSignal()
+    coverChanged = pyqtSignal(str)
 
     def __init__(self, songInfo: dict, parent=None):
         super().__init__(parent)
         # 保存信息
         self.setSongInfo(songInfo)
+        self.coverPath = ''
         # 实例化小部件
         self.albumPic = QLabel(self)
         self.windowMask = WindowMask(self, (0, 0, 0, 50))
@@ -28,7 +30,7 @@ class SongInfoCard(QWidget):
 
     def initWidget(self):
         """ 初始化小部件 """
-        self.resize(115 + 15 + self.scrollTextWindow.width() + 25,115)
+        self.resize(115 + 15 + self.scrollTextWindow.width() + 25, 115)
         self.setAttribute(Qt.WA_StyledBackground | Qt.WA_TranslucentBackground)
         self.scrollTextWindow.move(130, 0)
         self.albumPic.resize(115, 115)
@@ -41,8 +43,8 @@ class SongInfoCard(QWidget):
     def setSongInfo(self, songInfo: dict):
         """ 设置歌曲信息 """
         self.songInfo = songInfo
-        self.songName = self.songInfo.get('songName','')
-        self.songerName = self.songInfo.get('songer','')
+        self.songName = self.songInfo.get('songName', '')
+        self.songerName = self.songInfo.get('songer', '')
 
     def updateSongInfoCard(self, songInfo: dict):
         """ 更新歌曲信息卡 """
@@ -50,7 +52,7 @@ class SongInfoCard(QWidget):
             self.show()
             self.setSongInfo(songInfo)
             self.scrollTextWindow.initUI(songInfo)
-            self.resize(115 + 15 + self.scrollTextWindow.width() + 25,115)
+            self.resize(115 + 15 + self.scrollTextWindow.width() + 25, 115)
             self.setAlbumCover()
         else:
             self.hide()
@@ -74,10 +76,14 @@ class SongInfoCard(QWidget):
         if not self.songInfo.get('album'):
             self.hide()
             return
-        self.coverPath = getAlbumCoverPath(self.songInfo.get('album',' ')[-1])
-        self.albumPic.setPixmap(
-            QPixmap(self.coverPath).scaled(
-                115, 115, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        newCoverPath = getAlbumCoverPath(self.songInfo.get('album', ' ')[-1])
+        # 封面路径变化时发送信号并更新封面
+        if newCoverPath != self.coverPath:
+            self.coverChanged.emit(newCoverPath)
+            self.coverPath = newCoverPath
+            self.albumPic.setPixmap(
+                QPixmap(self.coverPath).scaled(
+                    115, 115, Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
     def mouseReleaseEvent(self, e):
         """ 鼠标松开发送信号 """
@@ -86,6 +92,7 @@ class SongInfoCard(QWidget):
 
 class ScrollTextWindow(QWidget):
     """ 滚动字幕 """
+
     def __init__(self, songInfo: dict, parent=None):
         super().__init__(parent)
         self.hasInitWidget = False
@@ -100,8 +107,8 @@ class ScrollTextWindow(QWidget):
     def setSongInfo(self, songInfo: dict):
         """ 更新歌曲信息 """
         self.songInfo = songInfo
-        self.songName = self.songInfo.get('songName','')
-        self.songerName = self.songInfo.get('songer','')
+        self.songName = self.songInfo.get('songName', '')
+        self.songerName = self.songInfo.get('songer', '')
 
     def initUI(self, songInfo: dict):
         """ 重置所有属性 """
@@ -124,7 +131,7 @@ class ScrollTextWindow(QWidget):
         """ 初始化界面 """
         self.adjustWindowWidth()
         if not self.hasInitWidget:
-            #self.setFixedHeight(115)
+            # self.setFixedHeight(115)
             self.setAttribute(Qt.WA_StyledBackground)
             # 初始化定时器
             self.songPauseTimer.setInterval(400)
@@ -263,7 +270,7 @@ class ScrollTextWindow(QWidget):
     def __countCapitalLetters(self):
         """ 计算大写字母个数 """
         # 特殊字符按大写字母算
-        specialCharacters="（）()！!"
+        specialCharacters = "（）()！!"
         self.songerCapLetterNum = sum(
             [1 for i in self.songerName if i.isupper() or i in specialCharacters])
         self.songCapLetterNum = sum(
@@ -275,7 +282,7 @@ if __name__ == "__main__":
     songInfo = {
         'songName': 'ハッピーでバッドな眠りは浅い',
         'songer': '鎖那',
-        'album': [r'resource\Album Cover\ハッピーでバッドな眠りは浅い\ハッピーでバッドな眠りは浅い.png']
+        'album': [r'resource\Album_Cover\ハッピーでバッドな眠りは浅い\ハッピーでバッドな眠りは浅い.png']
     }
     demo = SongInfoCard(songInfo)
     demo.setStyleSheet('background:rgb(129,133,137)')

@@ -13,6 +13,7 @@ from .album_card_viewer import AlbumCardViewer
 class AlbumTabInterface(QWidget):
     """ 定义专辑卡标签界面 """
     randomPlayAllSig = pyqtSignal()
+    sortModeChanged = pyqtSignal()
 
     def __init__(self, target_path_list: list, parent=None):
         super().__init__(parent)
@@ -112,7 +113,9 @@ class AlbumTabInterface(QWidget):
             self.sortModeButton.setText('歌手')
             self.albumCardViewer.sortMode = '歌手'
             self.albumCardViewer.sortBySonger()
-
+        # 改变排序方式时发送信号调整关联滚动条的滚动范围
+        self.sortModeChanged.emit()
+        
     def showSortModeMenu(self):
         """ 显示排序方式菜单 """
         # 设置默认动作
@@ -126,6 +129,11 @@ class AlbumTabInterface(QWidget):
         with open('resource\\css\\albumTabInterface.qss', 'r', encoding='utf-8') as f:
             qss = f.read()
             self.setStyleSheet(qss)
+
+    def resizeEvent(self, e):
+        """ 调整大小时改变小部件大小 """
+        super().resizeEvent(e)
+        self.albumCardViewer.resize(self.width(),self.albumCardViewer.height())
 
 
 if __name__ == "__main__":

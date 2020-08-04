@@ -3,14 +3,13 @@
 import sys
 
 from PyQt5.QtCore import QEvent, Qt
-from PyQt5.QtGui import QEnterEvent, QFont, QPixmap,QPen,QPainter,QColor
+from PyQt5.QtGui import QColor, QEnterEvent, QFont, QPainter, QPen, QPixmap
 from PyQt5.QtWidgets import (QApplication, QGraphicsDropShadowEffect, QLabel,
                              QLineEdit, QPushButton, QWidget)
 
-sys.path.append('..')
-from Groove.my_dialog_box.sub_panel_frame import SubPanelFrame
-from Groove.my_widget.my_label import ClickableLabel
-from Groove.my_create_playlist_interface.line_edit import LineEdit
+from my_create_playlist_interface.line_edit import LineEdit
+from my_dialog_box.sub_panel_frame import SubPanelFrame
+from my_widget.my_label import ClickableLabel
 
 
 class CreatePlaylistPanel(SubPanelFrame):

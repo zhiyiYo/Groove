@@ -173,15 +173,8 @@ class SongNameCard(QWidget):
         """ 设置播放状态并决定是否显示正在播放图标 """
         self.isPlay = isPlay
         self.playingLabel.setHidden(not isPlay)
-        self.setWidgetHidden(not isPlay)  
-        if isPlay:
-            self.songNameLabel.move(83, self.songNameLabel.y())
-            self.setButtonGroupState('selected-leave')
-            self.setCheckBoxBtLabelState('selected')
-        else:
-            self.songNameLabel.move(57, self.songNameLabel.y())
-            self.setButtonGroupState('notSelected-leave')
-            self.setCheckBoxBtLabelState('notSelected-notPlay')
+        self.setWidgetHidden(not isPlay)
+        self.songNameLabel.move([57,83][isPlay], self.songNameLabel.y())
         # 更新按钮位置
         self.__moveButtonGroup()
 

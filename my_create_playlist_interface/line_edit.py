@@ -6,8 +6,8 @@ from PyQt5.QtCore import Qt,QEvent
 from PyQt5.QtGui import QEnterEvent, QPixmap
 from PyQt5.QtWidgets import QApplication, QLineEdit, QWidget, QLabel
 
-from ..my_widget.my_button import ThreeStateButton
-from ..my_widget.my_menu import LineEditMenu
+from my_widget.my_button import ThreeStateButton
+from my_widget.my_menu import LineEditMenu
 
 
 class LineEdit(QLineEdit):

@@ -1,8 +1,8 @@
 import sys
 
-from PyQt5.QtCore import Qt,QPropertyAnimation,QEasingCurve
+from PyQt5.QtCore import Qt, QPropertyAnimation, QEasingCurve
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QApplication, QGraphicsBlurEffect, QLabel, QWidget,QGraphicsOpacityEffect
+from PyQt5.QtWidgets import QApplication, QGraphicsBlurEffect, QLabel, QWidget, QGraphicsOpacityEffect
 
 
 class SubWindow(QWidget):
@@ -27,8 +27,8 @@ class SubWindow(QWidget):
 
     def setPic(self, pic_path):
         """ 更换背景图 """
-        self.pic.setPixmap(QPixmap(pic_path).scaled(200,202))
-        
+        self.pic.setPixmap(QPixmap(pic_path).scaled(200, 202))
+
 
 class AlbumBlurBackground(QWidget):
     def __init__(self, parent=None):
@@ -41,7 +41,7 @@ class AlbumBlurBackground(QWidget):
 
     def initWidget(self):
         """ 初始化小部件 """
-        self.resize(260,303)
+        self.resize(260, 303)
         # 设置子窗口透明度
         self.subWindowOpacityEffect.setOpacity(0.7)
         self.subWindow.setGraphicsEffect(self.subWindowOpacityEffect)
@@ -50,17 +50,18 @@ class AlbumBlurBackground(QWidget):
         self.showAni.setStartValue(0)
         self.showAni.setEndValue(1)
         self.showAni.setEasingCurve(QEasingCurve.InQuad)
-    
+
     def show(self):
         """ 淡入 """
         self.opacityEffect.setOpacity(0)
         super().show()
         self.showAni.start()
 
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     demo = AlbumBlurBackground()
-    pic_path = r'resource\Album Cover\流星ダイアリー\流星ダイアリー.jpg'
+    pic_path = r'resource\Album_Cover\流星ダイアリー\流星ダイアリー.jpg'
     demo.subWindow.setPic(pic_path)
     demo.album = QLabel(demo)
     demo.albumName = QLabel('Assortrip\nHALCA', demo)

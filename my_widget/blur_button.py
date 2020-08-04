@@ -2,10 +2,9 @@ import sys
 
 import numpy as np
 from PIL import Image
-from PyQt5.QtCore import Qt, QPropertyAnimation, QEasingCurve, QTimer
-from PyQt5.QtGui import QBrush, QEnterEvent, QPainter, QPen, QPixmap, QImage
-from PyQt5.QtWidgets import (
-    QApplication,  QLabel, QToolButton, QWidget, QGraphicsOpacityEffect)
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QBrush, QEnterEvent, QImage, QPainter, QPen, QPixmap
+from PyQt5.QtWidgets import QApplication, QLabel, QToolButton, QWidget
 from scipy.ndimage.filters import gaussian_filter
 
 
@@ -14,14 +13,9 @@ class BlurButton(QToolButton):
 
     def __init__(self, parent, buttonPos: tuple, iconPath, blurPicPath='', buttonSize: tuple = (70, 70), blurRadius=30):
         super().__init__(parent)
-        # 动画效果
-        self.opacityEffect = QGraphicsOpacityEffect(self)
-        self.showAni = QPropertyAnimation(self.opacityEffect, b'opacity')
-        # 定时器
-        # self.bigTimer = QTimer(self)
         # 保存属性
         self.blurPicPath = blurPicPath
-        self.posX, self.posY = buttonPos
+        self.posX, self.posY = buttonPos    # 保存裁剪的图片区域左上角坐标
         self.buttonSize = buttonSize
         self.iconPath = iconPath
         self.blurRadius = blurRadius
@@ -40,12 +34,6 @@ class BlurButton(QToolButton):
         self.resize(self.buttonSize[0], self.buttonSize[1])
         self.move(self.posX, self.posY)
         self.setAttribute(Qt.WA_TranslucentBackground)
-        self.setGraphicsEffect(self.opacityEffect)
-        # 初始化动画
-        self.showAni.setDuration(100)
-        self.showAni.setStartValue(0)
-        self.showAni.setEndValue(1)
-        self.showAni.setEasingCurve(QEasingCurve.InQuad)
         self.__setBlurEffect()
 
     def __setBlurEffect(self):
@@ -114,18 +102,12 @@ class BlurButton(QToolButton):
         self.enter = False
         self.update()
 
-    def show(self):
-        """ 淡入 """
-        self.opacityEffect.setOpacity(0)
-        super().show()
-        self.showAni.start()
-
 
 class Demo(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.resize(200, 200)
-        self.picPath = 'resource\\Album Cover\\Attention\\Attention.jpg'
+        self.picPath = 'resource\\Album_Cover\\Attention\\Attention.jpg'
         self.label = QLabel(self)
         self.label.setPixmap(QPixmap(self.picPath).scaled(
             200, 200, Qt.KeepAspectRatio, Qt.SmoothTransformation))

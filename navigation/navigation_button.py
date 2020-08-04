@@ -5,8 +5,7 @@ from PyQt5.QtGui import (QBrush, QColor, QIcon, QPainter, QPen,QPolygon,
                          QPixmap,QFont)
 from PyQt5.QtWidgets import QPushButton
 
-sys.path.append('..')
-from Groove.my_functions.get_pressed_pos import getPressedPos
+from my_functions.get_pressed_pos import getPressedPos
 
 
 class NavigationButton(QPushButton):
@@ -51,8 +50,7 @@ class NavigationButton(QPushButton):
         """ 鼠标松开时更新样式 """
         super().mouseReleaseEvent(e)
         self.pressedPos = None
-        self.update()
-        
+        self.update() 
 
     def paintEvent(self, e):
         """ 选中时在左边绘制选中标志 """
@@ -62,6 +60,11 @@ class NavigationButton(QPushButton):
             brush = QBrush(QColor(201, 191, 189, 80))
             painter.setBrush(brush)
             painter.drawRect(self.rect())
+
+    def setSelected(self, isSelected: bool):
+        """ 设置选中情况 """
+        self.isSelected = isSelected
+        self.update()
 
 
 class ToolButton(NavigationButton):

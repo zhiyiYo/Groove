@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import (QApplication, QDialog, QFileDialog,
                              QGraphicsDropShadowEffect, QLabel, QPushButton,
                              QWidget)
 
-from ..my_dialog_box.sub_panel_frame import SubPanelFrame
+from my_dialog_box.sub_panel_frame import SubPanelFrame
 from .delete_song_folder_panel import DeleteSongFolderPanel
 from .folder_card import FolderCard
 from .folding_window import FoldingWindow
@@ -151,7 +151,7 @@ class SubSelectSongFolderPanel(QWidget):
 
     def readConfig(self):
         """ 从json文件读入配置 """
-        with open('Data\\config.json', encoding='utf-8') as f:
+        with open('config\\config.json', encoding='utf-8') as f:
             self.__config = json.load(f)
 
     def paintEvent(self, e):
@@ -170,7 +170,7 @@ class SubSelectSongFolderPanel(QWidget):
 
     def saveConfig(self):
         """ 关闭前将更新json文件 """
-        with open('Data\\config.json', 'w', encoding='utf-8') as f:
+        with open('config\\config.json', 'w', encoding='utf-8') as f:
             json.dump(self.__config, f)
         self.updateConfigSignal.emit()
         self.parent().deleteLater()

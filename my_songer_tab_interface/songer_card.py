@@ -4,9 +4,8 @@ from PyQt5.QtCore import QEvent, QPoint, Qt
 from PyQt5.QtGui import QBitmap, QBrush, QColor, QPainter, QPen, QPixmap,QIcon,QContextMenuEvent
 from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget,QAction
 
-sys.path.append('..')
-from Groove.my_widget.blur_button import BlurButton
-from Groove.my_widget.my_menu import CardContextMenu
+from my_widget.blur_button import BlurButton
+from my_widget.my_menu import CardContextMenu
 
 class SongerCard(QWidget):
     """ 定义一个包含歌手头像和名字的类 """

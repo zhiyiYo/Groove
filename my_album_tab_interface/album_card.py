@@ -1,19 +1,17 @@
 import re
 import sys
 
-from PyQt5.QtCore import QEvent, QPoint, Qt,pyqtSignal
+from PyQt5.QtCore import QEvent, QPoint, Qt, pyqtSignal
 from PyQt5.QtGui import (QBitmap, QBrush, QColor, QContextMenuEvent, QIcon,
-                         QPainter, QPen, QPixmap,QMoveEvent)
-from PyQt5.QtWidgets import (
-    QAction, QApplication, QLabel,QVBoxLayout, QWidget,QGraphicsBlurEffect)
-    
-sys.path.append('..')
+                         QMoveEvent, QPainter, QPen, QPixmap)
+from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsBlurEffect,
+                             QLabel, QVBoxLayout, QWidget)
 
-from Groove.my_widget.blur_button import BlurButton
-from Groove.my_widget.my_label import ClickableLabel
-from Groove.my_widget.my_menu import CardContextMenu
-from Groove.my_functions.auto_wrap import autoWrap
-from Groove.my_functions.is_not_leave import isNotLeave
+from my_functions.auto_wrap import autoWrap
+from my_functions.is_not_leave import isNotLeave
+from my_widget.blur_button import BlurButton
+from my_widget.my_label import ClickableLabel
+from my_widget.my_menu import CardContextMenu
 
 
 class AlbumCard(QWidget):
@@ -21,7 +19,7 @@ class AlbumCard(QWidget):
     playSignal = pyqtSignal(list)
     nextPlaySignal = pyqtSignal(list)
 
-    def __init__(self, albumInfo:dict, parent=None, albumViewWidget=None):
+    def __init__(self, albumInfo: dict, parent=None, albumViewWidget=None):
         super().__init__(parent)
         self.albumInfo = albumInfo
         self.albumViewWidget = albumViewWidget
@@ -38,7 +36,6 @@ class AlbumCard(QWidget):
         # 引用两个按钮
         self.playButton = self.albumCoverWindow.playButton
         self.addToButton = self.albumCoverWindow.addToButton
-
         # 初始化
         self.initWidget()
         self.setQss()
@@ -59,11 +56,12 @@ class AlbumCard(QWidget):
         self.albumName.setObjectName('albumName')
         self.songerName.setObjectName('songerName')
         # 将信号连接到槽函数
-        self.playButton.clicked.connect(lambda : self.playSignal.emit(self.albumInfo['songInfo_list']))
+        self.playButton.clicked.connect(
+            lambda: self.playSignal.emit(self.albumInfo['songInfo_list']))
 
     def setWidgetsToolTip(self):
         """ 设置歌手名和专辑名的自定义提示条 """
-        if self.parent() and hasattr(self.parent(),'customToolTip'):
+        if self.parent() and hasattr(self.parent(), 'customToolTip'):
             # 引用父级的提示条
             self.customToolTip = self.parent().customToolTip
             # 设置歌手名的提示条
@@ -78,12 +76,10 @@ class AlbumCard(QWidget):
 
     def enterEvent(self, e):
         """ 鼠标进入窗口时显示磨砂背景和按钮 """
-        # 窗体移动就更新提示条
-        #print('鼠标进入专辑卡')
         if self.hasMoved:
-            #self.setWidgetsToolTip()
+            # self.setWidgetsToolTip()
             self.hasMoved = False
-        #显示磨砂背景
+        # 显示磨砂背景
         if self.albumViewWidget:
             self.blurBackground = self.albumViewWidget.albumBlurBackground
             # 需要补上groupBox()的y()
@@ -97,8 +93,8 @@ class AlbumCard(QWidget):
 
     def leaveEvent(self, e):
         """ 鼠标离开时隐藏磨砂背景和按钮 """
-        if self.parent() and hasattr(self,'blurBackground'):
-            #隐藏磨砂背景
+        if self.parent() and hasattr(self, 'blurBackground'):
+            # 隐藏磨砂背景
             self.blurBackground.hide()
         self.addToButton.hide()
         self.playButton.hide()
@@ -119,7 +115,7 @@ class AlbumCard(QWidget):
         if isWordWrap:
             self.albumName.setText(newText)
             self.songerName.move(10, self.songerName.y()+22)
-        
+
     def setQss(self):
         """ 设置层叠样式 """
         with open('resource\\css\\albumCard.qss', 'r', encoding='utf-8') as f:
@@ -130,25 +126,23 @@ class AlbumCard(QWidget):
         """ 检测窗体移动 """
         self.hasMoved = True
 
+
 class AlbumCoverWindow(QWidget):
     """ 定义专辑封面 """
 
     def __init__(self, picPath, parent=None):
         super().__init__(parent)
-
         self.resize(200, 200)
         self.picPath = picPath
-
         # 隐藏边框并将背景设置为透明
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
-
         # 实例化封面和按钮
         self.albumPic = QLabel(self)
         self.playButton = BlurButton(
-            self, (29, 66), 'resource\\images\\播放按钮_70_70.png', self.picPath,blurRadius=50)
+            self, (29, 66), 'resource\\images\\播放按钮_70_70.png', self.picPath, blurRadius=50)
         self.addToButton = BlurButton(
-            self, (101, 66), 'resource\\images\\添加到按钮_70_70.png', self.picPath,blurRadius=50)
+            self, (101, 66), 'resource\\images\\添加到按钮_70_70.png', self.picPath, blurRadius=50)
         # 初始化小部件
         self.initWidget()
 
@@ -179,7 +173,7 @@ class AlbumCoverWindow(QWidget):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     albumInfo = {'album': '星之回响 (2020 bilibili拜年祭单品)', 'songer': 'HALCA',
-                 'cover_path': r"D:\Python_Study\Groove\resource\Album Cover\魔杰座\魔杰座.jpg"}
+                 'cover_path': r"D:\Python_Study\Groove\resource\Album_Cover\魔杰座\魔杰座.jpg"}
     demo = AlbumCard(albumInfo)
     demo.show()
     sys.exit(app.exec_())

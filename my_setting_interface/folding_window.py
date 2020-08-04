@@ -4,7 +4,7 @@ from PyQt5.QtCore import QPoint, Qt, pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QMouseEvent, QPainter, QPen, QPolygon
 from PyQt5.QtWidgets import QApplication, QWidget
 
-from ..my_functions.get_pressed_pos import getPressedPos
+from my_functions.get_pressed_pos import getPressedPos
 
 
 class FoldingWindow(QWidget):

@@ -10,8 +10,7 @@ from PyQt5.QtGui import (QBrush, QColor, QEnterEvent, QIcon, QPainter, QPen,
 from PyQt5.QtWidgets import (QApplication, QGraphicsBlurEffect, QLabel,
                              QPushButton, QToolButton)
 
-sys.path.append('..')
-from Groove.my_functions.is_not_leave import isNotLeave
+from my_functions.is_not_leave import isNotLeave
 
 
 class SongCardPlayButton(QToolButton):

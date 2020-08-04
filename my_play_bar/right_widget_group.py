@@ -4,8 +4,7 @@ from PyQt5.QtCore import Qt,QEvent
 from PyQt5.QtWidgets import QApplication, QHBoxLayout, QWidget
 from .play_bar_buttons import VolumeButton, SmallPlayModeButton, MoreActionsButton
 
-sys.path.append('..')
-from Groove.my_widget.my_slider import Slider
+from my_widget.my_slider import Slider
 
 
 class RightWidgetGroup(QWidget):

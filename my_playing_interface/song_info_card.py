@@ -4,10 +4,8 @@ from PyQt5.QtCore import Qt, QEvent, pyqtSignal, QTimer
 from PyQt5.QtGui import QPixmap,QFont,QFontMetrics
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel
 
-sys.path.append('..')
-
-from Groove.my_functions.get_album_cover_path import getAlbumCoverPath
-from Groove.my_widget.my_label import ClickableLabel
+from my_functions.get_album_cover_path import getAlbumCoverPath
+from my_widget.my_label import ClickableLabel
 
 
 class SongInfoCard(QWidget):

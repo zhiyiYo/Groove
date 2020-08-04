@@ -22,9 +22,9 @@ class SongCard(QWidget):
         self.isPlaying = False
         self.__currentState = 'leave-notPlay'
         # 记录下每个小部件所占的最大宽度
-        self.__maxSongNameCardWidth = 0
-        self.__maxSongerLabelWidth = 0
-        self.__maxAlbumLabelWidth = 0
+        self.__maxSongNameCardWidth = 420
+        self.__maxSongerLabelWidth = 284
+        self.__maxAlbumLabelWidth = 284
         # 记录songCard对应的item的下标
         self.itemIndex = None
         # 创建小部件
@@ -46,7 +46,8 @@ class SongCard(QWidget):
     def __initWidget(self):
         """ 初始化小部件 """
         self.__getLabelWidth()
-        self.resize(1200, 60)
+        self.resize(1234, 60)
+        self.resize(1234, 60)
         self.setFixedHeight(60)
         self.albumLabel.setCursor(Qt.PointingHandCursor)
         self.songerLabel.setCursor(Qt.PointingHandCursor)
@@ -182,8 +183,12 @@ class SongCard(QWidget):
         self.songNameCard.resize(self.__maxSongNameCardWidth, 60)
         if self.songerWidth > self.__maxSongerLabelWidth:
             self.songerLabel.setFixedWidth(self.__maxSongerLabelWidth)
+        else:
+            self.songerLabel.setFixedWidth(self.songerWidth)
         if self.albumWidth > self.__maxAlbumLabelWidth:
             self.albumLabel.setFixedWidth(self.__maxAlbumLabelWidth)
+        else:
+            self.albumLabel.setFixedWidth(self.albumWidth)
 
     def __createAnimations(self):
         """ 创建动画 """

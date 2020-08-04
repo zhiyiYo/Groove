@@ -6,7 +6,7 @@ from PyQt5.QtCore import QEasingCurve, QPropertyAnimation, Qt, QTimer
 from PyQt5.QtGui import QBrush, QPainter, QPen, QPixmap
 from PyQt5.QtWidgets import QApplication, QLabel, QWidget
 
-from ..my_widget.my_button import ThreeStateButton
+from my_widget.my_button import ThreeStateButton
 
 
 class StateToolTip(QWidget):

@@ -3,7 +3,7 @@ import sys
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter, QBrush, QPixmap
 
-from ..navigation.navigation_button import NavigationButton
+from navigation.navigation_button import NavigationButton
 from .create_playlist_panel import CreatePlaylistPanel
 
 

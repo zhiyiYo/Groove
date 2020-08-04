@@ -30,8 +30,14 @@ QSlider::groove:horizontal{
 QSlider::handle:horizontal{
     width: 30px;
     height: 30px;
-    border-image: url(resource/images/playBar/滑动条手柄_30_30_2.png);
+    border-image: url(resource/images/playBar/滑动条手柄_30_30.png);
 }
+
+/* QSlider::handle:horizontal:hover {
+    width: 30px;
+    height: 30px;
+    border-image: url(resource/images/playBar/滑动条手柄_hover_30_30.png);
+} */
 
 QSlider::handle:horizontal:pressed {
     width: 30px;

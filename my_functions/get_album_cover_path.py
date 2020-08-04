@@ -3,9 +3,9 @@ import os
 
 def getAlbumCoverPath(albumName) -> str:
     """ 获取封面路径 """
-    coverFolder = f"resource\\Album Cover\\{albumName}"
+    coverFolder = f"resource\\Album_Cover\\{albumName}"
     # 默认的封面
-    coverPath = 'resource\\Album Cover\\未知专辑封面_200_200.png'
+    coverPath = 'resource\\Album_Cover\\未知专辑封面_200_200.png'
     try:
         pic_list = os.listdir(coverFolder)
     except FileNotFoundError:

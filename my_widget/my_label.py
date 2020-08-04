@@ -4,9 +4,8 @@ from PyQt5.QtCore import QPoint, Qt, QTimer, pyqtSignal, QEvent
 from PyQt5.QtGui import QMouseEvent,QEnterEvent,QPixmap
 from PyQt5.QtWidgets import QApplication, QLabel, QToolTip, QWidget
 
-sys.path.append('..')
-from Groove.my_functions.is_not_leave import isNotLeave
-from Groove.my_widget.my_toolTip import ToolTip
+from my_functions.is_not_leave import isNotLeave
+from my_widget.my_toolTip import ToolTip
 
 
 class ClickableLabel(QLabel):

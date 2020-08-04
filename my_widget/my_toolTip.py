@@ -1,12 +1,13 @@
 import sys
-from random import choice
 import time
-from PyQt5.QtCore import Qt, QTimer,QPoint,QEvent
-from PyQt5.QtGui import QBrush, QColor, QPainter, QPen, QEnterEvent,QRegion
+from random import choice
+
+from PyQt5.QtCore import QEvent, QPoint, Qt, QTimer
+from PyQt5.QtGui import QBrush, QColor, QEnterEvent, QPainter, QPen, QRegion
 from PyQt5.QtWidgets import (QApplication, QDialog, QGraphicsDropShadowEffect,
                              QHBoxLayout, QLabel, QWidget)
-sys.path.append('..')
-from Groove.my_functions.auto_wrap import autoWrap
+
+from my_functions.auto_wrap import autoWrap
 
 
 class ToolTip(QWidget):

@@ -76,6 +76,8 @@ class MyMusicTabWidget(QWidget):
     def resizeEvent(self, QResizeEvent):
         """ 窗口大小改变时同时调整stackedWidget的大小 """
         self.stackedWidget.resize(self.width(), self.height() - 45)
+        self.songTab.resize(self.width(), self.songTab.height())
+        self.albumTab.resize(self.width(),self.albumTab.height())
 
     def buttonClickedEvent(self):
         """ 按钮点击时切换界面 """

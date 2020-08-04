@@ -157,19 +157,17 @@ class RandomPlayButton(QToolButton):
             painter.setBrush(bgBrush)
             painter.drawEllipse(1, 1, 44, 44)
             self.image = self.image.scaled(44, 44, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            painter.drawPixmap(1,1,44,44,self.image)
+            painter.drawPixmap(2,2,44,44,self.image)
         elif self.isEnter:
             # 设置画笔
             painter.setPen(QPen(QColor(101, 106, 116, 180)))
             bgBrush = QBrush(QColor(73, 76, 84, 80))
             painter.setBrush(bgBrush)
             painter.drawEllipse(1, 1, 44, 44)
-        # 绘制背景图
+        # 绘制图标
         if not self.isPressed:
             painter.setPen(Qt.NoPen)
-            brush = QBrush(self.image)
-            painter.setBrush(brush)
-            painter.drawEllipse(1, 1, 45, 45)
+            painter.drawPixmap(1,1,45,45,self.image)
 
 
 class BasicButton(QToolButton):
@@ -254,8 +252,9 @@ class LoopModeButton(QToolButton):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        # 设置进入标志位
+        # 设置标志位
         self.isEnter = False
+        self.isPressed=False
         # 设置点击次数以及对应的循环模式和的图标
         self.clickedTime = 0
         self.loopMode = QMediaPlaylist.Sequential
@@ -295,13 +294,34 @@ class LoopModeButton(QToolButton):
         self.isEnter = False
         self.update()
 
+    def mousePressEvent(self, e):
+        """ 鼠标按下更新背景 """
+        super().mousePressEvent(e)
+        self.isPressed = True
+        self.update()
+
+    def mouseReleaseEvent(self, e):
+        """ 鼠标按下更新背景 """
+        super().mouseReleaseEvent(e)
+        self.isPressed = False
+        self.update()
+
     def paintEvent(self, e):
         """ 绘制背景 """
+        self.image = QPixmap(self.__iconPath_list[self.clickedTime])
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing, True)
         # 设置画笔
         painter.setPen(Qt.NoPen)
-        if self.isEnter and self.clickedTime == 0:
+        if self.isPressed:
+            painter.setPen(QPen(QColor(101, 106, 116, 80)))
+            bgBrush = QBrush(QColor(73, 76, 84, 110))
+            painter.setBrush(bgBrush)
+            painter.drawEllipse(1, 1, 44, 44)
+            self.image = self.image.scaled(
+                44, 44, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            painter.drawPixmap(2, 2, 44, 44, self.image)
+        elif self.isEnter and self.clickedTime == 0:
             painter.setPen(QPen(QColor(101, 106, 116, 180)))
             bgBrush = QBrush(QColor(73, 76, 84, 80))
             painter.setBrush(bgBrush)
@@ -313,10 +333,10 @@ class LoopModeButton(QToolButton):
             painter.drawEllipse(1, 1, 44, 44)
         # 绘制背景图
         painter.setPen(Qt.NoPen)
-        self.image = QPixmap(self.__iconPath_list[self.clickedTime])
-        brush = QBrush(self.image)
-        painter.setBrush(brush)
-        painter.drawEllipse(1, 1, 45, 45)
+        # 绘制图标
+        if not self.isPressed:
+            painter.setPen(Qt.NoPen)
+            painter.drawPixmap(1, 1, 45, 45, self.image)
 
 
 class VolumeButton(QToolButton):

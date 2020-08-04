@@ -1,23 +1,24 @@
 import sys
 from ctypes.wintypes import HWND
 
-from PyQt5.QtCore import Qt, QAbstractAnimation, QPropertyAnimation
-from PyQt5.QtGui import QIcon, QPainter, QPen, QColor
-from PyQt5.QtWidgets import QApplication, QVBoxLayout, QHBoxLayout, QWidget, QToolButton, QLabel
-sys.path.append('..')
+from PyQt5.QtCore import QAbstractAnimation, QPropertyAnimation, Qt
+from PyQt5.QtGui import QColor, QIcon, QPainter, QPen
+from PyQt5.QtWidgets import (QApplication, QHBoxLayout, QLabel, QToolButton,
+                             QVBoxLayout, QWidget)
 
-from .navigation_button import PushButton,ToolButton
+from my_create_playlist_interface.create_playlist_button import \
+    CreatePlaylistButton
+from my_widget.button_group import ButtonGroup
+
+from .navigation_button import PushButton, ToolButton
 from .search_line_edit import SearchLineEdit
-from Groove.my_widget.button_group import ButtonGroup
-from Groove.my_create_playlist_interface.create_playlist_button import CreatePlaylistButton
 
 
 class NavigationMenu(QWidget):
     """ 侧边导航菜单 """
+
     def __init__(self, navigationBar, parent):
         super().__init__(parent)
-        # 引用配置文件数据和导航栏
-        self.config = self.window().settingInterface.config
         self.navigationBar = navigationBar
         # 创建搜索框
         self.searchLineEdit = SearchLineEdit(self)
@@ -27,7 +28,6 @@ class NavigationMenu(QWidget):
         self.h_layout_1 = QHBoxLayout()
         self.h_layout_2 = QHBoxLayout()
         self.all_v_layout = QVBoxLayout()
-
         # 初始化界面
         self.initWidget()
         self.initLayout()
@@ -35,8 +35,6 @@ class NavigationMenu(QWidget):
 
     def createButtons(self):
         """实例化按钮 """
-        # 实例化一个集中管理按钮的类
-        self.buttonGroup = ButtonGroup()
         self.showBarButton = ToolButton(
             r'resource\images\navigationBar\黑色最大化导航栏.png', parent=self)
         self.musicGroupButton = PushButton(
@@ -69,8 +67,7 @@ class NavigationMenu(QWidget):
             self.musicGroupButton, self.historyButton, self.playingButton,
             self.playListButton, self.myLoveButton, self.settingButton
         ]
-        # 将按钮添加到按钮组中
-        self.buttonGroup.addButtons(self.updatableButton_list)
+        self.currentButton = self.musicGroupButton
 
     def initWidget(self):
         """ 初始化小部件 """
@@ -78,13 +75,24 @@ class NavigationMenu(QWidget):
         self.setAttribute(Qt.WA_TranslucentBackground | Qt.WA_StyledBackground)
         self.setObjectName('navigationMenu')
         # 将按钮点击信号连接到槽函数并设置属性
-        name_list = [
+        self.__buttonName_list = [
             'musicGroupButton', 'historyButton', 'playingButton',
             'playListButton', 'myLoveButton', 'settingButton'
         ]
-        for button, name in zip(self.updatableButton_list, name_list):
+        for button, name in zip(self.updatableButton_list, self.__buttonName_list):
             button.setProperty('name', name)
-            button.clicked.connect(self.buttonClickedEvent)
+        self.musicGroupButton.clicked.connect(
+            lambda: self.setSelectedButton('musicGroupButton'))
+        self.historyButton.clicked.connect(
+            lambda: self.setSelectedButton('historyButton'))
+        self.playingButton.clicked.connect(
+            lambda: self.setSelectedButton('playingButton'))
+        self.playListButton.clicked.connect(
+            lambda: self.setSelectedButton('playListButton'))
+        self.settingButton.clicked.connect(
+            lambda: self.setSelectedButton('settingButton'))
+        self.myLoveButton.clicked.connect(
+            lambda: self.setSelectedButton('myLoveButton'))
         # 分配ID
         self.myLoveButton.setObjectName('myLoveButton')
         self.playListButton.setObjectName('playListButton')
@@ -115,24 +123,17 @@ class NavigationMenu(QWidget):
         # 设置总布局
         self.setLayout(self.all_v_layout)
 
-    def buttonClickedEvent(self):
-        """ 按钮点击事件 """
-        sender = self.sender()
-        # 更新自己按钮的标志位和样式
-        self.buttonGroup.updateButtons(sender)
+    def setSelectedButton(self, selectedButtonName, isSendBySelf=True):
+        """ 设置选中的按钮 """
+        if selectedButtonName == 'playingButton':
+            return
+        self.currentButton.setSelected(False)
+        self.currentButton = self.updatableButton_list[self.__buttonName_list.index(
+            selectedButtonName)]
+        self.currentButton.setSelected(True)
         # 更新绑定的任务栏的按钮的标志位和样式
-        self.navigationBar.buttonGroup.updateButtons(sender)
-        # 切换界面
-        if sender == self.musicGroupButton:
-            # 更新配置文件的下标
-            self.config['current-index'] = 0
-            self.config['pre-index'] = self.window().stackedWidget.currentIndex()
-            self.window().stackedWidget.setCurrentWidget(
-                self.window().myMusicInterface)
-        elif sender == self.settingButton:
-            self.config['current-index'] = 1
-            self.config['pre-index'] = self.window().stackedWidget.currentIndex()
-            self.window().stackedWidget.setCurrentWidget(self.window().settingInterface)
+        if isSendBySelf:
+            self.navigationBar.setSelectedButton(selectedButtonName,False)
 
     def setQss(self):
         """ 设置层叠样式 """
@@ -142,7 +143,6 @@ class NavigationMenu(QWidget):
     def paintEvent(self, e):
         """ 绘制分隔符 """
         painter = QPainter(self)
-        #pen = QPen(QColor(214,214,214,240))
         pen = QPen(QColor(160, 160, 160, 240))
         painter.setPen(pen)
         # 前两个参数为第一个坐标，后两个为第二个坐标
