@@ -1,9 +1,18 @@
 from random import shuffle
 from enum import Enum
-from json import dump,load
+from json import dump, load
 
 from PyQt5.Qt import QUrl, pyqtSignal
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlaylist
+
+
+class PlaylistType(Enum):
+    """ 播放列表种类枚举 """
+    SONG_CARD_PLAYLIST = 0    # 播放列表为所有歌曲
+    SONGER_CARD_PLAYLIST = 1  # 播放列表为选中歌手的歌
+    ALBUM_CARD_PLAYLIST = 2   # 播放列表为选中专辑的歌
+    LAST_PLAYLIST = 3         # 上一次的播放列表
+    NO_PLAYLIST = 4           # 没有播放列表
 
 
 class MediaPlaylist(QMediaPlaylist):
@@ -104,12 +113,12 @@ class MediaPlaylist(QMediaPlaylist):
             super().previous()
             self.switchSongSignal.emit(self.playlist[self.currentIndex()])
 
-    def playThisSong(self, songInfo_dict: dict, newSongInfoDict_list: list = None, playlistType=0):
+    def playThisSong(self, songInfo_dict: dict, newSongInfoDict_list: list = None, playlistType=PlaylistType.SONG_CARD_PLAYLIST):
         """ 按下歌曲卡的播放按钮或者双击歌曲卡时立即在当前的播放列表中播放这首歌 """
         if not songInfo_dict:
             return
         # 更新播放列表种类和播放列表
-        self.playlistType = PlaylistType(playlistType)
+        self.playlistType = playlistType
         if newSongInfoDict_list:
             self.setMedias(newSongInfoDict_list)
         # 设置当前播放歌曲
@@ -149,11 +158,11 @@ class MediaPlaylist(QMediaPlaylist):
         """ 保存关闭前的播放列表到json文件中 """
         with open('Data\\lastPlaylist.json', 'w', encoding='utf-8') as f:
             dump(self.playlist, f)
-            
+
     def readLastPlaylist(self):
         """ 从json文件中读取播放列表 """
         try:
-            with open('Data\\lastPlaylist.json',encoding='utf-8') as f:
+            with open('Data\\lastPlaylist.json', encoding='utf-8') as f:
                 self.playlist = load(f)
         except:
             self.playlist = []
@@ -167,13 +176,6 @@ class MediaPlaylist(QMediaPlaylist):
         super().removeMedia(index)
         self.setCurrentIndex(currentIndex)
 
-
-class PlaylistType(Enum):
-    """ 播放列表种类枚举 """
-    SONG_CARD_PLAYLIST = 0    # 播放列表为所有歌曲
-    SONGER_CARD_PLAYLIST = 1  # 播放列表为选中歌手的歌
-    ALBUM_CARD_PLAYLIST = 2   # 播放列表为选中专辑的歌
-    LAST_PLAYLIST = 3         # 上一次的播放列表
 
 
 if __name__ == "__main__":

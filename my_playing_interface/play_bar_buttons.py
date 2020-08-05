@@ -202,6 +202,12 @@ class PullUpArrow(BasicCircleButton):
         self.timer.setInterval(24)
         self.timer.timeout.connect(self.timerSlot)
 
+    def setArrowDirection(self, direction: str = 'up'):
+        """ 设置箭头方向，up朝上，down朝下 """
+        self.rotateDirection = 1 if direction.upper() == 'UP' else - 1
+        self.totalRotateAngle = 0 if direction.upper() == 'UP' else 180
+        self.update()
+
     def timerSlot(self):
         """ 定时器溢出时旋转箭头 """
         self.totalRotateAngle = self.rotateDirection * \

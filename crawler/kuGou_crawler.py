@@ -2,6 +2,8 @@ import os
 import re
 from time import sleep
 
+from fuzzywuzzy import fuzz
+
 import requests
 from mutagen.flac import FLAC, Picture
 from mutagen.id3 import APIC, TALB, TCON, TDRC
@@ -40,7 +42,9 @@ class KuGouCrawler():
             # 显式等待
             song_name_element = WebDriverWait(self.browser, 3.5).until(
                 EC.presence_of_element_located((By.CLASS_NAME, 'song_name')))
-            if self.songer + ' - ' + self.songname in song_name_element.text:
+            # 计算字符串匹配比例
+            matchRatio = fuzz.token_set_ratio(self.songer + ' - ' + self.songname, song_name_element.text)
+            if matchRatio > 70:
                 # 符合匹配条件时才爬取
                 album_name_element = WebDriverWait(self.browser, 3.5).until(
                     EC.presence_of_element_located((By.CLASS_NAME, 'album_name')))
@@ -74,7 +78,7 @@ class KuGouCrawler():
                     if Match:
                         break
 
-            # 没有mp3匹配到APIC间则写入封面，如果是flac和m4a则直接尝试写入封面
+            # mp3没有匹配到APIC间则写入封面，如果是flac和m4a则直接尝试写入封面
             extraction_cond = (self.suffix == 'mp3' and (not Match)) or (self.suffix == 'flac'
                 and not self.id_card.pictures) or (self.suffix == 'mp4'
                                                    and not self.id_card.get('covr'))

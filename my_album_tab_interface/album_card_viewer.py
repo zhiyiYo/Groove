@@ -22,6 +22,7 @@ class AlbumCardViewer(QWidget):
     """ 定义一个专辑卡视图 """
     playSignal = pyqtSignal(list)
     nextPlaySignal = pyqtSignal(list)
+    addAlbumToPlaylistSignal = pyqtSignal(list)
     
     def __init__(self, target_path_list:list, parent=None):
         super().__init__(parent)
@@ -97,6 +98,9 @@ class AlbumCardViewer(QWidget):
             # 下一首播放
             albumCard.nextPlaySignal.connect(
                 lambda playlist: self.nextPlaySignal.emit(playlist))
+            # 添加到播放列表
+            albumCard.addToPlaylistSignal.connect(
+                lambda playlist: self.addAlbumToPlaylistSignal.emit(playlist))
 
     def initLayout(self):
         """ 初始化布局 """

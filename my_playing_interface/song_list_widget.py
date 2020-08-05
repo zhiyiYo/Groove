@@ -154,6 +154,11 @@ class SongListWidget(ListWidget):
     def setPlaylist(self, playlist: list):
         """ 直接清空并更新播放列表 """
         self.playlist = playlist
+        self.clearSongCards()
+        self.createSongCards()
+
+    def clearSongCards(self):
+        """ 清空歌曲卡 """
         self.item_list.clear()
         self.clear()
         # 释放内存
@@ -161,7 +166,6 @@ class SongListWidget(ListWidget):
             songCard.deleteLater()
         self.songCard_list.clear()
         self.currentIndex = 0
-        self.createSongCards()
 
     def updateSongCards(self, songInfoDict_list):
         """ 更新所有歌曲卡信息 """

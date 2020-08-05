@@ -44,7 +44,7 @@ class GetMetaDataThread(QThread):
                     # 歌曲播放时会导致保存失败
                     self.id_card.save()
                 except:
-                    pass
+                    print(f'{songPath} 写入发生异常')
         else:
             self.crawlSignal.emit(f'当前进度：{index+1}/{len(self.songPath_list)}')
             

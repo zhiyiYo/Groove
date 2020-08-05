@@ -88,7 +88,6 @@ class PlayingInterface(QWidget):
         self.showPlaylistTimer.timeout.connect(self.showPlayListTimerSlot)
         self.hidePlaylistTimer.timeout.connect(self.hidePlayListTimerSlot)
         
-
     def __setQss(self):
         """ 设置层叠样式 """
         with open(r'resource\css\playInterface.qss', encoding='utf-8') as f:
@@ -169,7 +168,7 @@ class PlayingInterface(QWidget):
             self.songInfoCardChuteAni.setEndValue(
                 QRect(0, 258 - self.height(), self.width(), self.height()))
             self.playBarAni.setStartValue(
-                QRect(0, self.height()-self.playBar.height(), self.width(), self.playBar.height()))
+                QRect(0, self.playBar.y(), self.width(), self.playBar.height()))
             self.playBarAni.setEndValue(
                 QRect(0, 190, self.width(), self.playBar.height()))
             self.songListWidgetAni.setStartValue(
@@ -180,15 +179,16 @@ class PlayingInterface(QWidget):
                       self.songListWidget.width(), self.songListWidget.height()))
             if self.sender() == self.playBar.showPlaylistButton:
                 self.playBar.pullUpArrowButton.timer.start()
+            self.playBar.show()
             self.parallelAniGroup.start()
             self.blurBackgroundPic.hide()
-            self.isPlaylistVisible = True
             self.showPlaylistTimer.start()
 
     def showPlayListTimerSlot(self):
         """ 显示播放列表定时器溢出槽函数 """
         self.showPlaylistTimer.stop()
         self.songListWidgetAni.start()
+        self.isPlaylistVisible = True
 
     def hidePlayListTimerSlot(self):
         """ 显示播放列表定时器溢出槽函数 """
@@ -250,11 +250,7 @@ class PlayingInterface(QWidget):
             self.createSongCardThread.run()
         # 如果小部件不可见就显示
         if playlist and not self.songListWidget.isVisible():
-            self.songInfoCardChute.show()
-            self.playBar.show()
-            self.songListWidget.show()
-            self.randomPlayAllButton.hide()
-            self.guideLabel.hide()
+            self.__setGuideLabelHidden(True)
 
     def __settleDownPlayBar(self):
         """ 定住播放栏 """
@@ -295,14 +291,33 @@ class PlayingInterface(QWidget):
         self.removeMediaSignal.emit(index)
         # 如果播放列表为空，隐藏小部件
         if len(self.playlist) == 0:
-            self.playBar.hide()
-            self.songInfoCardChute.hide()
-            self.songListWidget.hide()
-            self.randomPlayAllButton.show()
-            self.guideLabel.show()
+            self.__setGuideLabelHidden(False)
         # 如果被移除的是最后一首就将当前播放歌曲置为被移除后的播放列表最后一首
         """ if lastSongRemoved:
             self.currentIndexChanged.emit(self.currentIndex) """
+
+    def clearPlaylist(self):
+        """ 清空歌曲卡 """
+        self.playlist.clear()
+        self.songListWidget.clearSongCards()
+        # 显示随机播放所有按钮
+        self.__setGuideLabelHidden(False)
+
+    def __setGuideLabelHidden(self, isHidden):
+        """ 设置导航标签和随机播放所有按钮的可见性 """
+        self.randomPlayAllButton.setHidden(isHidden)
+        self.guideLabel.setHidden(isHidden)
+        self.songListWidget.setHidden(not isHidden)
+        if isHidden:
+            # 隐藏导航标签时根据播放列表是否可见设置磨砂背景和播放栏的可见性
+            self.blurBackgroundPic.setHidden(self.isPlaylistVisible)
+            self.playBar.setHidden(not self.isPlaylistVisible)
+        else:
+            # 显示导航标签时隐藏磨砂背景
+            self.blurBackgroundPic.hide()
+            self.playBar.hide()
+        # 最后再显示歌曲信息卡
+        self.songInfoCardChute.setHidden(not isHidden)
 
     def __connectSignalToSlot(self):
         """ 将信号连接到槽 """

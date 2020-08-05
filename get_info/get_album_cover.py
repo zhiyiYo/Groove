@@ -50,7 +50,7 @@ class GetAlbumCover():
                 sub_album_cover_folder, info_dict['album'][-1] + '.png')
             if not os.path.exists(sub_album_cover_folder):
                 os.mkdir(sub_album_cover_folder)
-                copyfile('resource\\Album_Cover\\未知专辑封面_200_200.png', pic_path)
+                copyfile('resource\\images\\未知专辑封面_200_200.png', pic_path)
 
     def getID3AlbumCover(self, info_dict, id_card):
         """ 获取mp3文件的封面并写入文件夹 """

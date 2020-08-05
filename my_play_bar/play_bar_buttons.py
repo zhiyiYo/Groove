@@ -83,7 +83,8 @@ class PlayButton(QToolButton):
         if self.isPressed:
             self.image.scaled(58, 58, Qt.KeepAspectRatio,
                               Qt.SmoothTransformation)
-            painter.drawPixmap(2, 2, 59, 59, self.image)
+            x = 2 if self.isPlaying else 3
+            painter.drawPixmap(x, 3, 59, 59, self.image)
         elif self.isEnter:
             painter.setPen(QPen(QColor(101, 106, 116, 180)))
             bgBrush = QBrush(QColor(73, 76, 84, 70))
@@ -91,9 +92,9 @@ class PlayButton(QToolButton):
             painter.drawEllipse(1, 1, 62, 62)
         # 绘制背景图
         if not self.isPressed:
-            brush = QBrush(self.image)
-            painter.setBrush(brush)
-            painter.drawEllipse(1, 1, 63, 63)
+            x = 0 if self.isPlaying else 1
+            painter.drawPixmap(x, 1, 63, 63, self.image)
+
 
 
 class RandomPlayButton(QToolButton):

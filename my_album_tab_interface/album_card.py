@@ -18,6 +18,7 @@ class AlbumCard(QWidget):
     """ 定义包含专辑歌手名的窗口 """
     playSignal = pyqtSignal(list)
     nextPlaySignal = pyqtSignal(list)
+    addToPlaylistSignal = pyqtSignal(list)
 
     def __init__(self, albumInfo: dict, parent=None, albumViewWidget=None):
         super().__init__(parent)
@@ -107,6 +108,8 @@ class AlbumCard(QWidget):
             lambda: self.playSignal.emit(self.albumInfo['songInfo_list']))
         menu.nextToPlayAct.triggered.connect(
             lambda: self.nextPlaySignal.emit(self.albumInfo['songInfo_list']))
+        menu.addToMenu.playingAct.triggered.connect(
+            lambda : self.addToPlaylistSignal.emit(self.albumInfo['songInfo_list']))
         menu.exec_(event.globalPos())
 
     def adjustLabel(self):

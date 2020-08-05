@@ -23,6 +23,7 @@ class SongCardListWidget(ListWidget):
     playSignal = pyqtSignal(dict)
     nextPlaySignal = pyqtSignal(dict)
     removeItemSignal = pyqtSignal(int)
+    addSongToPlaylistSignal = pyqtSignal(dict)
 
     def __init__(self, target_path_list: list, parent=None):
         super().__init__(parent)
@@ -210,6 +211,8 @@ class SongCardListWidget(ListWidget):
             self.showPropertyPanel)
         self.contextMenu.deleteAct.triggered.connect(
             lambda: self.__removeSongCard(self.currentRow()))
+        self.contextMenu.addToMenu.playingAct.triggered.connect(
+            lambda : self.addSongToPlaylistSignal.emit(self.songCard_list[self.currentRow()].songInfo))
 
     def __adjustHeight(self):
         """ 如果歌曲卡数量太少就调整自己的高度 """

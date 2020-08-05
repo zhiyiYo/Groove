@@ -13,7 +13,10 @@ class SystemVolume():
         interface = devices.Activate(
             IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
         self.__volume = cast(interface, POINTER(IAudioEndpointVolume))
-        self.__getVolumeDBTable()
+        try:
+            self.__getVolumeDBTable()
+        except:
+            self.getVolumeTableManually()
 
     def setVolume(self, volume):
         """ 设置系统音量 """
@@ -30,7 +33,8 @@ class SystemVolume():
             filter(lambda key: self.volumeDBTable[key] == dB, self.volumeDBTable))
         if volume:
             return int(volume[0])
-        return None
+        # 读取到的36分贝值与实际的不同
+        return 36
 
     def __getVolumeDBTable(self):
         """ 读取音量与分贝的对应表 """
@@ -57,4 +61,5 @@ class SystemVolume():
 if __name__ == "__main__":
     sysVolume = SystemVolume()
     print(sysVolume.getVolume())
-    sysVolume.setVolume(80)
+    sysVolume.setVolume(30)
+    sysVolume.getVolumeTableManually()
