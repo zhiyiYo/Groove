@@ -21,6 +21,7 @@ class PlayBar(QWidget):
         # 实例化窗口特效
         self.windowEffect = WindowEffect()
         self.hWnd = HWND(int(self.winId()))
+        self.acrylicColor='0a517aB8'
         # 记录移动次数
         self.moveTime = 0
         # 实例化小部件
@@ -40,11 +41,11 @@ class PlayBar(QWidget):
         self.setFixedHeight(115)
         self.resize(1280, 115)
         # 初始化亚克力背景色
-        self.setAcrylicColor('0a517aC0')
+        self.setAcrylicColor(self.acrylicColor)
         # 引用小部件
         self.referenceWidgets()
         # 连接槽函数
-        self.songInfoCard.coverChanged.connect(self.__updateDominantColor)
+        self.songInfoCard.coverChanged.connect(self.updateDominantColor)
         self.moreActionsButton.clicked.connect(self.showMoreActionsMenu)
         # 设置小部件位置
         self.__setWidgetPos()
@@ -58,10 +59,10 @@ class PlayBar(QWidget):
         self.rightWidgetGroup.move(
             self.width() - self.rightWidgetGroup.width(), 0)
 
-    def __updateDominantColor(self, albumPath: str):
+    def updateDominantColor(self, albumPath: str):
         """ 更新主色调 """
-        rgb = getDominantColor(albumPath)
-        self.setAcrylicColor(rgb+'B8')
+        self.acrylicColor = getDominantColor(albumPath) + 'B8'
+        self.setAcrylicColor(self.acrylicColor)
 
     def setAcrylicColor(self, gradientColor: str):
         """ 设置亚克力效果的混合色 """

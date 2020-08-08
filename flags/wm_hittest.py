@@ -1,7 +1,7 @@
 from enum import Enum
 
-class Flags(Enum):
-    """ 包含各宏定义的枚举类 """
+class Hittest(Enum):
+    """ 窗口点击位置的枚举类 """
     HTCAPTION = 2
     HTLEFT = 10
     HTRIGHT = 11
@@ -11,8 +11,3 @@ class Flags(Enum):
     HTBOTTOM = 15
     HTBOTTOMLEFT = 16
     HTBOTTOMRIGHT = 17
-
-if __name__ == "__main__":
-    flags = Flags(Flags.HTBOTTOMRIGHT)
-    flags=Flags.HTBOTTOM
-    print(flags==Flags.HTBOTTOM)

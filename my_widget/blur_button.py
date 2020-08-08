@@ -44,7 +44,7 @@ class BlurButton(QToolButton):
                 (self.posX, self.posY, self.width()+self.posX, self.height()+self.posY)))
             blurImageArray = image
             # 对每一个颜色通道分别磨砂
-            channelNum=blurImageArray.shape[-1]
+            channelNum = blurImageArray.shape[-1]
             for i in range(channelNum):
                 blurImageArray[:, :, i] = gaussian_filter(
                     image[:, :, i], self.blurRadius) * 0.75

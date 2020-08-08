@@ -1,33 +1,40 @@
 # coding:utf-8
 
 import sys
-from ctypes.wintypes import HWND, MSG
+from ctypes import POINTER, Structure, cast
+from ctypes.wintypes import HWND, MSG, POINT, UINT
 from enum import Enum
 from random import shuffle
 from shutil import rmtree
 
-from PyQt5.QtCore import QPoint, QRect, QSize, Qt, QUrl, pyqtSignal,QAbstractAnimation
+from PyQt5.QtCore import (QAbstractAnimation, QPoint, QRect, QSize, Qt, QUrl,
+                          pyqtSignal)
 from PyQt5.QtGui import QCloseEvent, QFont, QIcon, QPixmap, QResizeEvent
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist
 from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsDropShadowEffect,
                              QStackedWidget, QWidget)
 from system_hotkey import SystemHotkey
+from win32 import win32api, win32gui
+from win32.lib import win32con
 
 from effects import WindowEffect
-from flags.wm_hittest import Flags
 from media_player import MediaPlaylist, PlaylistType
 from my_music_interface import MyMusicInterface
 from my_play_bar import PlayBar
+from my_playing_interface import CreateSongCardsThread, PlayingInterface
 from my_setting_interface import SettingInterface
 from my_sub_play_window import SubPlayWindow
 from my_thumbnail_tool_bar import ThumbnailToolBar
 from my_title_bar import TitleBar
 from navigation import NavigationBar, NavigationMenu
-from my_playing_interface import PlayingInterface, CreateSongCardsThread
+
+from .c_structures import MINMAXINFO
+from .monitor_functions import isMaximized
 
 
 class MainWindow(QWidget):
     """ 主窗口 """
+    BORDER_WIDTH = 5
     showSubPlayWindowSig = pyqtSignal()
 
     def __init__(self, parent=None):
@@ -58,7 +65,7 @@ class MainWindow(QWidget):
         self.currentNavigation = self.navigationBar
         # 从配置文件中的选择文件夹读取音频文件
         self.myMusicInterface = MyMusicInterface(
-            self.settingInterface.config['selected-folders'], self.subMainWindow)
+            self.settingInterface.config.get('selected-folders', []), self.subMainWindow)
         # 将最后一首歌作为playBar初始化时用的songInfo
         self.lastSongInfo = self.settingInterface.config.get('last-song', {})
         self.titleBar = TitleBar(self)
@@ -86,11 +93,10 @@ class MainWindow(QWidget):
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setWindowIcon(QIcon('resource\\images\\透明icon.png'))
         self.setAttribute(Qt.WA_TranslucentBackground | Qt.WA_StyledBackground)
-        # self.subMainWindow.setAttribute(Qt.WA_TranslucentBackground)
-        # 居中显示
-        desktop = QApplication.desktop()
+        # 在去除任务栏的显示区域居中显示
+        desktop = QApplication.desktop().availableGeometry()
         self.move(int(desktop.width() / 2 - self.width() / 2),
-                  int((desktop.height()-120) / 2 - self.height() / 2))
+                  int(desktop.height() / 2 - self.height() / 2))
         # 标题栏置顶
         self.titleBar.raise_()
         # self.titleBar.closeBt.setBlackCloseIcon(0)  # 更换图标
@@ -123,8 +129,6 @@ class MainWindow(QWidget):
         self.connectSignalToSlot()
         # 初始化播放栏
         self.initPlayBar()
-        # 显示主界面
-        self.show()
         # 创建正在播放界面的歌曲卡
         self.playingInterface.createSongCardThread.run()
 
@@ -143,15 +147,16 @@ class MainWindow(QWidget):
 
     def setWindowEffect(self):
         """ 设置窗口特效 """
-        # 开启亚克力效果和阴影效果
         self.hWnd = HWND(int(self.winId()))
+        # 开启窗口动画
+        self.windowEffect.setWindowAnimation(int(self.winId()))
+        # 开启亚克力效果和阴影效果
         self.windowEffect.setAcrylicEffect(self.hWnd, 'F2F2F250', True)
 
     def setWidgetGeometry(self):
         """ 调整小部件的geometry """
         self.subMainWindow.resize(self.size())
         self.totalStackWidget.resize(self.size())
-        self.playingInterface.resize(self.size())
         self.titleBar.resize(self.width(), 40)
         self.navigationBar.resize(60, self.height())
         self.navigationMenu.resize(400, self.height())
@@ -160,12 +165,15 @@ class MainWindow(QWidget):
             self.width() - self.currentNavigation.width(), self.height())
         self.myMusicInterface.resize(
             self.width() - self.currentNavigation.width(), self.height())
-        self.playBar.resize(self.width(), self.playBar.height())
+        if hasattr(self, 'playingInterface'):
+            self.playingInterface.resize(self.size())
+        if hasattr(self, 'playBar'):
+            self.playBar.resize(self.width(), self.playBar.height())
 
     def resizeEvent(self, e: QResizeEvent):
         """ 调整尺寸时同时调整子窗口的尺寸 """
-        self.setWidgetGeometry()
         super().resizeEvent(e)
+        self.setWidgetGeometry()
 
     def showNavigationMenu(self):
         """ 显示导航菜单和抬头 """
@@ -187,13 +195,12 @@ class MainWindow(QWidget):
 
     def moveEvent(self, e):
         if hasattr(self, 'playBar'):
-            if self.playBar.moveTime > 0:
+            if not self.isMaximized():
                 self.playBar.move(self.x() - 8, self.y() +
                                   self.height() - self.playBar.height())
             else:
-                self.playBar.move(self.x() + 1, self.y() +
-                                  self.height() - self.playBar.height() + 38)
-            self.playBar.moveTime += 1
+                self.playBar.move(self.x()+1, self.y() +
+                                  self.height() - self.playBar.height() + 9)
 
     def closeEvent(self, e: QCloseEvent):
         """ 关闭窗口前更新json文件 """
@@ -208,43 +215,72 @@ class MainWindow(QWidget):
         )
         self.settingInterface.config['duration'] = self.playBar.progressSlider.maximum(
         )
+        self.settingInterface.config['playBar-acrylicColor'] = self.playBar.acrylicColor
         self.settingInterface.writeConfig()
         self.playBar.close()
         self.subPlayWindow.close()
         self.playlist.save()
         e.accept()
 
-    def GET_X_LPARAM(self, param):
-        return param & 0xffff
-
-    def GET_Y_LPARAM(self, param):
-        return param >> 16
-
     def nativeEvent(self, eventType, message):
-        result = 0
+        """ 处理windows消息 """
         msg = MSG.from_address(message.__int__())
-        minV, maxV = 0, 4
-        if msg.message == 0x0084:
-            xPos = self.GET_X_LPARAM(msg.lParam) - self.frameGeometry().x()
-            yPos = self.GET_Y_LPARAM(msg.lParam) - self.frameGeometry().y()
-            if(xPos > minV and xPos < maxV):
-                result = Flags.HTLEFT.value
-            elif(xPos > (self.width() - maxV) and xPos < (self.width() - minV)):
-                result = Flags.HTRIGHT.value
-            elif (yPos > minV and yPos < maxV):
-                result = Flags.HTTOP.value
-            elif(yPos > (self.height() - maxV) and yPos < (self.height() - minV)):
-                result = Flags.HTBOTTOM.value
-            elif(xPos > minV and xPos < maxV and yPos > minV and yPos < maxV):
-                result = Flags.HTTOPLEFT.value
-            elif(xPos > (self.width() - maxV) and xPos < (self.width() - minV) and yPos > minV and yPos < maxV):
-                result = Flags.HTTOPRIGHT.value
-            elif(xPos > minV and xPos < maxV and yPos > (self.height() - maxV) and yPos < (self.height() - minV)):
-                result = Flags.HTBOTTOMLEFT.value
-            elif(xPos > (self.width() - maxV) and xPos < (self.width() - minV) and yPos > (self.height() - maxV) and yPos < (self.height() - minV)):
-                result = Flags.HTBOTTOMRIGHT.value
-            if result != 0:
-                return (True, result)
+        if msg.message == win32con.WM_NCHITTEST:
+            xPos = win32api.LOWORD(msg.lParam) - self.frameGeometry().x()
+            yPos = win32api.HIWORD(msg.lParam) - self.frameGeometry().y()
+            w, h = self.width(), self.height()
+            lx = xPos < self.BORDER_WIDTH
+            rx = xPos + 9 > w - self.BORDER_WIDTH
+            ty = yPos < self.BORDER_WIDTH
+            by = yPos > h - self.BORDER_WIDTH
+            if (lx and ty):
+                return True, win32con.HTTOPLEFT
+            elif (rx and by):
+                return True, win32con.HTBOTTOMRIGHT
+            elif (rx and ty):
+                return True, win32con.HTTOPRIGHT
+            elif (lx and by):
+                return True, win32con.HTBOTTOMLEFT
+            elif ty:
+                return True, win32con.HTTOP
+            elif by:
+                return True, win32con.HTBOTTOM
+            elif lx:
+                return True, win32con.HTLEFT
+            elif rx:
+                return True, win32con.HTRIGHT
+        elif msg.message == win32con.WM_NCCALCSIZE:
+            if isMaximized(msg.hWnd):
+                self.windowEffect.adjustMaximizedClientRect(
+                    HWND(msg.hWnd), msg.lParam)
+            return True, 0
+        if msg.message == win32con.WM_GETMINMAXINFO:
+            if isMaximized(msg.hWnd):
+                window_rect = win32gui.GetWindowRect(msg.hWnd)
+                if not window_rect:
+                    return False, 0
+                # 获取显示器句柄
+                monitor = win32api.MonitorFromRect(window_rect)
+                if not monitor:
+                    return False, 0
+                # 获取显示器信息
+                monitor_info = win32api.GetMonitorInfo(monitor)
+                monitor_rect = monitor_info['Monitor']
+                work_area = monitor_info['Work']
+                # 将lParam转换为MINMAXINFO指针
+                info = cast(
+                    msg.lParam, POINTER(MINMAXINFO)).contents
+                # 调整位置
+                info.ptMaxSize.x = work_area[2] - work_area[0]
+                info.ptMaxSize.y = work_area[3] - work_area[1]
+                info.ptMaxTrackSize.x = info.ptMaxSize.x
+                info.ptMaxTrackSize.y = info.ptMaxSize.y
+                # 修改放置点的x,y坐标
+                info.ptMaxPosition.x = abs(
+                    window_rect[0] - monitor_rect[0])
+                info.ptMaxPosition.y = abs(
+                    window_rect[1] - monitor_rect[1])
+                return True, 1
         return QWidget.nativeEvent(self, eventType, message)
 
     def connectSignalToSlot(self):
@@ -342,11 +378,13 @@ class MainWindow(QWidget):
             self.songCardPlayButtonSlot)
         self.songCardListWidget.nextPlaySignal.connect(
             self.songCardNextPlaySlot)
-        self.songCardListWidget.addSongToPlaylistSignal.connect(self.addSongToPlaylist)
+        self.songCardListWidget.addSongToPlaylistSignal.connect(
+            self.addSongToPlaylist)
         # todo:将专辑卡的信号连接到槽函数
         self.albumCardViewer.playSignal.connect(self.playAlbum)
         self.albumCardViewer.nextPlaySignal.connect(self.albumCardNextPlaySlot)
-        self.albumCardViewer.addAlbumToPlaylistSignal.connect(self.addAlbumToPlaylist)
+        self.albumCardViewer.addAlbumToPlaylistSignal.connect(
+            self.addAlbumToPlaylist)
         # todo:将子播放窗口的信号连接槽槽函数
         self.subPlayWindow.nextSongButton.clicked.connect(self.playlist.next)
         self.subPlayWindow.lastSongButton.clicked.connect(
@@ -542,6 +580,10 @@ class MainWindow(QWidget):
         volume = self.settingInterface.config.get('volume', 20)
         self.playBar.volumeSlider.setValue(volume)
         self.playingInterface.playBar.volumeSlider.setValue(volume)
+        # 初始化亚克力颜色
+        acrylicColor = self.settingInterface.config.get(
+            'playBar-acrylicColor', '0a517aB8')
+        self.playBar.setAcrylicColor(acrylicColor)
 
     def showPlayingInterface(self):
         """ 显示正在播放界面 """
@@ -628,17 +670,18 @@ class MainWindow(QWidget):
         self.playingInterface.songListWidget.resize(
             self.playingInterface.width()-60, self.playingInterface.height()-382)
         # 直接设置播放栏上拉箭头按钮箭头方向朝下
-        self.playingInterface.playBar.pullUpArrowButton.setArrowDirection('down')
+        self.playingInterface.playBar.pullUpArrowButton.setArrowDirection(
+            'down')
         if self.playingInterface.isPlaylistVisible:
             self.showPlayingInterface()
 
     def clearPlaylist(self):
         """ 清空播放列表 """
-        self.playlistType = PlaylistType.NO_PLAYLIST
+        self.playlist.playlistType = PlaylistType.NO_PLAYLIST
         self.playlist.clear()
         self.playingInterface.clearPlaylist()
 
-    def addSongToPlaylist(self,songInfo:dict):
+    def addSongToPlaylist(self, songInfo: dict):
         """ 向播放列表尾部添加一首歌 """
         self.playlist.addMedia(songInfo)
         self.playingInterface.setPlaylist(self.playlist.playlist)

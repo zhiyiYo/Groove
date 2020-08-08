@@ -1,12 +1,13 @@
 import sys
 from ctypes.wintypes import HWND
 
+from win32.lib import win32con
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QPixmap, QResizeEvent
 from PyQt5.QtWidgets import QApplication, QHBoxLayout, QLabel, QWidget
 
-from effects.frameless_window_func import FramelessWindowFunc
-from flags.wm_hittest import Flags
+from effects.window_effect import WindowEffect
 
 from .title_bar_buttons import BasicButton, MaximizeButton
 
@@ -19,7 +20,7 @@ class TitleBar(QWidget):
         self.resize(1360, 40)
         self.win = parent
         # 实例化无边框窗口函数类
-        self.framelessWindowFunc = FramelessWindowFunc()
+        self.windowEffect = WindowEffect()
         self.setAttribute(Qt.WA_TranslucentBackground)
         # 实例化小部件
         self.title = QLabel('Groove 音乐',self)
@@ -83,7 +84,7 @@ class TitleBar(QWidget):
 
     def mousePressEvent(self, event):
         if self.isPointInDragRegion(event.pos()):
-            self.framelessWindowFunc.moveWindow(HWND(int(self.parent().winId())))
+            self.windowEffect.moveWindow(HWND(int(self.parent().winId())))
 
     def showRestoreWindow(self):
         """ 复原窗口并更换最大化按钮的图标 """

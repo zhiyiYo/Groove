@@ -56,7 +56,7 @@ class SubSelectSongFolderPanel(QWidget):
         self.completeButton = QPushButton('完成', self)
         self.titleLabel = QLabel('从本地曲库创建个人"收藏"', self)
         self.folderCard_list = []
-        if self.__config['selected-folders']:
+        if self.__config.get('selected-folders'):
             self.subTitleLabel = QLabel('现在我们正在查看这些文件夹', self)
             for folderPath in self.__config['selected-folders']:
                 folderCard = FolderCard(folderPath, self)
@@ -104,7 +104,7 @@ class SubSelectSongFolderPanel(QWidget):
         """ 定时器溢出时显示文件对话框 """
         self.addFolderTimer.stop()
         path = QFileDialog.getExistingDirectory(self, '选择文件夹', './')
-        if path and path not in self.__config['selected-folders']:
+        if path and path not in self.__config.get('selected-folders',[]):
             # 将斜杠替换为反斜杠
             path = path.replace('/','\\')
             # 将选择的文件夹路径插入列表
@@ -151,8 +151,11 @@ class SubSelectSongFolderPanel(QWidget):
 
     def readConfig(self):
         """ 从json文件读入配置 """
-        with open('config\\config.json', encoding='utf-8') as f:
-            self.__config = json.load(f)
+        try:
+            with open('config\\config.json', encoding='utf-8') as f:
+                self.__config = json.load(f)
+        except FileNotFoundError:
+            self.__config = {'selected-folders': []}
 
     def paintEvent(self, e):
         """ 绘制边框 """

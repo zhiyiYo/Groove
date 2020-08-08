@@ -13,6 +13,8 @@ class SongInfo():
     def __init__(self, target_path_list: list):
         # 获取音频文件夹列表
         self.target_path_list = target_path_list
+        if not target_path_list:
+            self.target_path_list = []
         self.songInfo_list = []
         self.getInfo()
 

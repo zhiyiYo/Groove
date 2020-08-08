@@ -1,5 +1,10 @@
+# coding:utf-8
+
 from ctypes import c_bool, cdll
-from ctypes.wintypes import DWORD, HWND
+from ctypes.wintypes import DWORD, HWND,LPARAM
+
+from win32 import win32gui
+from win32.lib import win32con
 
 
 class WindowEffect():
@@ -21,7 +26,7 @@ class WindowEffect():
 
         # 设置和亚克力效果相叠加的背景颜色
         gradientColor = gradientColor[6:] + gradientColor[4:6] + \
-                        gradientColor[2:4] + gradientColor[:2]
+            gradientColor[2:4] + gradientColor[:2]
         gradientColor = DWORD(int(gradientColor, base=16))
         animationId = DWORD(animationId)
         self.dll.setAcrylicEffect(hWnd, accentFlags, gradientColor,
@@ -47,3 +52,20 @@ class WindowEffect():
     def setWindowFrame(self, hWnd: HWND, left: int, top, right, buttom):
         """ 设置客户区的边框大小 """
         self.dll.setWindowFrame(hWnd, left, top, right, buttom)
+
+    def setWindowAnimation(self, hWnd: int):
+        """ 打开窗口动画效果 """
+        style = win32gui.GetWindowLong(hWnd, win32con.GWL_STYLE)
+        win32gui.SetWindowLong(
+            hWnd, win32con.GWL_STYLE, style | win32con.WS_MAXIMIZEBOX
+                                            | win32con.WS_CAPTION
+                                            | win32con.CS_DBLCLKS
+                                            | win32con.WS_THICKFRAME)
+
+    def adjustMaximizedClientRect(self, hWnd: HWND, lParam: int):
+        """ 窗口最大化时调整大小 """
+        self.dll.adjustMaximizedClientRect(hWnd, LPARAM(lParam))
+
+    def moveWindow(self,hWnd:HWND):
+        """ 移动窗口 """
+        self.dll.moveWindow(hWnd)

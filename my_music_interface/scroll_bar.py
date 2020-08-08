@@ -30,7 +30,7 @@ class ScrollBar(QWidget):
     def adjustSrollBarHeight(self):
         """ 根据父级窗口的高度调整滚动条高度 """
         if self.parent():
-            self.minScrollBar.setFixedHeight(self.parent().height()-153)
+            self.minScrollBar.setFixedHeight(self.parent().height()-156)
 
     def setQss(self):
         """ 设置层叠样式 """

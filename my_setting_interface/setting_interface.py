@@ -1,5 +1,6 @@
 import sys
 from json import dump, load
+import os
 
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import (QApplication, QCheckBox, QHBoxLayout, QLabel,
@@ -74,8 +75,10 @@ class SettingInterface(QWidget):
         self.musicInThisPCLabel.setObjectName('titleLabel')
         self.equalizerLabel.setObjectName('clickableLabel')
         self.selectFolderLabel.setObjectName('clickableLabel')
+        # 根据是否有选中目录来设置爬虫复选框的启用与否
+        self.updateCheckBoxEnabled()
         # 设置选中的主题颜色
-        if self.config['color-mode'] == 'light-color':
+        if self.config.get('color-mode','light-color') == 'light-color':
             self.lightColorButton.setChecked(True)
         else:
             self.darkColorButton.setChecked(True)
@@ -98,6 +101,13 @@ class SettingInterface(QWidget):
         self.scrollArea.setWidget(self.widget)
         self.all_h_layout.addWidget(self.scrollArea)
         self.all_h_layout.setContentsMargins(0, 0, 0, 0)
+
+    def updateCheckBoxEnabled(self):
+        """ 根据是否有选中目录来设置爬虫复选框的启用与否 """
+        if self.config.get('selected-folders'):
+            self.getMetaDataCheckBox.setEnabled(True)
+        else:
+            self.getMetaDataCheckBox.setEnabled(False)
 
     def checkBoxStatedChangedEvent(self):
         """ 复选框状态改变对应的槽函数 """
@@ -174,8 +184,16 @@ class SettingInterface(QWidget):
 
     def readConfig(self):
         """ 读入配置文件数据 """
-        with open('config\\config.json', encoding='utf-8') as f:
-            self.config = load(f)
+        # 如果配置文件夹不存在就创建一个
+        if not os.path.exists('config'):
+            os.mkdir('config')
+        try:
+            with open('config\\config.json', encoding='utf-8') as f:
+                self.config = load(f)
+        except FileNotFoundError:
+            self.config = {}
+        if hasattr(self,'getMetaDataCheckBox'):
+            self.updateCheckBoxEnabled()
 
     def writeConfig(self):
         """ 读入配置文件数据 """

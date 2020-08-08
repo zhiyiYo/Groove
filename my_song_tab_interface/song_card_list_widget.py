@@ -92,6 +92,11 @@ class SongCardListWidget(ListWidget):
             songCard.doubleClicked.connect(self.__emitCurrentChangedSignal)
             songCard.playButtonClicked.connect(self.__playButtonSlot)
             songCard.clicked.connect(self.setCurrentIndex)
+        # 添加一个空白item来填补playBar所占高度
+        self.placeholderItem = QListWidgetItem(self)
+        self.placeholderItem.setSizeHint(QSize(1150,145))
+        self.placeholderItem.setBackground(QBrush(Qt.white))
+        self.addItem(self.placeholderItem)
 
     def __playButtonSlot(self, index):
         """ 歌曲卡播放按钮槽函数 """
@@ -218,7 +223,7 @@ class SongCardListWidget(ListWidget):
         """ 如果歌曲卡数量太少就调整自己的高度 """
         if self.parent():
             if len(self.songCard_list) * 60 < self.parent().height() - 60:
-                self.resize(self.width(), len(self.songCard_list) * 60)
+                self.resize(self.width(), len(self.songCard_list) * 60 + 145)
     
 
 if __name__ == '__main__':

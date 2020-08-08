@@ -13,6 +13,10 @@ QMenu#cardContextMenu{
     width:1px;
 }
 
+QMenu#songCardContextMenu{
+    width: 128px;
+}
+
 QMenu::right-arrow {
     /*position: relative;*/
     width: 16px;

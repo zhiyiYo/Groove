@@ -14,8 +14,8 @@ def gaussianBlur(rawImagePath, savePath='', blurRadius=18, brightnessFactor=1):
         blurImageArray[:, :, i] = gaussian_filter(
             imageArray[:, :, i], blurRadius) * brightnessFactor
     # 将ndarray转换为Image对象
-    blurImage = Image.fromarray(blurImageArray)
     if savePath:
+        blurImage = Image.fromarray(blurImageArray)
         blurImage.save(savePath)
     return blurImageArray
 
