@@ -186,13 +186,6 @@ class SubPropertyPanel(QWidget):
         # 绘制边框
         painter.setPen(self.pen)
         painter.drawRect(0, 0, self.width()-1, self.height()-1)
-
-    def setDropShadowEffect(self):
-        """ 添加阴影 """
-        dll = cdll.LoadLibrary('dll\\windowEffect.dll')
-        self.class_amanded = c_bool(False)
-        self.hWnd = HWND(int(self.winId()))
-        dll.addShadowEffect(c_bool(1), self.hWnd)
     
     def setShadowEffect(self):
         """ 添加阴影效果 """

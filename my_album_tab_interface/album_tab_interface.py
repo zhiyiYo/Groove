@@ -5,7 +5,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction, QApplication, QLabel, QPushButton, QWidget
 
 from my_widget.my_button import RandomPlayButton, SortModeButton
-from my_widget.my_menu import Menu
+from my_widget.my_menu import AeroMenu
 
 from .album_card_viewer import AlbumCardViewer
 
@@ -19,13 +19,13 @@ class AlbumTabInterface(QWidget):
         super().__init__(parent)
         self.resize(1270, 800)
         # 实例化专辑视图
-        self.albumCardViewer = AlbumCardViewer(target_path_list,self)
+        self.albumCardViewer = AlbumCardViewer(target_path_list, self)
         self.guideLabel = QLabel('这里没有可显示的内容。请尝试其他筛选器。', self)
         # 实例化无序播放所有按钮
         self.randomPlayButton = RandomPlayButton(
             slot=self.randomPlay, parent=self)
         # 实例化排序依据标签、按钮和菜单
-        self.sortModeMenu = Menu(parent=self)
+        self.sortModeMenu = AeroMenu(parent=self)
         self.sortModeLabel = QLabel('排序依据:', self)
         self.sortModeButton = SortModeButton(
             '添加日期', self.showSortModeMenu, self)
@@ -37,7 +37,7 @@ class AlbumTabInterface(QWidget):
         # 初始化
         self.__initWidget()
         self.__initLayout()
-        
+
     def __initWidget(self):
         """ 初始化小部件 """
         # 获取专辑总数
@@ -52,7 +52,7 @@ class AlbumTabInterface(QWidget):
         self.sortModeLabel.setObjectName('sortModeLabel')
         self.sortModeMenu.setProperty('modeNumber', '4')
         self.guideLabel.setObjectName('guideLabel')
-        self.guideLabel.resize(500,30)
+        self.guideLabel.resize(500, 30)
         # 如果专辑为空就显示guideLabel
         self.guideLabel.setHidden(not self.albumCardViewer.isAlbumEmpty)
         if self.albumCardViewer.isAlbumEmpty:
@@ -63,11 +63,11 @@ class AlbumTabInterface(QWidget):
     def __initLayout(self):
         """ 初始化布局 """
         self.guideLabel.move(15, 103)
-        self.randomPlayButton.move(11,23)
+        self.randomPlayButton.move(11, 23)
         self.sortModeLabel.move(211, 23)
         self.sortModeButton.move(286, 18)
-        self.albumCardViewer.move(0,56)
-        
+        self.albumCardViewer.move(0, 56)
+
     def addActionToMenu(self):
         """ 将动作添加到菜单里 """
 
@@ -115,7 +115,7 @@ class AlbumTabInterface(QWidget):
             self.albumCardViewer.sortBySonger()
         # 改变排序方式时发送信号调整关联滚动条的滚动范围
         self.sortModeChanged.emit()
-        
+
     def showSortModeMenu(self):
         """ 显示排序方式菜单 """
         # 设置默认动作
@@ -133,7 +133,8 @@ class AlbumTabInterface(QWidget):
     def resizeEvent(self, e):
         """ 调整大小时改变小部件大小 """
         super().resizeEvent(e)
-        self.albumCardViewer.resize(self.width(),self.albumCardViewer.height())
+        self.albumCardViewer.resize(
+            self.width(), self.albumCardViewer.height())
 
 
 if __name__ == "__main__":

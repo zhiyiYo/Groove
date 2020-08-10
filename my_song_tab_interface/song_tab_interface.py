@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
                              QLayout, QPushButton, QVBoxLayout, QWidget)
 
 from my_widget.my_button import RandomPlayButton, SortModeButton
-from my_widget.my_menu import Menu
+from my_widget.my_menu import AeroMenu
 
 from .song_card_list_widget import SongCardListWidget
 
@@ -16,20 +16,22 @@ class SongTabInterface(QWidget):
     """ 创建歌曲标签界面 """
     randomPlayAllSig = pyqtSignal()
 
-    def __init__(self, target_path_list:list, parent=None):
+    def __init__(self, target_path_list: list, parent=None):
         super().__init__(parent)
         self.resize(1267, 804)
         # 实例化布局
         self.h_layout = QHBoxLayout()
         self.all_v_layout = QVBoxLayout()
         # 实例化标签和下拉菜单
-        self.sortModeMenu = Menu(parent=self)
+        self.sortModeMenu = AeroMenu(parent=self)
         self.sortModeLabel = QLabel('排序依据:', self)
         self.guideLabel = QLabel('这里没有可显示的内容。请尝试其他筛选器。', self)
-        self.sortModeButton = SortModeButton('添加日期', self.showSortModeMenu, self)
-        self.randomPlayButton = RandomPlayButton(slot=self.randomPlay, parent=self)
+        self.sortModeButton = SortModeButton(
+            '添加日期', self.showSortModeMenu, self)
+        self.randomPlayButton = RandomPlayButton(
+            slot=self.randomPlay, parent=self)
         # 实例化歌曲列表视图
-        self.songCardListWidget = SongCardListWidget(target_path_list,self)
+        self.songCardListWidget = SongCardListWidget(target_path_list, self)
         # 将动作添加到菜单中
         self.addActionToMenu()
         # 设置初始排序方式
@@ -55,7 +57,7 @@ class SongTabInterface(QWidget):
         self.sortModeLabel.setObjectName('sortModeLabel')
         self.guideLabel.setObjectName('guideLabel')
         # 根据歌曲卡个数决定是否隐藏标签
-        self.guideLabel.resize(500,26)
+        self.guideLabel.resize(500, 26)
         if self.songCardListWidget.songCard_list:
             self.guideLabel.hide()
         else:
@@ -120,7 +122,7 @@ class SongTabInterface(QWidget):
         super().resizeEvent(e)
         self.songCardListWidget.resize(
             self.width()-20, self.songCardListWidget.height())
-        
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

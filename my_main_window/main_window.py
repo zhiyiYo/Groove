@@ -174,6 +174,9 @@ class MainWindow(QWidget):
         """ 调整尺寸时同时调整子窗口的尺寸 """
         super().resizeEvent(e)
         self.setWidgetGeometry()
+        # 更新标题栏图标
+        if isMaximized(int(self.winId())):
+            self.titleBar.maxBt.setMaxState(True)
 
     def showNavigationMenu(self):
         """ 显示导航菜单和抬头 """

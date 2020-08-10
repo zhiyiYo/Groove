@@ -12,14 +12,14 @@ from PyQt5.QtWidgets import (
 from get_info.get_song_info import SongInfo
 from my_dialog_box import PropertyPanel, SongInfoEditPanel
 from my_widget.my_listWidget import ListWidget
-from my_widget.my_menu import AddToMenu, Menu, SongCardListContextMenu
 
 from .song_card import SongCard
+from .song_card_list_context_menu import SongCardListContextMenu
 
 
 class SongCardListWidget(ListWidget):
     """ 定义一个歌曲卡列表视图 """
-    
+
     playSignal = pyqtSignal(dict)
     nextPlaySignal = pyqtSignal(dict)
     removeItemSignal = pyqtSignal(int)
@@ -61,7 +61,7 @@ class SongCardListWidget(ListWidget):
         self.__setQss()
         # 信号连接到槽
         self.__connectSignalToSlot()
-        
+
     def createSongCards(self):
         """ 清空列表并创建新歌曲卡 """
         for songCard in self.songCard_list:
@@ -94,7 +94,7 @@ class SongCardListWidget(ListWidget):
             songCard.clicked.connect(self.setCurrentIndex)
         # 添加一个空白item来填补playBar所占高度
         self.placeholderItem = QListWidgetItem(self)
-        self.placeholderItem.setSizeHint(QSize(1150,145))
+        self.placeholderItem.setSizeHint(QSize(1150, 145))
         self.placeholderItem.setBackground(QBrush(Qt.white))
         self.addItem(self.placeholderItem)
 
@@ -118,7 +118,7 @@ class SongCardListWidget(ListWidget):
         if hitIndex > -1:
             self.contextMenu.exec(self.cursor().pos())
 
-    def __removeSongCard(self,index):
+    def __removeSongCard(self, index):
         """ 删除选中的歌曲卡 """
         songCard = self.songCard_list.pop(index)
         songCard.deleteLater()
@@ -149,7 +149,7 @@ class SongCardListWidget(ListWidget):
             self.currentIndex = index
             self.playingIndex = index  # 更新正在播放的下标
             self.playingSongInfo = self.songInfo.songInfo_list[index]
-        
+
     def showPropertyPanel(self):
         """ 显示属性面板 """
         propertyPanel = PropertyPanel(
@@ -185,7 +185,7 @@ class SongCardListWidget(ListWidget):
         self.songInfo = SongInfo(self.target_path_list)
         self.setSortMode(self.sortMode)
 
-    def setSortMode(self,sortMode:str):
+    def setSortMode(self, sortMode: str):
         """ 根据当前的排序模式来排序歌曲开 """
         self.sortMode = sortMode
         if self.sortMode == '添加时间':
@@ -196,14 +196,15 @@ class SongCardListWidget(ListWidget):
             self.songInfo.sortBySonger()
         self.updateSongCards(self.songInfo.songInfo_list)
         if self.playingSongInfo in self.songInfo.songInfo_list:
-            self.setPlay(self.songInfo.songInfo_list.index(self.playingSongInfo))
+            self.setPlay(self.songInfo.songInfo_list.index(
+                self.playingSongInfo))
 
     def updateSongCards(self, songInfoDict_list: list):
         """ 更新所有歌曲卡的信息 """
         for i in range(len(songInfoDict_list)):
             songInfo_dict = songInfoDict_list[i]
             self.songCard_list[i].updateSongCard(songInfo_dict)
-        
+
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
         self.contextMenu.playAct.triggered.connect(
@@ -217,14 +218,14 @@ class SongCardListWidget(ListWidget):
         self.contextMenu.deleteAct.triggered.connect(
             lambda: self.__removeSongCard(self.currentRow()))
         self.contextMenu.addToMenu.playingAct.triggered.connect(
-            lambda : self.addSongToPlaylistSignal.emit(self.songCard_list[self.currentRow()].songInfo))
+            lambda: self.addSongToPlaylistSignal.emit(self.songCard_list[self.currentRow()].songInfo))
 
     def __adjustHeight(self):
         """ 如果歌曲卡数量太少就调整自己的高度 """
         if self.parent():
             if len(self.songCard_list) * 60 < self.parent().height() - 60:
                 self.resize(self.width(), len(self.songCard_list) * 60 + 145)
-    
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

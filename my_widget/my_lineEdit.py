@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLineEdit,
 
 from my_functions.is_not_leave import isNotLeave
 from my_widget.my_button import ThreeStateButton
-from my_widget.my_menu import LineEditMenu, Menu
+from my_widget.my_menu import LineEditMenu, AeroMenu
 
 
 class LineEdit(QLineEdit):
@@ -33,10 +33,9 @@ class LineEdit(QLineEdit):
         self.h_layout = QHBoxLayout()
         self.initWidget()
 
-
     def initWidget(self):
         """ 初始化小部件 """
-        self.resize(500,40)
+        self.resize(500, 40)
         self.clearButton.hide()
         self.textChanged.connect(self.textChangedEvent)
         self.clearButton.move(self.width() - self.clearButton.width(), 0)
@@ -45,7 +44,7 @@ class LineEdit(QLineEdit):
         self.clearButton.installEventFilter(self)
 
     def mousePressEvent(self, e):
-        if e.button()==Qt.LeftButton:
+        if e.button() == Qt.LeftButton:
             # 如果已经全选了再次点击就取消全选
             if self.clickedTime == 0:
                 self.selectAll()
@@ -98,7 +97,7 @@ class LineEdit(QLineEdit):
     def resizeEvent(self, e):
         """ 改变大小时需要移动按钮的位置 """
         self.clearButton.move(self.width() - self.clearButton.width(), 0)
-        
+
     def eventFilter(self, obj, e):
         """ 清空按钮按下时清空内容并隐藏按钮 """
         if obj == self.clearButton:
@@ -106,7 +105,7 @@ class LineEdit(QLineEdit):
                 self.clear()
                 self.clearButton.hide()
                 return True
-        return super().eventFilter(obj,e)
+        return super().eventFilter(obj, e)
 
 
 if __name__ == "__main__":

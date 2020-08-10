@@ -1,5 +1,6 @@
-import re
 import sys
+
+import numpy as np
 
 from PyQt5.QtCore import QEvent, QPoint, Qt, pyqtSignal
 from PyQt5.QtGui import (QBitmap, QBrush, QColor, QContextMenuEvent, QIcon,
@@ -8,10 +9,12 @@ from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsBlurEffect,
                              QLabel, QVBoxLayout, QWidget)
 
 from my_functions.auto_wrap import autoWrap
+from my_functions.get_pressed_pos import getPressedPos
 from my_functions.is_not_leave import isNotLeave
+from my_functions.perspective_transform import PerspectiveTransform
 from my_widget.blur_button import BlurButton
-from my_widget.my_label import ClickableLabel
-from my_widget.my_menu import CardContextMenu
+from my_widget.my_label import ClickableLabel, PerspectiveTransformLabel
+from .album_card_context_menu import AlbumCardContextMenu
 
 
 class AlbumCard(QWidget):
@@ -103,14 +106,14 @@ class AlbumCard(QWidget):
     def contextMenuEvent(self, event: QContextMenuEvent):
         """ 显示右击菜单 """
         # 创建菜单
-        menu = CardContextMenu(self, cardType=1)
+        menu = AlbumCardContextMenu(parent=self)
         menu.playAct.triggered.connect(
             lambda: self.playSignal.emit(self.albumInfo['songInfo_list']))
         menu.nextToPlayAct.triggered.connect(
             lambda: self.nextPlaySignal.emit(self.albumInfo['songInfo_list']))
         menu.addToMenu.playingAct.triggered.connect(
-            lambda : self.addToPlaylistSignal.emit(self.albumInfo['songInfo_list']))
-        menu.exec_(event.globalPos())
+            lambda: self.addToPlaylistSignal.emit(self.albumInfo['songInfo_list']))
+        menu.exec(event.globalPos())
 
     def adjustLabel(self):
         """ 根据专辑名的长度决定是否换行 """
@@ -137,11 +140,9 @@ class AlbumCoverWindow(QWidget):
         super().__init__(parent)
         self.resize(200, 200)
         self.picPath = picPath
-        # 隐藏边框并将背景设置为透明
-        self.setWindowFlags(Qt.FramelessWindowHint)
-        self.setAttribute(Qt.WA_TranslucentBackground)
         # 实例化封面和按钮
-        self.albumPic = QLabel(self)
+        self.albumPic = PerspectiveTransformLabel(
+            self.picPath, (200, 200), self)
         self.playButton = BlurButton(
             self, (29, 66), 'resource\\images\\播放按钮_70_70.png', self.picPath, blurRadius=50)
         self.addToButton = BlurButton(
@@ -151,26 +152,15 @@ class AlbumCoverWindow(QWidget):
 
     def initWidget(self):
         """ 初始化小部件 """
-        self.albumPic.setPixmap(
-            QPixmap(self.picPath).scaled(self.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        # 隐藏边框并将背景设置为透明
+        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setAttribute(Qt.WA_TranslucentBackground)
         # 专辑图居中
         self.albumPic.move(int(self.width() / 2 - self.albumPic.pixmap().width() / 2),
                            int(self.height() / 2 - self.albumPic.pixmap().height() / 2))
         # 隐藏按钮
         self.playButton.hide()
         self.addToButton.hide()
-
-    def paintEvent(self, e):
-        """ 绘制背景 """
-        painter = QPainter(self)
-        # 设置无描边
-        pen = Qt.NoPen
-        painter.setPen(pen)
-        # 设置画刷的内容为白底
-        brush = QBrush(Qt.white)
-        painter.setBrush(brush)
-        # 在指定区域画图
-        painter.drawRect(0, 0, self.width(), self.height())
 
 
 if __name__ == "__main__":

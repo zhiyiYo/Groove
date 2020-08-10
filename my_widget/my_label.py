@@ -1,10 +1,12 @@
 import sys
 
-from PyQt5.QtCore import QPoint, Qt, QTimer, pyqtSignal, QEvent
-from PyQt5.QtGui import QMouseEvent,QEnterEvent,QPixmap
+from PyQt5.QtCore import QEvent, QPoint, Qt, QTimer, pyqtSignal
+from PyQt5.QtGui import QEnterEvent, QMouseEvent, QPixmap
 from PyQt5.QtWidgets import QApplication, QLabel, QToolTip, QWidget
 
+from my_functions.get_pressed_pos import getPressedPos
 from my_functions.is_not_leave import isNotLeave
+from my_functions.perspective_transform import PerspectiveTransform
 from my_widget.my_toolTip import ToolTip
 
 
@@ -85,7 +87,90 @@ class ErrorIcon(QLabel):
             if notLeave:
                 return
             self.customToolTip.hide()
-        
+
+
+class PerspectiveTransformLabel(QLabel):
+    """ 可以进行透视变换的Label """
+
+    def __init__(self, picPath, picSize:tuple, parent):
+        super().__init__(parent=parent)
+        self.resize(picSize[0],picSize[1])
+        self.picPath = picPath
+        self.picSize = picSize
+        self.pressedPix = None
+        self.pressedPos = None
+        self.perspectiveTrans = None
+        self.picPix = QPixmap(self.picPath).scaled(
+            self.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        self.setPixmap(self.picPix)
+
+    def mousePressEvent(self, e):
+        """ 鼠标点击时对封面进行透视变换 """
+        super().mousePressEvent(e)
+        # 获取鼠标点击位置
+        self.pressedPos = getPressedPos(self, e)
+        if not self.perspectiveTrans:
+            self.perspectiveTrans = PerspectiveTransform(
+                self.picPath, (200, 200))  # type:PerspectiveTransform
+            self.perspectiveTrans.pressedPos = None
+        # 根据鼠标点击位置的不同设置背景封面的透视变换
+        if self.perspectiveTrans.pressedPos != self.pressedPos:
+            if self.pressedPos == 'left':
+                self.perspectiveTrans.setDstPoints(
+                    [5, 4], [self.perspectiveTrans.width - 2, 1],
+                    [3, self.perspectiveTrans.height - 3],
+                    [self.perspectiveTrans.width - 2, self.perspectiveTrans.height - 1])
+            elif self.pressedPos == 'left-top':
+                self.perspectiveTrans.setDstPoints(
+                    [6, 5], [self.perspectiveTrans.width - 1, 1],
+                    [1, self.perspectiveTrans.height - 2],
+                    [self.perspectiveTrans.width - 2, self.perspectiveTrans.height - 1])
+            elif self.pressedPos == 'left-bottom':
+                self.perspectiveTrans.setDstPoints(
+                    [2, 3], [self.perspectiveTrans.width - 3, 0],
+                    [2, self.perspectiveTrans.height - 4],
+                    [self.perspectiveTrans.width - 2, self.perspectiveTrans.height - 2])
+            elif self.pressedPos == 'top':
+                self.perspectiveTrans.setDstPoints(
+                    [3, 5], [self.perspectiveTrans.width - 4, 5],
+                    [1, self.perspectiveTrans.height - 2],
+                    [self.perspectiveTrans.width - 2, self.perspectiveTrans.height - 2])
+            elif self.pressedPos == 'center':
+                self.perspectiveTrans.setDstPoints(
+                    [3, 4], [self.perspectiveTrans.width - 4, 4],
+                    [3, self.perspectiveTrans.height - 3],
+                    [self.perspectiveTrans.width - 4, self.perspectiveTrans.height - 3])
+            elif self.pressedPos == 'bottom':
+                self.perspectiveTrans.setDstPoints(
+                    [2, 2], [self.perspectiveTrans.width - 3, 3],
+                    [3, self.perspectiveTrans.height - 3],
+                    [self.perspectiveTrans.width - 4, self.perspectiveTrans.height - 3])
+            elif self.pressedPos == 'right-bottom':
+                self.perspectiveTrans.setDstPoints(
+                    [2, 0], [self.perspectiveTrans.width - 3, 3],
+                    [1, self.perspectiveTrans.height - 2],
+                    [self.perspectiveTrans.width - 5, self.perspectiveTrans.height - 3])
+            elif self.pressedPos == 'right-top':
+                self.perspectiveTrans.setDstPoints(
+                    [0, 1], [self.perspectiveTrans.width - 7, 5],
+                    [2, self.perspectiveTrans.height - 1],
+                    [self.perspectiveTrans.width - 2, self.perspectiveTrans.height - 2])
+            elif self.pressedPos == 'right':
+                self.perspectiveTrans.setDstPoints(
+                    [1, 1], [self.perspectiveTrans.width - 6, 4],
+                    [2, self.perspectiveTrans.height - 1],
+                    [self.perspectiveTrans.width - 4, self.perspectiveTrans.height - 3])
+            self.pressedPix = self.perspectiveTrans.getPerspectiveTransform(
+                self.perspectiveTrans.width, self.perspectiveTrans.height, True).scaled(
+                    self.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        self.perspectiveTrans.pressedPos = self.pressedPos
+        self.setPixmap(self.pressedPix)
+
+    def mouseReleaseEvent(self, e):
+        """ 鼠标送回恢复原图像 """
+        super().mouseReleaseEvent(e)
+        self.setPixmap(self.picPix)
+
 
 class Demo(QWidget):
     def __init__(self):

@@ -4,10 +4,10 @@ from PyQt5.QtCore import QEasingCurve, QEvent, QPropertyAnimation, QRect, Qt
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction
 
-from my_widget.my_menu import Menu
+from my_widget.my_menu import AeroMenu
 
 
-class MoreActionsMenu(Menu):
+class MoreActionsMenu(AeroMenu):
     """ 更多操作圆角菜单，actionFlag用来指示动作的类型，actionFlag=1有四个动作，actionFlag=0有三个动作 """
 
     def __init__(self, parent=None, actionFlag=1):

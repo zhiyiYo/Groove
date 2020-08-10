@@ -16,4 +16,3 @@ demo = MainWindow()
 demo.show()
 demo.playBar.show()
 sys.exit(app.exec_())
-
