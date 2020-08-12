@@ -2,7 +2,7 @@
 
 import sys
 
-from PyQt5.QtCore import QPoint, QSize, Qt
+from PyQt5.QtCore import QPoint, QSize, Qt, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent, QIcon, QFont, QResizeEvent
 from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
                              QScrollBar, QVBoxLayout, QWidget)
@@ -13,6 +13,7 @@ from .scroll_bar import ScrollBar
 
 class MyMusicInterface(QWidget):
     """ 创建一个本地音乐分组界面 """
+    currentIndexChanged = pyqtSignal(int)
 
     def __init__(self, target_path_list: list, parent=None):
         super().__init__(parent)
@@ -66,7 +67,7 @@ class MyMusicInterface(QWidget):
         self.album_scrollBar.hide()
         # 标签窗口改变时也改变显示的滚动条
         self.myMusicTabWidget.stackedWidget.currentChanged.connect(
-            self.changeTabEvent)
+            self.changeTabSlot)
         self.myMusicTabWidget.albumTab.sortModeChanged.connect(
             self.album_scrollBar.associateScrollBar)
         # 分配ID
@@ -75,6 +76,9 @@ class MyMusicInterface(QWidget):
         self.song_scrollBar.setObjectName('songScrollBar')
         # self.songer_scrollBar.setObjectName('songerScrollBar')
         self.album_scrollBar.setObjectName('albumScrollBar')
+        # 信号连接到槽
+        self.myMusicTabWidget.currentIndexChanged.connect(
+            lambda index: self.currentIndexChanged.emit(index))
 
     def adjustScrollBarHeight(self):
         """ 调整滚动条高度 """
@@ -96,7 +100,7 @@ class MyMusicInterface(QWidget):
         for scrollBar in self.scrollBar_list:
             scrollBar.move(self.width() - scrollBar.width(), 40)
 
-    def changeTabEvent(self, index):
+    def changeTabSlot(self, index):
         """ 当前标签窗口改变时更改滚动条的绑定对象 """
         if index == 0:
             self.song_scrollBar.show()

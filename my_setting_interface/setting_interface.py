@@ -197,9 +197,6 @@ class SettingInterface(QWidget):
 
     def writeConfig(self):
         """ 读入配置文件数据 """
-        # 重置下标
-        self.config['current-index'] = 0
-        self.config['pre-index'] = 1
         with open('config\\config.json','w', encoding='utf-8') as f:
             dump(self.config, f)
 

@@ -22,6 +22,7 @@ class PlayingInterface(QWidget):
     currentIndexChanged = pyqtSignal(int)
     removeMediaSignal = pyqtSignal(int)
     randomPlayAllSignal = pyqtSignal()
+    switchToAlbumInterfaceSig = pyqtSignal(str)
 
     def __init__(self, playlist: list = None, parent=None):
         super().__init__(parent)
@@ -87,7 +88,7 @@ class PlayingInterface(QWidget):
         self.hidePlaylistTimer.setInterval(50)
         self.showPlaylistTimer.timeout.connect(self.showPlayListTimerSlot)
         self.hidePlaylistTimer.timeout.connect(self.hidePlayListTimerSlot)
-        
+
     def __setQss(self):
         """ 设置层叠样式 """
         with open(r'resource\css\playInterface.qss', encoding='utf-8') as f:
@@ -346,6 +347,13 @@ class PlayingInterface(QWidget):
             self.__removeSongFromPlaylist)
         self.randomPlayAllButton.clicked.connect(
             lambda: self.randomPlayAllSignal.emit())
+        # 切换到专辑界面
+        def switchToAlbumInterfaceSlot(
+            albumName): return self.switchToAlbumInterfaceSig.emit(albumName)
+        self.songInfoCardChute.switchToAlbumInterfaceSig.connect(
+            switchToAlbumInterfaceSlot)
+        self.songListWidget.switchToAlbumInterfaceSig.connect(
+            switchToAlbumInterfaceSlot)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 import sys
 
-from PyQt5.QtCore import QPoint, Qt
+from PyQt5.QtCore import QPoint, Qt,pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QFont, QPainter, QPen, QPolygon
 from PyQt5.QtWidgets import QApplication, QPushButton, QWidget
 
@@ -9,7 +9,9 @@ from my_functions.get_pressed_pos import getPressedPos
 
 class TabButton(QPushButton):
     """ 标签按钮，点击即可换页 """
-    def __init__(self, text:str, parent=None, tabIndex=0):
+    buttonSelected = pyqtSignal(int)
+
+    def __init__(self, text:str, parent=None, tabIndex:int=0):
         super().__init__(parent)
         self.text = text
         self.isEnter = False
@@ -17,6 +19,11 @@ class TabButton(QPushButton):
         self.pressedPos = None
         self.tabIndex = tabIndex
         self.setFixedSize(55, 40)
+
+    def setSelected(self, isSelected: bool):
+        """ 设置选中状态 """
+        self.isSelected = isSelected
+        self.update()
         
     def enterEvent(self, e):
         """ 鼠标进入时置位状态位 """
@@ -36,6 +43,7 @@ class TabButton(QPushButton):
         """ 鼠标松开更新样式 """
         self.pressedPos = None
         super().mouseReleaseEvent(e)
+        self.buttonSelected.emit(self.tabIndex)
 
     def paintEvent(self, QPaintEvent):
         """ 绘制背景 """

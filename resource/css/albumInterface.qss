@@ -1,0 +1,13 @@
+QLabel#albumNameLabel{
+    color:white;
+    font: 22pt 'Microsoft YaHei';
+    font-weight: 500;
+}
+
+QLabel#songerNameLabel,
+QLabel#yearTconLabel {
+    color: white;
+    font: 9pt 'Microsoft YaHei';
+    /*font: 15px 'Microsoft YaHei';*/
+}
+

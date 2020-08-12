@@ -13,6 +13,7 @@ from my_widget.my_label import ClickableLabel
 class SongCard(QWidget):
     """ 歌曲卡 """
     clicked = pyqtSignal(int)
+    switchToAlbumInterfaceSig = pyqtSignal(str)
 
     def __init__(self, songInfo: dict, parent=None):
         super().__init__(parent)
@@ -63,6 +64,8 @@ class SongCard(QWidget):
         # 信号连接到槽
         self.playButton.clicked.connect(
             lambda: self.clicked.emit(self.itemIndex))
+        self.albumLabel.clicked.connect(
+            lambda: self.switchToAlbumInterfaceSig.emit(self.albumLabel.text()))
 
     def __setQss(self):
         """ 设置层叠样式 """
@@ -166,14 +169,14 @@ class SongCard(QWidget):
         # 左键点击时才更新样式
         if e.button() == Qt.LeftButton:
             if not self.isPlaying:
-                # 发送点击信号
-                self.clicked.emit(self.itemIndex)
                 self.aniGroup.finished.connect(self.aniFinishedSlot)
 
     def aniFinishedSlot(self):
         """ 动画完成时更新样式 """
+        # 发送点击信号
         self.setDynamicProperty('enter-play')
         self.songNameCard.checkBox.hide()
+        self.clicked.emit(self.itemIndex)
         # 动画完成后需要断开连接，为下一次样式更新做准备
         self.aniGroup.disconnect()
 

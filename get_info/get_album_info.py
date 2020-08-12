@@ -50,18 +50,29 @@ class AlbumInfo():
         # 再将同一个专辑的歌曲添加到字典的歌曲列表中
         for songInfo in songInfo_list:
             for albumInfo_dict in albumInfo_list:
-                # 更新专辑的更新时间
-                if albumInfo_dict['updateTime'] < songInfo['createTime']:
-                    albumInfo_dict['updateTime'] = songInfo['createTime']
                 # songInfo['album']的一个元素存的是原始专辑名
                 if albumInfo_dict['album'] == songInfo['album'][0]:
                     # 如果专辑名匹配就将歌曲信息插到字典的列表中
                     albumInfo_dict['songInfo_list'].append(songInfo)
+                    # 更新专辑的更新时间
+                    if albumInfo_dict['updateTime'] < songInfo['createTime']:
+                        albumInfo_dict['updateTime'] = songInfo['createTime']
                     break
+        # 根据曲目序号排序每一个专辑
+        for albumInfo_dict in albumInfo_list:
+            albumInfo_dict['songInfo_list'].sort(key=self.sortAlbum)
+        # 将专辑信息写入文件
         with open('Data\\albumInfo.json', 'w', encoding='utf-8') as f:
             json.dump(albumInfo_list, f)
 
         return albumInfo_list
+
+    def sortAlbum(self, songInfo):
+        trackNum = songInfo['tracknumber']  # type:str
+        # 处理m4a
+        if not trackNum[0].isnumeric():
+            return eval(trackNum)[0]
+        return int(trackNum)
 
     def sortByUpdateTime(self):
         """ 依据文件创建日期排序文件信息列表 """

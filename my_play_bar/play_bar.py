@@ -21,7 +21,7 @@ class PlayBar(QWidget):
         # 实例化窗口特效
         self.windowEffect = WindowEffect()
         self.hWnd = HWND(int(self.winId()))
-        self.acrylicColor='0a517aB8'
+        self.acrylicColor = '0a517aB8'
         # 记录移动次数
         self.moveTime = 0
         # 实例化小部件
@@ -45,7 +45,7 @@ class PlayBar(QWidget):
         # 引用小部件
         self.referenceWidgets()
         # 连接槽函数
-        self.songInfoCard.coverChanged.connect(self.updateDominantColor)
+        self.songInfoCard.songChanged.connect(self.updateDominantColor)
         self.moreActionsButton.clicked.connect(self.showMoreActionsMenu)
         # 设置小部件位置
         self.__setWidgetPos()

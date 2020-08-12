@@ -200,9 +200,9 @@ class BasicButton(QToolButton):
 
     def mouseReleaseEvent(self, e):
         """ 鼠标按下更新背景 """
-        super().mouseReleaseEvent(e)
         self.isPressed = False
         self.update()
+        super().mouseReleaseEvent(e)
 
     def paintEvent(self, e):
         """ 绘制背景 """

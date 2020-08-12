@@ -18,6 +18,7 @@ class SongListWidget(ListWidget):
     """ 正在播放列表 """
     currentIndexChanged = pyqtSignal(int)
     removeItemSignal = pyqtSignal(int)
+    switchToAlbumInterfaceSig = pyqtSignal(str)
 
     def __init__(self, playlist: list, parent=None):
         super().__init__(parent)
@@ -35,8 +36,8 @@ class SongListWidget(ListWidget):
 
     def __initWidget(self):
         """ 初始化小部件 """
-        self.resize(1367, 800)
-        self.setDragEnabled(True)
+        self.resize(1150, 800)
+        # self.setDragEnabled(True)
         self.setSelectionMode(QListWidget.ExtendedSelection)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -67,9 +68,11 @@ class SongListWidget(ListWidget):
             self.item_list.append(item)
             # 信号连接到槽
             songCard.clicked.connect(self.__emitCurrentChangedSignal)
+            songCard.switchToAlbumInterfaceSig.connect(
+                self.__switchToAlbumInterface)
         if self.playlist:
             self.songCard_list[0].setPlay(True)
-        self.resize(1367, 800)
+        self.resize(1200, 800)
         # 更新歌曲卡更新方式
         self.updateMode = UpdateMode.UPDATE_ALL_CARDS
 
@@ -81,7 +84,7 @@ class SongListWidget(ListWidget):
     def resizeEvent(self, e):
         """ 更新item的尺寸 """
         for item in self.item_list:
-            item.setSizeHint(QSize(self.width()-117, 60))
+            item.setSizeHint(QSize(self.width(), 60))
         super().resizeEvent(e)
 
     def __connectSignalToSlot(self):
@@ -92,6 +95,9 @@ class SongListWidget(ListWidget):
         self.menu.propertyAct.triggered.connect(self.__showPropertyPanel)
         self.menu.removeAct.triggered.connect(
             lambda: self.__removeSongCard(self.currentRow()))
+        self.menu.showAlbumAct.triggered.connect(
+            lambda: self.__switchToAlbumInterface(
+                self.songCard_list[self.currentRow()].albumLabel.text()))
 
     def __emitCurrentChangedSignal(self, index):
         """ 发送当前播放的歌曲卡下标变化信号，同时更新样式和歌曲信息卡 """
@@ -105,7 +111,7 @@ class SongListWidget(ListWidget):
         if hitIndex > -1:
             self.menu.moveUpAct.setEnabled(True)
             self.menu.moveDownAct.setEnabled(True)
-            if self.currentRow()== len(self.playlist) - 1:
+            if self.currentRow() == len(self.playlist) - 1:
                 self.menu.moveDownAct.setEnabled(False)
             if self.currentRow() == 0:
                 self.menu.moveUpAct.setEnabled(False)
@@ -120,7 +126,7 @@ class SongListWidget(ListWidget):
     def __removeSongCard(self, index):
         """ 移除选中的一个歌曲卡 """
         # 记录下当前播放列表长度
-        playlistLen=len(self.playlist)
+        playlistLen = len(self.playlist)
         self.playlist.pop(index)
         songCard = self.songCard_list.pop(index)
         songCard.deleteLater()
@@ -195,6 +201,8 @@ class SongListWidget(ListWidget):
                 self.item_list.append(item)
                 # 信号连接到槽
                 songCard.clicked.connect(self.__emitCurrentChangedSignal)
+                songCard.switchToAlbumInterfaceSig.connect(
+                    self.__switchToAlbumInterface)
         elif deltaLen < 0:
             # 删除多余的item
             for i in range(len(self.playlist) - 1, len(self.playlist) + deltaLen - 1, -1):
@@ -212,6 +220,10 @@ class SongListWidget(ListWidget):
         # 更新样式和当前下标
         self.currentIndex = 0
         self.songCard_list[0].setPlay(True)
+
+    def __switchToAlbumInterface(self, albumName: str):
+        """ 切换到专辑界面 """
+        self.switchToAlbumInterfaceSig.emit(albumName)
 
 
 class UpdateMode(Enum):

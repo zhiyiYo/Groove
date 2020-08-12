@@ -10,8 +10,7 @@ def autoWrap(text: str, maxCharactersNum: int):
     not_alpha_num = 0
     blank_index = 0
     for index, i in enumerate(text):
-        # 大写字母按两个算
-        Match = re.match(r'[0-9a-z:\+\-\{\}\d\(\)\*\.\s]', i)
+        Match = re.match(r'[0-9A-Za-z:\+\-\{\}\d\(\)\*\.\s]', i)
         if Match:
             alpha_num += 1
             if Match.group() == ' ':

@@ -21,6 +21,7 @@ class SongCard(QWidget):
     clicked = pyqtSignal(int)
     doubleClicked = pyqtSignal(int)
     playButtonClicked = pyqtSignal(int)
+    switchToAlbumInterfaceSig = pyqtSignal(str)
 
     def __init__(self, songInfo: dict, parent=None):
         super().__init__(parent)
@@ -75,6 +76,8 @@ class SongCard(QWidget):
         self.installEventFilter(self)
         # 信号连接到槽
         self.playButton.clicked.connect(self.playButtonSlot)
+        self.albumLabel.clicked.connect(
+            lambda:self.switchToAlbumInterfaceSig.emit(self.albumLabel.text()))
 
     def setCheckBoxBtLabelState(self, state: str):
         """ 设置复选框、按钮和标签动态属性，总共3种状态"""
@@ -116,7 +119,7 @@ class SongCard(QWidget):
             self.__maxSongNameCardWidth = int(326 / 886 * width)
             self.__maxSongerLabelWidth = int(191 / 886 * width)
             self.__maxAlbumLabelWidth = self.__maxSongerLabelWidth
-            self.__maxTconLabelWidth = int(178 / 889 * width)
+            self.__maxTconLabelWidth = int(178 / 886 * width)
             # 如果实际尺寸大于可分配尺寸，就调整大小
             self.__adjustWidgetWidth()
         elif self.__resizeTime > 1:
@@ -265,7 +268,12 @@ class SongCard(QWidget):
             self.isDoubleClicked = False
             if not self.isPlaying:
                 # 发送点击信号
-                self.doubleClicked.emit(self.itemIndex)
+                self.aniGroup.finished.connect(self.__aniFinishedSlot)
+
+    def __aniFinishedSlot(self):
+        """ 动画完成时发出双击信号 """
+        self.doubleClicked.emit(self.itemIndex)
+        self.aniGroup.disconnect()
 
     def setSelected(self, isSelected:bool):
         """ 设置选中状态 """

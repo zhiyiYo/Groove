@@ -1,7 +1,6 @@
 import sys
-from ctypes.wintypes import HWND
 
-from PyQt5.QtCore import QAbstractAnimation, QPropertyAnimation, Qt
+from PyQt5.QtCore import Qt,pyqtSignal
 from PyQt5.QtGui import QColor, QIcon, QPainter, QPen
 from PyQt5.QtWidgets import (QApplication, QHBoxLayout, QLabel, QToolButton,
                              QVBoxLayout, QWidget)
@@ -16,6 +15,7 @@ from .search_line_edit import SearchLineEdit
 
 class NavigationMenu(QWidget):
     """ 侧边导航菜单 """
+    currentIndexChanged = pyqtSignal(int)
 
     def __init__(self, navigationBar, parent):
         super().__init__(parent)
@@ -29,9 +29,9 @@ class NavigationMenu(QWidget):
         self.h_layout_2 = QHBoxLayout()
         self.all_v_layout = QVBoxLayout()
         # 初始化界面
-        self.initWidget()
-        self.initLayout()
-        self.setQss()
+        self.__initWidget()
+        self.__initLayout()
+        self.__setQss()
 
     def createButtons(self):
         """实例化按钮 """
@@ -68,8 +68,10 @@ class NavigationMenu(QWidget):
             self.playListButton, self.myLoveButton, self.settingButton
         ]
         self.currentButton = self.musicGroupButton
+        # 创建按钮与下标对应的字典
+        self.buttonIndex_dict = {'musicGroupButton': 0, 'settingButton': 1}
 
-    def initWidget(self):
+    def __initWidget(self):
         """ 初始化小部件 """
         self.setFixedWidth(400)
         self.setAttribute(Qt.WA_TranslucentBackground | Qt.WA_StyledBackground)
@@ -97,7 +99,7 @@ class NavigationMenu(QWidget):
         self.myLoveButton.setObjectName('myLoveButton')
         self.playListButton.setObjectName('playListButton')
 
-    def initLayout(self):
+    def __initLayout(self):
         """ 初始化布局 """
         # 初始化布局的属性
         self.h_layout_2.setSpacing(0)
@@ -123,19 +125,34 @@ class NavigationMenu(QWidget):
         # 设置总布局
         self.setLayout(self.all_v_layout)
 
+    def setCurrentIndex(self, index: int):
+        """ 设置当前的下标，对应选中的按钮 """
+        selectedButtonName = list(
+            filter(lambda key: self.buttonIndex_dict[key] == index, self.buttonIndex_dict))
+        if selectedButtonName:
+            self.__updateButtonSelectedState(selectedButtonName[0])
+
     def setSelectedButton(self, selectedButtonName, isSendBySelf=True):
         """ 设置选中的按钮 """
         if selectedButtonName == 'playingButton':
             return
+        self.__updateButtonSelectedState(selectedButtonName)
+        # 更新绑定的任务栏的按钮的标志位和样式
+        if isSendBySelf:
+            self.navigationBar.setSelectedButton(selectedButtonName, False)
+            # 发送界面切换信号
+            if selectedButtonName in self.buttonIndex_dict.keys():
+                self.currentIndexChanged.emit(
+                    self.buttonIndex_dict[selectedButtonName])
+
+    def __updateButtonSelectedState(self, selectedButtonName):
+        """ 更新选中的按钮样式 """
         self.currentButton.setSelected(False)
         self.currentButton = self.updatableButton_list[self.__buttonName_list.index(
             selectedButtonName)]
         self.currentButton.setSelected(True)
-        # 更新绑定的任务栏的按钮的标志位和样式
-        if isSendBySelf:
-            self.navigationBar.setSelectedButton(selectedButtonName,False)
-
-    def setQss(self):
+                
+    def __setQss(self):
         """ 设置层叠样式 """
         with open(r'resource\css\navigation.qss', encoding='utf-8') as f:
             self.setStyleSheet(f.read())

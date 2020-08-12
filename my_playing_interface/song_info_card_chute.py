@@ -22,6 +22,8 @@ class SongInfoCardChute(QWidget):
     # 显示和隐藏播放栏信号
     showPlayBarSignal = pyqtSignal()
     hidePlayBarSignal = pyqtSignal()
+    # 切换到专辑界面
+    switchToAlbumInterfaceSig = pyqtSignal(str)
 
     def __init__(self, parent=None, playlist=None):
         super().__init__(parent)
@@ -52,6 +54,8 @@ class SongInfoCardChute(QWidget):
                 self.__showPlayBar)
             songInfoCard.hidePlayBarSignal.connect(
                 self.__hidePlayBar)
+            songInfoCard.switchToAlbumInterfaceSig.connect(
+                lambda albumName: self.switchToAlbumInterfaceSig.emit(albumName))
 
     def __createWidgets(self):
         """ 创建小部件 """

@@ -20,7 +20,8 @@ class TitleBar(QWidget):
     def __init__(self, parent):
         super().__init__(parent)
         self.resize(1360, 40)
-        # self.win = parent
+        # 创建记录下标的列表，里面的每一个元素为元组，第一个元素为stackWidget名字，第二个为Index
+        self.stackWidgetIndex_list = []
         # 实例化无边框窗口函数类
         self.windowEffect = WindowEffect()
         self.setAttribute(Qt.WA_TranslucentBackground)
@@ -30,6 +31,7 @@ class TitleBar(QWidget):
         # 初始化界面
         self.initWidget()
         self.adjustButtonPos()
+        self.returnBt.hide()
 
     def createButtons(self):
         """ 创建各按钮 """
@@ -112,7 +114,7 @@ class TitleBar(QWidget):
         condX = (60 < x < self.width() - 57 * 3)
         return condX
 
-    def setWhiteIcon(self, isWhiteIcon):
+    def setWhiteIcon(self, isWhiteIcon:bool):
         """ 设置图标颜色 """
         for button in self.button_list:
             button.setWhiteIcon(isWhiteIcon)

@@ -168,8 +168,8 @@ class PerspectiveTransformLabel(QLabel):
 
     def mouseReleaseEvent(self, e):
         """ 鼠标送回恢复原图像 """
-        super().mouseReleaseEvent(e)
         self.setPixmap(self.picPix)
+        super().mouseReleaseEvent(e)
 
 
 class Demo(QWidget):

@@ -7,6 +7,7 @@ from enum import Enum
 from random import shuffle
 from shutil import rmtree
 
+
 from PyQt5.QtCore import (QAbstractAnimation, QPoint, QRect, QSize, Qt, QUrl,
                           pyqtSignal)
 from PyQt5.QtGui import QCloseEvent, QFont, QIcon, QPixmap, QResizeEvent
@@ -24,6 +25,7 @@ from my_play_bar import PlayBar
 from my_playing_interface import CreateSongCardsThread, PlayingInterface
 from my_setting_interface import SettingInterface
 from my_sub_play_window import SubPlayWindow
+from my_album_interface import AlbumInterface
 from my_thumbnail_tool_bar import ThumbnailToolBar
 from my_title_bar import TitleBar
 from navigation import NavigationBar, NavigationMenu
@@ -77,7 +79,8 @@ class MainWindow(QWidget):
         self.subPlayWindow = SubPlayWindow(self, self.lastSongInfo)
         # 创建正在播放界面和创建歌曲卡线程
         self.playingInterface = PlayingInterface(self.playlist.playlist, self)
-        #self.createSongCardThread = CreateSongCardsThread(self.playingInterface.songListWidget, self)
+        # 创建专辑界面
+        self.albumInterface = AlbumInterface({}, self.subMainWindow)
         # 创建快捷键
         self.playAct = QAction(
             parent=self, shortcut=Qt.Key_Space, triggered=self.switchPlayState)
@@ -85,6 +88,9 @@ class MainWindow(QWidget):
             parent=self, shortcut=Qt.Key_Escape, triggered=self.exitFullScreen)
         self.addAction(self.playAct)
         self.addAction(self.showNormalAct)
+        # 创建stackWidget字典
+        self.stackWidget_dict = {'subStackWidget': self.subStackWidget,
+                                 'myMusicInterfaceStackWidget': self.myMusicInterface.myMusicTabWidget.stackedWidget}
 
     def __initWidget(self):
         """ 初始化小部件 """
@@ -99,18 +105,22 @@ class MainWindow(QWidget):
                   int(desktop.height() / 2 - self.height() / 2))
         # 标题栏置顶
         self.titleBar.raise_()
-        # self.titleBar.closeBt.setBlackCloseIcon(0)  # 更换图标
         # 隐藏导航菜单
         self.navigationMenu.hide()
         self.navigationBar.musicGroupButton.isSelected = True
         self.navigationMenu.musicGroupButton.isSelected = True
         # 设置窗口特效
         self.setWindowEffect()
-        # 将窗口添加到subStackWidget中
+        # todo:将窗口添加到StackWidget中
         self.subStackWidget.addWidget(self.myMusicInterface)
         self.subStackWidget.addWidget(self.settingInterface)
+        self.subStackWidget.addWidget(self.albumInterface)
         self.subStackWidget.setCurrentWidget(self.myMusicInterface)
         self.totalStackWidget.addWidget(self.subMainWindow)
+        self.totalStackWidget.addWidget(self.playingInterface)
+        # 初始化标题栏的下标列表
+        self.titleBar.stackWidgetIndex_list.append(
+            ('myMusicInterfaceStackWidget', 0))
         # 设置右边子窗口的位置
         self.setWidgetGeometry()
         # 引用小部件
@@ -119,7 +129,6 @@ class MainWindow(QWidget):
         self.initPlaylist()
         # 设置全局热键
         self.setHotKey()
-        self.totalStackWidget.addWidget(self.playingInterface)
         # 设置层叠样式
         self.setObjectName('mainWindow')
         self.subMainWindow.setObjectName('subMainWindow')
@@ -151,7 +160,7 @@ class MainWindow(QWidget):
         # 开启窗口动画
         self.windowEffect.setWindowAnimation(int(self.winId()))
         # 开启亚克力效果和阴影效果
-        self.windowEffect.setAcrylicEffect(self.hWnd, 'F2F2F250', True)
+        self.windowEffect.setAcrylicEffect(self.hWnd, 'F2F2F290', True)
 
     def setWidgetGeometry(self):
         """ 调整小部件的geometry """
@@ -165,6 +174,8 @@ class MainWindow(QWidget):
             self.width() - self.currentNavigation.width(), self.height())
         self.myMusicInterface.resize(
             self.width() - self.currentNavigation.width(), self.height())
+        if hasattr(self, 'albumInterface'):
+            self.albumInterface.resize(self.myMusicInterface.size())
         if hasattr(self, 'playingInterface'):
             self.playingInterface.resize(self.size())
         if hasattr(self, 'playBar'):
@@ -293,7 +304,7 @@ class MainWindow(QWidget):
             self.crawCompleteSlot)
         # todo: 标题栏返回按钮功能
         self.titleBar.returnBt.clicked.connect(
-            self.hidePlayingInterface)
+            self.returnButtonSlot)
         # todo:导航栏按钮功能
         self.navigationBar.showMenuButton.clicked.connect(
             self.showNavigationMenu)
@@ -376,6 +387,8 @@ class MainWindow(QWidget):
         self.playingInterface.removeMediaSignal.connect(
             self.playlist.removeMedia)
         self.playingInterface.randomPlayAllSignal.connect(self.disorderPlayAll)
+        self.playingInterface.switchToAlbumInterfaceSig.connect(
+            self.switchToAlbumInterface)
         # todo:歌曲卡的信号连接到槽函数
         self.songCardListWidget.playSignal.connect(
             self.songCardPlayButtonSlot)
@@ -383,11 +396,15 @@ class MainWindow(QWidget):
             self.songCardNextPlaySlot)
         self.songCardListWidget.addSongToPlaylistSignal.connect(
             self.addSongToPlaylist)
+        self.songCardListWidget.switchToAlbumInterfaceSig.connect(
+            self.switchToAlbumInterface)
         # todo:将专辑卡的信号连接到槽函数
         self.albumCardViewer.playSignal.connect(self.playAlbum)
         self.albumCardViewer.nextPlaySignal.connect(self.albumCardNextPlaySlot)
         self.albumCardViewer.addAlbumToPlaylistSignal.connect(
             self.addAlbumToPlaylist)
+        self.albumCardViewer.switchToAlbumInterfaceSig.connect(
+            self.__switchToAlbumInterface)
         # todo:将子播放窗口的信号连接槽槽函数
         self.subPlayWindow.nextSongButton.clicked.connect(self.playlist.next)
         self.subPlayWindow.lastSongButton.clicked.connect(
@@ -398,12 +415,29 @@ class MainWindow(QWidget):
             self.disorderPlayAll)
         # todo:将自己的信号连接到槽函数
         self.showSubPlayWindowSig.connect(lambda: self.subPlayWindow.show())
+        # todo:将专辑界面的信号连接到槽函数
+        self.albumInterface.playAlbumSignal.connect(self.playAlbum)
+        self.albumInterface.songCardPlaySig.connect(
+            self.albumInterfaceSongCardPlaySlot)
+        self.albumInterface.nextToPlaySignal.connect(self.songCardNextPlaySlot)
+        self.albumInterface.addSongToPlaylistSig.connect(
+            self.addSongToPlaylist)
+        self.albumInterface.addAlbumToPlaylistSig.connect(
+            self.addAlbumToPlaylist)
+        # todo:将主动切换界面的信号连接到槽函数
+        self.navigationBar.currentIndexChanged.connect(
+            self.stackWidgetIndexChangedSlot)
+        self.navigationMenu.currentIndexChanged.connect(
+            self.stackWidgetIndexChangedSlot)
+        self.myMusicInterface.currentIndexChanged.connect(
+            self.stackWidgetIndexChangedSlot)
 
     def referenceWidgets(self):
         """ 引用小部件 """
         self.songCardListWidget = self.myMusicInterface.myMusicTabWidget.songTab.songCardListWidget
         # self.songerCardViewer = self.myMusicInterface.myMusicTabWidget.songerTab.songerHeadPortraitViewer
         self.albumCardViewer = self.myMusicInterface.myMusicTabWidget.albumTab.albumCardViewer
+        self.albumInfo_list = self.albumCardViewer.albumInfo.albumInfo_list
 
     def initPlaylist(self):
         """ 初始化播放列表 """
@@ -535,13 +569,18 @@ class MainWindow(QWidget):
         self.subPlayWindow.updateWindow(songInfo)
         index = self.songCardListWidget.songInfo.songInfo_list.index(songInfo)
         self.songCardListWidget.setPlay(index)
+        # 更新专辑界面的歌曲卡
+        if songInfo in self.albumInterface.songListWidget.songInfo_list:
+            index = self.albumInterface.songListWidget.songInfo_list.index(
+                songInfo)
+            self.albumInterface.songListWidget.setPlay(index)
 
     def hotKeySlot(self, funcObj):
         """ 热键按下时显示子播放窗口并执行对应操作 """
         funcObj()
         self.showSubPlayWindowSig.emit()
 
-    def playAlbum(self, playlist):
+    def playAlbum(self, playlist: list):
         """ 播放专辑中的歌曲 """
         # 直接更新播放列表
         self.playingInterface.setPlaylist(playlist)
@@ -592,6 +631,7 @@ class MainWindow(QWidget):
         """ 显示正在播放界面 """
         self.playBar.hide()
         self.titleBar.title.hide()
+        self.titleBar.returnBt.show()
         if not self.playingInterface.isPlaylistVisible:
             self.playingInterface.songInfoCardChute.move(0, 0)
             self.playingInterface.playBar.hide()
@@ -601,10 +641,15 @@ class MainWindow(QWidget):
     def hidePlayingInterface(self):
         """ 隐藏正在播放界面 """
         self.playBar.show()
-        self.navigationBar.setSelectedButton(
-            self.navigationBar.currentButton.property('name'))
         self.totalStackWidget.setCurrentIndex(0)
-        self.titleBar.setWhiteIcon(False)
+        # 根据当前界面设置标题栏按钮颜色
+        if self.subStackWidget.currentWidget() == self.albumInterface:
+            self.titleBar.returnBt.setWhiteIcon(False)
+        else:
+            self.titleBar.setWhiteIcon(False)
+        # 隐藏返回按钮
+        if len(self.titleBar.stackWidgetIndex_list) == 1 and self.subStackWidget.currentWidget() != self.albumInterface:
+            self.titleBar.returnBt.hide()
         if self.navigationMenu.isVisible():
             self.titleBar.title.show()
         if not self.playingInterface.isPlaylistVisible:
@@ -693,3 +738,78 @@ class MainWindow(QWidget):
         """ 向播放列表尾部添加专辑 """
         self.playlist.addMedias(songInfoDict_list)
         self.playingInterface.setPlaylist(self.playlist.playlist)
+
+    def switchToAlbumInterface(self, album: str):
+        """ 由专辑名切换到专辑界面 """
+        albumInfo = list(
+            filter(lambda albumInfo: albumInfo['album'] == album, self.albumInfo_list))[0]
+        if not albumInfo:
+            albumInfo = {}
+        self.__switchToAlbumInterface(albumInfo)
+
+    def __switchToAlbumInterface(self, albumInfo: dict):
+        """ 由专辑信息切换到专辑界面 """
+        # 显示返回按钮
+        self.titleBar.returnBt.show()
+        self.albumInterface.updateWindow(albumInfo)
+        self.subStackWidget.setCurrentWidget(self.albumInterface)
+        self.totalStackWidget.setCurrentIndex(0)
+        self.playBar.show()
+        self.titleBar.setWhiteIcon(True)
+        self.titleBar.returnBt.setWhiteIcon(False)
+        # 根据当前播放的歌曲设置歌曲卡播放状态
+        songInfo = self.playlist.playlist[self.playlist.currentIndex()]
+        if songInfo in self.albumInterface.songInfo_list:
+            index = self.albumInterface.songInfo_list.index(
+                songInfo)
+            self.albumInterface.songListWidget.setPlay(index)
+
+    def albumInterfaceSongCardPlaySlot(self, index):
+        """ 专辑界面歌曲卡播放按钮按下时 """
+        albumSongList = self.albumInterface.songInfo_list
+        # 播放模式不为专辑播放模式或者播放列表不同时直接刷新播放列表
+        cond = self.playlist.playlistType != PlaylistType.ALBUM_CARD_PLAYLIST \
+            or self.playlist.playlist != albumSongList
+        if cond:
+            self.playAlbum(albumSongList)
+        self.playlist.setCurrentIndex(index)
+
+    def returnButtonSlot(self):
+        """ 标题栏返回按钮的槽函数 """
+        if self.totalStackWidget.currentWidget() == self.playingInterface:
+            self.hidePlayingInterface()
+        else:
+            # 当前界面不是albumInterface时弹出下标列表的最后一个下标
+            if self.titleBar.stackWidgetIndex_list and self.subStackWidget.currentWidget() != self.albumInterface:
+                self.titleBar.stackWidgetIndex_list.pop()
+            if self.titleBar.stackWidgetIndex_list:
+                stackWidgetName, index = self.titleBar.stackWidgetIndex_list[-1]
+                self.stackWidget_dict[stackWidgetName].setCurrentIndex(index)
+                if stackWidgetName == 'myMusicInterfaceStackWidget':
+                    self.subStackWidget.setCurrentIndex(0)
+                    self.navigationBar.setCurrentIndex(0)
+                    self.navigationMenu.setCurrentIndex(0)
+                    self.myMusicInterface.myMusicTabWidget.setSelectedButton(
+                        index)
+                elif stackWidgetName == 'subStackWidget':
+                    self.navigationBar.setCurrentIndex(index)
+                    self.navigationMenu.setCurrentIndex(index)
+                if len(self.titleBar.stackWidgetIndex_list) == 1:
+                    # 没有上一个下标时隐藏返回按钮
+                    self.titleBar.returnBt.hide()
+        self.titleBar.setWhiteIcon(False)
+        # 根据当前界面设置标题栏按钮颜色
+        if self.subStackWidget.currentWidget() == self.albumInterface:
+            self.titleBar.minBt.setWhiteIcon(True)
+            self.titleBar.maxBt.setWhiteIcon(True)
+            self.titleBar.closeBt.setWhiteIcon(True)
+
+    def stackWidgetIndexChangedSlot(self, index):
+        """ 堆叠窗口下标改变时的槽函数 """
+        self.titleBar.returnBt.show()
+        if self.sender() in [self.navigationBar, self.navigationMenu]:
+            self.titleBar.stackWidgetIndex_list.append(
+                ('subStackWidget', index))
+        elif self.sender() == self.myMusicInterface:
+            self.titleBar.stackWidgetIndex_list.append(
+                ('myMusicInterfaceStackWidget', index))

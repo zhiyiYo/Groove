@@ -1,10 +1,8 @@
 import sys
 from json import dump
 
-from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent, QPoint,
-                          QPropertyAnimation, QSize, Qt, pyqtSignal)
-from PyQt5.QtGui import (QBrush, QColor, QContextMenuEvent, QIcon, QPixmap,
-                         QWheelEvent)
+from PyQt5.QtCore import QEvent, QPoint, QSize, Qt, pyqtSignal
+from PyQt5.QtGui import QBrush, QColor, QContextMenuEvent, QIcon, QPixmap,QPainter
 from PyQt5.QtWidgets import (
     QAbstractItemView, QAction, QApplication, QHBoxLayout, QLabel, QListWidget,
     QListWidgetItem, QWidget)
@@ -24,6 +22,7 @@ class SongCardListWidget(ListWidget):
     nextPlaySignal = pyqtSignal(dict)
     removeItemSignal = pyqtSignal(int)
     addSongToPlaylistSignal = pyqtSignal(dict)
+    switchToAlbumInterfaceSig = pyqtSignal(str)
 
     def __init__(self, target_path_list: list, parent=None):
         super().__init__(parent)
@@ -36,7 +35,7 @@ class SongCardListWidget(ListWidget):
         if self.songInfo.songInfo_list:
             self.playingSongInfo = self.songInfo.songInfo_list[0]
         self.sortMode = '添加时间'
-        self.resize(1267, 758)
+        self.resize(1150, 758)
         # 初始化列表
         self.songCard_list = []
         self.item_list = []
@@ -50,7 +49,7 @@ class SongCardListWidget(ListWidget):
     def __initWidget(self):
         """ 初始化小部件 """
         # self.setDragEnabled(True)
-        self.__adjustHeight()
+        self.update()
         self.setAlternatingRowColors(True)
         # self.setSelectionMode(QListWidget.ExtendedSelection)
         # 将滚动模式改为以像素计算
@@ -92,10 +91,14 @@ class SongCardListWidget(ListWidget):
             songCard.doubleClicked.connect(self.__emitCurrentChangedSignal)
             songCard.playButtonClicked.connect(self.__playButtonSlot)
             songCard.clicked.connect(self.setCurrentIndex)
+            songCard.switchToAlbumInterfaceSig.connect(
+                lambda albumName: self.switchToAlbumInterfaceSig.emit(albumName))
         # 添加一个空白item来填补playBar所占高度
         self.placeholderItem = QListWidgetItem(self)
+        self.placeholderWidget = PlaceHolderWidget()
+        self.placeholderWidget.resize(1150, 145)
         self.placeholderItem.setSizeHint(QSize(1150, 145))
-        self.placeholderItem.setBackground(QBrush(Qt.white))
+        self.setItemWidget(self.placeholderItem, self.placeholderWidget)
         self.addItem(self.placeholderItem)
 
     def __playButtonSlot(self, index):
@@ -131,14 +134,13 @@ class SongCardListWidget(ListWidget):
             self.currentIndex -= 1
         # 发送信号
         self.removeItemSignal.emit(index)
-        # 如果歌曲卡太少就调整高度
-        self.__adjustHeight()
+        self.update()
 
     def __emitCurrentChangedSignal(self, index):
         """ 发送当前播放的歌曲卡变化信号，同时更新样式和歌曲信息卡 """
+        self.setPlay(index)
         # 发送歌曲信息更新信号
         self.playSignal.emit(self.songCard_list[index].songInfo)
-        self.setPlay(index)
 
     def setPlay(self, index):
         """ 设置播放状态 """
@@ -176,9 +178,10 @@ class SongCardListWidget(ListWidget):
 
     def resizeEvent(self, e):
         """ 更新item的尺寸 """
-        for item in self.item_list:
-            item.setSizeHint(QSize(self.width()-117, 60))
         super().resizeEvent(e)
+        for item in self.item_list:
+            item.setSizeHint(QSize(self.width(), 60))
+        self.placeholderItem.setSizeHint(QSize(self.width(), 145))
 
     def updateSongCardInfo(self):
         """ 重新扫描歌曲文件夹并更新歌曲卡信息 """
@@ -215,16 +218,30 @@ class SongCardListWidget(ListWidget):
             self.showSongInfoEditPanel)
         self.contextMenu.showPropertyAct.triggered.connect(
             self.showPropertyPanel)
+        self.contextMenu.showAlbumAct.triggered.connect(
+            lambda: self.switchToAlbumInterfaceSig.emit(self.songCard_list[self.currentRow()].albumLabel.text()))
         self.contextMenu.deleteAct.triggered.connect(
             lambda: self.__removeSongCard(self.currentRow()))
         self.contextMenu.addToMenu.playingAct.triggered.connect(
             lambda: self.addSongToPlaylistSignal.emit(self.songCard_list[self.currentRow()].songInfo))
+        
+    def paintEvent(self, e):
+        """ 绘制白色背景 """
+        super().paintEvent(e)
+        painter = QPainter(self.viewport())
+        painter.setPen(Qt.white)
+        painter.setBrush(Qt.white)
+        painter.drawRect(0, 60 * len(self.songCard_list),
+                        self.width(), self.height())
 
-    def __adjustHeight(self):
-        """ 如果歌曲卡数量太少就调整自己的高度 """
-        if self.parent():
-            if len(self.songCard_list) * 60 < self.parent().height() - 60:
-                self.resize(self.width(), len(self.songCard_list) * 60 + 145)
+
+class PlaceHolderWidget(QWidget):
+    """ 占位空白 """
+
+    def __init__(self, parent=None):
+        super().__init__()
+        self.setAttribute(Qt.WA_StyledBackground)
+        self.setStyleSheet('background:white')
 
 
 if __name__ == '__main__':

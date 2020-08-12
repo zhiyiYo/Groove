@@ -22,7 +22,7 @@ class SongInfo():
         """ 更新json文件 """
         with open('Data\\songInfo.json', 'w', encoding='utf-8') as f:
             json.dump([{}], f)
-        self.songInfo_list=[]
+        self.songInfo_list = []
         self.getInfo()
 
     def getInfo(self):
@@ -57,7 +57,7 @@ class SongInfo():
         ]
 
         # 判断旧文件路径列表是否与新文件名列表相等
-        if set(self.songPath_list) == set(oldSongPath_list) and len(oldSongPath_list)==len(self.songPath_list):
+        if set(self.songPath_list) == set(oldSongPath_list) and len(oldSongPath_list) == len(self.songPath_list):
             # 如果文件路径完全相等就直接获取以前的文件信息
             self.songInfo_list = oldData.copy()
 
@@ -85,7 +85,7 @@ class SongInfo():
                              self.songname_list, self.songer_list,
                              self.suffix_list)
 
-                for index,(song, songPath, songname, songer, suffix) in enumerate(argZip):
+                for index, (song, songPath, songname, songer, suffix) in enumerate(argZip):
                     id_card = File(songPath)
                     # 获取时间戳
                     createTime = os.path.getctime(songPath)
@@ -154,6 +154,8 @@ class SongInfo():
             # 曲目
             tracknumber = str(
                 id_card['TRCK'][0]) if id_card.get('TRCK') else '0'
+            tracknumber = self.adjustTrackNumber(tracknumber,suffix)
+            # 流派
             tcon = str(id_card['TCON'][0]) if id_card.get('TCON') else '未知流派'
             if id_card.get('TDRC'):
                 year = str(id_card['TDRC'][0]) + \
@@ -166,6 +168,7 @@ class SongInfo():
             album = id_card.get('album')[0] if id_card.get('album') else '未知专辑'
             tracknumber = id_card['tracknumber'][0] if id_card.get(
                 'tracknumber') else '0'
+            tracknumber = self.adjustTrackNumber(tracknumber,suffix)
             tcon = id_card.get('genre')[0] if id_card.get('genre') else '未知流派'
             year = id_card.get('year')[0][:4] + \
                 '年' if id_card.get('year') else '未知年份'
@@ -173,9 +176,10 @@ class SongInfo():
 
         elif suffix == '.m4a':
             album = id_card.get('©alb')[0] if id_card.get('©alb') else '未知专辑'
-            # m4a的曲目标签还应包括专辑中的总曲数,得到的是元胞数组
+            # m4a的曲目标签还应包括专辑中的总曲数,得到的是元组
             tracknumber = str(
-                id_card['trkn'][0]) if id_card.get('trkn') else '(0,0)'
+                id_card['trkn'][0]) if id_card.get('trkn') else '(0, 0)'
+            tracknumber = self.adjustTrackNumber(tracknumber,suffix)
             tcon = id_card.get('©gen')[0] if id_card.get('©gen') else '未知流派'
             year = id_card.get('©day')[0][:4] + \
                 '年' if id_card.get('©day') else '未知年份'
@@ -210,6 +214,24 @@ class SongInfo():
         """ 以歌手名排序文件信息列表 """
         self.songInfo_list.sort(key=lambda songInfo: songInfo['songer'])
 
+    def adjustTrackNumber(self, trackNum: str, suffix):
+        """ 调整曲目编号 """
+        # 删除前导0
+        if suffix == '.m4a':
+            trackNum=trackNum.replace(' ','')
+            trackNum_list = trackNum[1:-1].split(',')
+            trackNum_list = [int(i.lstrip('0')) if i !=
+                        '0' else int(i) for i in trackNum_list]
+            trackNum = str(tuple(trackNum_list))
+        else:
+            if trackNum != '0':
+                trackNum = trackNum.lstrip('0')
+            # 处理a/b
+            trackNum = trackNum.split('/')[0]
+            # 处理An
+            if trackNum[0].upper() == 'A':
+                trackNum = trackNum[1:]
+        return trackNum
 
 if __name__ == "__main__":
-    songInfo = SongInfo(['D:\\KuGou\\test_audio'])
+    songInfo = SongInfo(['D:\\KuGou'])

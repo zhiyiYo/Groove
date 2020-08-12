@@ -14,7 +14,7 @@ from .window_mask import WindowMask
 class SongInfoCard(QWidget):
     """ 播放栏左侧歌曲信息卡 """
     clicked = pyqtSignal()
-    coverChanged = pyqtSignal(str)
+    songChanged = pyqtSignal(str)
 
     def __init__(self, songInfo: dict, parent=None):
         super().__init__(parent)
@@ -77,9 +77,9 @@ class SongInfoCard(QWidget):
             self.hide()
             return
         newCoverPath = getAlbumCoverPath(self.songInfo.get('album', ' ')[-1])
+        self.songChanged.emit(newCoverPath)
         # 封面路径变化时发送信号并更新封面
         if newCoverPath != self.coverPath:
-            self.coverChanged.emit(newCoverPath)
             self.coverPath = newCoverPath
             self.albumPic.setPixmap(
                 QPixmap(self.coverPath).scaled(

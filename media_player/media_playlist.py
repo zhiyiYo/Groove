@@ -150,6 +150,8 @@ class MediaPlaylist(QMediaPlaylist):
 
     def setMedias(self, songInfoDict_list: list):
         """ 重置播放列表 """
+        if songInfoDict_list == self.playlist:
+            return
         self.clear()
         self.addMedias(songInfoDict_list)
         self.setCurrentIndex(0)

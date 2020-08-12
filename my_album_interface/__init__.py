@@ -1,0 +1,1 @@
+from .album_interface import AlbumInterface

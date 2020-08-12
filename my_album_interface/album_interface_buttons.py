@@ -19,9 +19,17 @@ class BasicButton(QPushButton):
         # 设置标志位
         self.isPressed = False
         self.isEnter = False
+        # 初始化
+        self.__initWidget()
+
+    def __initWidget(self):
+        """ 初始化小部件 """
         # 计算文本宽度
         self.__getTextWidth()
-        self.setFixedSize(self.textWidth + 70, 46)
+        if self.text:
+            self.setFixedSize(self.textWidth + 70, 46)
+        else:
+            self.setFixedSize(60, 46)
         # 安装事件过滤器
         self.installEventFilter(self)
 
@@ -55,11 +63,11 @@ class BasicButton(QPushButton):
         painter.setPen(Qt.NoPen)
         # 绘制背景
         if self.isPressed:
-            brush = QBrush(QColor(255, 255, 255, 130))
+            brush = QBrush(QColor(255, 255, 255, 127)) # 50%不透明度
             painter.setBrush(brush)
             painter.drawRoundedRect(self.rect(), 23, 23)
         elif self.isEnter:
-            brush = QBrush(QColor(255, 255, 255, 70))
+            brush = QBrush(QColor(255, 255, 255, 51)) # 20%不透明度
             painter.setBrush(brush)
             painter.drawRoundedRect(self.rect(), 23, 23)
         # 绘制图标和文字
@@ -74,7 +82,7 @@ class Demo(QWidget):
     def __init__(self):
         super().__init__()
         self.bt = BasicButton(
-            r'resource\images\album_interface\固定到开始菜单.png', '固定到"开始"菜单',self)
+            r'resource\images\album_interface\删除.png', '删除',self)
         self.setStyleSheet('QWidget{background:#404c59}')
         self.resize(200, 200)
         self.bt.move(41,77)

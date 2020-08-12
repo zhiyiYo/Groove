@@ -4,7 +4,7 @@ import numpy as np
 
 from PyQt5.QtCore import QEvent, QPoint, Qt, pyqtSignal
 from PyQt5.QtGui import (QBitmap, QBrush, QColor, QContextMenuEvent, QIcon,
-                         QMoveEvent, QPainter, QPen, QPixmap)
+                         QMoveEvent, QPainter, QPen, QPixmap, QFont, QFontMetrics)
 from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsBlurEffect,
                              QLabel, QVBoxLayout, QWidget)
 
@@ -22,10 +22,12 @@ class AlbumCard(QWidget):
     playSignal = pyqtSignal(list)
     nextPlaySignal = pyqtSignal(list)
     addToPlaylistSignal = pyqtSignal(list)
+    switchToAlbumInterfaceSig = pyqtSignal(dict)
 
     def __init__(self, albumInfo: dict, parent=None, albumViewWidget=None):
         super().__init__(parent)
         self.albumInfo = albumInfo
+        self.songInfo_list = self.albumInfo.get('songInfo_list')
         self.albumViewWidget = albumViewWidget
 
         # 设置窗体移动标志位
@@ -61,7 +63,7 @@ class AlbumCard(QWidget):
         self.songerName.setObjectName('songerName')
         # 将信号连接到槽函数
         self.playButton.clicked.connect(
-            lambda: self.playSignal.emit(self.albumInfo['songInfo_list']))
+            lambda: self.playSignal.emit(self.songInfo_list))
 
     def setWidgetsToolTip(self):
         """ 设置歌手名和专辑名的自定义提示条 """
@@ -108,19 +110,30 @@ class AlbumCard(QWidget):
         # 创建菜单
         menu = AlbumCardContextMenu(parent=self)
         menu.playAct.triggered.connect(
-            lambda: self.playSignal.emit(self.albumInfo['songInfo_list']))
+            lambda: self.playSignal.emit(self.songInfo_list))
         menu.nextToPlayAct.triggered.connect(
-            lambda: self.nextPlaySignal.emit(self.albumInfo['songInfo_list']))
+            lambda: self.nextPlaySignal.emit(self.songInfo_list))
         menu.addToMenu.playingAct.triggered.connect(
-            lambda: self.addToPlaylistSignal.emit(self.albumInfo['songInfo_list']))
+            lambda: self.addToPlaylistSignal.emit(self.songInfo_list))
         menu.exec(event.globalPos())
 
     def adjustLabel(self):
-        """ 根据专辑名的长度决定是否换行 """
+        """ 根据专辑名的长度决定是否换行和添加省略号 """
         newText, isWordWrap = autoWrap(self.albumName.text(), 22)
         if isWordWrap:
+            # 添加省略号
+            index = newText.index('\n')
+            fontMetrics = QFontMetrics(QFont('Microsoft YaHei', 10, 75))
+            secondLineText = fontMetrics.elidedText(
+                newText[index + 1:], Qt.ElideRight, 200)
+            newText = newText[: index + 1] + secondLineText
             self.albumName.setText(newText)
-            self.songerName.move(10, self.songerName.y()+22)
+            self.songerName.move(10, self.songerName.y() + 22)
+        # 给歌手名添加省略号
+        fontMetrics = QFontMetrics(QFont('Microsoft YaHei', 10, 25))
+        newSongerName = fontMetrics.elidedText(
+            self.songerName.text(), Qt.ElideRight, 200)
+        self.songerName.setText(newSongerName)
 
     def setQss(self):
         """ 设置层叠样式 """
@@ -132,6 +145,10 @@ class AlbumCard(QWidget):
         """ 检测窗体移动 """
         self.hasMoved = True
 
+    def mouseReleaseEvent(self, e):
+        """ 鼠标松开发送切换到专辑界面信号 """
+        super().mouseReleaseEvent(e)
+        self.switchToAlbumInterfaceSig.emit(self.albumInfo)
 
 class AlbumCoverWindow(QWidget):
     """ 定义专辑封面 """

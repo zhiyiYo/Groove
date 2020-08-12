@@ -23,6 +23,7 @@ class AlbumCardViewer(QWidget):
     playSignal = pyqtSignal(list)
     nextPlaySignal = pyqtSignal(list)
     addAlbumToPlaylistSignal = pyqtSignal(list)
+    switchToAlbumInterfaceSig = pyqtSignal(dict)
     
     def __init__(self, target_path_list:list, parent=None):
         super().__init__(parent)
@@ -101,6 +102,9 @@ class AlbumCardViewer(QWidget):
             # 添加到播放列表
             albumCard.addToPlaylistSignal.connect(
                 lambda playlist: self.addAlbumToPlaylistSignal.emit(playlist))
+            # 进入专辑界面
+            albumCard.switchToAlbumInterfaceSig.connect(
+                lambda albumInfo: self.switchToAlbumInterfaceSig.emit(albumInfo))
 
     def initLayout(self):
         """ 初始化布局 """
@@ -155,7 +159,7 @@ class AlbumCardViewer(QWidget):
                             row, 292)
                     else:
                         gridLayout.setRowMinimumHeight(
-                            row, 140)    
+                            row, 146)    
             for index, albumCard in enumerate(currentGroup_dict['album_list']):
                 x = index // self.column_num
                 y = index - self.column_num * x
@@ -188,7 +192,7 @@ class AlbumCardViewer(QWidget):
         else:
             # 补上分组标题所占的高度
             self.albumViewWidget.setFixedHeight(
-                303*self.total_row_num+34*len(self.currentGroupDict_list))
+                303 * self.total_row_num + 34 * len(self.currentGroupDict_list))
 
     def resizeEvent(self, event):
         """ 根据宽度调整网格的列数 """
