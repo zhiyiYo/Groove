@@ -22,7 +22,7 @@ class Demo(QWidget):
         self.lineEdit.move(int(self.width() / 2 - self.lineEdit.width() / 2),
                            int(self.height() / 2 - self.lineEdit.height() / 2)-30)
         self.lineEdit.textChanged.connect(self.printRgb)
-        with open(r'resource\css\songInfoEditPanel.qss', encoding='utf-8') as f:
+        with open(r'resource\css\infoEditPanel.qss', encoding='utf-8') as f:
             self.setStyleSheet(f.read())
 
     def setAlbumPic(self, albumPath):

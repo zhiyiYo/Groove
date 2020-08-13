@@ -61,8 +61,6 @@ class SongListWidget(ListWidget):
             self.addItem(item)
             # 将项目的内容重置为自定义类
             self.setItemWidget(item, songCard)
-            # 通过whatsthis记录每个项目对应的路径和下标
-            item.setWhatsThis(str(songInfo_dict))
             # 将item和songCard添加到列表中
             self.songCard_list.append(songCard)
             self.item_list.append(item)
@@ -194,8 +192,6 @@ class SongListWidget(ListWidget):
                 self.addItem(item)
                 # 将项目的内容重置为自定义类
                 self.setItemWidget(item, songCard)
-                # 通过whatsthis记录每个项目对应的路径和下标
-                item.setWhatsThis(str(songInfo_dict))
                 # 将item和songCard添加到列表中
                 self.songCard_list.append(songCard)
                 self.item_list.append(item)
@@ -224,6 +220,14 @@ class SongListWidget(ListWidget):
     def __switchToAlbumInterface(self, albumName: str):
         """ 切换到专辑界面 """
         self.switchToAlbumInterfaceSig.emit(albumName)
+
+    def updateOneSongCard(self, oldSongInfo, newSongInfo):
+        """ 更新一个歌曲卡 """
+        if oldSongInfo in self.playlist:
+            index = self.playlist.index(oldSongInfo)
+            self.playlist[index] = newSongInfo
+            self.songCard_list[index].updateSongCard(
+                newSongInfo)
 
 
 class UpdateMode(Enum):

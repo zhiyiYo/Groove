@@ -74,7 +74,7 @@ class TitleBar(QWidget):
 
     def adjustButtonPos(self):
         """ 初始化小部件位置 """
-        self.title.move(self.returnBt.width(), 0)
+        self.title.move(0, 0)
         self.closeBt.move(self.width() - 57, 0)
         self.maxBt.move(self.width() - 2 * 57, 0)
         self.minBt.move(self.width() - 3 * 57, 0)

@@ -1,5 +1,5 @@
 import sys
-import time
+from time import time
 
 from PyQt5.QtCore import QEvent, QPoint, QSize, Qt, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent, QIcon, QMouseEvent
@@ -31,7 +31,10 @@ class SongTabInterface(QWidget):
         self.randomPlayButton = RandomPlayButton(
             slot=self.randomPlay, parent=self)
         # 实例化歌曲列表视图
+        t1 = time()
         self.songCardListWidget = SongCardListWidget(target_path_list, self)
+        t2 = time()
+        print('创建歌曲卡列表视图所花时间：'.ljust(16), t2-t1)
         # 将动作添加到菜单中
         self.addActionToMenu()
         # 设置初始排序方式

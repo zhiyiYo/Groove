@@ -153,9 +153,11 @@ class SubSelectSongFolderPanel(QWidget):
         """ 从json文件读入配置 """
         try:
             with open('config\\config.json', encoding='utf-8') as f:
-                self.__config = json.load(f)
+                self.__config = json.load(f)  # type:dict
         except FileNotFoundError:
             self.__config = {'selected-folders': []}
+        if 'selected-folders' not in self.__config.keys():
+            self.__config['selected-folders'] = []
 
     def paintEvent(self, e):
         """ 绘制边框 """
@@ -217,27 +219,3 @@ class AddFolderCard(FoldingWindow):
                 self.image.width() - 4,
                 self.image.height() - 4, self.image)
 
-
-class Demo(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.resize(1280, 800)
-        self.label = QLabel(self)
-        self.label.setPixmap(
-            QPixmap(r"D:\hzz\图片\硝子\硝子 (3).jpg").scaled(
-                1280, 800, Qt.KeepAspectRatio, Qt.SmoothTransformation))
-        self.bt = QPushButton('点击打开歌曲文件夹选择面板', self)
-        self.bt.move(480, 355)
-        self.bt.clicked.connect(self.showPanel)
-
-    def showPanel(self):
-        # 读取信息
-        panel = SelectSongFolderPanel(self)
-        panel.exec_()
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = Demo()
-    demo.show()
-    sys.exit(app.exec_())

@@ -60,7 +60,7 @@ class SongCard(QWidget):
         self.songerLabel.setObjectName('clickableLabel')
         self.setWidgetState(self.__currentState)
         self.setCheckBoxBtLabelState('notSelected-notPlay')
-        self.__setQss()
+        # self.__setQss()
         # 安装事件过滤器
         self.installEventFilter(self)
         # 信号连接到槽

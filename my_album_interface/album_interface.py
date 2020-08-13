@@ -43,6 +43,8 @@ class AlbumInterface(QWidget):
 
     def updateWindow(self, albumInfo: dict):
         """ 更新窗口 """
+        if albumInfo == self.albumInfo:
+            return
         self.albumInfo = albumInfo if albumInfo else {}
         self.songInfo_list = albumInfo.get('songInfo_list')
         self.albumInfoBar.updateWindow(albumInfo)
@@ -71,3 +73,7 @@ class AlbumInterface(QWidget):
             lambda songInfo: self.nextToPlaySignal.emit(songInfo))
         self.songListWidget.addSongToPlaylistSignal.connect(
             lambda songInfo: self.addSongToPlaylistSig.emit(songInfo))
+
+    def updateOneSongCard(self, oldSongInfo:dict, newSongInfo):
+        """ 更新一个歌曲卡 """
+        self.songListWidget.updateOneSongCard(oldSongInfo,newSongInfo)

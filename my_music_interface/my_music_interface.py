@@ -65,11 +65,6 @@ class MyMusicInterface(QWidget):
         # 先隐藏歌手视图的滚动条
         # self.songer_scrollBar.hide()
         self.album_scrollBar.hide()
-        # 标签窗口改变时也改变显示的滚动条
-        self.myMusicTabWidget.stackedWidget.currentChanged.connect(
-            self.changeTabSlot)
-        self.myMusicTabWidget.albumTab.sortModeChanged.connect(
-            self.album_scrollBar.associateScrollBar)
         # 分配ID
         self.setObjectName('musicGroupInterface')
         self.myMusicLabel.setObjectName('myMusicLabel')
@@ -77,8 +72,7 @@ class MyMusicInterface(QWidget):
         # self.songer_scrollBar.setObjectName('songerScrollBar')
         self.album_scrollBar.setObjectName('albumScrollBar')
         # 信号连接到槽
-        self.myMusicTabWidget.currentIndexChanged.connect(
-            lambda index: self.currentIndexChanged.emit(index))
+        self.__connectSignalToSlot()
 
     def adjustScrollBarHeight(self):
         """ 调整滚动条高度 """
@@ -110,6 +104,17 @@ class MyMusicInterface(QWidget):
             self.song_scrollBar.hide()
             # self.songer_scrollBar.hide()
             self.album_scrollBar.show()
+
+    def __connectSignalToSlot(self):
+        """ 信号连接到槽 """
+        self.myMusicTabWidget.currentIndexChanged.connect(
+            self.currentIndexChanged)
+        self.myMusicTabWidget.stackedWidget.currentChanged.connect(
+            self.changeTabSlot)
+        self.myMusicTabWidget.albumTab.sortModeChanged.connect(
+            self.album_scrollBar.associateScrollBar)
+        self.myMusicTabWidget.albumTab.columnChanged.connect(
+            self.album_scrollBar.associateScrollBar)
 
 
 if __name__ == "__main__":

@@ -18,12 +18,14 @@ class PlayBar(QWidget):
 
     def __init__(self, songInfo: dict, parent=None):
         super().__init__(parent)
+        self.originWidth = 1280
         # 实例化窗口特效
         self.windowEffect = WindowEffect()
         self.hWnd = HWND(int(self.winId()))
         self.acrylicColor = '0a517aB8'
         # 记录移动次数
         self.moveTime = 0
+        self.resizeTime = 0
         # 实例化小部件
         self.playProgressBar = PlayProgressBar(
             songInfo.get('duration', '0:00'), self)
@@ -74,13 +76,29 @@ class PlayBar(QWidget):
             self.setStyleSheet(f.read())
 
     def resizeEvent(self, e):
-        self.__setWidgetPos()
+        """ 调整歌曲信息卡宽度 """
+        deltaWidth = self.width() - self.originWidth
+        if deltaWidth < 0:
+            self.__setWidgetPos()
+            self.__adjustSongInfoCardWidth()
+        elif deltaWidth > 0:
+            if self.playProgressBar.x() <= self.songInfoCard.width() + 20 or self.songInfoCard.scrollTextWindow.maxWidth != 250:
+                self.__setWidgetPos()
+                if deltaWidth + self.songInfoCard.width() >= self.songInfoCard.MAXWIDTH:
+                    self.songInfoCard.setFixedWidth(
+                        min(self.songInfoCard.MAXWIDTH, self.playProgressBar.x()-20))
+                else:
+                    self.songInfoCard.setFixedWidth(
+                        min(self.songInfoCard.width() + deltaWidth, self.playProgressBar.x() - 20))
+                self.songInfoCard.scrollTextWindow.maxWidth = self.songInfoCard.width() - 155
+                self.songInfoCard.scrollTextWindow.initFlagsWidth()
+        self.originWidth = self.width()
 
     def showMoreActionsMenu(self):
         """ 显示更多操作菜单 """
         globalPos = self.rightWidgetGroup.mapToGlobal(
             self.moreActionsButton.pos())
-        x = globalPos.x() + self.moreActionsButton.width()+16
+        x = globalPos.x() + self.moreActionsButton.width() + 16
         y = int(globalPos.y() + self.moreActionsButton.height() /
                 2 - self.moreActionsMenu.height()/2)
         self.moreActionsMenu.exec(QPoint(x, y))
@@ -100,7 +118,19 @@ class PlayBar(QWidget):
         # 引用方法
         self.setCurrentTime = self.playProgressBar.setCurrentTime
         self.setTotalTime = self.playProgressBar.setTotalTime
-        self.updateSongInfoCard = self.songInfoCard.updateSongInfoCard
+
+    def updateSongInfoCard(self, songInfo: dict):
+        """ 更新歌曲信息卡 """
+        self.songInfoCard.updateSongInfoCard(songInfo)
+        self.__adjustSongInfoCardWidth()
+
+    def __adjustSongInfoCardWidth(self):
+        """ 调整歌曲信息卡宽度 """
+        if self.songInfoCard.width() + 20 >= self.playProgressBar.x():
+            self.songInfoCard.setFixedWidth(self.playProgressBar.x() - 20)
+            self.songInfoCard.scrollTextWindow.maxWidth = self.songInfoCard.width() - 155
+            self.songInfoCard.scrollTextWindow.initFlagsWidth()
+
 
 
 if __name__ == "__main__":

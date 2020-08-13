@@ -221,7 +221,7 @@ class SubSongInfoEditPanel(QWidget):
 
     def setQss(self):
         """ 设置层叠样式表 """
-        with open(r'resource\css\songInfoEditPanel.qss', encoding='utf-8') as f:
+        with open(r'resource\css\infoEditPanel.qss', encoding='utf-8') as f:
             self.setStyleSheet(f.read())
 
     def paintEvent(self, event):

@@ -1,10 +1,11 @@
 import sys
 from json import dump
+from time import time
 
 from PyQt5.QtCore import QEvent, QPoint, QSize, Qt, pyqtSignal
-from PyQt5.QtGui import QBrush, QColor, QContextMenuEvent, QIcon, QPixmap,QPainter
+from PyQt5.QtGui import QBrush, QColor, QContextMenuEvent, QIcon, QPixmap, QPainter
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QAction, QApplication, QHBoxLayout, QLabel, QListWidget,
+    QAction, QApplication, QHBoxLayout, QLabel, QListWidget,
     QListWidgetItem, QWidget)
 
 from get_info.get_song_info import SongInfo
@@ -23,6 +24,7 @@ class SongCardListWidget(ListWidget):
     removeItemSignal = pyqtSignal(int)
     addSongToPlaylistSignal = pyqtSignal(dict)
     switchToAlbumInterfaceSig = pyqtSignal(str)
+    editSongCardSignal = pyqtSignal(dict, dict)
 
     def __init__(self, target_path_list: list, parent=None):
         super().__init__(parent)
@@ -48,14 +50,10 @@ class SongCardListWidget(ListWidget):
 
     def __initWidget(self):
         """ 初始化小部件 """
-        # self.setDragEnabled(True)
         self.update()
         self.setAlternatingRowColors(True)
-        # self.setSelectionMode(QListWidget.ExtendedSelection)
         # 将滚动模式改为以像素计算
-        self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
-        # 分配ID
-        self.setObjectName('songCardList')
+        self.setVerticalScrollMode(self.ScrollPerPixel)
         # 设置层叠样式
         self.__setQss()
         # 信号连接到槽
@@ -70,8 +68,6 @@ class SongCardListWidget(ListWidget):
         self.clear()
         # 对歌曲进行排序
         self.songInfo.sortByCreateTime()
-        # 引用排序完的字典
-        # self.songInfo_list = self.songInfo.songInfo_list
         for i in range(len(self.songInfo.songInfo_list)):
             # 添加空项目
             songInfo_dict = self.songInfo.songInfo_list[i]
@@ -83,8 +79,6 @@ class SongCardListWidget(ListWidget):
             item.setSizeHint(QSize(songCard.width(), 60))
             self.addItem(item)
             self.setItemWidget(item, songCard)
-            # 通过whatsthis记录每个项目对应的路径和下标
-            item.setWhatsThis(str(songInfo_dict))
             # 将项目添加到项目列表中
             self.songCard_list.append(songCard)
             self.item_list.append(item)
@@ -95,10 +89,7 @@ class SongCardListWidget(ListWidget):
                 lambda albumName: self.switchToAlbumInterfaceSig.emit(albumName))
         # 添加一个空白item来填补playBar所占高度
         self.placeholderItem = QListWidgetItem(self)
-        self.placeholderWidget = PlaceHolderWidget()
-        self.placeholderWidget.resize(1150, 145)
         self.placeholderItem.setSizeHint(QSize(1150, 145))
-        self.setItemWidget(self.placeholderItem, self.placeholderWidget)
         self.addItem(self.placeholderItem)
 
     def __playButtonSlot(self, index):
@@ -161,6 +152,7 @@ class SongCardListWidget(ListWidget):
     def showSongInfoEditPanel(self):
         """ 显示编辑歌曲信息面板 """
         current_dict = self.songInfo.songInfo_list[self.currentRow()]
+        oldSongInfo = current_dict.copy()
         songInfoEditPanel = SongInfoEditPanel(current_dict, self.window())
         songInfoEditPanel.exec_()
         # 更新歌曲卡
@@ -170,6 +162,8 @@ class SongCardListWidget(ListWidget):
             dump(self.songInfo.songInfo_list, f)
         # 更新歌曲信息
         self.songInfo = SongInfo(self.target_path_list)
+        # 发出编辑歌曲信息完成信号
+        self.editSongCardSignal.emit(oldSongInfo, current_dict)
 
     def __setQss(self):
         """ 设置层叠样式 """
@@ -224,7 +218,7 @@ class SongCardListWidget(ListWidget):
             lambda: self.__removeSongCard(self.currentRow()))
         self.contextMenu.addToMenu.playingAct.triggered.connect(
             lambda: self.addSongToPlaylistSignal.emit(self.songCard_list[self.currentRow()].songInfo))
-        
+
     def paintEvent(self, e):
         """ 绘制白色背景 """
         super().paintEvent(e)
@@ -232,21 +226,16 @@ class SongCardListWidget(ListWidget):
         painter.setPen(Qt.white)
         painter.setBrush(Qt.white)
         painter.drawRect(0, 60 * len(self.songCard_list),
-                        self.width(), self.height())
+                         self.width(), self.height())
 
-
-class PlaceHolderWidget(QWidget):
-    """ 占位空白 """
-
-    def __init__(self, parent=None):
-        super().__init__()
-        self.setAttribute(Qt.WA_StyledBackground)
-        self.setStyleSheet('background:white')
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    demo = SongCardListWidget(['D:\\KuGou'])
-    demo.show()
-
-    sys.exit(app.exec_())
+    def updateOneSongCard(self, oldSongInfo: dict, newSongInfo):
+        """ 更新一个歌曲卡 """
+        if oldSongInfo in self.songInfo.songInfo_list:
+            index = self.songInfo.songInfo_list.index(
+                oldSongInfo)
+            self.songInfo.songInfo_list[index] = newSongInfo
+            self.songCard_list[index].updateSongCard(
+                newSongInfo)
+            # 将修改的信息存入json文件
+            with open('Data\\songInfo.json', 'w', encoding='utf-8') as f:
+                dump(self.songInfo.songInfo_list, f)

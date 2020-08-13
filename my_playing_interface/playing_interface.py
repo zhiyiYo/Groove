@@ -355,6 +355,10 @@ class PlayingInterface(QWidget):
         self.songListWidget.switchToAlbumInterfaceSig.connect(
             switchToAlbumInterfaceSlot)
 
+    def updateOneSongCard(self, oldSongInfo:dict, newSongInfo):
+        """ 更新一个歌曲卡 """
+        self.songListWidget.updateOneSongCard(oldSongInfo, newSongInfo)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

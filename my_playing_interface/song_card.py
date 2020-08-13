@@ -58,7 +58,7 @@ class SongCard(QWidget):
         self.albumLabel.setObjectName('clickableLabel')
         self.songerLabel.setObjectName('clickableLabel')
         self.setDynamicProperty(self.__currentState)
-        self.__setQss()
+        # self.__setQss()
         # 安装事件过滤器
         self.installEventFilter(self)
         # 信号连接到槽

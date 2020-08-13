@@ -1,4 +1,5 @@
 import sys
+from time import time
 
 from PyQt5.QtCore import QEvent, QPoint, QSize, Qt, pyqtSignal
 from PyQt5.QtGui import QIcon
@@ -14,12 +15,16 @@ class AlbumTabInterface(QWidget):
     """ 定义专辑卡标签界面 """
     randomPlayAllSig = pyqtSignal()
     sortModeChanged = pyqtSignal()
+    columnChanged = pyqtSignal()
 
     def __init__(self, target_path_list: list, parent=None):
         super().__init__(parent)
         self.resize(1270, 800)
         # 实例化专辑视图
+        t1 = time()
         self.albumCardViewer = AlbumCardViewer(target_path_list, self)
+        t2 = time()
+        print('创建专辑视图所花时间：'.ljust(19), t2-t1)
         self.guideLabel = QLabel('这里没有可显示的内容。请尝试其他筛选器。', self)
         # 实例化无序播放所有按钮
         self.randomPlayButton = RandomPlayButton(
@@ -43,9 +48,6 @@ class AlbumTabInterface(QWidget):
         # 获取专辑总数
         albums_num = len(self.albumCardViewer.albumCardDict_list)
         self.randomPlayButton.setText(f'({albums_num})')
-        # 设置鼠标光标
-        self.sortModeButton.setCursor(Qt.PointingHandCursor)
-        self.randomPlayButton.setCursor(Qt.PointingHandCursor)
         # 分配ID
         self.setObjectName('albumTabInterface')
         self.sortModeMenu.setObjectName('sortModeMenu')
@@ -59,6 +61,8 @@ class AlbumTabInterface(QWidget):
             self.sortModeButton.setEnabled(False)
         # 设置层叠样式
         self.__setQss()
+        # 信号连接到槽函数
+        self.albumCardViewer.columnChanged.connect(self.columnChanged)
 
     def __initLayout(self):
         """ 初始化布局 """

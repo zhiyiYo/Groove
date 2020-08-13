@@ -42,3 +42,22 @@ QScrollBar::handle {
     border-radius: 1px;
     /*min-height: 40px;*/
 }
+
+/*设置歌手名标签样式*/
+QLabel {
+    font: 17px 'Microsoft YaHei Light';
+    background-color: transparent;
+}
+
+QLabel#songerName {
+    font-size: 16px;
+}
+
+QLabel#songerName:hover {
+    color: rgb(150, 150, 150);
+}
+
+QLabel#albumName {
+    font-family: 'Microsoft YaHei';
+    font-weight: bold;
+}

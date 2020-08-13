@@ -1,18 +1,39 @@
 import sys
 import json
-from time import time
 
-from PyQt5.QtWidgets import QApplication
-from my_album_interface import AlbumInterface
-from my_album_interface.album_info_bar import AlbumInfoBar
-from my_album_interface.song_card_list_widget import SongCardListWidget
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QApplication, QWidget,QLabel,QPushButton
+from my_dialog_box.album_info_edit_panel import AlbumInfoEditPanel
+
+
+class Demo(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.resize(1280, 800)
+        self.setQss()
+        self.label = QLabel(self)
+        self.label.setPixmap(QPixmap(r"D:\hzz\图片\硝子\硝子 (3).jpg").scaled(
+            1280, 800, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        self.bt = QPushButton('点击打开歌曲信息编辑面板', self)
+        self.bt.move(480, 355)
+        self.bt.clicked.connect(self.showPanel)
+
+    def showPanel(self):
+        # 读取信息
+        with open('Data\\albumInfo.json', 'r', encoding='utf-8') as f:
+            albumInfo_list = json.load(f)
+        albumInfo = albumInfo_list[0]
+        panel = AlbumInfoEditPanel(albumInfo, self)
+        panel.exec_()
+
+    def setQss(self):
+        with open(r'resource\css\infoEditPanel.qss', encoding='utf-8') as f:
+            self.setStyleSheet(f.read())
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    with open('Data\\albumInfo.json', encoding='utf-8') as f:
-        albumInfo_list = json.load(f)
-    demo = AlbumInterface(albumInfo_list[38])
+    demo = Demo()
     demo.show()
-    demo.updateWindow(albumInfo_list[2])
     sys.exit(app.exec_())

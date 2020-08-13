@@ -42,7 +42,7 @@ class SongCard(QWidget):
         # 创建小部件
         self.songNameCard = SongNameCard(songInfo['songName'], self)
         self.songerLabel = ClickableLabel(songInfo['songer'], self)
-        self.albumLabel = ClickableLabel(songInfo['album'][0], self)
+        self.albumLabel = ClickableLabel(songInfo['album'][0], self,False)
         self.yearLabel = QLabel(songInfo['year'], self)
         self.tconLabel = QLabel(songInfo['tcon'], self)
         self.durationLabel = QLabel(songInfo['duration'], self)
@@ -71,7 +71,7 @@ class SongCard(QWidget):
         self.songerLabel.setObjectName('clickableLabel')
         self.setWidgetState(self.__currentState)
         self.setCheckBoxBtLabelState('notSelected-notPlay')
-        self.__setQss()
+        # self.__setQss()
         # 安装事件过滤器
         self.installEventFilter(self)
         # 信号连接到槽

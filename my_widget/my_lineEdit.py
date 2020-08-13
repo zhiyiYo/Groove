@@ -11,11 +11,11 @@ from my_widget.my_menu import LineEditMenu, AeroMenu
 
 
 class LineEdit(QLineEdit):
-    """ 定义一个被点击就全选文字的单行输入框 """
+    """ 包含清空按钮的单行输入框 """
 
-    def __init__(self, string=None, parent=None):
+    def __init__(self, string=None, parent=None,isNeedClearBt:bool=True):
         super().__init__(string, parent)
-
+        self.isNeedClearBt = isNeedClearBt
         # 设置提示条和鼠标点击次数
         self.customToolTip = None
         self.clickedTime = 0
@@ -28,7 +28,6 @@ class LineEdit(QLineEdit):
         self.clearButton = ThreeStateButton(iconPath_dict, self)
         # 实例化右击菜单
         self.menu = LineEditMenu(self)
-
         # 实例化布局
         self.h_layout = QHBoxLayout()
         self.initWidget()
@@ -39,7 +38,8 @@ class LineEdit(QLineEdit):
         self.clearButton.hide()
         self.textChanged.connect(self.textChangedEvent)
         self.clearButton.move(self.width() - self.clearButton.width(), 0)
-        self.setTextMargins(0, 0, self.clearButton.width(), 0)
+        if self.isNeedClearBt:
+            self.setTextMargins(0, 0, self.clearButton.width(), 0)
         # 安装事件过滤器
         self.clearButton.installEventFilter(self)
 
@@ -53,7 +53,7 @@ class LineEdit(QLineEdit):
                 super().mousePressEvent(e)
             self.setFocus()
             # 如果输入框中有文本，就设置为只读并显示清空按钮
-            if self.text():
+            if self.text() and self.isNeedClearBt:
                 self.clearButton.show()
         self.clickedTime += 1
 
@@ -91,7 +91,7 @@ class LineEdit(QLineEdit):
 
     def textChangedEvent(self):
         """ 如果输入框中文本改变且此时清空按钮不可见，就显示清空按钮 """
-        if self.text() and not self.clearButton.isVisible():
+        if self.text() and not self.clearButton.isVisible() and self.isNeedClearBt:
             self.clearButton.show()
 
     def resizeEvent(self, e):

@@ -15,6 +15,7 @@ class SongInfoCard(QWidget):
     """ 播放栏左侧歌曲信息卡 """
     clicked = pyqtSignal()
     songChanged = pyqtSignal(str)
+    MAXWIDTH = 405
 
     def __init__(self, songInfo: dict, parent=None):
         super().__init__(parent)
@@ -52,7 +53,7 @@ class SongInfoCard(QWidget):
             self.show()
             self.setSongInfo(songInfo)
             self.scrollTextWindow.initUI(songInfo)
-            self.resize(115 + 15 + self.scrollTextWindow.width() + 25, 115)
+            self.setFixedWidth(115 + 15 + self.scrollTextWindow.width() + 25)
             self.setAlbumCover()
         else:
             self.hide()
@@ -88,14 +89,21 @@ class SongInfoCard(QWidget):
     def mouseReleaseEvent(self, e):
         """ 鼠标松开发送信号 """
         self.clicked.emit()
-
+        
 
 class ScrollTextWindow(QWidget):
     """ 滚动字幕 """
 
     def __init__(self, songInfo: dict, parent=None):
         super().__init__(parent)
+        # 设置默认最大宽度
+        self.maxWidth = 250
         self.hasInitWidget = False
+        # 设置刷新时间和移动距离
+        self.timeStep = 19
+        self.moveStep = 1
+        # 设置两段字符串之间留白的宽度
+        self.spacing = 25
         # 实例化定时器
         self.songPauseTimer = QTimer(self)
         self.songNameTimer = QTimer(self)
@@ -110,18 +118,28 @@ class ScrollTextWindow(QWidget):
         self.songName = self.songInfo.get('songName', '')
         self.songerName = self.songInfo.get('songer', '')
 
-    def initUI(self, songInfo: dict):
-        """ 重置所有属性 """
-        # 设置刷新时间和移动距离
-        self.timeStep = 19
-        self.moveStep = 1
+    def initFlagsWidth(self):
+        """ 初始化各标志位并调整窗口宽度 """ 
+        self.__initFlags()
+        # 调整宽度
+        self.adjustWindowWidth()
+        if self.isSongNameTooLong:
+            self.songNameTimer.start()
+        if self.isSongerNameTooLong:
+            self.songerNameTimer.start()
+
+    def __initFlags(self):
+        """ 初始化标志位 """
+        # 初始化下标
         self.songCurrentIndex = 0
         self.songerCurrentIndex = 0
         # 设置字符串溢出标志位
         self.isSongNameAllOut = False
         self.isSongerNameAllOut = False
-        # 设置两段字符串之间留白的宽度
-        self.spacing = 25
+
+    def initUI(self, songInfo: dict):
+        """ 重置所有属性 """
+        self.__initFlags()
         # 初始化界面
         self.setSongInfo(songInfo)
         self.initWidget()
@@ -131,7 +149,7 @@ class ScrollTextWindow(QWidget):
         """ 初始化界面 """
         self.adjustWindowWidth()
         if not self.hasInitWidget:
-            # self.setFixedHeight(115)
+            self.setFixedHeight(115)
             self.setAttribute(Qt.WA_StyledBackground)
             # 初始化定时器
             self.songPauseTimer.setInterval(400)
@@ -143,9 +161,7 @@ class ScrollTextWindow(QWidget):
             self.songPauseTimer.timeout.connect(self.restartTextTimer)
             self.songerPauseTimer.timeout.connect(self.restartTextTimer)
         # 根据字符串宽度是否大于窗口宽度开启滚动：
-        if self.songNameTimer.isActive():
             self.songNameTimer.stop()
-        if self.songerNameTimer.isActive():
             self.songerNameTimer.stop()
         if self.isSongNameTooLong:
             self.songNameTimer.start()
@@ -155,30 +171,28 @@ class ScrollTextWindow(QWidget):
 
     def getTextWidth(self):
         """ 计算文本的总宽度 """
-        # 计算大写字母个数
-        self.__countCapitalLetters()
-        songFontMetrics = QFontMetrics(QFont('Microsoft YaHei', 14, 400))
+        songFontMetrics = QFontMetrics(QFont('Microsoft YaHei', 14))
         self.songNameWidth = sum(
-            [songFontMetrics.width(i) for i in self.songName]) + 7 * self.songCapLetterNum
+            [songFontMetrics.width(i) for i in self.songName])
         # 检测歌手名是否全是英文
         self.isMatch = re.match(r'^[a-zA-Z]+$', self.songerName)
         if not self.isMatch:
-            songerFontMetrics = QFontMetrics(QFont('Microsoft YaHei', 12, 500))
+            songerFontMetrics = QFontMetrics(QFont('Microsoft YaHei', 12, 75))
         else:
-            songerFontMetrics = QFontMetrics(QFont('Microsoft YaHei', 11, 500))
+            songerFontMetrics = QFontMetrics(QFont('Microsoft YaHei', 11, 75))
         # 总是会少一个字符的长度
         self.songerNameWidth = sum(
-            [songerFontMetrics.width(i) for i in self.songerName]) + 8 + 4 * self.songerCapLetterNum
+            [songerFontMetrics.width(i) for i in self.songerName])
 
     def adjustWindowWidth(self):
         """ 根据字符串长度调整窗口宽度 """
         self.getTextWidth()
         maxWidth = max(self.songNameWidth, self.songerNameWidth)
         # 判断是否有字符串宽度超过窗口的最大宽度
-        self.isSongNameTooLong = self.songNameWidth > 250
-        self.isSongerNameTooLong = self.songerNameWidth > 250
+        self.isSongNameTooLong = self.songNameWidth > self.maxWidth
+        self.isSongerNameTooLong = self.songerNameWidth > self.maxWidth
         # 设置窗口的宽度
-        self.resize(min(maxWidth, 250), 115)
+        self.setFixedWidth(min(maxWidth, self.maxWidth))
 
     def updateSongIndex(self):
         """ 更新歌名下标 """
@@ -266,15 +280,6 @@ class ScrollTextWindow(QWidget):
             self.songNameTimer.start()
         else:
             self.songerNameTimer.start()
-
-    def __countCapitalLetters(self):
-        """ 计算大写字母个数 """
-        # 特殊字符按大写字母算
-        specialCharacters = "（）()！!"
-        self.songerCapLetterNum = sum(
-            [1 for i in self.songerName if i.isupper() or i in specialCharacters])
-        self.songCapLetterNum = sum(
-            [1 for i in self.songName if i.isupper() or i in specialCharacters])
 
 
 if __name__ == "__main__":

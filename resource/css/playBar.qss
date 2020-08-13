@@ -14,7 +14,7 @@ QSlider:horizontal{
 }
 
 QSlider#progressSlider{
-    width: 318px;
+    width: 330px;
 }
 
 QSlider#volumeSlider{

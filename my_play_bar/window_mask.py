@@ -23,21 +23,6 @@ class WindowMask(QWidget):
         self.raise_()
         super().show()
         
-    
-class Demo(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.resize(500,500)
-        self.mask = WindowMask(self,(0,0,0,50))
-        self.bt = QPushButton('显示遮罩', self)
-        self.bt.clicked.connect(self.showMask)
-
-    def showMask(self):
-        if self.mask.isVisible():
-            self.mask.hide()
-        else:
-            self.mask.show()
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

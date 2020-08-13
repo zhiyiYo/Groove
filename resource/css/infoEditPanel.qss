@@ -10,12 +10,9 @@ QLabel#songPath {
     font: 17px 'Microsoft YaHei';
 }
 
-QLabel#editSongInfo {
+QLabel#editSongInfo,
+QLabel#editAlbumInfo {
     font: 21px 'Microsoft YaHei';
-}
-
-QLabel#infoTypeLabel {
-    font: 18px 'Microsoft YaHei';
 }
 
 QLabel#bottomErrorLabel{
@@ -24,9 +21,13 @@ QLabel#bottomErrorLabel{
 
 
 QLineEdit {
-    padding: 9px 14px 8px 14px;
-    font: 16px 'Microsoft YaHei';
+    padding: 8px 13px 8px 13px;
+    font: 18px 'Microsoft YaHei';
     selection-background-color: rgb(0, 153, 188);
+}
+
+QLineEdit[hasClearBt='False']{
+    padding: 8px 13px 8px 12px;
 }
 
 QLineEdit:focus {
@@ -40,10 +41,11 @@ QLineEdit[hasText='false'] {
 
 QPushButton {
     background-color: rgb(204, 204, 204);
-    padding: 11px 64px 11px 64px;
+    padding: 10px 64px 10px 64px;
     font: 19px 'Microsoft YaHei';
     border: transparent;
     border-radius: 4px;
+    height: 40px;
 }
 
 QPushButton:pressed:hover{
@@ -69,3 +71,29 @@ QToolTip {
     height:30px;
 }
 */
+
+QScrollBar {
+    background: transparent;
+    width: 3px;
+}
+
+/*隐藏上箭头*/
+QScrollBarr::sub-line {
+    background: transparent;
+}
+
+/*隐藏下箭头*/
+QScrollBar::add-line {
+    background: transparent;
+}
+
+QScrollBar::handle {
+    background: rgb(128, 128, 128);
+    border: 2px solid rgb(128, 128, 128);
+    border-radius: 1px;
+}
+
+QScrollArea{
+    background: transparent;
+    border:none;
+}

@@ -62,8 +62,8 @@ class AlbumInfo():
         for albumInfo_dict in albumInfo_list:
             albumInfo_dict['songInfo_list'].sort(key=self.sortAlbum)
         # 将专辑信息写入文件
-        with open('Data\\albumInfo.json', 'w', encoding='utf-8') as f:
-            json.dump(albumInfo_list, f)
+        """ with open('Data\\albumInfo.json', 'w', encoding='utf-8') as f:
+            json.dump(albumInfo_list, f) """
 
         return albumInfo_list
 
@@ -86,6 +86,23 @@ class AlbumInfo():
     def sortBySonger(self):
         """ 以歌手名排序文件信息列表 """
         self.albumInfo_list.sort(key=lambda albumInfo: albumInfo['songer'])
+
+    def updateOneAlbumSongInfo(self, newSongInfo: dict) -> dict:
+        """ 更新专辑中的一首歌的信息，并返回一个更新后的专辑信息 """
+        for albumInfo in self.albumInfo_list:
+            if albumInfo['album'] == newSongInfo['album'][0] and albumInfo['songer'] == newSongInfo['songer']:
+                for songInfo in albumInfo['songInfo_list']:
+                    if songInfo['songPath'] == newSongInfo['songPath']:
+                        songInfo = newSongInfo.copy()
+                        return albumInfo
+        return {}
+
+    def getOneAlbumInfo(self, albumName: str) -> dict:
+        """ 根据专辑名返回一个专辑信息字典 """
+        for albumInfo in self.albumInfo_list:
+            if albumInfo['album'] == albumName:
+                return albumInfo
+        return {}
 
 
 if __name__ == "__main__":

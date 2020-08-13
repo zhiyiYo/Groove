@@ -1,6 +1,7 @@
 # coding:utf-8
 
 import sys
+from time import time
 
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QColor, QPainter, QPen
@@ -31,9 +32,14 @@ class MyMusicTabWidget(QWidget):
         """ 创建小部件 """
         # 实例化界面
         self.stackedWidget = QStackedWidget(self)
+        t1=time()
         self.songTab = SongTabInterface(self.target_path_list, self)
+        t2=time()
         # self.songerTab = SongerTabInterface(self)
+        print('创建歌曲标签界面所花时间：'.ljust(17), t2-t1)
         self.albumTab = AlbumTabInterface(self.target_path_list, self)
+        t3 = time()
+        print('创建专辑标签界面所花时间：'.ljust(17), t3-t2)
         # 实例化按钮和分组
         self.songTabButton = TabButton('歌曲', self, 0)
         self.songerTabButton = TabButton('歌手', self, 1)

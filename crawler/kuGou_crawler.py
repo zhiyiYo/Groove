@@ -72,10 +72,8 @@ class KuGouCrawler():
                     self.writeAlbumInfo(album_card_element)
 
             if self.suffix == 'mp3':
-                rex = r'APIC.*'
                 for key in self.id_card.tags.keys():
-                    Match = re.match(rex, key)
-                    if Match:
+                    if key.startswith('APIC'):
                         break
 
             # mp3没有匹配到APIC间则写入封面，如果是flac和m4a则直接尝试写入封面

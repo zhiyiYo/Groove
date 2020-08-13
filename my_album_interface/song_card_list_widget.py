@@ -1,11 +1,12 @@
 import sys
 from json import dump
 
+
 from PyQt5.QtCore import QEvent, QPoint, QSize, Qt, pyqtSignal
 from PyQt5.QtGui import (QBrush, QColor, QContextMenuEvent, QIcon, QPainter,
                          QPixmap)
 from PyQt5.QtWidgets import (
-    QAbstractItemView, QAction, QApplication, QHBoxLayout, QLabel, QListWidget,
+    QAction, QApplication, QHBoxLayout, QLabel, QListWidget,
     QListWidgetItem, QWidget)
 
 from get_info.get_song_info import SongInfo
@@ -23,7 +24,7 @@ class SongCardListWidget(ListWidget):
     nextToPlaySignal = pyqtSignal(dict)
     removeItemSignal = pyqtSignal(int)
     addSongToPlaylistSignal = pyqtSignal(dict)
-    updateSongInfoSignal = pyqtSignal()
+    editSongCardSignal = pyqtSignal(dict, dict)       # 编辑歌曲卡完成信号
 
     def __init__(self, songInfo_list: list, parent=None):
         super().__init__(parent)
@@ -51,9 +52,7 @@ class SongCardListWidget(ListWidget):
         self.setAttribute(Qt.WA_StyledBackground)
         self.setAlternatingRowColors(True)
         # 将滚动模式改为以像素计算
-        self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
-        # 分配ID
-        self.setObjectName('songCardList')
+        self.setVerticalScrollMode(self.ScrollPerPixel)
         # 设置层叠样式
         self.__setQss()
         # 信号连接到槽
@@ -143,11 +142,14 @@ class SongCardListWidget(ListWidget):
 
     def showSongInfoEditPanel(self):
         """ 显示编辑歌曲信息面板 """
-        current_dict = self.songInfo_list[self.currentRow()]
+        current_dict = self.songInfo_list[self.currentRow()] # type:dict
+        oldSongInfo = current_dict.copy()
         songInfoEditPanel = SongInfoEditPanel(current_dict, self.window())
         songInfoEditPanel.exec_()
         # 更新歌曲卡
         self.songCard_list[self.currentRow()].updateSongCard(current_dict)
+        # 发出更新歌曲卡信息的信号
+        self.editSongCardSignal.emit(oldSongInfo, current_dict)
 
     def __setQss(self):
         """ 设置层叠样式 """
@@ -160,7 +162,7 @@ class SongCardListWidget(ListWidget):
         for item in self.item_list:
             item.setSizeHint(QSize(self.width(), 60))
         self.placeholderItem.setSizeHint(QSize(self.width(), 145))
-        self.placeholderWidget.resize(self.width(), 145)
+        # self.placeholderWidget.resize(self.width(), 145)
 
     def updateSongCardsInfo(self, songInfoDict_list: list):
         """ 更新所有歌曲卡的信息，不增减歌曲卡 """
@@ -205,8 +207,8 @@ class SongCardListWidget(ListWidget):
         if songInfoDict_list == self.songInfo_list:
             return
         # 先移除占位符
-        self.removeItemWidget(self.placeholderItem)
-        self.placeholderWidget.deleteLater()
+        # self.removeItemWidget(self.placeholderItem)
+        # self.placeholderWidget.deleteLater()
         self.takeItem(len(self.songCard_list))
         # 长度相等就更新信息，不相等就根据情况创建或者删除item
         if self.songCard_list:
@@ -227,8 +229,6 @@ class SongCardListWidget(ListWidget):
                 self.addItem(item)
                 # 将项目的内容重置为自定义类
                 self.setItemWidget(item, songCard)
-                # 通过whatsthis记录每个项目对应的路径和下标
-                item.setWhatsThis(str(songInfo_dict))
                 # 将item和songCard添加到列表中
                 self.songCard_list.append(songCard)
                 self.item_list.append(item)
@@ -263,11 +263,11 @@ class SongCardListWidget(ListWidget):
 
     def __createPlaceHolderItem(self):
         """ 创建占位行 """
-        self.placeholderWidget = PlaceHolderWidget()
-        self.placeholderWidget.resize(self.width(), 145)
+        # self.placeholderWidget = PlaceHolderWidget()
+        # self.placeholderWidget.resize(self.width(), 145)
         self.placeholderItem = QListWidgetItem(self)
         self.placeholderItem.setSizeHint(QSize(self.width(), 145))
-        self.setItemWidget(self.placeholderItem, self.placeholderWidget)
+        # self.setItemWidget(self.placeholderItem, self.placeholderWidget)
         self.addItem(self.placeholderItem)
 
     def paintEvent(self, e):
@@ -276,13 +276,20 @@ class SongCardListWidget(ListWidget):
         painter = QPainter(self.viewport())
         painter.setPen(Qt.white)
         painter.setBrush(Qt.white)
-        painter.drawRect(0, 60*len(self.songCard_list),
+        painter.drawRect(0, 60 * len(self.songCard_list),
                          self.width(), self.height())
+
+    def updateOneSongCard(self, oldSongInfo, newSongInfo):
+        """ 更新一个歌曲卡 """
+        if oldSongInfo in self.songInfo_list:
+            index = self.songInfo_list.index(oldSongInfo)
+            self.songInfo_list[index] = newSongInfo
+            self.songCard_list[index].updateSongCard(
+                newSongInfo)
 
 
 class PlaceHolderWidget(QWidget):
     """ 占位空白 """
-
     def __init__(self, parent=None):
         super().__init__()
         self.setAttribute(Qt.WA_StyledBackground)

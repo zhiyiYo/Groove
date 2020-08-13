@@ -2,6 +2,7 @@ import json
 import os
 import re
 import sys
+from time import time
 
 import pinyin
 from PyQt5.QtCore import QEvent, QPoint, Qt, pyqtSignal
@@ -20,6 +21,7 @@ from my_widget.my_toolTip import ToolTip
 
 class AlbumCardViewer(QWidget):
     """ 定义一个专辑卡视图 """
+    columnChanged = pyqtSignal()
     playSignal = pyqtSignal(list)
     nextPlaySignal = pyqtSignal(list)
     addAlbumToPlaylistSignal = pyqtSignal(list)
@@ -41,7 +43,6 @@ class AlbumCardViewer(QWidget):
         # 实例化布局
         self.albumView_hLayout = QHBoxLayout()
         self.all_h_layout = QHBoxLayout()
-
         # 实例化滚动区域和滚动区域的窗口
         self.scrollArea = ScrollArea(self)
         self.albumViewWidget = QWidget()
@@ -55,7 +56,7 @@ class AlbumCardViewer(QWidget):
         # 创建专辑卡并将其添加到布局中
         self.__createAlbumCards()
         self.initLayout()
-        self.connectSignalToSlot()
+        self.__connectSignalToSlot()
         # 设置样式
         self.__setQss()
 
@@ -67,7 +68,6 @@ class AlbumCardViewer(QWidget):
             Qt.ScrollBarAlwaysOff)
         self.scrollArea.setHorizontalScrollBarPolicy(
             Qt.ScrollBarAlwaysOff)
-        # self.vScrollBar.setSingleStep(30)
         # 隐藏磨砂背景
         self.albumViewWidget.albumBlurBackground.hide()
         # 分配ID
@@ -90,7 +90,7 @@ class AlbumCardViewer(QWidget):
                                             'songer': albumInfo_dict['songer'],
                                             'firstLetter': pinyin.get_initial(album[0])[0].upper()})
 
-    def connectSignalToSlot(self):
+    def __connectSignalToSlot(self):
         """ 将信号连接到槽函数 """
         for albumCard in self.albumCard_list:
             # 播放
@@ -204,8 +204,10 @@ class AlbumCardViewer(QWidget):
             self.__updateColumnNum(5)
         elif 895 < self.width() <= 1115 and self.column_num != 4:
             self.__updateColumnNum(4)
-        elif self.width() <= 895:
+        elif 675 < self.width() <= 895:
             self.__updateColumnNum(3)
+        elif self.width() <= 675:
+            self.__updateColumnNum(2)
 
     def __updateColumnNum(self, new_column):
         """ 更新网格列数 """
@@ -214,6 +216,8 @@ class AlbumCardViewer(QWidget):
                 currentGroup_dict['gridLayout'].removeWidget(albumCard)
         self.column_num = new_column
         self.__updateGridLayout()
+        # 发送更新列数信号
+        self.columnChanged.emit()
 
     def __removeOldWidget(self):
         """ 从布局中移除小部件,同时设置新的布局 """

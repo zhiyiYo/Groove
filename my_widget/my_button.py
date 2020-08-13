@@ -42,7 +42,6 @@ class RandomPlayButton(QPushButton):
         super().__init__(text, parent)
         self.setIcon(QIcon('resource\\images\\无序播放所有_130_17.png'))
         self.setIconSize(QSize(130, 17))
-        self.setCursor(Qt.PointingHandCursor)
         self.setObjectName('randomPlayButton')
         self.clicked.connect(slot)
         self.installEventFilter(self)
@@ -65,7 +64,6 @@ class SortModeButton(QPushButton):
 
     def __init__(self, text, slot, parent=None):
         super().__init__(text, parent)
-        self.setCursor(Qt.PointingHandCursor)
         self.setObjectName('sortModeButton')
         self.clicked.connect(slot)
 

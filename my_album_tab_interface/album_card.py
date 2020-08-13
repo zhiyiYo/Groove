@@ -28,8 +28,8 @@ class AlbumCard(QWidget):
         super().__init__(parent)
         self.albumInfo = albumInfo
         self.songInfo_list = self.albumInfo.get('songInfo_list')
+        self.picPath = self.albumInfo.get('cover_path')
         self.albumViewWidget = albumViewWidget
-
         # 设置窗体移动标志位
         self.hasMoved = False
         # 储存未被更改过的专辑名
@@ -37,24 +37,27 @@ class AlbumCard(QWidget):
         # 实例化专辑名和歌手名
         self.albumName = ClickableLabel(albumInfo['album'], self)
         self.songerName = ClickableLabel(albumInfo['songer'], self)
-        # 实例化专辑封面
-        self.albumCoverWindow = AlbumCoverWindow(albumInfo['cover_path'], self)
-        # 引用两个按钮
-        self.playButton = self.albumCoverWindow.playButton
-        self.addToButton = self.albumCoverWindow.addToButton
+        # 实例化封面和按钮
+        self.albumPic = PerspectiveTransformLabel(
+            self.picPath, (200, 200), self)
+        self.playButton = BlurButton(
+            self, (39, 76), 'resource\\images\\播放按钮_70_70.png', self.picPath, blurRadius=26)
+        self.addToButton = BlurButton(
+            self, (111, 76), 'resource\\images\\添加到按钮_70_70.png', self.picPath, blurRadius=26)
         # 初始化
         self.initWidget()
-        self.setQss()
 
     def initWidget(self):
         """ 初始化小部件 """
         self.setFixedSize(220, 290)
-        self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
+        # 隐藏按钮
+        self.playButton.hide()
+        self.addToButton.hide()
         # 设置鼠标光标
         self.songerName.setCursor(Qt.PointingHandCursor)
         # 设置部件位置
-        self.albumCoverWindow.move(10, 10)
+        self.albumPic.move(10, 10)
         self.albumName.move(10, 218)
         self.songerName.move(10, 244)
         self.adjustLabel()
@@ -91,8 +94,7 @@ class AlbumCard(QWidget):
             # 需要补上groupBox()的y()
             offsetY = 0 if self.parent() == self.albumViewWidget else self.parent().y()
             self.blurBackground.move(self.x() - 20, self.y() + 8 + offsetY)
-            self.blurBackground.subWindow.setPic(
-                self.albumInfo['cover_path'])
+            self.blurBackground.subWindow.setPic(self.picPath)
             self.blurBackground.show()
         self.addToButton.show()
         self.playButton.show()
@@ -138,8 +140,7 @@ class AlbumCard(QWidget):
     def setQss(self):
         """ 设置层叠样式 """
         with open('resource\\css\\albumCard.qss', 'r', encoding='utf-8') as f:
-            qss = f.read()
-            self.setStyleSheet(qss)
+            self.setStyleSheet(f.read())
 
     def moveEvent(self, e: QMoveEvent):
         """ 检测窗体移动 """
@@ -148,36 +149,8 @@ class AlbumCard(QWidget):
     def mouseReleaseEvent(self, e):
         """ 鼠标松开发送切换到专辑界面信号 """
         super().mouseReleaseEvent(e)
-        self.switchToAlbumInterfaceSig.emit(self.albumInfo)
-
-class AlbumCoverWindow(QWidget):
-    """ 定义专辑封面 """
-
-    def __init__(self, picPath, parent=None):
-        super().__init__(parent)
-        self.resize(200, 200)
-        self.picPath = picPath
-        # 实例化封面和按钮
-        self.albumPic = PerspectiveTransformLabel(
-            self.picPath, (200, 200), self)
-        self.playButton = BlurButton(
-            self, (29, 66), 'resource\\images\\播放按钮_70_70.png', self.picPath, blurRadius=50)
-        self.addToButton = BlurButton(
-            self, (101, 66), 'resource\\images\\添加到按钮_70_70.png', self.picPath, blurRadius=50)
-        # 初始化小部件
-        self.initWidget()
-
-    def initWidget(self):
-        """ 初始化小部件 """
-        # 隐藏边框并将背景设置为透明
-        self.setWindowFlags(Qt.FramelessWindowHint)
-        self.setAttribute(Qt.WA_TranslucentBackground)
-        # 专辑图居中
-        self.albumPic.move(int(self.width() / 2 - self.albumPic.pixmap().width() / 2),
-                           int(self.height() / 2 - self.albumPic.pixmap().height() / 2))
-        # 隐藏按钮
-        self.playButton.hide()
-        self.addToButton.hide()
+        if e.button() == Qt.LeftButton:
+            self.switchToAlbumInterfaceSig.emit(self.albumInfo)
 
 
 if __name__ == "__main__":
