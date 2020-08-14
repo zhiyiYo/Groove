@@ -1,6 +1,7 @@
 import sys
 from json import dump
 from time import time
+from pprint import pprint
 
 from PyQt5.QtCore import QEvent, QPoint, QSize, Qt, pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QContextMenuEvent, QIcon, QPixmap, QPainter
@@ -228,14 +229,32 @@ class SongCardListWidget(ListWidget):
         painter.drawRect(0, 60 * len(self.songCard_list),
                          self.width(), self.height())
 
-    def updateOneSongCard(self, oldSongInfo: dict, newSongInfo):
+    def updateOneSongCard(self, oldSongInfo: dict, newSongInfo, isNeedWriteToFile=True):
         """ 更新一个歌曲卡 """
         if oldSongInfo in self.songInfo.songInfo_list:
+            print('在歌曲列表中的新的歌曲卡信息：')
+            pprint(newSongInfo)
+            print('==='*30)
             index = self.songInfo.songInfo_list.index(
                 oldSongInfo)
             self.songInfo.songInfo_list[index] = newSongInfo
             self.songCard_list[index].updateSongCard(
                 newSongInfo)
-            # 将修改的信息存入json文件
-            with open('Data\\songInfo.json', 'w', encoding='utf-8') as f:
-                dump(self.songInfo.songInfo_list, f)
+            if isNeedWriteToFile:
+                # 将修改的信息存入json文件
+                with open('Data\\songInfo.json', 'w', encoding='utf-8') as f:
+                    dump(self.songInfo.songInfo_list, f)
+        else:
+            print('不在歌曲列表中的旧的歌曲信息:')
+            pprint(oldSongInfo)
+            print('与之对应的新的歌曲信息：')
+            pprint(newSongInfo)
+            print('==='*30)
+
+    def updateMultiSongCards(self, oldSongInfo_list: list, newSongInfo_list: list):
+        """ 更新多个歌曲卡 """
+        for oldSongInfo,newSongInfo in zip(oldSongInfo_list, newSongInfo_list):
+            self.updateOneSongCard(oldSongInfo, newSongInfo, False)
+        # 将修改的信息存入json文件
+        with open('Data\\songInfo.json', 'w', encoding='utf-8') as f:
+                    dump(self.songInfo.songInfo_list, f) 

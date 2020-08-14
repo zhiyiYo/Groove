@@ -1,7 +1,7 @@
 import sys
 
-from PyQt5.QtCore import QEvent, QPoint, Qt, QTimer, pyqtSignal
-from PyQt5.QtGui import QEnterEvent, QMouseEvent, QPixmap
+from PyQt5.QtCore import QEvent, QPoint, Qt, pyqtSignal
+from PyQt5.QtGui import QEnterEvent, QMouseEvent, QPixmap, QPainter
 from PyQt5.QtWidgets import QApplication, QLabel, QToolTip, QWidget
 
 from my_functions.get_pressed_pos import getPressedPos
@@ -15,11 +15,11 @@ class ClickableLabel(QLabel):
     # 创建点击信号
     clicked = pyqtSignal()
 
-    def __init__(self, text='', parent=None, isSendEventToParent:bool=True):
+    def __init__(self, text='', parent=None, isSendEventToParent: bool = True):
         super().__init__(text, parent)
         self.isSendEventToParent = isSendEventToParent
-        #储存原始的text
-        self.rawText=text
+        # 储存原始的text
+        self.rawText = text
         self.customToolTip = None
 
     def mousePressEvent(self, e):
@@ -34,14 +34,14 @@ class ClickableLabel(QLabel):
         if event.button() == Qt.LeftButton:
             self.clicked.emit()
 
-    def setCustomToolTip(self,toolTip,toolTipText:str):
+    def setCustomToolTip(self, toolTip, toolTipText: str):
         """ 设置提示条和提示条出现的位置 """
         self.customToolTip = toolTip
         self.customToolTipText = toolTipText
-        
-    def enterEvent(self, e:QEnterEvent):
+
+    def enterEvent(self, e: QEnterEvent):
         """ 如果有设置提示条的话就显示提示条 """
-        #print('鼠标进入标签事件触发')
+        # print('鼠标进入标签事件触发')
         if self.customToolTip:
             self.customToolTip.setText(self.customToolTipText)
             # 有折叠发生时需要再加一个偏移量
@@ -70,14 +70,14 @@ class ErrorIcon(QLabel):
             QPixmap('resource\\images\\empty_lineEdit_error.png'))
         self.setFixedSize(21, 21)
 
-    def setCustomToolTip(self, toolTip, text:str):
+    def setCustomToolTip(self, toolTip, text: str):
         """ 设置提示条和提示条内容 """
         self.customToolTip = toolTip
         self.customToolTipText = text
 
     def enterEvent(self, e):
         """ 鼠标进入时显示提示条 """
-        #print('鼠标进入标签')
+        # print('鼠标进入标签')
         if self.customToolTip:
             self.customToolTip.setText(self.customToolTipText)
             # 有折叠发生时需要再加一个偏移量
@@ -96,20 +96,34 @@ class ErrorIcon(QLabel):
             self.customToolTip.hide()
 
 
-class PerspectiveTransformLabel(QLabel):
+class PerspectiveTransformLabel(QWidget):
     """ 可以进行透视变换的Label """
+    clicked = pyqtSignal()
 
-    def __init__(self, picPath, picSize:tuple, parent):
+    def __init__(self, picPath, newPicSize: tuple, parent):
+        """ 创建可进行透视变换的Label
+        Parameters
+        ----------
+        picPath : 进行透视变换的图片地址\n
+        newPicSize : 透视变换后的图片大小\n
+        parent : 父级窗口
+        """
         super().__init__(parent=parent)
-        self.resize(picSize[0],picSize[1])
-        self.picPath = picPath
-        self.picSize = picSize
+        self.setAttribute(Qt.WA_TranslucentBackground)
+        self.resize(newPicSize[0], newPicSize[1])
+        self.picSize = newPicSize
         self.pressedPix = None
         self.pressedPos = None
-        self.perspectiveTrans = None
+        self.setPicPath(picPath)
+
+    def setPicPath(self, picPath: str):
+        """ 更新图片位置 """
+        self.picPath = picPath
         self.picPix = QPixmap(self.picPath).scaled(
-            self.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        self.setPixmap(self.picPix)
+            self.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation) #type:QPixmap
+        self.perspectiveTrans = None
+        self.update()
+        # self.setPixmap(self.picPix)
 
     def mousePressEvent(self, e):
         """ 鼠标点击时对封面进行透视变换 """
@@ -118,7 +132,7 @@ class PerspectiveTransformLabel(QLabel):
         self.pressedPos = getPressedPos(self, e)
         if not self.perspectiveTrans:
             self.perspectiveTrans = PerspectiveTransform(
-                self.picPath, (200, 200))  # type:PerspectiveTransform
+                self.picPath, self.picSize)  # type:PerspectiveTransform
             self.perspectiveTrans.pressedPos = None
         # 根据鼠标点击位置的不同设置背景封面的透视变换
         if self.perspectiveTrans.pressedPos != self.pressedPos:
@@ -135,7 +149,7 @@ class PerspectiveTransformLabel(QLabel):
             elif self.pressedPos == 'left-bottom':
                 self.perspectiveTrans.setDstPoints(
                     [2, 3], [self.perspectiveTrans.width - 3, 0],
-                    [2, self.perspectiveTrans.height - 4],
+                    [4, self.perspectiveTrans.height - 4],
                     [self.perspectiveTrans.width - 2, self.perspectiveTrans.height - 2])
             elif self.pressedPos == 'top':
                 self.perspectiveTrans.setDstPoints(
@@ -154,9 +168,9 @@ class PerspectiveTransformLabel(QLabel):
                     [self.perspectiveTrans.width - 4, self.perspectiveTrans.height - 3])
             elif self.pressedPos == 'right-bottom':
                 self.perspectiveTrans.setDstPoints(
-                    [2, 0], [self.perspectiveTrans.width - 3, 3],
+                    [1, 0], [self.perspectiveTrans.width - 3, 2],
                     [1, self.perspectiveTrans.height - 2],
-                    [self.perspectiveTrans.width - 5, self.perspectiveTrans.height - 3])
+                    [self.perspectiveTrans.width - 5, self.perspectiveTrans.height - 4])
             elif self.pressedPos == 'right-top':
                 self.perspectiveTrans.setDstPoints(
                     [0, 1], [self.perspectiveTrans.width - 7, 5],
@@ -171,30 +185,27 @@ class PerspectiveTransformLabel(QLabel):
                 self.perspectiveTrans.width, self.perspectiveTrans.height, True).scaled(
                     self.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
         self.perspectiveTrans.pressedPos = self.pressedPos
-        self.setPixmap(self.pressedPix)
+        # self.setPixmap(self.pressedPix)
+        self.update()
 
     def mouseReleaseEvent(self, e):
         """ 鼠标送回恢复原图像 """
-        self.setPixmap(self.picPix)
+        # self.setPixmap(self.picPix)
+        self.pressedPos=None
+        self.update()
         super().mouseReleaseEvent(e)
+        self.clicked.emit()
 
+    def paintEvent(self, e):
+        """ 绘制背景 """
+        painter = QPainter(self)
+        painter.setRenderHints(QPainter.Antialiasing | QPainter.HighQualityAntialiasing | 
+                               QPainter.SmoothPixmapTransform)
+        painter.setPen(Qt.NoPen)
+        # 绘制背景图片
+        if not self.pressedPos:
+            painter.drawPixmap(self.rect(), self.picPix)
+        else:
+            painter.drawPixmap(self.rect(), self.pressedPix)
+    
 
-class Demo(QWidget):
-    def __init__(self):
-        super().__init__()
-
-        self.resize(600,400)
-        toolTipText='这是一个自定义可点击的标签没错他特呃呃呃呃呃呃额别长'*2
-        self.label = ClickableLabel('这是一个自定义可点击的标签', self)
-        self.customToolTip = ToolTip(toolTipText, self)
-        
-        self.label.move(50,180)
-        self.label.setCursor(Qt.PointingHandCursor)
-        self.label.clicked.connect(lambda: print(self.label.text()))
-        self.label.setCustomToolTip(self.customToolTip,toolTipText,50,180)
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = Demo()
-    demo.show()
-    sys.exit(app.exec_())

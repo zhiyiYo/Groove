@@ -26,12 +26,15 @@ class AlbumCardViewer(QWidget):
     nextPlaySignal = pyqtSignal(list)
     addAlbumToPlaylistSignal = pyqtSignal(list)
     switchToAlbumInterfaceSig = pyqtSignal(dict)
-    
-    def __init__(self, target_path_list:list, parent=None):
+    saveAlbumInfoSig = pyqtSignal(dict, dict)
+
+    def __init__(self, target_path_list: list, parent=None):
         super().__init__(parent)
         # 初始化网格的列数
         self.column_num = 5
         self.total_row_num = 0
+        self.albumCardDict_list = []
+        self.albumCard_list = []
         # 设置专辑为空标志位
         self.isAlbumEmpty = False
         # 设置当前排序方式
@@ -76,8 +79,6 @@ class AlbumCardViewer(QWidget):
 
     def __createAlbumCards(self):
         """ 将专辑卡添加到窗口中 """
-        self.albumCardDict_list = []
-        self.albumCard_list = []
         for albumInfo_dict in self.albumInfo.albumInfo_list:
             # 实例化专辑卡
             albumCard = AlbumCard(albumInfo_dict, self, self.albumViewWidget)
@@ -94,17 +95,17 @@ class AlbumCardViewer(QWidget):
         """ 将信号连接到槽函数 """
         for albumCard in self.albumCard_list:
             # 播放
-            albumCard.playSignal.connect(
-                lambda playlist: self.playSignal.emit(playlist))
+            albumCard.playSignal.connect(self.playSignal)
             # 下一首播放
-            albumCard.nextPlaySignal.connect(
-                lambda playlist: self.nextPlaySignal.emit(playlist))
+            albumCard.nextPlaySignal.connect(self.nextPlaySignal)
             # 添加到播放列表
             albumCard.addToPlaylistSignal.connect(
-                lambda playlist: self.addAlbumToPlaylistSignal.emit(playlist))
+                self.addAlbumToPlaylistSignal)
             # 进入专辑界面
             albumCard.switchToAlbumInterfaceSig.connect(
-                lambda albumInfo: self.switchToAlbumInterfaceSig.emit(albumInfo))
+                self.switchToAlbumInterfaceSig)
+            # 更新专辑信息
+            albumCard.saveAlbumInfoSig.connect(self.saveAlbumInfoSig)
 
     def initLayout(self):
         """ 初始化布局 """
@@ -137,20 +138,20 @@ class AlbumCardViewer(QWidget):
             gridLayout = currentGroup_dict['gridLayout']  # type:QGridLayout
             gridIndex = self.currentGroupDict_list.index(currentGroup_dict)
             columns = range(self.column_num)
-            if gridIndex!=len(self.currentGroupDict_list)-1:
+            if gridIndex != len(self.currentGroupDict_list)-1:
                 rows = range(
                     (len(currentGroup_dict['album_list']) - 1) // self.column_num + 1)
             else:
                 # 补上底部播放栏所占的位置
                 rows = range(
                     (len(currentGroup_dict['album_list']) - 1) // self.column_num + 2)
-            self.current_row_num = max(rows) + 1 
+            self.current_row_num = max(rows) + 1
             # 设置网格大小
             for column in columns:
                 gridLayout.setColumnMinimumWidth(
                     column, 221)
             for row in rows:
-                if row!=max(rows):
+                if row != max(rows):
                     gridLayout.setRowMinimumHeight(
                         row, 292)
                 else:
@@ -159,7 +160,7 @@ class AlbumCardViewer(QWidget):
                             row, 292)
                     else:
                         gridLayout.setRowMinimumHeight(
-                            row, 146)    
+                            row, 146)
             for index, albumCard in enumerate(currentGroup_dict['album_list']):
                 x = index // self.column_num
                 y = index - self.column_num * x
@@ -167,7 +168,8 @@ class AlbumCardViewer(QWidget):
                     gridLayout.addWidget(albumCard, x, y, 1, 1)
                 else:
                     if gridIndex == len(self.currentGroupDict_list) - 1:
-                        gridLayout.addWidget(albumCard, x, y, 2, 1,Qt.AlignTop)
+                        gridLayout.addWidget(
+                            albumCard, x, y, 2, 1, Qt.AlignTop)
                     else:
                         gridLayout.addWidget(albumCard, x, y, 1, 1)
 
@@ -185,7 +187,7 @@ class AlbumCardViewer(QWidget):
             # 如果现在的总列数小于网格的总列数，就将多出来的列的宽度的最小值设置为0
             for i in range(gridLayout.columnCount() - 1, self.column_num - 1, -1):
                 gridLayout.setColumnMinimumWidth(i, 0)
-                
+
         self.albumViewWidget.setFixedWidth(221 * self.column_num)
         if self.sortMode == '添加时间':
             self.albumViewWidget.setFixedHeight(303*self.total_row_num)
@@ -430,6 +432,13 @@ class AlbumCardViewer(QWidget):
         with open('resource\\css\\albumCardViewer.qss', encoding='utf-8') as f:
             qss = f.read()
             self.setStyleSheet(qss)
+
+    def findAlbumCard(self, albumInfo: dict) -> AlbumCard:
+        """ 通过albumInfo获取对AlbumCard实例的引用 """
+        for albumCard in self.albumCard_list:
+            if albumCard.albumInfo == albumInfo:
+                return albumCard
+        return None
 
 
 if __name__ == "__main__":

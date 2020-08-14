@@ -162,7 +162,6 @@ class SongCardListWidget(ListWidget):
         for item in self.item_list:
             item.setSizeHint(QSize(self.width(), 60))
         self.placeholderItem.setSizeHint(QSize(self.width(), 145))
-        # self.placeholderWidget.resize(self.width(), 145)
 
     def updateSongCardsInfo(self, songInfoDict_list: list):
         """ 更新所有歌曲卡的信息，不增减歌曲卡 """
@@ -204,11 +203,6 @@ class SongCardListWidget(ListWidget):
 
     def updateSongCards(self, songInfoDict_list):
         """ 更新所有歌曲卡，根据给定的信息决定创建或者删除歌曲卡 """
-        if songInfoDict_list == self.songInfo_list:
-            return
-        # 先移除占位符
-        # self.removeItemWidget(self.placeholderItem)
-        # self.placeholderWidget.deleteLater()
         self.takeItem(len(self.songCard_list))
         # 长度相等就更新信息，不相等就根据情况创建或者删除item
         if self.songCard_list:
@@ -263,11 +257,8 @@ class SongCardListWidget(ListWidget):
 
     def __createPlaceHolderItem(self):
         """ 创建占位行 """
-        # self.placeholderWidget = PlaceHolderWidget()
-        # self.placeholderWidget.resize(self.width(), 145)
         self.placeholderItem = QListWidgetItem(self)
         self.placeholderItem.setSizeHint(QSize(self.width(), 145))
-        # self.setItemWidget(self.placeholderItem, self.placeholderWidget)
         self.addItem(self.placeholderItem)
 
     def paintEvent(self, e):
@@ -287,18 +278,16 @@ class SongCardListWidget(ListWidget):
             self.songCard_list[index].updateSongCard(
                 newSongInfo)
 
+    def sortSongCardByTrackNum(self):
+        """ 以曲序为基准排序歌曲卡 """
+        self.songInfo_list.sort(key=self.__sortAlbum)
+        self.updateSongCardsInfo(self.songInfo_list)
 
-class PlaceHolderWidget(QWidget):
-    """ 占位空白 """
-    def __init__(self, parent=None):
-        super().__init__()
-        self.setAttribute(Qt.WA_StyledBackground)
-        self.setStyleSheet('background:white')
+    def __sortAlbum(self, songInfo):
+        """ 以曲序为基准排序歌曲卡 """
+        trackNum = songInfo['tracknumber']  # type:str
+        # 处理m4a
+        if not trackNum[0].isnumeric():
+            return eval(trackNum)[0]
+        return int(trackNum)
 
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    demo = SongCardListWidget(['D:\\KuGou'])
-    demo.show()
-
-    sys.exit(app.exec_())

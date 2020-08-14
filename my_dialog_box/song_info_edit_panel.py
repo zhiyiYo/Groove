@@ -151,7 +151,7 @@ class SubSongInfoEditPanel(QWidget):
             self.trackNumEditLine.setProperty('hasText', 'false')
 
         # 给输入框设置过滤器
-        rex_trackNum = QRegExp(r'(\d)|([1-9]\d*)')
+        rex_trackNum = QRegExp(r'(\d)|([1-9]\d{1,2})')
         rex_year = QRegExp(r'\d{4}年{0,1}')
         validator_tracknum = QRegExpValidator(
             rex_trackNum, self.trackNumEditLine)

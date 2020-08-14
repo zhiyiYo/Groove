@@ -221,13 +221,18 @@ class SongListWidget(ListWidget):
         """ 切换到专辑界面 """
         self.switchToAlbumInterfaceSig.emit(albumName)
 
-    def updateOneSongCard(self, oldSongInfo, newSongInfo):
+    def updateOneSongCard(self, oldSongInfo:dict, newSongInfo:dict):
         """ 更新一个歌曲卡 """
         if oldSongInfo in self.playlist:
             index = self.playlist.index(oldSongInfo)
-            self.playlist[index] = newSongInfo
+            self.playlist[index] = newSongInfo.copy()
             self.songCard_list[index].updateSongCard(
                 newSongInfo)
+
+    def updateMultiSongCards(self, oldSongInfo_list: list, newSongInfo_list: list):
+        """ 更新多个的歌曲卡 """
+        for oldSongInfo,newSongInfo in zip(oldSongInfo_list,newSongInfo_list):
+            self.updateOneSongCard(oldSongInfo, newSongInfo)
 
 
 class UpdateMode(Enum):

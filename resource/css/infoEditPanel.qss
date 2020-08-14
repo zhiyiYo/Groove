@@ -21,12 +21,12 @@ QLabel#bottomErrorLabel{
 
 
 QLineEdit {
-    padding: 8px 13px 8px 13px;
+    padding: 8px 13px 7px 13px;
     font: 18px 'Microsoft YaHei';
     selection-background-color: rgb(0, 153, 188);
 }
 
-QLineEdit[hasClearBt='False']{
+QLineEdit[hasClearBt='false']{
     padding: 8px 13px 8px 12px;
 }
 
@@ -62,16 +62,6 @@ QToolButton {
     margin:0px;
 }
 
-/*
-QToolTip {
-    border: 1px solid rgb(209, 209, 209);
-    font: 15px 'Microsoft YaHei';
-    background: rgb(242, 242, 242);
-    padding: 5px 5px 5px 5px;
-    height:30px;
-}
-*/
-
 QScrollBar {
     background: transparent;
     width: 3px;
@@ -88,8 +78,8 @@ QScrollBar::add-line {
 }
 
 QScrollBar::handle {
-    background: rgb(128, 128, 128);
-    border: 2px solid rgb(128, 128, 128);
+    background: rgb(139, 139, 139);
+    border: 2px solid rgb(139, 139, 139);
     border-radius: 1px;
 }
 

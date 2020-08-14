@@ -170,7 +170,7 @@ class LineEditMenu(AeroMenu):
         height = actionNum * 38 + 10
         # 不能把初始的宽度设置为0px，不然会报警
         self.animation.setStartValue(
-            QRect(pos.x(), pos.y(), 1, height))
+            QRect(pos.x(), pos.y(), 1, 1))
         self.animation.setEndValue(
             QRect(pos.x(), pos.y(), width, height))
         self.setStyle(QApplication.style())

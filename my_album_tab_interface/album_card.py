@@ -14,6 +14,7 @@ from my_functions.is_not_leave import isNotLeave
 from my_functions.perspective_transform import PerspectiveTransform
 from my_widget.blur_button import BlurButton
 from my_widget.my_label import ClickableLabel, PerspectiveTransformLabel
+from my_dialog_box.album_info_edit_panel import AlbumInfoEditPanel
 from .album_card_context_menu import AlbumCardContextMenu
 
 
@@ -23,6 +24,7 @@ class AlbumCard(QWidget):
     nextPlaySignal = pyqtSignal(list)
     addToPlaylistSignal = pyqtSignal(list)
     switchToAlbumInterfaceSig = pyqtSignal(dict)
+    saveAlbumInfoSig = pyqtSignal(dict, dict)
 
     def __init__(self, albumInfo: dict, parent=None, albumViewWidget=None):
         super().__init__(parent)
@@ -35,8 +37,8 @@ class AlbumCard(QWidget):
         # 储存未被更改过的专辑名
         self.rawAlbumName = albumInfo['album']
         # 实例化专辑名和歌手名
-        self.albumName = ClickableLabel(albumInfo['album'], self)
-        self.songerName = ClickableLabel(albumInfo['songer'], self)
+        self.albumNameLabel = ClickableLabel(albumInfo['album'], self)
+        self.songerNameLabel = ClickableLabel(albumInfo['songer'], self)
         # 实例化封面和按钮
         self.albumPic = PerspectiveTransformLabel(
             self.picPath, (200, 200), self)
@@ -45,9 +47,9 @@ class AlbumCard(QWidget):
         self.addToButton = BlurButton(
             self, (111, 76), 'resource\\images\\添加到按钮_70_70.png', self.picPath, blurRadius=26)
         # 初始化
-        self.initWidget()
+        self.__initWidget()
 
-    def initWidget(self):
+    def __initWidget(self):
         """ 初始化小部件 """
         self.setFixedSize(220, 290)
         self.setAttribute(Qt.WA_TranslucentBackground)
@@ -55,38 +57,22 @@ class AlbumCard(QWidget):
         self.playButton.hide()
         self.addToButton.hide()
         # 设置鼠标光标
-        self.songerName.setCursor(Qt.PointingHandCursor)
+        self.songerNameLabel.setCursor(Qt.PointingHandCursor)
         # 设置部件位置
         self.albumPic.move(10, 10)
-        self.albumName.move(10, 218)
-        self.songerName.move(10, 244)
-        self.adjustLabel()
+        self.albumNameLabel.move(10, 218)
+        self.songerNameLabel.move(10, 244)
+        self.__adjustLabel()
         # 分配ID
-        self.albumName.setObjectName('albumName')
-        self.songerName.setObjectName('songerName')
+        self.albumNameLabel.setObjectName('albumName')
+        self.songerNameLabel.setObjectName('songerName')
         # 将信号连接到槽函数
         self.playButton.clicked.connect(
             lambda: self.playSignal.emit(self.songInfo_list))
 
-    def setWidgetsToolTip(self):
-        """ 设置歌手名和专辑名的自定义提示条 """
-        if self.parent() and hasattr(self.parent(), 'customToolTip'):
-            # 引用父级的提示条
-            self.customToolTip = self.parent().customToolTip
-            # 设置歌手名的提示条
-            self.songerName.setCustomToolTip(
-                self.customToolTip, self.songerName.text())
-            # 设置专辑名的提示条
-            self.albumName.setCustomToolTip(
-                self.customToolTip, self.rawAlbumName)
-            # 设置两个按钮的提示条
-            self.playButton.setCustomToolTip(self.customToolTip, '全部播放')
-            self.addToButton.setCustomToolTip(self.customToolTip, '添加到')
-
     def enterEvent(self, e):
         """ 鼠标进入窗口时显示磨砂背景和按钮 """
         if self.hasMoved:
-            # self.setWidgetsToolTip()
             self.hasMoved = False
         # 显示磨砂背景
         if self.albumViewWidget:
@@ -117,11 +103,12 @@ class AlbumCard(QWidget):
             lambda: self.nextPlaySignal.emit(self.songInfo_list))
         menu.addToMenu.playingAct.triggered.connect(
             lambda: self.addToPlaylistSignal.emit(self.songInfo_list))
+        menu.editInfoAct.triggered.connect(self.__showAlbumInfoEditPanel)
         menu.exec(event.globalPos())
 
-    def adjustLabel(self):
+    def __adjustLabel(self):
         """ 根据专辑名的长度决定是否换行和添加省略号 """
-        newText, isWordWrap = autoWrap(self.albumName.text(), 22)
+        newText, isWordWrap = autoWrap(self.albumNameLabel.text(), 22)
         if isWordWrap:
             # 添加省略号
             index = newText.index('\n')
@@ -129,13 +116,15 @@ class AlbumCard(QWidget):
             secondLineText = fontMetrics.elidedText(
                 newText[index + 1:], Qt.ElideRight, 200)
             newText = newText[: index + 1] + secondLineText
-            self.albumName.setText(newText)
-            self.songerName.move(10, self.songerName.y() + 22)
+            self.albumNameLabel.setText(newText)
+            self.songerNameLabel.move(10, self.songerNameLabel.y() + 22)
         # 给歌手名添加省略号
         fontMetrics = QFontMetrics(QFont('Microsoft YaHei', 10, 25))
         newSongerName = fontMetrics.elidedText(
-            self.songerName.text(), Qt.ElideRight, 200)
-        self.songerName.setText(newSongerName)
+            self.songerNameLabel.text(), Qt.ElideRight, 200)
+        self.songerNameLabel.setText(newSongerName)
+        self.songerNameLabel.adjustSize()
+        self.albumNameLabel.adjustSize()
 
     def setQss(self):
         """ 设置层叠样式 """
@@ -152,11 +141,24 @@ class AlbumCard(QWidget):
         if e.button() == Qt.LeftButton:
             self.switchToAlbumInterfaceSig.emit(self.albumInfo)
 
+    def updateWindow(self, albumInfo: dict):
+        """ 更新专辑卡窗口信息 """
+        self.albumInfo = albumInfo
+        self.albumPic.setPicPath(albumInfo['cover_path'])
+        self.albumNameLabel.setText(albumInfo['album'])
+        self.songerNameLabel.setText(albumInfo['songer'])
+        self.playButton.setBlurPic(self.albumInfo['cover_path'], 26)
+        self.addToButton.setBlurPic(self.albumInfo['cover_path'], 26)
+        self.__adjustLabel()
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    albumInfo = {'album': '星之回响 (2020 bilibili拜年祭单品)', 'songer': 'HALCA',
-                 'cover_path': r"D:\Python_Study\Groove\resource\Album_Cover\魔杰座\魔杰座.jpg"}
-    demo = AlbumCard(albumInfo)
-    demo.show()
-    sys.exit(app.exec_())
+    def __showAlbumInfoEditPanel(self):
+        """ 显示专辑信息编辑面板 """
+        oldAlbumInfo = self.albumInfo.copy()
+        infoEditPanel = AlbumInfoEditPanel(self.albumInfo, self.window())
+        infoEditPanel.saveInfoSig.connect(self.updateWindow)
+        infoEditPanel.saveInfoSig.connect(
+            lambda newAlbumInfo: self.saveAlbumInfoSig.emit(oldAlbumInfo, newAlbumInfo))
+        infoEditPanel.setStyle(QApplication.style())
+        infoEditPanel.exec_()
+        
+

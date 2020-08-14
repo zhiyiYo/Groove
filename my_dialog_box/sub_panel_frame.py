@@ -6,17 +6,24 @@ from PyQt5.QtWidgets import QApplication, QDialog,QWidget
 
 class SubPanelFrame(QDialog):
     """ 子面板的外围框架 """
-    def __init__(self, parent=None):
+    def __init__(self, parent=None,isWindow=True):
+        self.isWindow = isWindow
         super().__init__(parent)
         self.setAttribute(Qt.WA_TranslucentBackground)
-        self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
+        if self.isWindow:
+            self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
+        else:
+            self.setWindowFlags(Qt.FramelessWindowHint)
     
     def showMask(self):
         """ 显示Mask """
         if self.parent():
             parent_rect = self.parent().geometry()
-            self.setGeometry(parent_rect.x(), parent_rect.y(),
-                             parent_rect.width(), parent_rect.height())
+            if not self.isWindow:
+                self.setGeometry(0, 0,
+                                parent_rect.width(), parent_rect.height())
+            else:
+                self.setGeometry(parent_rect)
             self.createWindowMask()
 
     def createWindowMask(self):

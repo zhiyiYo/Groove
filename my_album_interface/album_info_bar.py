@@ -127,8 +127,6 @@ class AlbumInfoBar(QWidget):
 
     def updateWindow(self, albumInfo: dict):
         """ 更新界面 """
-        if albumInfo == self.albumInfo:
-            return
         self.setAlbumInfo(albumInfo)
         self.albumNameLabel.setText(self.albumName)
         self.songerNameLabel.setText(self.songerName)

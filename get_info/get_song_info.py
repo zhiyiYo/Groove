@@ -6,6 +6,8 @@ import time
 
 from mutagen import File
 
+from my_functions.adjust_album_name import adjustAlbumName
+
 
 class SongInfo():
     """ 创建一个获取和保存歌曲信息的类 """
@@ -154,7 +156,7 @@ class SongInfo():
             # 曲目
             tracknumber = str(
                 id_card['TRCK'][0]) if id_card.get('TRCK') else '0'
-            tracknumber = self.adjustTrackNumber(tracknumber,suffix)
+            tracknumber = self.adjustTrackNumber(tracknumber, suffix)
             # 流派
             tcon = str(id_card['TCON'][0]) if id_card.get('TCON') else '未知流派'
             if id_card.get('TDRC'):
@@ -168,7 +170,7 @@ class SongInfo():
             album = id_card.get('album')[0] if id_card.get('album') else '未知专辑'
             tracknumber = id_card['tracknumber'][0] if id_card.get(
                 'tracknumber') else '0'
-            tracknumber = self.adjustTrackNumber(tracknumber,suffix)
+            tracknumber = self.adjustTrackNumber(tracknumber, suffix)
             tcon = id_card.get('genre')[0] if id_card.get('genre') else '未知流派'
             year = id_card.get('year')[0][:4] + \
                 '年' if id_card.get('year') else '未知年份'
@@ -179,26 +181,14 @@ class SongInfo():
             # m4a的曲目标签还应包括专辑中的总曲数,得到的是元组
             tracknumber = str(
                 id_card['trkn'][0]) if id_card.get('trkn') else '(0, 0)'
-            tracknumber = self.adjustTrackNumber(tracknumber,suffix)
+            tracknumber = self.adjustTrackNumber(tracknumber, suffix)
             tcon = id_card.get('©gen')[0] if id_card.get('©gen') else '未知流派'
             year = id_card.get('©day')[0][:4] + \
                 '年' if id_card.get('©day') else '未知年份'
             duration = f'{int(id_card.info.length//60)}:{int(id_card.info.length%60):02}'
 
-        # album作为列表返回，最后元素是该过的专辑名，第一个是原名
-        rex = r'[><:\\/\*\?]'
-        album_list = []
-        # 往列表中插入原名
-        album = re.sub(r'[\"]', "'", album)
-        album = album.strip()
-        album_list.append(album)
-        if re.search(rex, album):
-            # 替换不符合命名规则的专辑名
-            album = re.sub(rex, ' ', album)
-            album = re.sub(r'[\"]', "'", album)
-            album = album.strip()
-            album_list.append(album)
-
+        # album作为列表返回，最后元素是改过的专辑名，第一个是原名
+        album_list = adjustAlbumName(album)
         return album_list, tcon, year, duration, tracknumber
 
     def sortByCreateTime(self):
@@ -218,10 +208,10 @@ class SongInfo():
         """ 调整曲目编号 """
         # 删除前导0
         if suffix == '.m4a':
-            trackNum=trackNum.replace(' ','')
+            trackNum = trackNum.replace(' ', '')
             trackNum_list = trackNum[1:-1].split(',')
             trackNum_list = [int(i.lstrip('0')) if i !=
-                        '0' else int(i) for i in trackNum_list]
+                             '0' else int(i) for i in trackNum_list]
             trackNum = str(tuple(trackNum_list))
         else:
             if trackNum != '0':
@@ -232,6 +222,7 @@ class SongInfo():
             if trackNum[0].upper() == 'A':
                 trackNum = trackNum[1:]
         return trackNum
+
 
 if __name__ == "__main__":
     songInfo = SongInfo(['D:\\KuGou'])

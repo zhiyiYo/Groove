@@ -1,9 +1,10 @@
-import sys
 import json
+import sys
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import  Qt
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QApplication, QWidget,QLabel,QPushButton
+from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QWidget
+
 from my_dialog_box.album_info_edit_panel import AlbumInfoEditPanel
 
 

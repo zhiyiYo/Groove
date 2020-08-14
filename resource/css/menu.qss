@@ -132,6 +132,7 @@ QMenu#sortModeMenu::item:default:selected {
 QMenu#lineEditMenu{
     /*width: 182px;*/
     width: 1px;
+    height: 1px;
     border: 1px solid rgb(196, 199, 200);
     border-radius: 0px;
     padding: 5px 0px 5px 0px;

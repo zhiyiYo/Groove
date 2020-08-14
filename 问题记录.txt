@@ -56,3 +56,6 @@ self.setStyleSheet("background-color: rgb(255,255, 255)");
 
 25.self.pos().x()和self.x()得到的结果相同，代表窗体标题栏左上角的全局坐标，self.geometry().x()得到的是客户区的全局坐标
 
+26.弹出窗口的qss不起作用时可以手动setStyle(QAppliction.style())
+
+27.使用adjustSize()自动调整尺寸

@@ -11,7 +11,7 @@ if __name__ == "__main__":
     
     app = QApplication(sys.argv)
     app.setAttribute(Qt.AA_DontCreateNativeWidgetSiblings)
-    font = QFont(QApplication.font())
+    font = QFont('Microsoft YaHei')
     font.setStyleStrategy(QFont.PreferAntialias)
     app.setFont(font)
     t1 = time()

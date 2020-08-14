@@ -178,6 +178,16 @@ class MediaPlaylist(QMediaPlaylist):
         super().removeMedia(index)
         self.setCurrentIndex(currentIndex)
 
+    def updateOneSongInfo(self, oldSongInfo: dict, newSongInfo: dict):
+        """ 更新播放列表中一首歌曲的信息 """
+        if oldSongInfo in self.playlist:
+            index = self.playlist.index(oldSongInfo)
+            self.playlist[index] = newSongInfo
+
+    def updateMultiSongInfo(self, oldSongInfo_list: list, newSongInfo_list: list):
+        """ 更新播放列表中多首歌曲的信息 """
+        for oldSongInfo, newSongInfo in zip(oldSongInfo_list, newSongInfo_list):
+            self.updateOneSongInfo(oldSongInfo, newSongInfo)
 
 
 if __name__ == "__main__":
