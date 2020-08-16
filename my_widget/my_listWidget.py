@@ -24,6 +24,8 @@ class ListWidget(QListWidget):
         self.smoothMoveTimer = QTimer(self)
         self.smoothMode = SmoothMode(SmoothMode.COSINE)
         self.smoothMoveTimer.timeout.connect(self.smoothMove)
+        self.setVerticalScrollMode(self.ScrollPerPixel)
+        self.setAttribute(Qt.WA_StyledBackground)
 
     def wheelEvent(self, e: QWheelEvent):
         """ 实现平滑滚动效果 """

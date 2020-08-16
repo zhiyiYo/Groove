@@ -64,3 +64,8 @@ QScrollBar::handle:hover {
     border: 2px solid transparent;
     border-radius: 4px;
 }
+
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical {
+    background: none;
+}

@@ -22,7 +22,7 @@ class PlayingInterface(QWidget):
     currentIndexChanged = pyqtSignal(int)
     removeMediaSignal = pyqtSignal(int)
     randomPlayAllSignal = pyqtSignal()
-    switchToAlbumInterfaceSig = pyqtSignal(str)
+    switchToAlbumInterfaceSig = pyqtSignal(str,str)
 
     def __init__(self, playlist: list = None, parent=None):
         super().__init__(parent)
@@ -127,14 +127,14 @@ class PlayingInterface(QWidget):
         self.songInfoCardChute.resize(self.size())
         self.blurBackgroundPic.setFixedSize(self.size())
         self.playBar.resize(self.width(), self.playBar.height())
-        self.songListWidget.resize(self.width()-60, self.height()-382)
+        self.songListWidget.resize(self.width(), self.height()-382)
         if self.isPlaylistVisible:
             self.playBar.move(0, 190)
-            self.songListWidget.move(30, 382)
+            self.songListWidget.move(0, 382)
             self.songInfoCardChute.move(0, 258 - self.height())
         else:
             self.playBar.move(0, self.height() - self.playBar.height())
-            self.songListWidget.move(30, self.height())
+            self.songListWidget.move(0, self.height())
 
     def showPlayBar(self):
         """ 显示播放栏 """
@@ -345,15 +345,12 @@ class PlayingInterface(QWidget):
             self.__songListWidgetCurrentChangedSlot)
         self.songListWidget.removeItemSignal.connect(
             self.__removeSongFromPlaylist)
-        self.randomPlayAllButton.clicked.connect(
-            lambda: self.randomPlayAllSignal.emit())
+        self.randomPlayAllButton.clicked.connect(self.randomPlayAllSignal)
         # 切换到专辑界面
-        def switchToAlbumInterfaceSlot(
-            albumName): return self.switchToAlbumInterfaceSig.emit(albumName)
         self.songInfoCardChute.switchToAlbumInterfaceSig.connect(
-            switchToAlbumInterfaceSlot)
+            self.switchToAlbumInterfaceSig)
         self.songListWidget.switchToAlbumInterfaceSig.connect(
-            switchToAlbumInterfaceSlot)
+            self.switchToAlbumInterfaceSig)
 
     def updateOneSongCard(self, oldSongInfo: dict, newSongInfo):
         """ 更新一个歌曲卡 """

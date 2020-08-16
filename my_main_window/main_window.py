@@ -397,7 +397,7 @@ class MainWindow(QWidget):
             self.playlist.removeMedia)
         self.playingInterface.randomPlayAllSignal.connect(self.disorderPlayAll)
         self.playingInterface.switchToAlbumInterfaceSig.connect(
-            self.switchToAlbumInterface)
+            self.switchToAlbumInterfaceByName)
         # todo:歌曲界面歌曲卡列表视图的信号连接到槽函数
         self.songCardListWidget.playSignal.connect(
             self.songCardPlayButtonSlot)
@@ -406,7 +406,7 @@ class MainWindow(QWidget):
         self.songCardListWidget.addSongToPlaylistSignal.connect(
             self.addSongToPlaylist)
         self.songCardListWidget.switchToAlbumInterfaceSig.connect(
-            self.switchToAlbumInterface)
+            self.switchToAlbumInterfaceByName)
         self.songCardListWidget.editSongCardSignal.connect(
             self.editSongCardSlot)
         # todo:将专辑卡的信号连接到槽函数
@@ -415,7 +415,7 @@ class MainWindow(QWidget):
         self.albumCardViewer.addAlbumToPlaylistSignal.connect(
             self.addAlbumToPlaylist)
         self.albumCardViewer.switchToAlbumInterfaceSig.connect(
-            self.__switchToAlbumInterface)
+            self.switchToAlbumInterfaceByAlbumInfo)
         self.albumCardViewer.saveAlbumInfoSig.connect(self.updateAlbumInfo)
         # todo:将子播放窗口的信号连接槽槽函数
         self.subPlayWindow.nextSongButton.clicked.connect(self.playlist.next)
@@ -724,15 +724,10 @@ class MainWindow(QWidget):
     def crawCompleteSlot(self):
         """ 爬虫完成信号槽函数 """
         self.songCardListWidget.updateSongCardInfo()
-        # 爬取完成后直接删除旧的专辑封面文件夹
-        # rmtree('resource\\Album_Cover')
 
     def showPlaylist(self):
         """ 显示正在播放界面的播放列表 """
         self.playingInterface.showPlaylist()
-        # 调整歌曲列表的宽度
-        self.playingInterface.songListWidget.resize(
-            self.playingInterface.width()-60, self.playingInterface.height()-382)
         # 直接设置播放栏上拉箭头按钮箭头方向朝下
         self.playingInterface.playBar.pullUpArrowButton.setArrowDirection(
             'down')
@@ -755,15 +750,22 @@ class MainWindow(QWidget):
         self.playlist.addMedias(songInfoDict_list)
         self.playingInterface.setPlaylist(self.playlist.playlist)
 
-    def switchToAlbumInterface(self, album: str):
-        """ 由专辑名切换到专辑界面 """
-        albumInfo = self.albumCardViewer.albumInfo.getOneAlbumInfo(album)
+    def switchToAlbumInterfaceByName(self, albumName: str, songerName: str):
+        """ 由名字切换到专辑界面 """
+        self.currentAlbumCard = self.albumCardViewer.findAlbumCardByName(
+            albumName, songerName)
+        self.__switchToAlbumInterface(
+            self.currentAlbumCard.albumInfo)
+
+    def switchToAlbumInterfaceByAlbumInfo(self, albumInfo: dict):
+        """ 由专辑信息切换到专辑界面 """
+        # 引用对应的专辑卡
+        self.currentAlbumCard = self.albumCardViewer.findAlbumCardByAlbumInfo(
+            albumInfo)
         self.__switchToAlbumInterface(albumInfo)
 
     def __switchToAlbumInterface(self, albumInfo: dict):
-        """ 由专辑信息切换到专辑界面 """
-        # 引用对应的专辑卡
-        self.currentAlbumCard = self.albumCardViewer.findAlbumCard(albumInfo)
+        """ 切换到专辑界面 """
         # 显示返回按钮
         self.titleBar.returnBt.show()
         self.titleBar.title.move(self.titleBar.returnBt.width(), 0)
@@ -835,9 +837,9 @@ class MainWindow(QWidget):
         self.titleBar.returnBt.show()
         self.titleBar.title.move(self.titleBar.returnBt.width(), 0)
 
-    def editSongCardSlot(self, oldSongInfo:dict, newSongInfo:dict):
+    def editSongCardSlot(self, oldSongInfo: dict, newSongInfo: dict):
         """ 编辑歌曲卡完成信号的槽函数 """
-        self.playlist.updateOneSongInfo(oldSongInfo,newSongInfo)
+        self.playlist.updateOneSongInfo(oldSongInfo, newSongInfo)
         self.playingInterface.updateOneSongCard(oldSongInfo, newSongInfo)
         if self.sender() == self.albumInterface.songListWidget:
             self.songCardListWidget.updateOneSongCard(oldSongInfo, newSongInfo)
@@ -860,4 +862,4 @@ class MainWindow(QWidget):
         self.playingInterface.updateMultiSongCards(
             oldSongInfo_list.copy(), newSongInfo_list.copy())
         if self.sender() == self.albumInterface:
-            self.currentAlbumCard.updateWindow(newAlbumInfo)
+            self.currentAlbumCard.updateWindow(oldAlbumInfo, newAlbumInfo)

@@ -1,7 +1,6 @@
 import sys
 from json import dump
 from time import time
-from pprint import pprint
 
 from PyQt5.QtCore import QEvent, QPoint, QSize, Qt, pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QContextMenuEvent, QIcon, QPixmap, QPainter
@@ -24,7 +23,7 @@ class SongCardListWidget(ListWidget):
     nextPlaySignal = pyqtSignal(dict)
     removeItemSignal = pyqtSignal(int)
     addSongToPlaylistSignal = pyqtSignal(dict)
-    switchToAlbumInterfaceSig = pyqtSignal(str)
+    switchToAlbumInterfaceSig = pyqtSignal(str,str)
     editSongCardSignal = pyqtSignal(dict, dict)
 
     def __init__(self, target_path_list: list, parent=None):
@@ -86,8 +85,7 @@ class SongCardListWidget(ListWidget):
             songCard.doubleClicked.connect(self.__emitCurrentChangedSignal)
             songCard.playButtonClicked.connect(self.__playButtonSlot)
             songCard.clicked.connect(self.setCurrentIndex)
-            songCard.switchToAlbumInterfaceSig.connect(
-                lambda albumName: self.switchToAlbumInterfaceSig.emit(albumName))
+            songCard.switchToAlbumInterfaceSig.connect(self.switchToAlbumInterfaceSig)
         # 添加一个空白item来填补playBar所占高度
         self.placeholderItem = QListWidgetItem(self)
         self.placeholderItem.setSizeHint(QSize(1150, 145))
@@ -214,7 +212,9 @@ class SongCardListWidget(ListWidget):
         self.contextMenu.showPropertyAct.triggered.connect(
             self.showPropertyPanel)
         self.contextMenu.showAlbumAct.triggered.connect(
-            lambda: self.switchToAlbumInterfaceSig.emit(self.songCard_list[self.currentRow()].albumLabel.text()))
+            lambda: self.switchToAlbumInterfaceSig.emit(
+                self.songCard_list[self.currentRow()].albumLabel.text(),
+                self.songCard_list[self.currentRow()].songerLabel.text()))
         self.contextMenu.deleteAct.triggered.connect(
             lambda: self.__removeSongCard(self.currentRow()))
         self.contextMenu.addToMenu.playingAct.triggered.connect(
@@ -232,9 +232,6 @@ class SongCardListWidget(ListWidget):
     def updateOneSongCard(self, oldSongInfo: dict, newSongInfo, isNeedWriteToFile=True):
         """ 更新一个歌曲卡 """
         if oldSongInfo in self.songInfo.songInfo_list:
-            print('在歌曲列表中的新的歌曲卡信息：')
-            pprint(newSongInfo)
-            print('==='*30)
             index = self.songInfo.songInfo_list.index(
                 oldSongInfo)
             self.songInfo.songInfo_list[index] = newSongInfo
@@ -244,12 +241,6 @@ class SongCardListWidget(ListWidget):
                 # 将修改的信息存入json文件
                 with open('Data\\songInfo.json', 'w', encoding='utf-8') as f:
                     dump(self.songInfo.songInfo_list, f)
-        else:
-            print('不在歌曲列表中的旧的歌曲信息:')
-            pprint(oldSongInfo)
-            print('与之对应的新的歌曲信息：')
-            pprint(newSongInfo)
-            print('==='*30)
 
     def updateMultiSongCards(self, oldSongInfo_list: list, newSongInfo_list: list):
         """ 更新多个歌曲卡 """

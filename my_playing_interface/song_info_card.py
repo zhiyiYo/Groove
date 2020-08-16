@@ -12,7 +12,7 @@ class SongInfoCard(QWidget):
     """ 歌曲信息卡 """
     showPlayBarSignal = pyqtSignal()
     hidePlayBarSignal = pyqtSignal()
-    switchToAlbumInterfaceSig = pyqtSignal(str)
+    switchToAlbumInterfaceSig = pyqtSignal(str,str)
 
     def __init__(self, parent=None, songInfo: dict = None):
         super().__init__(parent)
@@ -50,7 +50,7 @@ class SongInfoCard(QWidget):
         self.songNameLabel.installEventFilter(self)
         self.songerAlbumLabel.installEventFilter(self)
         # 信号连接到槽
-        slot = lambda: self.switchToAlbumInterfaceSig.emit(self.album[0])
+        slot = lambda: self.switchToAlbumInterfaceSig.emit(self.album[0],self.songerName)
         self.songNameLabel.clicked.connect(slot)
         self.songerAlbumLabel.clicked.connect(slot)
 

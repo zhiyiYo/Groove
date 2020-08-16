@@ -19,3 +19,8 @@ QScrollBar#minScrollBar::handle {
     border-radius: 1px;
     min-height: 40px;
 }
+
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical {
+    background: none;
+}

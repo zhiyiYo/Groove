@@ -53,7 +53,7 @@ class SubPlayWindow(QWidget):
         self.resize(635, 175)
         self.__initLayout()
         self.setAttribute(Qt.WA_TranslucentBackground)
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.Window)
+        self.setWindowFlags(Qt.FramelessWindowHint | Qt.Window | Qt.WindowStaysOnTopHint)
         # 初始化音量滑块
         self.volumeSlider.setRange(0, 100)
         self.volumeSlider.setSingleStep(1)
@@ -166,9 +166,9 @@ class SubPlayWindow(QWidget):
 
     def __adjustText(self):
         """ 根据文本长度决定是否显示省略号 """
-        fontMetrics_1 = QFontMetrics(QFont('Microsoft YaHei', 17))
+        fontMetrics_1 = QFontMetrics(QFont('Microsoft YaHei', 17, 63))
         self.songName = fontMetrics_1.elidedText(
-            self.songName, Qt.ElideRight, 270)
+            self.songName, Qt.ElideRight, 285)
         fontMetrics_2 = QFontMetrics(QFont('Microsoft YaHei', 9))
         self.songerName = fontMetrics_2.elidedText(
             self.songerName, Qt.ElideRight, 290)

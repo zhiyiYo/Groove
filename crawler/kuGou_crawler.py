@@ -167,7 +167,10 @@ class KuGouCrawler():
                 # 写入封面数据
                 self.id_card.add_picture(picture)
             elif self.suffix == 'mp4':
-                self.id_card['covr'] = [resp.content]
+                try:
+                    self.id_card['covr'][0] = resp.content
+                except:
+                    self.id_card['covr'] = [resp.content]
 
     def fetchFromLocal(self, album_name):
         """ 从本地获取封面 """

@@ -98,7 +98,7 @@ class PlayBar(QWidget):
         """ 显示更多操作菜单 """
         globalPos = self.rightWidgetGroup.mapToGlobal(
             self.moreActionsButton.pos())
-        x = globalPos.x() + self.moreActionsButton.width() + 16
+        x = globalPos.x() + self.moreActionsButton.width() + 24
         y = int(globalPos.y() + self.moreActionsButton.height() /
                 2 - self.moreActionsMenu.height()/2)
         self.moreActionsMenu.exec(QPoint(x, y))

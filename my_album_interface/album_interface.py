@@ -1,6 +1,7 @@
 # coding:utf-8
 
 import sys
+from copy import deepcopy
 
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QPalette
@@ -71,7 +72,7 @@ class AlbumInterface(QWidget):
 
     def showAlbumInfoEditPanel(self):
         """ 显示专辑信息编辑面板 """
-        oldAlbumInfo = self.albumInfo.copy()
+        oldAlbumInfo = deepcopy(self.albumInfo)
         infoEditPanel = AlbumInfoEditPanel(self.albumInfo, self.window())
         infoEditPanel.saveInfoSig.connect(
             lambda newAlbumInfo: self.__saveAlbumInfoSlot(oldAlbumInfo, newAlbumInfo))
@@ -87,20 +88,23 @@ class AlbumInterface(QWidget):
             lambda: self.addAlbumToPlaylistSig.emit(self.songInfo_list))
         self.albumInfoBar.editInfoBt.clicked.connect(
             self.showAlbumInfoEditPanel)
+        self.albumInfoBar.editInfoSig.connect(self.showAlbumInfoEditPanel)
         # 歌曲列表信号
         self.songListWidget.playSignal.connect(self.songCardPlaySig)
         self.songListWidget.nextToPlaySignal.connect(self.nextToPlaySignal)
         self.songListWidget.addSongToPlaylistSignal.connect(
             self.addSongToPlaylistSig)
 
-    def sortSongCardsByTrackNum(self):
+    def __sortSongCardsByTrackNum(self):
         """ 以曲序为基准排序歌曲卡 """
         self.songListWidget.sortSongCardByTrackNum()
         self.albumInfo['songInfo_list'] = self.songListWidget.songInfo_list
-        self.songInfo_list = self.songListWidget.songCard_list
+        self.songInfo_list = self.songListWidget.songInfo_list
 
     def __saveAlbumInfoSlot(self, oldAlbumInfo: dict, newAlbumInfo: dict):
         """ 保存专辑信息 """
-        self.saveAlbumInfoSig.emit(oldAlbumInfo, newAlbumInfo)
+        newAlbumInfo_copy = deepcopy(newAlbumInfo)
         self.updateWindow(newAlbumInfo)
         self.__sortSongCardsByTrackNum()
+        self.saveAlbumInfoSig.emit(oldAlbumInfo, newAlbumInfo_copy)
+    

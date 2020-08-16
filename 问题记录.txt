@@ -59,3 +59,11 @@ self.setStyleSheet("background-color: rgb(255,255, 255)");
 26.弹出窗口的qss不起作用时可以手动setStyle(QAppliction.style())
 
 27.使用adjustSize()自动调整尺寸
+
+28.QListWidget使用setViewportMargins()设置内边距
+
+29.当滚动条背景出现花纹时记得将
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical {
+    background: none;
+}

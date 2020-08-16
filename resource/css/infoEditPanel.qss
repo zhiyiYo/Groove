@@ -2,6 +2,8 @@ QWidget {
     background-color: white;
 }
 
+
+/*标签*/
 QLabel {
     font: 18px 'Microsoft YaHei';
 }
@@ -19,6 +21,8 @@ QLabel#bottomErrorLabel{
     color: rgb(197, 5, 0);
 }
 
+
+/*单行编辑框*/
 
 QLineEdit {
     padding: 8px 13px 7px 13px;
@@ -38,7 +42,15 @@ QLineEdit[hasText='false'] {
     border: 1px solid rgb(197, 5, 0);
 }
 
+QLineEdit:disabled{
+    color: rgb(122, 122, 122);
+    border: none;
+    background-color: rgb(204, 204, 204);
+}
 
+
+
+/*按钮*/
 QPushButton {
     background-color: rgb(204, 204, 204);
     padding: 10px 64px 10px 64px;
@@ -62,6 +74,9 @@ QToolButton {
     margin:0px;
 }
 
+
+
+/*滚动条*/
 QScrollBar {
     background: transparent;
     width: 3px;

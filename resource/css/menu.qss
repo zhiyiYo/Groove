@@ -270,3 +270,23 @@ QMenu#albumCardContextMenu::separator {
     margin-bottom: 5px;
     margin-left: 15;
 }
+
+
+/*专辑界面更多操作菜单*/
+QMenu#albumInterfaceMoreActionMenu{
+    width: 1px;
+    background-color: rgb(214,215,219);
+    border: 1px solid rgb(183, 184, 188);
+    border-radius: 0px;
+}
+
+QMenu#albumInterfaceMoreActionMenu::item {
+    min-width: 120px;
+}
+
+QMenu#albumInterfaceMoreActionMenu::item:selected {
+    /* border-width: 1px;
+    border-color: rgb(212, 212, 212); */
+    background: rgb(189,196,201);
+    color: black;
+}

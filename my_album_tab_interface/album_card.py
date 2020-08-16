@@ -1,6 +1,7 @@
-import sys
+# coding:utf-8
 
-import numpy as np
+import sys
+from copy import deepcopy
 
 from PyQt5.QtCore import QEvent, QPoint, Qt, pyqtSignal
 from PyQt5.QtGui import (QBitmap, QBrush, QColor, QContextMenuEvent, QIcon,
@@ -25,11 +26,12 @@ class AlbumCard(QWidget):
     addToPlaylistSignal = pyqtSignal(list)
     switchToAlbumInterfaceSig = pyqtSignal(dict)
     saveAlbumInfoSig = pyqtSignal(dict, dict)
+    updateAlbumInfoSig = pyqtSignal(dict, dict)
 
     def __init__(self, albumInfo: dict, parent=None, albumViewWidget=None):
         super().__init__(parent)
         self.albumInfo = albumInfo
-        self.songInfo_list = self.albumInfo.get('songInfo_list')
+        self.songInfo_list = self.albumInfo.get('songInfo_list')  # type:list
         self.picPath = self.albumInfo.get('cover_path')
         self.albumViewWidget = albumViewWidget
         # 设置窗体移动标志位
@@ -68,7 +70,7 @@ class AlbumCard(QWidget):
         self.songerNameLabel.setObjectName('songerName')
         # 将信号连接到槽函数
         self.playButton.clicked.connect(
-            lambda: self.playSignal.emit(self.songInfo_list))
+            lambda: self.playSignal.emit(self.albumInfo['songInfo_list']))
 
     def enterEvent(self, e):
         """ 鼠标进入窗口时显示磨砂背景和按钮 """
@@ -98,11 +100,11 @@ class AlbumCard(QWidget):
         # 创建菜单
         menu = AlbumCardContextMenu(parent=self)
         menu.playAct.triggered.connect(
-            lambda: self.playSignal.emit(self.songInfo_list))
+            lambda: self.playSignal.emit(self.albumInfo['songInfo_list']))
         menu.nextToPlayAct.triggered.connect(
-            lambda: self.nextPlaySignal.emit(self.songInfo_list))
+            lambda: self.nextPlaySignal.emit(self.albumInfo['songInfo_list']))
         menu.addToMenu.playingAct.triggered.connect(
-            lambda: self.addToPlaylistSignal.emit(self.songInfo_list))
+            lambda: self.addToPlaylistSignal.emit(self.albumInfo['songInfo_list']))
         menu.editInfoAct.triggered.connect(self.__showAlbumInfoEditPanel)
         menu.exec(event.globalPos())
 
@@ -141,24 +143,39 @@ class AlbumCard(QWidget):
         if e.button() == Qt.LeftButton:
             self.switchToAlbumInterfaceSig.emit(self.albumInfo)
 
-    def updateWindow(self, albumInfo: dict):
+    def updateWindow(self, oldAlbumInfo: dict, newAlbumInfo: dict):
         """ 更新专辑卡窗口信息 """
-        self.albumInfo = albumInfo
-        self.albumPic.setPicPath(albumInfo['cover_path'])
-        self.albumNameLabel.setText(albumInfo['album'])
-        self.songerNameLabel.setText(albumInfo['songer'])
-        self.playButton.setBlurPic(self.albumInfo['cover_path'], 26)
-        self.addToButton.setBlurPic(self.albumInfo['cover_path'], 26)
+        self.albumInfo = newAlbumInfo
+        self.songInfo_list = self.albumInfo['songInfo_list']
+        self.albumPic.setPicPath(newAlbumInfo['cover_path'])
+        self.albumNameLabel.setText(newAlbumInfo['album'])
+        self.songerNameLabel.setText(newAlbumInfo['songer'])
+        self.playButton.setBlurPic(newAlbumInfo['cover_path'], 26)
+        self.addToButton.setBlurPic(newAlbumInfo['cover_path'], 26)
         self.__adjustLabel()
+        # 同时更新专辑列表的信息
+        self.updateAlbumInfoSig.emit(oldAlbumInfo, newAlbumInfo)
 
     def __showAlbumInfoEditPanel(self):
         """ 显示专辑信息编辑面板 """
-        oldAlbumInfo = self.albumInfo.copy()
+        oldAlbumInfo = deepcopy(self.albumInfo)
         infoEditPanel = AlbumInfoEditPanel(self.albumInfo, self.window())
-        infoEditPanel.saveInfoSig.connect(self.updateWindow)
         infoEditPanel.saveInfoSig.connect(
-            lambda newAlbumInfo: self.saveAlbumInfoSig.emit(oldAlbumInfo, newAlbumInfo))
+            lambda newAlbumInfo: self.__saveAlbumInfoSlot(oldAlbumInfo, newAlbumInfo))
         infoEditPanel.setStyle(QApplication.style())
         infoEditPanel.exec_()
-        
 
+    def __sortAlbum(self, songInfo):
+        """ 以曲序为基准排序歌曲卡 """
+        trackNum = songInfo['tracknumber']  # type:str
+        # 处理m4a
+        if not trackNum[0].isnumeric():
+            return eval(trackNum)[0]
+        return int(trackNum)
+
+    def __saveAlbumInfoSlot(self, oldAlbumInfo: dict, newAlbumInfo: dict):
+        """ 保存专辑信息并更新界面 """
+        newAlbumInfo_copy = deepcopy(newAlbumInfo)
+        self.albumInfo['songInfo_list'].sort(key=self.__sortAlbum)
+        self.updateWindow(oldAlbumInfo, newAlbumInfo)
+        self.saveAlbumInfoSig.emit(oldAlbumInfo, newAlbumInfo_copy)

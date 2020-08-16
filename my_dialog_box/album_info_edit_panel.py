@@ -5,8 +5,8 @@ import sys
 
 from mutagen import File, MutagenError
 from PyQt5.QtCore import QEvent, QPoint, QRegExp, Qt, QTimer, pyqtSignal
-from PyQt5.QtGui import (QBrush, QColor, QMouseEvent, QPainter, QPen, QPixmap,
-                         QRegExpValidator)
+from PyQt5.QtGui import (QBrush, QColor, QMouseEvent, QMovie, QPainter, QPen,
+                         QPixmap, QRegExpValidator)
 from PyQt5.QtWidgets import (
     QApplication, QFileDialog, QGraphicsDropShadowEffect,
     QGraphicsOpacityEffect, QLabel, QLineEdit, QPushButton, QScrollArea,
@@ -15,6 +15,7 @@ from PyQt5.QtWidgets import (
 from my_functions.adjust_album_name import adjustAlbumName
 from my_functions.get_pic_suffix import getPicSuffix
 from my_functions.modify_songInfo import modifySongInfo
+from my_functions.write_album_cover import writeAlbumCover
 from my_widget.my_label import ErrorIcon, PerspectiveTransformLabel
 from my_widget.my_lineEdit import LineEdit
 from my_widget.my_scrollArea import ScrollArea
@@ -100,12 +101,18 @@ class SubAlbumInfoEditPanel(QWidget):
             self.songInfoWidget_list.append(songInfoWidget)
         self.saveButton = QPushButton('保存', self)
         self.cancelButton = QPushButton('取消', self)
+        # 创建gif
+        """ self.loadingLabel = QLabel(self)
+        self.movie = QMovie(
+            'resource\\images\\loading_gif\\loading.gif', parent=self) """
 
     def __initWidget(self):
         """ 初始化小部件 """
         self.setFixedWidth(936)
         self.setMaximumHeight(self.MAXHEIGHT)
         self.setAttribute(Qt.WA_StyledBackground)
+        # self.loadingLabel.setAttribute(Qt.WA_TranslucentBackground)
+        # self.loadingLabel.setMovie(self.movie)
         self.scrollArea.setWidget(self.scrollWidget)
         self.songInfoWidgetNum = len(self.songInfoWidget_list)  # type:int
         # 初始化定时器
@@ -228,6 +235,11 @@ class SubAlbumInfoEditPanel(QWidget):
 
     def saveAlbumInfo(self):
         """ 保存专辑信息 """
+        # 禁用小部件
+        self.__setWidgetEnable(False)
+        # 显示动图
+        # self.__showLoadingGif()
+        # 更新标签信息
         self.albumInfo['album'] = self.albumNameLineEdit.text()
         self.albumInfo['songer'] = self.albumSongerLineEdit.text()
         self.albumInfo['tcon'] = self.tconLineEdit.text()
@@ -251,17 +263,24 @@ class SubAlbumInfoEditPanel(QWidget):
             except MutagenError:
                 self.__saveErrorSlot(songInfoWidget)
                 songInfoWidget.setSaveSongInfoErrorMsgHidden(False)
+                break 
         if not self.saveErrorHappened:
-            self.__saveAlbumCover()
+            self.saveAlbumCover()
             self.saveInfoSig.emit(self.albumInfo)
             self.parent().deleteLater()
         self.saveErrorHappened = False
+        # 保存失败时重新启用编辑框
+        self.__setWidgetEnable(True)
+        self.loadingLabel.hide()
+        self.movie.stop()
 
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
         self.saveButton.clicked.connect(self.saveAlbumInfo)
         self.cancelButton.clicked.connect(self.parent().deleteLater)
         self.albumCover.clicked.connect(self.delayTimer.start)
+        """ self.saveAlbumInfoThread.saveErrorSig.connect(
+            lambda index:self.__saveErrorSlot(self.songInfoWidget_list[index])) """
 
     def __showFileDialog(self):
         """ 显示专辑图片选取对话框 """
@@ -276,12 +295,18 @@ class SubAlbumInfoEditPanel(QWidget):
             self.newAlbumCoverPath = path
             self.albumCover.setPicPath(path)
 
-    def __saveAlbumCover(self):
+    def saveAlbumCover(self):
         """ 保存新专辑封面 """
-        if not self.newAlbumCoverPath or self.newAlbumCoverPath == os.path.abspath(self.cover_path):
+        if not self.newAlbumCoverPath:
             return
         with open(self.newAlbumCoverPath, 'rb') as f:
             picData = f.read()
+            # 给专辑中的所有文件写入同一张封面
+            for songInfo in self.songInfo_list:
+                writeAlbumCover(songInfo['songPath'], self.newAlbumCoverPath)
+            # 更换文件夹下的封面图片
+            if self.newAlbumCoverPath == os.path.abspath(self.cover_path):
+                return
             with open(self.cover_path, 'wb') as f:
                 f.write(picData)
             # 判断文件格式后修改后缀名
@@ -292,6 +317,26 @@ class SubAlbumInfoEditPanel(QWidget):
                 self.cover_path = oldName + newSuffix
                 self.albumInfo['cover_path'] = self.cover_path
 
+    def __setWidgetEnable(self, isEnable: bool):
+        """ 设置编辑框是否启用 """
+        self.albumCover.setEnabled(isEnable)
+        self.saveButton.setEnabled(isEnable)
+        self.tconLineEdit.setEnabled(isEnable)
+        self.albumNameLineEdit.setEnabled(isEnable)
+        self.albumSongerLineEdit.setEnabled(isEnable)
+        for songInfoWidget in self.songInfoWidget_list:
+            songInfoWidget.setLineEditEnable(isEnable)
+        # 更新样式
+        self.setStyle(QApplication.style())
+
+    def __showLoadingGif(self):
+        """ 显示正在加载动画 """
+        self.loadingLabel.resize(77,77)
+        self.loadingLabel.move(int(self.width() / 2 - self.loadingLabel.width() / 2),
+                               int(self.height() / 2 - self.loadingLabel.height() / 2))
+        self.loadingLabel.raise_()
+        self.loadingLabel.show()
+        self.movie.start()
 
 
 class SongInfoWidget(QWidget):
@@ -384,6 +429,12 @@ class SongInfoWidget(QWidget):
         self.bottomErrorLabel.setText('遇到未知错误，请稍后再试')
         self.bottomErrorLabel.adjustSize()
         self.bottomErrorLabel.setHidden(isHidden)
+
+    def setLineEditEnable(self, isEnable: bool):
+        """ 设置编辑框是否启用 """
+        self.songNameLineEdit.setEnabled(isEnable)
+        self.songerLineEdit.setEnabled(isEnable)
+        self.trackNumLineEdit.setEnabled(isEnable)
 
 
 class EditAlbumCoverLabel(PerspectiveTransformLabel):

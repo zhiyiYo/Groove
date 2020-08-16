@@ -106,6 +106,7 @@ class AlbumCardViewer(QWidget):
                 self.switchToAlbumInterfaceSig)
             # 更新专辑信息
             albumCard.saveAlbumInfoSig.connect(self.saveAlbumInfoSig)
+            #albumCard.updateAlbumInfoSig.connect(self.__updateAlbumInfoSlot)
 
     def initLayout(self):
         """ 初始化布局 """
@@ -433,16 +434,26 @@ class AlbumCardViewer(QWidget):
             qss = f.read()
             self.setStyleSheet(qss)
 
-    def findAlbumCard(self, albumInfo: dict) -> AlbumCard:
+    def findAlbumCardByAlbumInfo(self, albumInfo: dict) -> AlbumCard:
         """ 通过albumInfo获取对AlbumCard实例的引用 """
         for albumCard in self.albumCard_list:
             if albumCard.albumInfo == albumInfo:
                 return albumCard
         return None
 
+    def findAlbumCardByName(self, albumName: str, songerName: str) -> AlbumCard:
+        """ 通过名字查找专辑卡 """
+        for albumCard in self.albumCard_list:
+            if albumCard.albumInfo['album'] == albumName and albumCard.albumInfo['songer'] == songerName:
+                return albumCard
+        return None
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = AlbumCardViewer(['D:\\KuGou\\'])
-    demo.show()
-    sys.exit(app.exec_())
+    def __updateAlbumInfoSlot(self, oldAlbumInfo: dict, newAlbumInfo: dict):
+        """ 更新专辑列表的专辑信息 """
+        if oldAlbumInfo in self.albumInfo.albumInfo_list:
+            index = self.albumInfo.albumInfo_list.index(oldAlbumInfo)
+            self.albumInfo.albumInfo_list[index] = newAlbumInfo
+            print('更新专辑列表信息')
+        else:
+            print('没找到旧专辑信息')
+        print('=='*40)

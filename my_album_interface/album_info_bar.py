@@ -2,7 +2,7 @@
 
 import sys
 
-from PyQt5.QtCore import Qt,QPoint
+from PyQt5.QtCore import Qt, QPoint,pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QFont, QFontMetrics, QPixmap, QPalette
 from PyQt5.QtWidgets import QApplication, QLabel, QWidget
 
@@ -10,10 +10,12 @@ from my_functions.get_dominant_color import getDominantColor
 from my_widget.my_menu import AddToMenu
 
 from .album_interface_buttons import BasicButton
+from .more_actions_menu import MoreActionsMenu
 
 
 class AlbumInfoBar(QWidget):
     """ 专辑信息栏 """
+    editInfoSig = pyqtSignal()
 
     def __init__(self, albumInfo: dict, parent=None):
         super().__init__(parent)
@@ -27,6 +29,7 @@ class AlbumInfoBar(QWidget):
     def __createWidgets(self):
         """ 创建小部件 """
         self.addToMenu = AddToMenu(parent=self)
+        self.moreActionsMenu = MoreActionsMenu(self)
         self.albumCover = QLabel(self)
         self.albumNameLabel = QLabel(self.albumName, self)
         self.songerNameLabel = QLabel(self.songerName, self)
@@ -63,6 +66,7 @@ class AlbumInfoBar(QWidget):
         self.__setQss()
         # 信号连接到槽
         self.addToBt.clicked.connect(self.showAddToMenu)
+        self.moreActionsBt.clicked.connect(self.showMoreActionsMenu)
 
     def __initLayout(self):
         """ 初始化布局 """
@@ -98,7 +102,7 @@ class AlbumInfoBar(QWidget):
             # 再次根据换行后的长度决定是否使用省略号
             newAlbumName = ''.join(newAlbumName_list)
             secondLineText = fontMetrics.elidedText(
-                newAlbumName[index + 1 :], Qt.ElideRight, maxWidth)
+                newAlbumName[index + 1:], Qt.ElideRight, maxWidth)
             newAlbumName = newAlbumName[: index + 1] + secondLineText
             self.albumNameLabel.setText(newAlbumName)
             self.albumNameLabel.setFixedSize(maxWidth, 108)
@@ -113,14 +117,17 @@ class AlbumInfoBar(QWidget):
     def __adjustButtonPos(self):
         """ 根据窗口宽度隐藏部分按钮并调整更多操作按钮位置 """
         if self.width() >= 1200:
+            self.moreActionsMenu.setActionNum(1)
             self.moreActionsBt.move(1031, 211)
             self.pinToStartMenuBt.show()
             self.editInfoBt.show()
         elif 1058 <= self.width() < 1200:
+            self.moreActionsMenu.setActionNum(2)
             self.moreActionsBt.move(888, 211)
             self.editInfoBt.hide()
             self.pinToStartMenuBt.show()
         elif self.width() < 1058:
+            self.moreActionsMenu.setActionNum(3)
             self.moreActionsBt.move(685, 211)
             self.pinToStartMenuBt.hide()
             self.editInfoBt.hide()
@@ -162,8 +169,8 @@ class AlbumInfoBar(QWidget):
         """ 设置背景颜色 """
         self.backgroundColor = getDominantColor(
             self.albumCoverPath, resType=tuple)
-        if self.backgroundColor == (103, 108, 136):
-            self.backgroundColor = (72, 75, 86)
+        """ if self.backgroundColor == (103, 108, 136):
+            self.backgroundColor = (72, 75, 86) """
         r, g, b = self.backgroundColor
         palette = QPalette()
         palette.setColor(self.backgroundRole(), QColor(r, g, b))
@@ -190,4 +197,13 @@ class AlbumInfoBar(QWidget):
         x = addToGlobalPos.x() + self.addToBt.width() + 5
         y = addToGlobalPos.y()+int(self.addToBt.height()/2-self.addToMenu.height()/2)
         self.addToMenu.exec(QPoint(x, y))
-        
+
+    def showMoreActionsMenu(self):
+        """ 显示更多操作菜单 """
+        if self.moreActionsMenu.actionNum >= 2:
+            self.moreActionsMenu.editInfoAct.triggered.connect(self.editInfoSig)
+        globalPos = self.mapToGlobal(self.moreActionsBt.pos())
+        x = globalPos.x() + self.moreActionsBt.width() + 5
+        y = globalPos.y() + int(
+            self.moreActionsBt.height() / 2 - self.moreActionsMenu.currentHeight / 2)
+        self.moreActionsMenu.exec(QPoint(x, y))

@@ -13,7 +13,8 @@ QListWidget::item{
 
 QScrollBar {
     background: transparent;
-    width: 3px;
+    width: 5px;
+    margin-right: 2px;
 }
 
 /*隐藏上箭头*/
@@ -138,4 +139,10 @@ QToolButton[state='selected']:hover {
 
 QToolButton[state='selected']:pressed {
     background-color: rgb(0, 86, 105);
+}
+
+
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical {
+    background: none;
 }

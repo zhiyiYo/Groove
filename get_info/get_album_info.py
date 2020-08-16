@@ -103,7 +103,3 @@ class AlbumInfo():
             if albumInfo['album'] == albumName:
                 return albumInfo
         return {}
-
-
-if __name__ == "__main__":
-    albumInfo = AlbumInfo()

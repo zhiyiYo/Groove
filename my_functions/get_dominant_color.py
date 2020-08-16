@@ -16,7 +16,8 @@ def getDominantColor(imagePath, resType=str):
         cond_2 = (r > 220 and g > 220 and b > 200) or (
             (r > 200 and g > 220 and b > 220)) or (r > 220 and g > 200 and b > 200)
         if cond_1 or cond_2:
-            r, g, b = 103, 108, 136
+            #r, g, b = 103, 108, 136
+            r, g, b = 12, 60, 94
     if resType is str:
         rgb = hex(r)[2:].rjust(2, '0') + \
             hex(g)[2:].rjust(2, '0') + hex(b)[2:].rjust(2, '0')

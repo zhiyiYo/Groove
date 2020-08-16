@@ -21,7 +21,7 @@ class SongCard(QWidget):
     clicked = pyqtSignal(int)
     doubleClicked = pyqtSignal(int)
     playButtonClicked = pyqtSignal(int)
-    switchToAlbumInterfaceSig = pyqtSignal(str)
+    switchToAlbumInterfaceSig = pyqtSignal(str,str) # 发送专辑名和歌手名
 
     def __init__(self, songInfo: dict, parent=None):
         super().__init__(parent)
@@ -42,7 +42,7 @@ class SongCard(QWidget):
         # 创建小部件
         self.songNameCard = SongNameCard(songInfo['songName'], self)
         self.songerLabel = ClickableLabel(songInfo['songer'], self)
-        self.albumLabel = ClickableLabel(songInfo['album'][0], self,False)
+        self.albumLabel = ClickableLabel(songInfo['album'][0], self, False)
         self.yearLabel = QLabel(songInfo['year'], self)
         self.tconLabel = QLabel(songInfo['tcon'], self)
         self.durationLabel = QLabel(songInfo['duration'], self)
@@ -77,7 +77,7 @@ class SongCard(QWidget):
         # 信号连接到槽
         self.playButton.clicked.connect(self.playButtonSlot)
         self.albumLabel.clicked.connect(
-            lambda:self.switchToAlbumInterfaceSig.emit(self.albumLabel.text()))
+            lambda:self.switchToAlbumInterfaceSig.emit(self.albumLabel.text(),self.songerLabel.text()))
 
     def setCheckBoxBtLabelState(self, state: str):
         """ 设置复选框、按钮和标签动态属性，总共3种状态"""

@@ -1,13 +1,11 @@
 import sys
 from json import dump
 
-
 from PyQt5.QtCore import QEvent, QPoint, QSize, Qt, pyqtSignal
-from PyQt5.QtGui import (QBrush, QColor, QContextMenuEvent, QIcon, QPainter,
+from PyQt5.QtGui import (QBrush, QColor, QContextMenuEvent, QPainter,
                          QPixmap)
-from PyQt5.QtWidgets import (
-    QAction, QApplication, QHBoxLayout, QLabel, QListWidget,
-    QListWidgetItem, QWidget)
+from PyQt5.QtWidgets import (QAction, QApplication, QLabel, QListWidgetItem,
+                             QWidget)
 
 from get_info.get_song_info import SongInfo
 from my_dialog_box import PropertyPanel, SongInfoEditPanel
@@ -47,12 +45,8 @@ class SongCardListWidget(ListWidget):
 
     def __initWidget(self):
         """ 初始化小部件 """
-        # self.adjustHeight()
-        self.update()
         self.setAttribute(Qt.WA_StyledBackground)
         self.setAlternatingRowColors(True)
-        # 将滚动模式改为以像素计算
-        self.setVerticalScrollMode(self.ScrollPerPixel)
         # 设置层叠样式
         self.__setQss()
         # 信号连接到槽
@@ -185,12 +179,6 @@ class SongCardListWidget(ListWidget):
         self.contextMenu.addToMenu.playingAct.triggered.connect(
             lambda: self.addSongToPlaylistSignal.emit(self.songCard_list[self.currentRow()].songInfo))
 
-    def adjustHeight(self):
-        """ 如果歌曲卡数量太少就调整自己的高度 """
-        if self.parent():
-            if len(self.songCard_list) * 60 < self.parent().height() - self.y():
-                self.resize(self.width(), len(self.songCard_list) * 60 + 145)
-
     def clearSongCards(self):
         """ 清空歌曲卡 """
         self.item_list.clear()
@@ -267,6 +255,7 @@ class SongCardListWidget(ListWidget):
         painter = QPainter(self.viewport())
         painter.setPen(Qt.white)
         painter.setBrush(Qt.white)
+        # 填充不是白色的区域
         painter.drawRect(0, 60 * len(self.songCard_list),
                          self.width(), self.height())
 
@@ -290,4 +279,3 @@ class SongCardListWidget(ListWidget):
         if not trackNum[0].isnumeric():
             return eval(trackNum)[0]
         return int(trackNum)
-

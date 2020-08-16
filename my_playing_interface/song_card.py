@@ -13,7 +13,7 @@ from my_widget.my_label import ClickableLabel
 class SongCard(QWidget):
     """ 歌曲卡 """
     clicked = pyqtSignal(int)
-    switchToAlbumInterfaceSig = pyqtSignal(str)
+    switchToAlbumInterfaceSig = pyqtSignal(str,str) # 发送专辑名和歌手名
 
     def __init__(self, songInfo: dict, parent=None):
         super().__init__(parent)
@@ -30,8 +30,8 @@ class SongCard(QWidget):
         self.itemIndex = None
         # 创建小部件
         self.songNameCard = SongNameCard(songInfo['songName'], self)
-        self.songerLabel = ClickableLabel(songInfo['songer'], self)
-        self.albumLabel = ClickableLabel(songInfo['album'][0], self)
+        self.songerLabel = ClickableLabel(songInfo['songer'], self, False)
+        self.albumLabel = ClickableLabel(songInfo['album'][0], self, False)
         self.yearLabel = QLabel(songInfo['year'], self)
         self.durationLabel = QLabel(songInfo['duration'], self)
         self.buttonGroup = self.songNameCard.buttonGroup
@@ -65,7 +65,8 @@ class SongCard(QWidget):
         self.playButton.clicked.connect(
             lambda: self.clicked.emit(self.itemIndex))
         self.albumLabel.clicked.connect(
-            lambda: self.switchToAlbumInterfaceSig.emit(self.albumLabel.text()))
+            lambda: self.switchToAlbumInterfaceSig.emit(
+                self.albumLabel.text(),self.songerLabel.text()))
 
     def __setQss(self):
         """ 设置层叠样式 """

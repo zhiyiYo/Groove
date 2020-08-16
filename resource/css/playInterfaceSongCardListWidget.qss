@@ -115,3 +115,32 @@ QCheckBox::indicator:checked {
     border-image: url(resource/images/playing_interface/indicator_checked_25_25.png);
 }
 
+
+
+/*滚动条*/
+QScrollBar:vertical {
+    background: transparent;
+    width: 6px;
+    border: none;
+    margin-right: 3px;
+}
+
+
+QScrollBarr::sub-line:vertical {
+    background: transparent;
+}
+
+QScrollBar::add-line:vertical {
+    background: transparent;
+}
+
+QScrollBar::handle:vertical {
+    background: rgb(122, 122, 122);
+    border: 2px solid rgb(122,122,122);
+    border-radius: 1px;
+} 
+
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical {
+    background: none;
+}
