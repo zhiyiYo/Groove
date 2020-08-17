@@ -19,6 +19,7 @@ class AeroMenu(QMenu):
         self.setWindowFlags(Qt.FramelessWindowHint |
                             Qt.Popup | Qt.NoDropShadowWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground | Qt.WA_StyledBackground)
+        self.setObjectName('AeroMenu')
         self.setQss()
 
     def event(self, e: QEvent):
@@ -42,14 +43,15 @@ class AcrylicMenu(QMenu):
     """ 亚克力菜单 """
     windowEffect = WindowEffect()
 
-    def __init__(self, string='', parent=None):
+    def __init__(self, string='', parent=None,acrylicColor='e5e5e5C0'):
         super().__init__(string, parent)
+        self.acrylicColor = acrylicColor
         self.__initWidget()
 
     def event(self, e: QEvent):
         if e.type() == QEvent.WinIdChange:
             self.hWnd = HWND(int(self.winId()))
-            self.windowEffect.setAcrylicEffect(self.hWnd, 'e5e5e5C0', True)
+            self.windowEffect.setAcrylicEffect(self.hWnd, self.acrylicColor, True)
         return QMenu.event(self, e)
 
     def __initWidget(self):
@@ -70,8 +72,8 @@ class AcrylicMenu(QMenu):
 class AddToMenu(AcrylicMenu):
     """ 添加到菜单 """
 
-    def __init__(self, string='添加到', parent=None):
-        super().__init__(string, parent)
+    def __init__(self, string='添加到', parent=None,acrylicColor='e5e5e5C0'):
+        super().__init__(string, parent,acrylicColor)
         self.setObjectName('addToMenu')
         # 创建动作
         self.createActions()
@@ -111,6 +113,7 @@ class LineEditMenu(AeroMenu):
         self.setObjectName('lineEditMenu')
         self.animation.setDuration(300)
         self.animation.setEasingCurve(QEasingCurve.OutQuad)
+        self.setQss()
 
     def createActions(self):
         # 创建动作

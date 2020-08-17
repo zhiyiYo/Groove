@@ -47,7 +47,7 @@ class PlayBar(QWidget):
         # 引用小部件
         self.referenceWidgets()
         # 连接槽函数
-        self.songInfoCard.songChanged.connect(self.updateDominantColor)
+        self.songInfoCard.albumChanged.connect(self.updateDominantColor)
         self.moreActionsButton.clicked.connect(self.showMoreActionsMenu)
         # 设置小部件位置
         self.__setWidgetPos()
@@ -98,9 +98,9 @@ class PlayBar(QWidget):
         """ 显示更多操作菜单 """
         globalPos = self.rightWidgetGroup.mapToGlobal(
             self.moreActionsButton.pos())
-        x = globalPos.x() + self.moreActionsButton.width() + 24
+        x = globalPos.x() + self.moreActionsButton.width() + 30
         y = int(globalPos.y() + self.moreActionsButton.height() /
-                2 - self.moreActionsMenu.height()/2)
+                2 - 152 / 2)
         self.moreActionsMenu.exec(QPoint(x, y))
 
     def referenceWidgets(self):
@@ -130,7 +130,6 @@ class PlayBar(QWidget):
             self.songInfoCard.setFixedWidth(self.playProgressBar.x() - 20)
             self.songInfoCard.scrollTextWindow.maxWidth = self.songInfoCard.width() - 155
             self.songInfoCard.scrollTextWindow.initFlagsWidth()
-
 
 
 if __name__ == "__main__":

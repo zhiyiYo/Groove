@@ -16,13 +16,13 @@ class ListWidget(QListWidget):
         self.fps = 60
         self.duration = 400
         self.stepsTotal = 0
-        self.stepRatio = 1
-        self.acceleration = 1
+        self.stepRatio = 0.88
+        self.acceleration = 1.12
         self.lastWheelEvent = None
         self.scrollStamps = deque()
         self.stepsLeftQueue = deque()
         self.smoothMoveTimer = QTimer(self)
-        self.smoothMode = SmoothMode(SmoothMode.COSINE)
+        self.smoothMode = SmoothMode(SmoothMode.LINEAR)
         self.smoothMoveTimer.timeout.connect(self.smoothMove)
         self.setVerticalScrollMode(self.ScrollPerPixel)
         self.setAttribute(Qt.WA_StyledBackground)

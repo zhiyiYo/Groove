@@ -21,7 +21,7 @@ class SubMoreActionsMenu(QMenu):
         """ 初始化小部件 """
         self.setObjectName('roundBorderMenu')
         self.setAttribute(Qt.WA_TranslucentBackground)
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.NoDropShadowWindowHint)
+        self.setWindowFlags(Qt.FramelessWindowHint | Qt.NoDropShadowWindowHint | Qt.Popup)
         self.setShadowEffect()
 
     def setShadowEffect(self):
@@ -75,7 +75,7 @@ class SubMoreActionsMenu(QMenu):
             self.setStyleSheet(f.read())
 
 
-class MoreActionsMenu(QWidget):
+class MoreActionsMenu(QMenu):
     """ 更多操作圆角菜单，flag用来指示动作的类型，flag=1有四个动作，flag=0有三个动作 """
     def __init__(self, parent=None, actionFlag=1):
         super().__init__(parent)

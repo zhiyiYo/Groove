@@ -7,10 +7,9 @@ from PyQt5.QtGui import QBrush, QColor, QFont, QFontMetrics, QPixmap, QPalette
 from PyQt5.QtWidgets import QApplication, QLabel, QWidget
 
 from my_functions.get_dominant_color import getDominantColor
-from my_widget.my_menu import AddToMenu
 
 from .album_interface_buttons import BasicButton
-from .more_actions_menu import MoreActionsMenu
+from .album_interface_menus import MoreActionsMenu,AddToMenu
 
 
 class AlbumInfoBar(QWidget):
@@ -28,7 +27,7 @@ class AlbumInfoBar(QWidget):
 
     def __createWidgets(self):
         """ 创建小部件 """
-        self.addToMenu = AddToMenu(parent=self)
+        self.addToMenu = AddToMenu(self)
         self.moreActionsMenu = MoreActionsMenu(self)
         self.albumCover = QLabel(self)
         self.albumNameLabel = QLabel(self.albumName, self)
@@ -195,7 +194,7 @@ class AlbumInfoBar(QWidget):
         """ 显示添加到菜单 """
         addToGlobalPos = self.mapToGlobal(self.addToBt.pos())
         x = addToGlobalPos.x() + self.addToBt.width() + 5
-        y = addToGlobalPos.y()+int(self.addToBt.height()/2-self.addToMenu.height()/2)
+        y = addToGlobalPos.y() + int(self.addToBt.height() / 2 - 141 / 2)
         self.addToMenu.exec(QPoint(x, y))
 
     def showMoreActionsMenu(self):

@@ -444,8 +444,14 @@ class AlbumCardViewer(QWidget):
     def findAlbumCardByName(self, albumName: str, songerName: str) -> AlbumCard:
         """ 通过名字查找专辑卡 """
         for albumCard in self.albumCard_list:
-            if albumCard.albumInfo['album'] == albumName and albumCard.albumInfo['songer'] == songerName:
-                return albumCard
+            if albumCard.albumInfo['album'] == albumName:
+                # 如果歌手名也相同就直接返回，否则在歌曲列表中寻找
+                if albumCard.albumInfo['songer'] == songerName:
+                    return albumCard
+                else:
+                    for songInfo in albumCard.albumInfo['songInfo_list']:
+                        if songInfo['songer'] == songerName:
+                            return albumCard
         return None
 
     def __updateAlbumInfoSlot(self, oldAlbumInfo: dict, newAlbumInfo: dict):

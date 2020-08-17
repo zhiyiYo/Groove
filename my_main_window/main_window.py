@@ -766,6 +766,9 @@ class MainWindow(QWidget):
 
     def __switchToAlbumInterface(self, albumInfo: dict):
         """ 切换到专辑界面 """
+        # 退出全屏
+        if self.isFullScreen():
+            self.exitFullScreen()
         # 显示返回按钮
         self.titleBar.returnBt.show()
         self.titleBar.title.move(self.titleBar.returnBt.width(), 0)

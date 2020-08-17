@@ -1,6 +1,6 @@
 /*设置菜单样式*/
 QMenu {
-    background-color: rgba(242, 242, 242,0.75);
+    background-color: rgb(242, 242, 242);
     /*background-color: white;*/
     font-size: 18px;
     font: 18px "Microsoft YaHei";
@@ -154,7 +154,7 @@ QMenu#lineEditMenu::item {
 
 /*主界面更多操作菜单样式*/
 QMenu#moreActionsMenu{
-    background-color: rgba(242, 242, 242, 0.5);
+    background-color: rgba(242, 242, 242, 0.6);
     border-radius: 0px;
     width: 1px;
 }
@@ -273,7 +273,8 @@ QMenu#albumCardContextMenu::separator {
 
 
 /*专辑界面更多操作菜单*/
-QMenu#albumInterfaceMoreActionMenu{
+QMenu#albumInterfaceMoreActionMenu,
+QMenu#albumInterfaceAddToMenu {
     width: 1px;
     background-color: rgb(214,215,219);
     border: 1px solid rgb(183, 184, 188);
@@ -284,9 +285,37 @@ QMenu#albumInterfaceMoreActionMenu::item {
     min-width: 120px;
 }
 
-QMenu#albumInterfaceMoreActionMenu::item:selected {
+QMenu#albumInterfaceMoreActionMenu::item:selected,
+QMenu#albumInterfaceAddToMenu::item:selected{
     /* border-width: 1px;
     border-color: rgb(212, 212, 212); */
     background: rgb(189,196,201);
     color: black;
+}
+
+QMenu#albumInterfaceAddToMenu::item:selected{
+    height: 38px;
+}
+
+QMenu#albumInterfaceAddToMenu::separator {
+    height: 1px;
+    width: 140px;
+    background: rgba(138, 138, 138, 0.8);
+    margin-right: 15px;
+    margin-top: 6px;
+    margin-bottom: 6px;
+    margin-left: 15;
+}
+
+QMenu#albumInterfaceAddToMenu::icon {
+    position: absolute;
+    left: 14px;
+    height: 20px;
+    width: 20px;
+}
+
+QMenu#albumInterfaceAddToMenu::item {
+    /*设置文字边距*/
+    padding-left: 20px;
+    margin-bottom: 2px;
 }

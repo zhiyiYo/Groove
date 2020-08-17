@@ -4,6 +4,7 @@ import sys
 from ctypes.wintypes import HWND
 
 from PyQt5.QtCore import QEasingCurve, QPropertyAnimation, QRect, Qt, QEvent
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction, QApplication, QMenu
 
 from effects import WindowEffect
@@ -66,3 +67,61 @@ class MoreActionsMenu(QMenu):
         # 开始动画
         self.animation.start()
         super().exec(pos)
+
+
+class AddToMenu(QMenu):
+    """ 添加到菜单 """
+
+    def __init__(self, parent=None):
+        super().__init__(parent=None)
+        self.windowEffect = WindowEffect()
+        # 添加动画
+        self.animation = QPropertyAnimation(self, b'geometry')
+        # 创建动作
+        self.createActions()
+        self.__initWidget()
+
+    def __initWidget(self):
+        """ 初始化小部件 """
+        self.setWindowFlags(Qt.FramelessWindowHint |
+                            Qt.Popup | Qt.NoDropShadowWindowHint)
+        self.setObjectName('albumInterfaceAddToMenu')
+        self.animation.setDuration(300)
+        self.animation.setEasingCurve(QEasingCurve.OutQuad)
+        # 设置层叠样式
+        self.__setQss()
+
+    def event(self, e: QEvent):
+        if e.type() == QEvent.WinIdChange:
+            self.hWnd = HWND(int(self.winId()))
+            self.windowEffect.addShadowEffect(self.hWnd)
+        return QMenu.event(self, e)
+
+    def createActions(self):
+        """ 创建三个动作 """
+        self.playingAct = QAction(
+            QIcon('resource\\images\\menu\\正在播放.png'), '正在播放', self)
+        self.newPlayList = QAction(
+            QIcon('resource\\images\\menu\\黑色加号.png'), '新的播放列表', self)
+        self.myLove = QAction(
+            QIcon('resource\\images\\menu\\黑色我喜欢_20_20.png'), '我喜欢', self)
+        self.action_list = [self.playingAct, self.newPlayList, self.myLove]
+        self.addAction(self.playingAct)
+        self.addSeparator()
+        self.addActions([self.newPlayList, self.myLove])
+
+    def __setQss(self):
+        """ 设置层叠样式 """
+        with open('resource\\css\\menu.qss', encoding='utf-8') as f:
+            self.setStyleSheet(f.read())
+
+    def exec(self, pos):
+        """ 显示菜单 """
+        self.animation.setStartValue(
+            QRect(pos.x(), pos.y(), 1, 141))
+        self.animation.setEndValue(
+            QRect(pos.x(), pos.y(), 170, 141))
+        # 开始动画
+        self.animation.start()
+        super().exec(pos)
+

@@ -271,8 +271,8 @@ class SubAlbumInfoEditPanel(QWidget):
         self.saveErrorHappened = False
         # 保存失败时重新启用编辑框
         self.__setWidgetEnable(True)
-        self.loadingLabel.hide()
-        self.movie.stop()
+        #self.loadingLabel.hide()
+        #self.movie.stop()
 
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
