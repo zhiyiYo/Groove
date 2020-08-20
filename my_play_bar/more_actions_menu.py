@@ -52,10 +52,11 @@ class MoreActionsMenu(AeroMenu):
     def exec(self, pos):
         """ 重写exec_() """
         height = self.actionNum * 38
+        width = [188, 206][self.actionFlag]
         self.animation.setStartValue(
             QRect(pos.x(), pos.y(), 1, height))
         self.animation.setEndValue(
-            QRect(pos.x(), pos.y(), 206, height))
+            QRect(pos.x(), pos.y(), width, height))
         # 开始动画
         self.animation.start()
         super().exec(pos)

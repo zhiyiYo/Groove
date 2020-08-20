@@ -155,7 +155,7 @@ class SongCardListWidget(ListWidget):
         super().resizeEvent(e)
         for item in self.item_list:
             item.setSizeHint(QSize(self.width(), 60))
-        self.placeholderItem.setSizeHint(QSize(self.width(), 145))
+        self.placeholderItem.setSizeHint(QSize(self.width(), 116))
 
     def updateSongCardsInfo(self, songInfoDict_list: list):
         """ 更新所有歌曲卡的信息，不增减歌曲卡 """
@@ -246,7 +246,8 @@ class SongCardListWidget(ListWidget):
     def __createPlaceHolderItem(self):
         """ 创建占位行 """
         self.placeholderItem = QListWidgetItem(self)
-        self.placeholderItem.setSizeHint(QSize(self.width(), 145))
+        self.placeholderItem.setSizeHint(QSize(self.width(), 116))
+        self.placeholderItem.setBackground(QBrush(Qt.white))
         self.addItem(self.placeholderItem)
 
     def paintEvent(self, e):

@@ -45,9 +45,9 @@ class AlbumCard(QWidget):
         self.albumPic = PerspectiveTransformLabel(
             self.picPath, (200, 200), self)
         self.playButton = BlurButton(
-            self, (39, 76), 'resource\\images\\播放按钮_70_70.png', self.picPath, blurRadius=26)
+            self, (39, 76), 'resource\\images\\播放按钮_70_70.png', self.picPath, blurRadius=27)
         self.addToButton = BlurButton(
-            self, (111, 76), 'resource\\images\\添加到按钮_70_70.png', self.picPath, blurRadius=26)
+            self, (111, 76), 'resource\\images\\添加到按钮_70_70.png', self.picPath, blurRadius=27)
         # 初始化
         self.__initWidget()
 

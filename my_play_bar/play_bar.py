@@ -22,7 +22,7 @@ class PlayBar(QWidget):
         # 实例化窗口特效
         self.windowEffect = WindowEffect()
         self.hWnd = HWND(int(self.winId()))
-        self.acrylicColor = '0a517aB8'
+        self.acrylicColor = '0c3c5eB8'
         # 记录移动次数
         self.moveTime = 0
         self.resizeTime = 0

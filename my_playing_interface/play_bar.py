@@ -1,6 +1,6 @@
 import sys
 
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal, QPoint
 from PyQt5.QtWidgets import QApplication, QWidget
 
 from .play_bar_buttons import (BasicCircleButton, FillScreenButton,
@@ -9,6 +9,8 @@ from .play_bar_buttons import (BasicCircleButton, FillScreenButton,
                                TwoStateButton, VolumeButton)
 from .play_progress_bar import PlayProgressBar
 from .volume_slider import VolumeSlider
+
+from my_play_bar.more_actions_menu import MoreActionsMenu
 
 
 class PlayBar(QWidget):
@@ -27,6 +29,7 @@ class PlayBar(QWidget):
 
     def __createWidget(self):
         """ 创建小部件 """
+        self.moreActionsMenu = MoreActionsMenu(self, 0)
         self.playButton = PlayButton(self)
         self.volumeButton = VolumeButton(self)
         self.volumeSlider = VolumeSlider(self.window())
@@ -70,13 +73,7 @@ class PlayBar(QWidget):
         self.playProgressBar.move(0, 45)
         self.__moveButtons()
         # 信号连接到槽
-        self.volumeButton.clicked.connect(self.__showVolumeSlider)
-        self.volumeSlider.muteStateChanged.connect(
-            lambda muteState: self.volumeButton.setMute(muteState))
-        self.volumeSlider.volumeLevelChanged.connect(
-            lambda volumeLevel: self.volumeButton.updateIcon(volumeLevel))
-        for widget in self.__widget_list:
-            widget.clicked.connect(self.volumeSlider.hide)
+        self.__connectSignalToSlot()
         # 引用小部件及其方法
         self.__referenceWidget()
 
@@ -120,6 +117,26 @@ class PlayBar(QWidget):
         self.progressSlider = self.playProgressBar.progressSlider
         self.setCurrentTime = self.playProgressBar.setCurrentTime
         self.setTotalTime = self.playProgressBar.setTotalTime
+
+    def __showMoreActionsMenu(self):
+        """ 显示更多操作菜单 """
+        globalPos = self.mapToGlobal(
+            self.moreActionsButton.pos())
+        x = globalPos.x() + self.moreActionsButton.width() + 10
+        y = int(globalPos.y() + self.moreActionsButton.height() /
+                2 - 114 / 2)
+        self.moreActionsMenu.exec(QPoint(x, y))
+
+    def __connectSignalToSlot(self):
+        """ 信号连接到槽 """
+        self.moreActionsButton.clicked.connect(self.__showMoreActionsMenu)
+        self.volumeButton.clicked.connect(self.__showVolumeSlider)
+        self.volumeSlider.muteStateChanged.connect(
+            lambda muteState: self.volumeButton.setMute(muteState))
+        self.volumeSlider.volumeLevelChanged.connect(
+            lambda volumeLevel: self.volumeButton.updateIcon(volumeLevel))
+        for widget in self.__widget_list:
+            widget.clicked.connect(self.volumeSlider.hide)
 
 
 if __name__ == "__main__":

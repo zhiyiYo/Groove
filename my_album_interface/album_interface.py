@@ -24,7 +24,7 @@ class AlbumInterface(QWidget):
 
     def __init__(self, albumInfo: dict, parent=None):
         super().__init__(parent)
-        self.albumInfo = albumInfo
+        self.albumInfo = deepcopy(albumInfo)
         self.songInfo_list = albumInfo.get('songInfo_list')  # type:list
         # 创建小部件
         self.albumInfoBar = AlbumInfoBar(albumInfo, self)
@@ -47,7 +47,7 @@ class AlbumInterface(QWidget):
 
     def updateWindow(self, albumInfo: dict):
         """ 更新窗口 """
-        if albumInfo == self.albumInfo and not (albumInfo is self.albumInfo):
+        if albumInfo == self.albumInfo:
             return
         self.albumInfo = albumInfo if albumInfo else {}
         self.songInfo_list = albumInfo.get('songInfo_list')
@@ -73,7 +73,7 @@ class AlbumInterface(QWidget):
     def showAlbumInfoEditPanel(self):
         """ 显示专辑信息编辑面板 """
         oldAlbumInfo = deepcopy(self.albumInfo)
-        infoEditPanel = AlbumInfoEditPanel(self.albumInfo, self.window())
+        infoEditPanel = AlbumInfoEditPanel(deepcopy(self.albumInfo), self.window())
         infoEditPanel.saveInfoSig.connect(
             lambda newAlbumInfo: self.__saveAlbumInfoSlot(oldAlbumInfo, newAlbumInfo))
         infoEditPanel.setStyle(QApplication.style())

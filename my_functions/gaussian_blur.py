@@ -16,7 +16,7 @@ def gaussianBlur(rawImagePath, savePath='', blurRadius=18, brightnessFactor=1,bl
         # 如果新的尺寸小于旧尺寸才resize
         if newWidth < oldWidth:
             imageArray = np.array(image.resize(
-                (int(newWidth), int(newHeight))))
+                (int(newWidth), int(newHeight)),Image.ANTIALIAS))
         else:
             imageArray = np.array(image)
     else:

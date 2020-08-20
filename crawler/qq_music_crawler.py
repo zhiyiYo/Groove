@@ -15,7 +15,7 @@ class QQMusicCrawler():
     def __init__(self, albumTcon_dict):
         option = FirefoxOptions()
         option.add_argument('-headless')
-        self.browser = Firefox(options=option)
+        self.browser = Firefox()
         self.albumTcon_dict = albumTcon_dict
 
     def get_tcon(self, song, songname, songPath):
@@ -62,13 +62,11 @@ class QQMusicCrawler():
             url = 'https://y.qq.com/portal/search.html#page=1&searchid=1&remoteplace=txt.yqq.top&t=song&w=' + \
                 self.song[:-len(self.suffix)-1]
             self.browser.get(url)
-
             try:
                 # 搜索专辑
                 album_name = WebDriverWait(self.browser, 5).until(
                     EC.presence_of_element_located(
                         (By.CSS_SELECTOR, 'a.album_name')))
-
                 album_name.click()
             except:
                 pass
@@ -181,13 +179,13 @@ class QQMusicCrawler():
         cond = False
         if self.suffix == 'mp3':
             cond = not self.id_card.get('TCON') or str(
-                self.id_card.get('TCON')) in ['流行', '动漫', '无流派']
+                self.id_card.get('TCON')) in ['流行', '动漫', '无流派', '未知流派']
         elif self.suffix == 'flac':
             cond = not self.id_card.get('genre') or self.id_card.get('genre')[0] in [
-                '流行', '动漫', '无流派'
+                '流行', '动漫', '无流派', '未知流派'
             ]
         elif self.suffix == 'mp4':
             cond = not self.id_card.get('©gen') or self.id_card.get('©gen')[0] in [
-                '流行', '动漫', '无流派'
+                '流行', '动漫', '无流派','未知流派'
             ]
         return cond

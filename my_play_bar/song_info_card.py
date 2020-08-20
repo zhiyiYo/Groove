@@ -84,7 +84,7 @@ class SongInfoCard(QWidget):
             self.coverPath = newCoverPath
             self.albumPic.setPixmap(
                 QPixmap(self.coverPath).scaled(
-                    115, 115, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+                    115, 115, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
 
     def mouseReleaseEvent(self, e):
         """ 鼠标松开发送信号 """

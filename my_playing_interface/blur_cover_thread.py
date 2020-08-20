@@ -14,10 +14,11 @@ class BlurCoverThread(QThread):
         # 设置磨砂标志位
         self.__albumCoverPath = ''
         self.blurPixmap = None
+        self.blurRadius = 6
 
     def __blurAlbumCover(self):
         """ 得到磨砂后的pixmap """
-        self.blurPixmap = getBlurPixmap(self.__albumCoverPath, 7, 0.8, (300,300))
+        self.blurPixmap = getBlurPixmap(self.__albumCoverPath, self.blurRadius, 0.77, (450,450))
 
     def run(self):
         """ 开始磨砂 """

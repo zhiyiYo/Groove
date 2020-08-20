@@ -94,12 +94,13 @@ class MainWindow(QWidget):
         # 创建stackWidget字典
         self.stackWidget_dict = {'subStackWidget': self.subStackWidget,
                                  'myMusicInterfaceStackWidget': self.myMusicInterface.myMusicTabWidget.stackedWidget}
+        # 当前选中的专辑卡
+        self.currentAlbumCard = None
 
     def __initWidget(self):
         """ 初始化小部件 """
         self.resize(1300, 970)
-        self.setMinimumWidth(1030)
-        self.setMinimumHeight(850)
+        self.setMinimumSize(1030, 850)
         self.setWindowTitle('Groove音乐')
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setWindowIcon(QIcon('resource\\images\\透明icon.png'))
@@ -180,11 +181,13 @@ class MainWindow(QWidget):
         self.myMusicInterface.resize(
             self.width() - self.currentNavigation.width(), self.height())
         if hasattr(self, 'albumInterface'):
-            self.albumInterface.resize(self.myMusicInterface.size())
+            if not self.playingInterface.smallestModeInterface.isVisible():
+                self.albumInterface.resize(self.myMusicInterface.size())
         if hasattr(self, 'playingInterface'):
             self.playingInterface.resize(self.size())
         if hasattr(self, 'playBar'):
-            self.playBar.resize(self.width(), self.playBar.height())
+            if not self.playingInterface.smallestModeInterface.isVisible():
+                self.playBar.resize(self.width(), self.playBar.height())
 
     def resizeEvent(self, e: QResizeEvent):
         """ 调整尺寸时同时调整子窗口的尺寸 """
@@ -361,6 +364,8 @@ class MainWindow(QWidget):
         self.playBar.moreActionsMenu.clearPlayListAct.triggered.connect(
             self.clearPlaylist)
         self.playBar.songInfoCard.clicked.connect(self.showPlayingInterface)
+        self.playBar.smallPlayModeButton.clicked.connect(
+            self.showSmallestModeInterface)
         # todo:将播放器的信号连接到槽函数
         self.player.positionChanged.connect(self.playerPositionChangeSlot)
         self.player.durationChanged.connect(self.playerDurationChangeSlot)
@@ -371,12 +376,10 @@ class MainWindow(QWidget):
         # todo:将正在播放界面信号连接到槽函数
         self.playingInterface.currentIndexChanged.connect(
             self.playingInterfaceCurrrentIndexChangedSlot)
-        self.playingInterface.playBar.playButton.clicked.connect(
+        self.playingInterface.switchPlayStateSig.connect(
             self.switchPlayState)
-        self.playingInterface.playBar.lastSongButton.clicked.connect(
-            self.playlist.previous)
-        self.playingInterface.playBar.nextSongButton.clicked.connect(
-            self.playlist.next)
+        self.playingInterface.lastSongSig.connect(self.playlist.previous)
+        self.playingInterface.nextSongSig.connect(self.playlist.next)
         self.playingInterface.playBar.randomPlayButton.clicked.connect(
             self.setRandomPlay)
         self.playingInterface.playBar.volumeSlider.muteStateChanged.connect(
@@ -398,6 +401,11 @@ class MainWindow(QWidget):
         self.playingInterface.randomPlayAllSignal.connect(self.disorderPlayAll)
         self.playingInterface.switchToAlbumInterfaceSig.connect(
             self.switchToAlbumInterfaceByName)
+        self.playingInterface.playBar.moreActionsMenu.clearPlayListAct.triggered.connect(
+            self.clearPlaylist)
+        self.playingInterface.smallestModeStateChanged.connect(
+            self.smallestModeStateChanedSlot)
+        self.playingInterface.exitFullScreenSig.connect(self.exitFullScreen)
         # todo:歌曲界面歌曲卡列表视图的信号连接到槽函数
         self.songCardListWidget.playSignal.connect(
             self.songCardPlayButtonSlot)
@@ -483,6 +491,7 @@ class MainWindow(QWidget):
         self.playBar.playButton.setPlay(isPlay)
         self.thumbnailToolBar.playButton.setPlay(isPlay)
         self.playingInterface.playBar.playButton.setPlay(isPlay)
+        self.playingInterface.smallestModeInterface.playButton.setPlay(isPlay)
 
     def volumeChangedSlot(self, value):
         """ 音量滑动条数值改变时更换图标并设置音量 """
@@ -500,6 +509,8 @@ class MainWindow(QWidget):
         self.playingInterface.playBar.progressSlider.setValue(
             self.player.position())
         self.playingInterface.playBar.setCurrentTime(self.player.position())
+        self.playingInterface.smallestModeInterface.progressBar.setValue(
+            self.player.position())
 
     def playerDurationChangeSlot(self):
         """ 播放器当前播放的歌曲变化时更新进度条的范围和总时长标签 """
@@ -510,6 +521,8 @@ class MainWindow(QWidget):
             self.playingInterface.playBar.progressSlider.setRange(
                 0, self.player.duration())
             self.playingInterface.playBar.setTotalTime(self.player.duration())
+            self.playingInterface.smallestModeInterface.progressBar.setRange(
+                0, self.player.duration())
 
     def progressSliderMoveSlot(self):
         """ 手动拖动进度条时改变当前播放进度标签和播放器的值 """
@@ -520,6 +533,8 @@ class MainWindow(QWidget):
                 self.playingInterface.playBar.progressSlider.value())
         self.playBar.setCurrentTime(self.player.position())
         self.playingInterface.playBar.setCurrentTime(self.player.position())
+        self.playingInterface.smallestModeInterface.progressBar.setValue(
+            self.player.position())
 
     def songCardPlayButtonSlot(self, songInfo_dict):
         """ 歌曲卡的播放按钮按下时播放这首歌 """
@@ -581,7 +596,6 @@ class MainWindow(QWidget):
     def updateWindow(self, songInfo):
         """ 切换歌曲时更新歌曲卡、播放栏和子播放窗口 """
         self.playBar.updateSongInfoCard(songInfo)
-        self.subPlayWindow.updateWindow(songInfo)
         index = self.songCardListWidget.songInfo.songInfo_list.index(songInfo)
         self.songCardListWidget.setPlay(index)
         # 更新专辑界面的歌曲卡
@@ -589,6 +603,7 @@ class MainWindow(QWidget):
             index = self.albumInterface.songListWidget.songInfo_list.index(
                 songInfo)
             self.albumInterface.songListWidget.setPlay(index)
+        self.subPlayWindow.updateWindow(songInfo)
 
     def hotKeySlot(self, funcObj):
         """ 热键按下时显示子播放窗口并执行对应操作 """
@@ -639,7 +654,7 @@ class MainWindow(QWidget):
         self.playingInterface.playBar.volumeSlider.setValue(volume)
         # 初始化亚克力颜色
         acrylicColor = self.settingInterface.config.get(
-            'playBar-acrylicColor', '0a517aB8')
+            'playBar-acrylicColor', '0c3c5eB8')
         self.playBar.setAcrylicColor(acrylicColor)
 
     def showPlayingInterface(self):
@@ -649,8 +664,9 @@ class MainWindow(QWidget):
         self.titleBar.returnBt.show()
         self.titleBar.title.move(self.titleBar.returnBt.width(), 0)
         if not self.playingInterface.isPlaylistVisible:
-            self.playingInterface.songInfoCardChute.move(0, 0)
-            self.playingInterface.playBar.hide()
+            self.playingInterface.songInfoCardChute.move(
+                0, -self.playingInterface.playBar.height() + 68)
+            self.playingInterface.playBar.show()
         self.totalStackWidget.setCurrentIndex(1)
         self.titleBar.setWhiteIcon(True)
 
@@ -712,9 +728,12 @@ class MainWindow(QWidget):
 
     def exitFullScreen(self):
         """ 退出全屏 """
+        if not self.isFullScreen():
+            return
         self.showNormal()
         # 更新最大化按钮图标
         self.titleBar.maxBt.setMaxState(False)
+        self.titleBar.returnBt.show()
         self.titleBar.show()
         self.playingInterface.playBar.fillScreenButton.setFillScreen(False)
         if self.playingInterface.isPlaylistVisible:
@@ -752,16 +771,20 @@ class MainWindow(QWidget):
 
     def switchToAlbumInterfaceByName(self, albumName: str, songerName: str):
         """ 由名字切换到专辑界面 """
-        self.currentAlbumCard = self.albumCardViewer.findAlbumCardByName(
-            albumName, songerName)
-        self.__switchToAlbumInterface(
-            self.currentAlbumCard.albumInfo)
+        if self.albumInterface.albumInfo.get('album') != albumName or \
+                self.albumInterface.albumInfo.get('songer') != songerName or not self.currentAlbumCard:
+            self.currentAlbumCard = self.albumCardViewer.findAlbumCardByName(
+                albumName, songerName)
+        if self.currentAlbumCard:
+            self.__switchToAlbumInterface(
+                self.currentAlbumCard.albumInfo)
 
     def switchToAlbumInterfaceByAlbumInfo(self, albumInfo: dict):
         """ 由专辑信息切换到专辑界面 """
         # 引用对应的专辑卡
-        self.currentAlbumCard = self.albumCardViewer.findAlbumCardByAlbumInfo(
-            albumInfo)
+        if self.albumInterface.albumInfo != albumInfo or not self.currentAlbumCard:
+            self.currentAlbumCard = self.albumCardViewer.findAlbumCardByAlbumInfo(
+                albumInfo)
         self.__switchToAlbumInterface(albumInfo)
 
     def __switchToAlbumInterface(self, albumInfo: dict):
@@ -797,6 +820,8 @@ class MainWindow(QWidget):
 
     def returnButtonSlot(self):
         """ 标题栏返回按钮的槽函数 """
+        # 隐藏音量条
+        self.playingInterface.playBar.volumeSlider.hide()
         if self.totalStackWidget.currentWidget() == self.playingInterface:
             self.hidePlayingInterface()
         else:
@@ -866,3 +891,15 @@ class MainWindow(QWidget):
             oldSongInfo_list.copy(), newSongInfo_list.copy())
         if self.sender() == self.albumInterface:
             self.currentAlbumCard.updateWindow(oldAlbumInfo, newAlbumInfo)
+
+    def smallestModeStateChanedSlot(self, state: bool):
+        """ 最小播放模式状态改变时更改标题栏按钮可见性 """
+        self.titleBar.closeBt.show()
+        self.titleBar.returnBt.setHidden(state)
+        self.titleBar.minBt.setHidden(state)
+        self.titleBar.maxBt.setHidden(state)
+
+    def showSmallestModeInterface(self):
+        """ 切换到最小化播放模式 """
+        self.showPlayingInterface()
+        self.playingInterface.showSmallestModeInterface()

@@ -96,7 +96,7 @@ class TitleBar(QWidget):
                         win32con.SC_MOVE + win32con.HTCAPTION, 0)
             event.ignore()
             # 也可以通过调用windowEffect.dll的接口函数来实现窗口拖动
-            # self.windowEffect.moveWindow(HWND(int(self.parent().winId())))  
+            # self.windowEffect.moveWindow(HWND(int(self.parent().winId())))
 
     def showRestoreWindow(self):
         """ 复原窗口并更换最大化按钮的图标 """
@@ -111,10 +111,12 @@ class TitleBar(QWidget):
     def isPointInDragRegion(self, pos) -> bool:
         """ 检查鼠标按下的点是否属于允许拖动的区域 """
         x = pos.x()
-        condX = (60 < x < self.width() - 57 * 3)
-        return condX
+        left = 60 if self.returnBt.isVisible() else 0
+        # 如果最小化按钮看不见也意味着最大化按钮看不见
+        right = self.width() - 57 * 3 if self.minBt.isVisible() else self.width() - 57
+        return (left < x < right)
 
-    def setWhiteIcon(self, isWhiteIcon:bool):
+    def setWhiteIcon(self, isWhiteIcon: bool):
         """ 设置图标颜色 """
         for button in self.button_list:
             button.setWhiteIcon(isWhiteIcon)

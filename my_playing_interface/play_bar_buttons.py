@@ -219,8 +219,8 @@ class PullUpArrow(BasicCircleButton):
 
     def mouseReleaseEvent(self, e):
         """ 鼠标松开时打开计时器 """
-        super().mouseReleaseEvent(e)
         self.timer.start()
+        super().mouseReleaseEvent(e)
 
     def paintEvent(self, e):
         """ 绘制图标 """
