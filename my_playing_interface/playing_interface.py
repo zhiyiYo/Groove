@@ -1,5 +1,6 @@
 # coding:utf-8
 from random import shuffle
+from copy import deepcopy
 
 import sys
 from json import load
@@ -31,7 +32,7 @@ class PlayingInterface(QWidget):
     # 发出进入最小模式的信号
     smallestModeStateChanged = pyqtSignal(bool)
     # 退出全屏信号
-    exitFullScreenSig = pyqtSignal()    
+    exitFullScreenSig = pyqtSignal()
 
     def __init__(self, playlist: list = None, parent=None):
         super().__init__(parent)
@@ -122,7 +123,8 @@ class PlayingInterface(QWidget):
 
     def startBlurThread(self, albumCoverPath):
         """ 开启磨砂线程 """
-        self.blurCoverThread.setTargetCover(albumCoverPath)
+        blurRadius = [6, 40][self.smallestModeInterface.isVisible()]
+        self.blurCoverThread.setTargetCover(albumCoverPath,blurRadius=blurRadius)
         self.blurCoverThread.start()
 
     def mousePressEvent(self, e: QMouseEvent):
@@ -167,6 +169,7 @@ class PlayingInterface(QWidget):
         """ 隐藏播放栏 """
         if self.playBar.isVisible() and not self.isPlaylistVisible:
             self.playBar.hide()
+            self.songInfoCardChuteAni.setEasingCurve(QEasingCurve.OutCirc)
             self.songInfoCardChuteAni.setStartValue(
                 QRect(0, -self.playBar.height()+68, self.width(), self.height()))
             self.songInfoCardChuteAni.setEndValue(
@@ -257,14 +260,19 @@ class PlayingInterface(QWidget):
             self.songListWidget.setCurrentIndex(index)
             self.songInfoCardChute.setCurrentIndex(index)
 
-    def setPlaylist(self, playlist: list):
-        """ 更新播放列表 """
-        self.playlist = playlist.copy()
-        self.currentIndex = 0
+    def setPlaylist(self, playlist: list, isResetIndex: bool = True):
+        """ 更新播放列表
+        Parameters
+        ----------
+        playlist : 播放列表，每一个元素都是songInfo字典\n
+        isResetIndex : 是否将下标重置为0
+        """
+        self.playlist = deepcopy(playlist)
+        self.currentIndex = 0 if isResetIndex else self.currentIndex
         if playlist:
-            self.songInfoCardChute.setPlaylist(self.playlist)
-            self.smallestModeInterface.setPlaylist(self.playlist)
-            self.createSongCardThread.setPlaylist(self.playlist)
+            self.songInfoCardChute.setPlaylist(self.playlist, isResetIndex)
+            self.smallestModeInterface.setPlaylist(self.playlist, isResetIndex)
+            self.createSongCardThread.setPlaylist(self.playlist, isResetIndex)
             self.createSongCardThread.run()
         # 如果小部件不可见就显示
         if playlist and not self.songListWidget.isVisible():
@@ -402,7 +410,8 @@ class PlayingInterface(QWidget):
         # 记录下正常尺寸
         self.currentGeometry = self.window().geometry()  # type:QRect
         # 更新磨砂半径
-        self.blurCoverThread.blurRadius = 40
+        self.blurCoverThread.setTargetCover(
+            self.blurCoverThread.albumCoverPath, 40, (350, 350))
         self.blurCoverThread.start()
         self.playBar.hide()
         self.songListWidget.hide()
@@ -425,7 +434,8 @@ class PlayingInterface(QWidget):
         # 记录下最小播放模式的尺寸
         self.currentSmallestModeSize = self.window().size()  # type:QSize
         # 更新磨砂半径
-        self.blurCoverThread.blurRadius = 6
+        self.blurCoverThread.setTargetCover(
+            self.blurCoverThread.albumCoverPath, 6, (450, 450))
         self.blurCoverThread.start()
         self.smallestModeInterface.hide()
         self.window().setMinimumSize(1030, 850)
@@ -436,6 +446,7 @@ class PlayingInterface(QWidget):
         self.playBar.show()
         self.songListWidget.show()
         self.songInfoCardChute.show()
+        # self.window().show()
 
 
 if __name__ == "__main__":

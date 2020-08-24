@@ -15,7 +15,7 @@ class QQMusicCrawler():
     def __init__(self, albumTcon_dict):
         option = FirefoxOptions()
         option.add_argument('-headless')
-        self.browser = Firefox()
+        self.browser = Firefox(options=option)
         self.albumTcon_dict = albumTcon_dict
 
     def get_tcon(self, song, songname, songPath):

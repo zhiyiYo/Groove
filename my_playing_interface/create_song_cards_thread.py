@@ -17,10 +17,12 @@ class CreateSongCardsThread(QThread):
         super().__init__(parent)
         self.songListWidget = songListWidget  # type:SongListWidget
         self.playlist = None
+        self.__isResetIndex=True
 
-    def setPlaylist(self, playlist):
+    def setPlaylist(self, playlist,isResetIndex:bool=True):
         """ 更新播放列表 """
         self.playlist = playlist
+        self.__isResetIndex = isResetIndex
 
     def run(self):
         """ 创建歌曲卡 """
@@ -28,4 +30,4 @@ class CreateSongCardsThread(QThread):
             self.songListWidget.createSongCards()
             self.createDone.emit()
         elif self.songListWidget.updateMode == UpdateMode.UPDATE_ALL_CARDS:
-            self.songListWidget.updateSongCards(self.playlist)
+            self.songListWidget.updateSongCards(self.playlist,self.__isResetIndex)

@@ -98,12 +98,16 @@ class SmallestPlayModeInterface(QWidget):
         self.lastSongInfoCard.move(-self.width(), self.height() - 106)
         self.nextSongInfoCard.move(self.width(), self.height() - 106)
         # 高度太小时隐藏歌曲信息卡
-        if self.height() <= 320 and self.curSongInfoCard.isVisible():
-            self.curSongInfoCard.aniHide()
+        if self.height() <= 320:
+            if self.curSongInfoCard.isVisible():
+                self.curSongInfoCard.aniHide()
             self.lastSongInfoCard.hide()
             self.nextSongInfoCard.hide()
-        elif self.height() > 320 and not self.curSongInfoCard.isVisible():
-            self.curSongInfoCard.aniShow()
+        elif self.height() > 320:
+            if not self.curSongInfoCard.isVisible():
+                self.curSongInfoCard.aniShow()
+            else:
+                self.curSongInfoCard.show()
             self.lastSongInfoCard.show()
             self.nextSongInfoCard.show()
 
@@ -241,10 +245,10 @@ class SmallestPlayModeInterface(QWidget):
                 self.updateCards()
                 self.needToEmitSignal = True
 
-    def setPlaylist(self, playlist):
+    def setPlaylist(self, playlist,isResetIndex:bool=True):
         """ 更新播放列表 """
         self.playlist = playlist
-        self.currentIndex = 0
+        self.currentIndex = 0 if isResetIndex else self.currentIndex
         if playlist:
             self.curSongInfoCard.updateCard(self.playlist[0])
             self.curSongInfoCard.show()
@@ -286,6 +290,7 @@ class SongInfoCard(QWidget):
     def __initWidget(self):
         """ 初始化小部件 """
         self.setFixedHeight(55)
+        self.opacityEffect.setOpacity(1)
         self.setGraphicsEffect(self.opacityEffect)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.songNameLabel.setProperty('name','smallestModeSongNameLabel')

@@ -22,18 +22,3 @@ class Slider(QSlider):
         self.setValue(value)
         self.clicked.emit()
 
-class Demo(QWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.resize(300,300)
-
-        self.slider = Slider(Qt.Horizontal, self)
-        self.slider.setTickPosition(QSlider.TicksAbove)
-        self.slider.move(120, 120)
-        
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = Demo()
-    demo.show()
-    sys.exit(app.exec_())

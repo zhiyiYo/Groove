@@ -3,7 +3,6 @@ QWidget{
 }
 
 QWidget#demo{
-    /*background-color: rgb(126, 132, 146);*/
     background-color: cyan;
 }
 
@@ -11,10 +10,6 @@ QSlider:horizontal{
     height: 30px;
     background-color: transparent;
     /*padding:10px 0px 10px 0px;*/
-}
-
-QSlider#progressSlider{
-    width: 330px;
 }
 
 QSlider#volumeSlider{
@@ -32,12 +27,6 @@ QSlider::handle:horizontal{
     height: 30px;
     border-image: url(resource/images/playBar/滑动条手柄_30_30.png);
 }
-
-/* QSlider::handle:horizontal:hover {
-    width: 30px;
-    height: 30px;
-    border-image: url(resource/images/playBar/滑动条手柄_hover_30_30.png);
-} */
 
 QSlider::handle:horizontal:pressed {
     width: 30px;
@@ -68,14 +57,13 @@ QSlider::add-page:horizontal {
     margin-top: 13px;
     margin-bottom: 13px;
     /*还未划过的颜色*/
-    /*background: rgba(159,164,174,0.8);*/
-    background-color: rgba(255,255,255,0.2);
+    background-color: rgba(255,255,255,0.25);
 }
 
 QLabel#timeLabel{
     color:white;
     font:14px "Microsoft YaHei";
-    padding-left: 10px;
-    padding-right: 10px;
+    /* padding-left: 10px;
+    padding-right: 10px; */
     background-color: transparent;
 }

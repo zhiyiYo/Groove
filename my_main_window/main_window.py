@@ -85,12 +85,18 @@ class MainWindow(QWidget):
         # 创建专辑界面
         self.albumInterface = AlbumInterface({}, self.subMainWindow)
         # 创建快捷键
-        self.playAct = QAction(
+        self.togglePlayPauseAct_1 = QAction(
             parent=self, shortcut=Qt.Key_Space, triggered=self.switchPlayState)
         self.showNormalAct = QAction(
             parent=self, shortcut=Qt.Key_Escape, triggered=self.exitFullScreen)
-        self.addAction(self.playAct)
-        self.addAction(self.showNormalAct)
+        self.lastSongAct = QAction(
+            parent=self, shortcut=Qt.Key_MediaPrevious, triggered=self.playlist.previous)
+        self.nextSongAct = QAction(
+            parent=self, shortcut=Qt.Key_MediaNext, triggered=self.playlist.next)
+        self.togglePlayPauseAct_2 = QAction(
+            parent=self, shortcut=Qt.Key_MediaPlay, triggered=self.switchPlayState)
+        self.addActions([self.togglePlayPauseAct_1, self.showNormalAct,
+                         self.nextSongAct, self.lastSongAct, self.togglePlayPauseAct_2])
         # 创建stackWidget字典
         self.stackWidget_dict = {'subStackWidget': self.subStackWidget,
                                  'myMusicInterfaceStackWidget': self.myMusicInterface.myMusicTabWidget.stackedWidget}
@@ -202,10 +208,6 @@ class MainWindow(QWidget):
         self.currentNavigation = self.navigationMenu
         self.navigationBar.hide()
         self.navigationMenu.show()
-        if self.titleBar.returnBt.isVisible():
-            self.titleBar.title.move(self.titleBar.returnBt.width(), 0)
-        else:
-            self.titleBar.title.move(0, 0)
         self.titleBar.title.show()
         self.setWidgetGeometry()
         if self.sender() == self.navigationBar.searchButton:
@@ -536,22 +538,18 @@ class MainWindow(QWidget):
         self.playingInterface.smallestModeInterface.progressBar.setValue(
             self.player.position())
 
-    def songCardPlayButtonSlot(self, songInfo_dict):
-        """ 歌曲卡的播放按钮按下时播放这首歌 """
-        self.switchCurrentSong(songInfo_dict)
-
     def songCardNextPlaySlot(self, songInfo_dict):
         """ 下一首播放动作触发对应的槽函数 """
         # 直接更新正在播放界面的播放列表
         newPlaylist = self.playlist.playlist[:self.playlist.currentIndex(
         ) + 1] + [songInfo_dict] + self.playlist.playlist[self.playlist.currentIndex() + 1:]
-        self.playingInterface.setPlaylist(newPlaylist)
+        self.playingInterface.setPlaylist(newPlaylist, False)
         self.playingInterface.setCurrentIndex(self.playlist.currentIndex())
         self.playlist.insertMedia(
             self.playlist.currentIndex() + 1, songInfo_dict)
 
-    def switchCurrentSong(self, songInfo_dict: dict):
-        """ 切换当前播放的歌曲 """
+    def songCardPlayButtonSlot(self, songInfo_dict: dict):
+        """ 歌曲界面歌曲卡的播放按钮按下时播放这首歌 """
         newPlaylist = None
         # 如果当前播放列表模式不是歌曲界面的歌曲卡模式，就刷新播放列表
         if self.playlist.playlistType != PlaylistType.SONG_CARD_PLAYLIST:
@@ -621,7 +619,7 @@ class MainWindow(QWidget):
         """ 下一首播放动作触发对应的槽函数 """
         newPlaylist = self.playlist.playlist[:self.playlist.currentIndex(
         ) + 1] + songInfoDict_list + self.playlist.playlist[self.playlist.currentIndex() + 1:]
-        self.playingInterface.setPlaylist(newPlaylist)
+        self.playingInterface.setPlaylist(newPlaylist, isResetIndex=False)
         self.playingInterface.setCurrentIndex(self.playlist.currentIndex())
         self.playlist.insertMedias(
             self.playlist.currentIndex() + 1, songInfoDict_list)
@@ -662,7 +660,6 @@ class MainWindow(QWidget):
         self.playBar.hide()
         self.titleBar.title.hide()
         self.titleBar.returnBt.show()
-        self.titleBar.title.move(self.titleBar.returnBt.width(), 0)
         if not self.playingInterface.isPlaylistVisible:
             self.playingInterface.songInfoCardChute.move(
                 0, -self.playingInterface.playBar.height() + 68)
@@ -762,12 +759,12 @@ class MainWindow(QWidget):
     def addSongToPlaylist(self, songInfo: dict):
         """ 向播放列表尾部添加一首歌 """
         self.playlist.addMedia(songInfo)
-        self.playingInterface.setPlaylist(self.playlist.playlist)
+        self.playingInterface.setPlaylist(self.playlist.playlist, False)
 
     def addAlbumToPlaylist(self, songInfoDict_list: list):
         """ 向播放列表尾部添加专辑 """
         self.playlist.addMedias(songInfoDict_list)
-        self.playingInterface.setPlaylist(self.playlist.playlist)
+        self.playingInterface.setPlaylist(self.playlist.playlist, False)
 
     def switchToAlbumInterfaceByName(self, albumName: str, songerName: str):
         """ 由名字切换到专辑界面 """
@@ -794,7 +791,6 @@ class MainWindow(QWidget):
             self.exitFullScreen()
         # 显示返回按钮
         self.titleBar.returnBt.show()
-        self.titleBar.title.move(self.titleBar.returnBt.width(), 0)
         self.albumInterface.updateWindow(albumInfo)
         self.subStackWidget.setCurrentWidget(self.albumInterface)
         self.totalStackWidget.setCurrentIndex(0)
@@ -843,7 +839,6 @@ class MainWindow(QWidget):
                 if len(self.titleBar.stackWidgetIndex_list) == 1:
                     # 没有上一个下标时隐藏返回按钮
                     self.titleBar.returnBt.hide()
-                    self.titleBar.title.move(0, 0)
         self.titleBar.setWhiteIcon(False)
         # 根据当前界面设置标题栏按钮颜色
         if self.subStackWidget.currentWidget() == self.albumInterface:
@@ -863,7 +858,6 @@ class MainWindow(QWidget):
             self.titleBar.stackWidgetIndex_list.append(
                 ('myMusicInterfaceStackWidget', index))
         self.titleBar.returnBt.show()
-        self.titleBar.title.move(self.titleBar.returnBt.width(), 0)
 
     def editSongCardSlot(self, oldSongInfo: dict, newSongInfo: dict):
         """ 编辑歌曲卡完成信号的槽函数 """
@@ -893,11 +887,12 @@ class MainWindow(QWidget):
             self.currentAlbumCard.updateWindow(oldAlbumInfo, newAlbumInfo)
 
     def smallestModeStateChanedSlot(self, state: bool):
-        """ 最小播放模式状态改变时更改标题栏按钮可见性 """
+        """ 最小播放模式状态改变时更改标题栏按钮可见性和窗口是否置顶 """
         self.titleBar.closeBt.show()
         self.titleBar.returnBt.setHidden(state)
         self.titleBar.minBt.setHidden(state)
         self.titleBar.maxBt.setHidden(state)
+        self.windowEffect.setWindowStayOnTop(self.winId(),state)
 
     def showSmallestModeInterface(self):
         """ 切换到最小化播放模式 """

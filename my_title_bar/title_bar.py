@@ -5,11 +5,9 @@ from win32.lib import win32con
 from win32.win32api import SendMessage
 from win32.win32gui import ReleaseCapture
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt,QEvent
 from PyQt5.QtGui import QIcon, QPixmap, QResizeEvent
 from PyQt5.QtWidgets import QApplication, QHBoxLayout, QLabel, QWidget
-
-from effects.window_effect import WindowEffect
 
 from .title_bar_buttons import BasicButton, MaximizeButton
 
@@ -23,17 +21,15 @@ class TitleBar(QWidget):
         # 创建记录下标的列表，里面的每一个元素为元组，第一个元素为stackWidget名字，第二个为Index
         self.stackWidgetIndex_list = []
         # 实例化无边框窗口函数类
-        self.windowEffect = WindowEffect()
         self.setAttribute(Qt.WA_TranslucentBackground)
         # 实例化小部件
         self.title = QLabel('Groove 音乐', self)
-        self.createButtons()
+        self.__createButtons()
         # 初始化界面
-        self.initWidget()
-        self.adjustButtonPos()
-        self.returnBt.hide()
+        self.__initWidget()
+        self.__adjustButtonPos()
 
-    def createButtons(self):
+    def __createButtons(self):
         """ 创建各按钮 """
         self.minBt = BasicButton([
             {'normal': r'resource\images\titleBar\透明黑色最小化按钮_57_40.png',
@@ -60,7 +56,7 @@ class TitleBar(QWidget):
         self.button_list = [self.minBt, self.maxBt,
                             self.closeBt, self.returnBt]
 
-    def initWidget(self):
+    def __initWidget(self):
         """ 初始化小部件 """
         self.setFixedHeight(40)
         self.setStyleSheet("QWidget{background-color:transparent}\
@@ -69,10 +65,13 @@ class TitleBar(QWidget):
         self.title.hide()
         # 将按钮的点击信号连接到槽函数
         self.minBt.clicked.connect(self.window().showMinimized)
-        self.maxBt.clicked.connect(self.showRestoreWindow)
+        self.maxBt.clicked.connect(self.__showRestoreWindow)
         self.closeBt.clicked.connect(self.window().close)
+        # 给返回按钮安装事件过滤器
+        self.returnBt.installEventFilter(self)
+        self.returnBt.hide()
 
-    def adjustButtonPos(self):
+    def __adjustButtonPos(self):
         """ 初始化小部件位置 """
         self.title.move(0, 0)
         self.closeBt.move(self.width() - 57, 0)
@@ -81,16 +80,16 @@ class TitleBar(QWidget):
 
     def resizeEvent(self, e: QResizeEvent):
         """ 尺寸改变时移动按钮 """
-        self.adjustButtonPos()
+        self.__adjustButtonPos()
 
     def mouseDoubleClickEvent(self, event):
         """ 双击最大化窗口 """
-        self.showRestoreWindow()
+        self.__showRestoreWindow()
 
     def mousePressEvent(self, event):
         """ 移动窗口 """
         # 判断鼠标点击位置是否允许拖动
-        if self.isPointInDragRegion(event.pos()):
+        if self.__isPointInDragRegion(event.pos()):
             ReleaseCapture()
             SendMessage(self.window().winId(), win32con.WM_SYSCOMMAND,
                         win32con.SC_MOVE + win32con.HTCAPTION, 0)
@@ -98,7 +97,7 @@ class TitleBar(QWidget):
             # 也可以通过调用windowEffect.dll的接口函数来实现窗口拖动
             # self.windowEffect.moveWindow(HWND(int(self.parent().winId())))
 
-    def showRestoreWindow(self):
+    def __showRestoreWindow(self):
         """ 复原窗口并更换最大化按钮的图标 """
         if self.window().isMaximized():
             self.window().showNormal()
@@ -108,7 +107,7 @@ class TitleBar(QWidget):
             self.window().showMaximized()
             self.maxBt.setMaxState(True)
 
-    def isPointInDragRegion(self, pos) -> bool:
+    def __isPointInDragRegion(self, pos) -> bool:
         """ 检查鼠标按下的点是否属于允许拖动的区域 """
         x = pos.x()
         left = 60 if self.returnBt.isVisible() else 0
@@ -121,22 +120,14 @@ class TitleBar(QWidget):
         for button in self.button_list:
             button.setWhiteIcon(isWhiteIcon)
 
-
-class Demo(QWidget):
-    """ 测试标题栏 """
-
-    def __init__(self):
-        super().__init__()
-        self.setWindowFlags(Qt.FramelessWindowHint)
-        self.titleBar = TitleBar(self)
-        self.resize(1200, 900)
-
-    def resizeEvent(self, e):
-        self.titleBar.resize(self.width(), 40)
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = Demo()
-    demo.show()
-    sys.exit(app.exec_())
+    def eventFilter(self, obj, e: QEvent):
+        """ 过滤事件 """
+        if obj == self.returnBt:
+            if e.type() == QEvent.Hide:
+                self.title.move(0, 0)
+                return False
+            elif e.type() == QEvent.Show:
+                self.title.move(self.returnBt.width(), 0)
+                return False
+        return super().eventFilter(obj,e)
+            

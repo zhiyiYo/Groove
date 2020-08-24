@@ -267,13 +267,13 @@ class SongInfoCardChute(QWidget):
                 self.updateCards()
                 self.needToEmitSignal = True
 
-    def setPlaylist(self, playlist):
+    def setPlaylist(self, playlist, isResetIndex: bool = True):
         """ 更新播放列表 """
         self.playlist = playlist
-        self.currentIndex = 0
+        self.currentIndex = 0 if isResetIndex else self.currentIndex
         self.lastSongInfoCard.hide()
         if playlist:
-            self.curSongInfoCard.updateCard(self.playlist[0])
+            self.curSongInfoCard.updateCard(self.playlist[self.currentIndex])
             self.currentIndexChanged[str].emit(
                 self.curSongInfoCard.albumCoverPath)
             self.curSongInfoCard.show()
@@ -281,7 +281,8 @@ class SongInfoCardChute(QWidget):
                 self.nextSongInfoCard.hide()
             else:
                 self.nextSongInfoCard.show()
-                self.nextSongInfoCard.updateCard(self.playlist[1])
+                self.nextSongInfoCard.updateCard(
+                    self.playlist[self.currentIndex+1])
         else:
             self.curSongInfoCard.hide()
             self.nextSongInfoCard.hide()

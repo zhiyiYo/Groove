@@ -32,7 +32,7 @@ class CentralButtonGroup(QWidget):
 
     def initUI(self):
         """ 初始化界面 """
-        self.setFixedSize(317,67+8+3)
+        self.setFixedSize(317, 67 + 8 + 3)
         for i in range(5):
             self.h_layout.addWidget(self.button_list[i],0,Qt.AlignCenter)
             if i != 4:

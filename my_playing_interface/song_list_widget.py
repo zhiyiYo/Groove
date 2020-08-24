@@ -66,7 +66,7 @@ class SongListWidget(ListWidget):
             songCard.switchToAlbumInterfaceSig.connect(
                 self.__switchToAlbumInterface)
         if self.playlist:
-            self.songCard_list[0].setPlay(True)
+            self.songCard_list[self.currentIndex].setPlay(True)
         self.resize(1200, 800)
         # 更新歌曲卡更新方式
         self.updateMode = UpdateMode.UPDATE_ALL_CARDS
@@ -153,13 +153,13 @@ class SongListWidget(ListWidget):
             # 更新当前播放歌曲卡样式
             self.songCard_list[index].setPlay(True)
 
-    def setPlaylist(self, playlist: list):
+    def setPlaylist(self, playlist: list,isResetIndex:bool=True):
         """ 直接清空并更新播放列表 """
         self.playlist = playlist
-        self.clearSongCards()
+        self.clearSongCards(isResetIndex)
         self.createSongCards()
 
-    def clearSongCards(self):
+    def clearSongCards(self,isResetIndex:bool=True):
         """ 清空歌曲卡 """
         self.item_list.clear()
         self.clear()
@@ -167,9 +167,9 @@ class SongListWidget(ListWidget):
         for songCard in self.songCard_list:
             songCard.deleteLater()
         self.songCard_list.clear()
-        self.currentIndex = 0
+        self.currentIndex = 0 if isResetIndex else self.currentIndex
 
-    def updateSongCards(self, songInfoDict_list):
+    def updateSongCards(self, songInfoDict_list,isResetIndex:bool=True):
         """ 更新所有歌曲卡信息 """
         # 长度相等就更新信息，不相等就根据情况创建或者删除item
         if self.songCard_list:
@@ -212,8 +212,8 @@ class SongListWidget(ListWidget):
             songInfo_dict = self.playlist[i]
             self.songCard_list[i].updateSongCard(songInfo_dict)
         # 更新样式和当前下标
-        self.currentIndex = 0
-        self.songCard_list[0].setPlay(True)
+        self.currentIndex = 0 if isResetIndex else self.currentIndex
+        self.songCard_list[self.currentIndex].setPlay(True)
 
     def __switchToAlbumInterface(self, albumName: str, songerName: str):
         """ 切换到专辑界面 """

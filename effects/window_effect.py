@@ -13,7 +13,7 @@ class WindowEffect():
 
     def setAcrylicEffect(self, hWnd: HWND, gradientColor: str = 'FF000066', isEnableShadow: bool = False, animationId: int = 0):
         """ 给窗口开启Win10的亚克力效果
-        
+
         Parameters
         ----------
         hWnd : 窗口句柄\n
@@ -67,3 +67,11 @@ class WindowEffect():
     def moveWindow(self, hWnd: HWND):
         """ 移动窗口 """
         self.dll.moveWindow(hWnd)
+
+    def setWindowStayOnTop(self, hWnd, isStayOnTop: bool):
+        """ 设置窗口是否置顶 """
+        flag = win32con.HWND_TOPMOST if isStayOnTop else win32con.HWND_NOTOPMOST
+        win32gui.SetWindowPos(hWnd, flag, 0, 0, 0, 0,
+                              win32con.SWP_NOMOVE |
+                              win32con.SWP_NOSIZE |
+                              win32con.SWP_NOACTIVATE)

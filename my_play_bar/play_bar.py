@@ -40,8 +40,8 @@ class PlayBar(QWidget):
     def __initWidget(self):
         """ 初始化小部件 """
         self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
+        self.resize(1312, 115)
         self.setFixedHeight(115)
-        self.resize(1280, 115)
         # 初始化亚克力背景色
         self.setAcrylicColor(self.acrylicColor)
         # 引用小部件
@@ -78,6 +78,10 @@ class PlayBar(QWidget):
     def resizeEvent(self, e):
         """ 调整歌曲信息卡宽度 """
         deltaWidth = self.width() - self.originWidth
+        # 调整进度条的宽度
+        self.playProgressBar.resize(self.playProgressBar.width(
+        ) + int(deltaWidth / 3), self.playProgressBar.height())
+        # 调整歌曲信息卡宽度和部件位置
         if deltaWidth < 0:
             self.__setWidgetPos()
             self.__adjustSongInfoCardWidth()
@@ -92,6 +96,8 @@ class PlayBar(QWidget):
                         min(self.songInfoCard.width() + deltaWidth, self.playProgressBar.x() - 20))
                 self.songInfoCard.scrollTextWindow.maxWidth = self.songInfoCard.width() - 155
                 self.songInfoCard.scrollTextWindow.initFlagsWidth()
+            else:
+                self.__setWidgetPos()
         self.originWidth = self.width()
 
     def showMoreActionsMenu(self):

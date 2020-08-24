@@ -45,9 +45,9 @@ class AlbumCard(QWidget):
         self.albumPic = PerspectiveTransformLabel(
             self.picPath, (200, 200), self)
         self.playButton = BlurButton(
-            self, (39, 76), 'resource\\images\\播放按钮_70_70.png', self.picPath, blurRadius=27)
+            self, (39, 76), 'resource\\images\\播放按钮_70_70.png', self.picPath, blurRadius=29)
         self.addToButton = BlurButton(
-            self, (111, 76), 'resource\\images\\添加到按钮_70_70.png', self.picPath, blurRadius=27)
+            self, (111, 76), 'resource\\images\\添加到按钮_70_70.png', self.picPath, blurRadius=29)
         # 初始化
         self.__initWidget()
 
@@ -119,7 +119,6 @@ class AlbumCard(QWidget):
                 newText[index + 1:], Qt.ElideRight, 200)
             newText = newText[: index + 1] + secondLineText
             self.albumNameLabel.setText(newText)
-            self.songerNameLabel.move(10, self.songerNameLabel.y() + 22)
         # 给歌手名添加省略号
         fontMetrics = QFontMetrics(QFont('Microsoft YaHei', 10, 25))
         newSongerName = fontMetrics.elidedText(
@@ -127,6 +126,8 @@ class AlbumCard(QWidget):
         self.songerNameLabel.setText(newSongerName)
         self.songerNameLabel.adjustSize()
         self.albumNameLabel.adjustSize()
+        self.songerNameLabel.move(
+            10, self.albumNameLabel.y() + self.albumNameLabel.height()-4)
 
     def setQss(self):
         """ 设置层叠样式 """
