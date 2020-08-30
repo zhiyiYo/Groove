@@ -3,8 +3,7 @@ from time import time
 
 from PyQt5.QtCore import QEvent, QPoint, QSize, Qt, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent, QIcon, QMouseEvent
-from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
-                             QLayout, QPushButton, QVBoxLayout, QWidget)
+from PyQt5.QtWidgets import QAction, QApplication, QLabel, QWidget
 
 from my_widget.my_button import RandomPlayButton, SortModeButton
 from my_widget.my_menu import AeroMenu
@@ -19,9 +18,6 @@ class SongTabInterface(QWidget):
     def __init__(self, target_path_list: list, parent=None):
         super().__init__(parent)
         self.resize(1267, 804)
-        # 实例化布局
-        self.h_layout = QHBoxLayout()
-        self.all_v_layout = QVBoxLayout()
         # 实例化标签和下拉菜单
         self.sortModeMenu = AeroMenu(parent=self)
         self.sortModeLabel = QLabel('排序依据:', self)
@@ -34,18 +30,18 @@ class SongTabInterface(QWidget):
         t1 = time()
         self.songCardListWidget = SongCardListWidget(target_path_list, self)
         t2 = time()
-        print('创建歌曲卡列表视图所花时间：'.ljust(16), t2-t1)
+        print('创建歌曲卡列表视图所花时间：'.ljust(16), t2 - t1)
         # 将动作添加到菜单中
-        self.addActionToMenu()
+        self.__addActionToMenu()
         # 设置初始排序方式
         self.currentSortMode = self.sortByCratedTime
         self.sortModeNum_dict = {'添加日期': 0, 'A到Z': 1, '歌手': 2}
-        # 初始化UI界面
-        self.initWidget()
-        self.initLayout()
-        self.setQss()
+        # 初始化界面
+        self.__initWidget()
+        self.__initLayout()
+        self.__setQss()
 
-    def initWidget(self):
+    def __initWidget(self):
         """ 初始化小部件的属性 """
         # 隐藏滚动条
         self.songCardListWidget.setVerticalScrollBarPolicy(
@@ -67,7 +63,7 @@ class SongTabInterface(QWidget):
             self.songCardListWidget.hide()
             self.guideLabel.show()
 
-    def initLayout(self):
+    def __initLayout(self):
         """ 初始化布局 """
         self.guideLabel.move(15, 105)
         self.randomPlayButton.move(11, 18)
@@ -75,7 +71,7 @@ class SongTabInterface(QWidget):
         self.sortModeButton.move(286, 18)
         self.songCardListWidget.move(9, 60)
 
-    def addActionToMenu(self):
+    def __addActionToMenu(self):
         """ 将动作添加到菜单里 """
         # 创建排序列表项目的动作
         self.sortBySonger = QAction('歌手', self, triggered=self.sortSongCard)
@@ -114,7 +110,7 @@ class SongTabInterface(QWidget):
             self.mapToGlobal(QPoint(self.sortModeButton.x(),
                                     self.sortModeButton.y() - 37*self.sortModeNum_dict[self.currentSortMode.text()]-1)))
 
-    def setQss(self):
+    def __setQss(self):
         """ 设置层叠样式 """
         with open('resource\\css\\songTabInterface.qss', 'r', encoding='utf-8') as f:
             qss = f.read()
@@ -124,7 +120,7 @@ class SongTabInterface(QWidget):
         """ 改变窗口大小时也调整部件大小 """
         super().resizeEvent(e)
         self.songCardListWidget.resize(
-            self.width()-20, self.songCardListWidget.height())
+            self.width() - 20, self.songCardListWidget.height())
 
 
 if __name__ == "__main__":

@@ -2,7 +2,7 @@
 
 import sys
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt,QEvent
 from PyQt5.QtWidgets import QApplication, QLabel
 
 from my_song_tab_interface.song_card_sub_unit import SongNameCard
@@ -17,14 +17,16 @@ class TrackNumSongNameCard(SongNameCard):
         self.trackNumLabel = QLabel(self)
         self.setTrackNum(trackNum)
         # 初始化
-        self.initWidget()
+        self.__initWidget()
 
-    def initWidget(self):
+    def __initWidget(self):
         """ 初始化 """
         self.__adjustTrackNumLabelPos()
         self.trackNumLabel.setFixedWidth(25)
         self.trackNumLabel.setObjectName('songNameLabel')
         self.setCheckBoxBtLabelsState('notSelected-notPlay')
+        # 安装事件过滤器
+        self.checkBox.installEventFilter(self)
 
     def setCheckBoxBtLabelsState(self, state: str):
         """ 设置复选框、按钮和标签的状态并更新样式,有notSelected-notPlay、notSelected-play、selected这3种状态 """
@@ -63,3 +65,15 @@ class TrackNumSongNameCard(SongNameCard):
         """ 设置播放状态 """
         super().setPlay(isPlay)
         self.trackNumLabel.setHidden(isPlay)
+
+    def eventFilter(self, obj, e: QEvent):
+        """ 过滤事件 """
+        if obj == self.checkBox:
+            if e.type() == QEvent.Show:
+                self.trackNumLabel.hide()
+                return False
+            elif e.type() == QEvent.Hide:
+                self.trackNumLabel.show()
+                return False
+        return super().eventFilter(obj,e)
+        

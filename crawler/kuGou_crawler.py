@@ -77,7 +77,7 @@ class KuGouCrawler():
                         break
 
             # mp3没有匹配到APIC间则写入封面，如果是flac和m4a则直接尝试写入封面
-            extraction_cond = (self.suffix == 'mp3' and (not Match)) or (self.suffix == 'flac'
+            extraction_cond = (self.suffix == 'mp3' and (not key.startswith('APIC'))) or (self.suffix == 'flac'
                 and not self.id_card.pictures) or (self.suffix == 'mp4'
                                                    and not self.id_card.get('covr'))
             if extraction_cond:

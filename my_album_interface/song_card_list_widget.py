@@ -22,7 +22,8 @@ class SongCardListWidget(ListWidget):
     nextToPlaySignal = pyqtSignal(dict)
     removeItemSignal = pyqtSignal(int)
     addSongToPlaylistSignal = pyqtSignal(dict)
-    editSongCardSignal = pyqtSignal(dict, dict)       # 编辑歌曲卡完成信号
+    editSongCardSignal = pyqtSignal(dict, dict)  # 编辑歌曲卡完成信号
+    selectionModeStateChanged = pyqtSignal(bool)
 
     def __init__(self, songInfo_list: list, parent=None):
         super().__init__(parent)
@@ -30,12 +31,15 @@ class SongCardListWidget(ListWidget):
         self.currentIndex = -1
         self.playingIndex = -1  # 正在播放的歌曲卡下标
         self.playingSongInfo = None
+        self.selectedSongCardNum = 0
+        self.__isInSelectionMode = False
         if self.songInfo_list:
             self.playingSongInfo = self.songInfo_list[0]
         self.resize(1150, 758)
         # 初始化列表
-        self.songCard_list = []
         self.item_list = []
+        self.songCard_list = []
+        self.selectedSongCard_list = []
         # 创建右击菜单
         self.contextMenu = SongCardListContextMenu(self)
         # 创建歌曲卡
@@ -70,9 +74,9 @@ class SongCardListWidget(ListWidget):
             # 将项目添加到项目列表中
             self.songCard_list.append(songCard)
             self.item_list.append(item)
-            songCard.doubleClicked.connect(self.__emitCurrentChangedSignal)
-            songCard.playButtonClicked.connect(self.__playButtonSlot)
-            songCard.clicked.connect(self.setCurrentIndex)
+            # 歌曲卡信号连接到槽
+            self.__connectSongCardSignalToSlot(songCard)
+
         # 添加一个空白item来填补playBar所占高度
         self.__createPlaceHolderItem()
 
@@ -84,10 +88,16 @@ class SongCardListWidget(ListWidget):
 
     def setCurrentIndex(self, index):
         """ 设置当前下标 """
-        if index != self.currentIndex:
-            self.songCard_list[self.currentIndex].setSelected(False)
+        if not self.__isInSelectionMode:
+            # 不处于选择模式时将先前选中的歌曲卡设置为非选中状态
+            if index != self.currentIndex:
+                self.songCard_list[self.currentIndex].setSelected(False)
+                self.songCard_list[index].setSelected(True)
+        else:
+            # 如果处于选中模式下点击了歌曲卡则取反选中的卡的选中状态
+            songCard = self.songCard_list[index]  # type:SongCard
+            songCard.setChecked(not songCard.isChecked)
         self.currentIndex = index
-        self.songCard_list[index].setSelected(True)
 
     def contextMenuEvent(self, e: QContextMenuEvent):
         """ 重写鼠标右击时间的响应函数 """
@@ -164,21 +174,6 @@ class SongCardListWidget(ListWidget):
             songInfo_dict = songInfoDict_list[i]
             self.songCard_list[i].updateSongCard(songInfo_dict)
 
-    def __connectSignalToSlot(self):
-        """ 信号连接到槽 """
-        self.contextMenu.playAct.triggered.connect(
-            lambda: self.playSignal.emit(self.currentRow()))
-        self.contextMenu.nextSongAct.triggered.connect(
-            lambda: self.nextToPlaySignal.emit(self.songCard_list[self.currentRow()].songInfo))
-        self.contextMenu.editInfoAct.triggered.connect(
-            self.showSongInfoEditPanel)
-        self.contextMenu.showPropertyAct.triggered.connect(
-            self.showPropertyPanel)
-        self.contextMenu.deleteAct.triggered.connect(
-            lambda: self.__removeSongCard(self.currentRow()))
-        self.contextMenu.addToMenu.playingAct.triggered.connect(
-            lambda: self.addSongToPlaylistSignal.emit(self.songCard_list[self.currentRow()].songInfo))
-
     def clearSongCards(self):
         """ 清空歌曲卡 """
         self.item_list.clear()
@@ -215,9 +210,7 @@ class SongCardListWidget(ListWidget):
                 self.songCard_list.append(songCard)
                 self.item_list.append(item)
                 # 信号连接到槽
-                songCard.doubleClicked.connect(self.__emitCurrentChangedSignal)
-                songCard.playButtonClicked.connect(self.__playButtonSlot)
-                songCard.clicked.connect(self.setCurrentIndex)
+                self.__connectSongCardSignalToSlot(songCard)
         elif deltaLen < 0:
             # 删除多余的item
             for i in range(len(self.songInfo_list) - 1, len(self.songInfo_list) + deltaLen - 1, -1):
@@ -280,3 +273,69 @@ class SongCardListWidget(ListWidget):
         if not trackNum[0].isnumeric():
             return eval(trackNum)[0]
         return int(trackNum)
+
+    def __songCardCheckedStateChanedSlot(self, itemIndex: int, isChecked: bool):
+        """ 歌曲卡选中状态改变对应的槽函数 """
+        self.selectedSongCardNum += [-1, 1][isChecked]
+        songCard = self.songCard_list[itemIndex]
+        # 更新选中的歌曲卡列表
+        if isChecked:
+            self.selectedSongCard_list.append(songCard)
+        else:
+            self.selectedSongCard_list.pop(
+                self.selectedSongCard_list.index(songCard))
+        if not self.__isInSelectionMode:
+            self.__setSelectModeBarHidden(False)
+            # 将之前选中的item设置为非选中状态
+            if itemIndex != self.currentIndex:
+                self.songCard_list[self.currentIndex].setSelected(False)
+            # 所有歌曲卡进入选择模式
+            self.__setAllSongCardSelectionModeOpen(True)
+            # 发送信号要求主窗口隐藏播放栏
+            self.selectionModeStateChanged.emit(True)
+            # 更新标志位
+            self.__isInSelectionMode = True
+        else:
+            if not self.selectedSongCardNum:
+                # 没有选中的歌曲卡时隐藏底部选中操作栏
+                self.__setSelectModeBarHidden(True)
+                # 所有歌曲卡退出选择模式
+                self.__setAllSongCardSelectionModeOpen(False)
+                # 发送信号要求主窗口显示播放栏
+                self.selectionModeStateChanged.emit(False)
+                # 更新标志位
+                self.__isInSelectionMode = False
+
+    def __setSelectModeBarHidden(self, isHidden: bool):
+        """ 设置底部选择模式栏是否可见 """
+        pass
+
+    def __setAllSongCardSelectionModeOpen(self, isOpenSelectionMode: bool):
+        """ 设置所有歌曲卡是否进入选择模式 """
+        for songCard in self.songCard_list:
+            songCard.setSelectionModeOpen(isOpenSelectionMode)
+
+    def __connectSignalToSlot(self):
+        """ 信号连接到槽 """
+        self.contextMenu.playAct.triggered.connect(
+            lambda: self.playSignal.emit(self.currentRow()))
+        self.contextMenu.nextSongAct.triggered.connect(
+            lambda: self.nextToPlaySignal.emit(self.songCard_list[self.currentRow()].songInfo))
+        self.contextMenu.editInfoAct.triggered.connect(
+            self.showSongInfoEditPanel)
+        self.contextMenu.showPropertyAct.triggered.connect(
+            self.showPropertyPanel)
+        self.contextMenu.deleteAct.triggered.connect(
+            lambda: self.__removeSongCard(self.currentRow()))
+        self.contextMenu.addToMenu.playingAct.triggered.connect(
+            lambda: self.addSongToPlaylistSignal.emit(self.songCard_list[self.currentRow()].songInfo))
+        self.contextMenu.selectAct.triggered.connect(
+            lambda : self.songCard_list[self.currentRow()].setChecked(True))
+
+    def __connectSongCardSignalToSlot(self, songCard: SongCard):
+        """ 将歌曲卡信号连接到槽 """
+        songCard.doubleClicked.connect(self.__emitCurrentChangedSignal)
+        songCard.playButtonClicked.connect(self.__playButtonSlot)
+        songCard.clicked.connect(self.setCurrentIndex)
+        songCard.checkedStateChanged.connect(
+            self.__songCardCheckedStateChanedSlot)

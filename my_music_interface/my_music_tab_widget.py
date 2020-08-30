@@ -16,7 +16,6 @@ from my_widget.button_group import ButtonGroup
 
 class MyMusicTabWidget(QWidget):
     """ 放置歌曲、歌手和专辑界面 """
-    randomPlayAllSig = pyqtSignal()
     currentIndexChanged = pyqtSignal(int)
 
     def __init__(self, target_path_list: list, parent=None):
@@ -66,11 +65,6 @@ class MyMusicTabWidget(QWidget):
         # 将按钮点击信号连接到槽函数
         for button in [self.songTabButton, self.albumTabButton]:
             button.buttonSelected.connect(self.buttonSelectedSlot)
-        # 将随机播放信号连接到槽函数
-        def slot(): return self.randomPlayAllSig.emit()
-        self.songTab.randomPlayAllSig.connect(slot)
-        # self.songerTab.randomPlayAllSig.connect(slot)
-        self.albumTab.randomPlayAllSig.connect(slot)
 
     def initLayout(self):
         """ 初始化布局 """
@@ -87,6 +81,9 @@ class MyMusicTabWidget(QWidget):
 
     def buttonSelectedSlot(self, index):
         """ 按钮点击时切换界面 """
+        # 如果此时处于选择状态则不切换界面
+        if self.songTab.songCardListWidget.isInSelectionMode:
+            return
         sender = self.sender()
         self.setSelectedButton(index)
         self.stackedWidget.setCurrentIndex(sender.tabIndex)

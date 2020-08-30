@@ -13,6 +13,7 @@ class PlaylistType(Enum):
     ALBUM_CARD_PLAYLIST = 2   # 播放列表为选中专辑的歌
     LAST_PLAYLIST = 3         # 上一次的播放列表
     NO_PLAYLIST = 4           # 没有播放列表
+    CUSTOM_PLAYLIST = 5       # 自定义播放列表
 
 
 class MediaPlaylist(QMediaPlaylist):

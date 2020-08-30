@@ -94,6 +94,8 @@ QLabel#clickableLabel[state='selected']:hover {
     color: rgb(204, 225, 230);
 }
 
+
+/*复选框样式*/
 QCheckBox {
     background-color: transparent;
     spacing: 0px
@@ -109,14 +111,36 @@ QCheckBox::indicator[state='selected'] {
     border: 1px solid white;
 }
 
+QCheckBox::indicator[state='selected']:pressed {
+    border: 1px solid rgb(102, 166, 181);
+}
+
 QCheckBox::indicator[state='notSelected-notPlay'] {
     border: 1px solid black;
+}
+
+QCheckBox::indicator[state='notSelected-notPlay']:pressed {
+    border: 1px solid rgb(130,130,130);
 }
 
 QCheckBox::indicator[state='notSelected-play'] {
     border: 1px solid rgb(0, 107, 131);
 }
 
+QCheckBox::indicator[state='notSelected-play']:pressed {
+    border: 1px solid rgb(130, 172, 182);
+}
+
+QCheckBox::indicator:checked {
+    border-image: url(resource/images/song_tab_interface/indicator_checked_25_25.png);
+}
+
+QCheckBox::indicator:checked:pressed {
+    border-image: url(resource/images/song_tab_interface/indicator_checked_pressed_25_25.png);
+}
+
+
+/*按钮样式*/
 QToolButton {
     background-color: transparent;
     border: none;

@@ -17,6 +17,7 @@ from my_album_tab_interface.album_card import AlbumCard
 from my_widget.album_blur_background import AlbumBlurBackground
 from my_widget.my_scrollArea import ScrollArea
 from my_widget.my_toolTip import ToolTip
+from my_widget.my_groupBox import GroupBox
 
 
 class AlbumCardViewer(QWidget):
@@ -300,7 +301,7 @@ class AlbumCardViewer(QWidget):
         self.firsetLetterGroupDict_list = []
         for letter in first_letter_set:
             # 实例化分组和网格布局
-            group = QGroupBox(letter)
+            group = GroupBox(letter)
             gridLayout = QGridLayout()
             group.setLayout(gridLayout)
             # 将含有字母和分组的字典插入列表
@@ -354,7 +355,7 @@ class AlbumCardViewer(QWidget):
         self.yearGroupDict_list = []
         for year in year_set:
             # 实例化分组和网格布局
-            group = QGroupBox(year)
+            group = GroupBox(year)
             gridLayout = QGridLayout()
             group.setLayout(gridLayout)
             # 将含有字母和分组的字典插入列表
@@ -400,7 +401,7 @@ class AlbumCardViewer(QWidget):
         self.songerGroupDict_list = []
         for songer in songer_set:
             # 实例化分组和网格布局
-            group = QGroupBox(songer)
+            group = GroupBox(songer)
             gridLayout = QGridLayout()
             group.setLayout(gridLayout)
             # 将含有字母和分组的字典插入列表

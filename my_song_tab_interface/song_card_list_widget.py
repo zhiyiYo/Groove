@@ -1,6 +1,7 @@
 import sys
 from json import dump
 from time import time
+from copy import deepcopy
 
 from PyQt5.QtCore import QEvent, QPoint, QSize, Qt, pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QContextMenuEvent, QIcon, QPixmap, QPainter
@@ -23,8 +24,10 @@ class SongCardListWidget(ListWidget):
     nextPlaySignal = pyqtSignal(dict)
     removeItemSignal = pyqtSignal(int)
     addSongToPlaylistSignal = pyqtSignal(dict)
-    switchToAlbumInterfaceSig = pyqtSignal(str,str)
     editSongCardSignal = pyqtSignal(dict, dict)
+    selectionModeStateChanged = pyqtSignal(bool)
+    switchToAlbumInterfaceSig = pyqtSignal(str, str)
+    checkedSongCardNumChanged = pyqtSignal(int)
 
     def __init__(self, target_path_list: list, parent=None):
         super().__init__(parent)
@@ -34,13 +37,16 @@ class SongCardListWidget(ListWidget):
         self.previousIndex = 0
         self.playingIndex = 0  # 正在播放的歌曲卡下标
         self.playingSongInfo = None
+        self.isInSelectionMode = False
+        self.isAllSongCardsChecked = False
         if self.songInfo.songInfo_list:
             self.playingSongInfo = self.songInfo.songInfo_list[0]
         self.sortMode = '添加时间'
         self.resize(1150, 758)
         # 初始化列表
-        self.songCard_list = []
         self.item_list = []
+        self.songCard_list = []
+        self.checkedSongCard_list = []
         # 创建右击菜单
         self.contextMenu = SongCardListContextMenu(self)
         # 创建歌曲卡
@@ -82,10 +88,8 @@ class SongCardListWidget(ListWidget):
             # 将项目添加到项目列表中
             self.songCard_list.append(songCard)
             self.item_list.append(item)
-            songCard.doubleClicked.connect(self.__emitCurrentChangedSignal)
-            songCard.playButtonClicked.connect(self.__playButtonSlot)
-            songCard.clicked.connect(self.setCurrentIndex)
-            songCard.switchToAlbumInterfaceSig.connect(self.switchToAlbumInterfaceSig)
+            # 歌曲卡信号连接到槽
+            self.__connectSongCardSignalToSlot(songCard)
         # 添加一个空白item来填补playBar所占高度
         self.placeholderItem = QListWidgetItem(self)
         self.placeholderItem.setSizeHint(QSize(1150, 145))
@@ -99,10 +103,16 @@ class SongCardListWidget(ListWidget):
 
     def setCurrentIndex(self, index):
         """ 设置当前下标 """
-        if index != self.currentIndex:
-            self.songCard_list[self.currentIndex].setSelected(False)
+        if not self.isInSelectionMode:
+            # 不处于选择模式时将先前选中的歌曲卡设置为非选中状态
+            if index != self.currentIndex:
+                self.songCard_list[self.currentIndex].setSelected(False)
+                self.songCard_list[index].setSelected(True)
+        else:
+            # 如果处于选中模式下点击了歌曲卡则取反选中的卡的选中状态
+            songCard = self.songCard_list[index]  # type:SongCard
+            songCard.setChecked(not songCard.isChecked)
         self.currentIndex = index
-        self.songCard_list[index].setSelected(True)
 
     def contextMenuEvent(self, e: QContextMenuEvent):
         """ 重写鼠标右击时间的响应函数 """
@@ -142,20 +152,27 @@ class SongCardListWidget(ListWidget):
             self.playingIndex = index  # 更新正在播放的下标
             self.playingSongInfo = self.songInfo.songInfo_list[index]
 
-    def showPropertyPanel(self):
-        """ 显示属性面板 """
-        propertyPanel = PropertyPanel(
-            self.songCard_list[self.currentRow()].songInfo, self.window())
+    def showPropertyPanel(self, songInfo: dict = None):
+        """ 显示selected的歌曲卡的属性 """
+        songInfo = self.songCard_list[self.currentRow(
+        )].songInfo if not songInfo else songInfo
+        propertyPanel = PropertyPanel(songInfo, self.window())
         propertyPanel.exec_()
 
-    def showSongInfoEditPanel(self):
+    def showSongInfoEditPanel(self, songCard: SongCard = None):
         """ 显示编辑歌曲信息面板 """
-        current_dict = self.songInfo.songInfo_list[self.currentRow()]
-        oldSongInfo = current_dict.copy()
+        if not songCard:
+            # 歌曲卡默认为当前右键点击的歌曲卡
+            songCard = self.songCard_list[self.currentRow()]
+        # 获取歌曲卡下标和歌曲信息
+        index = self.songCard_list.index(songCard)
+        current_dict = songCard.songInfo
+        oldSongInfo = deepcopy(current_dict)
         songInfoEditPanel = SongInfoEditPanel(current_dict, self.window())
         songInfoEditPanel.exec_()
-        # 更新歌曲卡
-        self.songCard_list[self.currentRow()].updateSongCard(current_dict)
+        # 更新歌曲卡和歌曲信息列表
+        songCard.updateSongCard(current_dict)
+        self.songInfo.songInfo_list[index] = current_dict
         # 将修改的信息存入json文件
         with open('Data\\songInfo.json', 'w', encoding='utf-8') as f:
             dump(self.songInfo.songInfo_list, f)
@@ -201,25 +218,6 @@ class SongCardListWidget(ListWidget):
             songInfo_dict = songInfoDict_list[i]
             self.songCard_list[i].updateSongCard(songInfo_dict)
 
-    def __connectSignalToSlot(self):
-        """ 信号连接到槽 """
-        self.contextMenu.playAct.triggered.connect(
-            lambda: self.playSignal.emit(self.songCard_list[self.currentRow()].songInfo))
-        self.contextMenu.nextSongAct.triggered.connect(
-            lambda: self.nextPlaySignal.emit(self.songCard_list[self.currentRow()].songInfo))
-        self.contextMenu.editInfoAct.triggered.connect(
-            self.showSongInfoEditPanel)
-        self.contextMenu.showPropertyAct.triggered.connect(
-            self.showPropertyPanel)
-        self.contextMenu.showAlbumAct.triggered.connect(
-            lambda: self.switchToAlbumInterfaceSig.emit(
-                self.songCard_list[self.currentRow()].albumLabel.text(),
-                self.songCard_list[self.currentRow()].songerLabel.text()))
-        self.contextMenu.deleteAct.triggered.connect(
-            lambda: self.__removeSongCard(self.currentRow()))
-        self.contextMenu.addToMenu.playingAct.triggered.connect(
-            lambda: self.addSongToPlaylistSignal.emit(self.songCard_list[self.currentRow()].songInfo))
-
     def paintEvent(self, e):
         """ 绘制白色背景 """
         super().paintEvent(e)
@@ -244,8 +242,93 @@ class SongCardListWidget(ListWidget):
 
     def updateMultiSongCards(self, oldSongInfo_list: list, newSongInfo_list: list):
         """ 更新多个歌曲卡 """
-        for oldSongInfo,newSongInfo in zip(oldSongInfo_list, newSongInfo_list):
+        for oldSongInfo, newSongInfo in zip(oldSongInfo_list, newSongInfo_list):
             self.updateOneSongCard(oldSongInfo, newSongInfo, False)
         # 将修改的信息存入json文件
         with open('Data\\songInfo.json', 'w', encoding='utf-8') as f:
-                    dump(self.songInfo.songInfo_list, f) 
+            dump(self.songInfo.songInfo_list, f)
+
+    def __songCardCheckedStateChanedSlot(self, itemIndex: int, isChecked: bool):
+        """ 歌曲卡选中状态改变对应的槽函数 """
+        songCard = self.songCard_list[itemIndex]
+        # 如果歌曲卡不在选中的歌曲列表中且改歌曲卡变为选中状态就将其添加到列表中
+        if songCard not in self.checkedSongCard_list and isChecked:
+            self.checkedSongCard_list.append(songCard)
+            self.checkedSongCardNumChanged.emit(
+                len(self.checkedSongCard_list))
+        elif songCard in self.checkedSongCard_list and not isChecked:
+            self.checkedSongCard_list.pop(
+                self.checkedSongCard_list.index(songCard))
+            self.checkedSongCardNumChanged.emit(
+                len(self.checkedSongCard_list))
+        if not self.isInSelectionMode:
+            # 更新当前下标
+            self.setCurrentIndex(itemIndex)
+            # 所有歌曲卡进入选择模式
+            self.__setAllSongCardSelectionModeOpen(True)
+            # 发送信号要求主窗口隐藏播放栏
+            self.selectionModeStateChanged.emit(True)
+            # 更新标志位
+            self.isInSelectionMode = True
+        else:
+            if not self.checkedSongCard_list:
+                # 所有歌曲卡退出选择模式
+                self.__setAllSongCardSelectionModeOpen(False)
+                # 发送信号要求主窗口显示播放栏
+                self.selectionModeStateChanged.emit(False)
+                # 更新标志位
+                self.isInSelectionMode = False
+
+    def __setAllSongCardSelectionModeOpen(self, isOpenSelectionMode: bool):
+        """ 设置所有歌曲卡是否进入选择模式 """
+        cursor = [Qt.PointingHandCursor, Qt.ArrowCursor][isOpenSelectionMode]
+        for songCard in self.songCard_list:
+            songCard.setSelectionModeOpen(isOpenSelectionMode)
+            songCard.songerLabel.setCursor(cursor)
+            songCard.albumLabel.setCursor(cursor)
+
+    def setAllSongCardCheckedState(self, isAllChecked: bool):
+        """ 设置所有的歌曲卡checked状态 """
+        if self.isAllSongCardsChecked == isAllChecked:
+            return
+        self.isAllSongCardsChecked = isAllChecked
+        checkedSongCard_list_copy = self.songCard_list.copy()
+        for songCard in checkedSongCard_list_copy:
+            songCard.setChecked(isAllChecked)
+
+    def unCheckSongCards(self):
+        """ 取消所有已处于选中状态的歌曲卡的选中状态 """
+        checkedSongCard_list_copy = self.checkedSongCard_list.copy()
+        for songCard in checkedSongCard_list_copy:
+            songCard.setChecked(False)
+
+    def __connectSignalToSlot(self):
+        """ 信号连接到槽 """
+        self.contextMenu.playAct.triggered.connect(
+            lambda: self.playSignal.emit(self.songCard_list[self.currentRow()].songInfo))
+        self.contextMenu.nextSongAct.triggered.connect(
+            lambda: self.nextPlaySignal.emit(self.songCard_list[self.currentRow()].songInfo))
+        self.contextMenu.editInfoAct.triggered.connect(
+            self.showSongInfoEditPanel)
+        self.contextMenu.showPropertyAct.triggered.connect(
+            self.showPropertyPanel)
+        self.contextMenu.showAlbumAct.triggered.connect(
+            lambda: self.switchToAlbumInterfaceSig.emit(
+                self.songCard_list[self.currentRow()].album,
+                self.songCard_list[self.currentRow()].songer))
+        self.contextMenu.deleteAct.triggered.connect(
+            lambda: self.__removeSongCard(self.currentRow()))
+        self.contextMenu.addToMenu.playingAct.triggered.connect(
+            lambda: self.addSongToPlaylistSignal.emit(self.songCard_list[self.currentRow()].songInfo))
+        self.contextMenu.selectAct.triggered.connect(
+            lambda: self.songCard_list[self.currentRow()].setChecked(True))
+
+    def __connectSongCardSignalToSlot(self, songCard: SongCard):
+        """ 将歌曲卡信号连接到槽 """
+        songCard.doubleClicked.connect(self.__emitCurrentChangedSignal)
+        songCard.playButtonClicked.connect(self.__playButtonSlot)
+        songCard.clicked.connect(self.setCurrentIndex)
+        songCard.switchToAlbumInterfaceSig.connect(
+            self.switchToAlbumInterfaceSig)
+        songCard.checkedStateChanged.connect(
+            self.__songCardCheckedStateChanedSlot)

@@ -21,15 +21,18 @@ class SongCard(QWidget):
     clicked = pyqtSignal(int)
     doubleClicked = pyqtSignal(int)
     playButtonClicked = pyqtSignal(int)
-    switchToAlbumInterfaceSig = pyqtSignal(str,str) # 发送专辑名和歌手名
+    checkedStateChanged = pyqtSignal(int, bool)
+    switchToAlbumInterfaceSig = pyqtSignal(str, str)  # 发送专辑名和歌手名
 
     def __init__(self, songInfo: dict, parent=None):
         super().__init__(parent)
-        self.songInfo = songInfo
+        self.__getInfo(songInfo)
         self.__resizeTime = 0
-        # 记录播放状态
+        # 初始化各标志位
         self.isPlaying = False
         self.isSelected = False
+        self.isChecked = False
+        self.isInSelectionMode = False
         self.isDoubleClicked = False
         self.__currentState = 'notSelected-leave'
         # 记录下每个小部件所占的最大宽度
@@ -40,12 +43,12 @@ class SongCard(QWidget):
         # 记录songCard对应的item的下标
         self.itemIndex = None
         # 创建小部件
-        self.songNameCard = SongNameCard(songInfo['songName'], self)
-        self.songerLabel = ClickableLabel(songInfo['songer'], self)
-        self.albumLabel = ClickableLabel(songInfo['album'][0], self, False)
-        self.yearLabel = QLabel(songInfo['year'], self)
-        self.tconLabel = QLabel(songInfo['tcon'], self)
-        self.durationLabel = QLabel(songInfo['duration'], self)
+        self.songNameCard = SongNameCard(self.songName, self)
+        self.songerLabel = ClickableLabel(self.songer, self, False)
+        self.albumLabel = ClickableLabel(self.album, self, False)
+        self.yearLabel = QLabel(self.year, self)
+        self.tconLabel = QLabel(self.tcon, self)
+        self.durationLabel = QLabel(self.duration, self)
         self.buttonGroup = self.songNameCard.buttonGroup
         self.playButton = self.songNameCard.playButton
         self.addToButton = self.songNameCard.addToButton
@@ -66,18 +69,14 @@ class SongCard(QWidget):
         self.songerLabel.setCursor(Qt.PointingHandCursor)
         self.setAttribute(Qt.WA_StyledBackground)
         # 分配ID和属性
-        # self.setObjectName('songCard')
         self.albumLabel.setObjectName('clickableLabel')
         self.songerLabel.setObjectName('clickableLabel')
         self.setWidgetState(self.__currentState)
         self.setCheckBoxBtLabelState('notSelected-notPlay')
-        # self.__setQss()
         # 安装事件过滤器
         self.installEventFilter(self)
         # 信号连接到槽
-        self.playButton.clicked.connect(self.playButtonSlot)
-        self.albumLabel.clicked.connect(
-            lambda:self.switchToAlbumInterfaceSig.emit(self.albumLabel.text(),self.songerLabel.text()))
+        self.__connectSignalToSlot()
 
     def setCheckBoxBtLabelState(self, state: str):
         """ 设置复选框、按钮和标签动态属性，总共3种状态"""
@@ -92,11 +91,6 @@ class SongCard(QWidget):
         """ 设置按钮组窗口和自己的状态，总共6种状态 """
         self.songNameCard.setButtonGroupState(state)
         self.setProperty('state', state)
-
-    def __setQss(self):
-        """ 设置层叠样式 """
-        with open(r'resource\css\songTabInterfaceSongCard.qss', encoding='utf-8') as f:
-            self.setStyleSheet(f.read())
 
     def __getLabelWidth(self):
         """ 计算标签的长度 """
@@ -180,16 +174,16 @@ class SongCard(QWidget):
         for deltaX, widget in zip(self.__deltaX_list, self.__aniWidget_list):
             self.__aniTargetX_list.append(deltaX + widget.x())
 
-    def updateSongCard(self, songInfo):
+    def updateSongCard(self, songInfo: dict):
         """ 更新歌曲卡信息 """
         self.resize(self.size())
-        self.songInfo = songInfo
-        self.songNameCard.setSongName(songInfo['songName'])
-        self.songerLabel.setText(songInfo['songer'])
-        self.albumLabel.setText(songInfo['album'][0])
-        self.yearLabel.setText(songInfo['year'])
-        self.tconLabel.setText(songInfo['tcon'])
-        self.durationLabel.setText(songInfo['duration'])
+        self.__getInfo(songInfo)
+        self.songNameCard.setSongName(self.songName)
+        self.songerLabel.setText(self.songer)
+        self.albumLabel.setText(self.album)
+        self.yearLabel.setText(self.year)
+        self.tconLabel.setText(self.tcon)
+        self.durationLabel.setText(self.duration)
         # 调整宽度
         self.__getLabelWidth()
         songerWidth = self.songerWidth if self.songerWidth <= self.__maxSongerLabelWidth else self.__maxSongerLabelWidth
@@ -198,6 +192,16 @@ class SongCard(QWidget):
         self.songerLabel.setFixedWidth(songerWidth)
         self.albumLabel.setFixedWidth(albumWidth)
         self.tconLabel.setFixedWidth(tconWidth)
+
+    def __getInfo(self, songInfo: dict):
+        """ 从歌曲信息字典中获取信息 """
+        self.songInfo = songInfo
+        self.songName = songInfo.get('songName', '未知歌曲')  # type:str
+        self.songer = songInfo.get('songer', '未知歌手')     # type:str
+        self.album = songInfo.get('album', ['未知专辑'])[0]  # type:str
+        self.year = songInfo.get('year', '未知年份')         # type:str
+        self.tcon = songInfo.get('tcon', '未知流派')         # type:str
+        self.duration = songInfo.get('duration', '0:00')    # type:str
 
     def setPlay(self, isPlay):
         """ 设置播放状态并更新样式 """
@@ -217,19 +221,23 @@ class SongCard(QWidget):
         """ 安装监听 """
         if obj == self:
             if e.type() == QEvent.Enter:
-                self.songNameCard.setWidgetHidden(False)
+                self.songNameCard.checkBox.show()
+                self.songNameCard.buttonGroup.setHidden(self.isInSelectionMode)
                 state = 'selected-enter' if self.isSelected else 'notSelected-enter'
                 self.setWidgetState(state)
                 self.setStyle(QApplication.style())
             elif e.type() == QEvent.Leave:
+                # 不处于选择模式下时，如果歌曲卡没被选中而鼠标离开窗口就隐藏复选框和按钮组窗口
                 if not self.isSelected:
-                    self.songNameCard.setWidgetHidden(True)
+                    self.songNameCard.buttonGroup.hide()
+                    self.songNameCard.checkBox.setHidden(
+                        not self.isInSelectionMode)
                 state = 'selected-leave' if self.isSelected else 'notSelected-leave'
                 self.setWidgetState(state)
                 self.setStyle(QApplication.style())
             elif e.type() == QEvent.MouseButtonPress:
                 state = 'selected-pressed' if self.isSelected else 'notSelected-pressed'
-                if e.button()==Qt.LeftButton:
+                if e.button() == Qt.LeftButton:
                     self.isSelected = True
                 self.setWidgetState(state)
                 self.setStyle(QApplication.style())
@@ -264,7 +272,7 @@ class SongCard(QWidget):
         if e.button() == Qt.LeftButton:
             self.clicked.emit(self.itemIndex)
         # 左键点击时才发送信号
-        if self.isDoubleClicked and e.button()==Qt.LeftButton:
+        if self.isDoubleClicked and e.button() == Qt.LeftButton:
             self.isDoubleClicked = False
             if not self.isPlaying:
                 # 发送点击信号
@@ -275,7 +283,7 @@ class SongCard(QWidget):
         self.doubleClicked.emit(self.itemIndex)
         self.aniGroup.disconnect()
 
-    def setSelected(self, isSelected:bool):
+    def setSelected(self, isSelected: bool):
         """ 设置选中状态 """
         self.isSelected = isSelected
         if isSelected:
@@ -287,9 +295,40 @@ class SongCard(QWidget):
             state = 'notSelected-play' if self.isPlaying else 'notSelected-notPlay'
             self.setCheckBoxBtLabelState(state)
         self.setStyle(QApplication.style())
-    
+
     def playButtonSlot(self):
         """ 播放按钮按下时更新样式 """
         self.playButtonClicked.emit(self.itemIndex)
-        #self.setPlay(True)
-        
+
+    def setChecked(self, isChecked: bool):
+        """ 设置歌曲卡选中状态 """
+        self.songNameCard.checkBox.setChecked(isChecked)
+
+    def checkedStateChangedSlot(self):
+        """ 复选框选中状态改变对应的槽函数 """
+        self.isChecked = self.songNameCard.checkBox.isChecked()
+        self.setSelected(self.isChecked)
+        # 只要点击了复选框就进入选择模式，由父级控制退出选择模式
+        self.songNameCard.checkBox.show()
+        self.setSelectionModeOpen(True)
+        # 发出选中状态改变信号
+        self.checkedStateChanged.emit(self.itemIndex, self.isChecked)
+
+    def setSelectionModeOpen(self, isOpenSelectionMode: bool):
+        """ 设置是否进入选择模式, 处于选择模式下复选框一直可见，按钮不管是否处于选择模式都不可见 """
+        if self.isInSelectionMode == isOpenSelectionMode:
+            return
+        # 更新标志位
+        self.isInSelectionMode = isOpenSelectionMode
+        # 设置按钮和复选框的可见性
+        self.songNameCard.checkBox.setHidden(not isOpenSelectionMode)
+        self.songNameCard.buttonGroup.setHidden(True)
+
+    def __connectSignalToSlot(self):
+        """ 信号连接到槽 """
+        self.playButton.clicked.connect(self.playButtonSlot)
+        self.albumLabel.clicked.connect(
+            lambda: self.switchToAlbumInterfaceSig.emit(
+                self.album, self.songer))
+        self.songNameCard.checkBox.stateChanged.connect(
+            self.checkedStateChangedSlot)

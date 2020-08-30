@@ -1,6 +1,6 @@
 {
     "python.pythonPath": "D:\\Python\\python.exe",
     /* "code-runner.executorMap": {
-        "python": "set PYTHONIOENCODING=utf-8 && D:\\Anaconda\\envs\\Groove\\python.exe",
+        "python": "D:\\Anaconda\\envs\\Groove\\python.exe",
     } */
 }

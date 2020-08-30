@@ -82,19 +82,6 @@ class SongListWidget(ListWidget):
             item.setSizeHint(QSize(self.width()-60, 60))
         super().resizeEvent(e)
 
-    def __connectSignalToSlot(self):
-        """ 将信号连接到槽函数 """
-        # 右击菜单信号连接到槽函数
-        self.menu.playAct.triggered.connect(
-            lambda: self.__emitCurrentChangedSignal(self.currentRow()))
-        self.menu.propertyAct.triggered.connect(self.__showPropertyPanel)
-        self.menu.removeAct.triggered.connect(
-            lambda: self.__removeSongCard(self.currentRow()))
-        self.menu.showAlbumAct.triggered.connect(
-            lambda: self.__switchToAlbumInterface(
-                self.songCard_list[self.currentRow()].albumLabel.text(),
-                self.songCard_list[self.currentRow()].songerLabel.text()))
-
     def __emitCurrentChangedSignal(self, index):
         """ 发送当前播放的歌曲卡下标变化信号，同时更新样式和歌曲信息卡 """
         # 发送下标更新信号
@@ -231,6 +218,19 @@ class SongListWidget(ListWidget):
         """ 更新多个的歌曲卡 """
         for oldSongInfo, newSongInfo in zip(oldSongInfo_list, newSongInfo_list):
             self.updateOneSongCard(oldSongInfo, newSongInfo)
+
+    def __connectSignalToSlot(self):
+        """ 将信号连接到槽函数 """
+        # 右击菜单信号连接到槽函数
+        self.menu.playAct.triggered.connect(
+            lambda: self.__emitCurrentChangedSignal(self.currentRow()))
+        self.menu.propertyAct.triggered.connect(self.__showPropertyPanel)
+        self.menu.removeAct.triggered.connect(
+            lambda: self.__removeSongCard(self.currentRow()))
+        self.menu.showAlbumAct.triggered.connect(
+            lambda: self.__switchToAlbumInterface(
+                self.songCard_list[self.currentRow()].album,
+                self.songCard_list[self.currentRow()].songer))
 
 
 class UpdateMode(Enum):

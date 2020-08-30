@@ -24,6 +24,7 @@ class ListWidget(QListWidget):
         self.smoothMoveTimer = QTimer(self)
         self.smoothMode = SmoothMode(SmoothMode.LINEAR)
         self.smoothMoveTimer.timeout.connect(self.smoothMove)
+        self.setDragEnabled(False)
         self.setVerticalScrollMode(self.ScrollPerPixel)
         self.setAttribute(Qt.WA_StyledBackground)
 
