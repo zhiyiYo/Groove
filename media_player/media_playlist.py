@@ -1,3 +1,5 @@
+# coding:utf-8
+
 from random import shuffle
 from enum import Enum
 from json import dump, load

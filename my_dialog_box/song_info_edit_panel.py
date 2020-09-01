@@ -1,10 +1,7 @@
 # coding:utf-8
 
 import json
-import re
 import sys
-from ctypes import cdll, c_bool
-from ctypes.wintypes import HWND
 
 from mutagen import File,MutagenError
 from PyQt5.QtCore import QEvent, QRegExp, Qt

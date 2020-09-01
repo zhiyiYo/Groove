@@ -1,7 +1,4 @@
-import sys
-
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication
+# coding:utf-8
 
 from my_widget.basic_selection_mode_bar import (BasicButton,
                                                 BasicSelectionModeBar,CheckAllButton)
@@ -47,8 +44,3 @@ class SelectionModeBar(BasicSelectionModeBar):
         self.setToHideButtons(self.button_list[4:-2])
         self.insertSeparator(1)
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = SelectionModeBar()
-    demo.show()
-    sys.exit(app.exec_())

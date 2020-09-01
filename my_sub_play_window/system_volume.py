@@ -1,3 +1,5 @@
+# coding:utf-8
+
 from json import load,dump
 
 from ctypes import cast, POINTER
@@ -56,10 +58,3 @@ class SystemVolume():
             volume_dict = dict(zip(range(0, 101), dB_list))
             dump(volume_dict, f)
         self.__getVolumeDBTable()
-
-
-if __name__ == "__main__":
-    sysVolume = SystemVolume()
-    print(sysVolume.getVolume())
-    sysVolume.setVolume(30)
-    sysVolume.getVolumeTableManually()

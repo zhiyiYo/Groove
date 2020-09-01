@@ -1,7 +1,7 @@
-import sys
+# coding:utf-8
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QAction, QApplication, QPushButton, QWidget
+from PyQt5.QtWidgets import QWidget
 
 
 class WindowMask(QWidget):
@@ -22,10 +22,3 @@ class WindowMask(QWidget):
         self.setGeometry(0, 0, parent_rect.width(), parent_rect.height())
         self.raise_()
         super().show()
-        
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = Demo()
-    demo.show()
-    sys.exit(app.exec_())

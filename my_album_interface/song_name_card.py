@@ -1,7 +1,5 @@
 # coding:utf-8
 
-import sys
-
 from PyQt5.QtCore import Qt,QEvent
 from PyQt5.QtWidgets import QApplication, QLabel
 

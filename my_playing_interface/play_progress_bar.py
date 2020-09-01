@@ -1,7 +1,7 @@
-import sys
+# coding:utf-8
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QHBoxLayout
+from PyQt5.QtWidgets import QLabel, QWidget
 
 from my_widget.my_slider import Slider
 

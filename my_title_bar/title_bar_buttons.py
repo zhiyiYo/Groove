@@ -1,9 +1,8 @@
-import sys
+# coding:utf-8
 
 from PyQt5.QtCore import QEvent, QSize, Qt
-from PyQt5.QtGui import QEnterEvent, QIcon, QPixmap
-from PyQt5.QtWidgets import QApplication, QPushButton,QToolButton
-
+from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtWidgets import QPushButton, QToolButton
 
 
 class BasicButton(QToolButton):

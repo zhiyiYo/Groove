@@ -1,10 +1,10 @@
-import sys
-import os
+# coding:utf-8
+
 import re
 
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QFont, QFontMetrics, QPainter, QPixmap
-from PyQt5.QtWidgets import QApplication, QLabel, QWidget
+from PyQt5.QtWidgets import QLabel, QWidget
 
 from my_functions.is_not_leave import isNotLeave
 from my_functions.get_album_cover_path import getAlbumCoverPath
@@ -280,16 +280,3 @@ class ScrollTextWindow(QWidget):
             self.songNameTimer.start()
         else:
             self.songerNameTimer.start()
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    songInfo = {
-        'songName': 'ハッピーでバッドな眠りは浅い',
-        'songer': '鎖那',
-        'album': [r'resource\Album_Cover\ハッピーでバッドな眠りは浅い\ハッピーでバッドな眠りは浅い.png']
-    }
-    demo = SongInfoCard(songInfo)
-    demo.setStyleSheet('background:rgb(129,133,137)')
-    demo.show()
-    sys.exit(app.exec_())

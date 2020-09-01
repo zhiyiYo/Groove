@@ -1,13 +1,12 @@
 # coding:utf-8
 
-import sys
 from enum import Enum
 
 from PyQt5.QtCore import (QAbstractAnimation, QDateTime, QEasingCurve,
                           QParallelAnimationGroup, QPoint, QPropertyAnimation,
                           QRect, Qt, pyqtSignal)
 from PyQt5.QtGui import QMouseEvent
-from PyQt5.QtWidgets import QApplication, QWidget
+from PyQt5.QtWidgets import QWidget
 
 from .song_info_card import SongInfoCard
 
@@ -374,25 +373,3 @@ class SongInfoCardLoopMode(Enum):
     CYCLE_LEFT_SHIFT = 1
     # 循环右移
     CYCLE_RIGHT_SHIFT = 2
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    playlist = [{'songName': 'ハッピーでバッドな眠りは浅い',
-                 'songer': '鎖那',
-                 'album': ['ハッピーでバッドな眠りは浅い']},
-                {'songName': '猫じゃらし',
-                 'songer': 'RADWIMPS',
-                 'album': ['猫じゃらし - Single']},
-                {'songName': '歩いても歩いても、夜空は僕を追いかけてくる (步履不停，夜空追逐着我)',
-                 'songer': '鎖那',
-                 'album': ['(un)sentimental spica']},
-                {'songName': 'one another',
-                 'songer': 'HALCA',
-                 'album': ['Assortrip']},
-                {'songName': '恋をしたのは',
-                 'songer': 'aiko',
-                 'album': ['恋をしたのは']}, ]
-    demo = SongInfoCardChute(playlist=playlist)
-    demo.show()
-    sys.exit(app.exec_())

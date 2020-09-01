@@ -1,6 +1,6 @@
-import sys
+# coding:utf-8
 
-from PyQt5.QtCore import QEvent, QPoint, QSize, Qt
+from PyQt5.QtCore import QPoint, QSize, Qt
 from PyQt5.QtGui import (QBrush, QColor, QIcon, QPainter, QPen,QPolygon,
                          QPixmap,QFont)
 from PyQt5.QtWidgets import QPushButton

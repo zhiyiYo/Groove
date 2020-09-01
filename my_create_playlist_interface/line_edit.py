@@ -1,7 +1,5 @@
 # coding:utf-8
 
-import sys
-
 from PyQt5.QtCore import Qt,QEvent
 from PyQt5.QtGui import QEnterEvent, QPixmap
 from PyQt5.QtWidgets import QApplication, QLineEdit, QWidget, QLabel
@@ -120,9 +118,3 @@ class LineEdit(QLineEdit):
         with open('resource\\css\\lineEdit.qss', encoding='utf-8') as f:
             self.setStyleSheet(f.read())
 
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = LineEdit()
-    demo.show()
-    sys.exit(app.exec_())

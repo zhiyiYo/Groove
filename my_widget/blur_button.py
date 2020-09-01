@@ -101,29 +101,3 @@ class BlurButton(QToolButton):
         """ 鼠标离开按钮时减小按钮并隐藏提示条 """
         self.enter = False
         self.update()
-
-
-class Demo(QWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.resize(200, 200)
-        self.picPath = 'resource\\Album_Cover\\Attention\\Attention.jpg'
-        self.label = QLabel(self)
-        self.label.setPixmap(QPixmap(self.picPath).scaled(
-            200, 200, Qt.KeepAspectRatio, Qt.SmoothTransformation))
-        self.button = BlurButton(
-            self, (35, 68), 'resource\\images\\添加到按钮_70_70.png', self.picPath, blurRadius=30)
-        self.button.hide()
-
-    def enterEvent(self, QEvent):
-        self.button.show()
-
-    def leaveEvent(self, QEvent):
-        self.button.hide()
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = Demo()
-    demo.show()
-    sys.exit(app.exec_())

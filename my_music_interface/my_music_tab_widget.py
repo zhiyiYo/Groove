@@ -1,6 +1,5 @@
 # coding:utf-8
 
-import sys
 from time import time
 
 from PyQt5.QtCore import Qt, pyqtSignal
@@ -105,9 +104,3 @@ class MyMusicTabWidget(QWidget):
             else:
                 button.setSelected(False)
 
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = MyMusicTabWidget(['D:\\KuGou\\test_audio\\'])
-    demo.show()
-    sys.exit(app.exec_())

@@ -8,11 +8,9 @@
     随机播放的按钮没有按下时，根据循环模式按钮的状态决定播放方式
 """
 
-import sys
-
 from PyQt5.QtCore import QEvent, QSize, Qt,pyqtSignal
-from PyQt5.QtGui import QBrush, QColor, QEnterEvent, QIcon, QPainter, QPen, QPixmap
-from PyQt5.QtWidgets import QApplication, QToolButton, QWidget
+from PyQt5.QtGui import QBrush, QColor, QIcon, QPainter, QPen, QPixmap
+from PyQt5.QtWidgets import  QToolButton, QWidget
 from PyQt5.QtMultimedia import QMediaPlaylist
 
 

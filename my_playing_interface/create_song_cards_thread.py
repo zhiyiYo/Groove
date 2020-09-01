@@ -1,10 +1,6 @@
 # coding:utf-8
 
-import sys
-from enum import Enum
-
-from PyQt5.QtCore import Qt, QThread,pyqtSignal
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import QThread, pyqtSignal
 
 from .song_list_widget import SongListWidget, UpdateMode
 

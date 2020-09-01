@@ -1,7 +1,7 @@
-import sys
+# coding:utf-8
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QHBoxLayout, QWidget,QVBoxLayout
+from PyQt5.QtWidgets import QHBoxLayout, QWidget, QVBoxLayout
 
 from .play_bar_buttons import (LastSongButton, LoopModeButton, NextSongButton,
                               PlayButton, RandomPlayButton)
@@ -44,12 +44,5 @@ class CentralButtonGroup(QWidget):
         self.all_v_layout.setContentsMargins(0, 0, 0, 0)
         self.all_v_layout.addLayout(self.h_layout)
 
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = CentralButtonGroup()
-    demo.setStyleSheet('background:red')
-    demo.show()
-    sys.exit(app.exec_())
 
 

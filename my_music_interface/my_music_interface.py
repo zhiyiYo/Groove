@@ -1,12 +1,12 @@
 # coding:utf-8
 
-import sys
-
 from PyQt5.QtCore import QPoint, QSize, Qt, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent, QFont, QIcon, QResizeEvent
 from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
                              QScrollBar, QVBoxLayout, QWidget)
 
+from my_album_tab_interface.selection_mode_bar import \
+    SelectionModeBar as AlbumTabSelectionBar
 from my_song_tab_interface.selection_mode_bar import \
     SelectionModeBar as SongTabSelectionModeBar
 
@@ -18,9 +18,9 @@ class MyMusicInterface(QWidget):
     """ 创建一个本地音乐分组界面 """
     randomPlayAllSig = pyqtSignal()
     currentIndexChanged = pyqtSignal(int)
+    playCheckedCardsSig = pyqtSignal(list)
     selectionModeStateChanged = pyqtSignal(bool)
-    playCheckedSongCardsSig = pyqtSignal(list)
-    nextToPlayCheckedSongCardsSig = pyqtSignal(list)
+    nextToPlayCheckedCardsSig = pyqtSignal(list)
 
     def __init__(self, target_path_list: list, parent=None):
         super().__init__(parent)
@@ -45,6 +45,7 @@ class MyMusicInterface(QWidget):
         self.scrollBar_list = [self.song_scrollBar, self.album_scrollBar]
         # 实例化底部选择栏
         self.songTabSelectionModeBar = SongTabSelectionModeBar(self)
+        self.albumTabSelectionModeBar = AlbumTabSelectionBar(self)
 
     def __initLayout(self):
         """ 初始化布局 """
@@ -66,6 +67,7 @@ class MyMusicInterface(QWidget):
         self.adjustScrollBarHeight()
         # 隐藏底部选择栏
         self.songTabSelectionModeBar.hide()
+        self.albumTabSelectionModeBar.hide()
         # 先隐藏歌手视图的滚动条
         # self.songer_scrollBar.hide()
         self.album_scrollBar.hide()
@@ -102,6 +104,10 @@ class MyMusicInterface(QWidget):
             self.width(), self.songTabSelectionModeBar.height())
         self.songTabSelectionModeBar.move(
             0, self.height() - self.songTabSelectionModeBar.height())
+        self.albumTabSelectionModeBar.resize(
+            self.width(), self.albumTabSelectionModeBar.height())
+        self.albumTabSelectionModeBar.move(
+            0, self.height() - self.albumTabSelectionModeBar.height())
 
     def changeTabSlot(self, index):
         """ 当前标签窗口改变时更改滚动条的绑定对象 """
@@ -118,11 +124,18 @@ class MyMusicInterface(QWidget):
         """ 选中的卡数量发生改变时刷新选择栏 """
         if self.sender() == self.songCardListWidget:
             self.songTabSelectionModeBar.setPartButtonHidden(num > 1)
+        elif self.sender() == self.albumCardViewer:
+            self.albumTabSelectionModeBar.setPartButtonHidden(num > 1)
+            # 隐藏部分按钮时会发生高度的改变，需要调整位置
+            self.albumTabSelectionModeBar.move(
+                0, self.height() - self.albumTabSelectionModeBar.height())
 
     def __selectionModeStateChangedSlot(self, isOpenSelectionMode: bool):
         """ 选择模式状态变化槽函数 """
         if self.sender() == self.songCardListWidget:
             self.songTabSelectionModeBar.setHidden(not isOpenSelectionMode)
+        elif self.sender() == self.albumCardViewer:
+            self.albumTabSelectionModeBar.setHidden(not isOpenSelectionMode)
         self.selectionModeStateChanged.emit(isOpenSelectionMode)
 
     def __referenceWidgets(self):
@@ -139,10 +152,16 @@ class MyMusicInterface(QWidget):
         )
 
     def __songTabSelectAllButtonSlot(self):
-        """ 全选/取消全选 """
+        """ 歌曲卡全选/取消全选 """
         isChecked = not self.songCardListWidget.isAllSongCardsChecked
         self.songCardListWidget.setAllSongCardCheckedState(isChecked)
         self.songTabSelectionModeBar.checkAllButton.setCheckedState(isChecked)
+
+    def __albumTabSelectAllButtonSlot(self):
+        """ 专辑卡全选/取消全选 """
+        isChecked = not self.albumCardViewer.isAllAlbumCardsChecked
+        self.albumCardViewer.setAllAlbumCardCheckedState(isChecked)
+        self.albumTabSelectionModeBar.checkAllButton.setCheckedState(isChecked)
 
     def __unCheckSongCards(self):
         """ 取消已选中歌曲卡的选中状态并更新按钮图标 """
@@ -150,15 +169,32 @@ class MyMusicInterface(QWidget):
         # 更新按钮的图标为全选
         self.songTabSelectionModeBar.checkAllButton.setCheckedState(True)
 
-    def __emitPlaylist(self):
-        """ 发送播放列表 """
-        songInfo_list = [
+    def __unCheckAlbumCards(self):
+        """ 取消已选中的专辑卡的选中状态并更新按钮图标 """
+        self.albumCardViewer.unCheckAlbumCards()
+        self.albumTabSelectionModeBar.checkAllButton.setChecked(True)
+
+    def __emitSongTabPlaylist(self):
+        """ 发送歌曲界面选中的播放列表 """
+        playlist = [
             songCard.songInfo for songCard in self.songCardListWidget.checkedSongCard_list]
         self.__unCheckSongCards()
         if self.sender() == self.songTabSelectionModeBar.playButton:
-            self.playCheckedSongCardsSig.emit(songInfo_list)
+            self.playCheckedCardsSig.emit(playlist)
         elif self.sender() == self.songTabSelectionModeBar.nextToPlayButton:
-            self.nextToPlayCheckedSongCardsSig.emit(songInfo_list)
+            self.nextToPlayCheckedCardsSig.emit(playlist)
+
+    def __emitAlbumTabPlaylist(self):
+        """ 发送专辑界面选中的播放列表 """
+        # 将选中的所有专辑中的歌曲合成为一个列表
+        playlist = []
+        for albumCard in self.albumCardViewer.checkedAlbumCard_list:
+            playlist.extend(albumCard.albumInfo['songInfo_list'])
+        self.__unCheckAlbumCards()
+        if self.sender() == self.albumTabSelectionModeBar.playButton:
+            self.playCheckedCardsSig.emit(playlist)
+        elif self.sender() == self.albumTabSelectionModeBar.nextToPlayButton:
+            self.nextToPlayCheckedCardsSig.emit(playlist)
 
     def __switchToAlbumInterface(self):
         """ 切换到专辑界面 """
@@ -175,6 +211,10 @@ class MyMusicInterface(QWidget):
             songCard = self.songCardListWidget.checkedSongCard_list[0]
             self.__unCheckSongCards()
             self.songCardListWidget.showSongInfoEditPanel(songCard)
+        elif self.sender() == self.albumTabSelectionModeBar.editInfoButton:
+            albumCard = self.albumCardViewer.checkedAlbumCard_list[0]
+            self.__unCheckAlbumCards()
+            albumCard.showAlbumInfoEditPanel()
 
     def __showCheckedSongCardProperty(self):
         """ 显示选中的歌曲卡的属性 """
@@ -192,40 +232,49 @@ class MyMusicInterface(QWidget):
             self.album_scrollBar.associateScrollBar)
         self.myMusicTabWidget.albumTab.columnChanged.connect(
             self.album_scrollBar.associateScrollBar)
-        self.songCardListWidget.selectionModeStateChanged.connect(
-            self.__selectionModeStateChangedSlot)
-        self.songCardListWidget.checkedSongCardNumChanged.connect(
-            self.__checkedCardNumChangedSlot)
         # 无序播放所有信号连接到槽函数
         self.myMusicTabWidget.songTab.randomPlayAllSig.connect(
             self.randomPlayAllSig)
         self.myMusicTabWidget.albumTab.randomPlayAllSig.connect(
             self.randomPlayAllSig)
+        # 歌曲界面信号连接到槽函数
+        self.songCardListWidget.selectionModeStateChanged.connect(
+            self.__selectionModeStateChangedSlot)
+        self.songCardListWidget.checkedSongCardNumChanged.connect(
+            self.__checkedCardNumChangedSlot)
         # 歌曲界面选择栏各按钮信号连接到槽函数
         self.songTabSelectionModeBar.cancelButton.clicked.connect(
             self.__unCheckSongCards)
         self.songTabSelectionModeBar.checkAllButton.clicked.connect(
             self.__songTabSelectAllButtonSlot)
         self.songTabSelectionModeBar.playButton.clicked.connect(
-            self.__emitPlaylist)
+            self.__emitSongTabPlaylist)
         self.songTabSelectionModeBar.nextToPlayButton.clicked.connect(
-            self.__emitPlaylist)
+            self.__emitSongTabPlaylist)
         self.songTabSelectionModeBar.showAlbumButton.clicked.connect(
             self.__switchToAlbumInterface)
         self.songTabSelectionModeBar.editInfoButton.clicked.connect(
             self.__editCardInfo)
         self.songTabSelectionModeBar.propertyButton.clicked.connect(
             self.__showCheckedSongCardProperty)
+        # 专辑界面信号连接到槽函数
+        self.albumCardViewer.selectionModeStateChanged.connect(
+            self.__selectionModeStateChangedSlot)
+        self.albumCardViewer.checkedAlbumCardNumChanged.connect(
+            self.__checkedCardNumChangedSlot)
+        # 专辑界面选择栏信号连接到槽函数
+        self.albumTabSelectionModeBar.cancelButton.clicked.connect(
+            self.__unCheckAlbumCards)
+        self.albumTabSelectionModeBar.playButton.clicked.connect(
+            self.__emitAlbumTabPlaylist)
+        self.albumTabSelectionModeBar.nextToPlayButton.clicked.connect(
+            self.__emitAlbumTabPlaylist)
+        self.albumTabSelectionModeBar.editInfoButton.clicked.connect(
+            self.__editCardInfo)
+        self.albumTabSelectionModeBar.checkAllButton.clicked.connect(
+            self.__albumTabSelectAllButtonSlot)
 
     def exitSelectionMode(self):
         """ 退出选择模式 """
         self.__unCheckSongCards()
-
-
-if __name__ == "__main__":
-
-    app = QApplication(sys.argv)
-    font = QFont(QApplication.font())
-    demo = MyMusicInterface(['D:\\KuGou\\test_audio'])
-    demo.show()
-    sys.exit(app.exec_())
+        self.__unCheckAlbumCards()

@@ -1,8 +1,8 @@
-import sys
+# coding:utf-8
 
 from PyQt5.QtCore import QPoint, Qt, pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QMouseEvent, QPainter, QPen, QPolygon
-from PyQt5.QtWidgets import QApplication, QWidget
+from PyQt5.QtWidgets import QWidget
 
 from my_functions.get_pressed_pos import getPressedPos
 
@@ -148,9 +148,3 @@ class FoldingWindow(QWidget):
                     ]
                     painter.drawPolygon(QPolygon(points), 4)
 
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = FoldingWindow()
-    demo.show()
-    sys.exit(app.exec_())

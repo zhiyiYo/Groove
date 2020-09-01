@@ -1,12 +1,11 @@
-import sys
+# coding:utf-8
 
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QApplication, QToolButton, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QVBoxLayout, QWidget
 
 from my_create_playlist_interface.create_playlist_button import \
     CreatePlaylistButton
-from my_widget.button_group import ButtonGroup
 from navigation.navigation_button import ToolButton
 
 
@@ -18,7 +17,7 @@ class NavigationBar(QWidget):
         super().__init__(parent)
         self.navigationMenu = navigationMenu
         # 实例化按钮
-        self.createButtons()
+        self.__createButtons()
         # 实例化垂直布局
         self.v_layout = QVBoxLayout()
         # 初始化界面
@@ -26,7 +25,7 @@ class NavigationBar(QWidget):
         self.__initLayout()
         self.__setQss()
 
-    def createButtons(self):
+    def __createButtons(self):
         """实例化按钮 """
         self.showMenuButton = ToolButton(
             r'resource\images\navigationBar\黑色最大化导航栏.png', parent=self)

@@ -1,10 +1,11 @@
-import sys
+# coding:utf-8
+
 from enum import Enum
 from json import load
 
 from PyQt5.QtCore import QSize, Qt, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent
-from PyQt5.QtWidgets import QApplication, QListWidget, QListWidgetItem
+from PyQt5.QtWidgets import QListWidgetItem
 
 from my_dialog_box import PropertyPanel
 from my_widget.my_listWidget import ListWidget
@@ -237,12 +238,3 @@ class UpdateMode(Enum):
     """ 更新歌曲卡方式枚举类 """
     CREATE_ALL_NEW_CARDS = 0
     UPDATE_ALL_CARDS = 1
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    with open('Data\\songInfo.json', 'r', encoding='utf-8') as f:
-        songInfo_list = load(f)
-    demo = SongListWidget(songInfo_list)
-    demo.show()
-    sys.exit(app.exec_())

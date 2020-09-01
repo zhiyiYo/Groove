@@ -1,13 +1,14 @@
+# coding:utf-8
+
 import json
-import sys
 
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal
-from PyQt5.QtGui import QBrush, QColor, QFont, QPainter, QPen, QPixmap
-from PyQt5.QtWidgets import (QApplication, QDialog, QFileDialog,
-                             QGraphicsDropShadowEffect, QLabel, QPushButton,
-                             QWidget)
+from PyQt5.QtGui import QColor, QPainter, QPen, QPixmap
+from PyQt5.QtWidgets import (QFileDialog, QGraphicsDropShadowEffect, QLabel,
+                             QPushButton, QWidget)
 
 from my_dialog_box.sub_panel_frame import SubPanelFrame
+
 from .delete_song_folder_panel import DeleteSongFolderPanel
 from .folder_card import FolderCard
 from .folding_window import FoldingWindow
@@ -218,4 +219,3 @@ class AddFolderCard(FoldingWindow):
                 int(self.height() / 2 - (self.image.height() - 4) / 2),
                 self.image.width() - 4,
                 self.image.height() - 4, self.image)
-

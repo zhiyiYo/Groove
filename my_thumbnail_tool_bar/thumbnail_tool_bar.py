@@ -1,11 +1,8 @@
 # coding:utf-8
-import sys
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QBrush, QIcon, QPainter
-from PyQt5.QtWidgets import QWidget,QApplication
-from PyQt5.QtWinExtras import (QtWin, QWinThumbnailToolBar,
-                               QWinThumbnailToolButton)
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWinExtras import QWinThumbnailToolBar, QWinThumbnailToolButton
 
 
 class ThumbnailPlayButton(QWinThumbnailToolButton):
@@ -37,9 +34,9 @@ class ThumbnailToolBar(QWinThumbnailToolBar):
         self.lastSongButton = QWinThumbnailToolButton(self)
         self.nextSongButton = QWinThumbnailToolButton(self)
         # 初始化
-        self.initWidget()
+        self.__initWidget()
 
-    def initWidget(self):
+    def __initWidget(self):
         """ 初始化小部件 """
         # 设置图标和提示条
         self.lastSongButton.setToolTip('上一首')
@@ -59,5 +56,3 @@ class ThumbnailToolBar(QWinThumbnailToolBar):
         """ 设置按钮的启用与否 """
         for button in self.buttons():
             button.setEnabled(isEnable)
-
-

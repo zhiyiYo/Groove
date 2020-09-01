@@ -1,7 +1,5 @@
 # coding:utf-8
 
-import sys
-
 from PyQt5.QtCore import QEasingCurve, QPropertyAnimation, Qt, QTimer
 from PyQt5.QtGui import QBrush, QPainter, QPen, QPixmap
 from PyQt5.QtWidgets import QApplication, QLabel, QWidget
@@ -143,9 +141,3 @@ class StateToolTip(QWidget):
                       self.parent().y() + 70)
         super().show()
 
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = StateToolTip('正在添加音乐', '1 首歌曲')
-    demo.show()
-    sys.exit(app.exec_())

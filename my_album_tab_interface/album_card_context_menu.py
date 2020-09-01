@@ -20,7 +20,7 @@ class AlbumCardContextMenu(AcrylicMenu):
         """ 创建动作 """
         # 创建动作
         self.playAct = QAction('播放', self)
-        self.chooseAct = QAction('选择', self)
+        self.selectAct = QAction('选择', self)
         self.nextToPlayAct = QAction('下一首播放', self)
         self.pinToStartMenuAct = QAction('固定到"开始"菜单', self)
         self.deleteAct = QAction('删除', self)
@@ -35,7 +35,7 @@ class AlbumCardContextMenu(AcrylicMenu):
         self.addActions([self.showSongerAct, self.pinToStartMenuAct,
                          self.editInfoAct, self.deleteAct])
         self.addSeparator()
-        self.addAction(self.chooseAct)
+        self.addAction(self.selectAct)
 
 
     

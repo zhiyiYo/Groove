@@ -1,4 +1,4 @@
-import sys
+# coding:utf-8
 
 from PyQt5.QtCore import QEasingCurve, QEvent, QPropertyAnimation, QRect, Qt
 from PyQt5.QtGui import QIcon

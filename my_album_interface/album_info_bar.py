@@ -1,7 +1,5 @@
 # coding:utf-8
 
-import sys
-
 from PyQt5.QtCore import Qt, QPoint,pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QFont, QFontMetrics, QPixmap, QPalette
 from PyQt5.QtWidgets import QApplication, QLabel, QWidget

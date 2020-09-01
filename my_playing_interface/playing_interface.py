@@ -1,22 +1,22 @@
 # coding:utf-8
-from random import shuffle
-from copy import deepcopy
 
-import sys
+from copy import deepcopy
 from json import load
-from PyQt5.QtCore import (QEasingCurve, QParallelAnimationGroup, QAbstractAnimation,
-                          QPropertyAnimation, QRect, Qt, QTimer, pyqtSignal, QSize)
-from PyQt5.QtGui import QPixmap, QMouseEvent
-from PyQt5.QtWidgets import QApplication, QGraphicsBlurEffect, QLabel, QWidget
+
+from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve,
+                          QParallelAnimationGroup, QPropertyAnimation, QRect,
+                          QSize, Qt, QTimer, pyqtSignal)
+from PyQt5.QtGui import QMouseEvent, QPixmap
+from PyQt5.QtWidgets import QLabel, QWidget
+
+from my_widget.my_button import ThreeStateButton
 
 from .blur_cover_thread import BlurCoverThread
+from .create_song_cards_thread import CreateSongCardsThread
 from .play_bar import PlayBar
-
+from .smallest_play_mode_interface import SmallestPlayModeInterface
 from .song_info_card_chute import SongInfoCardChute
 from .song_list_widget import SongListWidget
-from .create_song_cards_thread import CreateSongCardsThread
-from .smallest_play_mode_interface import SmallestPlayModeInterface
-from my_widget.my_button import ThreeStateButton
 
 
 class PlayingInterface(QWidget):
@@ -446,13 +446,3 @@ class PlayingInterface(QWidget):
         self.playBar.show()
         self.songListWidget.show()
         self.songInfoCardChute.show()
-        # self.window().show()
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    with open('Data\\songInfo.json', 'r', encoding='utf-8') as f:
-        songInfo_list = load(f)
-    demo = PlayingInterface(playlist=songInfo_list)
-    demo.show()
-    sys.exit(app.exec_())

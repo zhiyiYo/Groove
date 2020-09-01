@@ -1,9 +1,9 @@
-import sys
+# coding:utf-8
+
 from time import time
 
-from PyQt5.QtCore import QEvent, QPoint, QSize, Qt, pyqtSignal
-from PyQt5.QtGui import QContextMenuEvent, QIcon, QMouseEvent
-from PyQt5.QtWidgets import QAction, QApplication, QLabel, QWidget
+from PyQt5.QtCore import QPoint, Qt, pyqtSignal
+from PyQt5.QtWidgets import QAction, QLabel, QWidget
 
 from my_widget.my_button import RandomPlayButton, SortModeButton
 from my_widget.my_menu import AeroMenu
@@ -122,9 +122,3 @@ class SongTabInterface(QWidget):
         self.songCardListWidget.resize(
             self.width() - 20, self.songCardListWidget.height())
 
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    mySongTab = SongTabInterface(['D:\\KuGou'])
-    mySongTab.show()
-    sys.exit(app.exec_())

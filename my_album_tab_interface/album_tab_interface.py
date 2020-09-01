@@ -1,4 +1,5 @@
-import sys
+# coding:utf-8
+
 from time import time
 
 from PyQt5.QtCore import QEvent, QPoint, QSize, Qt, pyqtSignal
@@ -141,8 +142,3 @@ class AlbumTabInterface(QWidget):
             self.width(), self.albumCardViewer.height())
 
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = AlbumTabInterface(['D:\\KuGou\\'])
-    demo.show()
-    sys.exit(app.exec_())

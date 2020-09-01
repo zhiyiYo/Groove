@@ -1,5 +1,4 @@
-import sys
-from ctypes.wintypes import HWND
+# coding:utf-8
 
 from win32.lib import win32con
 from win32.win32api import SendMessage
@@ -7,7 +6,7 @@ from win32.win32gui import ReleaseCapture
 
 from PyQt5.QtCore import Qt,QEvent
 from PyQt5.QtGui import QIcon, QPixmap, QResizeEvent
-from PyQt5.QtWidgets import QApplication, QHBoxLayout, QLabel, QWidget
+from PyQt5.QtWidgets import QLabel, QWidget
 
 from .title_bar_buttons import BasicButton, MaximizeButton
 

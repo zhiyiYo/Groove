@@ -1,7 +1,7 @@
-import sys
+# coding:utf-8
 
-from PyQt5.QtCore import Qt,QEvent
-from PyQt5.QtWidgets import QApplication, QHBoxLayout, QWidget
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QHBoxLayout, QWidget
 from .play_bar_buttons import VolumeButton, SmallPlayModeButton, MoreActionsButton
 
 from my_widget.my_slider import Slider
@@ -22,11 +22,10 @@ class RightWidgetGroup(QWidget):
         # 创建布局
         self.h_layout = QHBoxLayout()
         # 初始化界面
-        self.initWidget()
-        self.initLayout()
-        #self.setQss()
+        self.__initWidget()
+        self.__initLayout()
 
-    def initWidget(self):
+    def __initWidget(self):
         """ 初始化小部件 """
         self.setFixedSize(301, 16 + 67)
         self.volumeSlider.setRange(0,100)
@@ -34,7 +33,7 @@ class RightWidgetGroup(QWidget):
         # 将音量滑动条数值改变信号连接到槽函数
         self.volumeSlider.setValue(20)
                             
-    def initLayout(self):
+    def __initLayout(self):
         """ 初始化布局 """
         self.__spacing_list = [7, 8, 8, 5, 7]
         self.h_layout.setSpacing(0)
@@ -47,13 +46,3 @@ class RightWidgetGroup(QWidget):
             self.h_layout.addSpacing(self.__spacing_list[-1])
         self.setLayout(self.h_layout)
 
-    def setQss(self):
-        with open(r'resource\css\playBar.qss', encoding='utf-8') as f:
-            self.setStyleSheet(f.read())
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = RightWidgetGroup()
-    demo.show()
-    sys.exit(app.exec_())

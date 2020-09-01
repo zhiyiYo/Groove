@@ -1,11 +1,10 @@
 # coding:utf-8
 
-import sys
-
-from PyQt5.QtCore import (QAbstractAnimation, QEvent, QParallelAnimationGroup,
-                          QPropertyAnimation, Qt, pyqtSignal, QEasingCurve, QRect)
+from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
+                          QParallelAnimationGroup, QPropertyAnimation, QRect,
+                          Qt, pyqtSignal)
 from PyQt5.QtGui import QFont, QFontMetrics
-from PyQt5.QtWidgets import QApplication, QLabel, QSlider, QWidget, QGraphicsOpacityEffect
+from PyQt5.QtWidgets import QGraphicsOpacityEffect, QLabel, QSlider, QWidget
 
 from .play_bar_buttons import BasicCircleButton
 from .smallest_play_mode_buttons import PlayButton, SmallestPlayModeButton
@@ -362,20 +361,3 @@ class SongInfoCard(QWidget):
         """ 淡出动画完成的槽函数 """
         self.ani.disconnect()
         super().hide()
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    playlist = [{'songName': 'ハッピーでバッドな眠りは浅い',
-                 'songer': '鎖那'},
-                {'songName': '猫じゃらし',
-                 'songer': 'RADWIMPS'},
-                {'songName': '歩いても歩いても、夜空は僕を追いかけてくる (步履不停，夜空追逐着我)',
-                 'songer': '鎖那'},
-                {'songName': 'one another',
-                 'songer': 'HALCA'},
-                {'songName': '恋をしたのは',
-                 'songer': 'aiko'}]
-    demo = SmallestPlayModeInterface(playlist)
-    demo.show()
-    sys.exit(app.exec_())

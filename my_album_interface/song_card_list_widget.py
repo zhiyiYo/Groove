@@ -1,5 +1,7 @@
-import sys
+# coding:utf-8
+
 from json import dump
+from copy import deepcopy
 
 from PyQt5.QtCore import QEvent, QPoint, QSize, Qt, pyqtSignal
 from PyQt5.QtGui import (QBrush, QColor, QContextMenuEvent, QPainter,
@@ -22,6 +24,7 @@ class SongCardListWidget(ListWidget):
     nextToPlaySignal = pyqtSignal(dict)
     removeItemSignal = pyqtSignal(int)
     addSongToPlaylistSignal = pyqtSignal(dict)
+    checkedSongCardNumChanged = pyqtSignal(int)
     editSongCardSignal = pyqtSignal(dict, dict)  # 编辑歌曲卡完成信号
     selectionModeStateChanged = pyqtSignal(bool)
 
@@ -31,15 +34,16 @@ class SongCardListWidget(ListWidget):
         self.currentIndex = -1
         self.playingIndex = -1  # 正在播放的歌曲卡下标
         self.playingSongInfo = None
-        self.selectedSongCardNum = 0
-        self.__isInSelectionMode = False
+        # 初始化标志位
+        self.isInSelectionMode = False
+        self.isAllSongCardsChecked = False
         if self.songInfo_list:
             self.playingSongInfo = self.songInfo_list[0]
         self.resize(1150, 758)
         # 初始化列表
         self.item_list = []
         self.songCard_list = []
-        self.selectedSongCard_list = []
+        self.checkedSongCard_list = []
         # 创建右击菜单
         self.contextMenu = SongCardListContextMenu(self)
         # 创建歌曲卡
@@ -88,7 +92,7 @@ class SongCardListWidget(ListWidget):
 
     def setCurrentIndex(self, index):
         """ 设置当前下标 """
-        if not self.__isInSelectionMode:
+        if not self.isInSelectionMode:
             # 不处于选择模式时将先前选中的歌曲卡设置为非选中状态
             if index != self.currentIndex:
                 self.songCard_list[self.currentIndex].setSelected(False)
@@ -123,6 +127,8 @@ class SongCardListWidget(ListWidget):
 
     def __emitCurrentChangedSignal(self, index):
         """ 发送当前播放的歌曲卡变化信号，同时更新样式和歌曲信息卡 """
+        if self.isInSelectionMode:
+            return
         self.setPlay(index)
         # 发送歌曲信息更新信号
         self.playSignal.emit(index)
@@ -138,20 +144,26 @@ class SongCardListWidget(ListWidget):
                 self.songCard_list[index].setPlay(True)
                 self.playingSongInfo = self.songInfo_list[index]
 
-    def showPropertyPanel(self):
+    def showPropertyPanel(self, songInfo: dict = None):
         """ 显示属性面板 """
-        propertyPanel = PropertyPanel(
-            self.songCard_list[self.currentRow()].songInfo, self.window())
+        songInfo = self.songCard_list[self.currentRow(
+        )].songInfo if not songInfo else songInfo
+        propertyPanel = PropertyPanel(songInfo, self.window())
         propertyPanel.exec_()
 
-    def showSongInfoEditPanel(self):
+    def showSongInfoEditPanel(self, songCard=None):
         """ 显示编辑歌曲信息面板 """
-        current_dict = self.songInfo_list[self.currentRow()] # type:dict
-        oldSongInfo = current_dict.copy()
+        if not songCard:
+            # 歌曲卡默认为当前右键点击的歌曲卡
+            songCard = self.songCard_list[self.currentRow()]
+        # 获取歌曲卡下标和歌曲信息
+        index = self.songCard_list.index(songCard)
+        current_dict = songCard.songInfo   # type:dict
+        oldSongInfo = deepcopy(current_dict.copy)
         songInfoEditPanel = SongInfoEditPanel(current_dict, self.window())
         songInfoEditPanel.exec_()
         # 更新歌曲卡
-        self.songCard_list[self.currentRow()].updateSongCard(current_dict)
+        songCard.updateSongCard(current_dict)
         # 发出更新歌曲卡信息的信号
         self.editSongCardSignal.emit(oldSongInfo, current_dict)
 
@@ -276,16 +288,19 @@ class SongCardListWidget(ListWidget):
 
     def __songCardCheckedStateChanedSlot(self, itemIndex: int, isChecked: bool):
         """ 歌曲卡选中状态改变对应的槽函数 """
-        self.selectedSongCardNum += [-1, 1][isChecked]
         songCard = self.songCard_list[itemIndex]
-        # 更新选中的歌曲卡列表
-        if isChecked:
-            self.selectedSongCard_list.append(songCard)
-        else:
-            self.selectedSongCard_list.pop(
-                self.selectedSongCard_list.index(songCard))
-        if not self.__isInSelectionMode:
-            self.__setSelectModeBarHidden(False)
+        # 如果歌曲卡不在选中的歌曲列表中且该歌曲卡变为选中状态就将其添加到列表中
+        if songCard not in self.checkedSongCard_list and isChecked:
+            self.checkedSongCard_list.append(songCard)
+            self.checkedSongCardNumChanged.emit(
+                len(self.checkedSongCard_list))
+        # 如果歌曲卡已经在列表中且该歌曲卡变为非选中状态就弹出该歌曲卡
+        elif songCard in self.checkedSongCard_list and not isChecked:
+            self.checkedSongCard_list.pop(
+                self.checkedSongCard_list.index(songCard))
+            self.checkedSongCardNumChanged.emit(
+                len(self.checkedSongCard_list))
+        if not self.isInSelectionMode:
             # 将之前选中的item设置为非选中状态
             if itemIndex != self.currentIndex:
                 self.songCard_list[self.currentIndex].setSelected(False)
@@ -294,26 +309,36 @@ class SongCardListWidget(ListWidget):
             # 发送信号要求主窗口隐藏播放栏
             self.selectionModeStateChanged.emit(True)
             # 更新标志位
-            self.__isInSelectionMode = True
+            self.isInSelectionMode = True
         else:
-            if not self.selectedSongCardNum:
-                # 没有选中的歌曲卡时隐藏底部选中操作栏
-                self.__setSelectModeBarHidden(True)
+            if not self.checkedSongCard_list:
                 # 所有歌曲卡退出选择模式
                 self.__setAllSongCardSelectionModeOpen(False)
                 # 发送信号要求主窗口显示播放栏
                 self.selectionModeStateChanged.emit(False)
                 # 更新标志位
-                self.__isInSelectionMode = False
-
-    def __setSelectModeBarHidden(self, isHidden: bool):
-        """ 设置底部选择模式栏是否可见 """
-        pass
+                self.isInSelectionMode = False
 
     def __setAllSongCardSelectionModeOpen(self, isOpenSelectionMode: bool):
         """ 设置所有歌曲卡是否进入选择模式 """
+        cursor = [Qt.PointingHandCursor, Qt.ArrowCursor][isOpenSelectionMode]
         for songCard in self.songCard_list:
             songCard.setSelectionModeOpen(isOpenSelectionMode)
+            songCard.songerLabel.setCursor(cursor)
+
+    def setAllSongCardCheckedState(self, isAllChecked: bool):
+        """ 设置所有的歌曲卡checked状态 """
+        if self.isAllSongCardsChecked == isAllChecked:
+            return
+        self.isAllSongCardsChecked = isAllChecked
+        for songCard in self.songCard_list:
+            songCard.setChecked(isAllChecked)
+
+    def unCheckSongCards(self):
+        """ 取消所有已处于选中状态的歌曲卡的选中状态 """
+        checkedSongCard_list_copy = self.checkedSongCard_list.copy()
+        for songCard in checkedSongCard_list_copy:
+            songCard.setChecked(False)
 
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
@@ -330,7 +355,7 @@ class SongCardListWidget(ListWidget):
         self.contextMenu.addToMenu.playingAct.triggered.connect(
             lambda: self.addSongToPlaylistSignal.emit(self.songCard_list[self.currentRow()].songInfo))
         self.contextMenu.selectAct.triggered.connect(
-            lambda : self.songCard_list[self.currentRow()].setChecked(True))
+            lambda: self.songCard_list[self.currentRow()].setChecked(True))
 
     def __connectSongCardSignalToSlot(self, songCard: SongCard):
         """ 将歌曲卡信号连接到槽 """

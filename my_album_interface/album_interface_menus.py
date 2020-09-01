@@ -1,6 +1,5 @@
 # coding:utf-8
 
-import sys
 from ctypes.wintypes import HWND
 
 from PyQt5.QtCore import QEasingCurve, QPropertyAnimation, QRect, Qt, QEvent

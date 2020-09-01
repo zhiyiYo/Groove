@@ -1,15 +1,16 @@
-import json
-import re
-import sys
-from ctypes import cdll, c_bool
-from ctypes.wintypes import HWND
+# coding:utf-8
 
-from PyQt5.QtCore import QRect, QSize, Qt, QEvent
+import json
+import sys
+
+from PyQt5.QtCore import QEvent, QRect, QSize, Qt
 from PyQt5.QtGui import QColor, QPainter, QPen, QPixmap
-from PyQt5.QtWidgets import (QAction, QApplication, QDialog, QHBoxLayout,
-                             QLabel, QPushButton, QWidget, QGraphicsDropShadowEffect)
-                            
+from PyQt5.QtWidgets import (QAction, QApplication, QDialog,
+                             QGraphicsDropShadowEffect, QHBoxLayout, QLabel,
+                             QPushButton, QWidget)
+
 from my_functions.auto_wrap import autoWrap
+
 from .sub_panel_frame import SubPanelFrame
 
 

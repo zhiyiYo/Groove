@@ -1,10 +1,8 @@
 # coding:utf-8
 
-import sys
-
 from PyQt5.QtCore import Qt, QEvent
 from PyQt5.QtGui import QPainter, QColor, QPen, QPixmap
-from PyQt5.QtWidgets import QApplication, QToolButton, QWidget
+from PyQt5.QtWidgets import QToolButton
 
 
 class SmallestPlayModeButton(QToolButton):
@@ -92,21 +90,3 @@ class PlayButton(SmallestPlayModeButton):
         self.__isPause = not isPlay
         self.iconPixmap = self.pixmap_list[self.__isPause]
         self.update()
-
-
-class Demo(QWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.resize(100, 100)
-        self.lastSongButton = PlayButton(
-            [r'resource\images\smallest_play_mode\播放_45_45.png',
-             r'resource\images\smallest_play_mode\暂停_45_45.png'], self)
-        self.setStyleSheet('QWidget{background:rgb(140,147,151)}')
-        self.lastSongButton.move(27, 27)
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = Demo()
-    demo.show()
-    sys.exit(app.exec_())

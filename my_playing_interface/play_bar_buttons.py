@@ -1,8 +1,8 @@
-import sys
+# coding:utf-8
 
 from PyQt5.QtCore import Qt, QEvent, QTimer,pyqtSignal
 from PyQt5.QtGui import QPainter, QPixmap, QBrush, QColor, QPen
-from PyQt5.QtWidgets import QApplication, QToolButton, QWidget
+from PyQt5.QtWidgets import QToolButton, QWidget
 from PyQt5.QtMultimedia import QMediaPlaylist
 
 
@@ -347,18 +347,3 @@ class VolumeButton(BasicCircleButton):
             self.iconPixmap = self.pixmap_list[iconIndex]
             self.update()
 
-
-class Demo(QWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.resize(100, 100)
-        self.lastSongButton = FillScreenButton(self)
-        self.setStyleSheet('QWidget{background:rgb(88,150,140)}')
-        self.lastSongButton.move(27, 27)
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = Demo()
-    demo.show()
-    sys.exit(app.exec_())

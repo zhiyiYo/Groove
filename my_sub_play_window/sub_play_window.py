@@ -1,11 +1,10 @@
-import sys
+# coding:utf-8
 
 from PyQt5.QtCore import (
     QAbstractAnimation, QEasingCurve, QPropertyAnimation, Qt, QTimer,
     pyqtSignal)
 from PyQt5.QtGui import QBrush, QFont, QFontMetrics, QPainter, QPixmap
 from PyQt5.QtWidgets import QApplication, QLabel, QWidget
-from system_hotkey import SystemHotkey
 
 from my_functions.get_album_cover_path import getAlbumCoverPath
 from my_functions.is_not_leave import isNotLeave
@@ -187,26 +186,3 @@ class SubPlayWindow(QWidget):
         self.volumeLabel.setText(str(value))
         self.__adjustVolumeLabelPos()
         self.systemVolume.setVolume(value)
-
-
-class Demo(QWidget):
-    printSig = pyqtSignal()
-    def __init__(self, parent=None):
-        super().__init__(parent=parent)
-        songInfo = {'songName': 'ハッピーでバッドな眠りは浅い',
-                    'songer': '鎖那',
-                    'album': ['ハッピーでバッドな眠りは浅い']}
-        self.subWindow = SubPlayWindow(self, songInfo)
-        self.widget = QWidget(self)
-        self.label = QLabel('测试', self.widget)
-        self.resize(500, 500)
-        
-    def enterEvent(self, QEvent):
-        self.subWindow.show()
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = Demo()
-    demo.show()
-    demo.subWindow.show()
-    sys.exit(app.exec_())

@@ -2,12 +2,9 @@
 
 """ 歌曲卡组件库 """
 
-import sys
-
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QFont, QFontMetrics, QIcon, QPixmap
-from PyQt5.QtWidgets import (QApplication, QCheckBox, QLabel, QToolButton,
-                             QWidget)
+from PyQt5.QtWidgets import QCheckBox, QLabel, QToolButton, QWidget
 
 
 class ToolButton(QToolButton):

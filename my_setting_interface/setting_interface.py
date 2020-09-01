@@ -1,4 +1,5 @@
-import sys
+# coding:utf-8
+
 from json import dump, load
 import os
 
@@ -205,10 +206,3 @@ class SettingInterface(QWidget):
         self.writeConfig()
         e.accept()
 
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = SettingInterface()
-    demo.show()
-    sys.exit(app.exec_())

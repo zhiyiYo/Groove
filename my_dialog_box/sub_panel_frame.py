@@ -1,7 +1,7 @@
-import sys
+# coding:utf-8
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QDialog,QWidget
+from PyQt5.QtWidgets import QDialog, QWidget
 
 
 class SubPanelFrame(QDialog):

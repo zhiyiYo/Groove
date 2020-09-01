@@ -1,14 +1,14 @@
-import sys
+# coding:utf-8
 
-from PyQt5.QtCore import Qt,QSize
-from PyQt5.QtGui import QPixmap,QIcon
-from PyQt5.QtWidgets import QApplication,QToolButton
+from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtGui import QPixmap, QIcon
+from PyQt5.QtWidgets import QToolButton
 
 
 class PlayButton(QToolButton):
     """ 播放按钮 """
 
-    def __init__(self, parent=None,isPaused=True):
+    def __init__(self, parent=None, isPaused=True):
         super().__init__(parent)
         # 图标地址列表
         self.__iconPath_dict = [
@@ -21,11 +21,11 @@ class PlayButton(QToolButton):
         # 暂停标志位
         self.isPaused = isPaused
         # 初始化小部件
-        self.initWidget()
+        self.__initWidget()
 
-    def initWidget(self):
+    def __initWidget(self):
         """ 初始化小部件 """
-        self.resize(50,50)
+        self.resize(50, 50)
         self.setCursor(Qt.ArrowCursor)
         self.setIcon(QIcon(self.__iconPath_dict[self.isPaused]['normal']))
         self.setIconSize(QSize(self.width(), self.height()))
@@ -58,10 +58,3 @@ class PlayButton(QToolButton):
         """ 设置播放状态 """
         self.isPaused = not isPlay
         self.setIcon(QIcon(self.__iconPath_dict[self.isPaused]['normal']))
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = PlayButton()
-    demo.show()
-    sys.exit(app.exec_())

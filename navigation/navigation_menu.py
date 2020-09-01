@@ -1,8 +1,8 @@
-import sys
+# coding:utf-8
 
 from PyQt5.QtCore import Qt,pyqtSignal
 from PyQt5.QtGui import QColor, QIcon, QPainter, QPen
-from PyQt5.QtWidgets import (QApplication, QHBoxLayout, QLabel, QToolButton,
+from PyQt5.QtWidgets import (QApplication, QHBoxLayout, QLabel,
                              QVBoxLayout, QWidget)
 
 from my_create_playlist_interface.create_playlist_button import \

@@ -1,8 +1,9 @@
-import sys
+# coding:utf-8
 
-from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtGui import QPixmap, QFont, QFontMetrics, QIcon
-from PyQt5.QtWidgets import QApplication, QWidget, QToolButton, QLabel, QCheckBox
+from PyQt5.QtCore import QSize, Qt
+from PyQt5.QtGui import QFont, QFontMetrics, QIcon, QPixmap
+from PyQt5.QtWidgets import (QApplication, QCheckBox, QLabel, QToolButton,
+                             QWidget)
 
 
 class ToolButton(QToolButton):
@@ -161,10 +162,3 @@ class SongNameCard(QWidget):
         self.__getSongNameWidth()
         self.__moveButtonGroup()
         self.songNameLabel.setFixedWidth(self.songNameWidth)
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    demo = SongNameCard('ぐるぐるワンダーランド')
-    demo.show()
-    sys.exit(app.exec_())

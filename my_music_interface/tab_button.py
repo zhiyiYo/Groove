@@ -1,4 +1,4 @@
-import sys
+# coding:utf-8
 
 from PyQt5.QtCore import QPoint, Qt,pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QFont, QPainter, QPen, QPolygon
@@ -105,35 +105,3 @@ class TabButton(QPushButton):
             elif self.pressedPos in ['left-bottom', 'right-top']:
                 self.paintText(painter, 0.03, 0)
 
-
-class Demo(QWidget):
-    def __init__(self, parent=None, flags=Qt.WindowFlags()):
-        super().__init__(parent=parent, flags=flags)
-        self.bt1 = TabButton('歌手',self)
-        self.bt2 = TabButton('专辑',self)
-        self.resize(300,300)
-        self.bt1.move(50, 50)
-        self.bt2.move(150,50)
-        self.updatableButton_list=[self.bt1,self.bt2]
-        for bt in self.updatableButton_list:
-            bt.clicked.connect(self.buttonClickedEvent)
-
-    def buttonClickedEvent(self):
-        """ 按钮点击事件 """
-        sender = self.sender()
-        # 更新自己按钮的标志位
-        for button in self.updatableButton_list:
-            if sender == button:
-                button.isSelected = True
-            else:
-                button.isSelected = False
-        # 更新按钮的样式
-        for button in self.updatableButton_list:
-            button.update()
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = Demo()
-    demo.show()
-    sys.exit(app.exec_())

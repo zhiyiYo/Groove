@@ -1,8 +1,9 @@
-import sys
+# coding:utf-8
+
 from ctypes.wintypes import HWND
 
 from PyQt5.QtCore import QEvent, QPoint, QRect, Qt
-from PyQt5.QtWidgets import QApplication, QWidget
+from PyQt5.QtWidgets import QWidget
 
 from effects.window_effect import WindowEffect
 from my_functions.get_dominant_color import getDominantColor
@@ -22,7 +23,7 @@ class PlayBar(QWidget):
         # 实例化窗口特效
         self.windowEffect = WindowEffect()
         self.hWnd = HWND(int(self.winId()))
-        self.acrylicColor = '0c3c5eB8'
+        self.acrylicColor = '356c8aB8'
         # 记录移动次数
         self.moveTime = 0
         self.resizeTime = 0
@@ -136,14 +137,3 @@ class PlayBar(QWidget):
             self.songInfoCard.setFixedWidth(self.playProgressBar.x() - 20)
             self.songInfoCard.scrollTextWindow.maxWidth = self.songInfoCard.width() - 155
             self.songInfoCard.scrollTextWindow.initFlagsWidth()
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    songInfo = {
-        'songName': '星見る頃を過ぎても (即使观星时节已过)', 'songer': 'RADWIMPS', 'duration': '3:50',
-        'album': [r'オーダーメイド']}
-    demo = PlayBar(songInfo)
-    demo.move(500, 400)
-    demo.show()
-    sys.exit(app.exec_())

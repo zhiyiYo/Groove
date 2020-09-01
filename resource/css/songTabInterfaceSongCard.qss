@@ -56,6 +56,8 @@ QLabel#clickableLabel[state='selected']:hover{
     color: rgb(204, 225, 230);
 }
 
+
+/*复选框*/
 QCheckBox {
     background-color: transparent;
     spacing: 0px
@@ -79,6 +81,8 @@ QCheckBox::indicator[state='notSelected-play'] {
     border: 1px solid rgb(0, 107, 131);
 }
 
+
+/*按钮*/
 QToolButton {
     background-color: transparent;
     border: none;

@@ -1,8 +1,8 @@
-import sys
+# coding:utf-8
 
 from PyQt5.QtCore import Qt, QEvent, pyqtSignal
 from PyQt5.QtGui import QPixmap, QPainter, QBrush, QPen, QColor
-from PyQt5.QtWidgets import QApplication, QWidget, QGraphicsDropShadowEffect
+from PyQt5.QtWidgets import QWidget, QGraphicsDropShadowEffect
 
 from .play_bar_buttons import BasicCircleButton
 from my_widget.my_slider import Slider
@@ -131,22 +131,3 @@ class VolumeButton(BasicCircleButton):
         else:
             self.iconPixmap = self.pixmap_list[self.__volumeLevel]
         self.update()
-
-
-class Demo(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.resize(500, 500)
-        self.volumeSlider = VolumeSlider(self)
-        
-    def showVolumeSlider(self):
-        """ 显示音量条 """
-        self.volumeSlider.move(78+self.x(), 211+self.y())
-        self.volumeSlider.show()
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = Demo()
-    demo.show()
-    sys.exit(app.exec_())

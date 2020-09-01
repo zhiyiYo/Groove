@@ -1,7 +1,7 @@
-import sys
+# coding:utf-8
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QHBoxLayout
+from PyQt5.QtWidgets import QLabel, QWidget, QHBoxLayout
 
 from my_widget.my_slider import Slider
 
@@ -54,9 +54,3 @@ class PlayProgressBar(QWidget):
         self.progressSlider.setFixedWidth(self.width() - 100)
         super().resizeEvent(e)
 
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = PlayProgressBar('3:50')
-    demo.show()
-    sys.exit(app.exec_())

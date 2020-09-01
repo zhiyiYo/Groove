@@ -156,8 +156,6 @@ class MainWindow(QWidget):
         self.playingInterface.createSongCardThread.run()
         # 安装事件过滤器
 
-
-
     def setHotKey(self):
         """ 设置全局热键 """
         self.nextSongHotKey = SystemHotkey()
@@ -426,7 +424,8 @@ class MainWindow(QWidget):
             self.editSongCardSlot)
         # todo:将专辑卡的信号连接到槽函数
         self.albumCardViewer.playSignal.connect(self.playAlbum)
-        self.albumCardViewer.nextPlaySignal.connect(self.multiSongsNextPlaySlot)
+        self.albumCardViewer.nextPlaySignal.connect(
+            self.multiSongsNextPlaySlot)
         self.albumCardViewer.addAlbumToPlaylistSignal.connect(
             self.addSongsToPlaylist)
         self.albumCardViewer.switchToAlbumInterfaceSig.connect(
@@ -442,9 +441,9 @@ class MainWindow(QWidget):
             self.disorderPlayAll)
         self.myMusicInterface.selectionModeStateChanged.connect(
             self.selectionModeStateChangedSlot)
-        self.myMusicInterface.playCheckedSongCardsSig.connect(
-            self.playCheckedSongCards)
-        self.myMusicInterface.nextToPlayCheckedSongCardsSig.connect(
+        self.myMusicInterface.playCheckedCardsSig.connect(
+            self.playCheckedCards)
+        self.myMusicInterface.nextToPlayCheckedCardsSig.connect(
             self.multiSongsNextPlaySlot)
         # todo:将自己的信号连接到槽函数
         self.showSubPlayWindowSig.connect(lambda: self.subPlayWindow.show())
@@ -460,6 +459,8 @@ class MainWindow(QWidget):
         self.albumInterface.songListWidget.editSongCardSignal.connect(
             self.editSongCardSlot)
         self.albumInterface.saveAlbumInfoSig.connect(self.updateAlbumInfo)
+        self.albumInterface.selectionModeStateChanged.connect(
+            self.selectionModeStateChangedSlot)
         # todo:将主动切换界面的信号连接到槽函数
         self.navigationBar.currentIndexChanged.connect(
             self.stackWidgetIndexChangedSlot)
@@ -926,8 +927,8 @@ class MainWindow(QWidget):
         self.isInSelectionMode = isOpenSelectionMode
         self.playBar.setHidden(isOpenSelectionMode)
 
-    def playCheckedSongCards(self, songInfo_list: list):
-        """ 播放所有选中的歌曲卡 """
+    def playCheckedCards(self, songInfo_list: list):
+        """ 重置播放列表为所有选中的歌曲卡中的歌曲 """
         self.playlist.playlistType = PlaylistType.CUSTOM_PLAYLIST
         self.setPlaylist(songInfo_list)
 
@@ -952,3 +953,4 @@ class MainWindow(QWidget):
         """ 退出选择模式 """
         if self.isInSelectionMode:
             self.myMusicInterface.exitSelectionMode()
+            self.albumInterface.exitSelectionMode()

@@ -1,11 +1,11 @@
-import json
-import os
+# coding:utf-8
+
 import re
-import sys
 from time import time
 
 import pinyin
-from PyQt5.QtCore import QEvent, QPoint, Qt, pyqtSignal
+from PyQt5.QtCore import (QEvent, QParallelAnimationGroup, QPoint,
+                          QPropertyAnimation, Qt, pyqtSignal)
 from PyQt5.QtGui import QPainter, QPixmap
 from PyQt5.QtWidgets import (
     QApplication, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QScrollArea,
@@ -15,9 +15,9 @@ from get_info.get_album_cover import GetAlbumCover
 from get_info.get_album_info import AlbumInfo
 from my_album_tab_interface.album_card import AlbumCard
 from my_widget.album_blur_background import AlbumBlurBackground
+from my_widget.my_groupBox import GroupBox
 from my_widget.my_scrollArea import ScrollArea
 from my_widget.my_toolTip import ToolTip
-from my_widget.my_groupBox import GroupBox
 
 
 class AlbumCardViewer(QWidget):
@@ -28,6 +28,8 @@ class AlbumCardViewer(QWidget):
     addAlbumToPlaylistSignal = pyqtSignal(list)
     switchToAlbumInterfaceSig = pyqtSignal(dict)
     saveAlbumInfoSig = pyqtSignal(dict, dict)
+    selectionModeStateChanged = pyqtSignal(bool)
+    checkedAlbumCardNumChanged = pyqtSignal(int)
 
     def __init__(self, target_path_list: list, parent=None):
         super().__init__(parent)
@@ -36,8 +38,11 @@ class AlbumCardViewer(QWidget):
         self.total_row_num = 0
         self.albumCardDict_list = []
         self.albumCard_list = []
-        # 设置专辑为空标志位
+        self.checkedAlbumCard_list = []
+        # 初始化标志位
         self.isAlbumEmpty = False
+        self.isInSelectionMode = False
+        self.isAllAlbumCardsChecked=False
         # 设置当前排序方式
         self.sortMode = '添加时间'
         # 先扫描本地音乐的专辑封面
@@ -55,12 +60,11 @@ class AlbumCardViewer(QWidget):
         # 实例化并引用提示条
         """ self.albumViewWidget.customToolTip = ToolTip(parent=self.albumViewWidget)
         self.customToolTip = self.albumViewWidget.customToolTip """
-        # 初始化小部件
-        self.__initWidget()
         # 创建专辑卡并将其添加到布局中
         self.__createAlbumCards()
-        self.initLayout()
-        self.__connectSignalToSlot()
+        # 初始化小部件
+        self.__initWidget()
+        self.__initLayout()
         # 设置样式
         self.__setQss()
 
@@ -77,14 +81,24 @@ class AlbumCardViewer(QWidget):
         # 分配ID
         self.setObjectName('father')
         self.albumViewWidget.setObjectName('albumViewWidget')
+        # 信号连接到槽
+        self.__connectSignalToSlot()
 
     def __createAlbumCards(self):
         """ 将专辑卡添加到窗口中 """
+        # 创建并行动画组
+        self.hideCheckBoxAniGroup = QParallelAnimationGroup(self)
+        self.hideCheckBoxAni_list = []
         for albumInfo_dict in self.albumInfo.albumInfo_list:
-            # 实例化专辑卡
+            # 实例化专辑卡和动画
             albumCard = AlbumCard(albumInfo_dict, self, self.albumViewWidget)
-            album = albumInfo_dict['album']
+            # 创建动画
+            hideCheckBoxAni = QPropertyAnimation(
+                albumCard.checkBoxOpacityEffect, b'opacity')
+            self.hideCheckBoxAniGroup.addAnimation(hideCheckBoxAni)
+            self.hideCheckBoxAni_list.append(hideCheckBoxAni)
             # 将含有专辑卡及其信息的字典插入列表
+            album = albumInfo_dict['album']
             self.albumCard_list.append(albumCard)
             self.albumCardDict_list.append({'albumCard': albumCard,
                                             'albumName': album,
@@ -94,6 +108,8 @@ class AlbumCardViewer(QWidget):
 
     def __connectSignalToSlot(self):
         """ 将信号连接到槽函数 """
+        # 动画完成隐藏复选框
+        self.hideCheckBoxAniGroup.finished.connect(self.__hideAllCheckBox)
         for albumCard in self.albumCard_list:
             # 播放
             albumCard.playSignal.connect(self.playSignal)
@@ -107,9 +123,11 @@ class AlbumCardViewer(QWidget):
                 self.switchToAlbumInterfaceSig)
             # 更新专辑信息
             albumCard.saveAlbumInfoSig.connect(self.saveAlbumInfoSig)
-            #albumCard.updateAlbumInfoSig.connect(self.__updateAlbumInfoSlot)
+            # 进入选择模式
+            albumCard.checkedStateChanged.connect(self.__albumCardCheckedStateChanedSlot)
+            # albumCard.updateAlbumInfoSig.connect(self.__updateAlbumInfoSlot)
 
-    def initLayout(self):
+    def __initLayout(self):
         """ 初始化布局 """
         # 如果没有专辑，就置位专辑为空标志位并直接返回
         if not self.albumCard_list:
@@ -119,8 +137,8 @@ class AlbumCardViewer(QWidget):
         # 创建添加时间分组
         self.sortByAddTimeGroup()
         self.__updateGridLayout()
-        self.gridLayout.setVerticalSpacing(11)
-        self.gridLayout.setHorizontalSpacing(0)
+        self.gridLayout.setVerticalSpacing(20)
+        self.gridLayout.setHorizontalSpacing(10)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.albumView_hLayout.setContentsMargins(0, 0, 0, 0)
 
@@ -151,7 +169,7 @@ class AlbumCardViewer(QWidget):
             # 设置网格大小
             for column in columns:
                 gridLayout.setColumnMinimumWidth(
-                    column, 221)
+                    column, 211)
             for row in rows:
                 if row != max(rows):
                     gridLayout.setRowMinimumHeight(
@@ -242,9 +260,10 @@ class AlbumCardViewer(QWidget):
     def __addGroupToLayout(self):
         """ 将当前的分组添加到箱式布局中 """
         for index, currentGroup_dict in enumerate(self.currentGroupDict_list):
-            gridLayout = currentGroup_dict['gridLayout']
+            gridLayout = currentGroup_dict['gridLayout']  # type:QGridLayout
             # 设置网格的行距
             gridLayout.setVerticalSpacing(20)
+            gridLayout.setHorizontalSpacing(10)
             gridLayout.setContentsMargins(0, 0, 0, 0)
             self.v_layout.addWidget(currentGroup_dict['group'])
             if index < len(self.currentGroupDict_list)-1:
@@ -463,4 +482,69 @@ class AlbumCardViewer(QWidget):
             print('更新专辑列表信息')
         else:
             print('没找到旧专辑信息')
-        print('=='*40)
+        print('==' * 40)
+
+    def __albumCardCheckedStateChanedSlot(self, albumCard:AlbumCard, isChecked: bool):
+        """ 专辑卡选中状态改变对应的槽函数 """
+        # 如果专辑信息不在选中的专辑信息列表中且对应的专辑卡变为选中状态就将专辑信息添加到列表中
+        if albumCard not in self.checkedAlbumCard_list and isChecked:
+            self.checkedAlbumCard_list.append(albumCard)
+            self.checkedAlbumCardNumChanged.emit(
+                len(self.checkedAlbumCard_list))
+        # 如果专辑信息已经在列表中且该专辑卡变为非选中状态就弹出该专辑信息
+        elif albumCard in self.checkedAlbumCard_list and not isChecked:
+            self.checkedAlbumCard_list.pop(
+                self.checkedAlbumCard_list.index(albumCard))
+            self.checkedAlbumCardNumChanged.emit(
+                len(self.checkedAlbumCard_list))
+        # 如果先前不处于选择模式那么这次发生选中状态改变就进入选择模式
+        if not self.isInSelectionMode:
+            # 所有专辑卡进入选择模式
+            self.__setAllAlbumCardSelectionModeOpen(True)
+            # 发送信号要求主窗口隐藏播放栏
+            self.selectionModeStateChanged.emit(True)
+            # 更新标志位
+            self.isInSelectionMode = True
+        else:
+            if not self.checkedAlbumCard_list:
+                # 所有专辑卡退出选择模式
+                self.__setAllAlbumCardSelectionModeOpen(False)
+                # 发送信号要求主窗口显示播放栏
+                self.selectionModeStateChanged.emit(False)
+                # 更新标志位
+                self.isInSelectionMode = False
+
+    def __setAllAlbumCardSelectionModeOpen(self, isOpenSelectionMode: bool):
+        """ 设置所有专辑卡是否进入选择模式 """
+        for albumCard in self.albumCard_list:
+            albumCard.setSelectionModeOpen(isOpenSelectionMode)
+        # 退出选择模式时开启隐藏所有复选框的动画
+        if not isOpenSelectionMode:
+            self.__startHideCheckBoxAni()
+
+    def __startHideCheckBoxAni(self):
+        """ 开始隐藏复选框动画 """
+        for ani in self.hideCheckBoxAni_list:
+            ani.setStartValue(1)
+            ani.setEndValue(0)
+            ani.setDuration(140)
+        self.hideCheckBoxAniGroup.start()
+
+    def __hideAllCheckBox(self):
+        """ 隐藏所有复选框 """
+        for albumCard in self.albumCard_list:
+            albumCard.checkBox.hide()
+
+    def unCheckAlbumCards(self):
+        """ 取消所有已处于选中状态的专辑卡的选中状态 """
+        checkedAlbumCard_list_copy = self.checkedAlbumCard_list.copy()
+        for albumCard in checkedAlbumCard_list_copy:
+            albumCard.setChecked(False)
+
+    def setAllAlbumCardCheckedState(self, isAllChecked: bool):
+        """ 设置所有的专辑卡checked状态 """
+        if self.isAllAlbumCardsChecked == isAllChecked:
+            return
+        self.isAllAlbumCardsChecked = isAllChecked
+        for albumCard in self.albumCard_list:
+            albumCard.setChecked(isAllChecked)

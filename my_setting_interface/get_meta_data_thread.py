@@ -1,6 +1,7 @@
+# coding:utf-8
+
 import os
 import re
-import sys
 
 from mutagen import File,MutagenError
 from mutagen.flac import FLAC, Picture

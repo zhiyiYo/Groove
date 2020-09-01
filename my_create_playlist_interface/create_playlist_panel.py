@@ -1,10 +1,8 @@
 # coding:utf-8
 
-import sys
-
-from PyQt5.QtCore import QEvent, Qt
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor, QEnterEvent, QFont, QPainter, QPen, QPixmap
-from PyQt5.QtWidgets import (QApplication, QGraphicsDropShadowEffect, QLabel,
+from PyQt5.QtWidgets import (QGraphicsDropShadowEffect, QLabel,
                              QLineEdit, QPushButton, QWidget)
 
 from my_create_playlist_interface.line_edit import LineEdit
@@ -35,13 +33,13 @@ class SubCreatePlaylistPanel(QWidget):
     def __init__(self, parent):
         super().__init__(parent)
         # 创建小部件
-        self.createWidgets()
+        self.__createWidgets()
         # 初始化
-        self.initWidget()
-        self.initLayout()
-        self.setQss()
+        self.__initWidget()
+        self.__initLayout()
+        self.__setQss()
 
-    def createWidgets(self):
+    def __createWidgets(self):
         """ 创建小部件 """
         self.iconPic = QLabel(self)
         self.lineEdit = LineEdit(parent=self)
@@ -49,7 +47,7 @@ class SubCreatePlaylistPanel(QWidget):
         self.yourCreationLabel = QLabel('您创建的', self)
         self.createPlaylistButton = QPushButton('创建播放列表', self)
         
-    def initWidget(self):
+    def __initWidget(self):
         """ 初始化小部件 """
         self.setAttribute(Qt.WA_StyledBackground)
         self.setFixedSize(586, 644)
@@ -64,7 +62,7 @@ class SubCreatePlaylistPanel(QWidget):
         # 信号连接到槽函数
         self.cancelLabel.clicked.connect(self.parent().deleteLater)
 
-    def initLayout(self):
+    def __initLayout(self):
         """ 初始化布局 """
         self.iconPic.move(188, 74)
         self.lineEdit.move(52, 309)
@@ -87,31 +85,8 @@ class SubCreatePlaylistPanel(QWidget):
         painter.setPen(pen)
         painter.drawRect(0, 0, self.width() - 1, self.height() - 1)
 
-    def setQss(self):
+    def __setQss(self):
         """ 设置层叠样式 """
         with open('resource\\css\\createPlaylistPanel.qss', encoding='utf-8') as f:
             self.setStyleSheet(f.read())
 
-
-class Demo(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.resize(1280, 800)
-        self.label = QLabel(self)
-        self.label.setPixmap(QPixmap(r"D:\hzz\图片\硝子\硝子 (3).jpg").scaled(
-            1280, 800, Qt.KeepAspectRatio, Qt.SmoothTransformation))
-        self.bt = QPushButton('点击打开歌曲文件夹选择面板', self)
-        self.bt.move(480, 355)
-        self.bt.clicked.connect(self.showPanel)
-
-    def showPanel(self):
-        # 读取信息
-        panel = CreatePlaylistPanel(self)
-        panel.exec_()
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = Demo()
-    demo.show()
-    sys.exit(app.exec_())

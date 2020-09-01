@@ -1,4 +1,4 @@
-import sys
+# coding:utf-8
 
 from PyQt5.QtCore import Qt, QEvent, QTimer
 from PyQt5.QtGui import QEnterEvent
@@ -48,9 +48,3 @@ class ScrollBar(QWidget):
             self.minScrollBar.valueChanged.connect(
                 lambda: self.externalScrollBar.setValue(self.minScrollBar.value()))
 
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = ScrollBar()
-    demo.show()
-    sys.exit(app.exec_())

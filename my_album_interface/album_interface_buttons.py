@@ -1,7 +1,5 @@
 # coding:utf-8
 
-import sys
-
 from PyQt5.QtCore import QEvent, Qt
 from PyQt5.QtGui import (QBrush, QColor, QFont, QFontMetrics, QPainter, QPen,
                          QPixmap)
@@ -78,17 +76,3 @@ class BasicButton(QPushButton):
         painter.drawText(50, 29, self.text)
 
 
-class Demo(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.bt = BasicButton(
-            r'resource\images\album_interface\删除.png', '删除',self)
-        self.setStyleSheet('QWidget{background:#404c59}')
-        self.resize(200, 200)
-        self.bt.move(41,77)
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = Demo()
-    demo.show()
-    sys.exit(app.exec_())

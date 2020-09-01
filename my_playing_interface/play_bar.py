@@ -1,7 +1,7 @@
-import sys
+# coding:utf-8
 
 from PyQt5.QtCore import Qt, pyqtSignal, QPoint
-from PyQt5.QtWidgets import QApplication, QWidget
+from PyQt5.QtWidgets import QWidget
 
 from .play_bar_buttons import (BasicCircleButton, FillScreenButton,
                                LoopModeButton, PlayButton, PullUpArrow,
@@ -137,10 +137,3 @@ class PlayBar(QWidget):
             lambda volumeLevel: self.volumeButton.updateIcon(volumeLevel))
         for widget in self.__widget_list:
             widget.clicked.connect(self.volumeSlider.hide)
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = PlayBar()
-    demo.show()
-    sys.exit(app.exec_())

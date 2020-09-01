@@ -1,7 +1,5 @@
 # coding:utf-8
 
-import sys
-
 from PyQt5.QtCore import QEvent, Qt
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QLineEdit
@@ -39,9 +37,9 @@ class SearchLineEdit(QLineEdit):
         # 实例化右击菜单
         self.menu = LineEditMenu(self)
         # 初始化界面
-        self.initWidget()
+        self.__initWidget()
 
-    def initWidget(self):
+    def __initWidget(self):
         """ 初始化小部件 """
         self.resize(300, 45)
         self.clearButton.hide()

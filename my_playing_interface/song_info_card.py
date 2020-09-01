@@ -1,8 +1,8 @@
-import sys
+# coding:utf-8
 
-from PyQt5.QtCore import Qt, QEvent, pyqtSignal, QTimer
-from PyQt5.QtGui import QPixmap,QFont,QFontMetrics
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel
+from PyQt5.QtCore import QEvent, Qt, QTimer, pyqtSignal
+from PyQt5.QtGui import QFont, QFontMetrics, QPixmap
+from PyQt5.QtWidgets import QApplication, QLabel, QWidget
 
 from my_functions.get_album_cover_path import getAlbumCoverPath
 from my_widget.my_label import ClickableLabel
@@ -146,12 +146,3 @@ class SongInfoCard(QWidget):
             self.songerAlbumLabel.move(186, 82)
             self.songNameLabel.setFixedSize(totalWidth, 46)
             self.songNameLabel.setText(self.songName)
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    songInfo = {'songName': 'be Your XXX',
-                'songer': '鎖那',
-                'album': ['(un)sentimental spica']}
-    demo = SongInfoCard(songInfo=songInfo)
-    demo.show()
-    sys.exit(app.exec_())

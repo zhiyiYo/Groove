@@ -1,4 +1,4 @@
-import sys
+# coding:utf-8
 
 from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
                           QParallelAnimationGroup, QPropertyAnimation, QRect,
@@ -239,15 +239,3 @@ class SongCard(QWidget):
         albumWidth = self.albumWidth if self.albumWidth <= self.__maxAlbumLabelWidth else self.__maxAlbumLabelWidth
         self.songerLabel.setFixedWidth(songerWidth)
         self.albumLabel.setFixedWidth(albumWidth)
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    songInfo = {'songName': '歩いても歩いても、夜空は僕を追いかけてくる (步履不停，夜空追逐着我)',
-                'songer': '鎖那',
-                'album': ['(un)sentimental spica'],
-                'year': '2015年',
-                'duration': '4:33'}
-    demo = SongCard(songInfo)
-    demo.show()
-    sys.exit(app.exec_())

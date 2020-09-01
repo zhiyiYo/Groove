@@ -39,6 +39,7 @@ class GetAlbumCover():
         albumName_set = set([songInfo.get('album')[-1] for songInfo in self.songInfo.songInfo_list])
         albumFolder_set = set(os.listdir(self.album_cover_folder))
         if albumFolder_set == albumName_set:
+            print('不扫描封面')
             return
         diff_list_1 = list(albumName_set - albumFolder_set)     # 计算差集
         diff_list_2 = list(albumFolder_set - albumName_set)
@@ -76,6 +77,10 @@ class GetAlbumCover():
                 pic_data = id_card[key].data
                 self.__savePic(sub_album_cover_folder, info_dict, pic_data)
                 break
+        else:
+            # 没有提取到封面时也创建一个空文件夹
+            os.mkdir(sub_album_cover_folder)
+
 
     def getFlacAlbumCover(self, info_dict, id_card):
         """ 获取flac文件的封面并写入文件夹 """

@@ -102,6 +102,7 @@ QCheckBox {
 }
 
 QCheckBox::indicator {
+    /*需要减去边框的宽度*/
     width: 23px;
     height: 23px;
     background-color: transparent;

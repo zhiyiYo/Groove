@@ -1,4 +1,4 @@
-import sys
+# coding:utf-8
 
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtGui import QPixmap, QImage
