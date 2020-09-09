@@ -10,8 +10,10 @@ from my_functions.is_not_leave import isNotLeave
 from my_functions.get_album_cover_path import getAlbumCoverPath
 from .window_mask import WindowMask
 
+from my_widget.perspective_widget import PerspectiveWidget
 
-class SongInfoCard(QWidget):
+
+class SongInfoCard(PerspectiveWidget):
     """ 播放栏左侧歌曲信息卡 """
     clicked = pyqtSignal()
     albumChanged = pyqtSignal(str)
@@ -88,6 +90,7 @@ class SongInfoCard(QWidget):
 
     def mouseReleaseEvent(self, e):
         """ 鼠标松开发送信号 """
+        super().mouseReleaseEvent(e)
         self.clicked.emit()
         
 

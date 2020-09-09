@@ -6,7 +6,7 @@ from PyQt5.QtCore import QEvent, QPoint, QRect, Qt
 from PyQt5.QtWidgets import QWidget
 
 from effects.window_effect import WindowEffect
-from my_functions.get_dominant_color import getDominantColor
+from my_functions.get_dominant_color import DominantColor
 from my_play_bar.central_button_group import CentralButtonGroup
 from my_play_bar.more_actions_menu import MoreActionsMenu
 from my_play_bar.play_progress_bar import PlayProgressBar
@@ -23,7 +23,8 @@ class PlayBar(QWidget):
         # 实例化窗口特效
         self.windowEffect = WindowEffect()
         self.hWnd = HWND(int(self.winId()))
-        self.acrylicColor = '356c8aB8'
+        self.acrylicColor = '356c8aB2'
+        self.dominantColor = DominantColor()
         # 记录移动次数
         self.moveTime = 0
         self.resizeTime = 0
@@ -64,7 +65,8 @@ class PlayBar(QWidget):
 
     def updateDominantColor(self, albumPath: str):
         """ 更新主色调 """
-        self.acrylicColor = getDominantColor(albumPath) + 'B8'
+        self.acrylicColor = self.dominantColor.getDominantColor(
+            albumPath) + 'B2'
         self.setAcrylicColor(self.acrylicColor)
 
     def setAcrylicColor(self, gradientColor: str):

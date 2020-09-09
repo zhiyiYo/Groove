@@ -65,11 +65,11 @@ class SongTabInterface(QWidget):
 
     def __initLayout(self):
         """ 初始化布局 """
-        self.guideLabel.move(15, 105)
-        self.randomPlayButton.move(11, 18)
-        self.sortModeLabel.move(211, 23)
-        self.sortModeButton.move(286, 18)
-        self.songCardListWidget.move(9, 60)
+        self.guideLabel.move(35, 105)
+        self.randomPlayButton.move(31, 18)
+        self.sortModeLabel.move(231, 23)
+        self.sortModeButton.move(306, 18)
+        self.songCardListWidget.move(30, 60)
 
     def __addActionToMenu(self):
         """ 将动作添加到菜单里 """
@@ -120,5 +120,5 @@ class SongTabInterface(QWidget):
         """ 改变窗口大小时也调整部件大小 """
         super().resizeEvent(e)
         self.songCardListWidget.resize(
-            self.width() - 20, self.songCardListWidget.height())
+            self.width() - 60, self.songCardListWidget.height())
 

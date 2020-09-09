@@ -2,12 +2,13 @@
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor, QEnterEvent, QFont, QPainter, QPen, QPixmap
-from PyQt5.QtWidgets import (QGraphicsDropShadowEffect, QLabel,
-                             QLineEdit, QPushButton, QWidget)
+from PyQt5.QtWidgets import (QGraphicsDropShadowEffect, QLabel, QLineEdit,
+                             QWidget)
 
 from my_create_playlist_interface.line_edit import LineEdit
 from my_dialog_box.sub_panel_frame import SubPanelFrame
 from my_widget.my_label import ClickableLabel
+from my_widget.perspective_button import PerspectivePushButton
 
 
 class CreatePlaylistPanel(SubPanelFrame):
@@ -45,7 +46,7 @@ class SubCreatePlaylistPanel(QWidget):
         self.lineEdit = LineEdit(parent=self)
         self.cancelLabel = ClickableLabel('取消', self)
         self.yourCreationLabel = QLabel('您创建的', self)
-        self.createPlaylistButton = QPushButton('创建播放列表', self)
+        self.createPlaylistButton = PerspectivePushButton('创建播放列表', self)
         
     def __initWidget(self):
         """ 初始化小部件 """
@@ -89,4 +90,3 @@ class SubCreatePlaylistPanel(QWidget):
         """ 设置层叠样式 """
         with open('resource\\css\\createPlaylistPanel.qss', encoding='utf-8') as f:
             self.setStyleSheet(f.read())
-

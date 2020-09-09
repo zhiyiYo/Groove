@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QApplication, QLabel, QToolTip, QWidget
 
 from my_functions.get_pressed_pos import getPressedPos
 from my_functions.is_not_leave import isNotLeave
-from my_functions.perspective_transform import PerspectiveTransform
+from my_functions.perspective_transform_cv import PerspectiveTransform
 from my_widget.my_toolTip import ToolTip
 
 
@@ -182,7 +182,7 @@ class PerspectiveTransformLabel(QWidget):
                     [2, self.perspectiveTrans.height - 1],
                     [self.perspectiveTrans.width - 4, self.perspectiveTrans.height - 3])
             self.pressedPix = self.perspectiveTrans.getPerspectiveTransform(
-                self.perspectiveTrans.width, self.perspectiveTrans.height, True).scaled(
+                self.perspectiveTrans.width, self.perspectiveTrans.height, isGetQPixmap=True).scaled(
                     self.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
         self.perspectiveTrans.pressedPos = self.pressedPos
         # self.setPixmap(self.pressedPix)

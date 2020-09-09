@@ -16,7 +16,7 @@ QPushButton {
     padding: 11px 64px 11px 64px;
     font: 19px 'Microsoft YaHei';
     border: transparent;
-    border-radius: 4px;
+    /* border-radius: 4px; */
     height: 20px;
     width: 55px;
 }

@@ -1,15 +1,14 @@
 # coding:utf-8
 
 import json
-import sys
 
 from PyQt5.QtCore import QEvent, QRect, QSize, Qt
 from PyQt5.QtGui import QColor, QPainter, QPen, QPixmap
-from PyQt5.QtWidgets import (QAction, QApplication, QDialog,
-                             QGraphicsDropShadowEffect, QHBoxLayout, QLabel,
-                             QPushButton, QWidget)
+from PyQt5.QtWidgets import (QAction, QDialog, QGraphicsDropShadowEffect,
+                             QLabel, QWidget)
 
 from my_functions.auto_wrap import autoWrap
+from my_widget.perspective_button import PerspectivePushButton
 
 from .sub_panel_frame import SubPanelFrame
 
@@ -83,7 +82,7 @@ class SubPropertyPanel(QWidget):
             trackNUm = str(eval(self.songInfo['tracknumber'])[0])
             self.trackNumber = QLabel(trackNUm, self)
         # 实例化关闭按钮
-        self.closeButton = QPushButton('关闭', self)
+        self.closeButton = PerspectivePushButton('关闭', self)
         # 创建小部件列表
         self.label_list_1 = [self.albumName, self.songName,
                              self.songPath, self.songer, self.albumSonger]
@@ -194,29 +193,3 @@ class SubPropertyPanel(QWidget):
         self.shadowEffect.setBlurRadius(50)
         self.shadowEffect.setOffset(0, 5)
         self.setGraphicsEffect(self.shadowEffect)
-
-
-class Demo(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.resize(1200, 800)
-        self.setStyleSheet('background:white')
-        self.label = QLabel('测试', self)
-        self.label.move(0,100)
-        self.bt = QPushButton('点击打开属性面板', self)
-        self.bt.move(550, 375)
-        self.bt.clicked.connect(self.showPanel)
-
-    def showPanel(self):
-        # 读取信息
-        with open('Data\\songInfo.json', 'r', encoding='utf-8') as f:
-            songInfo_list = json.load(f)
-        songInfo = songInfo_list[0]
-        panel = PropertyPanel(songInfo, self)
-        panel.exec_()
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = Demo()
-    demo.show()
-    sys.exit(app.exec_())

@@ -1,21 +1,22 @@
 # coding:utf-8
 
 import json
-import sys
 
-from mutagen import File,MutagenError
+from mutagen import File, MutagenError
 from PyQt5.QtCore import QEvent, QRegExp, Qt
-from PyQt5.QtGui import (QColor, QContextMenuEvent,QPainter, QPen,
-                         QPixmap, QRegExpValidator, QFont)
-from PyQt5.QtWidgets import (QApplication, QDialog, QGraphicsDropShadowEffect, QLabel,QWidget,
-                             QLineEdit, QPushButton)
+from PyQt5.QtGui import (QColor, QContextMenuEvent, QFont, QPainter, QPen,
+                         QPixmap, QRegExpValidator)
+from PyQt5.QtWidgets import (QApplication, QDialog, QGraphicsDropShadowEffect,
+                             QLabel, QLineEdit, QWidget)
+
+from my_functions.auto_wrap import autoWrap
+from my_functions.modify_songInfo import modifySongInfo
+from my_widget.my_label import ErrorIcon
+from my_widget.my_lineEdit import LineEdit
+from my_widget.my_toolTip import ToolTip
+from my_widget.perspective_button import PerspectivePushButton
 
 from .sub_panel_frame import SubPanelFrame
-from my_functions.modify_songInfo import modifySongInfo
-from my_widget.my_lineEdit import LineEdit
-from my_widget.my_label import ErrorIcon
-from my_widget.my_toolTip import ToolTip
-from my_functions.auto_wrap import autoWrap
 
 
 class SongInfoEditPanel(SubPanelFrame):
@@ -61,8 +62,8 @@ class SubSongInfoEditPanel(QWidget):
     def createWidgets(self):
         """ 实例化小部件 """
         # 实例化按钮
-        self.saveButton = QPushButton('保存', self)
-        self.cancelButton = QPushButton('取消', self)
+        self.saveButton = PerspectivePushButton('保存', self)
+        self.cancelButton = PerspectivePushButton('取消', self)
         # 实例化标签
         self.yearLabel = QLabel('年', self)
         self.tconLabel = QLabel('类型', self)
@@ -281,35 +282,3 @@ class SubSongInfoEditPanel(QWidget):
         self.shadowEffect.setBlurRadius(50)
         self.shadowEffect.setOffset(0, 5)
         self.setGraphicsEffect(self.shadowEffect)
-
-
-class Demo(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.resize(1280,800)
-        self.setQss()
-        self.label = QLabel(self)
-        self.label.setPixmap(QPixmap(r"D:\hzz\图片\硝子\硝子 (3).jpg").scaled(
-            1280, 800, Qt.KeepAspectRatio, Qt.SmoothTransformation))
-        self.bt = QPushButton('点击打开歌曲信息编辑面板', self)
-        self.bt.move(480, 355)
-        self.bt.clicked.connect(self.showPanel)
-
-    def showPanel(self):
-        # 读取信息
-        with open('Data\\songInfo.json', 'r', encoding='utf-8') as f:
-            songInfo_list = json.load(f)
-        songInfo = songInfo_list[0]
-        panel = SongInfoEditPanel(songInfo, self)
-        panel.exec_()
-
-    def setQss(self):
-        with open(r'resource\css\songInfoEditPanel.qss', encoding='utf-8') as f:
-            self.setStyleSheet(f.read())
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = Demo()
-    demo.show()
-    sys.exit(app.exec_())

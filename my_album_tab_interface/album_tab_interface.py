@@ -67,10 +67,10 @@ class AlbumTabInterface(QWidget):
 
     def __initLayout(self):
         """ 初始化布局 """
-        self.guideLabel.move(15, 103)
-        self.randomPlayButton.move(11, 23)
-        self.sortModeLabel.move(211, 23)
-        self.sortModeButton.move(286, 18)
+        self.guideLabel.move(35, 103)
+        self.randomPlayButton.move(31, 23)
+        self.sortModeLabel.move(231, 23)
+        self.sortModeButton.move(306, 18)
         self.albumCardViewer.move(0, 56)
 
     def addActionToMenu(self):
@@ -101,22 +101,19 @@ class AlbumTabInterface(QWidget):
         """ 根据所选的排序方式对歌曲卡进行重新排序 """
         sender = self.sender()
         self.currentSortMode = sender
-        self.albumCardViewer.albumViewWidget.albumBlurBackground.hide()
+        self.albumCardViewer.albumBlurBackground.hide()
         # 更新分组
         if sender == self.sortByCratedTime and self.albumCardViewer.sortMode != '添加时间':
             self.sortModeButton.setText('添加时间')
             self.albumCardViewer.sortByAddTimeGroup()
         elif sender == self.sortByDictOrder and self.albumCardViewer.sortMode != 'A到Z':
             self.sortModeButton.setText('A到Z')
-            self.albumCardViewer.sortMode = 'A到Z'
-            self.albumCardViewer.sortByFirsetLetter()
+            self.albumCardViewer.sortByFirstLetter()
         elif sender == self.sortByYear and self.albumCardViewer.sortMode != '发行年份':
             self.sortModeButton.setText('发行年份')
-            self.albumCardViewer.sortMode = '发行年份'
             self.albumCardViewer.sortByYear()
         elif sender == self.sortBySonger and self.albumCardViewer.sortMode != '歌手':
             self.sortModeButton.setText('歌手')
-            self.albumCardViewer.sortMode = '歌手'
             self.albumCardViewer.sortBySonger()
         # 改变排序方式时发送信号调整关联滚动条的滚动范围
         self.sortModeChanged.emit()
@@ -127,13 +124,12 @@ class AlbumTabInterface(QWidget):
         self.sortModeMenu.setDefaultAction(self.currentSortMode)
         self.sortModeMenu.exec(
             self.mapToGlobal(QPoint(self.sortModeButton.x(),
-                                    self.sortModeButton.y() - 37*self.sortModeNum_dict[self.currentSortMode.text()]-1)))
-
+                                    self.sortModeButton.y() - 37 * self.sortModeNum_dict[self.currentSortMode.text()] - 1)))
+                                    
     def __setQss(self):
         """ 设置层叠样式 """
         with open('resource\\css\\albumTabInterface.qss', 'r', encoding='utf-8') as f:
-            qss = f.read()
-            self.setStyleSheet(qss)
+            self.setStyleSheet(f.read())
 
     def resizeEvent(self, e):
         """ 调整大小时改变小部件大小 """

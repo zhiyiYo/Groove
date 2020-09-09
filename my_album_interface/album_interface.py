@@ -56,9 +56,9 @@ class AlbumInterface(QWidget):
         """ 更新窗口 """
         if albumInfo == self.albumInfo:
             return
+        self.albumInfoBar.updateWindow(albumInfo)
         self.albumInfo = albumInfo if albumInfo else {}
         self.songInfo_list = albumInfo.get('songInfo_list')
-        self.albumInfoBar.updateWindow(albumInfo)
         self.songListWidget.updateSongCards(
             self.albumInfo.get('songInfo_list'))
         self.songListWidget.resize(
@@ -139,6 +139,8 @@ class AlbumInterface(QWidget):
         """ 保存专辑信息 """
         newAlbumInfo_copy = deepcopy(newAlbumInfo)
         self.updateWindow(newAlbumInfo)
+        # 如果只更改了专辑封面需要直接刷新信息栏
+        self.albumInfoBar.updateWindow(albumInfo)
         self.__sortSongCardsByTrackNum()
         self.saveAlbumInfoSig.emit(oldAlbumInfo, newAlbumInfo_copy)
 

@@ -67,3 +67,9 @@ QScrollBar::add-page:vertical,
 QScrollBar::sub-page:vertical {
     background: none;
 }
+
+30.背景透明会导致透视变换黑边的出现
+
+31.处于省电模式下运行会卡顿
+
+32.paintEvent不会覆盖小部件

@@ -4,7 +4,7 @@ from PyQt5.QtCore import Qt, QPoint,pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QFont, QFontMetrics, QPixmap, QPalette
 from PyQt5.QtWidgets import QApplication, QLabel, QWidget
 
-from my_functions.get_dominant_color import getDominantColor
+from my_functions.get_dominant_color import DominantColor
 
 from .album_interface_buttons import BasicButton
 from .album_interface_menus import MoreActionsMenu,AddToMenu
@@ -18,6 +18,7 @@ class AlbumInfoBar(QWidget):
         super().__init__(parent)
         self.setAlbumInfo(albumInfo)
         self.backgroundColor = None
+        self.dominantColor=DominantColor()
         # 实例化小部件
         self.__createWidgets()
         # 初始化
@@ -164,10 +165,8 @@ class AlbumInfoBar(QWidget):
 
     def __setBackgroundColor(self):
         """ 设置背景颜色 """
-        self.backgroundColor = getDominantColor(
+        self.backgroundColor = self.dominantColor.getDominantColor(
             self.albumCoverPath, resType=tuple)
-        """ if self.backgroundColor == (103, 108, 136):
-            self.backgroundColor = (72, 75, 86) """
         r, g, b = self.backgroundColor
         palette = QPalette()
         palette.setColor(self.backgroundRole(), QColor(r, g, b))

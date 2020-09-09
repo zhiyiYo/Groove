@@ -1,16 +1,14 @@
 # coding:utf-8
 
 import os
-import sys
 
 from mutagen import File, MutagenError
 from PyQt5.QtCore import QEvent, QPoint, QRegExp, Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import (QBrush, QColor, QMouseEvent, QMovie, QPainter, QPen,
-                         QPixmap, QRegExpValidator)
+                         QPixmap, QRegExpValidator, QLinearGradient)
 from PyQt5.QtWidgets import (
     QApplication, QFileDialog, QGraphicsDropShadowEffect,
-    QGraphicsOpacityEffect, QLabel, QLineEdit, QPushButton, QScrollArea,
-    QWidget)
+    QGraphicsOpacityEffect, QLabel, QLineEdit, QScrollArea, QWidget)
 
 from my_functions.adjust_album_name import adjustAlbumName
 from my_functions.get_pic_suffix import getPicSuffix
@@ -19,6 +17,8 @@ from my_functions.write_album_cover import writeAlbumCover
 from my_widget.my_label import ErrorIcon, PerspectiveTransformLabel
 from my_widget.my_lineEdit import LineEdit
 from my_widget.my_scrollArea import ScrollArea
+from my_widget.perspective_button import PerspectivePushButton
+from my_widget.perspective_widget import PerspectiveWidget
 
 from .sub_panel_frame import SubPanelFrame
 
@@ -83,10 +83,8 @@ class SubAlbumInfoEditPanel(QWidget):
         self.scrollWidget = QWidget()
         self.editAlbumInfoLabel = QLabel('编辑专辑信息', self)
         # 上半部分
-        self.albumCover = PerspectiveTransformLabel(
+        self.albumCover = AlbumCoverWindow(
             self.cover_path, (170, 170), self.scrollWidget)
-        self.editAlbumCoverLabel = EditAlbumCoverLabel(
-            self.scrollWidget, self.albumCover)
         self.albumNameLineEdit = LineEdit(self.albumName, self.scrollWidget)
         self.albumSongerLineEdit = LineEdit(self.songer, self.scrollWidget)
         self.tconLineEdit = LineEdit(self.tcon, self.scrollWidget)
@@ -99,8 +97,8 @@ class SubAlbumInfoEditPanel(QWidget):
             songInfoWidget = SongInfoWidget(songInfo, self.scrollWidget)
             songInfoWidget.isTrackNumEmptySig.connect(self.__trackNumEmptySlot)
             self.songInfoWidget_list.append(songInfoWidget)
-        self.saveButton = QPushButton('保存', self)
-        self.cancelButton = QPushButton('取消', self)
+        self.saveButton = PerspectivePushButton('保存', self)
+        self.cancelButton = PerspectivePushButton('取消', self)
         # 创建gif
         """ self.loadingLabel = QLabel(self)
         self.movie = QMovie(
@@ -139,7 +137,6 @@ class SubAlbumInfoEditPanel(QWidget):
         self.editAlbumInfoLabel.move(30, 30)
         self.scrollArea.move(2, 62)
         self.albumCover.move(30, 13)
-        self.editAlbumCoverLabel.move(44, 150)
         self.albumNameLabel.move(225, 7)
         self.albumSongerLabel.move(578, 7)
         self.tconLabel.move(225, 77)
@@ -263,7 +260,7 @@ class SubAlbumInfoEditPanel(QWidget):
             except MutagenError:
                 self.__saveErrorSlot(songInfoWidget)
                 songInfoWidget.setSaveSongInfoErrorMsgHidden(False)
-                break 
+                break
         if not self.saveErrorHappened:
             self.saveAlbumCover()
             self.saveInfoSig.emit(self.albumInfo)
@@ -271,8 +268,8 @@ class SubAlbumInfoEditPanel(QWidget):
         self.saveErrorHappened = False
         # 保存失败时重新启用编辑框
         self.__setWidgetEnable(True)
-        #self.loadingLabel.hide()
-        #self.movie.stop()
+        # self.loadingLabel.hide()
+        # self.movie.stop()
 
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
@@ -293,7 +290,7 @@ class SubAlbumInfoEditPanel(QWidget):
                 return
             # 暂存图片地址并刷新图片
             self.newAlbumCoverPath = path
-            self.albumCover.setPicPath(path)
+            self.albumCover.setAlbumCover(path)
 
     def saveAlbumCover(self):
         """ 保存新专辑封面 """
@@ -331,7 +328,7 @@ class SubAlbumInfoEditPanel(QWidget):
 
     def __showLoadingGif(self):
         """ 显示正在加载动画 """
-        self.loadingLabel.resize(77,77)
+        self.loadingLabel.resize(77, 77)
         self.loadingLabel.move(int(self.width() / 2 - self.loadingLabel.width() / 2),
                                int(self.height() / 2 - self.loadingLabel.height() / 2))
         self.loadingLabel.raise_()
@@ -437,25 +434,58 @@ class SongInfoWidget(QWidget):
         self.trackNumLineEdit.setEnabled(isEnable)
 
 
-class EditAlbumCoverLabel(PerspectiveTransformLabel):
-    """ 专辑封面左下角的编辑图标 """
+class AlbumCoverWindow(PerspectiveWidget):
+    """ 显示专辑封面窗口 """
+    clicked = pyqtSignal()
 
-    def __init__(self, parent, brotherWidget):
-        super().__init__('resource\\images\\album_interface\\编辑信息.png', (20, 20), parent)
-        self.brotherWidget = brotherWidget
+    def __init__(self, picPath: str, picSize: tuple, parent=None):
+        super().__init__(parent)
+        self.__picPath = picPath
+        self.__picSize = picSize
+        # 实例化小部件
+        self.albumCoverLabel = QLabel(self)
+        self.albumCoverMask=AlbumCoverMask(self)
+        self.editAlbumCoverLabel = QLabel(self)
+        # 初始化小部件
+        self.__initWidget()
 
-    def mousePressEvent(self, e: QMouseEvent):
-        """ 转发鼠标点击事件给父级的兄弟部件 """
-        super().mousePressEvent(e)
-        e = QMouseEvent(QEvent.MouseButtonPress,
-                        QPoint(e.pos().x() + 14, e.pos().y() + 137),
-                        e.globalPos(),
-                        Qt.LeftButton,
-                        Qt.LeftButton,
-                        Qt.NoModifier)
-        QApplication.sendEvent(self.brotherWidget, e)
+    def __initWidget(self):
+        """ 初始化小部件 """
+        self.setFixedSize(*self.__picSize)
+        self.albumCoverLabel.setFixedSize(*self.__picSize)
+        self.setAlbumCover(self.__picPath)
+        # 必须将标签的背景设置为透明
+        self.editAlbumCoverLabel.setAttribute(Qt.WA_TranslucentBackground)
+        self.editAlbumCoverLabel.setPixmap(
+            QPixmap('resource\\images\\album_interface\\编辑信息.png'))
+        self.editAlbumCoverLabel.move(14, 137)
+
+    def setAlbumCover(self, picPath: str):
+        """ 更换专辑封面 """
+        self.__picPath = picPath
+        self.albumCoverLabel.setPixmap(QPixmap(picPath).scaled(
+            self.width(), self.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
     def mouseReleaseEvent(self, e):
-        """ 鼠标松开转发事件 """
+        """ 鼠标松开发送点击信号 """
         super().mouseReleaseEvent(e)
-        QApplication.sendEvent(self.brotherWidget, e)
+        self.clicked.emit()
+
+
+class AlbumCoverMask(QWidget):
+    """ 专辑封面渐变遮罩 """
+
+    def __init__(self,parent,size:tuple=(170,170)):
+        super().__init__(parent)
+        self.resize(*size)
+
+    def paintEvent(self, e):
+        """ 绘制遮罩和图标 """
+        painter = QPainter(self)
+        painter.setPen(Qt.NoPen)
+        # 绘制遮罩
+        gradientColor = QLinearGradient(0, self.height(), self.width(), 0)
+        gradientColor.setColorAt(0, QColor(0, 0, 0, 128))
+        gradientColor.setColorAt(1, QColor(0, 0, 0, 0))
+        painter.setBrush(QBrush(gradientColor))
+        painter.drawRect(self.rect())

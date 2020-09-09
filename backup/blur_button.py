@@ -41,13 +41,23 @@ class BlurButton(QToolButton):
         """ 设置磨砂效果 """
         if self.blurPicPath:
             # 裁剪下需要磨砂的部分
-            img = Image.open(self.blurPicPath).resize(
-                (200, 200))  # type:Image.Image
-            img = img.crop((self.posX, self.posY,
-                            self.width() + self.posX, self.height() + self.posY))
-            img = img.filter(GaussianBlur(self.blurRadius)
-                             ).point(lambda x: int(x*0.7))
-            self.blurPic = img.toqpixmap()
+            image = np.array(Image.open(self.blurPicPath).resize((200, 200)).crop(
+                (self.posX, self.posY, self.width()+self.posX, self.height()+self.posY)))
+            blurImageArray = image
+            # 对每一个颜色通道分别磨砂
+            channelNum = blurImageArray.shape[-1]
+            for i in range(channelNum):
+                blurImageArray[:, :, i] = gaussian_filter(
+                    image[:, :, i], self.blurRadius) * 0.75
+            # 将narray转换为QImage
+            height, width, bytesPerComponent = blurImageArray.shape
+            bytesPerLine = channelNum * width  # 每行的字节数
+            if channelNum == 4:
+                imageFormat = QImage.Format_RGBA8888
+            else:
+                imageFormat = QImage.Format_RGB888
+            self.blurPic = QPixmap.fromImage(
+                QImage(blurImageArray.data, width, height, bytesPerLine, imageFormat))
             self.update()
 
     def setBlurPic(self, blurPicPath, blurRadius=35):

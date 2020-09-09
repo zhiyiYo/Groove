@@ -5,9 +5,10 @@ import json
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QColor, QPainter, QPen, QPixmap
 from PyQt5.QtWidgets import (QFileDialog, QGraphicsDropShadowEffect, QLabel,
-                             QPushButton, QWidget)
+                             QWidget)
 
 from my_dialog_box.sub_panel_frame import SubPanelFrame
+from my_widget.perspective_button import PerspectivePushButton
 
 from .delete_song_folder_panel import DeleteSongFolderPanel
 from .folder_card import FolderCard
@@ -43,18 +44,18 @@ class SubSelectSongFolderPanel(QWidget):
         # 读入配置文件
         self.readConfig()
         # 创建小部件
-        self.createWidgets()
+        self.__createWidgets()
         # 初始化
-        self.initWidget()
-        self.initLayout()
-        self.setQss()
+        self.__initWidget()
+        self.__initLayout()
+        
 
-    def createWidgets(self):
+    def __createWidgets(self):
         """ 创建小部件 """
         self.addFolderTimer = QTimer(self)
         self.deleteFolderTimer = QTimer(self)
         self.addFolderCard = AddFolderCard(self)
-        self.completeButton = QPushButton('完成', self)
+        self.completeButton = PerspectivePushButton('完成', self)
         self.titleLabel = QLabel('从本地曲库创建个人"收藏"', self)
         self.folderCard_list = []
         if self.__config.get('selected-folders'):
@@ -65,7 +66,7 @@ class SubSelectSongFolderPanel(QWidget):
                 folderCard.clicked.connect(self.startDeleteFolderTimer)
                 self.folderCard_list.append(folderCard)
 
-    def initWidget(self):
+    def __initWidget(self):
         """ 初始化小部件 """
         self.setFixedWidth(440)
         self.setFixedHeight(324 + 100 * len(self.folderCard_list))
@@ -85,8 +86,9 @@ class SubSelectSongFolderPanel(QWidget):
         self.titleLabel.setObjectName('titleLabel')
         if hasattr(self, 'subTitleLabel'):
             self.subTitleLabel.setObjectName('subTitleLabel')
+        self.__setQss()
 
-    def initLayout(self):
+    def __initLayout(self):
         """ 初始化布局 """
         self.titleLabel.move(31, 31)
         self.addFolderCard.move(36, 120)
@@ -168,7 +170,7 @@ class SubSelectSongFolderPanel(QWidget):
         painter.setPen(pen)
         painter.drawRect(0, 0, self.width() - 1, self.height() - 1)
 
-    def setQss(self):
+    def __setQss(self):
         """ 设置层叠样式 """
         with open(r'resource\css\selectSongFolderPanel.qss',
                   encoding='utf-8') as f:

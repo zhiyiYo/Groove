@@ -3,23 +3,25 @@
 from copy import deepcopy
 
 from PyQt5.QtCore import QEvent, QPoint, Qt, pyqtSignal
-from PyQt5.QtGui import (QBitmap, QBrush, QColor, QContextMenuEvent, QIcon,
-                         QMoveEvent, QPainter, QPen, QPixmap, QFont, QFontMetrics)
+from PyQt5.QtGui import (QBrush, QColor, QContextMenuEvent, QFont,
+                         QFontMetrics, QIcon, QMoveEvent, QPainter, QPen,
+                         QPixmap)
 from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsOpacityEffect,
-                             QLabel, QVBoxLayout, QWidget, QCheckBox)
+                             QLabel, QVBoxLayout, QWidget)
 
+from my_dialog_box.album_info_edit_panel import AlbumInfoEditPanel
 from my_functions.auto_wrap import autoWrap
 from my_functions.get_pressed_pos import getPressedPos
 from my_functions.is_not_leave import isNotLeave
-from my_functions.perspective_transform import PerspectiveTransform
 from my_widget.blur_button import BlurButton
-from my_widget.my_label import ClickableLabel, PerspectiveTransformLabel
-from my_dialog_box.album_info_edit_panel import AlbumInfoEditPanel
+from my_widget.my_label import ClickableLabel
+from my_widget.perspective_widget import PerspectiveWidget
+
 from .album_card_context_menu import AlbumCardContextMenu
 from .check_box import CheckBox
 
 
-class AlbumCard(QWidget):
+class AlbumCard(PerspectiveWidget):
     """ 定义包含专辑歌手名的窗口 """
     playSignal = pyqtSignal(list)
     nextPlaySignal = pyqtSignal(list)
@@ -28,13 +30,14 @@ class AlbumCard(QWidget):
     saveAlbumInfoSig = pyqtSignal(dict, dict)
     updateAlbumInfoSig = pyqtSignal(dict, dict)
     checkedStateChanged = pyqtSignal(QWidget, bool)  # 发送 albumCard 和 isChecked
+    showBlurAlbumBackgroundSig = pyqtSignal(QPoint, str)  # 发送专辑卡全局坐标
+    hideBlurAlbumBackgroundSig = pyqtSignal()
 
-    def __init__(self, albumInfo: dict, parent=None, albumViewWidget=None):
+    def __init__(self, albumInfo: dict, parent):
         super().__init__(parent)
         self.albumInfo = albumInfo
         self.songInfo_list = self.albumInfo.get('songInfo_list')  # type:list
-        self.picPath = self.albumInfo.get('cover_path')
-        self.albumViewWidget = albumViewWidget
+        self.picPath = self.albumInfo.get('cover_path')           # type:str
         # 初始化标志位
         self.isChecked = False
         self.isInSelectionMode = False
@@ -43,10 +46,30 @@ class AlbumCard(QWidget):
         # 初始化
         self.__initWidget()
 
+    def __createWidgets(self):
+        """ 创建小部件 """
+        # 实例化专辑名和歌手名
+        self.albumNameLabel = ClickableLabel(self.albumInfo['album'], self)
+        self.songerNameLabel = ClickableLabel(self.albumInfo['songer'], self)
+        # 实例化封面和按钮
+        self.albumPic = QLabel(self)
+        self.playButton = BlurButton(
+            self, (37, 71), r'resource\images\album_tab_interface\播放按钮_70_70.png', self.picPath)
+        self.addToButton = BlurButton(
+            self, (109, 71), r'resource\images\album_tab_interface\添加到按钮_70_70.png', self.picPath)
+        # 创建复选框
+        self.checkBox = CheckBox(self, forwardTargetWidget=self.albumPic)
+        # 创建动画和窗口特效
+        self.checkBoxOpacityEffect = QGraphicsOpacityEffect(self)
+
     def __initWidget(self):
         """ 初始化小部件 """
         self.setFixedSize(210, 290)
         self.setAttribute(Qt.WA_StyledBackground)
+        self.albumPic.setFixedSize(200, 200)
+        self.albumPic.setPixmap(QPixmap(self.picPath).scaled(
+            200, 200, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
+        # 给小部件添加特效
         self.checkBox.setGraphicsEffect(self.checkBoxOpacityEffect)
         # 隐藏按钮
         self.playButton.hide()
@@ -76,32 +99,11 @@ class AlbumCard(QWidget):
         self.checkBox.hide()
         self.__adjustLabel()
 
-    def __createWidgets(self):
-        """ 创建小部件 """
-        # 实例化专辑名和歌手名
-        self.albumNameLabel = ClickableLabel(self.albumInfo['album'], self)
-        self.songerNameLabel = ClickableLabel(self.albumInfo['songer'], self)
-        # 实例化封面和按钮
-        self.albumPic = PerspectiveTransformLabel(
-            self.picPath, (200, 200), self)
-        self.playButton = BlurButton(
-            self, (37, 71), r'resource\images\album_tab_interface\播放按钮_70_70.png', self.picPath, blurRadius=29)
-        self.addToButton = BlurButton(
-            self, (109, 71), r'resource\images\album_tab_interface\添加到按钮_70_70.png', self.picPath, blurRadius=29)
-        # 创建复选框
-        self.checkBox = CheckBox(self, forwardTargetWidget=self.albumPic)
-        self.checkBoxOpacityEffect=QGraphicsOpacityEffect(self)
-
     def enterEvent(self, e):
         """ 鼠标进入窗口时显示磨砂背景和按钮 """
         # 显示磨砂背景
-        if self.albumViewWidget:
-            self.blurBackground = self.albumViewWidget.albumBlurBackground
-            # 需要补上groupBox()的y()
-            offsetY = 0 if self.parent() == self.albumViewWidget else self.parent().y()
-            self.blurBackground.move(self.x() - 25, self.y() + 8 + offsetY)
-            self.blurBackground.subWindow.setPic(self.picPath)
-            self.blurBackground.show()
+        albumCardPos = self.mapToGlobal(QPoint(0, 0))  # type:QPoint
+        self.showBlurAlbumBackgroundSig.emit(albumCardPos, self.picPath)
         # 处于选择模式下按钮不可见
         if not self.isInSelectionMode:
             self.addToButton.show()
@@ -109,9 +111,8 @@ class AlbumCard(QWidget):
 
     def leaveEvent(self, e):
         """ 鼠标离开时隐藏磨砂背景和按钮 """
-        if self.parent() and hasattr(self, 'blurBackground'):
-            # 隐藏磨砂背景
-            self.blurBackground.hide()
+        # 隐藏磨砂背景
+        self.hideBlurAlbumBackgroundSig.emit()
         self.addToButton.hide()
         self.playButton.hide()
 
@@ -169,7 +170,9 @@ class AlbumCard(QWidget):
         """ 更新专辑卡窗口信息 """
         self.albumInfo = newAlbumInfo
         self.songInfo_list = self.albumInfo['songInfo_list']
-        self.albumPic.setPicPath(newAlbumInfo['cover_path'])
+        self.picPath = newAlbumInfo['cover_path']
+        self.albumPic.setPixmap(QPixmap(self.picPath).scaled(
+            200, 200, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
         self.albumNameLabel.setText(newAlbumInfo['album'])
         self.songerNameLabel.setText(newAlbumInfo['songer'])
         self.playButton.setBlurPic(newAlbumInfo['cover_path'], 26)
@@ -206,7 +209,7 @@ class AlbumCard(QWidget):
         """ 复选框选中状态改变对应的槽函数 """
         self.isChecked = self.checkBox.isChecked()
         # 发送信号
-        self.checkedStateChanged.emit(self,self.isChecked)
+        self.checkedStateChanged.emit(self, self.isChecked)
         # 更新属性和背景色
         self.setProperty('isChecked', str(self.isChecked))
         self.albumNameLabel.setProperty('isChecked', str(self.isChecked))
@@ -231,4 +234,3 @@ class AlbumCard(QWidget):
         """ 右击菜单选择动作对应的槽函数 """
         self.setSelectionModeOpen(True)
         self.setChecked(True)
-
