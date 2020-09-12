@@ -41,7 +41,6 @@ class ClickableLabel(QLabel):
 
     def enterEvent(self, e: QEnterEvent):
         """ 如果有设置提示条的话就显示提示条 """
-        # print('鼠标进入标签事件触发')
         if self.customToolTip:
             self.customToolTip.setText(self.customToolTipText)
             # 有折叠发生时需要再加一个偏移量
@@ -77,7 +76,6 @@ class ErrorIcon(QLabel):
 
     def enterEvent(self, e):
         """ 鼠标进入时显示提示条 """
-        # print('鼠标进入标签')
         if self.customToolTip:
             self.customToolTip.setText(self.customToolTipText)
             # 有折叠发生时需要再加一个偏移量

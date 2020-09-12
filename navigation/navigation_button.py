@@ -22,7 +22,7 @@ class NavigationButton(QPushButton):
     def initWidget(self):
         """ 初始化小部件 """
         # 设置按钮的图标
-        self.setFixedSize(self.buttonSizeTuple[0], self.buttonSizeTuple[1])
+        self.setFixedSize(*self.buttonSizeTuple)
         # 设置属性防止qss不起作用
         self.setAttribute(Qt.WA_StyledBackground | Qt.WA_TranslucentBackground)
         # 初始化标志位
@@ -57,7 +57,7 @@ class NavigationButton(QPushButton):
         painter = QPainter(self)
         painter.setPen(Qt.NoPen)
         if self.isEnter:
-            brush = QBrush(QColor(201, 191, 189, 80))
+            brush = QBrush(QColor(0,0,0,20))
             painter.setBrush(brush)
             painter.drawRect(self.rect())
 

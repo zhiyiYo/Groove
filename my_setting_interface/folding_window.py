@@ -54,15 +54,13 @@ class FoldingWindow(QWidget):
             painter.setBrush(brush)
             painter.drawRoundedRect(self.rect(), 5, 5)
         else:
-            pen = QPen(QColor(204, 204, 204))
-            pen.setWidth(3)
-            painter.setPen(pen)
-            painter.drawRect(self.rect())
+            painter.setPen(QPen(QColor(204, 204, 204), 2))
+            painter.drawRect(1, 1, self.width() - 2, self.height() - 2)
             painter.setPen(Qt.NoPen)
             if not self.pressedPos:
                 brush.setColor(QColor(230, 230, 230))
                 painter.setBrush(brush)
-                painter.drawRect(self.rect())
+                painter.drawRect(2, 2, self.width() - 4, self.height() - 4)
             else:
                 brush.setColor(QColor(153, 153, 153))
                 painter.setBrush(brush)
@@ -147,4 +145,3 @@ class FoldingWindow(QWidget):
                                self.height() - 1)
                     ]
                     painter.drawPolygon(QPolygon(points), 4)
-

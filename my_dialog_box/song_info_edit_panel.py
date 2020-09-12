@@ -3,7 +3,7 @@
 import json
 
 from mutagen import File, MutagenError
-from PyQt5.QtCore import QEvent, QRegExp, Qt
+from PyQt5.QtCore import QEvent, QRegExp, Qt, pyqtSignal
 from PyQt5.QtGui import (QColor, QContextMenuEvent, QFont, QPainter, QPen,
                          QPixmap, QRegExpValidator)
 from PyQt5.QtWidgets import (QApplication, QDialog, QGraphicsDropShadowEffect,
@@ -21,6 +21,8 @@ from .sub_panel_frame import SubPanelFrame
 
 class SongInfoEditPanel(SubPanelFrame):
     """ 歌曲信息编辑面板 """
+    saveInfoSig = pyqtSignal()
+
     def __init__(self, songInfo: dict, parent=None):
         super().__init__(parent)
         # 实例化子属性面板
@@ -32,19 +34,24 @@ class SongInfoEditPanel(SubPanelFrame):
     def initWidget(self):
         """ 初始化小部件 """
         # deleteLater才能真正释放内存
-        self.subSongInfoEditPanel.cancelButton.clicked.connect(self.deleteLater)
+        self.subSongInfoEditPanel.cancelButton.clicked.connect(
+            self.deleteLater)
+        self.subSongInfoEditPanel.saveInfoSig.connect(
+            self.saveInfoSig)
         self.showMask()
 
     def initLayout(self):
         """ 初始化布局 """
-        self.subSongInfoEditPanel.move(int(self.width() / 2 - self.subSongInfoEditPanel.width() / 2),
-                                   int(self.height() / 2 - self.subSongInfoEditPanel.height() / 2))
+        self.subSongInfoEditPanel.move(
+            int(self.width() / 2 - self.subSongInfoEditPanel.width() / 2),
+            int(self.height() / 2 - self.subSongInfoEditPanel.height() / 2))
 
 
 class SubSongInfoEditPanel(QWidget):
     """ 歌曲信息编辑面板的子窗口 """
+    saveInfoSig = pyqtSignal()
 
-    def __init__(self, songInfo:dict, parent=None):
+    def __init__(self, songInfo: dict, parent):
         super().__init__(parent)
 
         self.songInfo = songInfo
@@ -115,8 +122,6 @@ class SubSongInfoEditPanel(QWidget):
                               self.trackNumEditLine, self.diskEditLine, self.albumNameEditLine,
                               self.albumSongerEditLine, self.tconEditLine, self.yearEditLine]
 
-
-
     def initWidget(self):
         """ 初始化小部件的属性 """
         self.resize(932, 652)
@@ -174,8 +179,6 @@ class SubSongInfoEditPanel(QWidget):
         self.songPath.setObjectName('songPath')
         self.bottomErrorLabel.setObjectName('bottomErrorLabel')
 
-        # 设置提示条
-        #self.setWidgetsToolTip()
 
     def initLayout(self):
         """ 初始化小部件的排版 """
@@ -186,15 +189,15 @@ class SubSongInfoEditPanel(QWidget):
         self.cancelButton.move(736, 595)
         label_top_y = 95
 
-        for i,(label_left, label_right) in enumerate(zip(self.leftLabel_list, self.rightLabel_list)):
+        for i, (label_left, label_right) in enumerate(zip(self.leftLabel_list, self.rightLabel_list)):
             label_left.setObjectName('infoTypeLabel')
             label_right.setObjectName('infoTypeLabel')
             label_left.move(30, label_top_y + i * 87)
             label_right.move(494, label_top_y + i*87)
-            
+
         editLine_top_y = 127
-        
-        for i,(editLine_left, editLine_right) in enumerate(zip(self.leftEditLine_list, self.rightEditLine_list)):
+
+        for i, (editLine_left, editLine_right) in enumerate(zip(self.leftEditLine_list, self.rightEditLine_list)):
             editLine_left.move(30, editLine_top_y + i * 87)
             editLine_right.move(494, editLine_top_y + i * 87)
 
@@ -203,12 +206,12 @@ class SubSongInfoEditPanel(QWidget):
         if isWordWrap:
             self.songPath.setText(newSongPath)
             self.resize(self.width(), self.height() + 25)
-            self.cancelButton.move(self.cancelButton.x(), self.cancelButton.y() + 25)
+            self.cancelButton.move(self.cancelButton.x(),
+                                   self.cancelButton.y() + 25)
             self.saveButton.move(self.saveButton.x(), self.saveButton.y() + 25)
         # 调整报错标签的位置
         self.bottomErrorIcon.move(30, self.height() - 110)
         self.bottomErrorLabel.move(55, self.height() - 112)
-        
 
     def setWidgetsToolTip(self):
         """ 设置小部件的提示条 """
@@ -252,12 +255,10 @@ class SubSongInfoEditPanel(QWidget):
         except MutagenError:
             self.bottomErrorLabel.setText('遇到未知错误，请稍后再试')
             self.bottomErrorLabel.show()
-            self.bottomErrorIcon.show() 
+            self.bottomErrorIcon.show()
         else:
-            if not self.parent():
-                self.deleteLater()
-            else:
-                self.parent().deleteLater()
+            self.saveInfoSig.emit()
+            self.parent().deleteLater()
 
     def checkTrackEditLine(self):
         """ 检查曲目输入框的内容是否为空 """
@@ -267,7 +268,7 @@ class SubSongInfoEditPanel(QWidget):
             self.emptyTrackErrorIcon.show()
             self.bottomErrorIcon.show()
             self.saveButton.setEnabled(False)
-            self.trackNumEditLine.setProperty('hasText','false')
+            self.trackNumEditLine.setProperty('hasText', 'false')
         else:
             self.trackNumEditLine.setProperty('hasText', 'true')
             self.bottomErrorLabel.hide()

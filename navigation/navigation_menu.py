@@ -160,7 +160,7 @@ class NavigationMenu(QWidget):
     def paintEvent(self, e):
         """ 绘制分隔符 """
         painter = QPainter(self)
-        pen = QPen(QColor(160, 160, 160, 240))
+        pen = QPen(QColor(0,0,0,30))
         painter.setPen(pen)
         # 前两个参数为第一个坐标，后两个为第二个坐标
         painter.drawLine(15, 346, self.width() - 15, 346)

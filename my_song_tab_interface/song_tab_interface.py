@@ -5,6 +5,7 @@ from time import time
 from PyQt5.QtCore import QPoint, Qt, pyqtSignal
 from PyQt5.QtWidgets import QAction, QLabel, QWidget
 
+from get_info.get_song_info import SongInfo
 from my_widget.my_button import RandomPlayButton, SortModeButton
 from my_widget.my_menu import AeroMenu
 
@@ -28,7 +29,8 @@ class SongTabInterface(QWidget):
             slot=self.randomPlay, parent=self)
         # 实例化歌曲列表视图
         t1 = time()
-        self.songCardListWidget = SongCardListWidget(target_path_list, self)
+        songInfo=SongInfo(target_path_list)
+        self.songCardListWidget = SongCardListWidget(songInfo.songInfo_list, self)
         t2 = time()
         print('创建歌曲卡列表视图所花时间：'.ljust(16), t2 - t1)
         # 将动作添加到菜单中

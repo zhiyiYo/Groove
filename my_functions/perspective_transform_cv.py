@@ -51,7 +51,7 @@ class BasicPerspectiveTransform():
         # 执行变换
         self.dst = cv.warpPerspective(self.src, perspectiveMatrix, (
             imWidth, imHeight), borderMode=borderMode, borderValue=borderValue)
-
+        """ cv.imwrite('image1.png') """
         # 将ndarray转换为QPixmap，只有在创建了gui的情况下才能成功转换
         if isGetQPixmap:
             height, width, bytesPerComponent = self.dst.shape
@@ -100,7 +100,6 @@ class PixmapPerspectiveTransForm(BasicPerspectiveTransform):
 
     def __init__(self, pixmap: QPixmap=None):
         super().__init__()
-        self.pressedPos = None
         self.setPixmap(pixmap)
 
     def setPixmap(self, pixmap: QPixmap):

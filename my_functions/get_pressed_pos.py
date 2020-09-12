@@ -1,23 +1,34 @@
 from PyQt5.QtGui import QMouseEvent
 
-def getPressedPos(widget, e:QMouseEvent):
+
+def getPressedPos(widget, e: QMouseEvent):
     """ 检测鼠标并返回按下的方位 """
-    if 0 <= e.x() <= int(widget.width() / 3) and 0 <= e.y() <= int(widget.height() / 3):
+    pressedPos = None
+    width = widget.width()
+    height = widget.height()
+    leftX = 0 <= e.x() <= int(width / 3)
+    midX = int(width / 3) < e.x() <= int(width * 2 / 3)
+    rightX = int(width * 2 / 3) < e.x() <= width
+    topY = 0 <= e.y() <= int(height / 3)
+    midY = int(height / 3) < e.y() <= int(height * 2 / 3)
+    bottomY = int(height * 2 / 3) < e.y() <= height
+    # 获取点击位置
+    if leftX and topY:
         pressedPos = 'left-top'
-    elif int(widget.width() / 3) < e.x() <= int(widget.width() * 2 / 3) and 0 <= e.y() <= int(widget.height() / 3):
+    elif midX and topY:
         pressedPos = 'top'
-    elif int(widget.width() * 2 / 3) < e.x() <= widget.width() and 0 <= e.y() <= int(widget.height() / 3):
+    elif rightX and topY:
         pressedPos = 'right-top'
-    elif 0 <= e.x() <= int(widget.width() / 3) and int(widget.height() / 3) < e.y() <= int(widget.height() * 2 / 3):
+    elif leftX and midY:
         pressedPos = 'left'
-    elif int(widget.width() / 3) < e.x() <= int(widget.width()*2 / 3) and int(widget.height() / 3) < e.y() <= int(widget.height() * 2 / 3):
+    elif midX and midY:
         pressedPos = 'center'
-    elif int(widget.width()*2 / 3) < e.x() <= widget.width() and int(widget.height() / 3) < e.y() <= int(widget.height() * 2 / 3):
+    elif rightX and midY:
         pressedPos = 'right'
-    elif 0 <= e.x() <= int(widget.width() / 3) and int(widget.height()*2 / 3) < e.y() <= widget.height():
+    elif leftX and bottomY:
         pressedPos = 'left-bottom'
-    elif int(widget.width() / 3) < e.x() <= int(widget.width()*2 / 3) and int(widget.height()*2 / 3) < e.y() <= widget.height():
+    elif midX and bottomY:
         pressedPos = 'bottom'
-    elif int(widget.width() * 2 / 3) < e.x() <= widget.width() and int(widget.height() * 2 / 3) < e.y() <= widget.height():
+    elif rightX and bottomY:
         pressedPos = 'right-bottom'
     return pressedPos

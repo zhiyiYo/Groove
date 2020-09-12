@@ -2,7 +2,7 @@
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QHBoxLayout, QWidget
-from .play_bar_buttons import VolumeButton, SmallPlayModeButton, MoreActionsButton
+from .play_bar_buttons import VolumeButton, BasicButton
 
 from my_widget.my_slider import Slider
 
@@ -15,8 +15,10 @@ class RightWidgetGroup(QWidget):
         # 创建小部件
         self.volumeButton = VolumeButton(self)
         self.volumeSlider = Slider(Qt.Horizontal, self)
-        self.smallPlayModeButton = SmallPlayModeButton(self)
-        self.moreActionsButton = MoreActionsButton(self)
+        self.smallPlayModeButton = BasicButton(
+            r'resource\images\playBar\最小播放模式_45_45.png', self)
+        self.moreActionsButton = BasicButton(
+            r'resource\images\playBar\更多操作_45_45.png',self)
         self.widget_list = [self.volumeButton, self.volumeSlider,
                             self.smallPlayModeButton, self.moreActionsButton]
         # 创建布局

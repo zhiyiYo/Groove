@@ -39,7 +39,6 @@ class GetAlbumCover():
         albumName_set = set([songInfo.get('album')[-1] for songInfo in self.songInfo.songInfo_list])
         albumFolder_set = set(os.listdir(self.album_cover_folder))
         if albumFolder_set == albumName_set:
-            print('不扫描封面')
             return
         diff_list_1 = list(albumName_set - albumFolder_set)     # 计算差集
         diff_list_2 = list(albumFolder_set - albumName_set)

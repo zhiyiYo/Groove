@@ -29,56 +29,54 @@ class PerspectivePushButton(QPushButton):
         # 获取鼠标点击位置
         self.__pressedPos = getPressedPos(self, e)
         # 根据鼠标点击位置的不同设置背景封面的透视变换
-        if self.__perspectiveTrans.pressedPos != self.__pressedPos:
-            if self.__pressedPos == 'left':
-                self.__perspectiveTrans.setDstPoints(
-                    [3, 1], [self.__perspectiveTrans.width - 2, 1],
-                    [3, self.__perspectiveTrans.height - 2],
-                    [self.__perspectiveTrans.width - 2, self.__perspectiveTrans.height - 1])
-            elif self.__pressedPos == 'left-top':
-                self.__perspectiveTrans.setDstPoints(
-                    [3, 2], [self.__perspectiveTrans.width - 1, 1],
-                    [1, self.__perspectiveTrans.height - 2],
-                    [self.__perspectiveTrans.width - 2, self.__perspectiveTrans.height - 1])
-            elif self.__pressedPos == 'left-bottom':
-                self.__perspectiveTrans.setDstPoints(
-                    [3, 1], [self.__perspectiveTrans.width - 2, 1],
-                    [3, self.__perspectiveTrans.height - 3],
-                    [self.__perspectiveTrans.width - 1, self.__perspectiveTrans.height - 1])
-            elif self.__pressedPos == 'top':
-                self.__perspectiveTrans.setDstPoints(
-                    [2, 2], [self.__perspectiveTrans.width - 3, 2],
-                    [1, self.__perspectiveTrans.height - 2],
-                    [self.__perspectiveTrans.width - 2, self.__perspectiveTrans.height - 2])
-            elif self.__pressedPos == 'center':
-                self.__perspectiveTrans.setDstPoints(
-                    [2, 2], [self.__perspectiveTrans.width - 3, 2],
-                    [2, self.__perspectiveTrans.height - 3],
-                    [self.__perspectiveTrans.width - 3, self.__perspectiveTrans.height - 3])
-            elif self.__pressedPos == 'bottom':
-                self.__perspectiveTrans.setDstPoints(
-                    [1, 1], [self.__perspectiveTrans.width - 2, 1],
-                    [3, self.__perspectiveTrans.height - 3],
-                    [self.__perspectiveTrans.width - 4, self.__perspectiveTrans.height - 3])
-            elif self.__pressedPos == 'right-top':
-                self.__perspectiveTrans.setDstPoints(
-                    [0, 0], [self.__perspectiveTrans.width - 4, 1],
-                    [1, self.__perspectiveTrans.height - 1],
-                    [self.__perspectiveTrans.width - 2, self.__perspectiveTrans.height - 2])
-            elif self.__pressedPos == 'right':
-                self.__perspectiveTrans.setDstPoints(
-                    [1, 0], [self.__perspectiveTrans.width - 4, 1],
-                    [1, self.__perspectiveTrans.height - 1],
-                    [self.__perspectiveTrans.width - 4, self.__perspectiveTrans.height - 2])
-            elif self.__pressedPos == 'right-bottom':
-                self.__perspectiveTrans.setDstPoints(
-                    [1, 1], [self.__perspectiveTrans.width - 2, 1],
-                    [0, self.__perspectiveTrans.height - 1],
-                    [self.__perspectiveTrans.width - 4, self.__perspectiveTrans.height - 3])
-            self.__pressedPix = self.__perspectiveTrans.getPerspectiveTransform(
-                self.__perspectiveTrans.width, self.__perspectiveTrans.height, isGetQPixmap=True).scaled(
-                    self.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        self.__perspectiveTrans.pressedPos = self.__pressedPos
+        if self.__pressedPos == 'left':
+            self.__perspectiveTrans.setDstPoints(
+                [3, 1], [self.__perspectiveTrans.width - 2, 1],
+                [3, self.__perspectiveTrans.height - 2],
+                [self.__perspectiveTrans.width - 2, self.__perspectiveTrans.height - 1])
+        elif self.__pressedPos == 'left-top':
+            self.__perspectiveTrans.setDstPoints(
+                [3, 2], [self.__perspectiveTrans.width - 1, 1],
+                [1, self.__perspectiveTrans.height - 2],
+                [self.__perspectiveTrans.width - 2, self.__perspectiveTrans.height - 1])
+        elif self.__pressedPos == 'left-bottom':
+            self.__perspectiveTrans.setDstPoints(
+                [3, 1], [self.__perspectiveTrans.width - 2, 1],
+                [3, self.__perspectiveTrans.height - 3],
+                [self.__perspectiveTrans.width - 1, self.__perspectiveTrans.height - 1])
+        elif self.__pressedPos == 'top':
+            self.__perspectiveTrans.setDstPoints(
+                [2, 2], [self.__perspectiveTrans.width - 3, 2],
+                [1, self.__perspectiveTrans.height - 2],
+                [self.__perspectiveTrans.width - 2, self.__perspectiveTrans.height - 2])
+        elif self.__pressedPos == 'center':
+            self.__perspectiveTrans.setDstPoints(
+                [2, 2], [self.__perspectiveTrans.width - 3, 2],
+                [2, self.__perspectiveTrans.height - 3],
+                [self.__perspectiveTrans.width - 3, self.__perspectiveTrans.height - 3])
+        elif self.__pressedPos == 'bottom':
+            self.__perspectiveTrans.setDstPoints(
+                [1, 1], [self.__perspectiveTrans.width - 2, 1],
+                [3, self.__perspectiveTrans.height - 3],
+                [self.__perspectiveTrans.width - 4, self.__perspectiveTrans.height - 3])
+        elif self.__pressedPos == 'right-top':
+            self.__perspectiveTrans.setDstPoints(
+                [0, 0], [self.__perspectiveTrans.width - 4, 1],
+                [1, self.__perspectiveTrans.height - 1],
+                [self.__perspectiveTrans.width - 2, self.__perspectiveTrans.height - 2])
+        elif self.__pressedPos == 'right':
+            self.__perspectiveTrans.setDstPoints(
+                [1, 0], [self.__perspectiveTrans.width - 4, 1],
+                [1, self.__perspectiveTrans.height - 1],
+                [self.__perspectiveTrans.width - 4, self.__perspectiveTrans.height - 2])
+        elif self.__pressedPos == 'right-bottom':
+            self.__perspectiveTrans.setDstPoints(
+                [1, 1], [self.__perspectiveTrans.width - 2, 1],
+                [0, self.__perspectiveTrans.height - 1],
+                [self.__perspectiveTrans.width - 4, self.__perspectiveTrans.height - 3])
+        self.__pressedPix = self.__perspectiveTrans.getPerspectiveTransform(
+            self.__perspectiveTrans.width, self.__perspectiveTrans.height, isGetQPixmap=True).scaled(
+                self.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
         self.update()
 
     def mouseReleaseEvent(self, e):

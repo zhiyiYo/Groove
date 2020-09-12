@@ -52,6 +52,7 @@ class SongCard(QWidget):
         self.addToButton = self.songNameCard.addToButton
         self.__label_list = [self.songerLabel, self.albumLabel,
                              self.yearLabel, self.tconLabel, self.durationLabel]
+        self.__clickableLabel_list = [self.songerLabel, self.albumLabel]
         # 创建动画
         self.__createAnimations()
         # 初始化
@@ -63,8 +64,7 @@ class SongCard(QWidget):
         self.resize(1154, 60)
         self.resize(1154, 60)
         self.setFixedHeight(60)
-        self.albumLabel.setCursor(Qt.PointingHandCursor)
-        self.songerLabel.setCursor(Qt.PointingHandCursor)
+        self.setClickableLabelCursor(Qt.PointingHandCursor)
         self.setAttribute(Qt.WA_StyledBackground)
         # 分配ID和属性
         self.albumLabel.setObjectName('clickableLabel')
@@ -321,6 +321,11 @@ class SongCard(QWidget):
         # 设置按钮和复选框的可见性
         self.songNameCard.checkBox.setHidden(not isOpenSelectionMode)
         self.songNameCard.buttonGroup.setHidden(True)
+
+    def setClickableLabelCursor(self, cursor):
+        """ 设置可点击标签的光标样式 """
+        for label in self.__clickableLabel_list:
+            label.setCursor(cursor)
 
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """

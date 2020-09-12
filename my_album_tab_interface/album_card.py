@@ -151,11 +151,6 @@ class AlbumCard(PerspectiveWidget):
         self.songerNameLabel.move(
             5, self.albumNameLabel.y() + self.albumNameLabel.height()-4)
 
-    def __setQss(self):
-        """ 设置层叠样式 """
-        with open('resource\\css\\albumCard.qss', 'r', encoding='utf-8') as f:
-            self.setStyleSheet(f.read())
-
     def mouseReleaseEvent(self, e):
         """ 鼠标松开发送切换到专辑界面信号或者取反选中状态 """
         super().mouseReleaseEvent(e)

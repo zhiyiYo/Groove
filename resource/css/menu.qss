@@ -9,7 +9,7 @@ QMenu {
     border-radius: 5px;
 }
 
-QMenu#songCardContextMenu{
+QMenu#songCardContextMenu {
     width: 128px;
 }
 
@@ -25,14 +25,14 @@ QMenu::right-arrow {
 QMenu::separator {
     height: 1px;
     width: 140px;
-    background: rgba(138,138,138,0.8);
+    background: rgba(0,0,0,104);
     margin-right: 13px;
     margin-top: 5px;
     margin-bottom: 5px;
     margin-left: 13;
 }
 
-QMenu::item {  
+QMenu::item {
     padding: 7px 20px 7px 13px;
     /*background-color: transparent;*/
 }
@@ -40,7 +40,7 @@ QMenu::item {
 QMenu::item:selected {
     border-width: 1px;
     border-color: rgb(212, 212, 212);
-    background: rgb(218, 218, 218);
+    background: rgba(0,0,0,25);
     color: black;
 }
 
@@ -62,7 +62,6 @@ QMenu#roundBorderMenu::item {
 
 QMenu#addToMenu {
     padding: 5px 0px 8px 0px;
-    /*border: 1px solid rgb(204, 204, 204);*/
 }
 
 QMenu#addToMenu::item,
@@ -74,10 +73,13 @@ QMenu#blackAddToMenu::item {
 
 }
 
+QMenu#addToMenu::item:selected{
+    background-color: rgba(0, 0, 0, 25);
+}
+
 QMenu#addToMenu::separator {
     height: 1px;
     width: 140px;
-    /*background: rgba(138,138,138,0.8);*/
     margin-right: 14px;
     margin-left: 14px;
 }
@@ -115,7 +117,7 @@ QMenu#sortModeMenu::item {
 }
 
 QMenu#sortModeMenu::item:default {
-    background-color: rgb(168,239,255);
+    background-color: rgb(168, 239, 255);
 }
 
 QMenu#sortModeMenu::item:selected {
@@ -123,13 +125,13 @@ QMenu#sortModeMenu::item:selected {
 }
 
 QMenu#sortModeMenu::item:default:selected {
-    background: rgb(136,233,255);
+    background: rgb(136, 233, 255);
 }
 
 
 /*单行输入框右击菜单样式*/
 
-QMenu#lineEditMenu{
+QMenu#lineEditMenu {
     /*width: 182px;*/
     width: 1px;
     height: 1px;
@@ -137,12 +139,13 @@ QMenu#lineEditMenu{
     border-radius: 0px;
     padding: 5px 0px 5px 0px;
 }
-QMenu#lineEditMenu[hasCancelAct='true']{
+
+QMenu#lineEditMenu[hasCancelAct='true'] {
     /*width: 213px;*/
     width: 1px;
 }
 
-QMenu#lineEditMenu::icon{
+QMenu#lineEditMenu::icon {
     position: absolute;
     left: 16px;
 }
@@ -153,7 +156,7 @@ QMenu#lineEditMenu::item {
 
 
 /*主界面更多操作菜单样式*/
-QMenu#moreActionsMenu{
+QMenu#moreActionsMenu {
     background-color: rgba(242, 242, 242, 0.6);
     border-radius: 0px;
     width: 1px;
@@ -180,8 +183,8 @@ QMenu#playingInterfaceMenu::right-arrow {
 }
 
 QMenu#playingInterfaceMenu,
-QMenu#blackAddToMenu{
-    color:white;
+QMenu#blackAddToMenu {
+    color: white;
     background-color: rgb(31, 31, 31);
     border: 1px solid rgb(20, 20, 20);
     border-radius: 5px;
@@ -189,11 +192,11 @@ QMenu#blackAddToMenu{
     font: 18px "Microsoft YaHei";
 }
 
-QMenu#playingInterfaceMenu{
+QMenu#playingInterfaceMenu {
     width: 130px;
 }
 
-QMenu#blackAddToMenu{
+QMenu#blackAddToMenu {
     width: 170px;
 }
 
@@ -207,14 +210,14 @@ QMenu#blackAddToMenu::item {
     color: white;
 }
 
-QMenu#playingInterfaceMenu::item:disabled{
-    color: rgb(120,120,120);
-    background:transparent;
+QMenu#playingInterfaceMenu::item:disabled {
+    color: rgb(120, 120, 120);
+    background: transparent;
 }
 
-QMenu#playingInterfaceMenu::item:disabled:selected{
+QMenu#playingInterfaceMenu::item:disabled:selected {
     color: rgb(120, 120, 120);
-    background:transparent;
+    background: transparent;
 }
 
 QMenu#playingInterfaceMenu::item:disabled:pressed {
@@ -229,8 +232,8 @@ QMenu#blackAddToMenu::item:selected {
 }
 
 QMenu#playingInterfaceMenu::item:pressed,
-QMenu#blackAddToMenu::item:pressed{
-    background: rgb(77,77,77);
+QMenu#blackAddToMenu::item:pressed {
+    background: rgb(77, 77, 77);
     color: white;
 }
 
@@ -240,8 +243,8 @@ QMenu#blackAddToMenu {
 
 
 /*亚克力菜单样式*/
-QMenu[effect='acrylic']{
-    background:transparent;
+QMenu[effect='acrylic'] {
+    background: transparent;
     border: 0px;
 }
 
@@ -253,18 +256,22 @@ QMenu#acrylicMenu::item {
 QMenu#acrylicMenu::item:selected {
     border-width: 1px;
     border-color: rgb(212, 212, 212);
-    background: rgb(218, 218, 218);
+    background-color: rgba(0, 0, 0, 25);
     color: black;
 }
 
-QMenu#albumCardContextMenu::item{
+QMenu#albumCardContextMenu::item {
     padding: 7px 20px 7px 14px;
+}
+
+QMenu#albumCardContextMenu::item:selected {
+    background-color: rgba(0, 0, 0, 25);
 }
 
 QMenu#albumCardContextMenu::separator {
     height: 1px;
     width: 142px;
-    background: rgba(138, 138, 138, 0.8);
+    background: rgba(0,0,0,104);
     margin-right: 15px;
     margin-top: 5px;
     margin-bottom: 5px;
@@ -276,7 +283,7 @@ QMenu#albumCardContextMenu::separator {
 QMenu#albumInterfaceMoreActionMenu,
 QMenu#albumInterfaceAddToMenu {
     width: 1px;
-    background-color: rgb(214,215,219);
+    background-color: rgb(214, 215, 219);
     border: 1px solid rgb(183, 184, 188);
     border-radius: 0px;
 }
@@ -286,21 +293,19 @@ QMenu#albumInterfaceMoreActionMenu::item {
 }
 
 QMenu#albumInterfaceMoreActionMenu::item:selected,
-QMenu#albumInterfaceAddToMenu::item:selected{
-    /* border-width: 1px;
-    border-color: rgb(212, 212, 212); */
-    background: rgb(189,196,201);
+QMenu#albumInterfaceAddToMenu::item:selected {
+    background: rgba(0,0,0,25);
     color: black;
 }
 
-QMenu#albumInterfaceAddToMenu::item:selected{
+QMenu#albumInterfaceAddToMenu::item:selected {
     height: 38px;
 }
 
 QMenu#albumInterfaceAddToMenu::separator {
     height: 1px;
     width: 140px;
-    background: rgba(138, 138, 138, 0.8);
+    background: rgba(0,0,0,104);
     margin-right: 15px;
     margin-top: 6px;
     margin-bottom: 6px;

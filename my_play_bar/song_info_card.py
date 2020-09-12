@@ -26,7 +26,7 @@ class SongInfoCard(PerspectiveWidget):
         self.coverPath = ''
         # 实例化小部件
         self.albumPic = QLabel(self)
-        self.windowMask = WindowMask(self, (0, 0, 0, 50))
+        self.windowMask = WindowMask(self, (0, 0, 0, 25))
         self.scrollTextWindow = ScrollTextWindow(songInfo, self)
         # 初始化界面
         self.initWidget()
@@ -87,6 +87,12 @@ class SongInfoCard(PerspectiveWidget):
             self.albumPic.setPixmap(
                 QPixmap(self.coverPath).scaled(
                     115, 115, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
+
+    def mousePressEvent(self, e):
+        """ 鼠标点击时先隐藏遮罩再做透视变换 """
+        self.windowMask.hide()
+        super().mousePressEvent(e)
+        self.windowMask.show()
 
     def mouseReleaseEvent(self, e):
         """ 鼠标松开发送信号 """

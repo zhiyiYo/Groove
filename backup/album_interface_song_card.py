@@ -6,7 +6,7 @@ from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
 from PyQt5.QtGui import QFont, QFontMetrics, QMouseEvent
 from PyQt5.QtWidgets import QApplication, QLabel, QWidget
 
-from .song_name_card import TrackNumSongNameCard
+from .album_interface_song_name_card import TrackNumSongNameCard
 from my_widget.my_label import ClickableLabel
 
 
@@ -46,6 +46,7 @@ class SongCard(QWidget):
         self.playButton = self.songNameCard.playButton
         self.addToButton = self.songNameCard.addToButton
         self.__label_list = [self.songerLabel, self.durationLabel]
+        self.__clickableLabel_list = [self.songerLabel]
         # 创建动画
         self.__createAnimations()
         # 初始化
@@ -56,7 +57,7 @@ class SongCard(QWidget):
         self.__getLabelWidth()
         self.resize(1154, 60)
         self.setFixedHeight(60)
-        self.songerLabel.setCursor(Qt.PointingHandCursor)
+        self.setClickableLabelCursor(Qt.PointingHandCursor)
         self.setAttribute(Qt.WA_StyledBackground)
         # 分配ID和属性
         self.songerLabel.setObjectName('clickableLabel')
@@ -270,6 +271,11 @@ class SongCard(QWidget):
     def setChecked(self, isChecked: bool):
         """ 设置歌曲卡选中状态 """
         self.songNameCard.checkBox.setChecked(isChecked)
+
+    def setClickableLabelCursor(self, cursor):
+        """ 设置可点击标签的光标样式 """
+        for label in self.__clickableLabel_list:
+            label.setCursor(cursor)
 
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """

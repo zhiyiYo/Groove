@@ -1,6 +1,7 @@
 # coding:utf-8
 
 import sys
+from copy import deepcopy
 from ctypes import POINTER, Structure, cast
 from ctypes.wintypes import HWND, MSG, POINT, UINT
 from enum import Enum
@@ -20,12 +21,12 @@ from win32.lib import win32con
 
 from effects import WindowEffect
 from media_player import MediaPlaylist, PlaylistType
+from my_album_interface import AlbumInterface
 from my_music_interface import MyMusicInterface
 from my_play_bar import PlayBar
 from my_playing_interface import CreateSongCardsThread, PlayingInterface
 from my_setting_interface import SettingInterface
 from my_sub_play_window import SubPlayWindow
-from my_album_interface import AlbumInterface
 from my_thumbnail_tool_bar import ThumbnailToolBar
 from my_title_bar import TitleBar
 from navigation import NavigationBar, NavigationMenu
@@ -479,7 +480,7 @@ class MainWindow(QWidget):
         self.player.setPlaylist(self.playlist)
         # 如果没有上一次的播放列表数据，就设置默认的播放列表
         if not self.playlist.playlist:
-            songInfo_list = self.songCardListWidget.songInfo.songInfo_list.copy()
+            songInfo_list = self.songCardListWidget.songInfo_list.copy()
             self.playingInterface.setPlaylist(songInfo_list)
             self.playlist.setMedias(songInfo_list)
             self.playlist.playlistType = PlaylistType.SONG_CARD_PLAYLIST
@@ -564,10 +565,10 @@ class MainWindow(QWidget):
         newPlaylist = None
         # 如果当前播放列表模式不是歌曲界面的歌曲卡模式，就刷新播放列表
         if self.playlist.playlistType != PlaylistType.SONG_CARD_PLAYLIST:
-            index = self.songCardListWidget.songInfo.songInfo_list.index(
+            index = self.songCardListWidget.songInfo_list.index(
                 songInfo_dict)
-            newPlaylist = self.songCardListWidget.songInfo.songInfo_list[index:] + \
-                self.songCardListWidget.songInfo.songInfo_list[0:index]
+            newPlaylist = self.songCardListWidget.songInfo_list[index:] + \
+                self.songCardListWidget.songInfo_list[0:index]
             self.playingInterface.setPlaylist(newPlaylist)
         self.playlist.playThisSong(
             songInfo_dict, newPlaylist, PlaylistType.SONG_CARD_PLAYLIST)
@@ -605,7 +606,7 @@ class MainWindow(QWidget):
     def updateWindow(self, songInfo):
         """ 切换歌曲时更新歌曲卡、播放栏和子播放窗口 """
         self.playBar.updateSongInfoCard(songInfo)
-        index = self.songCardListWidget.songInfo.songInfo_list.index(songInfo)
+        index = self.songCardListWidget.songInfo_list.index(songInfo)
         self.songCardListWidget.setPlay(index)
         # 更新专辑界面的歌曲卡
         if songInfo in self.albumInterface.songListWidget.songInfo_list:
@@ -640,7 +641,7 @@ class MainWindow(QWidget):
     def disorderPlayAll(self):
         """ 无序播放所有 """
         self.playlist.playlistType = PlaylistType.SONG_CARD_PLAYLIST
-        newPlaylist = self.songCardListWidget.songInfo.songInfo_list.copy()
+        newPlaylist = self.songCardListWidget.songInfo_list.copy()
         shuffle(newPlaylist)
         self.setPlaylist(newPlaylist)
 
@@ -887,10 +888,11 @@ class MainWindow(QWidget):
         self.playlist.updateOneSongInfo(oldSongInfo, newSongInfo)
         self.playingInterface.updateOneSongCard(oldSongInfo, newSongInfo)
         if self.sender() == self.albumInterface.songListWidget:
+            print('尝试更新信息')
             self.songCardListWidget.updateOneSongCard(oldSongInfo, newSongInfo)
         elif self.sender() == self.songCardListWidget:
             # 获取专辑信息并更新专辑界面和专辑信息
-            albumInfo = self.albumCardViewer.albumInfo.updateOneAlbumSongInfo(
+            albumInfo = self.albumCardViewer.updateOneAlbumCardSongInfo(
                 newSongInfo)
             if albumInfo:
                 self.albumInterface.updateWindow(albumInfo)
@@ -901,11 +903,11 @@ class MainWindow(QWidget):
         oldSongInfo_list = oldAlbumInfo['songInfo_list']
         newSongInfo_list = newAlbumInfo['songInfo_list']
         self.songCardListWidget.updateMultiSongCards(
-            oldSongInfo_list.copy(), newSongInfo_list.copy())
+            deepcopy(oldSongInfo_list), deepcopy(newSongInfo_list))
         self.playlist.updateMultiSongInfo(
-            oldSongInfo_list.copy(), newSongInfo_list.copy())
+            deepcopy(oldSongInfo_list), deepcopy(newSongInfo_list))
         self.playingInterface.updateMultiSongCards(
-            oldSongInfo_list.copy(), newSongInfo_list.copy())
+            deepcopy(oldSongInfo_list), deepcopy(newSongInfo_list))
         if self.sender() == self.albumInterface:
             self.currentAlbumCard.updateWindow(oldAlbumInfo, newAlbumInfo)
 

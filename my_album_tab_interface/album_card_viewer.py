@@ -125,7 +125,6 @@ class AlbumCardViewer(QWidget):
                 self.__showBlurAlbumBackground)
             albumCard.hideBlurAlbumBackgroundSig.connect(
                 self.albumBlurBackground.hide)
-            # albumCard.updateAlbumInfoSig.connect(self.__updateAlbumInfoSlot)
 
     def __initLayout(self):
         """ 初始化布局 """
@@ -136,7 +135,7 @@ class AlbumCardViewer(QWidget):
             return
         # 按照添加时间分组
         self.sortByAddTimeGroup()
-        
+
         self.albumViewWidget.setLayout(self.albumView_hLayout)
         self.scrollArea.setWidget(self.albumViewWidget)
         # 设置全局布局
@@ -156,8 +155,8 @@ class AlbumCardViewer(QWidget):
             # 补上底部播放栏的占位
             rows = range(
                 (len(currentGroup_dict['album_list']) - 1) // self.column_num + 1 +
-                    int(gridIndex == len(self.currentGroupDict_list) - 1))
-                    
+                int(gridIndex == len(self.currentGroupDict_list) - 1))
+
             self.current_row_num = max(rows) + 1
             # 设置网格大小
             for column in columns:
@@ -272,7 +271,7 @@ class AlbumCardViewer(QWidget):
             self.update()
 
         self.albumView_hLayout_cLayout = gridLayout
-        self.albumView_hLayout_cLayout.setContentsMargins(10,0,0,0)
+        self.albumView_hLayout_cLayout.setContentsMargins(10, 0, 0, 0)
         # 构造一个包含布局和小部件列表字典的列表
         self.addTimeGroup_list = [
             {'gridLayout': gridLayout, 'album_list': self.albumCard_list, 'group': QGroupBox()}]
@@ -453,16 +452,6 @@ class AlbumCardViewer(QWidget):
                             return albumCard
         return None
 
-    def __updateAlbumInfoSlot(self, oldAlbumInfo: dict, newAlbumInfo: dict):
-        """ 更新专辑列表的专辑信息 """
-        if oldAlbumInfo in self.albumInfo.albumInfo_list:
-            index = self.albumInfo.albumInfo_list.index(oldAlbumInfo)
-            self.albumInfo.albumInfo_list[index] = newAlbumInfo
-            print('更新专辑列表信息')
-        else:
-            print('没找到旧专辑信息')
-        print('==' * 40)
-
     def __albumCardCheckedStateChanedSlot(self, albumCard: AlbumCard, isChecked: bool):
         """ 专辑卡选中状态改变对应的槽函数 """
         # 如果专辑信息不在选中的专辑信息列表中且对应的专辑卡变为选中状态就将专辑信息添加到列表中
@@ -535,3 +524,14 @@ class AlbumCardViewer(QWidget):
         self.albumBlurBackground.setBlurAlbum(picPath)
         self.albumBlurBackground.move(pos.x() - 31, pos.y() - 16)
         self.albumBlurBackground.show()
+
+    def updateOneAlbumCardSongInfo(self, newSongInfo: dict):
+        """ 更新一个专辑卡的一首歌的信息 """
+        for albumCard in self.albumCard_list:
+            albumInfo = albumCard.albumInfo
+            if albumInfo['album'] == newSongInfo['album'][0] and albumInfo['songer'] == newSongInfo['songer']:
+                for i, songInfo in enumerate(albumInfo['songInfo_list']):
+                    if songInfo['songPath'] == newSongInfo['songPath']:
+                        albumInfo['songInfo_list'][i] = newSongInfo.copy()
+                        return albumInfo
+        return {}
