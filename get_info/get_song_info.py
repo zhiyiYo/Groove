@@ -9,19 +9,22 @@ from mutagen import File
 from my_functions.adjust_album_name import adjustAlbumName
 
 
-class SongInfo():
+class GetSongInfo():
     """ 创建一个获取和保存歌曲信息的类 """
 
-    def __init__(self, target_path_list: list):
+    def __init__(self, targetFolderPath_list: list):
         # 获取音频文件夹列表
-        self.target_path_list = target_path_list
-        if not target_path_list:
-            self.target_path_list = []
+        self.targetFolderPath_list = targetFolderPath_list
+        if not targetFolderPath_list:
+            self.targetFolderPath_list = []
         self.songInfo_list = []
         self.getInfo()
 
-    def updateInfo(self):
-        """ 更新json文件 """
+    def scanTargetFolderSongInfo(self, targetFolderPath_list: list):
+        """ 扫描指定文件夹的歌曲信息并更新歌曲信息 """
+        self.targetFolderPath_list = targetFolderPath_list
+        if not os.path.exists('Data'):
+            os.mkdir('Data')
         with open('Data\\songInfo.json', 'w', encoding='utf-8') as f:
             json.dump([{}], f)
         self.songInfo_list = []
@@ -30,7 +33,7 @@ class SongInfo():
     def getInfo(self):
         """ 从指定的目录读取符合匹配规则的歌曲的标签卡信息 """
         filePath_list = []
-        for target_path in self.target_path_list:
+        for target_path in self.targetFolderPath_list:
             for _, _, sub_filename_list in os.walk(target_path):
                 break
             # 更新文件路径列表
@@ -43,78 +46,70 @@ class SongInfo():
         if not os.path.exists('Data'):
             os.mkdir('Data')
         # 从json文件读取旧信息
+        oldData = [{}]
         if os.path.exists('Data\\songInfo.json'):
             with open('Data\\songInfo.json', 'r', encoding='utf-8') as f:
                 try:
-                    # 尝试读取旧歌曲信息
                     oldData = json.load(f)
                 except:
-                    # 如果信息为空就创建一个空列表
-                    oldData = [{}]
-        else:
-            oldData = [{}]
+                    pass
 
         oldSongPath_list = [
-            oldFileInfo.get('songPath') for oldFileInfo in oldData
-        ]
+            oldFileInfo.get('songPath') for oldFileInfo in oldData]
 
         # 判断旧文件路径列表是否与新文件名列表相等
         if set(self.songPath_list) == set(oldSongPath_list) and len(oldSongPath_list) == len(self.songPath_list):
-            # 如果文件路径完全相等就直接获取以前的文件信息
+            # 如果文件路径完全相等就直接获取以前的文件信息并返回
             self.songInfo_list = oldData.copy()
+            return
+        newSongPath_set = set(self.songPath_list)
+        oldSongPath_set = set(oldSongPath_list)
+        # 计算文件路径差集
+        diffSongPath_list = list(newSongPath_set - oldSongPath_set)
+        # 计算文件路径的并集
+        commonSongPath_set = newSongPath_set & oldSongPath_set
 
-        else:
-
-            newSongPath_set = set(self.songPath_list)
-            oldSongPath_set = set(oldSongPath_list)
-            # 计算文件路径差集
-            diffSongPath_list = list(newSongPath_set - oldSongPath_set)
-            # 计算文件路径的并集
-            commonSongPath_set = newSongPath_set & oldSongPath_set
-
-            # 根据文件路径并集获取部分文件信息字典
-            if commonSongPath_set:
-                self.songInfo_list = [
-                    oldSongInfo_dict for oldSongInfo_dict in oldData
-                    if oldSongInfo_dict['songPath'] in commonSongPath_set
-                ]
-            # 如果有差集的存在就需要更新json文件
-            if not (newSongPath_set < oldSongPath_set and commonSongPath_set):
-                # 获取后缀名，歌名，歌手名列表
-                self.split_song_list(diffSongPath_list, flag=1)
-
-                argZip = zip(self.song_list, self.songPath_list,
-                             self.songname_list, self.songer_list,
-                             self.suffix_list)
-
-                for index, (song, songPath, songname, songer, suffix) in enumerate(argZip):
-                    id_card = File(songPath)
-                    # 获取时间戳
-                    createTime = os.path.getctime(songPath)
-                    # 将时间戳转换为时间结构
-                    timeStruct = time.localtime(createTime)
-                    # 格式化时间结构
-                    createTime = time.strftime('%Y-%m-%d %H:%M:%S', timeStruct)
-                    album_list, tcon, year, duration, tracknumber = self.fetch_album_tcon_year_trkn(
-                        suffix, id_card)
-                    # 将歌曲信息字典插入列表
-                    self.songInfo_list.append({
-                        'song': song,
-                        'songPath': songPath,
-                        'songer': songer,
-                        'songName': songname,
-                        'album': album_list,
-                        'tcon': tcon,
-                        'year': year,
-                        'tracknumber': tracknumber,
-                        'duration': duration,
-                        'suffix': suffix,
-                        'createTime': createTime,
-                    })
-            self.sortByCreateTime()
-            # 更新json文件
-            with open('Data\\songInfo.json', 'w', encoding='utf-8') as f:
-                json.dump(self.songInfo_list, f)
+        # 根据文件路径并集获取部分文件信息字典
+        if commonSongPath_set:
+            self.songInfo_list = [
+                oldSongInfo_dict for oldSongInfo_dict in oldData
+                if oldSongInfo_dict['songPath'] in commonSongPath_set
+            ]
+        # 如果有差集的存在就需要更新json文件
+        if not (newSongPath_set < oldSongPath_set and commonSongPath_set):
+            # 获取后缀名，歌名，歌手名列表
+            self.split_song_list(diffSongPath_list, flag=1)
+            argZip = zip(self.song_list, self.songPath_list,
+                         self.songname_list, self.songer_list,
+                         self.suffix_list)
+            for index, (song, songPath, songname, songer, suffix) in enumerate(argZip):
+                id_card = File(songPath)
+                # 获取时间戳
+                createTime = os.path.getctime(songPath)
+                # 将时间戳转换为时间结构
+                timeStruct = time.localtime(createTime)
+                # 格式化时间结构
+                createTime = time.strftime('%Y-%m-%d %H:%M:%S', timeStruct)
+                album_list, tcon, year, duration, tracknumber = self.fetch_album_tcon_year_trkn(
+                    suffix, id_card)
+                # 将歌曲信息字典插入列表
+                self.songInfo_list.append({
+                    'song': song,
+                    'songPath': songPath,
+                    'songer': songer,
+                    'songName': songname,
+                    'album': album_list,
+                    'tcon': tcon,
+                    'year': year,
+                    'tracknumber': tracknumber,
+                    'duration': duration,
+                    'suffix': suffix,
+                    'createTime': createTime,
+                })
+        self.sortByCreateTime()
+        # 更新json文件
+        with open('Data\\songInfo.json', 'w', encoding='utf-8') as f:
+            json.dump(self.songInfo_list, f)
 
     def split_song_list(self, filePath_list, flag=0):
         """分离歌手名，歌名和后缀名,flag用于表示是否将匹配到的音频文件拆开,
@@ -222,7 +217,3 @@ class SongInfo():
             if trackNum[0].upper() == 'A':
                 trackNum = trackNum[1:]
         return trackNum
-
-
-if __name__ == "__main__":
-    songInfo = SongInfo(['D:\\KuGou'])

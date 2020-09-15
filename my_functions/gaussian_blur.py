@@ -48,8 +48,3 @@ def getBlurPixmap(imagePath, blurRadius=30, brightnessFactor=1, blurPicSize: tup
     blurPixmap = QPixmap.fromImage(
         QImage(blurArray.data, width, height, bytesPerLine, imageFormat))
     return blurPixmap
-
-
-if __name__ == "__main__":
-    gaussianBlur(
-        'resource\\Album_Cover\\Girlfriend\\Girlfriend.jpg', '磨砂图片.jpg')

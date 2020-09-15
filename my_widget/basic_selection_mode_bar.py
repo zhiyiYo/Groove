@@ -222,20 +222,3 @@ class CheckAllButton(TwoStateButton):
     def setCheckedState(self, checkedState: bool):
         """ 设置全选/取消全选状态 """
         self.setState(not checkedState)
-
-
-class Demo(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.bt = BasicButton(
-            r'resource\\images\\selection_mode_bar\\删除_20_20.png', '删除', self)
-        self.setStyleSheet('QWidget{background:rgb(230,230,230)}')
-        self.resize(200, 200)
-        self.bt.move(41, 77)
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = Demo()
-    demo.show()
-    sys.exit(app.exec_())

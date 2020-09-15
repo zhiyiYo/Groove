@@ -4,7 +4,3 @@ def is_Chinese(word):
         if '\u4e00' <= ch <= '\u9fff':
             return True
     return False
-
-
-if __name__ == "__main__":
-    print(is_Chinese('の'))

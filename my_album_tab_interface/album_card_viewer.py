@@ -1,7 +1,6 @@
 # coding:utf-8
 
 import re
-from time import time
 
 import pinyin
 from PyQt5.QtCore import (QEvent, QParallelAnimationGroup, QPoint,
@@ -11,8 +10,6 @@ from PyQt5.QtWidgets import (
     QApplication, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QScrollArea,
     QVBoxLayout, QWidget)
 
-from get_info.get_album_cover import GetAlbumCover
-from get_info.get_album_info import AlbumInfo
 from my_album_tab_interface.album_card import AlbumCard
 from .album_blur_background import AlbumBlurBackground
 from my_widget.my_groupBox import GroupBox
@@ -30,8 +27,9 @@ class AlbumCardViewer(QWidget):
     selectionModeStateChanged = pyqtSignal(bool)
     checkedAlbumCardNumChanged = pyqtSignal(int)
 
-    def __init__(self, target_path_list: list, parent=None):
+    def __init__(self, albumInfo_list: list, parent=None):
         super().__init__(parent)
+        self.albumInfo_list = albumInfo_list
         # 初始化网格的列数
         self.column_num = 5
         self.total_row_num = 0
@@ -44,10 +42,7 @@ class AlbumCardViewer(QWidget):
         self.isAllAlbumCardsChecked = False
         # 设置当前排序方式
         self.sortMode = '添加时间'
-        # 先扫描本地音乐的专辑封面
-        self.getAlbumCover = GetAlbumCover(target_path_list)
-        # 获取专辑信息
-        self.albumInfo = AlbumInfo()
+        self.__currentSortFunc = self.sortByAddTimeGroup
         # 实例化布局
         self.albumView_hLayout = QHBoxLayout()
         self.all_h_layout = QHBoxLayout()
@@ -59,9 +54,6 @@ class AlbumCardViewer(QWidget):
         self.__createAlbumCards()
         # 初始化小部件
         self.__initWidget()
-        self.__initLayout()
-        # 设置样式
-        self.__setQss()
 
     def __initWidget(self):
         """ 初始化小部件 """
@@ -73,17 +65,17 @@ class AlbumCardViewer(QWidget):
             Qt.ScrollBarAlwaysOff)
         self.scrollArea.setHorizontalScrollBarPolicy(
             Qt.ScrollBarAlwaysOff)
-        # 分配ID
         self.albumViewWidget.setObjectName('albumViewWidget')
-        # 信号连接到槽
         self.__connectSignalToSlot()
+        self.__initLayout()
+        self.__setQss()
 
     def __createAlbumCards(self):
         """ 将专辑卡添加到窗口中 """
         # 创建并行动画组
         self.hideCheckBoxAniGroup = QParallelAnimationGroup(self)
         self.hideCheckBoxAni_list = []
-        for albumInfo_dict in self.albumInfo.albumInfo_list:
+        for albumInfo_dict in self.albumInfo_list:
             # 实例化专辑卡和动画
             albumCard = AlbumCard(albumInfo_dict, self)
             # 创建动画
@@ -135,7 +127,6 @@ class AlbumCardViewer(QWidget):
             return
         # 按照添加时间分组
         self.sortByAddTimeGroup()
-
         self.albumViewWidget.setLayout(self.albumView_hLayout)
         self.scrollArea.setWidget(self.albumViewWidget)
         # 设置全局布局
@@ -283,144 +274,109 @@ class AlbumCardViewer(QWidget):
         # 更新布局
         self.albumView_hLayout.addLayout(gridLayout)
 
-    def __createFirstLetterGroup(self):
-        """ 按照首字母对专辑创建分组 """
-        # 获取专辑的第一个字符组成的集合
-        first_char_set = {albumInfo_dict['albumName'][0]
-                          for albumInfo_dict in self.albumCardDict_list}
-        # 获取第一个字符的大写首字母
-        first_letter_set = {pinyin.get_initial(
-            first_char)[0].upper() for first_char in first_char_set}
-
-        first_letter_set_copy = first_letter_set.copy()
-        for letter in first_letter_set_copy:
-            # 匹配英文字母
-            Match = re.match(r'[A-Z]', letter)
-            if not Match:
-                first_letter_set.remove(letter)
-                first_letter_set.add('...')
-
-        # 创建分组
-        self.firsetLetterGroupDict_list = []
-        for letter in first_letter_set:
-            # 实例化分组和网格布局
-            group = GroupBox(letter)
-            gridLayout = QGridLayout()
-            group.setLayout(gridLayout)
-            # 将含有字母和分组的字典插入列表
-            self.firsetLetterGroupDict_list.append(
-                {'group': group, 'letter': letter, 'gridLayout': gridLayout, 'album_list': []})
-
-        # 按照字母排序列表
-        self.firsetLetterGroupDict_list.sort(key=lambda item: item['letter'])
-
-        # 检测是否含有...分组,有的话将其移到最后一个
-        if self.firsetLetterGroupDict_list[0]['letter'] == '...':
-            unique_group = self.firsetLetterGroupDict_list.pop(0)
-            self.firsetLetterGroupDict_list.append(unique_group)
-
     def sortByFirstLetter(self):
         """ 按照专辑名的首字母进行分组排序 """
         self.sortMode = 'A到Z'
-        self.__createFirstLetterGroup()
         # 将专辑卡从旧布局中移除
         self.__removeOldWidget()
-        # 将专辑加到分组中
+        # 创建分组
+        firstLetter_list = []
+        self.firsetLetterGroupDict_list = []
+        # 将专辑卡添加到分组中
         for albumCard_dict in self.albumCardDict_list:
-            for firstLetterGroup_dict in self.firsetLetterGroupDict_list:
-                if firstLetterGroup_dict['letter'] == albumCard_dict['firstLetter']:
-                    firstLetterGroup_dict['album_list'].append(
-                        albumCard_dict['albumCard'])
-                    break
-            else:
-                # 将不符合分组依据的头像插到特殊分组中
-                self.firsetLetterGroupDict_list[-1]['album_list'].append(
-                    albumCard_dict['albumCard'])
-                #firstLetterGroup_dict['firstLetter'] = '...'
+            # 获取专辑卡的专辑名首字母(有可能不是字母)
+            firstLetter = albumCard_dict['firstLetter']
+            firstLetter = firstLetter if 65 <= ord(
+                firstLetter) <= 90 else '...'
+            # 如果首字母属于不在列表中就将创建分组(仅限于A-Z和...)
+            if firstLetter not in firstLetter_list:
+                # firstLetter_list的首字母顺序和firsetLetterGroupDict_list保持一致
+                firstLetter_list.append(firstLetter)
+                group = GroupBox(firstLetter)
+                gridLayout = QGridLayout()
+                group.setLayout(gridLayout)
+                self.firsetLetterGroupDict_list.append(
+                    {'group': group, 'firstLetter': firstLetter,
+                     'gridLayout': gridLayout, 'album_list': []})
+            # 将专辑卡添加到分组中
+            index = firstLetter_list.index(firstLetter)
+            self.firsetLetterGroupDict_list[index]['album_list'].append(
+                albumCard_dict['albumCard'])
+        # 排序列表
+        self.firsetLetterGroupDict_list.sort(
+            key=lambda item: item['firstLetter'])
+        # 将...分组移到最后
+        if '...' in firstLetter_list:
+            unique_group = self.firsetLetterGroupDict_list.pop(0)
+            self.firsetLetterGroupDict_list.append(unique_group)
         # 将专辑加到分组的网格布局中
         self.currentGroupDict_list = self.firsetLetterGroupDict_list
         self.__updateGridLayout()
         self.__addGroupToLayout()
 
-    def __createYearGroup(self):
-        """ 对专辑按照年份创建分组 """
-        # 获取专辑的年份组成的集合
-        year_set = {albumInfo_dict['year']
-                    for albumInfo_dict in self.albumCardDict_list}
-        # 将未知年份替换为未知
-        if '未知年份' in year_set:
-            year_set.remove('未知年份')
-            year_set.add('未知')
+    def sortByYear(self):
+        """ 按照专辑的年份进行分组排序 """
+        self.sortMode = '发行年份'
+        # 将专辑卡从旧布局中移除
+        self.__removeOldWidget()
         # 创建分组
+        year_list = []
         self.yearGroupDict_list = []
-        for year in year_set:
-            # 实例化分组和网格布局
-            group = GroupBox(year)
-            gridLayout = QGridLayout()
-            group.setLayout(gridLayout)
-            # 将含有字母和分组的字典插入列表
-            self.yearGroupDict_list.append(
-                {'group': group, 'year': year, 'gridLayout': gridLayout, 'album_list': []})
+        # 将专辑加到分组中
+        for albumCard_dict in self.albumCardDict_list:
+            year = albumCard_dict['year']
+            year = '未知' if year == '未知年份' else year
+            # 如果年份不在年份列表中就创建分组
+            if year not in year_list:
+                year_list.append(year)
+                # 实例化分组和网格布局
+                group = GroupBox(year)
+                gridLayout = QGridLayout()
+                group.setLayout(gridLayout)
+                self.yearGroupDict_list.append(
+                    {'group': group, 'year': year,
+                     'gridLayout': gridLayout, 'album_list': []})
+            # 将专辑卡添加到分组中
+            index = year_list.index(year)
+            self.yearGroupDict_list[index]['album_list'].append(
+                albumCard_dict['albumCard'])
         # 按照年份从进到远排序
         self.yearGroupDict_list.sort(
             key=lambda item: item['year'], reverse=True)
         # 检测是否含有未知分组,有的话将其移到最后一个
-        if self.yearGroupDict_list[0]['year'] == '未知':
+        if '未知' in year_list:
             unique_group = self.yearGroupDict_list.pop(0)
             self.yearGroupDict_list.append(unique_group)
-
-    def sortByYear(self):
-        """ 按照专辑的年份进行分组排序 """
-        self.sortMode = '发行年份'
-        self.__createYearGroup()
-        # 将专辑卡从旧布局中移除
-        self.__removeOldWidget()
-        # 将专辑加到分组中
-        for albumCard_dict in self.albumCardDict_list:
-            for yearGroup_dict in self.yearGroupDict_list:
-                if yearGroup_dict['year'] == albumCard_dict['year']:
-                    yearGroup_dict['album_list'].append(
-                        albumCard_dict['albumCard'])
-                    break
-            else:
-                # 将不符合分组依据的头像插到特殊分组中
-                self.yearGroupDict_list[-1]['album_list'].append(
-                    albumCard_dict['albumCard'])
         # 将专辑加到分组的网格布局中
         self.currentGroupDict_list = self.yearGroupDict_list
         self.__updateGridLayout()
         self.__addGroupToLayout()
 
-    def __createSongerGroup(self):
-        """ 对专辑的所属歌手创建分组 """
-        songer_set = {albumInfo_dict['songer']
-                      for albumInfo_dict in self.albumCardDict_list}
-        # 创建分组
-        self.songerGroupDict_list = []
-        for songer in songer_set:
-            # 实例化分组和网格布局
-            group = GroupBox(songer)
-            gridLayout = QGridLayout()
-            group.setLayout(gridLayout)
-            # 将含有字母和分组的字典插入列表
-            self.songerGroupDict_list.append(
-                {'group': group, 'songer': songer, 'gridLayout': gridLayout, 'album_list': []})
-        # 按照年份从进到远排序
-        self.songerGroupDict_list.sort(key=lambda item: item['songer'].lower())
-
     def sortBySonger(self):
         """ 按照专辑的专辑进行分组排序 """
         self.sortMode = '歌手'
-        self.__createSongerGroup()
         # 将专辑卡从旧布局中移除
         self.__removeOldWidget()
+        # 创建列表
+        songer_list = []
+        self.songerGroupDict_list = []
         # 将专辑加到分组中
         for albumCard_dict in self.albumCardDict_list:
-            for songerGroup_dict in self.songerGroupDict_list:
-                if songerGroup_dict['songer'] == albumCard_dict['songer']:
-                    songerGroup_dict['album_list'].append(
-                        albumCard_dict['albumCard'])
-                    break
+            songer = albumCard_dict['songer']
+            if songer not in songer_list:
+                songer_list.append(songer)
+                group = GroupBox(songer)
+                gridLayout = QGridLayout()
+                group.setLayout(gridLayout)
+                self.songerGroupDict_list.append(
+                    {'group': group, 'songer': songer,
+                     'gridLayout': gridLayout, 'album_list': []})
+            # 将专辑卡添加到分组中
+            index = songer_list.index(songer)
+            self.songerGroupDict_list[index]['album_list'].append(
+                albumCard_dict['albumCard'])
+        # 排序列表
+        self.songerGroupDict_list.sort(key=lambda item: item['songer'].lower())
         # 将专辑加到分组的网格布局中
         self.currentGroupDict_list = self.songerGroupDict_list
         self.__updateGridLayout()

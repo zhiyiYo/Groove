@@ -80,10 +80,3 @@ class ScrollBar(QWidget):
         """ minScrollBar改变时同时改变另外两个滚动条的值 """
         self.maxScrollBar.setValue(self.minScrollBar.value())
         self.externalScrollBar.setValue(self.minScrollBar.value())
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = ScrollBar()
-    demo.show()
-    sys.exit(app.exec_())

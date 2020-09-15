@@ -71,10 +71,3 @@ class SongerTabInterface(QWidget):
         with open('resource\\css\\songerTabInterface.qss') as f:
             qss = f.read()
             self.setStyleSheet(qss)
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = SongerTabInterface()
-    demo.show()
-    sys.exit(app.exec_())

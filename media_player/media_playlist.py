@@ -191,8 +191,3 @@ class MediaPlaylist(QMediaPlaylist):
         """ 更新播放列表中多首歌曲的信息 """
         for oldSongInfo, newSongInfo in zip(oldSongInfo_list, newSongInfo_list):
             self.updateOneSongInfo(oldSongInfo, newSongInfo)
-
-
-if __name__ == "__main__":
-    playlistType = PlaylistType(0)
-    print(playlistType)

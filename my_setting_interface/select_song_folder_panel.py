@@ -21,7 +21,7 @@ class SelectSongFolderPanel(SubPanelFrame):
         super().__init__(parent)
         # 实例化子属性面板
         self.subSelectSongFolderPanel = SubSelectSongFolderPanel(self)
-        self.updateConfigSignal = self.subSelectSongFolderPanel.updateConfigSignal
+        self.updateSelectedFoldersSig = self.subSelectSongFolderPanel.updateSelectedFoldersSig
         # 初始化
         self.showMask()
         self.setSubWindowPos()
@@ -36,8 +36,8 @@ class SelectSongFolderPanel(SubPanelFrame):
 
 class SubSelectSongFolderPanel(QWidget):
     """ 子选择歌曲文件夹面板 """
-    # 创建一个更新json文件的信号
-    updateConfigSignal = pyqtSignal()
+
+    updateSelectedFoldersSig = pyqtSignal(list) # 发送更新了的歌曲文件夹列表
     
     def __init__(self, parent):
         super().__init__(parent)
@@ -48,7 +48,6 @@ class SubSelectSongFolderPanel(QWidget):
         # 初始化
         self.__initWidget()
         self.__initLayout()
-        
 
     def __createWidgets(self):
         """ 创建小部件 """
@@ -157,7 +156,7 @@ class SubSelectSongFolderPanel(QWidget):
         try:
             with open('config\\config.json', encoding='utf-8') as f:
                 self.__config = json.load(f)  # type:dict
-        except FileNotFoundError:
+        except:
             self.__config = {'selected-folders': []}
         if 'selected-folders' not in self.__config.keys():
             self.__config['selected-folders'] = []
@@ -180,13 +179,12 @@ class SubSelectSongFolderPanel(QWidget):
         """ 关闭前将更新json文件 """
         with open('config\\config.json', 'w', encoding='utf-8') as f:
             json.dump(self.__config, f)
-        self.updateConfigSignal.emit()
         self.parent().deleteLater()
+        self.updateSelectedFoldersSig.emit(self.__config['selected-folders'])
 
     def resizeEvent(self, e):
         """ 改变高度时移动按钮 """
         self.completeButton.move(223, self.height() - 71)
-
 
 class AddFolderCard(FoldingWindow):
     """ 点击选择文件夹 """

@@ -5,7 +5,6 @@ from time import time
 from PyQt5.QtCore import QPoint, Qt, pyqtSignal
 from PyQt5.QtWidgets import QAction, QLabel, QWidget
 
-from get_info.get_song_info import SongInfo
 from my_widget.my_button import RandomPlayButton, SortModeButton
 from my_widget.my_menu import AeroMenu
 
@@ -16,7 +15,7 @@ class SongTabInterface(QWidget):
     """ 创建歌曲标签界面 """
     randomPlayAllSig = pyqtSignal()
 
-    def __init__(self, target_path_list: list, parent=None):
+    def __init__(self, songInfo_list: list, parent=None):
         super().__init__(parent)
         self.resize(1267, 804)
         # 实例化标签和下拉菜单
@@ -29,10 +28,9 @@ class SongTabInterface(QWidget):
             slot=self.randomPlay, parent=self)
         # 实例化歌曲列表视图
         t1 = time()
-        songInfo=SongInfo(target_path_list)
-        self.songCardListWidget = SongCardListWidget(songInfo.songInfo_list, self)
+        self.songCardListWidget = SongCardListWidget(songInfo_list, self)
         t2 = time()
-        print('创建歌曲卡列表视图所花时间：'.ljust(16), t2 - t1)
+        print('创建歌曲卡列表视图耗时：'.ljust(16), t2 - t1)
         # 将动作添加到菜单中
         self.__addActionToMenu()
         # 设置初始排序方式
@@ -58,12 +56,12 @@ class SongTabInterface(QWidget):
         self.sortModeLabel.setObjectName('sortModeLabel')
         self.guideLabel.setObjectName('guideLabel')
         # 根据歌曲卡个数决定是否隐藏标签
+        self.songCardListWidget.emptyChangedSig.connect(
+            self.__songListWidgetEmptyChangedSlot)
         self.guideLabel.resize(500, 26)
-        if self.songCardListWidget.songCard_list:
-            self.guideLabel.hide()
-        else:
-            self.songCardListWidget.hide()
-            self.guideLabel.show()
+        isEmpty = not bool(self.songCardListWidget.songInfo_list)
+        self.guideLabel.setVisible(isEmpty)
+        self.songCardListWidget.setHidden(isEmpty)
 
     def __initLayout(self):
         """ 初始化布局 """
@@ -124,3 +122,7 @@ class SongTabInterface(QWidget):
         self.songCardListWidget.resize(
             self.width() - 60, self.songCardListWidget.height())
 
+    def __songListWidgetEmptyChangedSlot(self, isEmpty: bool):
+        """ 歌曲卡列表是否为空变化信号的槽函数 """
+        self.songCardListWidget.setHidden(isEmpty)
+        self.guideLabel.setVisible(isEmpty)

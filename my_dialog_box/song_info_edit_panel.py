@@ -28,10 +28,10 @@ class SongInfoEditPanel(SubPanelFrame):
         # 实例化子属性面板
         self.subSongInfoEditPanel = SubSongInfoEditPanel(songInfo, self)
         # 初始化
-        self.initWidget()
-        self.initLayout()
+        self.__initWidget()
+        self.__initLayout()
 
-    def initWidget(self):
+    def __initWidget(self):
         """ 初始化小部件 """
         # deleteLater才能真正释放内存
         self.subSongInfoEditPanel.cancelButton.clicked.connect(
@@ -40,7 +40,7 @@ class SongInfoEditPanel(SubPanelFrame):
             self.saveInfoSig)
         self.showMask()
 
-    def initLayout(self):
+    def __initLayout(self):
         """ 初始化布局 """
         self.subSongInfoEditPanel.move(
             int(self.width() / 2 - self.subSongInfoEditPanel.width() / 2),
@@ -58,15 +58,15 @@ class SubSongInfoEditPanel(QWidget):
         # 实例化标签卡
         self.id_card = File(songInfo['songPath'])
         # 实例化小部件
-        self.createWidgets()
+        self.__createWidgets()
         # 初始化小部件
-        self.initWidget()
-        self.initLayout()
+        self.__initWidget()
+        self.__initLayout()
         self.setShadowEffect()
         # 设置层叠样式
-        self.setQss()
+        self.__setQss()
 
-    def createWidgets(self):
+    def __createWidgets(self):
         """ 实例化小部件 """
         # 实例化按钮
         self.saveButton = PerspectivePushButton('保存', self)
@@ -86,10 +86,8 @@ class SubSongInfoEditPanel(QWidget):
         self.emptyTrackErrorIcon = ErrorIcon(self)
         self.bottomErrorIcon = ErrorIcon(self)
         self.bottomErrorLabel = QLabel(self)
-
         # 实例化提示条
         self.customToolTip = ToolTip(parent=self)
-
         # 实例化单行输入框
         self.diskEditLine = LineEdit('1', self)
         self.tconEditLine = LineEdit(self.songInfo['tcon'], self)
@@ -122,7 +120,7 @@ class SubSongInfoEditPanel(QWidget):
                               self.trackNumEditLine, self.diskEditLine, self.albumNameEditLine,
                               self.albumSongerEditLine, self.tconEditLine, self.yearEditLine]
 
-    def initWidget(self):
+    def __initWidget(self):
         """ 初始化小部件的属性 """
         self.resize(932, 652)
         self.setWindowFlags(Qt.FramelessWindowHint)
@@ -179,8 +177,7 @@ class SubSongInfoEditPanel(QWidget):
         self.songPath.setObjectName('songPath')
         self.bottomErrorLabel.setObjectName('bottomErrorLabel')
 
-
-    def initLayout(self):
+    def __initLayout(self):
         """ 初始化小部件的排版 """
         self.editInfoLabel.move(30, 30)
         self.songPathLabel.move(30, 470)
@@ -220,7 +217,7 @@ class SubSongInfoEditPanel(QWidget):
         self.trackNumEditLine.setCustomToolTip(
             self.customToolTip, '曲目必须是1000以下的数字')
 
-    def setQss(self):
+    def __setQss(self):
         """ 设置层叠样式表 """
         with open(r'resource\css\infoEditPanel.qss', encoding='utf-8') as f:
             self.setStyleSheet(f.read())
@@ -248,7 +245,10 @@ class SubSongInfoEditPanel(QWidget):
             self.songInfo['tracknumber'] = self.trackNumEditLine.text()
 
         self.songInfo['tcon'] = self.tconEditLine.text()
-        self.songInfo['year'] = self.yearEditLine.text()[:4]+'年'
+        if self.yearEditLine.text()[:4] != '未知年份':
+            self.songInfo['year'] = self.yearEditLine.text()[:4] + '年'
+        else:
+            self.songInfo['year'] = '未知年份'
         modifySongInfo(self.id_card, self.songInfo)
         try:
             self.id_card.save()

@@ -61,9 +61,3 @@ def writeAlbumCover(songPath: str, coverPath: str, picData=None):
         except:
             id_card['covr'] = [picData]  # 没有键时需要创建一个
     id_card.save()
-
-
-if __name__ == "__main__":
-    writeAlbumCover(
-        r"D:\Python_Study\label_card\resource\鎖那 - ニゲラの花束.mp3",
-        r"D:\Python_Study\label_card\resource\アルトコロニーの定理.png")

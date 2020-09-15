@@ -4,19 +4,15 @@ import json
 import os
 
 
-class AlbumInfo():
-    """ 定义一个获取专辑信息和将专辑信息写入json文件的类 """
+class GetAlbumInfo():
+    """ 从歌曲信息列表中整理出专辑信息的类 """
 
-    def __init__(self):
-        self.albumInfo_list = self.getAlbumInfo()
+    def __init__(self, songInfo_list: list):
+        self.albumInfo_list = self.getAlbumInfo(songInfo_list)
         self.sortByUpdateTime()
 
-    def getAlbumInfo(self):
-        """ 从json文件读入信息 """
-        return self.updateAlbumInfo()
-
-    def updateAlbumInfo(self):
-        """ 遍历songInfo.json文件来获取专辑信息 """
+    def getAlbumInfo(self, songInfo_list):
+        """ 从歌曲信息列表中来获取专辑信息 """
         albumInfo_list = []
         album_set = set()
 
@@ -61,11 +57,11 @@ class AlbumInfo():
         # 根据曲目序号排序每一个专辑
         for albumInfo_dict in albumInfo_list:
             albumInfo_dict['songInfo_list'].sort(key=self.sortAlbum)
-        # 将专辑信息写入文件
-        """ with open('Data\\albumInfo.json', 'w', encoding='utf-8') as f:
-            json.dump(albumInfo_list, f) """
-
         return albumInfo_list
+
+    def updateAlbumInfo(self, songInfo_list: list):
+        """ 更新专辑信息 """
+        self.albumInfo_list = self.getAlbumInfo(songInfo_list)
 
     def sortAlbum(self, songInfo):
         trackNum = songInfo['tracknumber']  # type:str

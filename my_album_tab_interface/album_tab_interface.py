@@ -1,7 +1,5 @@
 # coding:utf-8
 
-from time import time
-
 from PyQt5.QtCore import QEvent, QPoint, QSize, Qt, pyqtSignal
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction, QApplication, QLabel, QPushButton, QWidget
@@ -18,14 +16,11 @@ class AlbumTabInterface(QWidget):
     sortModeChanged = pyqtSignal()
     columnChanged = pyqtSignal()
 
-    def __init__(self, target_path_list: list, parent=None):
+    def __init__(self, albumInfo_list: list, parent=None):
         super().__init__(parent)
         self.resize(1270, 800)
         # 实例化专辑视图
-        t1 = time()
-        self.albumCardViewer = AlbumCardViewer(target_path_list, self)
-        t2 = time()
-        print('创建专辑视图所花时间：'.ljust(19), t2-t1)
+        self.albumCardViewer = AlbumCardViewer(albumInfo_list, self)
         self.guideLabel = QLabel('这里没有可显示的内容。请尝试其他筛选器。', self)
         # 实例化无序播放所有按钮
         self.randomPlayButton = RandomPlayButton(

@@ -17,13 +17,13 @@ class AlbumInterface(QWidget):
     """ 专辑界面 """
     songCardPlaySig = pyqtSignal(int)
     playAlbumSignal = pyqtSignal(list)              # 播放整张专辑
-    nextToPlaySignal = pyqtSignal(dict)             # 下一首播放
+    nextToPlayOneSongSig = pyqtSignal(dict)             # 下一首播放一首歌
     playCheckedCardsSig = pyqtSignal(list)          # 播放选中的歌曲卡
     addSongToPlaylistSig = pyqtSignal(dict)         # 添加一首歌到正在播放
     addAlbumToPlaylistSig = pyqtSignal(list)        # 添加专辑到正在播放
     saveAlbumInfoSig = pyqtSignal(dict, dict)
     selectionModeStateChanged = pyqtSignal(bool)
-    nextToPlayCheckedCardsSig = pyqtSignal(list)    # 将选中的歌曲添加到下一首播放
+    nextToPlayCheckedCardsSig = pyqtSignal(list)    # 将选中的多首歌添加到下一首播放
 
 
     def __init__(self, albumInfo: dict, parent=None):
@@ -91,39 +91,6 @@ class AlbumInterface(QWidget):
         infoEditPanel.setStyle(QApplication.style())
         infoEditPanel.exec_()
 
-    def __connectSignalToSlot(self):
-        """ 信号连接到槽 """
-        # 专辑信息栏信号
-        self.albumInfoBar.playAllBt.clicked.connect(
-            lambda: self.playAlbumSignal.emit(self.albumInfo.get('songInfo_list')))
-        self.albumInfoBar.addToMenu.playingAct.triggered.connect(
-            lambda: self.addAlbumToPlaylistSig.emit(self.songInfo_list))
-        self.albumInfoBar.editInfoBt.clicked.connect(
-            self.showAlbumInfoEditPanel)
-        self.albumInfoBar.editInfoSig.connect(self.showAlbumInfoEditPanel)
-        # 歌曲列表信号
-        self.songListWidget.playSignal.connect(self.songCardPlaySig)
-        self.songListWidget.nextToPlaySignal.connect(self.nextToPlaySignal)
-        self.songListWidget.addSongToPlaylistSignal.connect(
-            self.addSongToPlaylistSig)
-        self.songListWidget.selectionModeStateChanged.connect(
-            self.__selectionModeStateChangedSlot)
-        self.songListWidget.checkedSongCardNumChanged.connect(
-            self.__checkedCardNumChangedSlot)
-        # 选择栏信号连接到槽函数
-        self.selectionModeBar.cancelButton.clicked.connect(
-            self.__unCheckSongCards)
-        self.selectionModeBar.playButton.clicked.connect(
-            self.__emitPlaylist)
-        self.selectionModeBar.nextToPlayButton.clicked.connect(
-            self.__emitPlaylist)
-        self.selectionModeBar.editInfoButton.clicked.connect(
-            self.__editSongCardInfo)
-        self.selectionModeBar.propertyButton.clicked.connect(
-            self.__showCheckedSongCardProperty)
-        self.selectionModeBar.checkAllButton.clicked.connect(
-            self.__selectAllButtonSlot)
-        
     def __selectionModeStateChangedSlot(self, isOpenSelectionMode: bool):
         """ 选择状态改变对应的槽函数 """
         self.selectionModeBar.setHidden(not isOpenSelectionMode)
@@ -185,3 +152,36 @@ class AlbumInterface(QWidget):
     def exitSelectionMode(self):
         """ 退出选择模式 """
         self.__unSongCards()
+
+    def __connectSignalToSlot(self):
+        """ 信号连接到槽 """
+        # 专辑信息栏信号
+        self.albumInfoBar.playAllBt.clicked.connect(
+            lambda: self.playAlbumSignal.emit(self.albumInfo.get('songInfo_list')))
+        self.albumInfoBar.addToMenu.playingAct.triggered.connect(
+            lambda: self.addAlbumToPlaylistSig.emit(self.songInfo_list))
+        self.albumInfoBar.editInfoBt.clicked.connect(
+            self.showAlbumInfoEditPanel)
+        self.albumInfoBar.editInfoSig.connect(self.showAlbumInfoEditPanel)
+        # 歌曲列表信号
+        self.songListWidget.playSignal.connect(self.songCardPlaySig)
+        self.songListWidget.nextToPlayOneSongSig.connect(self.nextToPlayOneSongSig)
+        self.songListWidget.addSongToPlaylistSignal.connect(
+            self.addSongToPlaylistSig)
+        self.songListWidget.selectionModeStateChanged.connect(
+            self.__selectionModeStateChangedSlot)
+        self.songListWidget.checkedSongCardNumChanged.connect(
+            self.__checkedCardNumChangedSlot)
+        # 选择栏信号连接到槽函数
+        self.selectionModeBar.cancelButton.clicked.connect(
+            self.__unCheckSongCards)
+        self.selectionModeBar.playButton.clicked.connect(
+            self.__emitPlaylist)
+        self.selectionModeBar.nextToPlayButton.clicked.connect(
+            self.__emitPlaylist)
+        self.selectionModeBar.editInfoButton.clicked.connect(
+            self.__editSongCardInfo)
+        self.selectionModeBar.propertyButton.clicked.connect(
+            self.__showCheckedSongCardProperty)
+        self.selectionModeBar.checkAllButton.clicked.connect(
+            self.__selectAllButtonSlot)

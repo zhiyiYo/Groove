@@ -174,8 +174,3 @@ class GetMetaData():
                 self.kuGouCrawler.get_album(songer, songname, self.id_card)
         return isModified
 
-
-if __name__ == "__main__":
-    targetPath_list = [r'D:\Python_Study\label_card\resource']
-    getMetaData = GetMetaData(targetPath_list)
-    getMetaData.runQQMusicCrawler()

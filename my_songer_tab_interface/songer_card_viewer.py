@@ -231,10 +231,3 @@ class SongerCardViewer(QWidget):
                     songerHeadPortrait)
         self.column_num = new_column
         self.__updateGridLayout()
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = SongerCardViewer()
-    demo.show()
-    sys.exit(app.exec_())

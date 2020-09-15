@@ -9,17 +9,17 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from .get_song_info import SongInfo
+from .get_song_info import GetSongInfo
 
 
 class SongerInfo():
     """ 定义一个从酷狗爬取歌手信息的类 """
 
-    def __init__(self, target_path_list:list):
+    def __init__(self, target_path_list: list):
         """ 初始化属性 """
         self.cwd = os.getcwd()
 
-        self.songInfo = SongInfo(target_path_list)
+        self.songInfo = GetSongInfo(target_path_list)
         self.songer_pic_folder = os.path.join(
             self.cwd, 'resource\\Songer Photos')
         self.url = 'https://www.kugou.com/yy/html/search.html#searchType=song&searchKeyWord='
@@ -105,7 +105,7 @@ class SongerInfo():
             try:
                 suffix = '.' + imghdr.what(None, pic_data)
                 if suffix == '.jpeg':
-                    suffix='.jpg'
+                    suffix = '.jpg'
             except:
                 suffix = '.jpg'
             os.mkdir(self.sub_songer_pic_folder)
@@ -115,8 +115,3 @@ class SongerInfo():
                 f.write(pic_data)
 
         self.browser.quit()
-
-
-if __name__ == "__main__":
-    songerInfo = SongerInfo(['D:\\KuGou'])
-    songerInfo.getSongerInfo()

@@ -6,6 +6,9 @@ from PyQt5.QtGui import (QColor, QContextMenuEvent, QFont, QIcon, QPainter,
                          QPen, QResizeEvent)
 from PyQt5.QtWidgets import QAction, QLabel, QStackedWidget, QWidget
 
+from get_info.get_song_info import GetSongInfo
+from get_info.get_album_cover import GetAlbumCover
+from get_info.get_album_info import GetAlbumInfo
 from my_album_tab_interface import AlbumTabInterface
 from my_album_tab_interface.album_blur_background import AlbumBlurBackground
 from my_album_tab_interface.selection_mode_bar import \
@@ -26,9 +29,9 @@ class MyMusicInterface(QWidget):
     selectionModeStateChanged = pyqtSignal(bool)
     nextToPlayCheckedCardsSig = pyqtSignal(list)
 
-    def __init__(self, target_path_list: list, parent=None):
+    def __init__(self, targetFolderPath_list: list, parent=None):
         super().__init__(parent)
-        self.target_path_list = target_path_list
+        self.__targetFolderPath_list = targetFolderPath_list
         # 初始化标志位
         self.isInSelectionMode = False
         # 创建小部件
@@ -40,13 +43,20 @@ class MyMusicInterface(QWidget):
         """ 创建小部件 """
         # 实例化标签界面
         self.stackedWidget = QStackedWidget(self)
+        # 扫描文件夹列表下的音频文件信息
+        self.__songInfoGetter = GetSongInfo(self.__targetFolderPath_list)
+        self.__albumCoverGetter = GetAlbumCover(self.__targetFolderPath_list)
+        self.__albumInfoGetter = GetAlbumInfo(
+            self.__songInfoGetter.songInfo_list)
         t1 = time()
-        self.songTab = SongTabInterface(self.target_path_list, self)
+        self.songTab = SongTabInterface(
+            self.__songInfoGetter.songInfo_list, self)
         t2 = time()
-        print('创建歌曲标签界面所花时间：'.ljust(17), t2-t1)
-        self.albumTab = AlbumTabInterface(self.target_path_list, self)
+        self.albumTab = AlbumTabInterface(
+            self.__albumInfoGetter.albumInfo_list, self)
         t3 = time()
-        print('创建专辑标签界面所花时间：'.ljust(17), t3 - t2)
+        print('创建歌曲标签界面耗时：'.ljust(17), t2 - t1)
+        print('创建专辑标签界面耗时：'.ljust(17), t3 - t2)
         # 引用小部件
         self.__referenceWidgets()
         # 实例化标签页按钮
@@ -251,7 +261,7 @@ class MyMusicInterface(QWidget):
         """ 当窗口大小发生改变时隐藏小部件 """
         self.adjustScrollBarHeight()
         # 调整标签页面尺寸
-        self.stackedWidget.resize(self.size())
+        self.stackedWidget.resize(self.width(),self.height()-181)
         for scrollBar in self.scrollBar_list:
             scrollBar.move(self.width() - scrollBar.width(), 40)
         # 调整选中模式栏的位置和宽度
@@ -263,6 +273,15 @@ class MyMusicInterface(QWidget):
             self.width(), self.albumTabSelectionModeBar.height())
         self.albumTabSelectionModeBar.move(
             0, self.height() - self.albumTabSelectionModeBar.height())
+
+    def scanTargetPathSongInfo(self,targetFolderPath_list:list):
+        """ 重新扫描指定的歌曲文件夹列表中的歌曲信息并更新标签界面 """
+        self.__targetFolderPath_list = targetFolderPath_list
+        # 重新扫描歌曲信息和专辑信息
+        self.__songInfoGetter.scanTargetFolderSongInfo(targetFolderPath_list)
+        self.__albumInfoGetter.updateAlbumInfo(self.__songInfoGetter.songInfo_list)
+        # 更新界面
+        self.songCardListWidget.updateAllSongCards(self.__songInfoGetter.songInfo_list)
 
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """

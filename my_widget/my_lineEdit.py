@@ -1,13 +1,11 @@
-import sys
 
-from PyQt5.QtCore import QEvent, QSize, Qt
+from PyQt5.QtCore import QEvent, Qt
 from PyQt5.QtGui import QContextMenuEvent, QFont, QIcon
-from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLineEdit,
-                             QToolButton)
+from PyQt5.QtWidgets import QHBoxLayout, QLineEdit
 
 from my_functions.is_not_leave import isNotLeave
 from my_widget.my_button import ThreeStateButton
-from my_widget.my_menu import LineEditMenu, AeroMenu
+from my_widget.my_menu import LineEditMenu
 
 
 class LineEdit(QLineEdit):
@@ -106,10 +104,3 @@ class LineEdit(QLineEdit):
                 self.clearButton.hide()
                 return True
         return super().eventFilter(obj, e)
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = LineEdit()
-    demo.show()
-    sys.exit(app.exec_())

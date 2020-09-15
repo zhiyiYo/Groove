@@ -63,11 +63,3 @@ class AlbumBlurBackground(QWidget):
     @property
     def blurRadius(self):
         return self.__blurRadius
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = AlbumBlurBackground(
-        imagePath='resource\\Album_Cover\\人間開花\\人間開花.jpg')
-    demo.show()
-    sys.exit(app.exec_())

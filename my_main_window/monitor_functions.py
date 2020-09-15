@@ -35,7 +35,3 @@ def adjust_maximized_client_rect(hWnd: int):
     # 返回显示监视器的工作区域矩形
     rect = monitor_info['Work']
     return rect
-
-
-if __name__ == "__main__":
-    print(win32con.MONITOR_DEFAULTTONULL)

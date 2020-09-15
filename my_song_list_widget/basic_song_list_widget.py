@@ -22,6 +22,7 @@ class BasicSongListWidget(ListWidget):
     checkedSongCardNumChanged = pyqtSignal(int)
     editSongCardSignal = pyqtSignal(dict, dict)  # 编辑歌曲卡完成信号
     selectionModeStateChanged = pyqtSignal(bool)
+    emptyChangedSig = pyqtSignal(bool)         # 歌曲卡是否为空信号
 
     def __init__(self, songInfo_list: list, songCardType: SongCardType, parent=None, placeHolderHeight=116):
         """ 创建歌曲卡列表控件对象
@@ -276,6 +277,9 @@ class BasicSongListWidget(ListWidget):
                 songCard.deleteLater()
                 self.takeItem(i)
         # 更新部分歌曲卡
+        if not (bool(self.songInfo_list) and bool(songInfo_list)):
+            # 当两个列表是否为空的的布尔值不同时发送歌曲卡列表是否为空信号
+            self.emptyChangedSig.emit(not bool(songInfo_list))
         self.songInfo_list = songInfo_list if songInfo_list else []
         iterRange = range(
             len(self.songInfo_list) - deltaLen) if deltaLen > 0 else range(len(self.songInfo_list))

@@ -7,7 +7,6 @@ from time import time
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent
 
-from get_info.get_song_info import SongInfo
 from my_song_list_widget.basic_song_list_widget import BasicSongListWidget
 from my_song_list_widget.song_card_type import SongCardType
 
@@ -18,11 +17,11 @@ class SongCardListWidget(BasicSongListWidget):
     """ 定义一个歌曲卡列表视图 """
 
     playSignal = pyqtSignal(dict)
-    nextPlaySignal = pyqtSignal(dict)
+    nextToPlayOneSongSig = pyqtSignal(dict)
     switchToAlbumInterfaceSig = pyqtSignal(str, str)
 
     def __init__(self, songInfo_list: list, parent=None):
-        super().__init__(songInfo_list, SongCardType.SONG_TAB_SONG_CARD, parent,146)
+        super().__init__(songInfo_list, SongCardType.SONG_TAB_SONG_CARD, parent, 146)
         self.resize(1150, 758)
         self.sortMode = '添加时间'
         # 创建右击菜单
@@ -71,11 +70,6 @@ class SongCardListWidget(BasicSongListWidget):
         with open('resource\\css\\songTabInterfaceSongListWidget.qss', encoding='utf-8') as f:
             self.setStyleSheet(f.read())
 
-    def updateSongCardInfo(self):
-        """ 重新扫描歌曲文件夹并更新歌曲卡信息 """
-        self.songInfo = SongInfo(self.target_path_list)
-        self.setSortMode(self.sortMode)
-
     def setSortMode(self, sortMode: str):
         """ 根据当前的排序模式来排序歌曲卡 """
         self.sortMode = sortMode
@@ -100,7 +94,7 @@ class SongCardListWidget(BasicSongListWidget):
             lambda: self.playSignal.emit(
                 self.songCard_list[self.currentRow()].songInfo))
         self.contextMenu.nextSongAct.triggered.connect(
-            lambda: self.nextPlaySignal.emit(
+            lambda: self.nextToPlayOneSongSig.emit(
                 self.songCard_list[self.currentRow()].songInfo))
         self.contextMenu.editInfoAct.triggered.connect(
             self.showSongInfoEditPanel)

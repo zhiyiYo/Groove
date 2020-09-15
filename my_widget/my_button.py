@@ -2,7 +2,6 @@
 
 """ 自定义按钮库"""
 
-import sys
 
 from PyQt5.QtCore import QEvent, QPoint, QSize, Qt, QTimer
 from PyQt5.QtGui import (QBrush, QColor, QEnterEvent, QIcon, QPainter, QPen,
@@ -11,28 +10,6 @@ from PyQt5.QtWidgets import (QApplication, QGraphicsBlurEffect, QLabel,
                              QPushButton, QToolButton)
 
 from my_functions.is_not_leave import isNotLeave
-
-
-class SongCardPlayButton(QToolButton):
-    """ 定义歌曲卡播放按钮 """
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setFixedSize(61, 61)
-        self.setObjectName('playButton')
-        self.setIcon(QIcon('resource\\images\\songCard\\black_play_bt.png'))
-        self.setIconSize(QSize(61, 61))
-
-
-class SongCardAddToButton(QToolButton):
-    """ 定义歌曲卡添加到按钮 """
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setFixedSize(61, 61)
-        self.setObjectName('addToButton')
-        self.setIcon(QIcon('resource\\images\\songCard\\black_addTo_bt.png'))
-        self.setIconSize(QSize(61, 61))
 
 
 class RandomPlayButton(QPushButton):
@@ -107,11 +84,3 @@ class ThreeStateButton(QToolButton):
             return
         self.setIcon(QIcon(self.iconPath_dict['normal']))
         super().mouseReleaseEvent(e)
-    
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    demo = SongCardAddToButton()
-    demo.show()
-    sys.exit(app.exec_())

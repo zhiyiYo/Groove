@@ -132,10 +132,3 @@ class SongerName(QWidget):
         # 初始化布局
         self.v_layout.addWidget(self.songerNameLabel, 0, Qt.AlignHCenter)
         self.setLayout(self.v_layout)
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    songCard = SongerCard(
-        'resource\\Songer Photos\\LINKIN PARK\\LINKIN PARK.jpg', 'Backstreet Boys')
-    songCard.show()
-    sys.exit(app.exec_())
