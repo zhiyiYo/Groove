@@ -3,6 +3,10 @@ QWidget#subMainWindow{
     background-color: transparent;
 }
 
+QWidget#subStackWidget{
+    background-color: white;
+}
+
 QLabel{
     background-color: transparent;
 }

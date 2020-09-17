@@ -68,6 +68,7 @@ class TitleBar(QWidget):
         self.closeBt.clicked.connect(self.window().close)
         # 给返回按钮安装事件过滤器
         self.returnBt.installEventFilter(self)
+        self.title.installEventFilter(self)
         self.returnBt.hide()
 
     def __adjustButtonPos(self):
@@ -128,5 +129,10 @@ class TitleBar(QWidget):
             elif e.type() == QEvent.Show:
                 self.title.move(self.returnBt.width(), 0)
                 return False
+        elif obj == self.title:
+            if e.type() == QEvent.Show:
+                if self.returnBt.isVisible():
+                    self.title.move(self.returnBt.width(), 0)
+                    return False
         return super().eventFilter(obj,e)
             

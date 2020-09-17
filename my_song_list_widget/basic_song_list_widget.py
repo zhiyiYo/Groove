@@ -5,7 +5,7 @@ from json import dump
 
 from PyQt5.QtCore import QEvent, QPoint, QSize, Qt, pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QContextMenuEvent, QPainter, QPixmap
-from PyQt5.QtWidgets import QListWidgetItem
+from PyQt5.QtWidgets import QListWidgetItem,QApplication
 
 from my_dialog_box import PropertyPanel, SongInfoEditPanel
 from my_widget.my_listWidget import ListWidget
@@ -269,6 +269,7 @@ class BasicSongListWidget(ListWidget):
             # 添加item
             for songInfo in songInfo_list[oldSongInfoLen:]:
                 self.appendOneSongCard(songInfo, connectSongCardSigToSlotFunc)
+                # QApplication.processEvents()
         elif deltaLen < 0:
             # 删除多余的item
             for i in range(oldSongInfoLen - 1, len(songInfo_list) - 1, -1):

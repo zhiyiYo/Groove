@@ -4,8 +4,8 @@ import json
 
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QColor, QPainter, QPen, QPixmap
-from PyQt5.QtWidgets import (QFileDialog, QGraphicsDropShadowEffect, QLabel,
-                             QWidget)
+from PyQt5.QtWidgets import (QApplication, QFileDialog,
+                             QGraphicsDropShadowEffect, QLabel, QWidget)
 
 from my_dialog_box.sub_panel_frame import SubPanelFrame
 from my_widget.perspective_button import PerspectivePushButton
@@ -179,8 +179,9 @@ class SubSelectSongFolderPanel(QWidget):
         """ 关闭前将更新json文件 """
         with open('config\\config.json', 'w', encoding='utf-8') as f:
             json.dump(self.__config, f)
-        self.parent().deleteLater()
         self.updateSelectedFoldersSig.emit(self.__config['selected-folders'])
+        self.parent().deleteLater()
+        #QApplication.processEvents()
 
     def resizeEvent(self, e):
         """ 改变高度时移动按钮 """

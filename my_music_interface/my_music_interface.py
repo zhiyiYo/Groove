@@ -16,6 +16,7 @@ from my_album_tab_interface.selection_mode_bar import \
 from my_song_tab_interface import SongTabInterface
 from my_song_tab_interface.selection_mode_bar import \
     SelectionModeBar as SongTabSelectionModeBar
+from my_widget.pop_up_ani_stacked_widget import PopUpAniStackedWidget
 
 from .scroll_bar import ScrollBar
 from .tab_button import TabButton
@@ -42,7 +43,7 @@ class MyMusicInterface(QWidget):
     def __createWidgets(self):
         """ 创建小部件 """
         # 实例化标签界面
-        self.stackedWidget = QStackedWidget(self)
+        self.stackedWidget = PopUpAniStackedWidget(self)
         # 扫描文件夹列表下的音频文件信息
         self.__songInfoGetter = GetSongInfo(self.__targetFolderPath_list)
         self.__albumCoverGetter = GetAlbumCover(self.__targetFolderPath_list)
@@ -90,8 +91,8 @@ class MyMusicInterface(QWidget):
         self.resize(1300, 970)
         self.setAttribute(Qt.WA_StyledBackground)
         # 将标签页面添加到stackedWidget中
-        self.stackedWidget.addWidget(self.songTab)
-        self.stackedWidget.addWidget(self.albumTab)
+        self.stackedWidget.addWidget(self.songTab, 0, 22)
+        self.stackedWidget.addWidget(self.albumTab, 0, 22)
         self.songTabButton.setSelected(True)
         # 设置标签上
         self.myMusicLabel.setText('我的音乐')

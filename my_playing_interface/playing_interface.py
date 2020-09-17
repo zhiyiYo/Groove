@@ -7,7 +7,7 @@ from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve,
                           QParallelAnimationGroup, QPropertyAnimation, QRect,
                           QSize, Qt, QTimer, pyqtSignal)
 from PyQt5.QtGui import QMouseEvent, QPixmap
-from PyQt5.QtWidgets import QLabel, QWidget
+from PyQt5.QtWidgets import QLabel, QWidget,QApplication
 
 from my_widget.my_button import ThreeStateButton
 

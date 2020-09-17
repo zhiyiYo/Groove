@@ -233,7 +233,7 @@ class SubAlbumInfoEditPanel(QWidget):
     def saveAlbumInfo(self):
         """ 保存专辑信息 """
         # 禁用小部件
-        self.__setWidgetEnable(False)
+        # self.__setWidgetEnable(False)
         # 显示动图
         # self.__showLoadingGif()
         # 更新标签信息
@@ -267,7 +267,7 @@ class SubAlbumInfoEditPanel(QWidget):
             self.parent().deleteLater()
         self.saveErrorHappened = False
         # 保存失败时重新启用编辑框
-        self.__setWidgetEnable(True)
+        # self.__setWidgetEnable(True)
         # self.loadingLabel.hide()
         # self.movie.stop()
 

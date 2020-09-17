@@ -5,7 +5,7 @@ from json import load
 
 from PyQt5.QtCore import QSize, Qt, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent
-from PyQt5.QtWidgets import QListWidgetItem
+from PyQt5.QtWidgets import QListWidgetItem,QApplication
 
 from my_dialog_box import PropertyPanel
 from my_widget.my_listWidget import ListWidget
@@ -46,26 +46,8 @@ class SongListWidget(ListWidget):
 
     def createSongCards(self):
         """ 创建歌曲卡 """
-        for i in range(len(self.playlist)):
-            # 添加空项目
-            songInfo_dict = self.playlist[i]
-            # 创建item和歌曲卡
-            item = QListWidgetItem()
-            songCard = SongCard(songInfo_dict)
-            # 记录下标
-            songCard.itemIndex = i
-            songCard.resize(1150, 60)
-            item.setSizeHint(QSize(songCard.width(), 60))
-            self.addItem(item)
-            # 将项目的内容重置为自定义类
-            self.setItemWidget(item, songCard)
-            # 将item和songCard添加到列表中
-            self.songCard_list.append(songCard)
-            self.item_list.append(item)
-            # 信号连接到槽
-            songCard.clicked.connect(self.__emitCurrentChangedSignal)
-            songCard.switchToAlbumInterfaceSig.connect(
-                self.__switchToAlbumInterface)
+        for songInfo in self.playlist:
+            self.appendOneSongCard(songInfo)
         if self.playlist:
             self.songCard_list[self.currentIndex].setPlay(True)
         self.resize(1200, 800)
@@ -141,13 +123,13 @@ class SongListWidget(ListWidget):
             # 更新当前播放歌曲卡样式
             self.songCard_list[index].setPlay(True)
 
-    def setPlaylist(self, playlist: list,isResetIndex:bool=True):
+    def setPlaylist(self, playlist: list, isResetIndex: bool = True):
         """ 直接清空并更新播放列表 """
         self.playlist = playlist
         self.clearSongCards(isResetIndex)
         self.createSongCards()
 
-    def clearSongCards(self,isResetIndex:bool=True):
+    def clearSongCards(self, isResetIndex: bool = True):
         """ 清空歌曲卡 """
         self.item_list.clear()
         self.clear()
@@ -157,34 +139,18 @@ class SongListWidget(ListWidget):
         self.songCard_list.clear()
         self.currentIndex = 0 if isResetIndex else self.currentIndex
 
-    def updateSongCards(self, songInfoDict_list,isResetIndex:bool=True):
+    def updateSongCards(self, songInfo_list: list, isResetIndex: bool = True):
         """ 更新所有歌曲卡信息 """
         # 长度相等就更新信息，不相等就根据情况创建或者删除item
         if self.songCard_list:
             self.songCard_list[self.currentIndex].setPlay(False)
-        deltaLen = len(songInfoDict_list) - len(self.playlist)
+        deltaLen = len(songInfo_list) - len(self.playlist)
+        oldSongInfoLen = len(self.playlist)
         if deltaLen > 0:
             # 添加item
-            for i in range(len(self.playlist), len(self.playlist) + deltaLen):
-                # 添加空项目
-                songInfo_dict = songInfoDict_list[i]
-                # 创建item和歌曲卡
-                item = QListWidgetItem()
-                songCard = SongCard(songInfo_dict)
-                # 记录下标
-                songCard.itemIndex = i
-                songCard.resize(1150, 60)
-                item.setSizeHint(QSize(songCard.width(), 60))
-                self.addItem(item)
-                # 将项目的内容重置为自定义类
-                self.setItemWidget(item, songCard)
-                # 将item和songCard添加到列表中
-                self.songCard_list.append(songCard)
-                self.item_list.append(item)
-                # 信号连接到槽
-                songCard.clicked.connect(self.__emitCurrentChangedSignal)
-                songCard.switchToAlbumInterfaceSig.connect(
-                    self.__switchToAlbumInterface)
+            for songInfo in songInfo_list[oldSongInfoLen:]:
+                self.appendOneSongCard(songInfo)
+                QApplication.processEvents()
         elif deltaLen < 0:
             # 删除多余的item
             for i in range(len(self.playlist) - 1, len(self.playlist) + deltaLen - 1, -1):
@@ -193,7 +159,7 @@ class SongListWidget(ListWidget):
                 songCard.deleteLater()
                 self.takeItem(i)
         # 更新部分歌曲卡
-        self.playlist = songInfoDict_list
+        self.playlist = songInfo_list
         iterRange = range(
             len(self.playlist) - deltaLen) if deltaLen > 0 else range(len(self.playlist))
         for i in iterRange:
@@ -219,6 +185,26 @@ class SongListWidget(ListWidget):
         """ 更新多个的歌曲卡 """
         for oldSongInfo, newSongInfo in zip(oldSongInfo_list, newSongInfo_list):
             self.updateOneSongCard(oldSongInfo, newSongInfo)
+
+    def appendOneSongCard(self, songInfo: dict):
+        """ 在歌曲列表视图尾部添加一个歌曲卡 """
+        # 创建item和歌曲卡
+        item = QListWidgetItem()
+        songCard = SongCard(songInfo)
+        # 记录下标
+        songCard.itemIndex = len(self.songCard_list)
+        songCard.resize(1150, 60)
+        item.setSizeHint(QSize(songCard.width(), 60))
+        self.addItem(item)
+        # 将项目的内容重置为自定义类
+        self.setItemWidget(item, songCard)
+        # 将item和songCard添加到列表中
+        self.songCard_list.append(songCard)
+        self.item_list.append(item)
+        # 信号连接到槽
+        songCard.clicked.connect(self.__emitCurrentChangedSignal)
+        songCard.switchToAlbumInterfaceSig.connect(
+            self.__switchToAlbumInterface)
 
     def __connectSignalToSlot(self):
         """ 将信号连接到槽函数 """
