@@ -14,7 +14,7 @@ from my_functions.adjust_album_name import adjustAlbumName
 from my_functions.get_pic_suffix import getPicSuffix
 from my_functions.modify_songInfo import modifySongInfo
 from my_functions.write_album_cover import writeAlbumCover
-from my_widget.my_label import ErrorIcon, PerspectiveTransformLabel
+from my_widget.my_label import ErrorIcon
 from my_widget.my_lineEdit import LineEdit
 from my_widget.my_scrollArea import ScrollArea
 from my_widget.perspective_button import PerspectivePushButton

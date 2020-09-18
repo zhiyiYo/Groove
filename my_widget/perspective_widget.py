@@ -1,33 +1,34 @@
 # coding:utf-8
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap, QPainter
-from PyQt5.QtWidgets import QWidget
+from time import time
 
-from my_functions.perspective_transform_cv import PixmapPerspectiveTransForm
+import numpy as np
+from PIL import Image
+from PyQt5.QtCore import QPoint, Qt
+from PyQt5.QtGui import QPainter, QPixmap, QScreen,QImage
+from PyQt5.QtWidgets import QApplication, QWidget
+
 from my_functions.get_pressed_pos import getPressedPos
+from my_functions.perspective_transform_cv import PixmapPerspectiveTransform
 
 
 class PerspectiveWidget(QWidget):
     """ 可进行透视变换的窗口 """
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, isTransScreenshot=False):
         super().__init__(parent)
         self.__visibleChildren = []
-        self.__perspectiveTrans = PixmapPerspectiveTransForm()
-        self.__fixedPixmap = None
+        self.__isTransScreenshot = isTransScreenshot
+        self.__perspectiveTrans = PixmapPerspectiveTransform() 
+        self.__screenshotPix = None
         self.__pressedPix = None
         self.__pressedPos = None
-
-    def setFixedPixmap(self, pixmap: QPixmap):
-        """ 设置固定的pixmap用于透视变换 """
-        self.__fixedPixmap = pixmap
 
     def mousePressEvent(self, e):
         """ 鼠标点击窗口时进行透视变换 """
         super().mousePressEvent(e)
         self.grabMouse()
-        pixmap = self.grab() if not self.__fixedPixmap else self.__fixedPixmap
+        pixmap = self.grab()
         self.__perspectiveTrans.setPixmap(pixmap)
         # 获取鼠标点击位置
         self.__pressedPos = getPressedPos(self, e)
@@ -77,9 +78,11 @@ class PerspectiveWidget(QWidget):
                 [1, 1], [self.__perspectiveTrans.width - 6, 4],
                 [2, self.__perspectiveTrans.height - 1],
                 [self.__perspectiveTrans.width - 4, self.__perspectiveTrans.height - 3])
-        self.__pressedPix = self.__perspectiveTrans.getPerspectiveTransform(
-            self.__perspectiveTrans.width, self.__perspectiveTrans.height, isGetQPixmap=True).scaled(
-                self.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        # 获取透视变换后的QPixmap
+        self.__pressedPix = self.__getTransformPixmap()
+        # 对桌面上的窗口进行截图
+        if self.__isTransScreenshot:
+            self.__adjustTransformPix()
         # 隐藏本来看得见的小部件
         self.__visibleChildren = [
             child for child in self.children() if hasattr(child, 'isVisible') and child.isVisible()]
@@ -109,6 +112,35 @@ class PerspectiveWidget(QWidget):
         # 绘制背景图片
         if self.__pressedPos:
             painter.drawPixmap(self.rect(), self.__pressedPix)
+
+    def __getTransformPixmap(self) -> QPixmap:
+        """ 获取透视变换后的QPixmap """
+        pix = self.__perspectiveTrans.getPerspectiveTransform(
+            self.__perspectiveTrans.width, self.__perspectiveTrans.height).scaled(
+                self.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        return pix
+
+    def __getScreenShot(self) -> QPixmap:
+        """ 对窗口口所在的桌面区域进行截图 """
+        screen = QApplication.primaryScreen()  # type:QScreen
+        pos = self.mapToGlobal(QPoint(0, 0))   # type:QPoint
+        pix = screen.grabWindow(
+            0, pos.x(), pos.y(), self.width(), self.height())
+        return pix
+
+    def __adjustTransformPix(self):
+        """ 对窗口截图再次进行透视变换并将两张图融合，消除可能存在的黑边 """
+        self.__screenshotPix = self.__getScreenShot()
+        self.__perspectiveTrans.setPixmap(self.__screenshotPix)
+        self.__screenshotPressedPix = self.__getTransformPixmap()
+        # 融合两张透视图
+        t0 = time()
+        img_1 = self.__perspectiveTrans.transQPixmapToNdarray(self.__pressedPix)
+        img_2 = self.__perspectiveTrans.transQPixmapToNdarray(self.__screenshotPressedPix)
+        # 去除非透明背景部分     
+        mask = img_1[:, :, -1] == 0
+        img_2[mask] = img_1[mask]
+        self.__pressedPix = self.__perspectiveTrans.transNdarrayToQPixmap(img_2)
 
     @property
     def pressedPos(self) -> str:

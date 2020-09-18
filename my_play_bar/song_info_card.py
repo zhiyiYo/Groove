@@ -20,7 +20,7 @@ class SongInfoCard(PerspectiveWidget):
     MAXWIDTH = 405
 
     def __init__(self, songInfo: dict, parent=None):
-        super().__init__(parent)
+        super().__init__(parent,True)
         # 保存信息
         self.setSongInfo(songInfo)
         self.coverPath = ''
@@ -87,12 +87,6 @@ class SongInfoCard(PerspectiveWidget):
             self.albumPic.setPixmap(
                 QPixmap(self.coverPath).scaled(
                     115, 115, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
-
-    def mousePressEvent(self, e):
-        """ 鼠标点击时先隐藏遮罩再做透视变换 """
-        self.windowMask.hide()
-        super().mousePressEvent(e)
-        self.windowMask.show()
 
     def mouseReleaseEvent(self, e):
         """ 鼠标松开发送信号 """

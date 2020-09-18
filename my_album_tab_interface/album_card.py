@@ -34,7 +34,7 @@ class AlbumCard(PerspectiveWidget):
     hideBlurAlbumBackgroundSig = pyqtSignal()
 
     def __init__(self, albumInfo: dict, parent):
-        super().__init__(parent)
+        super().__init__(parent,True)
         self.albumInfo = albumInfo
         self.songInfo_list = self.albumInfo.get('songInfo_list')  # type:list
         self.picPath = self.albumInfo.get('cover_path')           # type:str

@@ -38,7 +38,7 @@ def getBlurPixmap(imagePath, blurRadius=30, brightnessFactor=1, blurPicSize: tup
     blurArray = gaussianBlur(
         imagePath, blurRadius=blurRadius, brightnessFactor=brightnessFactor, blurPicSize=blurPicSize)
     height, width, bytesPerComponent = blurArray.shape
-    bytesPerLine = blurArray.shape[-1] * width  # 每行的字节数
+    bytesPerLine = bytesPerComponent * width  # 每行的字节数
     # 设置转换格式
     if blurArray.shape[-1] == 4:
         imageFormat = QImage.Format_RGBA8888

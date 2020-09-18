@@ -4,7 +4,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QPainter,QIcon
 from PyQt5.QtWidgets import QPushButton
 
-from my_functions.perspective_transform_cv import PixmapPerspectiveTransForm
+from my_functions.perspective_transform_cv import PixmapPerspectiveTransform
 from my_functions.get_pressed_pos import getPressedPos
 
 
@@ -14,7 +14,7 @@ class PerspectivePushButton(QPushButton):
 
     def __init__(self, text:str='', parent=None, icon:QIcon=None):
         super().__init__(text, parent)
-        self.__perspectiveTrans = PixmapPerspectiveTransForm()
+        self.__perspectiveTrans = PixmapPerspectiveTransform()
         self.__pressedPix = None
         self.__pressedPos = None
         if icon:
@@ -75,7 +75,7 @@ class PerspectivePushButton(QPushButton):
                 [0, self.__perspectiveTrans.height - 1],
                 [self.__perspectiveTrans.width - 4, self.__perspectiveTrans.height - 3])
         self.__pressedPix = self.__perspectiveTrans.getPerspectiveTransform(
-            self.__perspectiveTrans.width, self.__perspectiveTrans.height, isGetQPixmap=True).scaled(
+            self.__perspectiveTrans.width, self.__perspectiveTrans.height).scaled(
                 self.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
         self.update()
 
