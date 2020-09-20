@@ -23,7 +23,7 @@ class PlayBar(QWidget):
         # 实例化窗口特效
         self.windowEffect = WindowEffect()
         self.hWnd = HWND(int(self.winId()))
-        self.acrylicColor = '356c8aB2'
+        self.acrylicColor = '356c8aCC'
         self.dominantColor = DominantColor()
         # 记录移动次数
         self.moveTime = 0
@@ -66,7 +66,7 @@ class PlayBar(QWidget):
     def updateDominantColor(self, albumPath: str):
         """ 更新主色调 """
         self.acrylicColor = self.dominantColor.getDominantColor(
-            albumPath) + 'B2'
+            albumPath) + 'CC'
         self.setAcrylicColor(self.acrylicColor)
 
     def setAcrylicColor(self, gradientColor: str):

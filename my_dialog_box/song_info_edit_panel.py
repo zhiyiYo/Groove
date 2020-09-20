@@ -96,12 +96,7 @@ class SubSongInfoEditPanel(QWidget):
         self.songNameEditLine = LineEdit(self.songInfo['songName'], self)
         self.songerNameEditLine = LineEdit(self.songInfo['songer'], self)
         self.albumSongerEditLine = LineEdit(self.songInfo['songer'], self)
-        if self.songInfo['suffix'] in ['.flac', '.mp3']:
-            self.trackNumEditLine = LineEdit(
-                self.songInfo['tracknumber'], self)
-        elif self.songInfo['suffix'] == '.m4a':
-            trackNUm = str(eval(self.songInfo['tracknumber'])[0])
-            self.trackNumEditLine = LineEdit(trackNUm, self)
+        self.trackNumEditLine = LineEdit(self.songInfo['tracknumber'], self)
 
         # 创建集中管理小部件的列表
         self.leftLabel_list = [
@@ -237,13 +232,7 @@ class SubSongInfoEditPanel(QWidget):
         self.songInfo['songer'] = self.songerNameEditLine.text()
         self.songInfo['album'][0] = self.albumNameEditLine.text()
         # 根据后缀名选择曲目标签的写入方式
-        if self.songInfo['suffix'] == '.m4a':
-            track_tuple = (int(self.trackNumEditLine.text()),
-                           eval(self.songInfo['tracknumber'])[1])
-            self.songInfo['tracknumber'] = str(track_tuple)
-        else:
-            self.songInfo['tracknumber'] = self.trackNumEditLine.text()
-
+        self.songInfo['tracknumber'] = self.trackNumEditLine.text()
         self.songInfo['tcon'] = self.tconEditLine.text()
         if self.yearEditLine.text()[:4] != '未知年份':
             self.songInfo['year'] = self.yearEditLine.text()[:4] + '年'

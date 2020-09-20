@@ -113,8 +113,7 @@ class SongTabInterface(QWidget):
     def __setQss(self):
         """ 设置层叠样式 """
         with open('resource\\css\\songTabInterface.qss', 'r', encoding='utf-8') as f:
-            qss = f.read()
-            self.setStyleSheet(qss)
+            self.setStyleSheet(f.read())
 
     def resizeEvent(self, e):
         """ 改变窗口大小时也调整部件大小 """

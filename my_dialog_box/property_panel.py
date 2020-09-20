@@ -76,11 +76,7 @@ class SubPropertyPanel(QWidget):
         self.songName = QLabel(self.songInfo['songName'], self)
         self.albumSonger = QLabel(self.songInfo['songer'], self)
         self.songPath = QLabel(self.songInfo['songPath'], self)
-        if self.songInfo['suffix'] in ['.flac', '.mp3']:
-            self.trackNumber = QLabel(self.songInfo['tracknumber'], self)
-        elif self.songInfo['suffix'] == '.m4a':
-            trackNUm = str(eval(self.songInfo['tracknumber'])[0])
-            self.trackNumber = QLabel(trackNUm, self)
+        self.trackNumber = QLabel(self.songInfo['tracknumber'], self)
         # 实例化关闭按钮
         self.closeButton = PerspectivePushButton('关闭', self)
         # 创建小部件列表

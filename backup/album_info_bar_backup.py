@@ -1,13 +1,13 @@
 # coding:utf-8
 
-from PyQt5.QtCore import Qt, QPoint, pyqtSignal
-from PyQt5.QtGui import QBrush, QColor, QFont, QFontMetrics, QPixmap, QPalette, QResizeEvent
+from PyQt5.QtCore import Qt, QPoint,pyqtSignal
+from PyQt5.QtGui import QBrush, QColor, QFont, QFontMetrics, QPixmap, QPalette
 from PyQt5.QtWidgets import QApplication, QLabel, QWidget
 
 from my_functions.get_dominant_color import DominantColor
 
 from .album_interface_buttons import BasicButton
-from .album_interface_menus import MoreActionsMenu, AddToMenu
+from .album_interface_menus import MoreActionsMenu,AddToMenu
 
 
 class AlbumInfoBar(QWidget):
@@ -18,7 +18,7 @@ class AlbumInfoBar(QWidget):
         super().__init__(parent)
         self.setAlbumInfo(albumInfo)
         self.backgroundColor = None
-        self.dominantColor = DominantColor()
+        self.dominantColor=DominantColor()
         # 实例化小部件
         self.__createWidgets()
         # 初始化
@@ -44,14 +44,12 @@ class AlbumInfoBar(QWidget):
             r'resource\images\album_interface\编辑信息.png', '编辑信息', self)
         self.moreActionsBt = BasicButton(
             r'resource\images\album_interface\更多操作.png', '', self)
-        self.deleteButton = BasicButton(
-            r'resource\images\album_interface\删除.png', '删除', self)
         self.albumCover.setPixmap(QPixmap(self.albumCoverPath).scaled(
-            295, 295, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            204, 204, Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
     def __initWidget(self):
         """ 初始化小部件 """
-        self.resize(1260, 385)
+        self.resize(1230, 284)
         # 禁止从父级窗口继承背景
         self.setAutoFillBackground(True)
         # 设置小部件位置
@@ -70,22 +68,21 @@ class AlbumInfoBar(QWidget):
 
     def __initLayout(self):
         """ 初始化布局 """
-        self.albumCover.move(45, 45)
-        self.albumNameLabel.move(385, 35)
+        self.albumCover.move(45, 42)
+        self.albumNameLabel.move(294, 37)
         self.__adjustLabelPos()
-        self.playAllBt.move(360, 308)
-        self.addToBt.move(503, self.playAllBt.y())
-        self.showSongerBt.move(629, self.playAllBt.y())
-        self.pinToStartMenuBt.move(774, self.playAllBt.y())
-        self.editInfoBt.move(977, self.playAllBt.y())
-        self.deleteButton.move(1121, self.playAllBt.y())
-        self.__adjustButtonPos(True)
+        self.playAllBt.move(271, 211)
+        self.addToBt.move(414, 211)
+        self.showSongerBt.move(540, 211)
+        self.pinToStartMenuBt.move(685, 211)
+        self.editInfoBt.move(888, 211)
+        self.__adjustButtonPos()
 
     def __adjustLabelPos(self):
         """ 根据专辑名是否换行来调整标签位置 """
-        maxWidth = self.width() - 40 - 385
+        maxWidth = self.width() - 232 - 294
         # 设置专辑名歌手名标签的长度
-        fontMetrics = QFontMetrics(QFont('Microsoft YaHei', 24, 63))
+        fontMetrics = QFontMetrics(QFont('Microsoft YaHei', 22, 63))
         albumLabelWidth = sum([fontMetrics.width(i)
                                for i in self.albumName])
         self.albumNameLabel.setFixedWidth(min(maxWidth, albumLabelWidth))
@@ -106,41 +103,32 @@ class AlbumInfoBar(QWidget):
                 newAlbumName[index + 1:], Qt.ElideRight, maxWidth)
             newAlbumName = newAlbumName[: index + 1] + secondLineText
             self.albumNameLabel.setText(newAlbumName)
-            self.albumNameLabel.setFixedSize(maxWidth, 110)
-            self.songerNameLabel.move(self.albumNameLabel.x(), 155)
-            self.yearTconLabel.move(self.albumNameLabel.x(), 177)
+            self.albumNameLabel.setFixedSize(maxWidth, 108)
+            self.songerNameLabel.move(294, 155)
+            self.yearTconLabel.move(294, 177)
         else:
             self.albumNameLabel.setText(self.albumName)
             self.albumNameLabel.setFixedSize(totalWidth, 54)
-            self.songerNameLabel.move(self.albumNameLabel.x(), 93)
-            self.yearTconLabel.move(self.albumNameLabel.x(), 115)
+            self.songerNameLabel.move(294, 98)
+            self.yearTconLabel.move(294, 119)
 
-    def __adjustButtonPos(self, isDeltaWidthPositive: bool):
+    def __adjustButtonPos(self):
         """ 根据窗口宽度隐藏部分按钮并调整更多操作按钮位置 """
-        if isDeltaWidthPositive and self.width() >= 1315:
-            if self.width() >= 1315:
-                self.__adjustButtonPosFunc(1, 1120, False, True, True, True)
-        elif ((isDeltaWidthPositive and 1240 <= self.width() < 1315) or
-                    (not isDeltaWidthPositive and self.width() >= 1240)):
-            isDeleteBtVisible = self.deleteButton.isVisible()
-            # 保持删除按钮原来的可见性
-            self.__adjustButtonPosFunc(
-                1, 1120, not isDeleteBtVisible, isDeleteBtVisible, True, True)
-        if 1200 <= self.width() < 1240:
-            self.__adjustButtonPosFunc(1, 1120, True, False, True, True)
+        if self.width() >= 1200:
+            self.moreActionsMenu.setActionNum(1)
+            self.moreActionsBt.move(1031, 211)
+            self.pinToStartMenuBt.show()
+            self.editInfoBt.show()
         elif 1058 <= self.width() < 1200:
-            self.__adjustButtonPosFunc(2, 988, True, False, True, False)
+            self.moreActionsMenu.setActionNum(2)
+            self.moreActionsBt.move(888, 211)
+            self.editInfoBt.hide()
+            self.pinToStartMenuBt.show()
         elif self.width() < 1058:
-            self.__adjustButtonPosFunc(3, 785, True, False, False, False)
-
-    def __adjustButtonPosFunc(self, actionNum, x, isMoreActBtVisible, isDeleteBtVisible, isPinToBtVisible, isEditInfoBtVisible):
-        """ 设置按钮位置子函数 """
-        self.moreActionsMenu.setActionNum(actionNum)
-        self.moreActionsBt.move(x, self.playAllBt.y())
-        self.moreActionsBt.setVisible(isMoreActBtVisible)
-        self.deleteButton.setVisible(isDeleteBtVisible)
-        self.pinToStartMenuBt.setVisible(isPinToBtVisible)
-        self.editInfoBt.setVisible(isEditInfoBtVisible)
+            self.moreActionsMenu.setActionNum(3)
+            self.moreActionsBt.move(685, 211)
+            self.pinToStartMenuBt.hide()
+            self.editInfoBt.hide()
 
     def updateWindow(self, albumInfo: dict):
         """ 更新界面 """
@@ -149,28 +137,26 @@ class AlbumInfoBar(QWidget):
         self.songerNameLabel.setText(self.songerName)
         self.yearTconLabel.setText(self.year + ' • ' + self.tcon)
         self.albumCover.setPixmap(QPixmap(self.albumCoverPath).scaled(
-            295, 295, Qt.KeepAspectRatio, Qt.SmoothTransformation))
-        self.__adjustLabelText()
+            204, 204, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        self.__adjustLabelWidth()
         self.__setBackgroundColor()
         self.__adjustLabelPos()
 
     def setAlbumInfo(self, albumInfo: dict):
         """ 设置专辑信息 """
         self.albumInfo = albumInfo if albumInfo else {}
-        self.year = albumInfo.get('year', '未知年份')           # type:str
-        self.tcon = albumInfo.get('tcon', '未知流派')           # type:str
-        self.albumName = albumInfo.get('album', '未知专辑')     # type:str
-        self.songerName = albumInfo.get('songer', '未知歌手')   # type:str
+        self.year = albumInfo.get('year', '未知年份')
+        self.tcon = albumInfo.get('tcon', '未知流派')
+        self.albumName = albumInfo.get('album', '未知专辑')
+        self.songerName = albumInfo.get('songer', '未知歌手')
         self.albumCoverPath = albumInfo.get(
             'cover_path', r'resource\images\未知专辑封面_200_200.png')
 
-    def resizeEvent(self, e: QResizeEvent):
+    def resizeEvent(self, e):
         """ 窗口调整大小时 """
-        # 计算宽度的差值
-        deltaWidth = e.size().width() - e.oldSize().width()
         super().resizeEvent(e)
         self.__adjustLabelPos()
-        self.__adjustButtonPos(deltaWidth >= 0)
+        self.__adjustButtonPos()
 
     def __setQss(self):
         """ 设置层叠样式 """
@@ -186,12 +172,13 @@ class AlbumInfoBar(QWidget):
         palette.setColor(self.backgroundRole(), QColor(r, g, b))
         self.setPalette(palette)
 
-    def __adjustLabelText(self):
-        """ 调整歌手名和年份流派标签长度和文本 """
-        maxWidth = self.width() - 40 - 294
+    def __adjustLabelWidth(self):
+        """ 调整标签长度 """
+        maxWidth = self.width() - 232 - 294
         fontMetrics = QFontMetrics(QFont('Microsoft YaHei', 9))
-        songerWidth = fontMetrics.width(self.songerName)
-        yearTconWidth = fontMetrics.width(self.yearTconLabel.text())
+        songerWidth = sum([fontMetrics.width(i) for i in self.songerName])
+        yearTconWidth = sum([fontMetrics.width(i)
+                             for i in self.yearTconLabel.text()])
         self.songerNameLabel.setFixedWidth(min(maxWidth, songerWidth))
         self.yearTconLabel.setFixedWidth(min(maxWidth, yearTconWidth))
         # 加省略号
@@ -210,8 +197,7 @@ class AlbumInfoBar(QWidget):
     def showMoreActionsMenu(self):
         """ 显示更多操作菜单 """
         if self.moreActionsMenu.actionNum >= 2:
-            self.moreActionsMenu.editInfoAct.triggered.connect(
-                self.editInfoSig)
+            self.moreActionsMenu.editInfoAct.triggered.connect(self.editInfoSig)
         globalPos = self.mapToGlobal(self.moreActionsBt.pos())
         x = globalPos.x() + self.moreActionsBt.width() + 5
         y = globalPos.y() + int(

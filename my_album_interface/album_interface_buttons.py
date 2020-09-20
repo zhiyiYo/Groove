@@ -34,7 +34,7 @@ class BasicButton(QPushButton):
     def __getTextWidth(self):
         """ 计算按钮文本的宽度 """
         fontMetrics = QFontMetrics(QFont('Microsoft YaHei', 10))
-        self.textWidth = sum([fontMetrics.width(i) for i in self.text])
+        self.textWidth = fontMetrics.width(self.text)
 
     def eventFilter(self, obj, e: QEvent):
         """ 过滤事件 """

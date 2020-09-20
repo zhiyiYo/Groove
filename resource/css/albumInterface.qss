@@ -1,6 +1,6 @@
 QLabel#albumNameLabel{
     color:white;
-    font: 22pt 'Microsoft YaHei';
+    font: 24pt 'Microsoft YaHei';
     font-weight: 500;
 }
 

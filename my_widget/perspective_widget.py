@@ -1,11 +1,9 @@
 # coding:utf-8
 
-from time import time
-
 import numpy as np
-from PIL import Image
+
 from PyQt5.QtCore import QPoint, Qt
-from PyQt5.QtGui import QPainter, QPixmap, QScreen,QImage
+from PyQt5.QtGui import QPainter, QPixmap, QScreen, QImage
 from PyQt5.QtWidgets import QApplication, QWidget
 
 from my_functions.get_pressed_pos import getPressedPos
@@ -24,15 +22,57 @@ class PerspectiveWidget(QWidget):
         self.__pressedPix = None
         self.__pressedPos = None
 
+    @property
+    def pressedPos(self) -> str:
+        """ 返回鼠标点击位置 """
+        return self.__pressedPos
+
     def mousePressEvent(self, e):
         """ 鼠标点击窗口时进行透视变换 """
         super().mousePressEvent(e)
         self.grabMouse()
         pixmap = self.grab()
         self.__perspectiveTrans.setPixmap(pixmap)
-        # 获取鼠标点击位置
-        self.__pressedPos = getPressedPos(self, e)
         # 根据鼠标点击位置的不同设置背景封面的透视变换
+        self.__setDstPointsByPressedPos(getPressedPos(self,e))
+        # 获取透视变换后的QPixmap
+        self.__pressedPix = self.__getTransformPixmap()
+        # 对桌面上的窗口进行截图
+        if self.__isTransScreenshot:
+            self.__adjustTransformPix()
+        # 隐藏本来看得见的小部件
+        self.__visibleChildren = [
+            child for child in self.children() if hasattr(child, 'isVisible') and child.isVisible()]
+        for child in self.__visibleChildren:
+            if hasattr(child, 'hide'):
+                child.hide()
+        self.update()
+
+    def mouseReleaseEvent(self, e):
+        """ 鼠标松开时显示小部件 """
+        super().mouseReleaseEvent(e)
+        self.releaseMouse()
+        self.__pressedPos = None
+        self.update()
+        # 显示小部件
+        for child in self.__visibleChildren:
+            if hasattr(child, 'show'):
+                child.show()
+
+    def paintEvent(self, e):
+        """ 绘制背景 """
+        super().paintEvent(e)
+        painter = QPainter(self)
+        painter.setRenderHints(QPainter.Antialiasing | QPainter.HighQualityAntialiasing |
+                               QPainter.SmoothPixmapTransform)
+        painter.setPen(Qt.NoPen)
+        # 绘制背景图片
+        if self.__pressedPos:
+            painter.drawPixmap(self.rect(), self.__pressedPix)
+
+    def __setDstPointsByPressedPos(self,pressedPos:str):
+        """ 通过鼠标点击位置设置透视变换的四个边角坐标 """
+        self.__pressedPos = pressedPos
         if self.__pressedPos == 'left':
             self.__perspectiveTrans.setDstPoints(
                 [5, 4], [self.__perspectiveTrans.width - 2, 1],
@@ -78,40 +118,6 @@ class PerspectiveWidget(QWidget):
                 [1, 1], [self.__perspectiveTrans.width - 6, 4],
                 [2, self.__perspectiveTrans.height - 1],
                 [self.__perspectiveTrans.width - 4, self.__perspectiveTrans.height - 3])
-        # 获取透视变换后的QPixmap
-        self.__pressedPix = self.__getTransformPixmap()
-        # 对桌面上的窗口进行截图
-        if self.__isTransScreenshot:
-            self.__adjustTransformPix()
-        # 隐藏本来看得见的小部件
-        self.__visibleChildren = [
-            child for child in self.children() if hasattr(child, 'isVisible') and child.isVisible()]
-        for child in self.__visibleChildren:
-            if hasattr(child, 'hide'):
-                child.hide()
-        self.update()
-
-    def mouseReleaseEvent(self, e):
-        """ 鼠标松开时显示小部件 """
-        super().mouseReleaseEvent(e)
-        self.releaseMouse()
-        self.__pressedPos = None
-        self.update()
-        # 显示小部件
-        for child in self.__visibleChildren:
-            if hasattr(child, 'show'):
-                child.show()
-
-    def paintEvent(self, e):
-        """ 绘制背景 """
-        super().paintEvent(e)
-        painter = QPainter(self)
-        painter.setRenderHints(QPainter.Antialiasing | QPainter.HighQualityAntialiasing |
-                               QPainter.SmoothPixmapTransform)
-        painter.setPen(Qt.NoPen)
-        # 绘制背景图片
-        if self.__pressedPos:
-            painter.drawPixmap(self.rect(), self.__pressedPix)
 
     def __getTransformPixmap(self) -> QPixmap:
         """ 获取透视变换后的QPixmap """
@@ -134,15 +140,9 @@ class PerspectiveWidget(QWidget):
         self.__perspectiveTrans.setPixmap(self.__screenshotPix)
         self.__screenshotPressedPix = self.__getTransformPixmap()
         # 融合两张透视图
-        t0 = time()
         img_1 = self.__perspectiveTrans.transQPixmapToNdarray(self.__pressedPix)
         img_2 = self.__perspectiveTrans.transQPixmapToNdarray(self.__screenshotPressedPix)
         # 去除非透明背景部分     
         mask = img_1[:, :, -1] == 0
         img_2[mask] = img_1[mask]
         self.__pressedPix = self.__perspectiveTrans.transNdarrayToQPixmap(img_2)
-
-    @property
-    def pressedPos(self) -> str:
-        """ 返回鼠标点击位置 """
-        return self.__pressedPos

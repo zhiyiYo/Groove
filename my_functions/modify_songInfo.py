@@ -1,4 +1,5 @@
 from mutagen import File
+from tinytag import TinyTag
 from mutagen.id3 import TDRC, TIT1, TIT2, TALB, TCON, TPE1, TPE2, TRCK
 
 
@@ -27,7 +28,8 @@ def modifySongInfo(id_card, songInfo_dict):
         id_card['©ART'] = songInfo_dict['songer']
         id_card['aART'] = songInfo_dict['songer']
         id_card['©alb'] = songInfo_dict['album']
-        track_tuple = eval(songInfo_dict['tracknumber'])
-        id_card['trkn'] = [(track_tuple[0], track_tuple[1])]
+        # m4a写入曲目时还需要指定总曲目数
+        tag = TinyTag.get(id_card.filename)
+        id_card['trkn'] = [(int(tag.track), int(tag.track_total))]
         id_card['©gen'] = songInfo_dict['tcon']
         id_card['©day'] = songInfo_dict['year'][:4]

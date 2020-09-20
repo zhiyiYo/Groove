@@ -1,6 +1,5 @@
 # coding:utf-8
 
-from enum import Enum
 from json import load
 
 from PyQt5.QtCore import QSize, Qt, pyqtSignal
@@ -26,11 +25,10 @@ class SongListWidget(ListWidget):
         self.currentIndex = 0
         self.songCard_list = []
         self.item_list = []
-        self.updateMode = UpdateMode.CREATE_ALL_NEW_CARDS
         # 创建右击菜单
         self.menu = Menu(self)
         # 创建歌曲卡
-        # self.createSongCards()
+        self.createSongCards()
         # 初始化
         self.__initWidget()
 
@@ -51,8 +49,6 @@ class SongListWidget(ListWidget):
         if self.playlist:
             self.songCard_list[self.currentIndex].setPlay(True)
         self.resize(1200, 800)
-        # 更新歌曲卡更新方式
-        self.updateMode = UpdateMode.UPDATE_ALL_CARDS
 
     def __setQss(self):
         """ 设置层叠样式 """
@@ -219,8 +215,3 @@ class SongListWidget(ListWidget):
                 self.songCard_list[self.currentRow()].album,
                 self.songCard_list[self.currentRow()].songer))
 
-
-class UpdateMode(Enum):
-    """ 更新歌曲卡方式枚举类 """
-    CREATE_ALL_NEW_CARDS = 0
-    UPDATE_ALL_CARDS = 1

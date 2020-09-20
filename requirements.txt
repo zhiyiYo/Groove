@@ -54,3 +54,4 @@ websockets==8.1
 wincertstore==0.2
 wrapt==1.11.2
 yapf==0.30.0
+tinytag==1.4.0

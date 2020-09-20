@@ -18,7 +18,7 @@ class DominantColor:
         self.rgb = tuple()
 
     def getDominantColor(self, imagePath, resType=str):
-        """ 获取指定图片的主色调
+        """ 获取指定图片的主色调\n
         Parameters
         ----------
         imagePath : 图片路径\n
@@ -26,24 +26,58 @@ class DominantColor:
         """
         self.imagePath = imagePath
         colorThief = ColorThief(imagePath)
-        self.rgb = colorThief.get_color()
-        # 对饱和度进行调整
-        self.__adjustSaturation()
-        # 如果颜色还是太浅就使用默认主题色
-        luminance = self.__getLuminance()
-        if luminance > 200:
-            self.rgb = (53, 108, 138)
+        palette = colorThief.get_palette(quality=9)
+        # 调整调色板明度
+        palette = self.__adjustPaletteValue(palette)
+        for rgb in palette[:]:
+            h, s, v = self.rgb2hsv(rgb)
+            if h < 0.02:
+                palette.remove(rgb)
+                if len(palette) <= 2:
+                    break
+        palette = palette[:3]
+        palette.sort(key=lambda rgb: self.rgb2hsv(rgb)[1], reverse=True)
+        self.rgb = palette[0]
         # 根据指定的返回类型决定返回十六进制颜色代码还是元组
         if resType is str:
             rgb = ''.join([hex(i)[2:].rjust(2, '0') for i in self.rgb])
             return rgb
         return self.rgb
 
-    def __getLuminance(self):
-        """ 根据rgb获取颜色亮度 """
-        r, g, b = self.rgb
-        luminance = sqrt(0.299 * (r * r) + 0.587 * (g * g) + 0.114 * (b * b))
-        return luminance
+    def __adjustPaletteValue(self, palette: list):
+        """ 调整调色板的明度 """
+        newPalette = []
+        for rgb in palette:
+            h, s, v = self.rgb2hsv(rgb)
+            if v > 0.9:
+                factor = 0.8
+            elif 0.8 < v <= 0.9:
+                factor = 0.9
+            elif 0.7 < v <= 0.8:
+                factor = 0.95
+            else:
+                factor = 1
+            v *= factor
+            newPalette.append(self.hsv2rgb(h, s, v))
+        return newPalette
+
+    def rgb2hsv(self, rgb: tuple) -> tuple:
+        """ rgb空间变换到hsv空间 """
+        r, g, b = [i / 255 for i in rgb]
+        mx = max(r, g, b)
+        mn = min(r, g, b)
+        df = mx - mn
+        if mx == mn:
+            h = 0
+        elif mx == r:
+            h = (60 * ((g-b)/df) + 360) % 360
+        elif mx == g:
+            h = (60 * ((b-r)/df) + 120) % 360
+        elif mx == b:
+            h = (60 * ((r - g) / df) + 240) % 360
+        s = 0 if mx == 0 else df / mx
+        v = mx
+        return (h, s, v)
 
     def hsv2rgb(self, h, s, v) -> tuple:
         """ hsv空间变换到rgb空间 """
@@ -69,45 +103,6 @@ class DominantColor:
             r, g, b = v, p, q
         r, g, b = int(r * 255), int(g * 255), int(b * 255)
         return (r, g, b)
-
-    def rgb2hsv(self, r, g, b) -> tuple:
-        """ rgb空间变换到hsv空间 """
-        r, g, b = r/255.0, g/255.0, b/255.0
-        mx = max(r, g, b)
-        mn = min(r, g, b)
-        df = mx-mn
-        if mx == mn:
-            h = 0
-        elif mx == r:
-            h = (60 * ((g-b)/df) + 360) % 360
-        elif mx == g:
-            h = (60 * ((b-r)/df) + 120) % 360
-        elif mx == b:
-            h = (60 * ((r - g) / df) + 240) % 360
-        s = 0 if mx == 0 else df / mx
-        v = mx
-        return (h, s, v)
-
-    def __adjustSaturation(self):
-        """ 调整饱和度 """
-        luminance = self.__getLuminance()
-        h, s, v = self.rgb2hsv(*self.rgb)
-        factor = 1
-        # 根据亮度调整饱和度
-        if luminance > 230:
-            factor = 4.8
-        elif 200 < luminance <= 230:
-            factor = 3.3
-        elif 180 < luminance <= 200:
-            factor = 2.1
-        elif 160 < luminance <= 180:
-            factor = 1.3
-        elif 140 < luminance <= 160:
-            factor = 1.2
-        elif 127.5 < luminance <= 140:
-            factor = 1.1
-        s = min(1, factor * s)
-        self.rgb = self.hsv2rgb(h, s, v)
 
 
 class Demo(QWidget):

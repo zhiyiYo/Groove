@@ -38,7 +38,6 @@ class PixmapPerspectiveTransform():
         imHeight : 变换后的图像高度\n
         borderMode : 边框插值方式\n
         borderValue : 边框颜色\n
-        isGetQPixmap : 是否返回QPixmap
         """
         # 如果是jpg需要加上一个透明通道
         if self.src.shape[-1] == 3:

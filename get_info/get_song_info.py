@@ -5,6 +5,7 @@ import re
 import time
 
 from mutagen import File
+from tinytag import TinyTag
 
 from my_functions.adjust_album_name import adjustAlbumName
 
@@ -34,11 +35,11 @@ class GetSongInfo():
         """ 从指定的目录读取符合匹配规则的歌曲的标签卡信息 """
         filePath_list = []
         for target_path in self.targetFolderPath_list:
-            for _, _, sub_filename_list in os.walk(target_path):
-                break
+            absPath_list = [
+                os.path.join(target_path, filename) for filename in os.listdir(target_path)]
             # 更新文件路径列表
             filePath_list += [
-                os.path.join(target_path, file_name) for file_name in sub_filename_list]
+                filePath for filePath in absPath_list if os.path.isfile(filePath)]
 
         # 获取符合匹配音频文件名和路径列表
         self.split_song_list(filePath_list)
@@ -46,13 +47,11 @@ class GetSongInfo():
         if not os.path.exists('Data'):
             os.mkdir('Data')
         # 从json文件读取旧信息
-        oldData = [{}]
-        if os.path.exists('Data\\songInfo.json'):
+        try:
             with open('Data\\songInfo.json', 'r', encoding='utf-8') as f:
-                try:
-                    oldData = json.load(f)
-                except:
-                    pass
+                oldData = json.load(f)
+        except:
+            oldData = [{}] 
 
         oldSongPath_list = [
             oldFileInfo.get('songPath') for oldFileInfo in oldData]
@@ -83,7 +82,7 @@ class GetSongInfo():
                          self.songname_list, self.songer_list,
                          self.suffix_list)
             for index, (song, songPath, songname, songer, suffix) in enumerate(argZip):
-                id_card = File(songPath)
+                id_card = TinyTag.get(songPath)
                 # 获取时间戳
                 createTime = os.path.getctime(songPath)
                 # 将时间戳转换为时间结构
@@ -91,7 +90,7 @@ class GetSongInfo():
                 # 格式化时间结构
                 createTime = time.strftime('%Y-%m-%d %H:%M:%S', timeStruct)
                 album_list, tcon, year, duration, tracknumber = self.fetch_album_tcon_year_trkn(
-                    suffix, id_card)
+                    suffix, id_card, songPath)
                 # 将歌曲信息字典插入列表
                 self.songInfo_list.append({
                     'song': song,
@@ -122,66 +121,34 @@ class GetSongInfo():
         self.song_list = fileName_list.copy()
         # 创建列表
         self.songer_list, self.songname_list, self.suffix_list = [], [], []
-        rex = r'(.+) - (.+)(\.mp3)|(.+) - (.+)(\.flac)|(.+) - (.+)(\.m4a)'
-
+        # 过滤文件
+        rex = r'(.+) - (.+)(\..+)'
         for file_name, file_path in zip(fileName_list, filePath_list):
-            Match = re.match(rex, file_name)
-            if Match and flag == 1:
-                if Match.group(1):
+            if file_name.endswith(('mp3', 'flac', 'm4a')):
+                Match = re.match(rex, file_name)
+                if Match and flag == 1:
                     self.songer_list.append(Match.group(1))
                     self.songname_list.append(Match.group(2))
                     self.suffix_list.append(Match.group(3))
-                elif Match.group(4):
-                    self.songer_list.append(Match.group(4))
-                    self.songname_list.append(Match.group(5))
-                    self.suffix_list.append(Match.group(6))
-                else:
-                    self.songer_list.append(Match.group(7))
-                    self.songname_list.append(Match.group(8))
-                    self.suffix_list.append(Match.group(9))
-            elif not Match:
+            else:
                 self.song_list.remove(file_name)
                 self.songPath_list.remove(file_path)
 
-    def fetch_album_tcon_year_trkn(self, suffix, id_card):
+    def fetch_album_tcon_year_trkn(self, suffix: str, id_card: TinyTag, songPath: str):
         """ 根据文件的后缀名来获取专辑信息及时长 """
-        if suffix == '.mp3':
-            # 如果没有标题则添加标题
-            album = str(id_card['TALB'][0]) if id_card.get('TALB') else '未知专辑'
-            # 曲目
-            tracknumber = str(
-                id_card['TRCK'][0]) if id_card.get('TRCK') else '0'
-            tracknumber = self.adjustTrackNumber(tracknumber, suffix)
-            # 流派
-            tcon = str(id_card['TCON'][0]) if id_card.get('TCON') else '未知流派'
-            if id_card.get('TDRC'):
-                year = str(id_card['TDRC'][0]) + \
-                    '年' if len(str(id_card['TDRC'])) == 4 else '未知年份'
-            else:
-                year = '未知年份'
-            duration = f'{int(id_card.info.length//60)}:{int(id_card.info.length%60):02}'
-
-        elif suffix == '.flac':
-            album = id_card.get('album')[0] if id_card.get('album') else '未知专辑'
-            tracknumber = id_card['tracknumber'][0] if id_card.get(
-                'tracknumber') else '0'
-            tracknumber = self.adjustTrackNumber(tracknumber, suffix)
-            tcon = id_card.get('genre')[0] if id_card.get('genre') else '未知流派'
-            year = id_card.get('year')[0][:4] + \
-                '年' if id_card.get('year') else '未知年份'
-            duration = f'{int(id_card.info.length//60)}:{int(id_card.info.length%60):02}'
-
-        elif suffix == '.m4a':
-            album = id_card.get('©alb')[0] if id_card.get('©alb') else '未知专辑'
-            # m4a的曲目标签还应包括专辑中的总曲数,得到的是元组
-            tracknumber = str(
-                id_card['trkn'][0]) if id_card.get('trkn') else '(0, 0)'
-            tracknumber = self.adjustTrackNumber(tracknumber, suffix)
-            tcon = id_card.get('©gen')[0] if id_card.get('©gen') else '未知流派'
-            year = id_card.get('©day')[0][:4] + \
-                '年' if id_card.get('©day') else '未知年份'
-            duration = f'{int(id_card.info.length//60)}:{int(id_card.info.length%60):02}'
-
+        album = id_card.album if id_card.album else '未知专辑'
+        tracknumber = str(id_card.track) if id_card.track else '0'
+        tcon = id_card.genre if id_card.genre else '未知流派'
+        duration = f'{int(id_card.duration//60)}:{int(id_card.duration%60):02}'
+        # 调整曲目序号
+        tracknumber = self.adjustTrackNumber(tracknumber)
+        if id_card.year and id_card.year[0] != '0':
+            year = id_card.year[:4] + '年'
+        else:
+            id_card = File(songPath)
+            key_dict = {'.m4a': '©day', '.mp3': 'TDRC', '.flac': 'year'}
+            year = str(id_card.get(key_dict[suffix])[0])[
+                :4] + '年' if id_card.get(key_dict[suffix]) else '未知年份'
         # album作为列表返回，最后元素是改过的专辑名，第一个是原名
         album_list = adjustAlbumName(album)
         return album_list, tcon, year, duration, tracknumber
@@ -199,21 +166,13 @@ class GetSongInfo():
         """ 以歌手名排序文件信息列表 """
         self.songInfo_list.sort(key=lambda songInfo: songInfo['songer'])
 
-    def adjustTrackNumber(self, trackNum: str, suffix):
+    def adjustTrackNumber(self, trackNum: str):
         """ 调整曲目编号 """
-        # 删除前导0
-        if suffix == '.m4a':
-            trackNum = trackNum.replace(' ', '')
-            trackNum_list = trackNum[1:-1].split(',')
-            trackNum_list = [int(i.lstrip('0')) if i !=
-                             '0' else int(i) for i in trackNum_list]
-            trackNum = str(tuple(trackNum_list))
-        else:
-            if trackNum != '0':
-                trackNum = trackNum.lstrip('0')
-            # 处理a/b
-            trackNum = trackNum.split('/')[0]
-            # 处理An
-            if trackNum[0].upper() == 'A':
-                trackNum = trackNum[1:]
+        if trackNum != '0':
+            trackNum = trackNum.lstrip('0')
+        # 处理a/b
+        trackNum = trackNum.split('/')[0]
+        # 处理An
+        if trackNum[0].upper() == 'A':
+            trackNum = trackNum[1:]
         return trackNum

@@ -10,12 +10,13 @@ from PyQt5.QtMultimedia import QMediaContent, QMediaPlaylist
 
 class PlaylistType(Enum):
     """ 播放列表种类枚举 """
-    SONG_CARD_PLAYLIST = 0    # 播放列表为所有歌曲
+    SONG_CARD_PLAYLIST = 0    # 播放列表为一首歌
     SONGER_CARD_PLAYLIST = 1  # 播放列表为选中歌手的歌
     ALBUM_CARD_PLAYLIST = 2   # 播放列表为选中专辑的歌
     LAST_PLAYLIST = 3         # 上一次的播放列表
     NO_PLAYLIST = 4           # 没有播放列表
     CUSTOM_PLAYLIST = 5       # 自定义播放列表
+    ALL_SONG_PLAYLIST = 6       # 播放列表为歌曲文件夹中的所有歌曲
 
 
 class MediaPlaylist(QMediaPlaylist):
@@ -43,7 +44,7 @@ class MediaPlaylist(QMediaPlaylist):
         # 初始化随机播放按钮按下状态
         self.randPlayBtPressed = False
         # 读入上次的播放列表
-        self.readLastPlaylist()
+        self.__readLastPlaylist()
         if self.playlist:
             for songInfo_dict in self.playlist:
                 super().addMedia(QMediaContent(
@@ -116,26 +117,17 @@ class MediaPlaylist(QMediaPlaylist):
             super().previous()
             self.switchSongSignal.emit(self.playlist[self.currentIndex()])
 
-    def playThisSong(self, songInfo_dict: dict, newSongInfoDict_list: list = None, playlistType=PlaylistType.SONG_CARD_PLAYLIST):
+    def setCurrentSong(self, songInfo_dict: dict):
         """ 按下歌曲卡的播放按钮或者双击歌曲卡时立即在当前的播放列表中播放这首歌 """
         if not songInfo_dict:
             return
-        # 更新播放列表种类和播放列表
-        self.playlistType = playlistType
-        if newSongInfoDict_list:
-            self.setMedias(newSongInfoDict_list)
         # 设置当前播放歌曲
-        if songInfo_dict in self.playlist:
-            self.setCurrentIndex(self.playlist.index(songInfo_dict))
-        else:
-            # 如果这首歌不在播放列表中，就将其插入播放列表的表头
-            self.insertMedia(0, songInfo_dict)
-            self.setCurrentIndex(0)
+        self.setCurrentIndex(self.playlist.index(songInfo_dict))
 
     def playAlbum(self, songInfoDict_list: list):
         """ 播放专辑中的歌曲 """
         self.playlistType = PlaylistType.ALBUM_CARD_PLAYLIST
-        self.setMedias(songInfoDict_list)
+        self.setPlaylist(songInfoDict_list)
 
     def setRandomPlay(self, isRandomPlay=False):
         """ 按下随机播放按钮时根据循环模式决定是否设置随机播放模式 """
@@ -151,7 +143,7 @@ class MediaPlaylist(QMediaPlaylist):
             # 恢复之前的循环模式
             self.setPlaybackMode(self.prePlayMode)
 
-    def setMedias(self, songInfoDict_list: list):
+    def setPlaylist(self, songInfoDict_list: list):
         """ 重置播放列表 """
         if songInfoDict_list == self.playlist:
             return
@@ -164,7 +156,7 @@ class MediaPlaylist(QMediaPlaylist):
         with open('Data\\lastPlaylist.json', 'w', encoding='utf-8') as f:
             dump(self.playlist, f)
 
-    def readLastPlaylist(self):
+    def __readLastPlaylist(self):
         """ 从json文件中读取播放列表 """
         try:
             with open('Data\\lastPlaylist.json', encoding='utf-8') as f:

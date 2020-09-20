@@ -13,6 +13,7 @@ class SongCardListWidget(BasicSongListWidget):
     """ 专辑界面歌曲卡列表视图 """
 
     playSignal = pyqtSignal(int)
+    playOneSongSig = pyqtSignal(dict)
     nextToPlayOneSongSig = pyqtSignal(dict)  # 插入一首歌到播放列表中
 
     def __init__(self, songInfo_list: list, parent=None):
@@ -75,7 +76,7 @@ class SongCardListWidget(BasicSongListWidget):
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
         self.contextMenu.playAct.triggered.connect(
-            lambda: self.playSignal.emit(self.currentRow()))
+            lambda: self.playOneSongSig.emit(self.songCard_list[self.currentRow()].songInfo))
         self.contextMenu.nextSongAct.triggered.connect(
             lambda: self.nextToPlayOneSongSig.emit(self.songCard_list[self.currentRow()].songInfo))
         self.contextMenu.editInfoAct.triggered.connect(

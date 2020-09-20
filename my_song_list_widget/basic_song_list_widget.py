@@ -42,7 +42,7 @@ class BasicSongListWidget(ListWidget):
         self.currentIndex = -1
         self.playingIndex = -1  # 正在播放的歌曲卡下标
         self.playingSongInfo = self.songInfo_list[0] if songInfo_list else None
-        self.placeHolderWidth = placeHolderHeight
+        self.placeHolderHeight = placeHolderHeight
         # 初始化标志位
         self.isInSelectionMode = False
         self.isAllSongCardsChecked = False
@@ -125,7 +125,7 @@ class BasicSongListWidget(ListWidget):
         self.songCard_list[self.currentIndex].setSelected(False)
         self.currentIndex = index
         self.playingIndex = index  # 更新正在播放的下标
-        if index > 0:
+        if index >= 0:
             self.songCard_list[index].setPlay(True)
             self.playingSongInfo = self.songInfo_list[index]
 
@@ -196,7 +196,7 @@ class BasicSongListWidget(ListWidget):
         for item in self.item_list:
             item.setSizeHint(QSize(self.width(), 60))
         self.placeholderItem.setSizeHint(
-            QSize(self.width(), self.placeHolderWidth))
+            QSize(self.width(), self.placeHolderHeight))
 
     def songCardCheckedStateChanedSlot(self, itemIndex: int, isChecked: bool):
         """ 歌曲卡选中状态改变对应的槽函数 """
@@ -302,7 +302,7 @@ class BasicSongListWidget(ListWidget):
         """ 创建占位行 """
         self.placeholderItem = QListWidgetItem(self)
         self.placeholderItem.setSizeHint(
-            QSize(self.width(), self.placeHolderWidth))
+            QSize(self.width(), self.placeHolderHeight))
         self.placeholderItem.setBackground(QBrush(Qt.white))
         self.addItem(self.placeholderItem)
 
@@ -327,15 +327,7 @@ class BasicSongListWidget(ListWidget):
             self.songInfo_list.sort(
                 key=lambda songInfo: songInfo[key], reverse=isReverse)
         else:
-            self.songInfo_list.sort(key=self.__sortByTrackNum)
-
-    def __sortByTrackNum(self, songInfo):
-        """ 以曲序为基准排序歌曲卡 """
-        trackNum = songInfo['tracknumber']  # type:str
-        # 处理m4a
-        if not trackNum[0].isnumeric():
-            return eval(trackNum)[0]
-        return int(trackNum)
+            self.songInfo_list.sort(key=lambda songInfo:int(songInfo['tracknumber']))
 
     @property
     def songCardType(self) -> SongCardType:

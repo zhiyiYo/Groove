@@ -262,7 +262,7 @@ class MyMusicInterface(QWidget):
         """ 当窗口大小发生改变时隐藏小部件 """
         self.adjustScrollBarHeight()
         # 调整标签页面尺寸
-        self.stackedWidget.resize(self.width(),self.height()-181)
+        self.stackedWidget.resize(self.width(), self.height()-181)
         for scrollBar in self.scrollBar_list:
             scrollBar.move(self.width() - scrollBar.width(), 40)
         # 调整选中模式栏的位置和宽度
@@ -275,14 +275,16 @@ class MyMusicInterface(QWidget):
         self.albumTabSelectionModeBar.move(
             0, self.height() - self.albumTabSelectionModeBar.height())
 
-    def scanTargetPathSongInfo(self,targetFolderPath_list:list):
+    def scanTargetPathSongInfo(self, targetFolderPath_list: list):
         """ 重新扫描指定的歌曲文件夹列表中的歌曲信息并更新标签界面 """
         self.__targetFolderPath_list = targetFolderPath_list
         # 重新扫描歌曲信息和专辑信息
         self.__songInfoGetter.scanTargetFolderSongInfo(targetFolderPath_list)
-        self.__albumInfoGetter.updateAlbumInfo(self.__songInfoGetter.songInfo_list)
+        self.__albumInfoGetter.updateAlbumInfo(
+            self.__songInfoGetter.songInfo_list)
         # 更新界面
-        self.songCardListWidget.updateAllSongCards(self.__songInfoGetter.songInfo_list)
+        self.songCardListWidget.updateAllSongCards(
+            self.__songInfoGetter.songInfo_list)
 
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """

@@ -12,7 +12,6 @@ from PyQt5.QtWidgets import QLabel, QWidget,QApplication
 from my_widget.my_button import ThreeStateButton
 
 from .blur_cover_thread import BlurCoverThread
-from .create_song_cards_thread import CreateSongCardsThread
 from .play_bar import PlayBar
 from .smallest_play_mode_interface import SmallestPlayModeInterface
 from .song_info_card_chute import SongInfoCardChute
@@ -58,9 +57,6 @@ class PlayingInterface(QWidget):
             {'normal': r'resource\images\playing_interface\全部随机播放_normal_256_39.png',
              'hover': r'resource\images\playing_interface\全部随机播放_hover_256_39.png',
              'pressed': r'resource\images\playing_interface\全部随机播放_pressed_256_39.png'}, self, (256, 39))
-        # 实例化创建歌曲卡线程
-        self.createSongCardThread = CreateSongCardsThread(
-            self.songListWidget, self)
         # 创建定时器
         self.showPlaylistTimer = QTimer(self)
         self.hidePlaylistTimer = QTimer(self)
@@ -272,8 +268,7 @@ class PlayingInterface(QWidget):
         if playlist:
             self.songInfoCardChute.setPlaylist(self.playlist, isResetIndex)
             self.smallestModeInterface.setPlaylist(self.playlist, isResetIndex)
-            self.createSongCardThread.setPlaylist(self.playlist, isResetIndex)
-            self.createSongCardThread.run()
+            self.songListWidget.updateSongCards(self.playlist)
         # 如果小部件不可见就显示
         if playlist and not self.songListWidget.isVisible():
             self.__setGuideLabelHidden(True)

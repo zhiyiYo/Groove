@@ -246,12 +246,7 @@ class SubAlbumInfoEditPanel(QWidget):
             songInfo['songer'] = songInfoWidget.songerLineEdit.text()
             songInfo['tcon'] = self.tconLineEdit.text()
             # 根据后缀名选择曲目标签的写入方式
-            if songInfo['suffix'] == '.m4a':
-                track_tuple = (int(songInfoWidget.trackNumLineEdit.text()),
-                               eval(songInfo['tracknumber'])[1])
-                songInfo['tracknumber'] = str(track_tuple)
-            else:
-                songInfo['tracknumber'] = songInfoWidget.trackNumLineEdit.text()
+            songInfo['tracknumber'] = songInfoWidget.trackNumLineEdit.text()
             # 实例化标签卡
             id_card = File(songInfo['songPath'])
             modifySongInfo(id_card, songInfo)
@@ -353,9 +348,6 @@ class SongInfoWidget(QWidget):
         self.errorIcon = ErrorIcon(self)
         self.bottomErrorIcon = ErrorIcon(self)
         self.bottomErrorLabel = QLabel('曲目必须是1000以下的数字', self)
-        if self.songInfo['suffix'] == '.m4a':
-            trackNum = str(eval(self.songInfo['tracknumber'])[0])
-            self.trackNumLineEdit.setText(trackNum)
         # 初始化
         self.__initWidget()
 

@@ -34,7 +34,7 @@ class AlbumCard(PerspectiveWidget):
     hideBlurAlbumBackgroundSig = pyqtSignal()
 
     def __init__(self, albumInfo: dict, parent):
-        super().__init__(parent,True)
+        super().__init__(parent, True)
         self.albumInfo = albumInfo
         self.songInfo_list = self.albumInfo.get('songInfo_list')  # type:list
         self.picPath = self.albumInfo.get('cover_path')           # type:str
@@ -185,18 +185,11 @@ class AlbumCard(PerspectiveWidget):
         infoEditPanel.setStyle(QApplication.style())
         infoEditPanel.exec_()
 
-    def __sortAlbum(self, songInfo):
-        """ 以曲序为基准排序歌曲卡 """
-        trackNum = songInfo['tracknumber']  # type:str
-        # 处理m4a
-        if not trackNum[0].isnumeric():
-            return eval(trackNum)[0]
-        return int(trackNum)
-
     def __saveAlbumInfoSlot(self, oldAlbumInfo: dict, newAlbumInfo: dict):
         """ 保存专辑信息并更新界面 """
         newAlbumInfo_copy = deepcopy(newAlbumInfo)
-        self.albumInfo['songInfo_list'].sort(key=self.__sortAlbum)
+        self.albumInfo['songInfo_list'].sort(
+            key=lambda songInfo: int(songInfo['tracknumber']))
         self.updateWindow(oldAlbumInfo, newAlbumInfo)
         self.saveAlbumInfoSig.emit(oldAlbumInfo, newAlbumInfo_copy)
 

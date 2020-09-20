@@ -16,12 +16,13 @@ from .song_card_list_context_menu import SongCardListContextMenu
 class SongCardListWidget(BasicSongListWidget):
     """ 定义一个歌曲卡列表视图 """
 
-    playSignal = pyqtSignal(dict)
+    playSignal = pyqtSignal(dict)  # 将播放列表的当前歌曲切换为指定的歌曲卡
+    playOneSongSig = pyqtSignal(dict)  # 重置播放列表为指定的一首歌
     nextToPlayOneSongSig = pyqtSignal(dict)
     switchToAlbumInterfaceSig = pyqtSignal(str, str)
 
     def __init__(self, songInfo_list: list, parent=None):
-        super().__init__(songInfo_list, SongCardType.SONG_TAB_SONG_CARD, parent, 146)
+        super().__init__(songInfo_list, SongCardType.SONG_TAB_SONG_CARD, parent, 116)
         self.resize(1150, 758)
         self.sortMode = '添加时间'
         # 创建右击菜单
@@ -91,7 +92,7 @@ class SongCardListWidget(BasicSongListWidget):
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
         self.contextMenu.playAct.triggered.connect(
-            lambda: self.playSignal.emit(
+            lambda: self.playOneSongSig.emit(
                 self.songCard_list[self.currentRow()].songInfo))
         self.contextMenu.nextSongAct.triggered.connect(
             lambda: self.nextToPlayOneSongSig.emit(

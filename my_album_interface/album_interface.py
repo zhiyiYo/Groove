@@ -15,16 +15,16 @@ from .album_info_bar import AlbumInfoBar
 
 class AlbumInterface(QWidget):
     """ 专辑界面 """
-    songCardPlaySig = pyqtSignal(int)
+    songCardPlaySig = pyqtSignal(int)               # 在当前播放列表中播放这首歌
+    playOneSongCardSig = pyqtSignal(dict)            # 将播放列表重置为一首歌
     playAlbumSignal = pyqtSignal(list)              # 播放整张专辑
-    nextToPlayOneSongSig = pyqtSignal(dict)             # 下一首播放一首歌
+    nextToPlayOneSongSig = pyqtSignal(dict)         # 下一首播放一首歌
     playCheckedCardsSig = pyqtSignal(list)          # 播放选中的歌曲卡
     addSongToPlaylistSig = pyqtSignal(dict)         # 添加一首歌到正在播放
     addAlbumToPlaylistSig = pyqtSignal(list)        # 添加专辑到正在播放
     saveAlbumInfoSig = pyqtSignal(dict, dict)
     selectionModeStateChanged = pyqtSignal(bool)
     nextToPlayCheckedCardsSig = pyqtSignal(list)    # 将选中的多首歌添加到下一首播放
-
 
     def __init__(self, albumInfo: dict, parent=None):
         super().__init__(parent)
@@ -78,7 +78,7 @@ class AlbumInterface(QWidget):
     def updateOneSongCard(self, oldSongInfo: dict, newSongInfo):
         """ 更新一个歌曲卡 """
         # 不将歌曲信息写入json文件
-        self.songListWidget.updateOneSongCard(oldSongInfo, newSongInfo,False)
+        self.songListWidget.updateOneSongCard(oldSongInfo, newSongInfo, False)
         self.albumInfo['songInfo_list'] = self.songListWidget.songInfo_list
 
     def showAlbumInfoEditPanel(self):
@@ -165,7 +165,9 @@ class AlbumInterface(QWidget):
         self.albumInfoBar.editInfoSig.connect(self.showAlbumInfoEditPanel)
         # 歌曲列表信号
         self.songListWidget.playSignal.connect(self.songCardPlaySig)
-        self.songListWidget.nextToPlayOneSongSig.connect(self.nextToPlayOneSongSig)
+        self.songListWidget.playOneSongSig.connect(self.playOneSongCardSig)
+        self.songListWidget.nextToPlayOneSongSig.connect(
+            self.nextToPlayOneSongSig)
         self.songListWidget.addSongToPlaylistSignal.connect(
             self.addSongToPlaylistSig)
         self.songListWidget.selectionModeStateChanged.connect(
