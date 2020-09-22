@@ -4,7 +4,7 @@ from copy import deepcopy
 from json import dump
 from time import time
 
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal, QMargins
 from PyQt5.QtGui import QContextMenuEvent
 
 from my_song_list_widget.basic_song_list_widget import BasicSongListWidget
@@ -22,7 +22,8 @@ class SongCardListWidget(BasicSongListWidget):
     switchToAlbumInterfaceSig = pyqtSignal(str, str)
 
     def __init__(self, songInfo_list: list, parent=None):
-        super().__init__(songInfo_list, SongCardType.SONG_TAB_SONG_CARD, parent, 116)
+        super().__init__(songInfo_list, SongCardType.SONG_TAB_SONG_CARD,
+                         parent, QMargins(30, 245, 30, 116))
         self.resize(1150, 758)
         self.sortMode = '添加时间'
         # 创建右击菜单
@@ -35,6 +36,7 @@ class SongCardListWidget(BasicSongListWidget):
     def __initWidget(self):
         """ 初始化小部件 """
         self.setAlternatingRowColors(True)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         # 设置层叠样式
         self.__setQss()
         # 信号连接到槽
@@ -88,6 +90,13 @@ class SongCardListWidget(BasicSongListWidget):
     def updateAllSongCards(self, songInfo_list: list):
         """ 更新所有歌曲卡，根据给定的信息决定创建或者删除歌曲卡 """
         super().updateAllSongCards(songInfo_list, self.__connectSongCardSignalToSlot)
+
+    def resizeEvent(self, e):
+        """ 改变尺寸时调整竖直滚动条大小 """
+        super().resizeEvent(e)
+        self.verticalScrollBar().move(-1, 40)
+        self.verticalScrollBar().resize(
+            self.verticalScrollBar().width(), self.height() - 156)
 
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """

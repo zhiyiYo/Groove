@@ -1,37 +1,16 @@
 QListWidget {
-    /*selection-color:white;*/
     border: transparent;
     outline: none;
-    alternate-background-color: white;
-    background: rgb(242, 242, 242);
+    background-color: white;
     padding: 0px;
 }
 
-QListWidget::item{
-    background-color: transparent;
+QListWidget::item:!alternate{
+    background-color: rgb(242, 242, 242);
 }
 
-QScrollBar {
-    background: transparent;
-    width: 5px;
-    margin-right: 2px;
-}
-
-/*隐藏上箭头*/
-QScrollBarr::sub-line {
-    background: transparent;
-}
-
-/*隐藏下箭头*/
-QScrollBar::add-line {
-    background: transparent;
-}
-
-QScrollBar::handle {
-    background: rgb(128, 128, 128);
-    border: 2px solid rgb(128, 128, 128);
-    border-radius: 1px;
-    /*min-height: 40px;*/
+QListWidget::item:alternate {
+    background: white;
 }
 
 /*歌曲卡样式*/
@@ -171,7 +150,8 @@ QToolButton[state='selected']:pressed {
 /*滚动条*/
 QScrollBar {
     background: transparent;
-    width: 3px;
+    width: 4px;
+    padding-left: 1px;
 }
 
 /*隐藏上箭头*/

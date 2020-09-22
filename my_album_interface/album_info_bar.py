@@ -47,7 +47,7 @@ class AlbumInfoBar(QWidget):
         self.deleteButton = BasicButton(
             r'resource\images\album_interface\删除.png', '删除', self)
         self.albumCover.setPixmap(QPixmap(self.albumCoverPath).scaled(
-            295, 295, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            295, 295, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
 
     def __initWidget(self):
         """ 初始化小部件 """
@@ -149,7 +149,7 @@ class AlbumInfoBar(QWidget):
         self.songerNameLabel.setText(self.songerName)
         self.yearTconLabel.setText(self.year + ' • ' + self.tcon)
         self.albumCover.setPixmap(QPixmap(self.albumCoverPath).scaled(
-            295, 295, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            295, 295, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
         self.__adjustLabelText()
         self.__setBackgroundColor()
         self.__adjustLabelPos()

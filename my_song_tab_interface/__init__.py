@@ -1,1 +1,1 @@
-from .song_tab_interface import SongTabInterface
+from .song_card_list_widget import SongCardListWidget

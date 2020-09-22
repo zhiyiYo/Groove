@@ -4,7 +4,7 @@ QWidget {
 
 /*设置标签文本左对齐*/
 QLabel,
-QPushButton{
+QPushButton {
     text-align: left;
     color: rgb(75, 75, 75);
     font-size: 16px;
@@ -21,6 +21,13 @@ QLabel#guideLabel {
     color: black;
     font: 25px 'Microsoft YaHei';
 }
+
+QLabel#myMusicLabel {
+    font-family: 'Microsoft YaHei Light';
+    font-size: 43px;
+    padding: 0px;
+}
+
 
 /*设置按钮的样式*/
 QPushButton {
@@ -51,5 +58,11 @@ QPushButton#randomPlayButton:hover {
 }
 
 QPushButton#randomPlayButton:pressed {
-    color: rgb(153,153,153);
+    color: rgb(153, 153, 153);
+}
+
+
+/*菜单*/
+QMenu#sortModeMenu[actionNum='4']{
+    height: 150px;
 }

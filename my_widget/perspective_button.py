@@ -81,10 +81,10 @@ class PerspectivePushButton(QPushButton):
 
     def mouseReleaseEvent(self, e):
         """ 鼠标松开时显示小部件 """
-        super().mouseReleaseEvent(e)
         self.releaseMouse()
         self.__pressedPos = None
         self.update()
+        super().mouseReleaseEvent(e)
 
     def paintEvent(self, e):
         """ 绘制背景 """

@@ -179,9 +179,9 @@ class SubSelectSongFolderPanel(QWidget):
         """ 关闭前将更新json文件 """
         with open('config\\config.json', 'w', encoding='utf-8') as f:
             json.dump(self.__config, f)
+        QApplication.processEvents()
         self.updateSelectedFoldersSig.emit(self.__config['selected-folders'])
         self.parent().deleteLater()
-        #QApplication.processEvents()
 
     def resizeEvent(self, e):
         """ 改变高度时移动按钮 """

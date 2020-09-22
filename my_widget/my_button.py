@@ -15,12 +15,11 @@ from my_functions.is_not_leave import isNotLeave
 class RandomPlayButton(QPushButton):
     """ 定义条形随机播放按钮 """
 
-    def __init__(self, text='', slot=None, parent=None):
+    def __init__(self, text='', parent=None):
         super().__init__(text, parent)
         self.setIcon(QIcon('resource\\images\\无序播放所有_130_17.png'))
         self.setIconSize(QSize(130, 17))
         self.setObjectName('randomPlayButton')
-        self.clicked.connect(slot)
         self.installEventFilter(self)
 
     def eventFilter(self, obj, e):
@@ -34,15 +33,6 @@ class RandomPlayButton(QPushButton):
             elif e.type() == QEvent.MouseButtonPress:
                 self.setIcon(QIcon('resource\\images\\无序播放所有_pressed_130_17.png'))
         return False
-
-
-class SortModeButton(QPushButton):
-    """ 定义排序模式按钮 """
-
-    def __init__(self, text, slot, parent=None):
-        super().__init__(text, parent)
-        self.setObjectName('sortModeButton')
-        self.clicked.connect(slot)
 
 
 class ThreeStateButton(QToolButton):

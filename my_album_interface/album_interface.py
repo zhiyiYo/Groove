@@ -31,8 +31,8 @@ class AlbumInterface(QWidget):
         self.albumInfo = deepcopy(albumInfo)
         self.songInfo_list = albumInfo.get('songInfo_list')  # type:list
         # 创建小部件
-        self.albumInfoBar = AlbumInfoBar(albumInfo, self)
         self.songListWidget = SongCardListWidget(self.songInfo_list, self)
+        self.albumInfoBar = AlbumInfoBar(albumInfo, self)
         self.selectionModeBar = SelectionModeBar(self)
         # 初始化
         self.__initWidget()
@@ -42,9 +42,7 @@ class AlbumInterface(QWidget):
         self.resize(1230, 900)
         self.setAutoFillBackground(True)
         self.selectionModeBar.hide()
-        self.songListWidget.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.songListWidget.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.songListWidget.move(30, 45 + self.albumInfoBar.height())
         # 设置背景色
         palette = QPalette()
         palette.setColor(self.backgroundRole(), Qt.white)
@@ -60,16 +58,14 @@ class AlbumInterface(QWidget):
         self.albumInfo = albumInfo if albumInfo else {}
         self.songInfo_list = albumInfo.get('songInfo_list')
         self.songListWidget.updateAllSongCards(self.songInfo_list)
-        self.songListWidget.resize(
-            self.width() - 60, self.height() - 45 - self.albumInfoBar.height())
+        self.songListWidget.resize(self.size())
 
     def resizeEvent(self, e):
         """ 改变尺寸时改变小部件大小 """
         super().resizeEvent(e)
         self.albumInfoBar.resize(
             self.width(), self.albumInfoBar.height())
-        self.songListWidget.resize(
-            self.width() - 60, self.height() - 45 - self.albumInfoBar.height())
+        self.songListWidget.resize(self.size())
         self.selectionModeBar.resize(
             self.width(), self.selectionModeBar.height())
         self.selectionModeBar.move(

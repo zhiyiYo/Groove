@@ -1,25 +1,24 @@
 # coding:utf-8
 from time import time
 
-from PyQt5.QtCore import QPoint, QSize, Qt, pyqtSignal
-from PyQt5.QtGui import (QColor, QContextMenuEvent, QFont, QIcon, QPainter,
-                         QPen, QResizeEvent)
-from PyQt5.QtWidgets import QAction, QLabel, QStackedWidget, QWidget
+from PyQt5.QtCore import QPoint, Qt, pyqtSignal
+from PyQt5.QtGui import QPalette
+from PyQt5.QtWidgets import QWidget
 
-from get_info.get_song_info import GetSongInfo
 from get_info.get_album_cover import GetAlbumCover
 from get_info.get_album_info import GetAlbumInfo
-from my_album_tab_interface import AlbumTabInterface
+from get_info.get_song_info import GetSongInfo
+from my_album_tab_interface import AlbumCardViewer
 from my_album_tab_interface.album_blur_background import AlbumBlurBackground
 from my_album_tab_interface.selection_mode_bar import \
     SelectionModeBar as AlbumTabSelectionBar
-from my_song_tab_interface import SongTabInterface
+from my_song_tab_interface import SongCardListWidget
 from my_song_tab_interface.selection_mode_bar import \
     SelectionModeBar as SongTabSelectionModeBar
 from my_widget.pop_up_ani_stacked_widget import PopUpAniStackedWidget
 
-from .scroll_bar import ScrollBar
 from .tab_button import TabButton
+from .tool_bar import ToolBar
 
 
 class MyMusicInterface(QWidget):
@@ -50,85 +49,52 @@ class MyMusicInterface(QWidget):
         self.__albumInfoGetter = GetAlbumInfo(
             self.__songInfoGetter.songInfo_list)
         t1 = time()
-        self.songTab = SongTabInterface(
+        self.songCardListWidget = SongCardListWidget(
             self.__songInfoGetter.songInfo_list, self)
         t2 = time()
-        self.albumTab = AlbumTabInterface(
+        self.albumCardViewer = AlbumCardViewer(
             self.__albumInfoGetter.albumInfo_list, self)
         t3 = time()
         print('创建歌曲标签界面耗时：'.ljust(17), t2 - t1)
         print('创建专辑标签界面耗时：'.ljust(17), t3 - t2)
+        # 创建工具栏
+        self.toolBar = ToolBar(self)
         # 引用小部件
         self.__referenceWidgets()
-        # 实例化标签页按钮
-        self.songTabButton = TabButton('歌曲', self, 0)
-        self.songerTabButton = TabButton('歌手', self, 1)
-        self.albumTabButton = TabButton('专辑', self, 1)
-        self.button_list = [self.songTabButton,
-                            self.songerTabButton, self.albumTabButton]
-        # 实例化一个标签和三个竖直滚动条
-        self.myMusicLabel = QLabel(self)
-        self.song_scrollBar = ScrollBar(self.songCardList_vScrollBar, self)
-        self.album_scrollBar = ScrollBar(self.albumViewer_vScrollBar, self)
-        self.scrollBar_list = [self.song_scrollBar, self.album_scrollBar]
         # 实例化底部选择栏
         self.songTabSelectionModeBar = SongTabSelectionModeBar(self)
         self.albumTabSelectionModeBar = AlbumTabSelectionBar(self)
 
-    def __initLayout(self):
-        """ 初始化布局 """
-        self.myMusicLabel.move(30, 54)
-        self.stackedWidget.move(0, 181)
-        self.songTabButton.move(33, 136)
-        self.albumTabButton.move(239, 136)
-        self.songerTabButton.move(136, 136)
-        for scrollBar in self.scrollBar_list:
-            scrollBar.move(self.width() - scrollBar.width(), 40)
-
     def __initWidget(self):
         """ 初始化小部件的属性 """
-        self.__initLayout()
         self.resize(1300, 970)
-        self.setAttribute(Qt.WA_StyledBackground)
         # 将标签页面添加到stackedWidget中
-        self.stackedWidget.addWidget(self.songTab, 0, 22)
-        self.stackedWidget.addWidget(self.albumTab, 0, 22)
+        self.stackedWidget.addWidget(self.songCardListWidget, 0, 30)
+        self.stackedWidget.addWidget(self.albumCardViewer, 0, 30)
         self.songTabButton.setSelected(True)
-        # 设置标签上
-        self.myMusicLabel.setText('我的音乐')
-        # 隐藏列表视图的滚动条
-        self.songCardListWidget.setVerticalScrollBarPolicy(
-            Qt.ScrollBarAlwaysOff)
-        # 设置滚动条高度
-        self.adjustScrollBarHeight()
+        # 初始化按钮
+        self.toolBar.randomPlayAllButton.setText(
+            f'({len(self.songCardListWidget.songCard_list)})')
         # 隐藏底部选择栏和磨砂背景
         self.songTabSelectionModeBar.hide()
         self.albumTabSelectionModeBar.hide()
-        self.album_scrollBar.hide()
-        # 分配ID并设置层叠样式
-        self.setObjectName('musicGroupInterface')
-        self.myMusicLabel.setObjectName('myMusicLabel')
-        self.song_scrollBar.setObjectName('songScrollBar')
-        self.album_scrollBar.setObjectName('albumScrollBar')
-        self.__setQss()
+        # 设置背景色
+        palette = QPalette()
+        palette.setColor(self.backgroundRole(), Qt.white)
+        self.setPalette(palette)
         # 信号连接到槽
         self.__connectSignalToSlot()
 
-    def adjustScrollBarHeight(self):
-        """ 调整滚动条高度 """
-        self.song_scrollBar.adjustSrollBarHeight()
-        self.album_scrollBar.adjustSrollBarHeight()
-
-    def __setQss(self):
-        """ 设置层叠样式表 """
-        with open('resource\\css\\myMusicInterface.qss', 'r',
-                  encoding='utf-8') as f:
-            self.setStyleSheet(f.read())
-
     def __changeTabSlot(self, index):
-        """ 当前标签窗口改变时更改滚动条的绑定对象 """
-        self.song_scrollBar.setVisible(index == 0)
-        self.album_scrollBar.setVisible(index == 1)
+        """ 当前标签窗口改变时刷新工具栏 """
+        self.toolBar.songSortModeButton.setVisible(index == 0)
+        self.toolBar.albumSortModeButton.setVisible(index == 1)
+        if index == 0:
+            self.toolBar.randomPlayAllButton.setText(
+                f'({len(self.songCardListWidget.songCard_list)})')
+        elif index == 1:
+            self.toolBar.randomPlayAllButton.setText(
+                f'({len(self.albumCardViewer.albumCardDict_list)})')
 
     def __checkedCardNumChangedSlot(self, num):
         """ 选中的卡数量发生改变时刷新选择栏 """
@@ -151,14 +117,13 @@ class MyMusicInterface(QWidget):
 
     def __referenceWidgets(self):
         """ 引用小部件 """
-        # 引用视图
-        self.songCardListWidget = self.songTab.songCardListWidget
-        self.albumCardViewer = self.albumTab.albumCardViewer
-        # 引用三个视图的滚动条
-        self.songCardList_vScrollBar = self.songCardListWidget.verticalScrollBar(
-        )
-        self.albumViewer_vScrollBar = self.albumCardViewer.scrollArea.verticalScrollBar(
-        )
+        # 引用按钮
+        self.songTabButton = self.toolBar.songTabButton
+        self.songerTabButton = self.toolBar.songerTabButton
+        self.albumTabButton = self.toolBar.albumTabButton
+        # 引用当前排序动作
+        self.currentSongSortAct = self.toolBar.songSortByCratedTimeAct
+        self.currentAlbumSortAct = self.toolBar.albumSortByCratedTimeAct
 
     def __songTabSelectAllButtonSlot(self):
         """ 歌曲卡全选/取消全选 """
@@ -247,24 +212,14 @@ class MyMusicInterface(QWidget):
         if self.isInSelectionMode:
             return
         self.setSelectedButton(tabIndex)
-        self.stackedWidget.setCurrentIndex(tabIndex)
+        self.stackedWidget.setCurrentIndex(tabIndex,duration=300)
         self.currentIndexChanged.emit(tabIndex)
-
-    def paintEvent(self, QPaintEvent):
-        """ 绘制背景 """
-        super().paintEvent(QPaintEvent)
-        painter = QPainter(self)
-        pen = QPen(QColor(229, 229, 229))
-        painter.setPen(pen)
-        painter.drawLine(30, 176, self.width() - 30, 176)
 
     def resizeEvent(self, e):
         """ 当窗口大小发生改变时隐藏小部件 """
-        self.adjustScrollBarHeight()
         # 调整标签页面尺寸
-        self.stackedWidget.resize(self.width(), self.height()-181)
-        for scrollBar in self.scrollBar_list:
-            scrollBar.move(self.width() - scrollBar.width(), 40)
+        self.stackedWidget.resize(self.width(), self.height())
+        self.toolBar.resize(self.width() - 30, self.toolBar.height())
         # 调整选中模式栏的位置和宽度
         self.songTabSelectionModeBar.resize(
             self.width(), self.songTabSelectionModeBar.height())
@@ -286,23 +241,78 @@ class MyMusicInterface(QWidget):
         self.songCardListWidget.updateAllSongCards(
             self.__songInfoGetter.songInfo_list)
 
+    def __showSortModeMenu(self):
+        """ 显示排序方式菜单 """
+        if self.sender() is self.toolBar.songSortModeButton:
+            self.toolBar.songSortModeMenu.setDefaultAction(
+                self.currentSongSortAct)
+            actIndex = self.toolBar.songSortAction_list.index(
+                self.currentSongSortAct)
+            self.toolBar.songSortModeMenu.exec(
+                self.mapToGlobal(QPoint(self.sender().x(),
+                                        self.sender().y() - 37 * actIndex - 1)))
+        elif self.sender() is self.toolBar.albumSortModeButton:
+            self.toolBar.albumSortModeMenu.setDefaultAction(
+                self.currentAlbumSortAct)
+            actIndex = self.toolBar.albumSortAction_list.index(
+                self.currentAlbumSortAct)
+            self.toolBar.albumSortModeMenu.exec(
+                self.mapToGlobal(QPoint(self.sender().x(),
+                                        self.sender().y() - 37 * actIndex - 1)))
+
+    def __sortSongCard(self):
+        """ 根据所选的排序方式对歌曲卡进行重新排序 """
+        sender = self.sender()
+        self.currentSongSortAct = sender
+        # 更新列表
+        if sender is self.toolBar.songSortByCratedTimeAct and self.songCardListWidget.sortMode != '添加时间':
+            self.toolBar.songSortModeButton.setText('添加时间')
+            self.songCardListWidget.setSortMode('添加时间')
+        elif sender is self.toolBar.songSortByDictOrderAct and self.songCardListWidget.sortMode != 'A到Z':
+            self.toolBar.songSortModeButton.setText('A到Z')
+            self.songCardListWidget.setSortMode('A到Z')
+        elif sender is self.toolBar.songSortBySongerAct and self.songCardListWidget.sortMode != '歌手':
+            self.toolBar.songSortModeButton.setText('歌手')
+            self.songCardListWidget.setSortMode('歌手')
+
+    def __sortAlbumCard(self):
+        """ 根据所选的排序方式对歌曲卡进行重新排序 """
+        sender = self.sender()
+        self.currentAlbumSortAct = sender
+        self.albumCardViewer.albumBlurBackground.hide()
+        # 更新分组
+        if sender is self.toolBar.albumSortByCratedTimeAct and self.albumCardViewer.sortMode != '添加时间':
+            self.toolBar.albumSortModeButton.setText('添加时间')
+            self.albumCardViewer.sortByAddTimeGroup()
+        elif sender is self.toolBar.albumSortByDictOrderAct and self.albumCardViewer.sortMode != 'A到Z':
+            self.toolBar.albumSortModeButton.setText('A到Z')
+            self.albumCardViewer.sortByFirstLetter()
+        elif sender is self.toolBar.albumSortByYearAct and self.albumCardViewer.sortMode != '发行年份':
+            self.toolBar.albumSortModeButton.setText('发行年份')
+            self.albumCardViewer.sortByYear()
+        elif sender is self.toolBar.albumSortBySongerAct and self.albumCardViewer.sortMode != '歌手':
+            self.toolBar.albumSortModeButton.setText('歌手')
+            self.albumCardViewer.sortBySonger()
+
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
         # 将按钮点击信号连接到槽
         self.songTabButton.buttonSelected.connect(self.__buttonSelectedSlot)
         self.albumTabButton.buttonSelected.connect(self.__buttonSelectedSlot)
+        # 将工具栏信号连接到槽函数
+        self.toolBar.songSortModeButton.clicked.connect(
+            self.__showSortModeMenu)
+        self.toolBar.albumSortModeButton.clicked.connect(
+            self.__showSortModeMenu)
+        self.toolBar.randomPlayAllButton.clicked.connect(
+            self.randomPlayAllSig)
+        for act in self.toolBar.songSortAction_list:
+            act.triggered.connect(self.__sortSongCard)
+        for act in self.toolBar.albumSortAction_list:
+            act.triggered.connect(self.__sortAlbumCard)
         # 将标签页面信号连接到槽
         self.stackedWidget.currentChanged.connect(
             self.__changeTabSlot)
-        self.albumTab.sortModeChanged.connect(
-            self.album_scrollBar.associateScrollBar)
-        self.albumTab.columnChanged.connect(
-            self.album_scrollBar.associateScrollBar)
-        # 无序播放所有信号连接到槽函数
-        self.songTab.randomPlayAllSig.connect(
-            self.randomPlayAllSig)
-        self.albumTab.randomPlayAllSig.connect(
-            self.randomPlayAllSig)
         # 歌曲界面信号连接到槽函数
         self.songCardListWidget.selectionModeStateChanged.connect(
             self.__selectionModeStateChangedSlot)

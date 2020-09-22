@@ -2,7 +2,6 @@
 
 import imghdr
 import os
-from json import load
 from shutil import copyfile, rmtree
 
 from mutagen import File

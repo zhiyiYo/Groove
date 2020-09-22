@@ -37,7 +37,6 @@ class AlbumCardViewer(QWidget):
         self.albumCard_list = []
         self.checkedAlbumCard_list = []
         # 初始化标志位
-        self.isAlbumEmpty = False
         self.isInSelectionMode = False
         self.isAllAlbumCardsChecked = False
         # 设置当前排序方式
@@ -47,6 +46,7 @@ class AlbumCardViewer(QWidget):
         self.albumView_hLayout = QHBoxLayout()
         self.all_h_layout = QHBoxLayout()
         # 实例化滚动区域和滚动区域的窗口
+        self.__createGuideLabel()
         self.scrollArea = ScrollArea(self)
         self.albumViewWidget = QWidget()
         self.albumBlurBackground = AlbumBlurBackground(self.albumViewWidget)
@@ -60,15 +60,25 @@ class AlbumCardViewer(QWidget):
         self.resize(1270, 760)
         # 隐藏磨砂背景
         self.albumBlurBackground.hide()
+        # 设置导航标签的可见性
+        self.guideLabel.setHidden(bool(self.albumCard_list))
+        # 设置滚动区域外边距
+        self.scrollArea.setViewportMargins(0, 245, 0, 0)
         # 初始化滚动条
-        self.scrollArea.setVerticalScrollBarPolicy(
-            Qt.ScrollBarAlwaysOff)
         self.scrollArea.setHorizontalScrollBarPolicy(
             Qt.ScrollBarAlwaysOff)
         self.albumViewWidget.setObjectName('albumViewWidget')
         self.__connectSignalToSlot()
         self.__initLayout()
         self.__setQss()
+
+    def __createGuideLabel(self):
+        """ 创建导航标签 """
+        self.guideLabel = QLabel('这里没有可显示的内容。请尝试其他筛选器。', self)
+        self.guideLabel.setStyleSheet(
+            "color: black; font: 25px 'Microsoft YaHei'")
+        self.guideLabel.resize(500, 26)
+        self.guideLabel.move(35, 286)
 
     def __createAlbumCards(self):
         """ 将专辑卡添加到窗口中 """
@@ -122,8 +132,6 @@ class AlbumCardViewer(QWidget):
         """ 初始化布局 """
         # 如果没有专辑，就置位专辑为空标志位并直接返回
         if not self.albumCard_list:
-            self.isAlbumEmpty = True
-            self.hide()
             return
         # 按照添加时间分组
         self.sortByAddTimeGroup()
@@ -190,7 +198,11 @@ class AlbumCardViewer(QWidget):
         """ 根据宽度调整网格的列数 """
         super().resizeEvent(event)
         # 如果第一次超过1337就调整网格的列数
-        if self.width() >= 1350 and self.column_num != 6:
+        if self.width() >= 1790 and self.column_num != 8:
+            self.__updateColumnNum(8)
+        if 1570<=self.width() < 1790 and self.column_num != 7:
+            self.__updateColumnNum(7)
+        elif 1350<=self.width() < 1570 and self.column_num != 6:
             self.__updateColumnNum(6)
         elif 1130 < self.width() < 1350 and self.column_num != 5:
             self.__updateColumnNum(5)
@@ -200,6 +212,10 @@ class AlbumCardViewer(QWidget):
             self.__updateColumnNum(3)
         elif self.width() <= 690:
             self.__updateColumnNum(2)
+        # 调整滚动条
+        self.scrollArea.verticalScrollBar().move(-1, 40)
+        self.scrollArea.verticalScrollBar().resize(
+            self.scrollArea.verticalScrollBar().width(), self.height() - 156)
 
     def __updateColumnNum(self, new_column):
         """ 更新网格列数 """
@@ -208,8 +224,6 @@ class AlbumCardViewer(QWidget):
                 currentGroup_dict['gridLayout'].removeWidget(albumCard)
         self.column_num = new_column
         self.__updateGridLayout()
-        # 发送更新列数信号
-        self.columnChanged.emit()
 
     def __removeOldWidget(self):
         """ 从布局中移除小部件,同时设置新的布局 """

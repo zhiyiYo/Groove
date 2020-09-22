@@ -1,6 +1,6 @@
 # coding:utf-8
 
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal, QMargins
 from PyQt5.QtGui import QContextMenuEvent
 
 from my_song_list_widget.basic_song_list_widget import BasicSongListWidget
@@ -17,7 +17,8 @@ class SongCardListWidget(BasicSongListWidget):
     nextToPlayOneSongSig = pyqtSignal(dict)  # 插入一首歌到播放列表中
 
     def __init__(self, songInfo_list: list, parent=None):
-        super().__init__(songInfo_list, SongCardType.ALBUM_INTERFACE_SONG_CARD, parent)
+        super().__init__(songInfo_list, SongCardType.ALBUM_INTERFACE_SONG_CARD,
+                         parent, QMargins(30, 430, 30, 116))
         # 创建右击菜单
         self.contextMenu = SongCardListContextMenu(self)
         # 创建歌曲卡
@@ -64,9 +65,16 @@ class SongCardListWidget(BasicSongListWidget):
         with open('resource\\css\\songTabInterfaceSongListWidget.qss', encoding='utf-8') as f:
             self.setStyleSheet(f.read())
 
-    def updateAllSongCards(self, songInfo_list:list):
+    def updateAllSongCards(self, songInfo_list: list):
         """ 更新所有歌曲卡，根据给定的信息决定创建或者删除歌曲卡 """
         super().updateAllSongCards(songInfo_list, self.__connectSongCardSignalToSlot)
+
+    def resizeEvent(self, e):
+        """ 调整尺寸的同时调整滚动条的位置和尺寸 """
+        super().resizeEvent(e)
+        self.verticalScrollBar().move(-1, 40)
+        self.verticalScrollBar().resize(
+            self.verticalScrollBar().width(), self.height() - 156)
 
     def sortSongCardByTrackNum(self):
         """ 以曲序为基准排序歌曲卡 """

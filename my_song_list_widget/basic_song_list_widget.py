@@ -3,9 +3,9 @@
 from copy import deepcopy
 from json import dump
 
-from PyQt5.QtCore import QEvent, QPoint, QSize, Qt, pyqtSignal
+from PyQt5.QtCore import QEvent, QPoint, QSize, Qt, pyqtSignal, QMargins
 from PyQt5.QtGui import QBrush, QColor, QContextMenuEvent, QPainter, QPixmap
-from PyQt5.QtWidgets import QListWidgetItem,QApplication
+from PyQt5.QtWidgets import QListWidgetItem, QLabel, QApplication
 
 from my_dialog_box import PropertyPanel, SongInfoEditPanel
 from my_widget.my_listWidget import ListWidget
@@ -24,14 +24,15 @@ class BasicSongListWidget(ListWidget):
     selectionModeStateChanged = pyqtSignal(bool)
     emptyChangedSig = pyqtSignal(bool)         # 歌曲卡是否为空信号
 
-    def __init__(self, songInfo_list: list, songCardType: SongCardType, parent=None, placeHolderHeight=116):
+    def __init__(self, songInfo_list: list, songCardType: SongCardType, parent=None, viewportMargins=QMargins(0, 0, 0, 0)):
         """ 创建歌曲卡列表控件对象
+
         Parameters
         ----------
         songInfo_list : 歌曲信息列表\n
         songCardType : 歌曲卡类型\n
         parent : 父级窗口\n
-        placeHolderHeight : 底部空白高度
+        viewportMargins : 视口的外边距
         """
         super().__init__(parent)
         self.__songCardType = songCardType
@@ -42,7 +43,6 @@ class BasicSongListWidget(ListWidget):
         self.currentIndex = -1
         self.playingIndex = -1  # 正在播放的歌曲卡下标
         self.playingSongInfo = self.songInfo_list[0] if songInfo_list else None
-        self.placeHolderHeight = placeHolderHeight
         # 初始化标志位
         self.isInSelectionMode = False
         self.isAllSongCardsChecked = False
@@ -50,8 +50,12 @@ class BasicSongListWidget(ListWidget):
         self.item_list = []
         self.songCard_list = []
         self.checkedSongCard_list = []
+        # 创建导航标签标签
+        self.__createGuideLabel()
         # 交错颜色
         self.setAlternatingRowColors(True)
+        # 设置边距
+        self.setViewportMargins(viewportMargins)
 
     def createSongCards(self, connectSongCardToSlotFunc):
         """ 清空列表并创建新歌曲卡，该函数必须被子类重写
@@ -62,8 +66,16 @@ class BasicSongListWidget(ListWidget):
         for songInfo in self.songInfo_list:
             # 添加空项目
             self.appendOneSongCard(songInfo, connectSongCardToSlotFunc)
-        # 添加一个空白item来填补playBar所占高度
-        self.__createPlaceHolderItem()
+        # 设置导航标签是否隐藏
+        self.guideLabel.setHidden(bool(self.songCard_list))
+
+    def __createGuideLabel(self):
+        """ 创建导航标签 """
+        self.guideLabel = QLabel('这里没有可显示的内容。请尝试其他筛选器。', self)
+        self.guideLabel.setStyleSheet(
+            "color: black; font: 25px 'Microsoft YaHei'")
+        self.guideLabel.resize(500, 26)
+        self.guideLabel.move(35, 286)
 
     def appendOneSongCard(self, songInfo: dict, connectSongCardSigToSlotFunc=None):
         """ 在列表尾部添加一个歌曲卡
@@ -180,23 +192,13 @@ class BasicSongListWidget(ListWidget):
         with open('Data\\songInfo.json', 'w', encoding='utf-8') as f:
             dump(self.songInfo_list, f)
 
-    def paintEvent(self, e):
-        """ 绘制白色背景 """
-        super().paintEvent(e)
-        painter = QPainter(self.viewport())
-        painter.setPen(Qt.white)
-        painter.setBrush(Qt.white)
-        # 填充不是白色的区域
-        painter.drawRect(0, 60 * len(self.songCard_list),
-                         self.width(), self.height())
-
     def resizeEvent(self, e):
         """ 更新item的尺寸 """
         super().resizeEvent(e)
+        margins = self.viewportMargins()  # type:QMargins
         for item in self.item_list:
-            item.setSizeHint(QSize(self.width(), 60))
-        self.placeholderItem.setSizeHint(
-            QSize(self.width(), self.placeHolderHeight))
+            item.setSizeHint(
+                QSize(self.width() - margins.left() - margins.right(), 60))
 
     def songCardCheckedStateChanedSlot(self, itemIndex: int, isChecked: bool):
         """ 歌曲卡选中状态改变对应的槽函数 """
@@ -259,7 +261,6 @@ class BasicSongListWidget(ListWidget):
         ----------
         songInfo_list : 歌曲信息列表\n
         connectSongCardSigToSlotFunc : 将歌曲卡信号连接到槽函数的函数对象 """
-        self.takeItem(len(self.songCard_list))
         # 长度相等就更新信息，不相等就根据情况创建或者删除item
         if self.songCard_list:
             self.songCard_list[self.currentIndex].setPlay(False)
@@ -293,18 +294,8 @@ class BasicSongListWidget(ListWidget):
         self.playingSongInfo = None
         for songCard in self.songCard_list:
             songCard.setPlay(False)
-        # 创建新占位行
-        self.__createPlaceHolderItem()
-        # 调整高度
-        self.update()
-
-    def __createPlaceHolderItem(self):
-        """ 创建占位行 """
-        self.placeholderItem = QListWidgetItem(self)
-        self.placeholderItem.setSizeHint(
-            QSize(self.width(), self.placeHolderHeight))
-        self.placeholderItem.setBackground(QBrush(Qt.white))
-        self.addItem(self.placeholderItem)
+        # 如果歌曲卡为空就显示导航标签
+        self.guideLabel.setHidden(bool(self.songCard_list))
 
     def clearSongCards(self):
         """ 清空歌曲卡 """
@@ -327,7 +318,8 @@ class BasicSongListWidget(ListWidget):
             self.songInfo_list.sort(
                 key=lambda songInfo: songInfo[key], reverse=isReverse)
         else:
-            self.songInfo_list.sort(key=lambda songInfo:int(songInfo['tracknumber']))
+            self.songInfo_list.sort(
+                key=lambda songInfo: int(songInfo['tracknumber']))
 
     @property
     def songCardType(self) -> SongCardType:
