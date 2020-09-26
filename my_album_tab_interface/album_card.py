@@ -28,7 +28,6 @@ class AlbumCard(PerspectiveWidget):
     addToPlaylistSignal = pyqtSignal(list)
     switchToAlbumInterfaceSig = pyqtSignal(dict)
     saveAlbumInfoSig = pyqtSignal(dict, dict)
-    updateAlbumInfoSig = pyqtSignal(dict, dict)
     checkedStateChanged = pyqtSignal(QWidget, bool)  # 发送 albumCard 和 isChecked
     showBlurAlbumBackgroundSig = pyqtSignal(QPoint, str)  # 发送专辑卡全局坐标
     hideBlurAlbumBackgroundSig = pyqtSignal()
@@ -54,9 +53,9 @@ class AlbumCard(PerspectiveWidget):
         # 实例化封面和按钮
         self.albumPic = QLabel(self)
         self.playButton = BlurButton(
-            self, (37, 71), r'resource\images\album_tab_interface\播放按钮_70_70.png', self.picPath)
+            self, (30, 65), r'resource\images\album_tab_interface\播放按钮_70_70.png', self.picPath)
         self.addToButton = BlurButton(
-            self, (109, 71), r'resource\images\album_tab_interface\添加到按钮_70_70.png', self.picPath)
+            self, (100, 65), r'resource\images\album_tab_interface\添加到按钮_70_70.png', self.picPath)
         # 创建复选框
         self.checkBox = CheckBox(self, forwardTargetWidget=self.albumPic)
         # 创建动画和窗口特效
@@ -67,6 +66,8 @@ class AlbumCard(PerspectiveWidget):
         self.setFixedSize(210, 290)
         self.setAttribute(Qt.WA_StyledBackground)
         self.albumPic.setFixedSize(200, 200)
+        self.playButton.move(35, 70)
+        self.addToButton.move(105, 70)
         self.albumPic.setPixmap(QPixmap(self.picPath).scaled(
             200, 200, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
         # 给小部件添加特效
@@ -105,9 +106,8 @@ class AlbumCard(PerspectiveWidget):
         albumCardPos = self.mapToGlobal(QPoint(0, 0))  # type:QPoint
         self.showBlurAlbumBackgroundSig.emit(albumCardPos, self.picPath)
         # 处于选择模式下按钮不可见
-        if not self.isInSelectionMode:
-            self.addToButton.show()
-            self.playButton.show()
+        self.playButton.setHidden(self.isInSelectionMode)
+        self.addToButton.setHidden(self.isInSelectionMode)
 
     def leaveEvent(self, e):
         """ 鼠标离开时隐藏磨砂背景和按钮 """
@@ -161,7 +161,7 @@ class AlbumCard(PerspectiveWidget):
                 # 不处于选择模式时且鼠标松开事件不是复选框发来的才发送切换到专辑界面的信号
                 self.switchToAlbumInterfaceSig.emit(self.albumInfo)
 
-    def updateWindow(self, oldAlbumInfo: dict, newAlbumInfo: dict):
+    def updateWindow(self, newAlbumInfo: dict):
         """ 更新专辑卡窗口信息 """
         self.albumInfo = newAlbumInfo
         self.songInfo_list = self.albumInfo['songInfo_list']
@@ -170,11 +170,9 @@ class AlbumCard(PerspectiveWidget):
             200, 200, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
         self.albumNameLabel.setText(newAlbumInfo['album'])
         self.songerNameLabel.setText(newAlbumInfo['songer'])
-        self.playButton.setBlurPic(newAlbumInfo['cover_path'], 26)
-        self.addToButton.setBlurPic(newAlbumInfo['cover_path'], 26)
+        self.playButton.setBlurPic(newAlbumInfo['cover_path'], 30)
+        self.addToButton.setBlurPic(newAlbumInfo['cover_path'], 30)
         self.__adjustLabel()
-        # 同时更新专辑列表的信息
-        self.updateAlbumInfoSig.emit(oldAlbumInfo, newAlbumInfo)
 
     def showAlbumInfoEditPanel(self):
         """ 显示专辑信息编辑面板 """
@@ -190,7 +188,7 @@ class AlbumCard(PerspectiveWidget):
         newAlbumInfo_copy = deepcopy(newAlbumInfo)
         self.albumInfo['songInfo_list'].sort(
             key=lambda songInfo: int(songInfo['tracknumber']))
-        self.updateWindow(oldAlbumInfo, newAlbumInfo)
+        self.updateWindow(newAlbumInfo)
         self.saveAlbumInfoSig.emit(oldAlbumInfo, newAlbumInfo_copy)
 
     def __checkedStateChangedSlot(self):

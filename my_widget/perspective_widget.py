@@ -30,6 +30,9 @@ class PerspectiveWidget(QWidget):
     def mousePressEvent(self, e):
         """ 鼠标点击窗口时进行透视变换 """
         super().mousePressEvent(e)
+        # 多次点击时不响应，防止小部件的再次隐藏
+        if self.__pressedPos:
+            return
         self.grabMouse()
         pixmap = self.grab()
         self.__perspectiveTrans.setPixmap(pixmap)
@@ -80,19 +83,19 @@ class PerspectiveWidget(QWidget):
                 [self.__perspectiveTrans.width - 2, self.__perspectiveTrans.height - 1])
         elif self.__pressedPos == 'left-top':
             self.__perspectiveTrans.setDstPoints(
-                [6, 5], [self.__perspectiveTrans.width - 1, 1],
+                [7, 6], [self.__perspectiveTrans.width - 1, 1],
                 [1, self.__perspectiveTrans.height - 2],
                 [self.__perspectiveTrans.width - 2, self.__perspectiveTrans.height - 1])
         elif self.__pressedPos == 'left-bottom':
             self.__perspectiveTrans.setDstPoints(
-                [2, 3], [self.__perspectiveTrans.width - 3, 0],
-                [4, self.__perspectiveTrans.height - 4],
+                [0, 1], [self.__perspectiveTrans.width - 3, 0],
+                [6, self.__perspectiveTrans.height - 5],
                 [self.__perspectiveTrans.width - 2, self.__perspectiveTrans.height - 2])
         elif self.__pressedPos == 'top':
             self.__perspectiveTrans.setDstPoints(
-                [3, 5], [self.__perspectiveTrans.width - 4, 5],
-                [1, self.__perspectiveTrans.height - 2],
-                [self.__perspectiveTrans.width - 2, self.__perspectiveTrans.height - 2])
+                [4, 5], [self.__perspectiveTrans.width - 5, 5],
+                [0, self.__perspectiveTrans.height - 1],
+                [self.__perspectiveTrans.width - 1, self.__perspectiveTrans.height - 1])
         elif self.__pressedPos == 'center':
             self.__perspectiveTrans.setDstPoints(
                 [3, 4], [self.__perspectiveTrans.width - 4, 4],
@@ -100,14 +103,14 @@ class PerspectiveWidget(QWidget):
                 [self.__perspectiveTrans.width - 4, self.__perspectiveTrans.height - 3])
         elif self.__pressedPos == 'bottom':
             self.__perspectiveTrans.setDstPoints(
-                [2, 2], [self.__perspectiveTrans.width - 3, 3],
-                [3, self.__perspectiveTrans.height - 3],
-                [self.__perspectiveTrans.width - 4, self.__perspectiveTrans.height - 3])
+                [0, 0], [self.__perspectiveTrans.width - 1, 0],
+                [4, self.__perspectiveTrans.height - 4],
+                [self.__perspectiveTrans.width - 5, self.__perspectiveTrans.height - 4])
         elif self.__pressedPos == 'right-bottom':
             self.__perspectiveTrans.setDstPoints(
                 [1, 0], [self.__perspectiveTrans.width - 3, 2],
                 [1, self.__perspectiveTrans.height - 2],
-                [self.__perspectiveTrans.width - 5, self.__perspectiveTrans.height - 4])
+                [self.__perspectiveTrans.width - 6, self.__perspectiveTrans.height - 5])
         elif self.__pressedPos == 'right-top':
             self.__perspectiveTrans.setDstPoints(
                 [0, 1], [self.__perspectiveTrans.width - 7, 5],

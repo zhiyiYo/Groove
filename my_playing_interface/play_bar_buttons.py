@@ -199,7 +199,7 @@ class PullUpArrow(BasicCircleButton):
         self.totalRotateAngle = 0
         # 实例化定时器
         self.timer = QTimer(self)
-        self.timer.setInterval(24)
+        self.timer.setInterval(19)
         self.timer.timeout.connect(self.timerSlot)
 
     def setArrowDirection(self, direction: str = 'up'):

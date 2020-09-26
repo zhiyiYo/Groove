@@ -7,7 +7,7 @@ from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve,
                           QParallelAnimationGroup, QPropertyAnimation, QRect,
                           QSize, Qt, QTimer, pyqtSignal)
 from PyQt5.QtGui import QMouseEvent, QPixmap
-from PyQt5.QtWidgets import QLabel, QWidget,QApplication
+from PyQt5.QtWidgets import QLabel, QWidget, QApplication
 
 from my_widget.my_button import ThreeStateButton
 
@@ -87,15 +87,15 @@ class PlayingInterface(QWidget):
         # 将信号连接到槽
         self.__connectSignalToSlot()
         # 初始化动画
-        self.playBarAni.setDuration(500)
-        self.songListWidgetAni.setDuration(300)
-        self.songListWidgetAni.setEasingCurve(QEasingCurve.InQuad)
-        self.playBarAni.setEasingCurve(QEasingCurve.InExpo)
+        self.playBarAni.setDuration(350)
+        self.songListWidgetAni.setDuration(350)
+        self.songListWidgetAni.setEasingCurve(QEasingCurve.InOutQuad)
+        self.playBarAni.setEasingCurve(QEasingCurve.InOutQuad)
         self.parallelAniGroup.addAnimation(self.playBarAni)
         self.parallelAniGroup.addAnimation(self.songInfoCardChuteAni)
         # 初始化定时器
-        self.showPlaylistTimer.setInterval(400)
-        self.hidePlaylistTimer.setInterval(50)
+        self.showPlaylistTimer.setInterval(120)
+        self.hidePlaylistTimer.setInterval(120)
         self.showPlaylistTimer.timeout.connect(self.showPlayListTimerSlot)
         self.hidePlaylistTimer.timeout.connect(self.hidePlayListTimerSlot)
 
@@ -120,7 +120,8 @@ class PlayingInterface(QWidget):
     def startBlurThread(self, albumCoverPath):
         """ 开启磨砂线程 """
         blurRadius = [6, 40][self.smallestModeInterface.isVisible()]
-        self.blurCoverThread.setTargetCover(albumCoverPath,blurRadius=blurRadius)
+        self.blurCoverThread.setTargetCover(
+            albumCoverPath, blurRadius=blurRadius)
         self.blurCoverThread.start()
 
     def mousePressEvent(self, e: QMouseEvent):
@@ -175,8 +176,8 @@ class PlayingInterface(QWidget):
     def showPlaylist(self):
         """ 显示播放列表 """
         if self.songListWidgetAni.state() != QAbstractAnimation.Running:
-            self.songInfoCardChuteAni.setDuration(500)
-            self.songInfoCardChuteAni.setEasingCurve(QEasingCurve.InExpo)
+            self.songInfoCardChuteAni.setDuration(350)
+            self.songInfoCardChuteAni.setEasingCurve(QEasingCurve.InOutQuad)
             self.songInfoCardChuteAni.setStartValue(
                 QRect(0, self.songInfoCardChute.y(), self.width(), self.height()))
             self.songInfoCardChuteAni.setEndValue(
@@ -212,8 +213,8 @@ class PlayingInterface(QWidget):
     def hidePlaylist(self):
         """ 隐藏播放列表 """
         if self.parallelAniGroup.state() != QAbstractAnimation.Running:
-            self.songInfoCardChuteAni.setDuration(500)
-            self.songInfoCardChuteAni.setEasingCurve(QEasingCurve.InExpo)
+            self.songInfoCardChuteAni.setDuration(350)
+            self.songInfoCardChuteAni.setEasingCurve(QEasingCurve.InOutQuad)
             self.songInfoCardChuteAni.setStartValue(
                 QRect(0, self.songInfoCardChute.y(), self.width(), self.height()))
             self.songInfoCardChuteAni.setEndValue(

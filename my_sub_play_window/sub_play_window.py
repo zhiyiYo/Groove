@@ -6,7 +6,7 @@ from PyQt5.QtCore import (
 from PyQt5.QtGui import QBrush, QFont, QFontMetrics, QPainter, QPixmap
 from PyQt5.QtWidgets import QApplication, QLabel, QWidget
 
-from my_functions.get_album_cover_path import getAlbumCoverPath
+from my_functions.get_cover_path import getCoverPath
 from my_functions.is_not_leave import isNotLeave
 from my_widget.my_button import ThreeStateButton
 from my_widget.my_slider import Slider
@@ -52,7 +52,8 @@ class SubPlayWindow(QWidget):
         self.resize(635, 175)
         self.__initLayout()
         self.setAttribute(Qt.WA_TranslucentBackground)
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.Window | Qt.WindowStaysOnTopHint)
+        self.setWindowFlags(Qt.FramelessWindowHint |
+                            Qt.Window | Qt.WindowStaysOnTopHint)
         # 初始化音量滑块
         self.volumeSlider.setRange(0, 100)
         self.volumeSlider.setSingleStep(1)
@@ -75,7 +76,7 @@ class SubPlayWindow(QWidget):
         self.updateWindow(self.songInfo)
         # 引用方法
         self.setPlay = self.playButton.setPlay
-        
+
     def __initLayout(self):
         """ 初始化布局 """
         self.move(62, 75)
@@ -107,7 +108,7 @@ class SubPlayWindow(QWidget):
     def timerSlot(self):
         """ 定时器溢出时间 """
         self.timer.stop()
-        self.ani.start()      
+        self.ani.start()
 
     def enterEvent(self, e):
         """ 鼠标进入时停止动画并重置定时器 """
@@ -131,7 +132,7 @@ class SubPlayWindow(QWidget):
         notLeave = isNotLeave(self)
         if not notLeave:
             self.timer.start()
-        
+
     def paintEvent(self, e):
         """ 绘制背景色 """
         painter = QPainter(self)
@@ -149,16 +150,16 @@ class SubPlayWindow(QWidget):
         self.ani.finished.connect(self.hide)
         self.timer.timeout.connect(self.timerSlot)
         self.volumeSlider.valueChanged.connect(self.sliderValueChangedSlot)
-        
+
     def __setQss(self):
         """ 设置层叠样式 """
-        with open(r'resource\css\subPlayWindow.qss',encoding='utf-8') as f:
+        with open(r'resource\css\subPlayWindow.qss', encoding='utf-8') as f:
             self.setStyleSheet(f.read())
 
     def __setAlbumCover(self):
         """ 设置封面 """
         # 如果专辑信息为空就直接隐藏
-        self.coverPath = getAlbumCoverPath(self.songInfo.get('album', ' ')[-1])
+        self.coverPath = getCoverPath(self.songInfo.get('album', ' ')[-1])
         self.albumPic.setPixmap(
             QPixmap(self.coverPath).scaled(
                 125, 125, Qt.KeepAspectRatio, Qt.SmoothTransformation))

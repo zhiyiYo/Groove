@@ -5,7 +5,7 @@ from PyQt5.QtGui import QPainter, QPen, QColor
 from PyQt5.QtWidgets import QWidget, QLabel, QPushButton, QAction
 
 from .tab_button import TabButton
-from my_widget.my_button import RandomPlayButton
+from my_widget.my_button import ThreeStatePushButton
 from my_widget.my_menu import AeroMenu
 
 
@@ -27,7 +27,10 @@ class ToolBar(QWidget):
         self.songerTabButton = TabButton('歌手', self, 1)
         self.albumTabButton = TabButton('专辑', self, 1)
         # 创建底部按钮
-        self.randomPlayAllButton = RandomPlayButton(parent=self)
+        self.randomPlayAllButton = ThreeStatePushButton(
+            {'normal': r'resource\images\无序播放所有_130_17.png',
+             'hover': r'resource\images\无序播放所有_hover_130_17.png',
+             'pressed': r'resource\images\无序播放所有_pressed_130_17.png'}, parent=self)
         self.sortModeLabel = QLabel('排序依据:', self)
         self.songSortModeButton = QPushButton('添加日期', self)
         self.albumSortModeButton = QPushButton('添加日期', self)
@@ -66,6 +69,7 @@ class ToolBar(QWidget):
         self.albumSortModeMenu.setProperty('modeNumber','4')
         self.songSortModeButton.setObjectName('sortModeButton')
         self.albumSortModeButton.setObjectName('sortModeButton')
+        self.randomPlayAllButton.setObjectName('randomPlayButton')
         # 设置层叠样式
         self.__setQss()
 

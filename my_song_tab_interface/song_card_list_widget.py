@@ -23,7 +23,7 @@ class SongCardListWidget(BasicSongListWidget):
 
     def __init__(self, songInfo_list: list, parent=None):
         super().__init__(songInfo_list, SongCardType.SONG_TAB_SONG_CARD,
-                         parent, QMargins(30, 245, 30, 116))
+                         parent, QMargins(30, 245, 30, 0))
         self.resize(1150, 758)
         self.sortMode = '添加时间'
         # 创建右击菜单

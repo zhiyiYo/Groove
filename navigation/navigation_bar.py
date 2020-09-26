@@ -45,7 +45,7 @@ class NavigationBar(QWidget):
             r'resource\images\navigationBar\黑色导航栏正在播放.png',
             parent=self,
             buttonSize=(60, 62))
-        self.playListButton = ToolButton(
+        self.playlistButton = ToolButton(
             r'resource\images\navigationBar\黑色播放列表.png', parent=self)
         self.createPlaylistButton = CreatePlaylistButton(self)
         self.settingButton = ToolButton(
@@ -53,14 +53,14 @@ class NavigationBar(QWidget):
         # 创建一个按钮列表
         self.button_list = [
             self.showMenuButton, self.searchButton, self.musicGroupButton,
-            self.historyButton, self.playingButton, self.playListButton,
+            self.historyButton, self.playingButton, self.playlistButton,
             self.createPlaylistButton, self.settingButton
         ]
         # 可变样式的按钮列表
         self.updatableButton_list = self.button_list[2:6] + [self.settingButton]
         self.currentButton = self.musicGroupButton
         # 创建按钮与下标对应的字典
-        self.buttonIndex_dict = {'musicGroupButton': 0, 'settingButton': 1}
+        self.buttonIndex_dict = {'musicGroupButton': 0, 'playlistButton':1,'settingButton': 2}
 
     def __initWidget(self):
         """ 初始化小部件 """
@@ -71,7 +71,7 @@ class NavigationBar(QWidget):
         # 将部分按钮的点击信号连接到槽函数并设置属性
         self.__buttonName_list = [
             'musicGroupButton', 'historyButton', 'playingButton',
-            'playListButton', 'settingButton'
+            'playlistButton', 'settingButton'
         ]
         for button, name in zip(self.updatableButton_list, self.__buttonName_list):
             button.setProperty('name', name)
@@ -81,8 +81,8 @@ class NavigationBar(QWidget):
             lambda: self.setSelectedButton('historyButton'))
         self.playingButton.clicked.connect(
             lambda: self.setSelectedButton('playingButton'))
-        self.playListButton.clicked.connect(
-            lambda: self.setSelectedButton('playListButton'))
+        self.playlistButton.clicked.connect(
+            lambda: self.setSelectedButton('playlistButton'))
         self.settingButton.clicked.connect(
             lambda: self.setSelectedButton('settingButton'))
 

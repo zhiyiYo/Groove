@@ -1,15 +1,16 @@
 # coding:utf-8
 
+import os
+import re
 import sys
+import json
 from copy import deepcopy
 from ctypes import POINTER, Structure, cast
 from ctypes.wintypes import HWND, MSG, POINT, UINT
-from enum import Enum
 from random import shuffle
-from shutil import rmtree
 from time import time
 
-from PyQt5.QtCore import QEasingCurve, Qt, pyqtSignal
+from PyQt5.QtCore import QEasingCurve, Qt, pyqtSignal, QDateTime
 from PyQt5.QtGui import QCloseEvent, QIcon
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist
 from PyQt5.QtWidgets import QAction, QApplication, QWidget
@@ -20,9 +21,11 @@ from win32.lib import win32con
 from effects import WindowEffect
 from media_player import MediaPlaylist, PlaylistType
 from my_album_interface import AlbumInterface
+from my_create_playlist_interface.create_playlist_panel import CreatePlaylistPanel
 from my_music_interface import MyMusicInterface
 from my_play_bar import PlayBar
 from my_playing_interface import PlayingInterface
+from my_playlist_card_interface import PlaylistCardInterface
 from my_setting_interface import SettingInterface
 from my_sub_play_window import SubPlayWindow
 from my_thumbnail_tool_bar import ThumbnailToolBar
@@ -78,15 +81,19 @@ class MainWindow(QWidget):
         self.lastSongInfo = self.settingInterface.config.get('last-song', {})
         self.titleBar = TitleBar(self)
         self.playBar = PlayBar(self.lastSongInfo, self)
-        # 实例化缩略图任务栏
+        # 创建缩略图任务栏
         self.thumbnailToolBar = ThumbnailToolBar(self)
         self.thumbnailToolBar.setWindow(self.windowHandle())
-        # 实例化左上角播放窗口
+        # 创建左上角播放窗口
         self.subPlayWindow = SubPlayWindow(self, self.lastSongInfo)
         # 创建正在播放界面
         self.playingInterface = PlayingInterface(self.playlist.playlist, self)
         # 创建专辑界面
         self.albumInterface = AlbumInterface({}, self.subMainWindow)
+        # 创建播放列表卡界面
+        self.readCustomPlaylists()  # 读入所有播放列表
+        self.playlistCardInterface = PlaylistCardInterface(
+            self.customPlaylists, self)
         # 创建快捷键
         self.togglePlayPauseAct_1 = QAction(
             parent=self, shortcut=Qt.Key_Space, triggered=self.switchPlayState)
@@ -128,9 +135,10 @@ class MainWindow(QWidget):
         self.setWindowEffect()
         # todo:将窗口添加到StackWidget中
         self.subStackWidget.addWidget(self.myMusicInterface, 0, 70, False)
+        self.subStackWidget.addWidget(
+            self.playlistCardInterface, 0, 160, False)
         self.subStackWidget.addWidget(self.settingInterface, 0, 160, False)
         self.subStackWidget.addWidget(self.albumInterface, 0, 70)
-        self.subStackWidget.setCurrentWidget(self.myMusicInterface)
         self.totalStackWidget.addWidget(self.subMainWindow)
         self.totalStackWidget.addWidget(self.playingInterface)
         # 初始化标题栏的下标列表
@@ -328,8 +336,12 @@ class MainWindow(QWidget):
             self.switchToMyMusicInterface)
         self.navigationBar.playingButton.clicked.connect(
             self.showPlayingInterface)
+        self.navigationBar.playlistButton.clicked.connect(
+            self.switchToPlaylistCardInterface)
         self.navigationBar.settingButton.clicked.connect(
             self.switchToSettingInterface)
+        self.navigationBar.createPlaylistButton.clicked.connect(
+            self.showCreatePlaylistPanel)
         self.navigationBar.currentIndexChanged.connect(
             self.stackWidgetIndexChangedSlot)
         # todo:导航菜单功能
@@ -341,6 +353,10 @@ class MainWindow(QWidget):
             self.showPlayingInterface)
         self.navigationMenu.settingButton.clicked.connect(
             self.switchToSettingInterface)
+        self.navigationMenu.playlistButton.clicked.connect(
+            self.switchToPlaylistCardInterface)
+        self.navigationMenu.createPlaylistButton.clicked.connect(
+            self.showCreatePlaylistPanel)
         self.navigationMenu.currentIndexChanged.connect(
             self.stackWidgetIndexChangedSlot)
         # todo:缩略图任务栏各按钮的功能
@@ -914,7 +930,7 @@ class MainWindow(QWidget):
         self.playingInterface.updateMultiSongCards(
             deepcopy(oldSongInfo_list), deepcopy(newSongInfo_list))
         if self.sender() == self.albumInterface:
-            self.currentAlbumCard.updateWindow(oldAlbumInfo, newAlbumInfo)
+            self.currentAlbumCard.updateWindow(newAlbumInfo)
 
     def smallestModeStateChanedSlot(self, state: bool):
         """ 最小播放模式状态改变时更改标题栏按钮可见性和窗口是否置顶 """
@@ -957,9 +973,59 @@ class MainWindow(QWidget):
         self.exitSelectionMode()
         self.subStackWidget.setCurrentWidget(self.myMusicInterface)
 
+    def switchToPlaylistCardInterface(self):
+        """ 切换到播放列表卡界面 """
+        self.exitSelectionMode()
+        self.subStackWidget.setCurrentWidget(
+            self.playlistCardInterface, duration=300)
+
     def exitSelectionMode(self):
         """ 退出选择模式 """
         if not self.isInSelectionMode:
             return
         self.myMusicInterface.exitSelectionMode()
         self.albumInterface.exitSelectionMode()
+
+    def readCustomPlaylists(self):
+        """ 读取自定义播放列表 """
+        # 如果没有播放列表文件夹就创建一个
+        if not os.path.exists('Playlists'):
+            os.mkdir('Playlists')
+        # 获取播放列表
+        self.customPlaylists = []
+        playlistFile_list = os.listdir('Playlists')
+        for playlistFile in playlistFile_list:
+            with open(os.path.join('Playlists', playlistFile), encoding='utf-8') as f:
+                self.customPlaylists.append(json.load(f))
+        print(self.customPlaylists)
+
+    def showCreatePlaylistPanel(self):
+        """ 显示创建播放列表面板 """
+        createPlaylistPanel = CreatePlaylistPanel(parent=self)
+        createPlaylistPanel.createPlaylistSig.connect(
+            self.createNewPlaylist)
+        createPlaylistPanel.exec_()
+
+    def createNewPlaylist(self, playlistName: str):
+        """ 创建新播放列表 """
+        existPlaylistName_list = [playlistFile[:-4]
+                                  for playlistFile in os.listdir('Playlists')]
+        # 如果创建的播放列表名字已存在，需要修改名字
+        if playlistName in existPlaylistName_list:
+            length = len(playlistName)
+            # 匹配类似的播放列表名的序号
+            number_list = []
+            for name in existPlaylistName_list:
+                Match = re.match(r'(（\d+）)?', name[length:])
+                if name[:length] == playlistName and Match:
+                    number_list.append(Match.group())
+            # 排序序号列表
+            number_list.sort(reverse=True)
+            num = int(number_list[0][1:-1]) + 1 if number_list[0] else 1
+            playlistName = playlistName + str(num)
+        # 创建播放列表字典
+        playlist = {'playlistName': playlistName,
+                    'songInfo_list': [],
+                    'modifiedTime': QDateTime.currentDateTime().toString(Qt.ISODate)}
+        with open(f'Playlists\\{playlistName}.json', 'w', encoding='utf-8') as f:
+            json.dump(playlist, f)

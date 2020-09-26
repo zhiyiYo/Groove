@@ -121,7 +121,7 @@ class AlbumCardViewer(QWidget):
             albumCard.saveAlbumInfoSig.connect(self.saveAlbumInfoSig)
             # 进入选择模式
             albumCard.checkedStateChanged.connect(
-                self.__albumCardCheckedStateChanedSlot)
+                self.__albumCardCheckedStateChangedSlot)
             # 显示和隐藏磨砂背景
             albumCard.showBlurAlbumBackgroundSig.connect(
                 self.__showBlurAlbumBackground)
@@ -144,7 +144,6 @@ class AlbumCardViewer(QWidget):
 
     def __updateGridLayout(self):
         """ 更新网格 """
-        self.total_row_num = 0
         self.vertical_spacing_count = len(self.currentGroupDict_list)-1
         for currentGroup_dict in self.currentGroupDict_list:
             # 引用当前分组的网格布局
@@ -159,8 +158,7 @@ class AlbumCardViewer(QWidget):
             self.current_row_num = max(rows) + 1
             # 设置网格大小
             for column in columns:
-                gridLayout.setColumnMinimumWidth(
-                    column, 211)
+                gridLayout.setColumnMinimumWidth(column, 211)
             for row in rows:
                 height = 292 if row != max(rows) or gridIndex != len(
                     self.currentGroupDict_list) - 1 else 146
@@ -177,7 +175,7 @@ class AlbumCardViewer(QWidget):
                     gridLayout.addWidget(albumCard, x, y, 1, 1, Qt.AlignLeft)
             gridLayout.setAlignment(Qt.AlignLeft)
             # 获取当前的总行数
-            self.total_row_num += self.current_row_num
+            self.total_row_num = self.current_row_num
             # 如果现在的总行数小于网格的总行数，就将多出来的行宽度的最小值设为0
             for i in range(gridLayout.rowCount() - 1, self.current_row_num - 1, -1):
                 gridLayout.setRowMinimumHeight(i, 0)
@@ -399,8 +397,7 @@ class AlbumCardViewer(QWidget):
     def __setQss(self):
         """ 设置层叠样式 """
         with open('resource\\css\\albumCardViewer.qss', encoding='utf-8') as f:
-            qss = f.read()
-            self.setStyleSheet(qss)
+            self.setStyleSheet(f.read())
 
     def findAlbumCardByAlbumInfo(self, albumInfo: dict) -> AlbumCard:
         """ 通过albumInfo获取对AlbumCard实例的引用 """
@@ -422,7 +419,7 @@ class AlbumCardViewer(QWidget):
                             return albumCard
         return None
 
-    def __albumCardCheckedStateChanedSlot(self, albumCard: AlbumCard, isChecked: bool):
+    def __albumCardCheckedStateChangedSlot(self, albumCard: AlbumCard, isChecked: bool):
         """ 专辑卡选中状态改变对应的槽函数 """
         # 如果专辑信息不在选中的专辑信息列表中且对应的专辑卡变为选中状态就将专辑信息添加到列表中
         if albumCard not in self.checkedAlbumCard_list and isChecked:

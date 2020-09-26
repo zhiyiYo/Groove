@@ -12,12 +12,6 @@ class CreatePlaylistButton(NavigationButton):
     def __init__(self, parent):
         self.icon_path = r'resource\images\navigationBar\黑色新建播放列表.png'
         super().__init__(self.icon_path, parent=parent)
-
-    def mouseReleaseEvent(self, e):
-        """ 鼠标松开时显示创建播放列表面板 """
-        super().mouseReleaseEvent(e)
-        createPlaylistPanel = CreatePlaylistPanel(self.window())
-        createPlaylistPanel.exec_()
         
     def paintEvent(self, e):
         """ 绘制背景 """

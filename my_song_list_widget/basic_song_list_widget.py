@@ -3,14 +3,14 @@
 from copy import deepcopy
 from json import dump
 
-from PyQt5.QtCore import QEvent, QPoint, QSize, Qt, pyqtSignal, QMargins
+from PyQt5.QtCore import QEvent, QMargins, QPoint, QSize, Qt, pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QContextMenuEvent, QPainter, QPixmap
-from PyQt5.QtWidgets import QListWidgetItem, QLabel, QApplication
+from PyQt5.QtWidgets import QApplication, QLabel, QListWidgetItem, QWidget
 
 from my_dialog_box import PropertyPanel, SongInfoEditPanel
 from my_widget.my_listWidget import ListWidget
 
-from .song_card import SongTabSongCard, AlbumInterfaceSongCard
+from .song_card import AlbumInterfaceSongCard, SongTabSongCard
 from .song_card_type import SongCardType
 
 
@@ -24,7 +24,7 @@ class BasicSongListWidget(ListWidget):
     selectionModeStateChanged = pyqtSignal(bool)
     emptyChangedSig = pyqtSignal(bool)         # 歌曲卡是否为空信号
 
-    def __init__(self, songInfo_list: list, songCardType: SongCardType, parent=None, viewportMargins=QMargins(0, 0, 0, 0)):
+    def __init__(self, songInfo_list: list, songCardType: SongCardType, parent=None, viewportMargins=QMargins(0, 0, 0, 0), paddingBottomHeight: int = 116):
         """ 创建歌曲卡列表控件对象
 
         Parameters
@@ -32,10 +32,12 @@ class BasicSongListWidget(ListWidget):
         songInfo_list : 歌曲信息列表\n
         songCardType : 歌曲卡类型\n
         parent : 父级窗口\n
-        viewportMargins : 视口的外边距
+        viewportMargins : 视口的外边距\n
+        paddingBottomHeight : 列表视图底部留白
         """
         super().__init__(parent)
         self.__songCardType = songCardType
+        self.paddingBottomHeight = paddingBottomHeight
         # 使用指定的歌曲卡类创建歌曲卡对象
         self.__SongCard = [SongTabSongCard,
                            AlbumInterfaceSongCard][songCardType.value]
@@ -68,6 +70,8 @@ class BasicSongListWidget(ListWidget):
             self.appendOneSongCard(songInfo, connectSongCardToSlotFunc)
         # 设置导航标签是否隐藏
         self.guideLabel.setHidden(bool(self.songCard_list))
+        # 添加一个空白item来填补playBar所占高度
+        self.__createPaddingBottomItem()
 
     def __createGuideLabel(self):
         """ 创建导航标签 """
@@ -199,6 +203,8 @@ class BasicSongListWidget(ListWidget):
         for item in self.item_list:
             item.setSizeHint(
                 QSize(self.width() - margins.left() - margins.right(), 60))
+        self.paddingBottomItem.setSizeHint(
+            QSize(self.width() - margins.left() - margins.right(), self.paddingBottomHeight))
 
     def songCardCheckedStateChanedSlot(self, itemIndex: int, isChecked: bool):
         """ 歌曲卡选中状态改变对应的槽函数 """
@@ -261,6 +267,9 @@ class BasicSongListWidget(ListWidget):
         ----------
         songInfo_list : 歌曲信息列表\n
         connectSongCardSigToSlotFunc : 将歌曲卡信号连接到槽函数的函数对象 """
+        # 删除旧占位行
+        self.removeItemWidget(self.paddingBottomItem)
+        self.takeItem(len(self.songCard_list))
         # 长度相等就更新信息，不相等就根据情况创建或者删除item
         if self.songCard_list:
             self.songCard_list[self.currentIndex].setPlay(False)
@@ -296,6 +305,8 @@ class BasicSongListWidget(ListWidget):
             songCard.setPlay(False)
         # 如果歌曲卡为空就显示导航标签
         self.guideLabel.setHidden(bool(self.songCard_list))
+        # 创建新占位行
+        self.__createPaddingBottomItem()
 
     def clearSongCards(self):
         """ 清空歌曲卡 """
@@ -320,6 +331,22 @@ class BasicSongListWidget(ListWidget):
         else:
             self.songInfo_list.sort(
                 key=lambda songInfo: int(songInfo['tracknumber']))
+
+    def __createPaddingBottomItem(self):
+        """ 创建底部占位行 """
+        self.paddingBottomItem = QListWidgetItem(self)
+        # 创建占位窗口
+        self.paddingBottomWidget = QWidget(self)
+        self.paddingBottomWidget.setStyleSheet('background:white')
+        self.paddingBottomWidget.setFixedHeight(self.paddingBottomHeight)
+        # 将窗口加到Item中
+        margins = self.viewportMargins()  # type:QMargins
+        width = self.width() - margins.left() - margins.right()
+        self.paddingBottomWidget.resize(width, self.paddingBottomHeight)
+        self.paddingBottomItem.setSizeHint(
+            QSize(width, self.paddingBottomHeight))
+        self.setItemWidget(self.paddingBottomItem, self.paddingBottomWidget)
+        self.addItem(self.paddingBottomItem)
 
     @property
     def songCardType(self) -> SongCardType:

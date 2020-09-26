@@ -1,22 +1,31 @@
 import sys
 
-import numpy as np
 from PIL import Image
 from PIL.ImageFilter import GaussianBlur
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QBrush, QEnterEvent, QImage, QPainter, QPen, QPixmap
+from PyQt5.QtGui import QBrush, QEnterEvent, QPainter, QPen, QPixmap
 from PyQt5.QtWidgets import QApplication, QLabel, QToolButton, QWidget
-from scipy.ndimage.filters import gaussian_filter
 
 
 class BlurButton(QToolButton):
     """ 磨砂按钮 """
 
-    def __init__(self, parent, buttonPos: tuple, iconPath, blurPicPath='', buttonSize: tuple = (70, 70), blurRadius=30):
+    def __init__(self, parent, cropPos: tuple, iconPath:str, blurPicPath:str, buttonSize: tuple = (70, 70), blurRadius=30):
+        """ 实例化磨砂按钮
+        
+        Parameters
+        ----------
+        parent : 父级\n
+        cropPos : 图像裁剪位置坐标\n
+        iconPath : 按钮图标路径\n
+        blurPicPath : 磨砂图片路径\n
+        buttonSize : 按钮大小\n
+        blurRadius : 磨砂半径
+         """
         super().__init__(parent)
         # 保存属性
         self.blurPicPath = blurPicPath
-        self.posX, self.posY = buttonPos    # 保存裁剪的图片区域左上角坐标
+        self.cropX, self.cropY = cropPos    # 保存裁剪的图片区域左上角坐标
         self.buttonSize = buttonSize
         self.iconPath = iconPath
         self.blurRadius = blurRadius
@@ -26,29 +35,30 @@ class BlurButton(QToolButton):
         self.enter = False
         # 图标
         self.iconPic = QPixmap(self.iconPath).scaled(
-            self.buttonSize[0], self.buttonSize[1], Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            *self.buttonSize, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         # 初始化
         self.initWidget()
 
     def initWidget(self):
         """ 初始化小部件 """
-        self.resize(self.buttonSize[0], self.buttonSize[1])
-        self.move(self.posX, self.posY)
+        self.resize(*self.buttonSize)
+        #self.move(self.cropX, self.cropY)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.__setBlurEffect()
 
     def __setBlurEffect(self):
         """ 设置磨砂效果 """
-        if self.blurPicPath:
-            # 裁剪下需要磨砂的部分
-            img = Image.open(self.blurPicPath).resize(
-                (200, 200))  # type:Image.Image
-            img = img.crop((self.posX, self.posY,
-                            self.width() + self.posX, self.height() + self.posY))
-            img = img.filter(GaussianBlur(self.blurRadius)
-                             ).point(lambda x: int(x*0.7))
-            self.blurPic = img.toqpixmap()
-            self.update()
+        if not self.blurPicPath:
+            return
+        # 裁剪下需要磨砂的部分
+        img = Image.open(self.blurPicPath).resize(
+            (200, 200))  # type:Image.Image
+        img = img.crop((self.cropX, self.cropY,
+                        self.width() + self.cropX, self.height() + self.cropY))
+        img = img.filter(GaussianBlur(self.blurRadius)
+                            ).point(lambda x: int(x * 0.7))
+        self.blurPic = img.toqpixmap()
+        self.update()
 
     def setBlurPic(self, blurPicPath, blurRadius=35):
         """ 设置磨砂图片 """

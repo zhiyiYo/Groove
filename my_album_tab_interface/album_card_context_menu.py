@@ -12,11 +12,11 @@ class AlbumCardContextMenu(AcrylicMenu):
         super().__init__('', parent)
         self.setFixedWidth(173)
         # 创建动作
-        self.createActions()
+        self.__createActions()
         self.setObjectName('albumCardContextMenu')
         self.setQss()
 
-    def createActions(self):
+    def __createActions(self):
         """ 创建动作 """
         # 创建动作
         self.playAct = QAction('播放', self)

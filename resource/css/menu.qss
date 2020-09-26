@@ -108,6 +108,10 @@ QMenu#sortModeMenu[modeNumber='4'] {
     height: 152px;
 }
 
+QMenu#sortModeMenu[modeNumber='2'] {
+    height: 76px;
+}
+
 QMenu#sortModeMenu::item {
     width: 57;
     height: 14;
@@ -260,15 +264,18 @@ QMenu#acrylicMenu::item:selected {
     color: black;
 }
 
-QMenu#albumCardContextMenu::item {
+QMenu#albumCardContextMenu::item,
+QMenu#playlistCardContextMenu::item {
     padding: 7px 20px 7px 14px;
 }
 
-QMenu#albumCardContextMenu::item:selected {
+QMenu#albumCardContextMenu::item:selected,
+QMenu#playlistCardContextMenu::item:selected {
     background-color: rgba(0, 0, 0, 25);
 }
 
-QMenu#albumCardContextMenu::separator {
+QMenu#albumCardContextMenu::separator,
+QMenu#playlistCardContextMenu::separator {
     height: 1px;
     width: 142px;
     background: rgba(0,0,0,104);

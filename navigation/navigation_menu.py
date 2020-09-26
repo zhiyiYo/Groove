@@ -1,6 +1,6 @@
 # coding:utf-8
 
-from PyQt5.QtCore import Qt,pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QColor, QIcon, QPainter, QPen
 from PyQt5.QtWidgets import (QApplication, QHBoxLayout, QLabel,
                              QVBoxLayout, QWidget)
@@ -46,7 +46,7 @@ class NavigationMenu(QWidget):
         self.playingButton = PushButton(
             r'resource\images\navigationBar\黑色导航栏正在播放.png', '正在播放', self,
             (400, 62), (60, 62))
-        self.playListButton = PushButton(
+        self.playlistButton = PushButton(
             r'resource\images\navigationBar\黑色播放列表.png', '播放列表', self,
             (340, 60))
         self.createPlaylistButton = CreatePlaylistButton(self)
@@ -59,17 +59,18 @@ class NavigationMenu(QWidget):
         # 创建一个小部件列表
         self.widget_list = [
             self.showBarButton, self.searchLineEdit, self.musicGroupButton,
-            self.historyButton, self.playingButton, self.playListButton,
+            self.historyButton, self.playingButton, self.playlistButton,
             self.createPlaylistButton, self.myLoveButton, self.settingButton
         ]
         # 创建要更新样式的按钮列表
         self.updatableButton_list = [
             self.musicGroupButton, self.historyButton, self.playingButton,
-            self.playListButton, self.myLoveButton, self.settingButton
+            self.playlistButton, self.myLoveButton, self.settingButton
         ]
         self.currentButton = self.musicGroupButton
-        # 创建按钮与下标对应的字典
-        self.buttonIndex_dict = {'musicGroupButton': 0, 'settingButton': 1}
+        # 创建按钮与subStackedWidget的widget下标对应的字典
+        self.buttonIndex_dict = {'musicGroupButton': 0,
+                                 'playlistButton': 1, 'settingButton': 2}
 
     def __initWidget(self):
         """ 初始化小部件 """
@@ -79,7 +80,7 @@ class NavigationMenu(QWidget):
         # 将按钮点击信号连接到槽函数并设置属性
         self.__buttonName_list = [
             'musicGroupButton', 'historyButton', 'playingButton',
-            'playListButton', 'myLoveButton', 'settingButton'
+            'playlistButton', 'myLoveButton', 'settingButton'
         ]
         for button, name in zip(self.updatableButton_list, self.__buttonName_list):
             button.setProperty('name', name)
@@ -89,15 +90,15 @@ class NavigationMenu(QWidget):
             lambda: self.setSelectedButton('historyButton'))
         self.playingButton.clicked.connect(
             lambda: self.setSelectedButton('playingButton'))
-        self.playListButton.clicked.connect(
-            lambda: self.setSelectedButton('playListButton'))
+        self.playlistButton.clicked.connect(
+            lambda: self.setSelectedButton('playlistButton'))
         self.settingButton.clicked.connect(
             lambda: self.setSelectedButton('settingButton'))
         self.myLoveButton.clicked.connect(
             lambda: self.setSelectedButton('myLoveButton'))
         # 分配ID
         self.myLoveButton.setObjectName('myLoveButton')
-        self.playListButton.setObjectName('playListButton')
+        self.playlistButton.setObjectName('playlistButton')
 
     def __initLayout(self):
         """ 初始化布局 """
@@ -116,7 +117,7 @@ class NavigationMenu(QWidget):
         for widget in self.widget_list[2:5]:
             self.all_v_layout.addWidget(widget)
         # 添加剩下的按钮
-        self.h_layout_2.addWidget(self.playListButton)
+        self.h_layout_2.addWidget(self.playlistButton)
         self.h_layout_2.addWidget(self.createPlaylistButton)
         self.all_v_layout.addLayout(self.h_layout_2)
         self.all_v_layout.addWidget(self.myLoveButton)
@@ -151,7 +152,7 @@ class NavigationMenu(QWidget):
         self.currentButton = self.updatableButton_list[self.__buttonName_list.index(
             selectedButtonName)]
         self.currentButton.setSelected(True)
-                
+
     def __setQss(self):
         """ 设置层叠样式 """
         with open(r'resource\css\navigation.qss', encoding='utf-8') as f:
@@ -160,7 +161,7 @@ class NavigationMenu(QWidget):
     def paintEvent(self, e):
         """ 绘制分隔符 """
         painter = QPainter(self)
-        pen = QPen(QColor(0,0,0,30))
+        pen = QPen(QColor(0, 0, 0, 30))
         painter.setPen(pen)
         # 前两个参数为第一个坐标，后两个为第二个坐标
         painter.drawLine(15, 346, self.width() - 15, 346)

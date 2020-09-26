@@ -18,7 +18,7 @@ class SongCardListWidget(BasicSongListWidget):
 
     def __init__(self, songInfo_list: list, parent=None):
         super().__init__(songInfo_list, SongCardType.ALBUM_INTERFACE_SONG_CARD,
-                         parent, QMargins(30, 430, 30, 116))
+                         parent, QMargins(30, 430, 30, 0))
         # 创建右击菜单
         self.contextMenu = SongCardListContextMenu(self)
         # 创建歌曲卡

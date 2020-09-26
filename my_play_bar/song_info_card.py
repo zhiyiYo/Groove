@@ -7,7 +7,7 @@ from PyQt5.QtGui import QFont, QFontMetrics, QPainter, QPixmap
 from PyQt5.QtWidgets import QLabel, QWidget
 
 from my_functions.is_not_leave import isNotLeave
-from my_functions.get_album_cover_path import getAlbumCoverPath
+from my_functions.get_cover_path import getCoverPath
 from .window_mask import WindowMask
 
 from my_widget.perspective_widget import PerspectiveWidget
@@ -20,7 +20,7 @@ class SongInfoCard(PerspectiveWidget):
     MAXWIDTH = 405
 
     def __init__(self, songInfo: dict, parent=None):
-        super().__init__(parent,True)
+        super().__init__(parent, True)
         # 保存信息
         self.setSongInfo(songInfo)
         self.coverPath = ''
@@ -79,7 +79,7 @@ class SongInfoCard(PerspectiveWidget):
         if not self.songInfo.get('album'):
             self.hide()
             return
-        newCoverPath = getAlbumCoverPath(self.songInfo.get('album', ' ')[-1])
+        newCoverPath = getCoverPath(self.songInfo.get('album', ' ')[-1])
         # 封面路径变化时发送信号并更新封面
         if newCoverPath != self.coverPath:
             self.albumChanged.emit(newCoverPath)
@@ -92,7 +92,7 @@ class SongInfoCard(PerspectiveWidget):
         """ 鼠标松开发送信号 """
         super().mouseReleaseEvent(e)
         self.clicked.emit()
-        
+
 
 class ScrollTextWindow(QWidget):
     """ 滚动字幕 """
@@ -122,7 +122,7 @@ class ScrollTextWindow(QWidget):
         self.songerName = self.songInfo.get('songer', '')
 
     def initFlagsWidth(self):
-        """ 初始化各标志位并调整窗口宽度 """ 
+        """ 初始化各标志位并调整窗口宽度 """
         self.__initFlags()
         # 调整宽度
         self.adjustWindowWidth()
