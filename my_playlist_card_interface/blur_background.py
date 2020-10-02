@@ -23,7 +23,7 @@ class BlurBackground(QWidget):
             return
         # 读入专辑封面
         playlistCover = Image.open(imagePath).resize(
-            (288, 288)).crop((0, 46, 288, 242))  # type:Image.Image
+            (288, 288)).crop((0, 92, 288, 288))  # type:Image.Image
         # 创建一个新图像
         blurImage = Image.new(
             'RGBA', (288 + 2 * blurRadius, 196 + 2 * blurRadius), (255, 255, 255, 0))

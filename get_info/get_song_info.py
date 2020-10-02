@@ -19,7 +19,7 @@ class GetSongInfo():
         if not targetFolderPath_list:
             self.targetFolderPath_list = []
         self.songInfo_list = []
-        self.getInfo()
+        self.getInfo(targetFolderPath_list)
 
     def scanTargetFolderSongInfo(self, targetFolderPath_list: list):
         """ 扫描指定文件夹的歌曲信息并更新歌曲信息 """
@@ -29,11 +29,12 @@ class GetSongInfo():
         with open('Data\\songInfo.json', 'w', encoding='utf-8') as f:
             json.dump([{}], f)
         self.songInfo_list = []
-        self.getInfo()
+        self.getInfo(targetFolderPath_list)
 
-    def getInfo(self):
+    def getInfo(self,targetFolderPath_list:list):
         """ 从指定的目录读取符合匹配规则的歌曲的标签卡信息 """
         filePath_list = []
+        self.targetFolderPath_list = targetFolderPath_list
         for target_path in self.targetFolderPath_list:
             absPath_list = [
                 os.path.join(target_path, filename) for filename in os.listdir(target_path)]

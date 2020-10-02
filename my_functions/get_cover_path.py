@@ -8,7 +8,7 @@ def getCoverPath(albumName, isGetAlbumCover=True) -> str:
     if isGetAlbumCover:
         coverPath = r'resource\images\未知专辑封面_200_200.png'
     else:
-        coverPath= r'resource\images\playlist_interface\空播放列表封面.png'
+        coverPath= r'resource\images\playlist_card_interface\空播放列表封面.jpg'
     try:
         pic_list = os.listdir(coverFolder)
     except FileNotFoundError:

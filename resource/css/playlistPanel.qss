@@ -1,8 +1,8 @@
-QWidget#subCreatePlaylistPanel{
+QWidget#basicPlaylistPanel{
     background-color: white;
 }
 
-QPushButton#createPlaylistButton {
+QPushButton {
     color:white;
     border:1px solid transparent;
     border-radius: 4px;
@@ -11,17 +11,23 @@ QPushButton#createPlaylistButton {
     padding: 16px 104px 13px 104px;
 }
 
-QPushButton#createPlaylistButton:hover{
+QPushButton:hover{
     color:black;
     background-color: rgb(230, 230, 230);
 }
 
-QPushButton#createPlaylistButton:pressed {
+QPushButton:pressed {
     background-color: rgb(153,153,153);
 }
 
-QLabel#yourCreationLabel {
+QPushButton:disabled {
+    background-color: rgb(204,204,204);
+    color: rgb(122, 122, 122);
+}
+
+QLabel {
     font: 18px 'Microsoft YaHei';
+    background-color: transparent;
 }
 
 QLabel#cancelLabel{

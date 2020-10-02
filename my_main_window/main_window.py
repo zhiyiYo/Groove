@@ -21,7 +21,7 @@ from win32.lib import win32con
 from effects import WindowEffect
 from media_player import MediaPlaylist, PlaylistType
 from my_album_interface import AlbumInterface
-from my_create_playlist_interface.create_playlist_panel import CreatePlaylistPanel
+from my_playlist_panel_interface .create_playlist_panel import CreatePlaylistPanel
 from my_music_interface import MyMusicInterface
 from my_play_bar import PlayBar
 from my_playing_interface import PlayingInterface
@@ -117,7 +117,7 @@ class MainWindow(QWidget):
         """ 初始化小部件 """
         self.resize(1300, 1000)
         self.setMinimumSize(1030, 850)
-        self.setWindowTitle('Groove音乐')
+        self.setWindowTitle('MyGroove音乐')
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setWindowIcon(QIcon('resource\\images\\透明icon.png'))
         self.setAttribute(Qt.WA_TranslucentBackground | Qt.WA_StyledBackground)
@@ -387,6 +387,8 @@ class MainWindow(QWidget):
             self.clearPlaylist)
         self.playBar.smallPlayModeButton.clicked.connect(
             self.showSmallestModeInterface)
+        self.playBar.moreActionsMenu.savePlayListAct.triggered.connect(
+            lambda: self.showCreatePlaylistPanel(self.playlist.playlist))
         # todo:将播放器的信号连接到槽函数
         self.player.positionChanged.connect(self.playerPositionChangeSlot)
         self.player.durationChanged.connect(self.playerDurationChangeSlot)
@@ -422,6 +424,8 @@ class MainWindow(QWidget):
             self.switchToAlbumInterfaceByName)
         self.playingInterface.playBar.moreActionsMenu.clearPlayListAct.triggered.connect(
             self.clearPlaylist)
+        self.playingInterface.playBar.moreActionsMenu.savePlayListAct.triggered.connect(
+            lambda: self.showCreatePlaylistPanel(self.playlist.playlist))
         self.playingInterface.smallestModeStateChanged.connect(
             self.smallestModeStateChanedSlot)
         self.playingInterface.exitFullScreenSig.connect(self.exitFullScreen)
@@ -431,8 +435,8 @@ class MainWindow(QWidget):
         self.songTabSongListWidget.playOneSongSig.connect(self.playOneSongCard)
         self.songTabSongListWidget.nextToPlayOneSongSig.connect(
             self.songCardNextPlaySlot)
-        self.songTabSongListWidget.addSongToPlaylistSignal.connect(
-            self.addSongToPlaylist)
+        self.songTabSongListWidget.addSongToPlayingSignal.connect(
+            self.addOneSongToPlayingPlaylist)
         self.songTabSongListWidget.switchToAlbumInterfaceSig.connect(
             self.switchToAlbumInterfaceByName)
         self.songTabSongListWidget.editSongCardSignal.connect(
@@ -441,8 +445,6 @@ class MainWindow(QWidget):
         self.albumCardViewer.playSignal.connect(self.playAlbum)
         self.albumCardViewer.nextPlaySignal.connect(
             self.multiSongsNextPlaySlot)
-        self.albumCardViewer.addAlbumToPlaylistSignal.connect(
-            self.addSongsToPlaylist)
         self.albumCardViewer.switchToAlbumInterfaceSig.connect(
             self.switchToAlbumInterfaceByAlbumInfo)
         self.albumCardViewer.saveAlbumInfoSig.connect(self.updateAlbumInfo)
@@ -462,6 +464,12 @@ class MainWindow(QWidget):
             self.multiSongsNextPlaySlot)
         self.myMusicInterface.selectionModeStateChanged.connect(
             self.selectionModeStateChangedSlot)
+        self.myMusicInterface.addSongsToCustomPlaylistSig.connect(
+            self.addSongsToCustomPlaylist)
+        self.myMusicInterface.addSongsToNewCustomPlaylistSig.connect(
+            lambda songInfo_list: self.showCreatePlaylistPanel(songInfo_list))
+        self.myMusicInterface.addSongsToPlayingPlaylistSig.connect(
+            self.addSongsToPlayingPlaylist)
         # todo:将自己的信号连接到槽函数
         self.showSubPlayWindowSig.connect(self.subPlayWindow.show)
         # todo:将专辑界面的信号连接到槽函数
@@ -471,10 +479,10 @@ class MainWindow(QWidget):
         self.albumInterface.playOneSongCardSig.connect(self.playOneSongCard)
         self.albumInterface.nextToPlayOneSongSig.connect(
             self.songCardNextPlaySlot)
-        self.albumInterface.addSongToPlaylistSig.connect(
-            self.addSongToPlaylist)
-        self.albumInterface.addAlbumToPlaylistSig.connect(
-            self.addSongsToPlaylist)
+        self.albumInterface.addOneSongToPlayingSig.connect(
+            self.addOneSongToPlayingPlaylist)
+        self.albumInterface.addSongsToPlayingPlaylistSig.connect(
+            self.addSongsToPlayingPlaylist)
         self.albumInterface.songListWidget.editSongCardSignal.connect(
             self.editSongCardSlot)
         self.albumInterface.saveAlbumInfoSig.connect(self.updateAlbumInfo)
@@ -482,6 +490,22 @@ class MainWindow(QWidget):
             self.selectionModeStateChangedSlot)
         self.albumInterface.playCheckedCardsSig.connect(self.playCheckedCards)
         self.albumInterface.nextToPlayCheckedCardsSig.connect(
+            self.multiSongsNextPlaySlot)
+        self.albumInterface.addSongsToCustomPlaylistSig.connect(
+            self.addSongsToCustomPlaylist)
+        self.albumInterface.addSongsToNewCustomPlaylistSig.connect(
+            lambda songInfo_list: self.showCreatePlaylistPanel(songInfo_list))
+        # todo:将播放列表界面信号连接到槽函数
+        self.playlistCardInterface.selectionModeStateChanged.connect(
+            self.selectionModeStateChangedSlot)
+        self.playlistCardInterface.createPlaylistButton.clicked.connect(
+            self.showCreatePlaylistPanel)
+        self.playlistCardInterface.renamePlaylistSig.connect(
+            self.renamePlaylistSlot)
+        self.playlistCardInterface.deletePlaylistSig.connect(
+            lambda playlist: self.customPlaylists.remove(playlist))
+        self.playlistCardInterface.playSig.connect(self.playCustomPlaylist)
+        self.playlistCardInterface.nextToPlaySig.connect(
             self.multiSongsNextPlaySlot)
 
     def referenceWidgets(self):
@@ -500,8 +524,9 @@ class MainWindow(QWidget):
             self.playlist.playlistType = PlaylistType.ALL_SONG_PLAYLIST
         # 将当前歌曲设置为上次关闭前播放的歌曲
         if self.lastSongInfo in self.playlist.playlist:
-            self.playlist.setCurrentIndex(
-                self.playlist.playlist.index(self.lastSongInfo))
+            index = self.playlist.playlist.index(self.lastSongInfo)
+            self.playlist.setCurrentIndex(index)
+            self.playingInterface.setCurrentIndex(index)
 
     def switchPlayState(self):
         """ 播放按钮按下时根据播放器的状态来决定是暂停还是播放 """
@@ -786,13 +811,13 @@ class MainWindow(QWidget):
         self.playlist.clear()
         self.playingInterface.clearPlaylist()
 
-    def addSongToPlaylist(self, songInfo: dict):
-        """ 向播放列表尾部添加一首歌 """
+    def addOneSongToPlayingPlaylist(self, songInfo: dict):
+        """ 向正在播放列表尾部添加一首歌 """
         self.playlist.addMedia(songInfo)
         self.playingInterface.setPlaylist(self.playlist.playlist, False)
 
-    def addSongsToPlaylist(self, songInfo_list: list):
-        """ 向播放列表尾部添加多首歌 """
+    def addSongsToPlayingPlaylist(self, songInfo_list: list):
+        """ 向正在播放列表尾部添加多首歌 """
         self.playlist.addMedias(songInfo_list)
         self.playingInterface.setPlaylist(self.playlist.playlist, False)
 
@@ -985,6 +1010,7 @@ class MainWindow(QWidget):
             return
         self.myMusicInterface.exitSelectionMode()
         self.albumInterface.exitSelectionMode()
+        self.playlistCardInterface.exitSelectionMode()
 
     def readCustomPlaylists(self):
         """ 读取自定义播放列表 """
@@ -997,35 +1023,38 @@ class MainWindow(QWidget):
         for playlistFile in playlistFile_list:
             with open(os.path.join('Playlists', playlistFile), encoding='utf-8') as f:
                 self.customPlaylists.append(json.load(f))
-        print(self.customPlaylists)
 
-    def showCreatePlaylistPanel(self):
+    def showCreatePlaylistPanel(self, songInfo_list: list = None):
         """ 显示创建播放列表面板 """
-        createPlaylistPanel = CreatePlaylistPanel(parent=self)
+        createPlaylistPanel = CreatePlaylistPanel(self, songInfo_list)
         createPlaylistPanel.createPlaylistSig.connect(
-            self.createNewPlaylist)
+            self.createPlaylistSlot)
         createPlaylistPanel.exec_()
 
-    def createNewPlaylist(self, playlistName: str):
-        """ 创建新播放列表 """
-        existPlaylistName_list = [playlistFile[:-4]
-                                  for playlistFile in os.listdir('Playlists')]
-        # 如果创建的播放列表名字已存在，需要修改名字
-        if playlistName in existPlaylistName_list:
-            length = len(playlistName)
-            # 匹配类似的播放列表名的序号
-            number_list = []
-            for name in existPlaylistName_list:
-                Match = re.match(r'(（\d+）)?', name[length:])
-                if name[:length] == playlistName and Match:
-                    number_list.append(Match.group())
-            # 排序序号列表
-            number_list.sort(reverse=True)
-            num = int(number_list[0][1:-1]) + 1 if number_list[0] else 1
-            playlistName = playlistName + str(num)
-        # 创建播放列表字典
-        playlist = {'playlistName': playlistName,
-                    'songInfo_list': [],
-                    'modifiedTime': QDateTime.currentDateTime().toString(Qt.ISODate)}
-        with open(f'Playlists\\{playlistName}.json', 'w', encoding='utf-8') as f:
-            json.dump(playlist, f)
+    def createPlaylistSlot(self, playlist: dict):
+        """ 创建播放列表 """
+        self.customPlaylists.append(playlist)
+        self.playlistCardInterface.addOnePlaylistCard(playlist)
+
+    def renamePlaylistSlot(self, oldPlaylist: dict, newPlaylist: dict):
+        """ 重命名播放列表槽函数 """
+        index = self.customPlaylists.index(oldPlaylist)
+        self.customPlaylists[index] = newPlaylist
+
+    def playCustomPlaylist(self, songInfo_list: list):
+        """ 播放自定义播放列表中的所有歌曲 """
+        self.playCheckedCards(songInfo_list)
+
+    def addSongsToCustomPlaylist(self, playlistName: str, songInfo_list: list):
+        """ 将歌曲添加到自定义播放列表中 """
+        playlist = self.playlistCardInterface.addSongsToPlaylist(
+            playlistName, songInfo_list)
+        index = self.getCustomPlaylistIndexByName(playlistName)
+        self.customPlaylists[index] = deepcopy(playlist)
+
+    def getCustomPlaylistIndexByName(self, playlistName: str) -> int:
+        """ 通过播放列表名字得到播放列表的下标 """
+        for index, playlist in enumerate(self.customPlaylists):
+            if playlist['playlistName'] == playlistName:
+                return index
+        raise Exception(f'指定的播放列表"{playlistName}"不存在')

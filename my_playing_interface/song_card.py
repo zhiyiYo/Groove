@@ -13,11 +13,11 @@ from my_widget.my_label import ClickableLabel
 class SongCard(QWidget):
     """ 歌曲卡 """
     clicked = pyqtSignal(int)
-    switchToAlbumInterfaceSig = pyqtSignal(str,str) # 发送专辑名和歌手名
+    switchToAlbumInterfaceSig = pyqtSignal(str, str)  # 发送专辑名和歌手名
 
     def __init__(self, songInfo: dict, parent=None):
         super().__init__(parent)
-        self.songInfo = songInfo
+        self.__getInfo(songInfo)
         self.__resizeTime = 0
         # 记录播放状态
         self.isPlaying = False
@@ -66,7 +66,7 @@ class SongCard(QWidget):
             lambda: self.clicked.emit(self.itemIndex))
         self.albumLabel.clicked.connect(
             lambda: self.switchToAlbumInterfaceSig.emit(
-                self.albumLabel.text(),self.songerLabel.text()))
+                self.albumLabel.text(), self.songerLabel.text()))
 
     def __setQss(self):
         """ 设置层叠样式 """
@@ -224,10 +224,10 @@ class SongCard(QWidget):
         else:
             self.setDynamicProperty('leave-notPlay')
 
-    def updateSongCard(self, songInfo):
+    def updateSongCard(self, songInfo: dict):
         """ 更新歌曲卡信息 """
         self.resize(self.size())
-        self.songInfo = songInfo
+        self.__getInfo(songInfo)
         self.songNameCard.setSongName(songInfo['songName'])
         self.songerLabel.setText(songInfo['songer'])
         self.albumLabel.setText(songInfo['album'][0])
@@ -239,3 +239,12 @@ class SongCard(QWidget):
         albumWidth = self.albumWidth if self.albumWidth <= self.__maxAlbumLabelWidth else self.__maxAlbumLabelWidth
         self.songerLabel.setFixedWidth(songerWidth)
         self.albumLabel.setFixedWidth(albumWidth)
+
+    def __getInfo(self, songInfo: dict):
+        """ 从歌曲信息中分离信息 """
+        self.songInfo = songInfo
+        self.year = songInfo['year']          # type:str
+        self.songer = songInfo['songer']      # type:str
+        self.album = songInfo['album'][0]     # type:str
+        self.duration = songInfo['duration']  # type:str
+        self.songName = songInfo['songName']  # type:str

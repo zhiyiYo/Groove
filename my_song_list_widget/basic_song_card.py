@@ -1,16 +1,15 @@
 # coding:utf-8
 
-import sys
-
 from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
                           QParallelAnimationGroup, QPropertyAnimation, QRect,
-                          Qt, pyqtSignal)
+                          Qt, pyqtSignal, QPoint)
 from PyQt5.QtGui import QFont, QFontMetrics, QMouseEvent
 from PyQt5.QtWidgets import QApplication, QLabel, QWidget
 
 from .song_card_sub_unit import TrackNumSongNameCard
 from .song_card_sub_unit import SongNameCard as SongTabSongNameCard
 from .song_card_type import SongCardType
+from my_widget.my_menu import AddToMenu
 
 
 class BasicSongCard(QWidget):
@@ -19,7 +18,9 @@ class BasicSongCard(QWidget):
     clicked = pyqtSignal(int)
     doubleClicked = pyqtSignal(int)
     playButtonClicked = pyqtSignal(int)
+    addSongToPlayingSig = pyqtSignal(dict)
     checkedStateChanged = pyqtSignal(int, bool)
+    addSongsToCustomPlaylistSig = pyqtSignal(str, list)
 
     def __init__(self, songInfo: dict, songCardType, parent=None):
         """ 实例化歌曲卡
@@ -69,6 +70,7 @@ class BasicSongCard(QWidget):
         self.installEventFilter(self)
         # 信号连接到槽
         self.playButton.clicked.connect(self.playButtonSlot)
+        self.addToButton.clicked.connect(self.__showAddToMenu)
         self.checkBox.stateChanged.connect(self.checkedStateChangedSlot)
 
     def _getInfo(self, songInfo: dict):
@@ -360,6 +362,20 @@ class BasicSongCard(QWidget):
         fontMetrics = QFontMetrics(QFont('Microsoft YaHei', 9))
         self.__scaleableLabelTextWidth_list = [
             fontMetrics.width(label.text()) for label in self.__scaleableWidget_list[1:]]
+
+    def __showAddToMenu(self):
+        """ 显示添加到菜单 """
+        addToMenu = AddToMenu(parent=self)
+        addToGlobalPos = self.mapToGlobal(QPoint(
+            0, 0)) + QPoint(self.addToButton.x() + self.buttonGroup.x(), 0)
+        x = addToGlobalPos.x() + self.addToButton.width() + 5
+        y = addToGlobalPos.y() + int(self.addToButton.height() / 2 -
+                                     (13 + 38 * addToMenu.actionCount()) / 2)
+        addToMenu.playingAct.triggered.connect(
+            lambda: self.addSongToPlayingSig.emit(self.songInfo))
+        addToMenu.addSongsToPlaylistSig.connect(
+            lambda name: self.addSongsToCustomPlaylistSig.emit(name, [self.songInfo]))
+        addToMenu.exec(QPoint(x, y))
 
     @property
     def widget_list(self) -> list:

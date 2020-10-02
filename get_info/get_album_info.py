@@ -37,10 +37,14 @@ class GetAlbumInfo():
                     # 否则用默认的封面
                     cover_path = 'resource\\images\\未知专辑封面_200_200.png'
                 albumInfo_list.append(
-                    {'album': album_list[0], 'songer': songInfo['songer'],
-                     'songInfo_list': [], 'tcon': songInfo['tcon'],
-                     'year': songInfo['year'], 'updateTime': '0',
-                     'cover_path': cover_path})
+                    {'updateTime': '0',
+                     'songInfo_list': [],
+                     'album': album_list[0],
+                     'tcon': songInfo['tcon'],
+                     'year': songInfo['year'],
+                     'cover_path': cover_path,
+                     'modifiedAlbum':album_list[-1],
+                     'songer': songInfo['songer']})
                 album_set.add(album_list[0])
 
         # 再将同一个专辑的歌曲添加到字典的歌曲列表中

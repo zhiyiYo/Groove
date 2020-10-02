@@ -4,7 +4,7 @@ from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QVBoxLayout, QWidget
 
-from my_create_playlist_interface.create_playlist_button import \
+from my_playlist_panel_interface .create_playlist_button import \
     CreatePlaylistButton
 from navigation.navigation_button import ToolButton
 
@@ -57,10 +57,12 @@ class NavigationBar(QWidget):
             self.createPlaylistButton, self.settingButton
         ]
         # 可变样式的按钮列表
-        self.updatableButton_list = self.button_list[2:6] + [self.settingButton]
+        self.updatableButton_list = self.button_list[2:6] + [
+            self.settingButton]
         self.currentButton = self.musicGroupButton
         # 创建按钮与下标对应的字典
-        self.buttonIndex_dict = {'musicGroupButton': 0, 'playlistButton':1,'settingButton': 2}
+        self.buttonIndex_dict = {'musicGroupButton': 0,
+                                 'playlistButton': 1, 'settingButton': 2}
 
     def __initWidget(self):
         """ 初始化小部件 """
@@ -75,7 +77,9 @@ class NavigationBar(QWidget):
         ]
         for button, name in zip(self.updatableButton_list, self.__buttonName_list):
             button.setProperty('name', name)
-        self.musicGroupButton.clicked.connect(
+            button.clicked.connect(
+                lambda checked, name=name: self.setSelectedButton(name))
+        """ self.musicGroupButton.clicked.connect(
             lambda: self.setSelectedButton('musicGroupButton'))
         self.historyButton.clicked.connect(
             lambda: self.setSelectedButton('historyButton'))
@@ -84,7 +88,7 @@ class NavigationBar(QWidget):
         self.playlistButton.clicked.connect(
             lambda: self.setSelectedButton('playlistButton'))
         self.settingButton.clicked.connect(
-            lambda: self.setSelectedButton('settingButton'))
+            lambda: self.setSelectedButton('settingButton')) """
 
     def __initLayout(self):
         """ 初始化布局 """
@@ -106,7 +110,7 @@ class NavigationBar(QWidget):
         if selectedButtonName:
             self.__updateButtonSelectedState(selectedButtonName[0])
 
-    def setSelectedButton(self, selectedButtonName,isSendBySelf=True):
+    def setSelectedButton(self, selectedButtonName, isSendBySelf=True):
         """ 设置选中的按钮 """
         if selectedButtonName == 'playingButton':
             return

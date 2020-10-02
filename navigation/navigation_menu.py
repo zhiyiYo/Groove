@@ -5,7 +5,7 @@ from PyQt5.QtGui import QColor, QIcon, QPainter, QPen
 from PyQt5.QtWidgets import (QApplication, QHBoxLayout, QLabel,
                              QVBoxLayout, QWidget)
 
-from my_create_playlist_interface.create_playlist_button import \
+from my_playlist_panel_interface .create_playlist_button import \
     CreatePlaylistButton
 from my_widget.button_group import ButtonGroup
 
@@ -84,7 +84,9 @@ class NavigationMenu(QWidget):
         ]
         for button, name in zip(self.updatableButton_list, self.__buttonName_list):
             button.setProperty('name', name)
-        self.musicGroupButton.clicked.connect(
+            button.clicked.connect(
+                lambda checked, name=name: self.setSelectedButton(name))
+        """ self.musicGroupButton.clicked.connect(
             lambda: self.setSelectedButton('musicGroupButton'))
         self.historyButton.clicked.connect(
             lambda: self.setSelectedButton('historyButton'))
@@ -95,7 +97,7 @@ class NavigationMenu(QWidget):
         self.settingButton.clicked.connect(
             lambda: self.setSelectedButton('settingButton'))
         self.myLoveButton.clicked.connect(
-            lambda: self.setSelectedButton('myLoveButton'))
+            lambda: self.setSelectedButton('myLoveButton')) """
         # 分配ID
         self.myLoveButton.setObjectName('myLoveButton')
         self.playlistButton.setObjectName('playlistButton')

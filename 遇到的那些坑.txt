@@ -73,3 +73,8 @@ QScrollBar::sub-page:vertical {
 31.处于省电模式下运行会卡顿
 
 32.paintEvent不会覆盖小部件
+
+33.lambda表达式在执行的时候才会去寻找变量，开循环将按钮的clicked信号连接到lambda函数需要写成:
+    bt.clicked.connect(lambda checked,x=x: slotFunc(x))
+    https://www.cnblogs.com/liuq/p/6073855.html
+    

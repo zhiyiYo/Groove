@@ -1,55 +1,53 @@
 # coding:utf-8
 
-import re
-
 import pinyin
-from PyQt5.QtCore import (QEvent, QParallelAnimationGroup, QPoint,
-                          QPropertyAnimation, Qt, pyqtSignal)
-from PyQt5.QtGui import QPainter, QPixmap
-from PyQt5.QtWidgets import (
-    QApplication, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QScrollArea,
-    QVBoxLayout, QWidget)
-
-from my_album_tab_interface.album_card import AlbumCard
-from .album_blur_background import AlbumBlurBackground
+from my_widget.my_grid_layout import GridLayout
 from my_widget.my_groupBox import GroupBox
 from my_widget.my_scrollArea import ScrollArea
+from PyQt5.QtCore import (QParallelAnimationGroup, QPoint, QPropertyAnimation,
+                          Qt, pyqtSignal)
+from PyQt5.QtWidgets import QApplication, QGroupBox, QLabel, QVBoxLayout, QWidget
+
+from .album_blur_background import AlbumBlurBackground
+from .album_card import AlbumCard
+from my_dialog_box.delete_card_panel import DeleteCardPanel
 
 
 class AlbumCardViewer(QWidget):
     """ 定义一个专辑卡视图 """
-    columnChanged = pyqtSignal()
+
     playSignal = pyqtSignal(list)
     nextPlaySignal = pyqtSignal(list)
-    addAlbumToPlaylistSignal = pyqtSignal(list)
-    switchToAlbumInterfaceSig = pyqtSignal(dict)
+    albumNumChanged = pyqtSignal(int)
     saveAlbumInfoSig = pyqtSignal(dict, dict)
+    addAlbumToPlayingSignal = pyqtSignal(list)            # 将专辑添加到正在播放
+    switchToAlbumInterfaceSig = pyqtSignal(dict)
     selectionModeStateChanged = pyqtSignal(bool)
     checkedAlbumCardNumChanged = pyqtSignal(int)
+    addAlbumToNewCustomPlaylistSig = pyqtSignal(list)     # 将专辑添加到新建的播放列表
+    addAlbumToCustomPlaylistSig = pyqtSignal(str, list)   # 将专辑添加到已存在的自定义播放列表
 
     def __init__(self, albumInfo_list: list, parent=None):
         super().__init__(parent)
         self.albumInfo_list = albumInfo_list
         # 初始化网格的列数
-        self.column_num = 5
-        self.total_row_num = 0
+        self.columnNum = 1
         self.albumCardDict_list = []
         self.albumCard_list = []
         self.checkedAlbumCard_list = []
+        self.currentGroupDict_list = []
         # 初始化标志位
         self.isInSelectionMode = False
         self.isAllAlbumCardsChecked = False
         # 设置当前排序方式
         self.sortMode = '添加时间'
-        self.__currentSortFunc = self.sortByAddTimeGroup
-        # 实例化布局
-        self.albumView_hLayout = QHBoxLayout()
-        self.all_h_layout = QHBoxLayout()
+        # 实例化滚动部件的竖直布局
+        self.scrollWidgetVBoxLayout = QVBoxLayout()
         # 实例化滚动区域和滚动区域的窗口
         self.__createGuideLabel()
         self.scrollArea = ScrollArea(self)
-        self.albumViewWidget = QWidget()
-        self.albumBlurBackground = AlbumBlurBackground(self.albumViewWidget)
+        self.scrollWidget = QWidget()
+        self.albumBlurBackground = AlbumBlurBackground(self.scrollWidget)
         # 创建专辑卡并将其添加到布局中
         self.__createAlbumCards()
         # 初始化小部件
@@ -61,13 +59,12 @@ class AlbumCardViewer(QWidget):
         # 隐藏磨砂背景
         self.albumBlurBackground.hide()
         # 设置导航标签的可见性
+        self.guideLabel.raise_()
         self.guideLabel.setHidden(bool(self.albumCard_list))
-        # 设置滚动区域外边距
-        self.scrollArea.setViewportMargins(0, 245, 0, 0)
         # 初始化滚动条
         self.scrollArea.setHorizontalScrollBarPolicy(
             Qt.ScrollBarAlwaysOff)
-        self.albumViewWidget.setObjectName('albumViewWidget')
+        self.scrollWidget.setObjectName('scrollWidget')
         self.__connectSignalToSlot()
         self.__initLayout()
         self.__setQss()
@@ -85,126 +82,74 @@ class AlbumCardViewer(QWidget):
         # 创建并行动画组
         self.hideCheckBoxAniGroup = QParallelAnimationGroup(self)
         self.hideCheckBoxAni_list = []
-        for albumInfo_dict in self.albumInfo_list:
-            # 实例化专辑卡和动画
-            albumCard = AlbumCard(albumInfo_dict, self)
-            # 创建动画
-            hideCheckBoxAni = QPropertyAnimation(
-                albumCard.checkBoxOpacityEffect, b'opacity')
-            self.hideCheckBoxAniGroup.addAnimation(hideCheckBoxAni)
-            self.hideCheckBoxAni_list.append(hideCheckBoxAni)
-            # 将含有专辑卡及其信息的字典插入列表
-            album = albumInfo_dict['album']
-            self.albumCard_list.append(albumCard)
-            self.albumCardDict_list.append({'albumCard': albumCard,
-                                            'albumName': album,
-                                            'year': albumInfo_dict['year'][:4],
-                                            'songer': albumInfo_dict['songer'],
-                                            'firstLetter': pinyin.get_initial(album[0])[0].upper()})
+        for albumInfo in self.albumInfo_list:
+            self.__createOneAlbumCard(albumInfo)
+
+    def __createOneAlbumCard(self, albumInfo: dict):
+        """ 创建一个专辑卡 """
+        # 实例化专辑卡和动画
+        albumCard = AlbumCard(albumInfo, self)
+        # 创建动画
+        hideCheckBoxAni = QPropertyAnimation(
+            albumCard.checkBoxOpacityEffect, b'opacity')
+        self.hideCheckBoxAniGroup.addAnimation(hideCheckBoxAni)
+        self.hideCheckBoxAni_list.append(hideCheckBoxAni)
+        # 将含有专辑卡及其信息的字典插入列表
+        album = albumInfo['album']
+        self.albumCard_list.append(albumCard)
+        self.albumCardDict_list.append({'albumCard': albumCard,
+                                        'albumName': album,
+                                        'year': albumInfo['year'][:4],
+                                        'songer': albumInfo['songer'],
+                                        'firstLetter': pinyin.get_initial(album[0])[0].upper()})
+        # 专辑卡信号连接到槽函数
+        albumCard.playSignal.connect(self.playSignal)
+        albumCard.nextPlaySignal.connect(self.nextPlaySignal)
+        albumCard.saveAlbumInfoSig.connect(self.saveAlbumInfoSig)
+        albumCard.deleteCardSig.connect(self.showDeleteOneCardPanel)
+        albumCard.addToPlayingSignal.connect(
+            self.addAlbumToPlayingSignal)
+        albumCard.switchToAlbumInterfaceSig.connect(
+            self.switchToAlbumInterfaceSig)
+        albumCard.checkedStateChanged.connect(
+            self.__albumCardCheckedStateChangedSlot)
+        albumCard.showBlurAlbumBackgroundSig.connect(
+            self.__showBlurAlbumBackground)
+        albumCard.hideBlurAlbumBackgroundSig.connect(
+            self.albumBlurBackground.hide)
+        albumCard.addAlbumToCustomPlaylistSig.connect(
+            self.addAlbumToCustomPlaylistSig)
+        albumCard.addAlbumToNewCustomPlaylistSig.connect(
+            self.addAlbumToNewCustomPlaylistSig)
 
     def __connectSignalToSlot(self):
         """ 将信号连接到槽函数 """
         # 动画完成隐藏复选框
         self.hideCheckBoxAniGroup.finished.connect(self.__hideAllCheckBox)
-        for albumCard in self.albumCard_list:
-            # 播放
-            albumCard.playSignal.connect(self.playSignal)
-            # 下一首播放
-            albumCard.nextPlaySignal.connect(self.nextPlaySignal)
-            # 添加到播放列表
-            albumCard.addToPlaylistSignal.connect(
-                self.addAlbumToPlaylistSignal)
-            # 进入专辑界面
-            albumCard.switchToAlbumInterfaceSig.connect(
-                self.switchToAlbumInterfaceSig)
-            # 更新专辑信息
-            albumCard.saveAlbumInfoSig.connect(self.saveAlbumInfoSig)
-            # 进入选择模式
-            albumCard.checkedStateChanged.connect(
-                self.__albumCardCheckedStateChangedSlot)
-            # 显示和隐藏磨砂背景
-            albumCard.showBlurAlbumBackgroundSig.connect(
-                self.__showBlurAlbumBackground)
-            albumCard.hideBlurAlbumBackgroundSig.connect(
-                self.albumBlurBackground.hide)
 
     def __initLayout(self):
         """ 初始化布局 """
-        # 如果没有专辑，就置位专辑为空标志位并直接返回
-        if not self.albumCard_list:
-            return
         # 按照添加时间分组
-        self.sortByAddTimeGroup()
-        self.albumViewWidget.setLayout(self.albumView_hLayout)
-        self.scrollArea.setWidget(self.albumViewWidget)
-        # 设置全局布局
-        self.all_h_layout.addWidget(self.scrollArea)
-        self.all_h_layout.setContentsMargins(0, 0, 0, 0)
-        self.setLayout(self.all_h_layout)
-
-    def __updateGridLayout(self):
-        """ 更新网格 """
-        self.vertical_spacing_count = len(self.currentGroupDict_list)-1
-        for currentGroup_dict in self.currentGroupDict_list:
-            # 引用当前分组的网格布局
-            gridLayout = currentGroup_dict['gridLayout']  # type:QGridLayout
-            gridIndex = self.currentGroupDict_list.index(currentGroup_dict)
-            columns = range(self.column_num)
-            # 补上底部播放栏的占位
-            rows = range(
-                (len(currentGroup_dict['album_list']) - 1) // self.column_num + 1 +
-                int(gridIndex == len(self.currentGroupDict_list) - 1))
-
-            self.current_row_num = max(rows) + 1
-            # 设置网格大小
-            for column in columns:
-                gridLayout.setColumnMinimumWidth(column, 211)
-            for row in rows:
-                height = 292 if row != max(rows) or gridIndex != len(
-                    self.currentGroupDict_list) - 1 else 146
-                gridLayout.setRowMinimumHeight(row, height)
-
-            for index, albumCard in enumerate(currentGroup_dict['album_list']):
-                x = index // self.column_num
-                y = index - self.column_num * x
-                if x == max(rows) - 1 and gridIndex == len(self.currentGroupDict_list) - 1:
-                    # 多占一行播放栏的位置
-                    gridLayout.addWidget(
-                        albumCard, x, y, 2, 1, Qt.AlignTop | Qt.AlignLeft)
-                else:
-                    gridLayout.addWidget(albumCard, x, y, 1, 1, Qt.AlignLeft)
-            gridLayout.setAlignment(Qt.AlignLeft)
-            # 获取当前的总行数
-            self.total_row_num = self.current_row_num
-            # 如果现在的总行数小于网格的总行数，就将多出来的行宽度的最小值设为0
-            for i in range(gridLayout.rowCount() - 1, self.current_row_num - 1, -1):
-                gridLayout.setRowMinimumHeight(i, 0)
-
-            # 如果现在的总列数小于网格的总列数，就将多出来的列的宽度的最小值设置为0
-            for i in range(gridLayout.columnCount() - 1, self.column_num - 1, -1):
-                gridLayout.setColumnMinimumWidth(i, 0)
-
-        self.albumViewWidget.setFixedWidth(self.width())
-        if self.sortMode == '添加时间':
-            self.albumViewWidget.setFixedHeight(303 * self.total_row_num)
-        else:
-            # 补上分组标题所占的高度
-            self.albumViewWidget.setFixedHeight(
-                303 * self.total_row_num + 34 * len(self.currentGroupDict_list))
+        self.sortByAddTime()
+        self.scrollWidgetVBoxLayout.setSpacing(30)
+        self.scrollWidgetVBoxLayout.setContentsMargins(10, 245, 0, 120)
+        self.scrollWidget.setLayout(self.scrollWidgetVBoxLayout)
+        self.scrollArea.setWidget(self.scrollWidget)
 
     def resizeEvent(self, event):
         """ 根据宽度调整网格的列数 """
         super().resizeEvent(event)
+        self.scrollArea.resize(self.size())
         # 如果第一次超过1337就调整网格的列数
-        if self.width() >= 1790 and self.column_num != 8:
+        if self.width() >= 1790 and self.columnNum != 8:
             self.__updateColumnNum(8)
-        if 1570<=self.width() < 1790 and self.column_num != 7:
+        if 1570 <= self.width() < 1790 and self.columnNum != 7:
             self.__updateColumnNum(7)
-        elif 1350<=self.width() < 1570 and self.column_num != 6:
+        elif 1350 <= self.width() < 1570 and self.columnNum != 6:
             self.__updateColumnNum(6)
-        elif 1130 < self.width() < 1350 and self.column_num != 5:
+        elif 1130 < self.width() < 1350 and self.columnNum != 5:
             self.__updateColumnNum(5)
-        elif 910 < self.width() <= 1130 and self.column_num != 4:
+        elif 910 < self.width() <= 1130 and self.columnNum != 4:
             self.__updateColumnNum(4)
         elif 690 < self.width() <= 910:
             self.__updateColumnNum(3)
@@ -215,82 +160,77 @@ class AlbumCardViewer(QWidget):
         self.scrollArea.verticalScrollBar().resize(
             self.scrollArea.verticalScrollBar().width(), self.height() - 156)
 
-    def __updateColumnNum(self, new_column):
+    def __updateColumnNum(self, columnNum: int):
         """ 更新网格列数 """
+        self.columnNum = columnNum
         for currentGroup_dict in self.currentGroupDict_list:
-            for albumCard in currentGroup_dict['album_list']:
-                currentGroup_dict['gridLayout'].removeWidget(albumCard)
-        self.column_num = new_column
-        self.__updateGridLayout()
+            gridLayout = currentGroup_dict['gridLayout']  # type:GridLayout
+            gridLayout.updateColumnNum(columnNum, 210, 290)
+        self.__adjustScrollWidgetSize()
 
-    def __removeOldWidget(self):
-        """ 从布局中移除小部件,同时设置新的布局 """
-        # 将专辑卡从布局中移除
+    def __adjustScrollWidgetSize(self):
+        """ 调整滚动部件的高度 """
+        rowCount = sum([currentGroup_dict['gridLayout'].rowCount()
+                        for currentGroup_dict in self.currentGroupDict_list])
+        containerCount = len(self.currentGroupDict_list)
+        self.scrollWidget.resize(
+            self.width(), 310 * rowCount + 60 * containerCount * (self.sortMode != '添加日期') + 120 + 245)
+
+    def __removeContainerFromVBoxLayout(self):
+        """ 从竖直布局中移除专辑卡容器 """
         for currentGroup_dict in self.currentGroupDict_list:
-            for albumCard in currentGroup_dict['album_list']:
-                currentGroup_dict['gridLayout'].removeWidget(albumCard)
-            # 删除groupBox和布局
-            currentGroup_dict['group'].deleteLater()
+            # 将专辑卡从每个网格布局中移除
+            currentGroup_dict['gridLayout'].removeAllWidgets()
+            self.scrollWidgetVBoxLayout.removeWidget(
+                currentGroup_dict['container'])
+            currentGroup_dict['container'].deleteLater()
             currentGroup_dict['gridLayout'].deleteLater()
+        self.currentGroupDict_list = []
 
-        # 先移除albumView_h_layout的当前分组
-        self.albumView_hLayout.removeItem(self.albumView_hLayout_cLayout)
-        # 创建一个新的竖直布局再将其加到布局中
-        self.v_layout = QVBoxLayout()
-        self.albumView_hLayout_cLayout = self.v_layout
-        self.albumView_hLayout_cLayout.setContentsMargins(10, 0, 0, 0)
-
-    def __addGroupToLayout(self):
+    def __addContainterToVBoxLayout(self):
         """ 将当前的分组添加到箱式布局中 """
-        for index, currentGroup_dict in enumerate(self.currentGroupDict_list):
-            gridLayout = currentGroup_dict['gridLayout']  # type:QGridLayout
-            # 设置网格的行距
-            gridLayout.setVerticalSpacing(20)
-            gridLayout.setHorizontalSpacing(10)
-            gridLayout.setContentsMargins(0, 0, 0, 0)
-            self.v_layout.addWidget(currentGroup_dict['group'])
-            if index < len(self.currentGroupDict_list)-1:
-                self.v_layout.addSpacing(10)
-        self.albumView_hLayout.addLayout(self.v_layout)
+        for currentGroup_dict in self.currentGroupDict_list:
+            self.scrollWidgetVBoxLayout.addWidget(
+                currentGroup_dict['container'], 0, Qt.AlignTop)
 
-    def sortByAddTimeGroup(self):
+    def __addAlbumCardToGridLayout(self):
+        """ 将专辑卡添加到每一个网格布局中 """
+        for currentGroup_dict in self.currentGroupDict_list:
+            for index, albumCard in enumerate(currentGroup_dict['albumCard_list']):
+                row = index // self.columnNum
+                column = index - row * self.columnNum
+                currentGroup_dict['gridLayout'].addWidget(
+                    albumCard, row, column)
+            currentGroup_dict['gridLayout'].setAlignment(Qt.AlignLeft)
+
+    def sortByAddTime(self):
         """ 按照添加时间分组 """
+        self.sortMode = '添加时间'
         # 创建一个包含所有歌曲卡的网格布局
-        gridLayout = QGridLayout()
+        container = QWidget()
+        gridLayout = GridLayout()
         gridLayout.setVerticalSpacing(20)
         gridLayout.setHorizontalSpacing(10)
-        # 移除旧的布局
-        if self.sortMode != '添加时间':
-            self.sortMode = '添加时间'
-            # 将组合框从布局中移除
-            for currentGroup_dict in self.currentGroupDict_list:
-                self.albumView_hLayout_cLayout.removeWidget(
-                    currentGroup_dict['group'])
-                # 删除groupBox和布局
-                currentGroup_dict['group'].deleteLater()
-                currentGroup_dict['gridLayout'].deleteLater()
-            # 移除旧布局
-            self.albumView_hLayout.removeItem(self.albumView_hLayout_cLayout)
-            self.update()
-
-        self.albumView_hLayout_cLayout = gridLayout
-        self.albumView_hLayout_cLayout.setContentsMargins(10, 0, 0, 0)
+        container.setLayout(gridLayout)
+        # 从竖直布局中移除小部件
+        self.__removeContainerFromVBoxLayout()
         # 构造一个包含布局和小部件列表字典的列表
         self.addTimeGroup_list = [
-            {'gridLayout': gridLayout, 'album_list': self.albumCard_list, 'group': QGroupBox()}]
+            {'container': container,
+             'gridLayout': gridLayout,
+             'albumCard_list': self.albumCard_list}]
         # 创建一个对当前分组列表引用的列表
         self.currentGroupDict_list = self.addTimeGroup_list
-        # 更新网格
-        self.__updateGridLayout()
-        # self.__updateGridLayout()
-        # 更新布局
-        self.albumView_hLayout.addLayout(gridLayout)
+        # 将专辑卡添加到布局中
+        self.__addAlbumCardToGridLayout()
+        self.__addContainterToVBoxLayout()
+        self.__adjustScrollWidgetSize()
 
     def sortByFirstLetter(self):
         """ 按照专辑名的首字母进行分组排序 """
         self.sortMode = 'A到Z'
         # 将专辑卡从旧布局中移除
-        self.__removeOldWidget()
+        self.__removeContainerFromVBoxLayout()
         # 创建分组
         firstLetter_list = []
         self.firsetLetterGroupDict_list = []
@@ -305,14 +245,16 @@ class AlbumCardViewer(QWidget):
                 # firstLetter_list的首字母顺序和firsetLetterGroupDict_list保持一致
                 firstLetter_list.append(firstLetter)
                 group = GroupBox(firstLetter)
-                gridLayout = QGridLayout()
+                gridLayout = GridLayout()
                 group.setLayout(gridLayout)
+                gridLayout.setVerticalSpacing(20)
+                gridLayout.setHorizontalSpacing(10)
                 self.firsetLetterGroupDict_list.append(
-                    {'group': group, 'firstLetter': firstLetter,
-                     'gridLayout': gridLayout, 'album_list': []})
+                    {'container': group, 'firstLetter': firstLetter,
+                     'gridLayout': gridLayout, 'albumCard_list': []})
             # 将专辑卡添加到分组中
             index = firstLetter_list.index(firstLetter)
-            self.firsetLetterGroupDict_list[index]['album_list'].append(
+            self.firsetLetterGroupDict_list[index]['albumCard_list'].append(
                 albumCard_dict['albumCard'])
         # 排序列表
         self.firsetLetterGroupDict_list.sort(
@@ -323,14 +265,16 @@ class AlbumCardViewer(QWidget):
             self.firsetLetterGroupDict_list.append(unique_group)
         # 将专辑加到分组的网格布局中
         self.currentGroupDict_list = self.firsetLetterGroupDict_list
-        self.__updateGridLayout()
-        self.__addGroupToLayout()
+        # 将专辑卡添加到网格布局中并将容器添加到竖直布局中
+        self.__addAlbumCardToGridLayout()
+        self.__addContainterToVBoxLayout()
+        self.__adjustScrollWidgetSize()
 
     def sortByYear(self):
         """ 按照专辑的年份进行分组排序 """
         self.sortMode = '发行年份'
         # 将专辑卡从旧布局中移除
-        self.__removeOldWidget()
+        self.__removeContainerFromVBoxLayout()
         # 创建分组
         year_list = []
         self.yearGroupDict_list = []
@@ -343,14 +287,16 @@ class AlbumCardViewer(QWidget):
                 year_list.append(year)
                 # 实例化分组和网格布局
                 group = GroupBox(year)
-                gridLayout = QGridLayout()
+                gridLayout = GridLayout()
                 group.setLayout(gridLayout)
+                gridLayout.setVerticalSpacing(20)
+                gridLayout.setHorizontalSpacing(10)
                 self.yearGroupDict_list.append(
-                    {'group': group, 'year': year,
-                     'gridLayout': gridLayout, 'album_list': []})
+                    {'container': group, 'year': year,
+                     'gridLayout': gridLayout, 'albumCard_list': []})
             # 将专辑卡添加到分组中
             index = year_list.index(year)
-            self.yearGroupDict_list[index]['album_list'].append(
+            self.yearGroupDict_list[index]['albumCard_list'].append(
                 albumCard_dict['albumCard'])
         # 按照年份从进到远排序
         self.yearGroupDict_list.sort(
@@ -361,14 +307,15 @@ class AlbumCardViewer(QWidget):
             self.yearGroupDict_list.append(unique_group)
         # 将专辑加到分组的网格布局中
         self.currentGroupDict_list = self.yearGroupDict_list
-        self.__updateGridLayout()
-        self.__addGroupToLayout()
+        self.__addAlbumCardToGridLayout()
+        self.__addContainterToVBoxLayout()
+        self.__adjustScrollWidgetSize()
 
     def sortBySonger(self):
         """ 按照专辑的专辑进行分组排序 """
         self.sortMode = '歌手'
         # 将专辑卡从旧布局中移除
-        self.__removeOldWidget()
+        self.__removeContainerFromVBoxLayout()
         # 创建列表
         songer_list = []
         self.songerGroupDict_list = []
@@ -378,21 +325,24 @@ class AlbumCardViewer(QWidget):
             if songer not in songer_list:
                 songer_list.append(songer)
                 group = GroupBox(songer)
-                gridLayout = QGridLayout()
+                gridLayout = GridLayout()
                 group.setLayout(gridLayout)
+                gridLayout.setVerticalSpacing(20)
+                gridLayout.setHorizontalSpacing(10)
                 self.songerGroupDict_list.append(
-                    {'group': group, 'songer': songer,
-                     'gridLayout': gridLayout, 'album_list': []})
+                    {'container': group, 'songer': songer,
+                     'gridLayout': gridLayout, 'albumCard_list': []})
             # 将专辑卡添加到分组中
             index = songer_list.index(songer)
-            self.songerGroupDict_list[index]['album_list'].append(
+            self.songerGroupDict_list[index]['albumCard_list'].append(
                 albumCard_dict['albumCard'])
         # 排序列表
         self.songerGroupDict_list.sort(key=lambda item: item['songer'].lower())
         # 将专辑加到分组的网格布局中
         self.currentGroupDict_list = self.songerGroupDict_list
-        self.__updateGridLayout()
-        self.__addGroupToLayout()
+        self.__addAlbumCardToGridLayout()
+        self.__addContainterToVBoxLayout()
+        self.__adjustScrollWidgetSize()
 
     def __setQss(self):
         """ 设置层叠样式 """
@@ -487,7 +437,7 @@ class AlbumCardViewer(QWidget):
     def __showBlurAlbumBackground(self, pos: QPoint, picPath: str):
         """ 显示磨砂背景 """
         # 将全局坐标转为窗口坐标
-        pos = self.albumViewWidget.mapFromGlobal(pos)
+        pos = self.scrollWidget.mapFromGlobal(pos)
         self.albumBlurBackground.setBlurAlbum(picPath)
         self.albumBlurBackground.move(pos.x() - 31, pos.y() - 16)
         self.albumBlurBackground.show()
@@ -502,3 +452,80 @@ class AlbumCardViewer(QWidget):
                         albumInfo['songInfo_list'][i] = newSongInfo.copy()
                         return albumInfo
         return {}
+
+    def updateAllAlbumCards(self, albumInfo_list: list):
+        """ 更新所有专辑卡 """
+        # 将专辑卡从布局中移除
+        self.__removeContainerFromVBoxLayout()
+        # 根据具体情况增减专辑卡
+        newCardNum = len(albumInfo_list)
+        oldCardNum = len(self.albumCard_list)
+        deltaNum = newCardNum - oldCardNum
+        if deltaNum < 0:
+            for i in range(oldCardNum - 1, newCardNum - 1, -1):
+                albumCard = self.albumCard_list.pop()
+                self.hideCheckBoxAni_list.pop()
+                self.albumCardDict_list.pop()
+                self.hideCheckBoxAniGroup.takeAnimation(i)
+                albumCard.deleteLater()
+        elif deltaNum > 0:
+            for albumInfo in albumInfo_list[oldCardNum:]:
+                self.__createOneAlbumCard(albumInfo)
+                QApplication.processEvents()
+        # 更新部分专辑卡
+        self.albumInfo_list = albumInfo_list
+        iterRange = range(oldCardNum) if deltaNum > 0 else range(newCardNum)
+        for i in iterRange:
+            albumInfo = albumInfo_list[i]
+            album = albumInfo['album']
+            self.albumCard_list[i].updateWindow(albumInfo)
+            QApplication.processEvents()
+            self.albumCardDict_list[i] = {'albumCard': albumCard,
+                                          'albumName': album,
+                                          'year': albumInfo['year'][:4],
+                                          'songer': albumInfo['songer'],
+                                          'firstLetter': pinyin.get_initial(album[0])[0].upper()}
+        # 重新排序专辑卡
+        self.setSortMode(self.sortMode)
+        # 根据当前专辑卡数决定是否显示导航标签
+        self.guideLabel.setHidden(bool(albumInfo_list))
+        if deltaNum != 0:
+            self.albumNumChanged.emit(newCardNum)
+
+    def setSortMode(self, sortMode: str):
+        """ 排序专辑卡 """
+        self.sortMode = sortMode
+        if sortMode == '添加时间':
+            self.sortByAddTime()
+        elif sortMode == 'A到Z':
+            self.sortByFirstLetter()
+        elif sortMode == '发行年份':
+            self.sortByYear()
+        elif sortMode == '歌手':
+            self.sortBySonger()
+        else:
+            raise Exception(f'排序依据"{sortMode}"不存在')
+
+    def showDeleteOneCardPanel(self, albumInfo: dict):
+        """ 显示删除一个专辑卡的对话框 """
+        title = '是否确定要删除此项？'
+        content = f"""如果删除"{albumInfo['album']}"，它将不再位于此设备上。"""
+        deleteCardPanel = DeleteCardPanel(title, content, self.window())
+        deleteCardPanel.deleteCardSig.connect(
+            lambda: self.__deleteAlbumCards([albumInfo]))
+        deleteCardPanel.exec_()
+
+    def showDeleteMultiAlbumCardPanel(self, albumInfo_list: list):
+        """ 显示删除多个专辑卡的对话框 """
+        title = '确定要删除这些项？'
+        content = "如果你删除这些专辑，它们将不再位于此设备上。"
+        deleteCardPanel = DeleteCardPanel(title, content, self.window())
+        deleteCardPanel.deleteCardSig.connect(
+            lambda: self.__deleteAlbumCards(albumInfo_list))
+        deleteCardPanel.exec()
+
+    def __deleteAlbumCards(self, albumInfo_list: list):
+        """ 删除一个专辑卡 """
+        for albumInfo in albumInfo_list:
+            self.albumInfo_list.remove(albumInfo)
+        self.updateAllAlbumCards(self.albumInfo_list)

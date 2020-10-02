@@ -13,6 +13,7 @@ from my_dialog_box.album_info_edit_panel import AlbumInfoEditPanel
 from my_functions.auto_wrap import autoWrap
 from my_functions.get_pressed_pos import getPressedPos
 from my_functions.is_not_leave import isNotLeave
+from my_widget.my_menu import AddToMenu
 from my_widget.blur_button import BlurButton
 from my_widget.my_label import ClickableLabel
 from my_widget.perspective_widget import PerspectiveWidget
@@ -23,18 +24,22 @@ from .check_box import CheckBox
 
 class AlbumCard(PerspectiveWidget):
     """ 定义包含专辑歌手名的窗口 """
+
     playSignal = pyqtSignal(list)
+    deleteCardSig = pyqtSignal(dict)
     nextPlaySignal = pyqtSignal(list)
-    addToPlaylistSignal = pyqtSignal(list)
-    switchToAlbumInterfaceSig = pyqtSignal(dict)
-    saveAlbumInfoSig = pyqtSignal(dict, dict)
-    checkedStateChanged = pyqtSignal(QWidget, bool)  # 发送 albumCard 和 isChecked
-    showBlurAlbumBackgroundSig = pyqtSignal(QPoint, str)  # 发送专辑卡全局坐标
+    addToPlayingSignal = pyqtSignal(list)                 # 将专辑添加到正在播放
     hideBlurAlbumBackgroundSig = pyqtSignal()
+    saveAlbumInfoSig = pyqtSignal(dict, dict)
+    switchToAlbumInterfaceSig = pyqtSignal(dict)
+    checkedStateChanged = pyqtSignal(QWidget, bool)
+    addAlbumToNewCustomPlaylistSig = pyqtSignal(list)     # 将专辑添加到新建的播放列表
+    addAlbumToCustomPlaylistSig = pyqtSignal(str, list)   # 将专辑添加到已存在的自定义播放列表
+    showBlurAlbumBackgroundSig = pyqtSignal(QPoint, str)  # 发送专辑卡全局坐标
 
     def __init__(self, albumInfo: dict, parent):
         super().__init__(parent, True)
-        self.albumInfo = albumInfo
+        self.albumInfo = deepcopy(albumInfo)
         self.songInfo_list = self.albumInfo.get('songInfo_list')  # type:list
         self.picPath = self.albumInfo.get('cover_path')           # type:str
         # 初始化标志位
@@ -88,7 +93,8 @@ class AlbumCard(PerspectiveWidget):
         self.songerNameLabel.setProperty('isChecked', 'False')
         # 将信号连接到槽函数
         self.playButton.clicked.connect(
-            lambda: self.playSignal.emit(self.albumInfo['songInfo_list']))
+            lambda: self.playSignal.emit(self.songInfo_list))
+        self.addToButton.clicked.connect(self.__showAddToMenu)
         self.checkBox.stateChanged.connect(self.__checkedStateChangedSlot)
 
     def __initLayout(self):
@@ -121,13 +127,19 @@ class AlbumCard(PerspectiveWidget):
         # 创建菜单
         menu = AlbumCardContextMenu(parent=self)
         menu.playAct.triggered.connect(
-            lambda: self.playSignal.emit(self.albumInfo['songInfo_list']))
+            lambda: self.playSignal.emit(self.songInfo_list))
         menu.nextToPlayAct.triggered.connect(
-            lambda: self.nextPlaySignal.emit(self.albumInfo['songInfo_list']))
+            lambda: self.nextPlaySignal.emit(self.songInfo_list))
         menu.addToMenu.playingAct.triggered.connect(
-            lambda: self.addToPlaylistSignal.emit(self.albumInfo['songInfo_list']))
+            lambda: self.addToPlayingSignal.emit(self.songInfo_list))
         menu.editInfoAct.triggered.connect(self.showAlbumInfoEditPanel)
         menu.selectAct.triggered.connect(self.__selectActSlot)
+        menu.addToMenu.addSongsToPlaylistSig.connect(
+            lambda name: self.addAlbumToCustomPlaylistSig.emit(name, self.songInfo_list))
+        menu.addToMenu.newPlayList.triggered.connect(
+            lambda: self.addAlbumToNewCustomPlaylistSig.emit(self.songInfo_list))
+        menu.deleteAct.triggered.connect(
+            lambda: self.deleteCardSig.emit(self.albumInfo))
         menu.exec(event.globalPos())
 
     def __adjustLabel(self):
@@ -163,7 +175,9 @@ class AlbumCard(PerspectiveWidget):
 
     def updateWindow(self, newAlbumInfo: dict):
         """ 更新专辑卡窗口信息 """
-        self.albumInfo = newAlbumInfo
+        if newAlbumInfo == self.albumInfo:
+            return
+        self.albumInfo = deepcopy(newAlbumInfo)
         self.songInfo_list = self.albumInfo['songInfo_list']
         self.picPath = newAlbumInfo['cover_path']
         self.albumPic.setPixmap(QPixmap(self.picPath).scaled(
@@ -220,3 +234,20 @@ class AlbumCard(PerspectiveWidget):
         """ 右击菜单选择动作对应的槽函数 """
         self.setSelectionModeOpen(True)
         self.setChecked(True)
+
+    def __showAddToMenu(self):
+        """ 显示添加到菜单 """
+        addToMenu = AddToMenu(parent=self)
+        addToGlobalPos = self.mapToGlobal(QPoint(
+            0, 0)) + QPoint(self.addToButton.x(), self.addToButton.y())
+        x = addToGlobalPos.x() + self.addToButton.width() + 5
+        y = addToGlobalPos.y() + int(self.addToButton.height() / 2 -
+                                     (13 + 38 * addToMenu.actionCount()) / 2)
+        addToMenu.playingAct.triggered.connect(
+            lambda: self.addToPlayingSignal.emit(self.songInfo_list))
+        addToMenu.newPlayList.triggered.connect(
+            lambda: self.addAlbumToNewCustomPlaylistSig.emit(self.songInfo_list))
+        addToMenu.addSongsToPlaylistSig.connect(
+            lambda name: self.addAlbumToCustomPlaylistSig.emit(name, self.songInfo_list))
+        addToMenu.exec(QPoint(x, y))
+        

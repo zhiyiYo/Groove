@@ -7,7 +7,7 @@ QWidget#albumCard[isChecked='False'] {
 }
 
 QWidget{
-    background-color: white;
+    background-color: transparent;
 }
 
 
@@ -28,13 +28,13 @@ QGroupBox {
 QGroupBox::title {
     subcontrol-origin: margin;
     subcontrol-position: top left;
+    padding-left: 10px;
 
 }
 
 QGridLayout{
     background-color: transparent;
 }
-
 
 
 /*滚动条*/

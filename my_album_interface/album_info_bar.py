@@ -7,12 +7,16 @@ from PyQt5.QtWidgets import QApplication, QLabel, QWidget
 from my_functions.get_dominant_color import DominantColor
 
 from .album_interface_buttons import BasicButton
-from .album_interface_menus import MoreActionsMenu, AddToMenu
+from .album_interface_menus import MoreActionsMenu
+from my_widget.my_menu import AddToMenu
 
 
 class AlbumInfoBar(QWidget):
     """ 专辑信息栏 """
     editInfoSig = pyqtSignal()
+    addToPlayingPlaylistSig = pyqtSignal()
+    addToNewCustomPlaylistSig = pyqtSignal()
+    addToCustomPlaylistSig = pyqtSignal(str)
 
     def __init__(self, albumInfo: dict, parent=None):
         super().__init__(parent)
@@ -26,7 +30,6 @@ class AlbumInfoBar(QWidget):
 
     def __createWidgets(self):
         """ 创建小部件 """
-        self.addToMenu = AddToMenu(self)
         self.moreActionsMenu = MoreActionsMenu(self)
         self.albumCover = QLabel(self)
         self.albumNameLabel = QLabel(self.albumName, self)
@@ -46,6 +49,7 @@ class AlbumInfoBar(QWidget):
             r'resource\images\album_interface\更多操作.png', '', self)
         self.deleteButton = BasicButton(
             r'resource\images\album_interface\删除.png', '删除', self)
+        self.albumCover.setFixedSize(295, 295)
         self.albumCover.setPixmap(QPixmap(self.albumCoverPath).scaled(
             295, 295, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
 
@@ -65,8 +69,8 @@ class AlbumInfoBar(QWidget):
         # 设置层叠样式
         self.__setQss()
         # 信号连接到槽
-        self.addToBt.clicked.connect(self.showAddToMenu)
-        self.moreActionsBt.clicked.connect(self.showMoreActionsMenu)
+        self.addToBt.clicked.connect(self.__showAddToMenu)
+        self.moreActionsBt.clicked.connect(self.__showMoreActionsMenu)
 
     def __initLayout(self):
         """ 初始化布局 """
@@ -121,7 +125,7 @@ class AlbumInfoBar(QWidget):
             if self.width() >= 1315:
                 self.__adjustButtonPosFunc(1, 1120, False, True, True, True)
         elif ((isDeltaWidthPositive and 1240 <= self.width() < 1315) or
-                    (not isDeltaWidthPositive and self.width() >= 1240)):
+              (not isDeltaWidthPositive and self.width() >= 1240)):
             isDeleteBtVisible = self.deleteButton.isVisible()
             # 保持删除按钮原来的可见性
             self.__adjustButtonPosFunc(
@@ -200,14 +204,19 @@ class AlbumInfoBar(QWidget):
         self.yearTconLabel.setText(fontMetrics.elidedText(
             self.yearTconLabel.text(), Qt.ElideRight, maxWidth))
 
-    def showAddToMenu(self):
+    def __showAddToMenu(self):
         """ 显示添加到菜单 """
+        addToMenu = AddToMenu(parent=self)
         addToGlobalPos = self.mapToGlobal(self.addToBt.pos())
         x = addToGlobalPos.x() + self.addToBt.width() + 5
-        y = addToGlobalPos.y() + int(self.addToBt.height() / 2 - 141 / 2)
-        self.addToMenu.exec(QPoint(x, y))
+        y = addToGlobalPos.y() + int(self.addToBt.height() / 2 -
+                                     (13 + 38 * addToMenu.actionCount()) / 2)
+        addToMenu.playingAct.triggered.connect(self.addToPlayingPlaylistSig)
+        addToMenu.addSongsToPlaylistSig.connect(self.addToCustomPlaylistSig)
+        addToMenu.newPlayList.triggered.connect(self.addToNewCustomPlaylistSig)
+        addToMenu.exec(QPoint(x, y))
 
-    def showMoreActionsMenu(self):
+    def __showMoreActionsMenu(self):
         """ 显示更多操作菜单 """
         if self.moreActionsMenu.actionNum >= 2:
             self.moreActionsMenu.editInfoAct.triggered.connect(

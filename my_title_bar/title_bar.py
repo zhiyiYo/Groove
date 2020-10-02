@@ -22,7 +22,7 @@ class TitleBar(QWidget):
         # 实例化无边框窗口函数类
         self.setAttribute(Qt.WA_TranslucentBackground)
         # 实例化小部件
-        self.title = QLabel('Groove 音乐', self)
+        self.title = QLabel('MyGroove 音乐', self)
         self.__createButtons()
         # 初始化界面
         self.__initWidget()

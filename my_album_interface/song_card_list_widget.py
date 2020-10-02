@@ -19,8 +19,6 @@ class SongCardListWidget(BasicSongListWidget):
     def __init__(self, songInfo_list: list, parent=None):
         super().__init__(songInfo_list, SongCardType.ALBUM_INTERFACE_SONG_CARD,
                          parent, QMargins(30, 430, 30, 0))
-        # 创建右击菜单
-        self.contextMenu = SongCardListContextMenu(self)
         # 创建歌曲卡
         self.__createSongCards()
         # 初始化
@@ -32,8 +30,6 @@ class SongCardListWidget(BasicSongListWidget):
         self.setAlternatingRowColors(True)
         # 设置层叠样式
         self.__setQss()
-        # 信号连接到槽
-        self.__connectSignalToSlot()
 
     def __createSongCards(self):
         """ 清空列表并创建新歌曲卡 """
@@ -50,7 +46,9 @@ class SongCardListWidget(BasicSongListWidget):
         hitIndex = self.indexAt(e.pos()).column()
         # 显示右击菜单
         if hitIndex > -1:
-            self.contextMenu.exec(self.cursor().pos())
+            contextMenu = SongCardListContextMenu(self)
+            self.__connectMenuSignalToSlot(contextMenu)
+            contextMenu.exec(self.cursor().pos())
 
     def __emitCurrentChangedSignal(self, index):
         """ 发送当前播放的歌曲卡变化信号，同时更新样式和歌曲信息卡 """
@@ -81,23 +79,28 @@ class SongCardListWidget(BasicSongListWidget):
         self.sortSongInfo(key='tracknumber')
         self.updateAllSongCards(self.songInfo_list)
 
-    def __connectSignalToSlot(self):
+    def __connectMenuSignalToSlot(self, contextMenu: SongCardListContextMenu):
         """ 信号连接到槽 """
-        self.contextMenu.playAct.triggered.connect(
+        contextMenu.playAct.triggered.connect(
             lambda: self.playOneSongSig.emit(self.songCard_list[self.currentRow()].songInfo))
-        self.contextMenu.nextSongAct.triggered.connect(
+        contextMenu.nextSongAct.triggered.connect(
             lambda: self.nextToPlayOneSongSig.emit(self.songCard_list[self.currentRow()].songInfo))
-        self.contextMenu.editInfoAct.triggered.connect(
+        contextMenu.editInfoAct.triggered.connect(
             self.showSongInfoEditPanel)
-        self.contextMenu.showPropertyAct.triggered.connect(
+        contextMenu.showPropertyAct.triggered.connect(
             self.showPropertyPanel)
-        self.contextMenu.deleteAct.triggered.connect(
+        contextMenu.deleteAct.triggered.connect(
             lambda: self.__removeSongCard(self.currentRow()))
-        self.contextMenu.addToMenu.playingAct.triggered.connect(
-            lambda: self.addSongToPlaylistSignal.emit(
+        contextMenu.addToMenu.playingAct.triggered.connect(
+            lambda: self.addSongToPlayingSignal.emit(
                 self.songCard_list[self.currentRow()].songInfo))
-        self.contextMenu.selectAct.triggered.connect(
+        contextMenu.selectAct.triggered.connect(
             lambda: self.songCard_list[self.currentRow()].setChecked(True))
+        contextMenu.addToMenu.addSongsToPlaylistSig.connect(
+            lambda name: self.addSongsToCustomPlaylistSig.emit(name, self.songInfo_list))
+        contextMenu.addToMenu.newPlayList.triggered.connect(
+            lambda: self.addSongsToNewCustomPlaylistSig.emit(
+                [self.songCard_list[self.currentRow()].songInfo]))
 
     def __connectSongCardSignalToSlot(self, songCard):
         """ 将歌曲卡信号连接到槽 """

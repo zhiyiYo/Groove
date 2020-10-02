@@ -1,5 +1,7 @@
 # coding:utf-8
 
+import os
+
 from ctypes.wintypes import HWND
 
 from PyQt5.QtCore import QEasingCurve, QPropertyAnimation, QRect, Qt, QEvent
@@ -102,12 +104,24 @@ class AddToMenu(QMenu):
             QIcon('resource\\images\\menu\\正在播放.png'), '正在播放', self)
         self.newPlayList = QAction(
             QIcon('resource\\images\\menu\\黑色加号.png'), '新的播放列表', self)
-        self.myLove = QAction(
-            QIcon('resource\\images\\menu\\黑色我喜欢_20_20.png'), '我喜欢', self)
-        self.action_list = [self.playingAct, self.newPlayList, self.myLove]
+        # 根据播放列表创建动作
+        playlistName_list = self.__getPlaylistNames()
+        self.playlistNameAct_list = [
+            QAction(QIcon(r'resource\images\menu\黑色我喜欢_20_20.png'), name, self) for name in playlistName_list]
+        self.action_list = [self.playingAct,
+                            self.newPlayList] + self.playlistNameAct_list
         self.addAction(self.playingAct)
         self.addSeparator()
-        self.addActions([self.newPlayList, self.myLove])
+        self.addActions([self.newPlayList] + self.playlistNameAct_list)
+
+    def __getPlaylistNames(self):
+        """ 扫描播放列表文件夹下的播放列表名字 """
+        # 扫描播放列表文件夹下的播放列表名字
+        if not os.path.exists('Playlists'):
+            os.mkdir('Playlists')
+        playlistName_list = [os.path.splitext(
+            i)[0] for i in os.listdir('Playlists')]
+        return playlistName_list
 
     def __setQss(self):
         """ 设置层叠样式 """

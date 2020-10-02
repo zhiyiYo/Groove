@@ -354,6 +354,49 @@ class PlayingInterface(QWidget):
         self.playlist = self.songListWidget.playlist
         self.songInfoCardChute.playlist = self.playlist
 
+    def showSmallestModeInterface(self):
+        """ 显示最小播放模式界面 """
+        self.exitFullScreenSig.emit()
+        # 记录下正常尺寸
+        self.currentGeometry = self.window().geometry()  # type:QRect
+        # 更新磨砂半径
+        self.blurCoverThread.setTargetCover(
+            self.blurCoverThread.albumCoverPath, 40, (350, 350))
+        self.blurCoverThread.start()
+        self.playBar.hide()
+        self.songListWidget.hide()
+        self.songInfoCardChute.hide()
+        self.blurBackgroundPic.show()
+        # 先更新歌曲信息卡再显示界面
+        self.smallestModeInterface.setCurrentIndex(self.currentIndex)
+        self.smallestModeInterface.show()
+        # 发出隐藏标题栏按钮的信号
+        self.smallestModeStateChanged.emit(True)
+        self.window().setMinimumSize(206, 197)
+        self.window().setGeometry(self.currentGeometry.x() +
+                                  self.currentGeometry.width() - self.currentSmallestModeSize.width(),
+                                  self.currentGeometry.y(),
+                                  self.currentSmallestModeSize.width(),
+                                  self.currentSmallestModeSize.height())
+
+    def __hideSmallestModeInterface(self):
+        """ 隐藏最小播放模式界面 """
+        # 记录下最小播放模式的尺寸
+        self.currentSmallestModeSize = self.window().size()  # type:QSize
+        # 更新磨砂半径
+        self.blurCoverThread.setTargetCover(
+            self.blurCoverThread.albumCoverPath, 6, (450, 450))
+        self.blurCoverThread.start()
+        self.smallestModeInterface.hide()
+        self.window().setMinimumSize(1030, 850)
+        self.window().setGeometry(self.currentGeometry)
+        # 发出显示标题栏按钮的信号
+        self.smallestModeStateChanged.emit(False)
+        self.blurBackgroundPic.setHidden(self.isPlaylistVisible)
+        self.playBar.show()
+        self.songListWidget.show()
+        self.songInfoCardChute.show()
+
     def __connectSignalToSlot(self):
         """ 将信号连接到槽 """
         self.blurCoverThread.blurDone.connect(self.setBlurPixmap)
@@ -399,46 +442,3 @@ class PlayingInterface(QWidget):
             self.switchToAlbumInterfaceSig)
         self.songListWidget.switchToAlbumInterfaceSig.connect(
             self.switchToAlbumInterfaceSig)
-
-    def showSmallestModeInterface(self):
-        """ 显示最小播放模式界面 """
-        self.exitFullScreenSig.emit()
-        # 记录下正常尺寸
-        self.currentGeometry = self.window().geometry()  # type:QRect
-        # 更新磨砂半径
-        self.blurCoverThread.setTargetCover(
-            self.blurCoverThread.albumCoverPath, 40, (350, 350))
-        self.blurCoverThread.start()
-        self.playBar.hide()
-        self.songListWidget.hide()
-        self.songInfoCardChute.hide()
-        self.blurBackgroundPic.show()
-        # 先更新歌曲信息卡再显示界面
-        self.smallestModeInterface.setCurrentIndex(self.currentIndex)
-        self.smallestModeInterface.show()
-        # 发出隐藏标题栏按钮的信号
-        self.smallestModeStateChanged.emit(True)
-        self.window().setMinimumSize(206, 197)
-        self.window().setGeometry(self.currentGeometry.x() +
-                                  self.currentGeometry.width() - self.currentSmallestModeSize.width(),
-                                  self.currentGeometry.y(),
-                                  self.currentSmallestModeSize.width(),
-                                  self.currentSmallestModeSize.height())
-
-    def __hideSmallestModeInterface(self):
-        """ 隐藏最小播放模式界面 """
-        # 记录下最小播放模式的尺寸
-        self.currentSmallestModeSize = self.window().size()  # type:QSize
-        # 更新磨砂半径
-        self.blurCoverThread.setTargetCover(
-            self.blurCoverThread.albumCoverPath, 6, (450, 450))
-        self.blurCoverThread.start()
-        self.smallestModeInterface.hide()
-        self.window().setMinimumSize(1030, 850)
-        self.window().setGeometry(self.currentGeometry)
-        # 发出显示标题栏按钮的信号
-        self.smallestModeStateChanged.emit(False)
-        self.blurBackgroundPic.setHidden(self.isPlaylistVisible)
-        self.playBar.show()
-        self.songListWidget.show()
-        self.songInfoCardChute.show()

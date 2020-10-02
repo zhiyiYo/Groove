@@ -2,7 +2,7 @@
 
 from ctypes.wintypes import HWND
 
-from PyQt5.QtCore import QEvent, QPoint, QRect, Qt
+from PyQt5.QtCore import QPoint, Qt
 from PyQt5.QtWidgets import QWidget
 
 from effects.window_effect import WindowEffect
@@ -23,7 +23,7 @@ class PlayBar(QWidget):
         # 实例化窗口特效
         self.windowEffect = WindowEffect()
         self.hWnd = HWND(int(self.winId()))
-        self.acrylicColor = '356c8aCC'
+        self.acrylicColor = '225c7fCC'
         self.dominantColor = DominantColor()
         # 记录移动次数
         self.moveTime = 0

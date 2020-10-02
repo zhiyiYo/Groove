@@ -26,8 +26,6 @@ class SongCardListWidget(BasicSongListWidget):
                          parent, QMargins(30, 245, 30, 0))
         self.resize(1150, 758)
         self.sortMode = '添加时间'
-        # 创建右击菜单
-        self.contextMenu = SongCardListContextMenu(self)
         # 创建歌曲卡
         self.__createSongCards()
         # 初始化
@@ -39,8 +37,6 @@ class SongCardListWidget(BasicSongListWidget):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         # 设置层叠样式
         self.__setQss()
-        # 信号连接到槽
-        self.__connectSignalToSlot()
 
     def __createSongCards(self):
         """ 清空列表并创建新歌曲卡 """
@@ -57,7 +53,9 @@ class SongCardListWidget(BasicSongListWidget):
         hitIndex = self.indexAt(e.pos()).column()
         # 显示右击菜单
         if hitIndex > -1:
-            self.contextMenu.exec(self.cursor().pos())
+            contextMenu = SongCardListContextMenu(self)
+            self.__connectMenuSignalToSlot(contextMenu)
+            contextMenu.exec(self.cursor().pos())
 
     def __emitCurrentChangedSignal(self, index):
         """ 发送当前播放的歌曲卡变化信号，同时更新样式和歌曲信息卡 """
@@ -98,32 +96,47 @@ class SongCardListWidget(BasicSongListWidget):
         self.verticalScrollBar().resize(
             self.verticalScrollBar().width(), self.height() - 156)
 
-    def __connectSignalToSlot(self):
+    def __connectMenuSignalToSlot(self, contextMenu: SongCardListContextMenu):
         """ 信号连接到槽 """
-        self.contextMenu.playAct.triggered.connect(
+        contextMenu.playAct.triggered.connect(
             lambda: self.playOneSongSig.emit(
                 self.songCard_list[self.currentRow()].songInfo))
-        self.contextMenu.nextSongAct.triggered.connect(
+        contextMenu.nextSongAct.triggered.connect(
             lambda: self.nextToPlayOneSongSig.emit(
                 self.songCard_list[self.currentRow()].songInfo))
-        self.contextMenu.editInfoAct.triggered.connect(
+        # 显示歌曲信息编辑面板
+        contextMenu.editInfoAct.triggered.connect(
             self.showSongInfoEditPanel)
-        self.contextMenu.showPropertyAct.triggered.connect(
+        # 显示属性面板
+        contextMenu.showPropertyAct.triggered.connect(
             self.showPropertyPanel)
-        self.contextMenu.showAlbumAct.triggered.connect(
+        # 显示专辑界面
+        contextMenu.showAlbumAct.triggered.connect(
             lambda: self.switchToAlbumInterfaceSig.emit(
                 self.songCard_list[self.currentRow()].album,
                 self.songCard_list[self.currentRow()].songer))
-        self.contextMenu.deleteAct.triggered.connect(
+        # 删除歌曲卡
+        contextMenu.deleteAct.triggered.connect(
             lambda: self.__removeSongCard(self.currentRow()))
-        self.contextMenu.addToMenu.playingAct.triggered.connect(
-            lambda: self.addSongToPlaylistSignal.emit(
+        # 将歌曲添加到正在播放列表
+        contextMenu.addToMenu.playingAct.triggered.connect(
+            lambda: self.addSongToPlayingSignal.emit(
                 self.songCard_list[self.currentRow()].songInfo))
-        self.contextMenu.selectAct.triggered.connect(
+        # 进入选择模式
+        contextMenu.selectAct.triggered.connect(
             lambda: self.songCard_list[self.currentRow()].setChecked(True))
+        # 将歌曲添加到已存在的自定义播放列表中
+        contextMenu.addToMenu.addSongsToPlaylistSig.connect(
+            lambda name: self.addSongsToCustomPlaylistSig.emit(
+                name, [self.songCard_list[self.currentRow()].songInfo]))
+        # 将歌曲添加到新建的播放列表
+        contextMenu.addToMenu.newPlayList.triggered.connect(
+            lambda: self.addSongsToNewCustomPlaylistSig.emit(
+                [self.songCard_list[self.currentRow()].songInfo]))
 
     def __connectSongCardSignalToSlot(self, songCard):
         """ 将歌曲卡信号连接到槽 """
+        songCard.addSongToPlayingSig.connect(self.addSongToPlayingSignal)
         songCard.doubleClicked.connect(self.__emitCurrentChangedSignal)
         songCard.playButtonClicked.connect(self.__playButtonSlot)
         songCard.clicked.connect(self.setCurrentIndex)
@@ -131,3 +144,5 @@ class SongCardListWidget(BasicSongListWidget):
             self.switchToAlbumInterfaceSig)
         songCard.checkedStateChanged.connect(
             self.songCardCheckedStateChanedSlot)
+        songCard.addSongsToCustomPlaylistSig.connect(
+            self.addSongsToCustomPlaylistSig)

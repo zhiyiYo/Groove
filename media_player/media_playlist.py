@@ -16,7 +16,7 @@ class PlaylistType(Enum):
     LAST_PLAYLIST = 3         # 上一次的播放列表
     NO_PLAYLIST = 4           # 没有播放列表
     CUSTOM_PLAYLIST = 5       # 自定义播放列表
-    ALL_SONG_PLAYLIST = 6       # 播放列表为歌曲文件夹中的所有歌曲
+    ALL_SONG_PLAYLIST = 6     # 播放列表为歌曲文件夹中的所有歌曲
 
 
 class MediaPlaylist(QMediaPlaylist):

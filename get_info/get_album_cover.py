@@ -60,6 +60,16 @@ class GetAlbumCover():
             elif suffix == 'mp4':
                 self.__getM4aAlbumCover(info_dict)
 
+    def updateAlbumCover(self, target_path_list: list,isRescanFolders:bool=False):
+        """ 重新扫描指定的文件下的音频文件的专辑封面 """
+        self.target_path_list = target_path_list
+        self.songInfo.scanTargetFolderSongInfo(target_path_list)
+        if isRescanFolders:
+            self.songInfo.scanTargetFolderSongInfo(target_path_list)
+        else:
+            self.songInfo.getInfo(target_path_list)
+        self.getAlbum()
+
     def __getID3AlbumCover(self, info_dict):
         """ 获取mp3文件的封面并写入文件夹 """
         # 封面目录

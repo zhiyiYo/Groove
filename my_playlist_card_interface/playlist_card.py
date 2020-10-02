@@ -1,5 +1,7 @@
 # coding:utf-8
 
+from copy import deepcopy
+
 from my_album_tab_interface.check_box import CheckBox
 from my_functions.auto_wrap import autoWrap
 from my_functions.get_cover_path import getCoverPath
@@ -19,14 +21,17 @@ from .playlist_card_context_menu import PlaylistCardContextMenu
 
 class PlaylistCard(PerspectiveWidget):
     """ 播放列表信息卡 """
+    playSig = pyqtSignal(list)
+    nextToPlaySig = pyqtSignal(list)
+    deleteCardSig = pyqtSignal(dict)
     hideBlurBackgroundSig = pyqtSignal()
-    checkedStateChanged = pyqtSignal(QWidget,bool)
+    renamePlaylistSig = pyqtSignal(dict)
+    checkedStateChanged = pyqtSignal(QWidget, bool)
     switchToPlaylistInterfaceSig = pyqtSignal(str)
     showBlurBackgroundSig = pyqtSignal(QPoint, str)
-    
 
     def __init__(self, playlist: dict, parent=None):
-        super().__init__(parent)
+        super().__init__(parent, True)
         # 初始化标志位
         self.isChecked = False
         self.isInSelectionMode = False
@@ -57,7 +62,7 @@ class PlaylistCard(PerspectiveWidget):
         self.addToButton.hide()
         # 设置标签字体
         self.playlistNameLabel.setFont(QFont('Microsoft YaHei', 10, 75))
-        self.playlistLenLabel.setFont(QFont('Microsoft YaHei',9))
+        self.playlistLenLabel.setFont(QFont('Microsoft YaHei', 9))
         # 给小部件添加特效
         self.checkBox.setGraphicsEffect(self.checkBoxOpacityEffect)
         # 设置封面
@@ -75,7 +80,7 @@ class PlaylistCard(PerspectiveWidget):
 
     def __initLayout(self):
         """ 初始化布局 """
-        self.checkBox.move(262,21)
+        self.checkBox.move(262, 21)
         self.playButton.move(80, 68)
         self.playlistCover.move(5, 5)
         self.addToButton.move(148, 68)
@@ -85,15 +90,15 @@ class PlaylistCard(PerspectiveWidget):
 
     def __getPlaylistInfo(self, playlist: dict):
         """ 获取播放列表信息 """
-        self.playlist = playlist
-        self.playlistName = playlist.get('playlistName')       # type:str
-        self.songInfo_list = playlist.get(
-            'songInfo_list', [])  # type:list[dict]
+        self.playlist = deepcopy(playlist)
+        self.playlistName = self.playlist.get('playlistName')       # type:str
+        self.songInfo_list = self.playlist.get(
+            'songInfo_list', [])  # type:list
         if self.songInfo_list:
             self.playlistCoverPath = getCoverPath(
                 self.songInfo_list[0].get('album')[-1], False)
         else:
-            self.playlistCoverPath = r'resource\images\playlist_interface\空播放列表封面.png'
+            self.playlistCoverPath = r'resource\images\playlist_card_interface\空播放列表封面.jpg'
 
     def __adjustLabel(self):
         """ 调整标签的文本长度和位置 """
@@ -107,6 +112,7 @@ class PlaylistCard(PerspectiveWidget):
             newText = newText[: index + 1] + secondLineText
             self.playlistNameLabel.setText(newText)
         self.playlistNameLabel.adjustSize()
+        self.playlistLenLabel.adjustSize()
         self.playlistLenLabel.move(
             5, self.playlistNameLabel.y() + self.playlistNameLabel.height() + 5)
 
@@ -175,10 +181,20 @@ class PlaylistCard(PerspectiveWidget):
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
         self.checkBox.stateChanged.connect(self.__checkedStateChangedSlot)
+        self.playButton.clicked.connect(
+            lambda: self.playSig.emit(self.songInfo_list))
 
     def contextMenuEvent(self, e):
         """ 显示右击菜单 """
         menu = PlaylistCardContextMenu(parent=self)
+        menu.playAct.triggered.connect(
+            lambda: self.playSig.emit(self.songInfo_list))
+        menu.nextToPlayAct.triggered.connect(
+            lambda: self.nextToPlaySig.emit(self.songInfo_list))
+        menu.deleteAct.triggered.connect(
+            lambda: self.deleteCardSig.emit(self.playlist))
+        menu.renameAct.triggered.connect(
+            lambda: self.renamePlaylistSig.emit(self.playlist))
         menu.selectAct.triggered.connect(self.__selectActSlot)
         menu.exec(e.globalPos())
 
@@ -186,7 +202,6 @@ class PlaylistCard(PerspectiveWidget):
         """ 右击菜单选择动作对应的槽函数 """
         self.setSelectionModeOpen(True)
         self.setChecked(True)
-        
 
 
 class PlaylistCover(QWidget):
@@ -216,7 +231,7 @@ class PlaylistCover(QWidget):
         self.dominantRgb = self.__dominantColor.getDominantColor(
             picPath, tuple)
         self.update()
-        
+
     def paintEvent(self, e):
         """ 绘制背景 """
         super().paintEvent(e)
@@ -240,5 +255,3 @@ class PlaylistCover(QWidget):
         painter.drawRect(96, 21, self.width() - 192, 5)
         painter.setBrush(QBrush(QColor(*self.dominantRgb, 210)))
         painter.drawRect(86, 26, self.width() - 172, 5)
-        
-

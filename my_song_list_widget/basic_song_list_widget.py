@@ -17,12 +17,16 @@ from .song_card_type import SongCardType
 class BasicSongListWidget(ListWidget):
     """ 基本歌曲列表控件 """
 
+    emptyChangedSig = pyqtSignal(bool)                   # 歌曲卡是否为空信号
     removeItemSignal = pyqtSignal(int)
-    addSongToPlaylistSignal = pyqtSignal(dict)
+    songCardNumChanged = pyqtSignal(int)
+    addSongToPlayingSignal = pyqtSignal(dict)            # 将一首歌添加到正在播放
     checkedSongCardNumChanged = pyqtSignal(int)
-    editSongCardSignal = pyqtSignal(dict, dict)  # 编辑歌曲卡完成信号
+    editSongCardSignal = pyqtSignal(dict, dict)          # 编辑歌曲卡完成信号
     selectionModeStateChanged = pyqtSignal(bool)
-    emptyChangedSig = pyqtSignal(bool)         # 歌曲卡是否为空信号
+    addSongsToNewCustomPlaylistSig = pyqtSignal(list)    # 将歌曲添加到新的自定义播放列表
+    addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 将歌曲添加到已存在的自定义播放列表
+    
 
     def __init__(self, songInfo_list: list, songCardType: SongCardType, parent=None, viewportMargins=QMargins(0, 0, 0, 0), paddingBottomHeight: int = 116):
         """ 创建歌曲卡列表控件对象
@@ -42,8 +46,8 @@ class BasicSongListWidget(ListWidget):
         self.__SongCard = [SongTabSongCard,
                            AlbumInterfaceSongCard][songCardType.value]
         self.songInfo_list = songInfo_list if songInfo_list else []
-        self.currentIndex = -1
-        self.playingIndex = -1  # 正在播放的歌曲卡下标
+        self.currentIndex = 0
+        self.playingIndex = 0  # 正在播放的歌曲卡下标
         self.playingSongInfo = self.songInfo_list[0] if songInfo_list else None
         # 初始化标志位
         self.isInSelectionMode = False
@@ -185,7 +189,6 @@ class BasicSongListWidget(ListWidget):
         if isNeedWriteToFile:
             # 将修改的信息存入json文件
             with open('Data\\songInfo.json', 'w', encoding='utf-8') as f:
-                print(len(self.songInfo_list))
                 dump(self.songInfo_list, f)
 
     def updateMultiSongCards(self, oldSongInfo_list: list, newSongInfo_list: list):
@@ -298,8 +301,8 @@ class BasicSongListWidget(ListWidget):
             songInfo_dict = self.songInfo_list[i]
             self.songCard_list[i].updateSongCard(songInfo_dict)
         # 更新样式和当前下标
-        self.currentIndex = -1
-        self.playingIndex = -1
+        self.currentIndex = 0
+        self.playingIndex = 0
         self.playingSongInfo = None
         for songCard in self.songCard_list:
             songCard.setPlay(False)
@@ -307,6 +310,9 @@ class BasicSongListWidget(ListWidget):
         self.guideLabel.setHidden(bool(self.songCard_list))
         # 创建新占位行
         self.__createPaddingBottomItem()
+        # 发出歌曲卡数量改变信号
+        if deltaLen != 0:
+            self.songCardNumChanged.emit(len(self.songInfo_list))
 
     def clearSongCards(self):
         """ 清空歌曲卡 """
@@ -316,8 +322,8 @@ class BasicSongListWidget(ListWidget):
         for songCard in self.songCard_list:
             songCard.deleteLater()
         self.songCard_list.clear()
-        self.currentIndex = -1
-        self.playingIndex = -1
+        self.currentIndex = 0
+        self.playingIndex = 0
 
     def sortSongInfo(self, key: str, isReverse=True):
         """ 依据指定的键排序歌曲信息列表

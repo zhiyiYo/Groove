@@ -2,7 +2,7 @@
 
 from copy import deepcopy
 
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal, QPoint
 from PyQt5.QtGui import QPalette
 from PyQt5.QtWidgets import QApplication, QWidget
 
@@ -11,20 +11,24 @@ from my_dialog_box.album_info_edit_panel import AlbumInfoEditPanel
 from .selection_mode_bar import SelectionModeBar
 from .song_card_list_widget import SongCardListWidget
 from .album_info_bar import AlbumInfoBar
+from my_widget.my_menu import AddToMenu
 
 
 class AlbumInterface(QWidget):
     """ 专辑界面 """
-    songCardPlaySig = pyqtSignal(int)               # 在当前播放列表中播放这首歌
-    playOneSongCardSig = pyqtSignal(dict)            # 将播放列表重置为一首歌
-    playAlbumSignal = pyqtSignal(list)              # 播放整张专辑
-    nextToPlayOneSongSig = pyqtSignal(dict)         # 下一首播放一首歌
-    playCheckedCardsSig = pyqtSignal(list)          # 播放选中的歌曲卡
-    addSongToPlaylistSig = pyqtSignal(dict)         # 添加一首歌到正在播放
-    addAlbumToPlaylistSig = pyqtSignal(list)        # 添加专辑到正在播放
+
+    songCardPlaySig = pyqtSignal(int)                    # 在当前播放列表中播放这首歌
+    playAlbumSignal = pyqtSignal(list)                   # 播放整张专辑
+    playOneSongCardSig = pyqtSignal(dict)                # 将播放列表重置为一首歌
+    playCheckedCardsSig = pyqtSignal(list)               # 播放选中的歌曲卡
+    nextToPlayOneSongSig = pyqtSignal(dict)              # 下一首播放一首歌
+    addOneSongToPlayingSig = pyqtSignal(dict)            # 添加一首歌到正在播放
     saveAlbumInfoSig = pyqtSignal(dict, dict)
     selectionModeStateChanged = pyqtSignal(bool)
-    nextToPlayCheckedCardsSig = pyqtSignal(list)    # 将选中的多首歌添加到下一首播放
+    nextToPlayCheckedCardsSig = pyqtSignal(list)         # 将选中的多首歌添加到下一首播放
+    addSongsToPlayingPlaylistSig = pyqtSignal(list)      # 添加歌曲到正在播放
+    addSongsToNewCustomPlaylistSig = pyqtSignal(list)    # 添加歌曲到新建播放列表
+    addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 添加歌曲到自定义的播放列表中
 
     def __init__(self, albumInfo: dict, parent=None):
         super().__init__(parent)
@@ -147,29 +151,68 @@ class AlbumInterface(QWidget):
 
     def exitSelectionMode(self):
         """ 退出选择模式 """
-        self.__unSongCards()
+        self.__unCheckSongCards()
+
+    def __showAddToMenu(self):
+        """ 显示添加到菜单 """
+        # 初始化菜单动作触发标志
+        self.__actionTriggeredFlag = False
+        addToMenu = AddToMenu(parent=self)
+        # 计算菜单弹出位置
+        addToGlobalPos = self.selectionModeBar.mapToGlobal(QPoint(
+            0, 0)) + QPoint(self.selectionModeBar.addToButton.x(), 0)
+        x = addToGlobalPos.x() + self.selectionModeBar.addToButton.width() + 5
+        y = addToGlobalPos.y() + int(self.selectionModeBar.addToButton.height() / 2 -
+                                     (13 + 38 * addToMenu.actionCount()) / 2)
+        # 获取选中的歌曲信息列表
+        songInfo_list = [
+            songCard.songInfo for songCard in self.songListWidget.checkedSongCard_list]
+        addToMenu.playingAct.triggered.connect(
+            lambda: self.addSongsToPlayingPlaylistSig.emit(songInfo_list))
+        addToMenu.addSongsToPlaylistSig.connect(
+            lambda name: self.addSongsToCustomPlaylistSig.emit(name, songInfo_list))
+        addToMenu.newPlayList.triggered.connect(
+            lambda: self.addSongsToNewCustomPlaylistSig.emit(songInfo_list))
+        for act in addToMenu.action_list:
+            act.triggered.connect(self.__addToMenuTriggeredSlot)
+        addToMenu.exec(QPoint(x, y))
+        # 如果动作有被触发就退出选择模式
+        if self.__actionTriggeredFlag:
+            self.__unCheckSongCards()
+
+    def __addToMenuTriggeredSlot(self):
+        """ 添加到菜单上的动作被触发时标志位置位 """
+        self.__actionTriggeredFlag = True
 
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
         # 专辑信息栏信号
         self.albumInfoBar.playAllBt.clicked.connect(
-            lambda: self.playAlbumSignal.emit(self.albumInfo.get('songInfo_list')))
-        self.albumInfoBar.addToMenu.playingAct.triggered.connect(
-            lambda: self.addAlbumToPlaylistSig.emit(self.songInfo_list))
+            lambda: self.playAlbumSignal.emit(self.songInfo_list))
+        self.albumInfoBar.addToPlayingPlaylistSig.connect(
+            lambda: self.addSongsToPlayingPlaylistSig.emit(self.songInfo_list))
         self.albumInfoBar.editInfoBt.clicked.connect(
             self.showAlbumInfoEditPanel)
+        self.albumInfoBar.addToNewCustomPlaylistSig.connect(
+            lambda: self.addSongsToNewCustomPlaylistSig.emit(self.songInfo_list))
+        self.albumInfoBar.addToCustomPlaylistSig.connect(
+            lambda name: self.addSongsToCustomPlaylistSig.emit(name, self.songInfo_list))
         self.albumInfoBar.editInfoSig.connect(self.showAlbumInfoEditPanel)
         # 歌曲列表信号
         self.songListWidget.playSignal.connect(self.songCardPlaySig)
         self.songListWidget.playOneSongSig.connect(self.playOneSongCardSig)
         self.songListWidget.nextToPlayOneSongSig.connect(
             self.nextToPlayOneSongSig)
-        self.songListWidget.addSongToPlaylistSignal.connect(
-            self.addSongToPlaylistSig)
+        self.songListWidget.addSongToPlayingSignal.connect(
+            self.addOneSongToPlayingSig)
         self.songListWidget.selectionModeStateChanged.connect(
             self.__selectionModeStateChangedSlot)
         self.songListWidget.checkedSongCardNumChanged.connect(
             self.__checkedCardNumChangedSlot)
+        self.songListWidget.addSongsToCustomPlaylistSig.connect(
+            self.addSongsToCustomPlaylistSig)
+        self.songListWidget.addSongsToNewCustomPlaylistSig.connect(
+            self.addSongsToNewCustomPlaylistSig)
         # 选择栏信号连接到槽函数
         self.selectionModeBar.cancelButton.clicked.connect(
             self.__unCheckSongCards)
@@ -183,3 +226,5 @@ class AlbumInterface(QWidget):
             self.__showCheckedSongCardProperty)
         self.selectionModeBar.checkAllButton.clicked.connect(
             self.__selectAllButtonSlot)
+        self.selectionModeBar.addToButton.clicked.connect(
+            self.__showAddToMenu)

@@ -21,7 +21,7 @@ class BlurCoverThread(QThread):
     def __blurAlbumCover(self):
         """ 得到磨砂后的pixmap """
         self.blurPixmap = getBlurPixmap(
-            self.albumCoverPath, self.blurRadius, 0.77, self.bluredPicMaxSize)
+            self.albumCoverPath, self.blurRadius, 0.8, self.bluredPicMaxSize)
 
     def run(self):
         """ 开始磨砂 """

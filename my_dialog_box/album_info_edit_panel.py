@@ -299,10 +299,14 @@ class SubAlbumInfoEditPanel(QWidget):
             # 更换文件夹下的封面图片
             if self.newAlbumCoverPath == os.path.abspath(self.cover_path):
                 return
-            with open(self.cover_path, 'wb') as f:
-                f.write(picData)
             # 判断文件格式后修改后缀名
             newSuffix = getPicSuffix(picData)
+            # 如果封面路径是默认专辑封面，就修改封面路径
+            if self.cover_path == 'resource\\images\\未知专辑封面_200_200.png':
+                self.cover_path = 'resource\\Album_Cover\\{0}\\{0}{1}'.format(
+                    self.albumInfo['modifiedAlbum'], newSuffix)
+            with open(self.cover_path, 'wb') as f:
+                f.write(picData)
             oldName, oldSuffix = os.path.splitext(self.cover_path)
             if newSuffix != oldSuffix:
                 os.rename(self.cover_path, oldName + newSuffix)
@@ -436,7 +440,7 @@ class AlbumCoverWindow(PerspectiveWidget):
         self.__picSize = picSize
         # 实例化小部件
         self.albumCoverLabel = QLabel(self)
-        self.albumCoverMask=AlbumCoverMask(self)
+        self.albumCoverMask = AlbumCoverMask(self)
         self.editAlbumCoverLabel = QLabel(self)
         # 初始化小部件
         self.__initWidget()
@@ -467,7 +471,7 @@ class AlbumCoverWindow(PerspectiveWidget):
 class AlbumCoverMask(QWidget):
     """ 专辑封面渐变遮罩 """
 
-    def __init__(self,parent,size:tuple=(170,170)):
+    def __init__(self, parent, size: tuple = (170, 170)):
         super().__init__(parent)
         self.resize(*size)
 

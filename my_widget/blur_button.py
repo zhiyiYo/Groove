@@ -51,7 +51,7 @@ class BlurButton(QToolButton):
         if not self.blurPicPath:
             return
         # 裁剪下需要磨砂的部分
-        img = Image.open(self.blurPicPath).resize(
+        img = Image.open(self.blurPicPath).convert('RGB').resize(
             (200, 200))  # type:Image.Image
         img = img.crop((self.cropX, self.cropY,
                         self.width() + self.cropX, self.height() + self.cropY))

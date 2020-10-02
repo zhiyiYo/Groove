@@ -1,7 +1,7 @@
 import re
 
 
-def autoWrap(text: str, maxCharactersNum: int):
+def autoWrap(text: str, maxCharactersNum: int) -> tuple:
     """ 根据专辑名的长度决定是否换行,maxCharactersNum是text换算为1个宽度字符的总长度 """
     # 设置换行标志位
     isWordWrap = True
@@ -52,4 +52,4 @@ def autoWrap(text: str, maxCharactersNum: int):
         isWordWrap = False
     newText = ''.join(text_list)
 
-    return newText, isWordWrap
+    return (newText, isWordWrap)

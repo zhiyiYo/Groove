@@ -1,8 +1,11 @@
-import sys
+# coding:utf-8
+
+import os
+
 from ctypes.wintypes import HWND
 
 from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
-                          QPropertyAnimation, QRect, Qt)
+                          QPropertyAnimation, QRect, Qt, pyqtSignal)
 from PyQt5.QtGui import QBrush, QColor, QIcon, QPainter, QPen
 from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsDropShadowEffect,
                              QHBoxLayout, QMenu, QWidget)
@@ -43,7 +46,7 @@ class AcrylicMenu(QMenu):
     """ 亚克力菜单 """
     windowEffect = WindowEffect()
 
-    def __init__(self, string='', parent=None,acrylicColor='e5e5e5C0'):
+    def __init__(self, string='', parent=None, acrylicColor='e5e5e5C0'):
         super().__init__(string, parent)
         self.acrylicColor = acrylicColor
         self.__initWidget()
@@ -51,7 +54,8 @@ class AcrylicMenu(QMenu):
     def event(self, e: QEvent):
         if e.type() == QEvent.WinIdChange:
             self.hWnd = HWND(int(self.winId()))
-            self.windowEffect.setAcrylicEffect(self.hWnd, self.acrylicColor, True)
+            self.windowEffect.setAcrylicEffect(
+                self.hWnd, self.acrylicColor, True)
         return QMenu.event(self, e)
 
     def __initWidget(self):
@@ -59,7 +63,7 @@ class AcrylicMenu(QMenu):
         self.setAttribute(Qt.WA_StyledBackground)
         self.setWindowFlags(Qt.FramelessWindowHint |
                             Qt.Popup | Qt.NoDropShadowWindowHint)
-        self.setProperty('effect','acrylic')
+        self.setProperty('effect', 'acrylic')
         self.setObjectName('acrylicMenu')
         self.setQss()
 
@@ -71,9 +75,10 @@ class AcrylicMenu(QMenu):
 
 class AddToMenu(AcrylicMenu):
     """ 添加到菜单 """
+    addSongsToPlaylistSig = pyqtSignal(str)  # 将歌曲添加到已存在的自定义播放列表
 
-    def __init__(self, string='添加到', parent=None,acrylicColor='e5e5e5C0'):
-        super().__init__(string, parent,acrylicColor)
+    def __init__(self, string='添加到', parent=None, acrylicColor='e5e5e5C0'):
+        super().__init__(string, parent, acrylicColor)
         self.setObjectName('addToMenu')
         # 创建动作
         self.createActions()
@@ -85,18 +90,33 @@ class AddToMenu(AcrylicMenu):
             QIcon('resource\\images\\menu\\正在播放.png'), '正在播放', self)
         self.newPlayList = QAction(
             QIcon('resource\\images\\menu\\黑色加号.png'), '新的播放列表', self)
-        self.myLove = QAction(
-            QIcon('resource\\images\\menu\\黑色我喜欢_20_20.png'), '我喜欢', self)
-        self.action_list = [self.playingAct, self.newPlayList, self.myLove]
+        # 根据播放列表创建动作
+        playlistName_list = self.__getPlaylistNames()
+        self.playlistNameAct_list = [
+            QAction(QIcon(r'resource\images\menu\黑色我喜欢_20_20.png'), name, self) for name in playlistName_list]
+        self.action_list = [self.playingAct,
+                            self.newPlayList] + self.playlistNameAct_list
         self.addAction(self.playingAct)
         self.addSeparator()
-        self.addActions([self.newPlayList, self.myLove])
+        self.addActions([self.newPlayList] + self.playlistNameAct_list)
+        # 将添加到播放列表的信号连接到槽函数
+        for name, playlistNameAct in zip(playlistName_list, self.playlistNameAct_list):
+            # lambda表达式只有在执行的时候才回去寻找变量name，所以需要将name固定下来
+            playlistNameAct.triggered.connect(
+                lambda checked, playlistName=name: self.addSongsToPlaylistSig.emit(playlistName))
 
-    def connectToSlots(self, slot_list: list):
-        """ 将触发信号连接到槽函数 """
-        for i in range(3):
-            self.action_list[i].triggered.connect(slot_list[i])
+    def __getPlaylistNames(self):
+        """ 扫描播放列表文件夹下的播放列表名字 """
+        # 扫描播放列表文件夹下的播放列表名字
+        if not os.path.exists('Playlists'):
+            os.mkdir('Playlists')
+        playlistName_list = [os.path.splitext(
+            i)[0] for i in os.listdir('Playlists')]
+        return playlistName_list
 
+    def actionCount(self):
+        """ 返回菜单中的动作数 """
+        return len(self.action_list)
 
 
 class LineEditMenu(AeroMenu):
