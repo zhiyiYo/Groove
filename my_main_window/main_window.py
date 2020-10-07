@@ -156,8 +156,8 @@ class MainWindow(QWidget):
         self.setQss()
         # 初始化播放列表
         self.initPlaylist()
-        # 设置全局热键
-        self.setHotKey()
+        # todo:设置全局热键
+        # self.setHotKey()
         # 将信号连接到槽函数
         self.connectSignalToSlot()
         # 初始化播放栏
@@ -244,10 +244,6 @@ class MainWindow(QWidget):
         else:
             self.settingInterface.config['last-song'] = {}
         self.settingInterface.config['volume'] = self.playBar.volumeSlider.value(
-        )
-        self.settingInterface.config['position'] = self.playBar.progressSlider.value(
-        )
-        self.settingInterface.config['duration'] = self.playBar.progressSlider.maximum(
         )
         self.settingInterface.config['playBar-acrylicColor'] = self.playBar.acrylicColor
         self.settingInterface.writeConfig()
@@ -704,11 +700,10 @@ class MainWindow(QWidget):
         """ 从配置文件中读取配置数据来初始化播放栏 """
         # 初始化音量
         volume = self.settingInterface.config.get('volume', 20)
-        self.playBar.volumeSlider.setValue(volume)
         self.playingInterface.playBar.volumeSlider.setValue(volume)
         # 初始化亚克力颜色
         acrylicColor = self.settingInterface.config.get(
-            'playBar-acrylicColor', '0c3c5eB8')
+            'playBar-acrylicColor', '225c7fCC')
         self.playBar.setAcrylicColor(acrylicColor)
 
     def showPlayingInterface(self):
@@ -954,8 +949,10 @@ class MainWindow(QWidget):
             deepcopy(oldSongInfo_list), deepcopy(newSongInfo_list))
         self.playingInterface.updateMultiSongCards(
             deepcopy(oldSongInfo_list), deepcopy(newSongInfo_list))
-        if self.sender() == self.albumInterface:
-            self.currentAlbumCard.updateWindow(newAlbumInfo)
+        # 更新专辑标签界面
+        with open('Data\\songInfo.json', encoding='utf-8') as f:
+            songInfo_list = json.load(f)
+        self.myMusicInterface.updateAlbumCardViewer(songInfo_list)
 
     def smallestModeStateChanedSlot(self, state: bool):
         """ 最小播放模式状态改变时更改标题栏按钮可见性和窗口是否置顶 """

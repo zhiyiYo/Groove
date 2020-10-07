@@ -14,7 +14,6 @@ enum34==1.1.10
 fake-useragent==0.1.11
 future==0.18.2
 fuzzywuzzy==0.18.0
-haishoku==1.1.8
 idna==2.10
 isort==4.3.21
 lazy-object-proxy==1.4.3

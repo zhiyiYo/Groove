@@ -100,9 +100,9 @@ class SubAlbumInfoEditPanel(QWidget):
         self.saveButton = PerspectivePushButton('保存', self)
         self.cancelButton = PerspectivePushButton('取消', self)
         # 创建gif
-        """ self.loadingLabel = QLabel(self)
-        self.movie = QMovie(
-            'resource\\images\\loading_gif\\loading.gif', parent=self) """
+        # self.loadingLabel = QLabel(self)
+        # self.movie = QMovie(
+        #    'resource\\images\\loading_gif\\loading.gif', parent=self)
 
     def __initWidget(self):
         """ 初始化小部件 """
@@ -241,7 +241,9 @@ class SubAlbumInfoEditPanel(QWidget):
         self.albumInfo['songer'] = self.albumSongerLineEdit.text()
         self.albumInfo['tcon'] = self.tconLineEdit.text()
         for songInfo, songInfoWidget in zip(self.songInfo_list, self.songInfoWidget_list):
-            songInfo['album'] = adjustAlbumName(self.albumNameLineEdit.text())
+            album_list = adjustAlbumName(self.albumNameLineEdit.text())
+            songInfo['album'] = album_list[0]
+            songInfo['modifiedAlbum'] = album_list[-1]
             songInfo['songName'] = songInfoWidget.songNameLineEdit.text()
             songInfo['songer'] = songInfoWidget.songerLineEdit.text()
             songInfo['tcon'] = self.tconLineEdit.text()

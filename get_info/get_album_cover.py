@@ -32,33 +32,16 @@ class GetAlbumCover():
             os.mkdir('resource\\Album_Cover\\未知专辑')
             copyfile('resource\\images\\未知专辑封面_200_200.png',
                      'resource\\Album_Cover\\未知专辑\\未知专辑.png')
-        # 决定是否需要扫描文件夹
-        albumName_set = set([songInfo.get('album')[-1]
-                             for songInfo in self.songInfo.songInfo_list])
-        albumFolder_set = set(os.listdir(self.album_cover_folder))
-        if albumFolder_set == albumName_set:
-            return
-        diff_list_1 = list(albumName_set - albumFolder_set)     # 计算差集
-        diff_list_2 = list(albumFolder_set - albumName_set)
-        if len(diff_list_1) == len(diff_list_2):
-            diff_list_1.sort()
-            diff_list_2.sort()
-            # 文件夹名的末尾可能比专辑名少一个.
-            for i in range(len(diff_list_1)):
-                if not diff_list_1[i].startswith(diff_list_2[i]):
-                    break
-            else:
-                return
         # 开始获取封面
-        for info_dict in self.songInfo.songInfo_list:
-            suffix = info_dict['suffix'][1:]
+        for songInfo in self.songInfo.songInfo_list:
+            suffix = songInfo['suffix']
             # 根据后缀名选择获取封面的方式
-            if suffix == 'mp3':
-                self.__getID3AlbumCover(info_dict)
-            elif suffix == 'flac':
-                self.__getFlacAlbumCover(info_dict)
-            elif suffix == 'mp4':
-                self.__getM4aAlbumCover(info_dict)
+            if suffix == '.mp3':
+                self.__getID3AlbumCover(songInfo)
+            elif suffix == '.flac':
+                self.__getFlacAlbumCover(songInfo)
+            elif suffix == '.m4a':
+                self.__getM4aAlbumCover(songInfo)
 
     def updateAlbumCover(self, target_path_list: list,isRescanFolders:bool=False):
         """ 重新扫描指定的文件下的音频文件的专辑封面 """
@@ -70,17 +53,17 @@ class GetAlbumCover():
             self.songInfo.getInfo(target_path_list)
         self.getAlbum()
 
-    def __getID3AlbumCover(self, info_dict):
+    def __getID3AlbumCover(self, songInfo):
         """ 获取mp3文件的封面并写入文件夹 """
         # 封面目录
-        isPicExist, sub_album_cover_folder = self.__isPicExist(info_dict)
+        isPicExist, sub_album_cover_folder = self.__isPicExist(songInfo)
         if isPicExist:
             return
         # 如果文件夹中不存在图片就扫描歌曲元数据来提取
-        id_card = File(info_dict['songPath'])
+        id_card = File(songInfo['songPath'])
         # 如果文件后缀名与实际类型不匹配就调用另一个函数
         if id_card.mime[0].split('/')[-1] == 'flac':
-            self.__getFlacAlbumCover(info_dict)
+            self.__getFlacAlbumCover(songInfo)
             return
 
         for key in id_card.tags.keys():
@@ -89,21 +72,21 @@ class GetAlbumCover():
                 os.mkdir(sub_album_cover_folder)
                 # 提取封面数据
                 pic_data = id_card[key].data
-                self.__savePic(sub_album_cover_folder, info_dict, pic_data)
+                self.__savePic(sub_album_cover_folder, songInfo, pic_data)
                 break
         else:
             # 没有提取到封面时也创建一个空文件夹
             os.mkdir(sub_album_cover_folder)
 
-    def __getFlacAlbumCover(self, info_dict):
+    def __getFlacAlbumCover(self, songInfo):
         """ 获取flac文件的封面并写入文件夹 """
-        isPicExist, sub_album_cover_folder = self.__isPicExist(info_dict)
+        isPicExist, sub_album_cover_folder = self.__isPicExist(songInfo)
         if isPicExist:
             return
-        id_card = File(info_dict['songPath'])
+        id_card = File(songInfo['songPath'])
         # 如果文件后缀名与实际类型不匹配就调用另一个函数
         if id_card.mime[0].split('/')[-1] == 'mp4':
-            self.__getM4aAlbumCover(info_dict)
+            self.__getM4aAlbumCover(songInfo)
             return
         # 确认是否存在封面数据
         if id_card.pictures:
@@ -111,14 +94,14 @@ class GetAlbumCover():
             os.mkdir(sub_album_cover_folder)
             # 提取封面数据
             pic_data = id_card.pictures[0].data
-            self.__savePic(sub_album_cover_folder, info_dict, pic_data)
+            self.__savePic(sub_album_cover_folder, songInfo, pic_data)
 
-    def __getM4aAlbumCover(self, info_dict):
+    def __getM4aAlbumCover(self, songInfo):
         """ 获取m4a文件的封面 """
-        isPicExist, sub_album_cover_folder = self.__isPicExist(info_dict)
+        isPicExist, sub_album_cover_folder = self.__isPicExist(songInfo)
         if isPicExist:
             return
-        id_card = File(info_dict['songPath'])
+        id_card = File(songInfo['songPath'])
         # 如果文件后缀名与实际类型不匹配就直接返回
         if id_card.mime[0].split('/')[-1] != 'mp4':
             return
@@ -127,12 +110,12 @@ class GetAlbumCover():
             os.mkdir(sub_album_cover_folder)
             # 提取封面数据
             pic_data = bytes(id_card['covr'][0])
-            self.__savePic(sub_album_cover_folder, info_dict, pic_data)
+            self.__savePic(sub_album_cover_folder, songInfo, pic_data)
 
-    def __isPicExist(self, info_dict):
+    def __isPicExist(self, songInfo):
         """ 检测封面是否存在 """
         sub_album_cover_folder = os.path.join(
-            self.album_cover_folder, info_dict['album'][-1])
+            self.album_cover_folder, songInfo['modifiedAlbum'])
         # 默认封面存在
         isPicExist = True
         if os.path.exists(sub_album_cover_folder):
@@ -161,13 +144,13 @@ class GetAlbumCover():
             suffix = '.jpg'
         return suffix
 
-    def __savePic(self, sub_album_cover_folder, info_dict, pic_data):
+    def __savePic(self, sub_album_cover_folder, songInfo, pic_data):
         """ 储存提取到的专辑封面 """
         # 获取后缀名
         suffix = self.__getPicSuffix(pic_data)
         # 封面路径
         pic_path = os.path.join(
-            sub_album_cover_folder, info_dict['album'][-1] + suffix)
+            sub_album_cover_folder, songInfo['modifiedAlbum'] + suffix)
         # 写入封面
         with open(pic_path, 'wb') as f:
             f.write(pic_data)

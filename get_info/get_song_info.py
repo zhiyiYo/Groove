@@ -2,12 +2,12 @@
 import json
 import os
 import re
-import time
 
 from mutagen import File
 from tinytag import TinyTag
 
 from my_functions.adjust_album_name import adjustAlbumName
+from PyQt5.QtCore import QFileInfo, Qt
 
 
 class GetSongInfo():
@@ -31,7 +31,7 @@ class GetSongInfo():
         self.songInfo_list = []
         self.getInfo(targetFolderPath_list)
 
-    def getInfo(self,targetFolderPath_list:list):
+    def getInfo(self, targetFolderPath_list: list):
         """ 从指定的目录读取符合匹配规则的歌曲的标签卡信息 """
         filePath_list = []
         self.targetFolderPath_list = targetFolderPath_list
@@ -43,7 +43,7 @@ class GetSongInfo():
                 filePath for filePath in absPath_list if os.path.isfile(filePath)]
 
         # 获取符合匹配音频文件名和路径列表
-        self.split_song_list(filePath_list)
+        self.__splitSonglist(filePath_list)
         # 如果数据文件夹不存在就创建一个
         if not os.path.exists('Data'):
             os.mkdir('Data')
@@ -52,7 +52,7 @@ class GetSongInfo():
             with open('Data\\songInfo.json', 'r', encoding='utf-8') as f:
                 oldData = json.load(f)
         except:
-            oldData = [{}] 
+            oldData = [{}]
 
         oldSongPath_list = [
             oldFileInfo.get('songPath') for oldFileInfo in oldData]
@@ -78,19 +78,16 @@ class GetSongInfo():
         # 如果有差集的存在就需要更新json文件
         if not (newSongPath_set < oldSongPath_set and commonSongPath_set):
             # 获取后缀名，歌名，歌手名列表
-            self.split_song_list(diffSongPath_list, flag=1)
+            self.__splitSonglist(diffSongPath_list, flag=1)
             argZip = zip(self.song_list, self.songPath_list,
                          self.songname_list, self.songer_list,
                          self.suffix_list)
             for index, (song, songPath, songname, songer, suffix) in enumerate(argZip):
                 id_card = TinyTag.get(songPath)
                 # 获取时间戳
-                createTime = os.path.getctime(songPath)
-                # 将时间戳转换为时间结构
-                timeStruct = time.localtime(createTime)
-                # 格式化时间结构
-                createTime = time.strftime('%Y-%m-%d %H:%M:%S', timeStruct)
-                album_list, tcon, year, duration, tracknumber = self.fetch_album_tcon_year_trkn(
+                createTime = QFileInfo(
+                    songPath).birthTime().toString(Qt.ISODate)
+                album_list, tcon, year, duration, tracknumber = self.__getAlbumTconYear(
                     suffix, id_card, songPath)
                 # 将歌曲信息字典插入列表
                 self.songInfo_list.append({
@@ -98,20 +95,21 @@ class GetSongInfo():
                     'songPath': songPath,
                     'songer': songer,
                     'songName': songname,
-                    'album': album_list,
+                    'album': album_list[0],           # album为原专辑名
+                    'modifiedAlbum': album_list[-1],  # modifiedAlbum为修改后的专辑名
                     'tcon': tcon,
                     'year': year,
                     'tracknumber': tracknumber,
                     'duration': duration,
                     'suffix': suffix,
-                    'createTime': createTime,
+                    'createTime': createTime
                 })
         self.sortByCreateTime()
         # 更新json文件
         with open('Data\\songInfo.json', 'w', encoding='utf-8') as f:
             json.dump(self.songInfo_list, f)
 
-    def split_song_list(self, filePath_list, flag=0):
+    def __splitSonglist(self, filePath_list, flag=0):
         """分离歌手名，歌名和后缀名,flag用于表示是否将匹配到的音频文件拆开,
         flag = 1为拆开,flag=0为不拆开，update_songList用于更新歌曲文件列表"""
         self.songPath_list = filePath_list.copy()
@@ -135,14 +133,14 @@ class GetSongInfo():
                 self.song_list.remove(file_name)
                 self.songPath_list.remove(file_path)
 
-    def fetch_album_tcon_year_trkn(self, suffix: str, id_card: TinyTag, songPath: str):
+    def __getAlbumTconYear(self, suffix: str, id_card: TinyTag, songPath: str):
         """ 根据文件的后缀名来获取专辑信息及时长 """
         album = id_card.album if id_card.album else '未知专辑'
         tracknumber = str(id_card.track) if id_card.track else '0'
         tcon = id_card.genre if id_card.genre else '未知流派'
         duration = f'{int(id_card.duration//60)}:{int(id_card.duration%60):02}'
         # 调整曲目序号
-        tracknumber = self.adjustTrackNumber(tracknumber)
+        tracknumber = self.__adjustTrackNumber(tracknumber)
         if id_card.year and id_card.year[0] != '0':
             year = id_card.year[:4] + '年'
         else:
@@ -155,7 +153,7 @@ class GetSongInfo():
         return album_list, tcon, year, duration, tracknumber
 
     def sortByCreateTime(self):
-        """ 依据文件创建日期排序文件信息列表 """
+        """ 依据文件修改日期排序文件信息列表 """
         self.songInfo_list.sort(
             key=lambda songInfo: songInfo['createTime'], reverse=True)
 
@@ -167,7 +165,7 @@ class GetSongInfo():
         """ 以歌手名排序文件信息列表 """
         self.songInfo_list.sort(key=lambda songInfo: songInfo['songer'])
 
-    def adjustTrackNumber(self, trackNum: str):
+    def __adjustTrackNumber(self, trackNum: str):
         """ 调整曲目编号 """
         if trackNum != '0':
             trackNum = trackNum.lstrip('0')

@@ -26,7 +26,6 @@ class BasicSongListWidget(ListWidget):
     selectionModeStateChanged = pyqtSignal(bool)
     addSongsToNewCustomPlaylistSig = pyqtSignal(list)    # 将歌曲添加到新的自定义播放列表
     addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 将歌曲添加到已存在的自定义播放列表
-    
 
     def __init__(self, songInfo_list: list, songCardType: SongCardType, parent=None, viewportMargins=QMargins(0, 0, 0, 0), paddingBottomHeight: int = 116):
         """ 创建歌曲卡列表控件对象
@@ -209,7 +208,7 @@ class BasicSongListWidget(ListWidget):
         self.paddingBottomItem.setSizeHint(
             QSize(self.width() - margins.left() - margins.right(), self.paddingBottomHeight))
 
-    def songCardCheckedStateChanedSlot(self, itemIndex: int, isChecked: bool):
+    def songCardCheckedStateChangedSlot(self, itemIndex: int, isChecked: bool):
         """ 歌曲卡选中状态改变对应的槽函数 """
         songCard = self.songCard_list[itemIndex]
         # 如果歌曲卡不在选中的歌曲列表中且该歌曲卡变为选中状态就将其添加到列表中
@@ -329,7 +328,7 @@ class BasicSongListWidget(ListWidget):
         """ 依据指定的键排序歌曲信息列表
         Parameters
         ----------
-        key : 排序依据，有'createTime'、'songName'、'songer'和'tracknumber'四种\n
+        key : 排序依据，有'modifiedTime'、'songName'、'songer'和'tracknumber'四种\n
         isReverse : 是否降序，只对前三种排序方式有效 """
         if key != 'tracknumber':
             self.songInfo_list.sort(
@@ -361,4 +360,4 @@ class BasicSongListWidget(ListWidget):
     def __connectSongCardSignalToSlot(self, songCard):
         """ 将一个歌曲卡的信号连接到槽函数 """
         # 必须被子类重写
-        pass
+        raise NotImplementedError

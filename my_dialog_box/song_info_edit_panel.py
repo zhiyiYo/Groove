@@ -10,10 +10,10 @@ from PyQt5.QtWidgets import (QApplication, QDialog, QGraphicsDropShadowEffect,
                              QLabel, QLineEdit, QWidget)
 
 from my_functions.auto_wrap import autoWrap
+from my_functions.adjust_album_name import adjustAlbumName
 from my_functions.modify_songInfo import modifySongInfo
 from my_widget.my_label import ErrorIcon
 from my_widget.my_lineEdit import LineEdit
-from my_widget.my_toolTip import ToolTip
 from my_widget.perspective_button import PerspectivePushButton
 
 from .sub_panel_frame import SubPanelFrame
@@ -86,13 +86,11 @@ class SubSongInfoEditPanel(QWidget):
         self.emptyTrackErrorIcon = ErrorIcon(self)
         self.bottomErrorIcon = ErrorIcon(self)
         self.bottomErrorLabel = QLabel(self)
-        # 实例化提示条
-        self.customToolTip = ToolTip(parent=self)
         # 实例化单行输入框
         self.diskEditLine = LineEdit('1', self)
         self.tconEditLine = LineEdit(self.songInfo['tcon'], self)
         self.yearEditLine = LineEdit(self.songInfo['year'], self)
-        self.albumNameEditLine = LineEdit(self.songInfo['album'][0], self)
+        self.albumNameEditLine = LineEdit(self.songInfo['album'], self)
         self.songNameEditLine = LineEdit(self.songInfo['songName'], self)
         self.songerNameEditLine = LineEdit(self.songInfo['songer'], self)
         self.albumSongerEditLine = LineEdit(self.songInfo['songer'], self)
@@ -205,13 +203,6 @@ class SubSongInfoEditPanel(QWidget):
         self.bottomErrorIcon.move(30, self.height() - 110)
         self.bottomErrorLabel.move(55, self.height() - 112)
 
-    def setWidgetsToolTip(self):
-        """ 设置小部件的提示条 """
-        self.emptyTrackErrorIcon.setCustomToolTip(
-            self.customToolTip, '曲目必须是1000以下的数字')
-        self.trackNumEditLine.setCustomToolTip(
-            self.customToolTip, '曲目必须是1000以下的数字')
-
     def __setQss(self):
         """ 设置层叠样式表 """
         with open(r'resource\css\infoEditPanel.qss', encoding='utf-8') as f:
@@ -228,9 +219,11 @@ class SubSongInfoEditPanel(QWidget):
 
     def saveInfo(self):
         """ 保存标签卡信息 """
+        album_list = adjustAlbumName(self.albumNameEditLine.text())
         self.songInfo['songName'] = self.songNameEditLine.text()
         self.songInfo['songer'] = self.songerNameEditLine.text()
-        self.songInfo['album'][0] = self.albumNameEditLine.text()
+        self.songInfo['album'] = album_list[0]
+        self.songInfo['modifiedAlbum'] = album_list[-1]
         # 根据后缀名选择曲目标签的写入方式
         self.songInfo['tracknumber'] = self.trackNumEditLine.text()
         self.songInfo['tcon'] = self.tconEditLine.text()

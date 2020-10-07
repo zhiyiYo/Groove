@@ -446,7 +446,7 @@ class AlbumCardViewer(QWidget):
         """ 更新一个专辑卡的一首歌的信息 """
         for albumCard in self.albumCard_list:
             albumInfo = albumCard.albumInfo
-            if albumInfo['album'] == newSongInfo['album'][0] and albumInfo['songer'] == newSongInfo['songer']:
+            if albumInfo['album'] == newSongInfo['album'] and albumInfo['songer'] == newSongInfo['songer']:
                 for i, songInfo in enumerate(albumInfo['songInfo_list']):
                     if songInfo['songPath'] == newSongInfo['songPath']:
                         albumInfo['songInfo_list'][i] = newSongInfo.copy()
@@ -455,6 +455,10 @@ class AlbumCardViewer(QWidget):
 
     def updateAllAlbumCards(self, albumInfo_list: list):
         """ 更新所有专辑卡 """
+        oldAlbumInfo_list = [
+            albumCard.albumInfo for albumCard in self.albumCard_list]
+        if albumInfo_list == oldAlbumInfo_list:
+            return
         # 将专辑卡从布局中移除
         self.__removeContainerFromVBoxLayout()
         # 根据具体情况增减专辑卡
@@ -484,7 +488,7 @@ class AlbumCardViewer(QWidget):
                                           'albumName': album,
                                           'year': albumInfo['year'][:4],
                                           'songer': albumInfo['songer'],
-                                          'firstLetter': pinyin.get_initial(album[0])[0].upper()}
+                                          'firstLetter': pinyin.get_initial(album)[0].upper()}
         # 重新排序专辑卡
         self.setSortMode(self.sortMode)
         # 根据当前专辑卡数决定是否显示导航标签

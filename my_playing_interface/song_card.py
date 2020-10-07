@@ -31,7 +31,7 @@ class SongCard(QWidget):
         # 创建小部件
         self.songNameCard = SongNameCard(songInfo['songName'], self)
         self.songerLabel = ClickableLabel(songInfo['songer'], self, False)
-        self.albumLabel = ClickableLabel(songInfo['album'][0], self, False)
+        self.albumLabel = ClickableLabel(songInfo['album'], self, False)
         self.yearLabel = QLabel(songInfo['year'], self)
         self.durationLabel = QLabel(songInfo['duration'], self)
         self.buttonGroup = self.songNameCard.buttonGroup
@@ -76,10 +76,9 @@ class SongCard(QWidget):
     def __getLabelWidth(self):
         """ 计算标签的长度 """
         fontMetrics = QFontMetrics(QFont('Microsoft YaHei', 9))
-        self.songerWidth = sum([fontMetrics.width(i)
-                                for i in self.songInfo['songer']])
-        self.albumWidth = sum([fontMetrics.width(i)
-                               for i in self.songInfo['album']])
+        self.songerWidth = fontMetrics.width(self.songInfo['songer'])
+        self.albumWidth = fontMetrics.width(self.songInfo['album'])
+
 
     def setDynamicProperty(self, state: str):
         """ 设置动态属性，总共4状态，分别为enter-notPlay、enter-play、leave-notPlay、leave-play """
@@ -230,7 +229,7 @@ class SongCard(QWidget):
         self.__getInfo(songInfo)
         self.songNameCard.setSongName(songInfo['songName'])
         self.songerLabel.setText(songInfo['songer'])
-        self.albumLabel.setText(songInfo['album'][0])
+        self.albumLabel.setText(songInfo['album'])
         self.yearLabel.setText(songInfo['year'])
         self.durationLabel.setText(songInfo['duration'])
         # 调整宽度
@@ -245,6 +244,6 @@ class SongCard(QWidget):
         self.songInfo = songInfo
         self.year = songInfo['year']          # type:str
         self.songer = songInfo['songer']      # type:str
-        self.album = songInfo['album'][0]     # type:str
+        self.album = songInfo['album']        # type:str
         self.duration = songInfo['duration']  # type:str
         self.songName = songInfo['songName']  # type:str

@@ -1,7 +1,7 @@
 import os
 
 
-def getCoverPath(albumName, isGetAlbumCover=True) -> str:
+def getCoverPath(albumName:str, isGetAlbumCover=True) -> str:
     """ 获取封面路径 """
     coverFolder = f"resource\\Album_Cover\\{albumName}"
     # 默认的封面

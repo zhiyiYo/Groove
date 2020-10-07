@@ -75,7 +75,7 @@ class SongCardListWidget(BasicSongListWidget):
         """ 根据当前的排序模式来排序歌曲卡 """
         self.sortMode = sortMode
         if self.sortMode == '添加时间':
-            self.sortSongInfo('createTime')
+            self.sortSongInfo('modifiedTime')
         elif self.sortMode == 'A到Z':
             self.sortSongInfo('songName')
         elif self.sortMode == '歌手':
@@ -143,6 +143,6 @@ class SongCardListWidget(BasicSongListWidget):
         songCard.switchToAlbumInterfaceSig.connect(
             self.switchToAlbumInterfaceSig)
         songCard.checkedStateChanged.connect(
-            self.songCardCheckedStateChanedSlot)
+            self.songCardCheckedStateChangedSlot)
         songCard.addSongsToCustomPlaylistSig.connect(
             self.addSongsToCustomPlaylistSig)

@@ -51,31 +51,31 @@ class TabButton(QPushButton):
         painter.setRenderHints(QPainter.Antialiasing | QPainter.TextAntialiasing)
         painter.setFont(QFont('Microsoft YaHei', 15))
         if not self.isSelected:
-            self.paintAllText(painter,14)
+            self.__paintAllText(painter,14)
         else:
-            self.paintAllText(painter,14)
+            self.__paintAllText(painter,14)
             if not self.pressedPos:
-                self.paintLine(painter, 1, self.height() - 3, self.width() - 1, self.height() - 3,
+                self.__paintLine(painter, 1, self.height() - 3, self.width() - 1, self.height() - 3,
                                self.width() - 1, self.height(), 1, self.height())
             # 左上角和右下角                   
             elif self.pressedPos in ['left-top', 'right-bottom']:
-                self.paintLine(painter, 1, self.height() - 3, self.width() - 1, self.height()-4,
+                self.__paintLine(painter, 1, self.height() - 3, self.width() - 1, self.height()-4,
                                self.width() - 1, self.height() - 1, 1, self.height())
             # 左中右上下
             elif self.pressedPos in ['left', 'center', 'right', 'top', 'bottom']:
-                self.paintLine(painter, 2, self.height() - 4, self.width() - 2, self.height() - 4,
+                self.__paintLine(painter, 2, self.height() - 4, self.width() - 2, self.height() - 4,
                                self.width() - 2, self.height() - 1, 2, self.height() - 1)
             # 左下角和右上角                   
             elif self.pressedPos in ['left-bottom', 'right-top']:
-                self.paintLine(painter, 1, self.height() - 4, self.width() - 1, self.height()-3,
+                self.__paintLine(painter, 1, self.height() - 4, self.width() - 1, self.height()-3,
                                self.width() - 1, self.height(), 1, self.height() - 1)
                 
-    def paintText(self, painter, shearX, shearY, x=1, y=5):
+    def __paintText(self, painter, shearX, shearY, x=1, y=5):
         """ 绘制文本 """
         painter.shear(shearX, shearY)
         painter.drawText(x, y+21, self.text)
 
-    def paintLine(self, painter, x1, y1, x2, y2, x3, y3, x4, y4):
+    def __paintLine(self, painter, x1, y1, x2, y2, x3, y3, x4, y4):
         """ 绘制选中标志 """
         painter.setPen(Qt.NoPen)
         brush = QBrush(QColor(0, 153, 188))
@@ -83,7 +83,7 @@ class TabButton(QPushButton):
         points = [QPoint(x1, y1), QPoint(x2, y2), QPoint(x3, y3), QPoint(x4, y4)]
         painter.drawPolygon(QPolygon(points), 4)
 
-    def paintAllText(self, painter, fontSize=16):
+    def __paintAllText(self, painter, fontSize=16):
         """ 根据各种点击情况绘制文本 """
         if not self.isSelected:
             pen = QPen(QColor(102, 102, 102))
@@ -92,16 +92,16 @@ class TabButton(QPushButton):
             if self.isEnter:
                 # 鼠标进入时画笔改为黑色
                 painter.setPen(QPen(Qt.black))
-            self.paintText(painter, 0, 0)
+            self.__paintText(painter, 0, 0)
         else:
             painter.setFont(QFont('Microsoft YaHei', fontSize))
             # 左上角和右下角
             if self.pressedPos in ['left-top', 'right-bottom']:
-                self.paintText(painter, -0.03, 0)
+                self.__paintText(painter, -0.03, 0)
             # 左中右上下
             elif self.pressedPos in ['left', 'center', 'right', 'top', 'bottom']:
-                self.paintText(painter, 0, 0)
+                self.__paintText(painter, 0, 0)
             # 左下角和右上角
             elif self.pressedPos in ['left-bottom', 'right-top']:
-                self.paintText(painter, 0.03, 0)
+                self.__paintText(painter, 0.03, 0)
 

@@ -23,7 +23,7 @@ class ListWidget(QListWidget):
         self.stepsLeftQueue = deque()
         self.smoothMoveTimer = QTimer(self)
         self.smoothMode = SmoothMode(SmoothMode.LINEAR)
-        self.smoothMoveTimer.timeout.connect(self.smoothMove)
+        self.smoothMoveTimer.timeout.connect(self.__smoothMove)
         self.setDragEnabled(False)
         self.setVerticalScrollMode(self.ScrollPerPixel)
         self.setAttribute(Qt.WA_StyledBackground)
@@ -55,12 +55,12 @@ class ListWidget(QListWidget):
         # 定时器的溢出时间t=1000ms/帧数
         self.smoothMoveTimer.start(1000 / self.fps)
 
-    def smoothMove(self):
+    def __smoothMove(self):
         """ 计时器溢出时进行平滑滚动 """
         totalDelta = 0
         # 计算所有未处理完事件的滚动距离，定时器每溢出一次就将步数-1
         for i in self.stepsLeftQueue:
-            totalDelta += self.subDelta(i[0], i[1])
+            totalDelta += self.__subDelta(i[0], i[1])
             i[1] -= 1
         # 如果事件已处理完，就将其移出队列
         while self.stepsLeftQueue and self.stepsLeftQueue[0][1] == 0:
@@ -80,7 +80,7 @@ class ListWidget(QListWidget):
         if not self.stepsLeftQueue:
             self.smoothMoveTimer.stop()
 
-    def subDelta(self, delta, stepsLeft):
+    def __subDelta(self, delta, stepsLeft):
         """ 计算每一步的插值 """
         m = self.stepsTotal / 2
         x = abs(self.stepsTotal - stepsLeft - m)

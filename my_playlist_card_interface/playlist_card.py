@@ -96,7 +96,7 @@ class PlaylistCard(PerspectiveWidget):
             'songInfo_list', [])  # type:list
         if self.songInfo_list:
             self.playlistCoverPath = getCoverPath(
-                self.songInfo_list[0].get('album')[-1], False)
+                self.songInfo_list[0].get('modifiedAlbum'), False)
         else:
             self.playlistCoverPath = r'resource\images\playlist_card_interface\空播放列表封面.jpg'
 

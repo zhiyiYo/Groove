@@ -4,7 +4,7 @@
 
 from PyQt5.QtCore import QSize, Qt,QEvent
 from PyQt5.QtGui import QFont, QFontMetrics, QIcon, QPixmap
-from PyQt5.QtWidgets import QCheckBox, QLabel, QToolButton, QWidget
+from PyQt5.QtWidgets import QCheckBox, QLabel, QToolButton, QWidget,QApplication
 
 
 class ToolButton(QToolButton):
@@ -58,6 +58,7 @@ class ButtonGroup(QWidget):
         self.setProperty('state', 'notSelected-leave')
         # 隐藏按钮
         # self.setButtonHidden(True)
+        self.installEventFilter(self)
 
     def setButtonHidden(self, isHidden: bool):
         """ 设置按钮是否可见 """
@@ -72,6 +73,16 @@ class ButtonGroup(QWidget):
     def setState(self, state: str):
         """ 设置按钮组状态 """
         self.setProperty('state', state)
+
+    def eventFilter(self, obj, e:QEvent):
+        """ 过滤事件 """
+        if obj == self:
+            if e.type() == QEvent.Hide:
+                # 隐藏按钮组时强行取消按钮的hover状态
+                e = QEvent(QEvent.Leave)
+                QApplication.sendEvent(self.playButton, e)
+                QApplication.sendEvent(self.addToButton, e)
+        return super().eventFilter(obj,e)
 
 
 class SongNameCard(QWidget):

@@ -202,7 +202,7 @@ class AlbumCard(PerspectiveWidget):
         newAlbumInfo_copy = deepcopy(newAlbumInfo)
         self.albumInfo['songInfo_list'].sort(
             key=lambda songInfo: int(songInfo['tracknumber']))
-        self.updateWindow(newAlbumInfo)
+        # self.updateWindow(newAlbumInfo)
         self.saveAlbumInfoSig.emit(oldAlbumInfo, newAlbumInfo_copy)
 
     def __checkedStateChangedSlot(self):

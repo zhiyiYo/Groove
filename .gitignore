@@ -1,0 +1,24 @@
+# 忽略.vscode文件
+.vscode/
+
+# 忽略数据文件夹
+.Data/
+
+# 忽略配置文件夹
+config/
+
+# 忽略播放列表文件夹
+Playlists/
+
+# 忽略专辑封面文件夹
+resource/Album_Cover/
+resource/crawl_albums/
+
+# 忽略json文件
+*.json
+
+# 忽略eddx文件
+*.eddx
+
+# 忽略python缓存文件
+*.py[cod]

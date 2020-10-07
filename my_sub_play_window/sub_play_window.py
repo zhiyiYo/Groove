@@ -159,7 +159,7 @@ class SubPlayWindow(QWidget):
     def __setAlbumCover(self):
         """ 设置封面 """
         # 如果专辑信息为空就直接隐藏
-        self.coverPath = getCoverPath(self.songInfo.get('album', ' ')[-1])
+        self.coverPath = getCoverPath(self.songInfo.get('modifiedAlbum'))
         self.albumPic.setPixmap(
             QPixmap(self.coverPath).scaled(
                 125, 125, Qt.KeepAspectRatio, Qt.SmoothTransformation))

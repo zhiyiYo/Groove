@@ -51,7 +51,7 @@ class SongInfoCard(QWidget):
         self.songerAlbumLabel.installEventFilter(self)
         # 信号连接到槽
         def slot(): return self.switchToAlbumInterfaceSig.emit(
-            self.album[0], self.songerName)
+            self.album, self.songerName)
         self.songNameLabel.clicked.connect(slot)
         self.songerAlbumLabel.clicked.connect(slot)
 
@@ -65,16 +65,16 @@ class SongInfoCard(QWidget):
         self.songInfo = songInfo
         if not self.songInfo:
             self.songInfo = {}
-        self.album = self.songInfo.get('album', ['未知专辑'])
+        self.album = self.songInfo.get('album', '未知专辑')
         self.songName = self.songInfo.get('songName', '未知歌名')
         self.songerName = self.songInfo.get('songer', '未知歌手')
-        self.albumCoverPath = getCoverPath(self.album[-1])
+        self.albumCoverPath = getCoverPath(self.songInfo.get('modifiedAlbum'))
 
     def updateCard(self, songInfo: dict):
         """ 更新歌曲信息卡 """
         self.setSongInfo(songInfo)
         self.songNameLabel.setText(self.songName)
-        self.songerAlbumLabel.setText(self.songerName + ' • ' + self.album[0])
+        self.songerAlbumLabel.setText(self.songerName + ' • ' + self.album)
         self.albumCoverLabel.setPixmap(QPixmap(self.albumCoverPath).scaled(
             136, 136, Qt.KeepAspectRatio, Qt.SmoothTransformation))
         # 调整文本

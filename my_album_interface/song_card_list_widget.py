@@ -108,4 +108,4 @@ class SongCardListWidget(BasicSongListWidget):
         songCard.playButtonClicked.connect(self.__playButtonSlot)
         songCard.clicked.connect(self.setCurrentIndex)
         songCard.checkedStateChanged.connect(
-            self.songCardCheckedStateChanedSlot)
+            self.songCardCheckedStateChangedSlot)

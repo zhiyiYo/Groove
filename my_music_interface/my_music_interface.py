@@ -30,9 +30,9 @@ class MyMusicInterface(QWidget):
     playCheckedCardsSig = pyqtSignal(list)
     selectionModeStateChanged = pyqtSignal(bool)
     nextToPlayCheckedCardsSig = pyqtSignal(list)
+    addSongsToPlayingPlaylistSig = pyqtSignal(list)      # 将歌曲添加到正在播放列表
     addSongsToNewCustomPlaylistSig = pyqtSignal(list)    # 将歌曲添加到新建播放列表中
     addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 将歌曲添加到已存在的自定义播放列表中
-    addSongsToPlayingPlaylistSig = pyqtSignal(list)      # 将歌曲添加到正在播放列表
 
     def __init__(self, targetFolderPath_list: list, parent=None):
         super().__init__(parent)
@@ -48,7 +48,7 @@ class MyMusicInterface(QWidget):
         """ 创建小部件 """
         # 实例化标签界面
         self.stackedWidget = PopUpAniStackedWidget(self)
-        # 扫描文件夹列表下的音频文件信息
+        # 扫描文件夹列表下的音频文件信息，顺序不能改动
         self.__songInfoGetter = GetSongInfo(self.__targetFolderPath_list)
         self.__albumCoverGetter = GetAlbumCover(self.__targetFolderPath_list)
         self.__albumInfoGetter = GetAlbumInfo(
@@ -249,6 +249,18 @@ class MyMusicInterface(QWidget):
             self.__songInfoGetter.songInfo_list)
         self.albumCardViewer.updateAllAlbumCards(
             self.__albumInfoGetter.albumInfo_list)
+
+    def updateWindow(self, songInfo_list: list):
+        """ 更新我的音乐界面 """
+        self.__songInfoGetter.songInfo_list = songInfo_list
+        self.songCardListWidget.updateAllSongCards(songInfo_list)
+        self.updateAlbumCardViewer(songInfo_list)
+
+    def updateAlbumCardViewer(self, songInfo_list: list):
+        """ 更新专辑卡界面 """
+        self.__albumCoverGetter.updateAlbumCover(self.__targetFolderPath_list)
+        self.__albumInfoGetter.updateAlbumInfo(songInfo_list)
+        self.albumCardViewer.updateAllAlbumCards(self.__albumInfoGetter.albumInfo_list)
 
     def __showSortModeMenu(self):
         """ 显示排序方式菜单 """

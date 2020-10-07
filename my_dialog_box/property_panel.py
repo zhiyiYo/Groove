@@ -71,7 +71,7 @@ class SubPropertyPanel(QWidget):
         self.year = QLabel(self.songInfo['year'], self)
         self.tcon = QLabel(self.songInfo['tcon'], self)
         self.songer = QLabel(self.songInfo['songer'], self)
-        self.albumName = QLabel(self.songInfo['album'][0], self)
+        self.albumName = QLabel(self.songInfo['album'], self)
         self.duration = QLabel(self.songInfo['duration'], self)
         self.songName = QLabel(self.songInfo['songName'], self)
         self.albumSonger = QLabel(self.songInfo['songer'], self)

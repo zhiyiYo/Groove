@@ -200,7 +200,7 @@ class SettingInterface(QWidget):
             with open('config\\config.json', encoding='utf-8') as f:
                 self.config = load(f)  # type:dict
         except:
-            self.config = {}
+            self.config = {'selected-folders'}
         if hasattr(self, 'getMetaDataCheckBox'):
             self.updateCheckBoxEnabled()
 

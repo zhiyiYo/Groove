@@ -259,6 +259,7 @@ class PlayingInterface(QWidget):
 
     def setPlaylist(self, playlist: list, isResetIndex: bool = True):
         """ 更新播放列表
+        
         Parameters
         ----------
         playlist : 播放列表，每一个元素都是songInfo字典\n

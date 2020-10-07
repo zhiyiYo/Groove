@@ -4,63 +4,53 @@ import json
 import os
 
 
-class GetAlbumInfo():
+class GetAlbumInfo:
     """ 从歌曲信息列表中整理出专辑信息的类 """
 
     def __init__(self, songInfo_list: list):
         self.albumInfo_list = self.getAlbumInfo(songInfo_list)
-        self.sortByUpdateTime()
+        self.sortByModifiedTime()
 
-    def getAlbumInfo(self, songInfo_list):
+    def getAlbumInfo(self, songInfo_list: list):
         """ 从歌曲信息列表中来获取专辑信息 """
         albumInfo_list = []
-        album_set = set()
+        albumSonger_list = []
 
-        if not os.path.exists('Data\\songInfo.json'):
-            return None
-        # 从json文件读取信息
-        with open('Data\\songInfo.json', encoding='utf-8') as f:
-            songInfo_list = json.load(f)
-        # 先将专辑信息字典插到列表中
         for songInfo in songInfo_list:
-            # songInfo的'album'对应的值是一个列表，可能包含修改前和修改后的专辑名
-            album_list = songInfo['album']
-            # 如果专辑名不在集合中，就往列表中插入专辑信息字典
-            if album_list[0] not in album_set:
+            album = songInfo['album']   # type:str
+            songer = songInfo['songer']  # type:str
+            modifiedAlbum = songInfo['modifiedAlbum']  # type:str
+            # 如果(专辑名,歌手名)不在列表中，就往列表中插入新的专辑信息字典
+            if (album, songer) not in albumSonger_list:
+                albumSonger_list.append((album, songer))
                 pic_list = os.listdir(
-                    f'resource\\Album_Cover\\{album_list[-1]}')
+                    f'resource\\Album_Cover\\{modifiedAlbum}')
                 if pic_list:
-                    # 如果目录下有封面就用这个封面作为albumCard的背景
+                    # 目录下有封面就用这个封面作为albumCard的背景
                     cover_path = os.path.join(
-                        f'resource\\Album_Cover\\{album_list[-1]}', pic_list[0])
+                        f'resource\\Album_Cover\\{modifiedAlbum}', pic_list[0])
                 else:
-                    # 否则用默认的封面
-                    cover_path = 'resource\\images\\未知专辑封面_200_200.png'
+                    cover_path = 'resource\\Album_Cover\\未知专辑\\未知专辑.png'
                 albumInfo_list.append(
-                    {'updateTime': '0',
-                     'songInfo_list': [],
-                     'album': album_list[0],
+                    {'modifiedTime': songInfo['createTime'],
+                     'album': album,
+                     'songer': songer,
                      'tcon': songInfo['tcon'],
                      'year': songInfo['year'],
                      'cover_path': cover_path,
-                     'modifiedAlbum':album_list[-1],
-                     'songer': songInfo['songer']})
-                album_set.add(album_list[0])
+                     'songInfo_list': [songInfo],
+                     'modifiedAlbum': modifiedAlbum})
+            else:
+                index = albumSonger_list.index((album, songer))
+                albumInfo = albumInfo_list[index]
+                albumInfo['songInfo_list'].append(songInfo)
+                # 更新专辑的更新时间
+                if albumInfo['modifiedTime'] < songInfo['createTime']:
+                    albumInfo['modifiedTime'] = songInfo['createTime']
 
-        # 再将同一个专辑的歌曲添加到字典的歌曲列表中
-        for songInfo in songInfo_list:
-            for albumInfo_dict in albumInfo_list:
-                # songInfo['album']的一个元素存的是原始专辑名
-                if albumInfo_dict['album'] == songInfo['album'][0]:
-                    # 如果专辑名匹配就将歌曲信息插到字典的列表中
-                    albumInfo_dict['songInfo_list'].append(songInfo)
-                    # 更新专辑的更新时间
-                    if albumInfo_dict['updateTime'] < songInfo['createTime']:
-                        albumInfo_dict['updateTime'] = songInfo['createTime']
-                    break
         # 根据曲目序号排序每一个专辑
-        for albumInfo_dict in albumInfo_list:
-            albumInfo_dict['songInfo_list'].sort(key=self.sortAlbum)
+        for albumInfo in albumInfo_list:
+            albumInfo['songInfo_list'].sort(key=self.sortAlbum)
         return albumInfo_list
 
     def updateAlbumInfo(self, songInfo_list: list):
@@ -74,22 +64,15 @@ class GetAlbumInfo():
             return eval(trackNum)[0]
         return int(trackNum)
 
-    def sortByUpdateTime(self):
-        """ 依据文件创建日期排序文件信息列表 """
+    def sortByModifiedTime(self):
+        """ 依据修改日期排序专辑信息列表 """
         self.albumInfo_list.sort(
-            key=lambda albumInfo: albumInfo['updateTime'], reverse=True)
+            key=lambda albumInfo: albumInfo['modifiedTime'], reverse=True)
 
     def sortByDictOrder(self):
-        """ 以字典序排序文件信息列表 """
+        """ 以字典序排序专辑信息列表 """
         self.albumInfo_list.sort(key=lambda albumInfo: albumInfo['songName'])
 
     def sortBySonger(self):
-        """ 以歌手名排序文件信息列表 """
+        """ 以歌手名排序专辑信息列表 """
         self.albumInfo_list.sort(key=lambda albumInfo: albumInfo['songer'])
-
-    def getOneAlbumInfo(self, albumName: str) -> dict:
-        """ 根据专辑名返回一个专辑信息字典 """
-        for albumInfo in self.albumInfo_list:
-            if albumInfo['album'] == albumName:
-                return albumInfo
-        return {}
