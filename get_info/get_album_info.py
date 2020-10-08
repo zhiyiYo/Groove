@@ -23,12 +23,11 @@ class GetAlbumInfo:
             # 如果(专辑名,歌手名)不在列表中，就往列表中插入新的专辑信息字典
             if (album, songer) not in albumSonger_list:
                 albumSonger_list.append((album, songer))
-                pic_list = os.listdir(
-                    f'resource\\Album_Cover\\{modifiedAlbum}')
-                if pic_list:
+                folderPath = 'resource\\Album_Cover\\' + modifiedAlbum
+                if os.path.exists(folderPath) and (pic_list := os.listdir(folderPath)):
+                    # pic_list = os.listdir(folderPath)
                     # 目录下有封面就用这个封面作为albumCard的背景
-                    cover_path = os.path.join(
-                        f'resource\\Album_Cover\\{modifiedAlbum}', pic_list[0])
+                    cover_path = os.path.join(folderPath, pic_list[0])
                 else:
                     cover_path = 'resource\\Album_Cover\\未知专辑\\未知专辑.png'
                 albumInfo_list.append(

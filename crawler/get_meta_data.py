@@ -36,6 +36,7 @@ class GetMetaData():
                 try:
                     # 歌曲在播放时保存会失败
                     self.id_card.save()
+                    print(songPath+' 保存成功')
                 except MutagenError:
                     pass
         self.kuGouCrawler.browser.quit()

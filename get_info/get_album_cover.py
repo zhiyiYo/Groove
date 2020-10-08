@@ -17,7 +17,6 @@ class GetAlbumCover():
         """ 初始化类的属性 """
         self.album_cover_folder =  r'resource\Album_Cover'
         self.target_path_list = target_path_list
-        # 实例化一个用于获取歌曲信息的类
         self.songInfo = GetSongInfo(target_path_list)
         # 获取封面
         self.getAlbum()

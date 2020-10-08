@@ -484,7 +484,7 @@ class AlbumCardViewer(QWidget):
             album = albumInfo['album']
             self.albumCard_list[i].updateWindow(albumInfo)
             QApplication.processEvents()
-            self.albumCardDict_list[i] = {'albumCard': albumCard,
+            self.albumCardDict_list[i] = {'albumCard': self.albumCard_list[i],
                                           'albumName': album,
                                           'year': albumInfo['year'][:4],
                                           'songer': albumInfo['songer'],

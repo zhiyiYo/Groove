@@ -1,8 +1,8 @@
-# 忽略.vscode文件
+# 忽略.vscode文件夹
 .vscode/
 
 # 忽略数据文件夹
-.Data/
+Data/
 
 # 忽略配置文件夹
 config/
@@ -21,4 +21,8 @@ resource/crawl_albums/
 *.eddx
 
 # 忽略python缓存文件
+__pycache__/
 *.py[cod]
+
+# 忽略日志文件
+*.log
