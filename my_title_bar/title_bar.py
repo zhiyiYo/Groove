@@ -4,7 +4,7 @@ from win32.lib import win32con
 from win32.win32api import SendMessage
 from win32.win32gui import ReleaseCapture
 
-from PyQt5.QtCore import Qt,QEvent
+from PyQt5.QtCore import Qt, QEvent
 from PyQt5.QtGui import QIcon, QPixmap, QResizeEvent
 from PyQt5.QtWidgets import QLabel, QWidget
 
@@ -73,7 +73,7 @@ class TitleBar(QWidget):
 
     def __adjustButtonPos(self):
         """ 初始化小部件位置 """
-        self.title.move(0, 0)
+        self.title.move(self.returnBt.isVisible()*60, 0)
         self.closeBt.move(self.width() - 57, 0)
         self.maxBt.move(self.width() - 2 * 57, 0)
         self.minBt.move(self.width() - 3 * 57, 0)
@@ -134,5 +134,4 @@ class TitleBar(QWidget):
                 if self.returnBt.isVisible():
                     self.title.move(self.returnBt.width(), 0)
                     return False
-        return super().eventFilter(obj,e)
-            
+        return super().eventFilter(obj, e)

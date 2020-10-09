@@ -26,3 +26,13 @@ __pycache__/
 
 # 忽略日志文件
 *.log
+
+# 忽略音频文件
+resource/test_audio/
+
+# 忽略测试文件
+test.py
+demo.py
+
+# 忽略备份文件夹
+backup/

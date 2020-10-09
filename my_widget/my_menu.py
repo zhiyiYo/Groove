@@ -46,7 +46,7 @@ class AcrylicMenu(QMenu):
     """ 亚克力菜单 """
     windowEffect = WindowEffect()
 
-    def __init__(self, string='', parent=None, acrylicColor='e5e5e5C0'):
+    def __init__(self, string='', parent=None, acrylicColor='e5e5e5CC'):
         super().__init__(string, parent)
         self.acrylicColor = acrylicColor
         self.__initWidget()
@@ -110,8 +110,7 @@ class AddToMenu(AcrylicMenu):
         # 扫描播放列表文件夹下的播放列表名字
         if not os.path.exists('Playlists'):
             os.mkdir('Playlists')
-        playlistName_list = [os.path.splitext(
-            i)[0] for i in os.listdir('Playlists')]
+        playlistName_list = [i[:-5] for i in os.listdir('Playlists') if i.endswith('.json')]
         return playlistName_list
 
     def actionCount(self):

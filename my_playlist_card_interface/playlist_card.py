@@ -63,6 +63,7 @@ class PlaylistCard(PerspectiveWidget):
         # 设置标签字体
         self.playlistNameLabel.setFont(QFont('Microsoft YaHei', 10, 75))
         self.playlistLenLabel.setFont(QFont('Microsoft YaHei', 9))
+        self.playlistLenLabel.setMinimumWidth(200)
         # 给小部件添加特效
         self.checkBox.setGraphicsEffect(self.checkBoxOpacityEffect)
         # 设置封面
