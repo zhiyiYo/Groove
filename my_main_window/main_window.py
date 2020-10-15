@@ -154,7 +154,7 @@ class MainWindow(QWidget):
         # 初始化播放栏
         self.initPlayBar()
         # 安装事件过滤器
-        # self.navigationInterface.navigationMenu.installEventFilter(self)
+        self.navigationInterface.navigationMenu.installEventFilter(self)
 
     def setHotKey(self):
         """ 设置全局热键 """
@@ -199,9 +199,28 @@ class MainWindow(QWidget):
     def eventFilter(self, obj, e: QEvent):
         """ 过滤事件 """
         if obj == self.navigationInterface.navigationMenu:
+            # 显示导航菜单是更改标题栏返回按钮和标题的父级为导航菜单
+            isVisible = self.titleBar.returnBt.isVisible()
             if e.type() == QEvent.Show:
-                self.navigationInterface.navigationMenu.stackUnder(
-                    self.playBar)
+                self.titleBar.returnBt.setParent(obj)
+                # 显示标题
+                self.titleBar.title.setParent(obj)
+                self.titleBar.title.move(15, 10)
+                self.titleBar.title.show()
+                # 如果播放栏课件就缩短导航菜单
+                isScaled = self.playBar.isVisible()
+                height = self.height() - isScaled * self.playBar.height()
+                self.navigationInterface.navigationMenu.setBottomSpacingVisible(
+                    not isScaled)
+                self.navigationInterface.navigationMenu.resize(
+                    self.navigationInterface.navigationMenu.width(), height)
+            elif e.type() == QEvent.Hide:
+                # 隐藏标题
+                self.titleBar.title.hide()
+                self.titleBar.title.setParent(self.titleBar)
+                self.titleBar.returnBt.setParent(self.titleBar)
+            # 根据情况显示/隐藏返回按钮和标题
+            self.titleBar.returnBt.setVisible(isVisible)
         return super().eventFilter(obj, e)
 
     def resizeEvent(self, e):
@@ -477,11 +496,11 @@ class MainWindow(QWidget):
         self.songTabSongListWidget = self.myMusicInterface.songCardListWidget
         self.albumCardViewer = self.myMusicInterface.albumCardViewer
 
-    def navigationDisplayModeChangedSlot(self):
+    def navigationDisplayModeChangedSlot(self, diaPlayMode: int):
         """ 导航界面显示模式改变对应的槽函数 """
         self.titleBar.title.setVisible(self.navigationInterface.isExpanded)
         self.adjustWidgetGeometry()
-        #self.navigationInterface.navigationMenu.stackUnder(self.playBar)
+        self.navigationInterface.navigationMenu.stackUnder(self.playBar)
 
     def initPlaylist(self):
         """ 初始化播放列表 """

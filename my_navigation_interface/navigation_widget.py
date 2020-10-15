@@ -65,7 +65,7 @@ class NavigationWidget(BasicNavigationWidget):
 
     def __initWidget(self):
         """ 初始化小部件 """
-        self.setFixedWidth(400)
+        self.resize(400, 800)
         self.setAttribute(Qt.WA_StyledBackground)
         self.setSelectedButton(self.musicGroupButton)
         # 将按钮的点击信号连接到槽函数
@@ -75,7 +75,7 @@ class NavigationWidget(BasicNavigationWidget):
 
     def __initLayout(self):
         """ 初始化布局 """
-        self.scrollArea.move(0, 161)
+        self.scrollArea.move(0, 162)
         self.scrollArea.setWidget(self.scrollWidget)
         # 将按钮添加到滚动区域
         self.historyButton.move(0, 62)
@@ -84,24 +84,24 @@ class NavigationWidget(BasicNavigationWidget):
         self.playlistButton.move(0, 186)
         self.searchLineEdit.move(15, 108)
         self.createPlaylistButton.move(340, 186)
-        self.settingButton.move(0, self.height() - 185)
+        self.settingButton.move(0, self.height() - 187)
         self.__addPlaylistNameButtonsToScrollWidget()
         # 调整滚动区域的高度
         self.__adjustScrollWidgetHeight()
 
     def resizeEvent(self, e):
         """ 调整小部件尺寸 """
-        self.scrollArea.resize(self.width(), self.height() - 346)
+        self.scrollArea.resize(self.width(), self.height() - 347)
         self.scrollWidget.resize(self.width(), self.scrollWidget.height())
-        self.settingButton.move(0, self.height() - 185)
+        self.settingButton.move(0, self.height() - 62 - 115 - 10)
 
     def paintEvent(self, e):
         """ 绘制分隔符 """
         painter = QPainter(self)
         pen = QPen(QColor(0, 0, 0, 30))
         painter.setPen(pen)
-        painter.drawLine(15, self.height() - 185,
-                         self.width() - 15, self.height() - 185)
+        painter.drawLine(15, self.settingButton.y() - 1,
+                         self.width() - 15, self.settingButton.y() - 1)
 
     def getPlaylistNames(self):
         """ 扫描播放列表名字 """

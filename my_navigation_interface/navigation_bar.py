@@ -81,5 +81,5 @@ class NavigationBar(BasicNavigationWidget):
             self.v_layout.addWidget(button)
         self.v_layout.addWidget(self.settingButton, 0, Qt.AlignBottom)
         # 留出底部播放栏的位置
-        self.v_layout.addSpacing(123)
+        self.v_layout.addSpacing(127)
         self.setLayout(self.v_layout)

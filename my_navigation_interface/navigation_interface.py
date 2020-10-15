@@ -7,13 +7,14 @@ from PyQt5.QtWidgets import QWidget
 
 from .navigation_bar import NavigationBar
 from .navigation_widget import NavigationWidget
+from .navigation_menu import NavigationMenu
 from effects import WindowEffect
 
 
 class NavigationInterface(QWidget):
     """ 导航界面 """
 
-    COLLAPE = 0     # 折叠窗口
+    COMPACT = 0     # 折叠窗口
     OVERLAY = 1     # 显示导航菜单，窗口不展开
     IN_LINE = 2     # 导航窗口展开
     displayModeChanged = pyqtSignal(int)
@@ -30,11 +31,11 @@ class NavigationInterface(QWidget):
         # 创建部件
         self.navigationBar = NavigationBar(self)
         self.navigationWidget = NavigationWidget(self)
-        self.navigationMenu = NavigationWidget(self)
+        self.navigationMenu = NavigationMenu(self)
         self.__navigation_list = [self.navigationBar,
                                   self.navigationWidget, self.navigationMenu]
         # 设置显示导航菜单/导航部件标志位
-        self.__displayMode = self.COLLAPE
+        self.__displayMode = self.COMPACT
         self.__isExpanded = False
         self.__isOverlay = False
         # 初始化
@@ -45,11 +46,6 @@ class NavigationInterface(QWidget):
         self.resize(self.navigationBar.width(), 800)
         self.setCurrentIndex(0)
         self.navigationWidget.hide()
-        # 设置弹出菜单
-        self.navigationMenu.setWindowFlags(
-            Qt.NoDropShadowWindowHint | Qt.Popup)
-        self.effect.setAcrylicEffect(
-            HWND(int(self.navigationMenu.winId())), 'F2F2F299')
         # 信号连接到槽
         self.__connectSignalToSlot()
         # 安装事件过滤器
@@ -78,6 +74,8 @@ class NavigationInterface(QWidget):
         self.navigationMenu.showBarButton.clicked.connect(
             self.__collapseWindow)
         self.navigationWidget.showBarButton.clicked.connect(
+            self.__collapseWindow)
+        self.navigationMenu.playingButton.clicked.connect(
             self.__collapseWindow)
         for widget in self.__navigation_list:
             widget.playingButton.clicked.connect(
@@ -121,18 +119,20 @@ class NavigationInterface(QWidget):
             self.__displayMode = self.OVERLAY
             self.navigationMenu.move(self.mapToGlobal(QPoint(0, 0)))
             self.navigationMenu.updateWindow()
-            self.navigationMenu.show()
-            #self.displayModeChanged.emit(self.OVERLAY)
-            self.navigationMenu.stackUnder(self.navigationBar)
+            self.navigationMenu.aniShow()
+            # self.displayModeChanged.emit(self.OVERLAY)
             self.navigationBar.hide()
 
     def __collapseWindow(self):
         """ 折叠导航窗口 """
         self.__isExpanded = False
-        self.__displayMode = self.COLLAPE
+        self.__displayMode = self.COMPACT
         self.navigationBar.show()
-        self.navigationMenu.hide()
         self.navigationWidget.hide()
+        if self.sender() is self.navigationMenu.showBarButton:
+            self.navigationMenu.aniHide()
+        elif self.sender() is self.navigationMenu.playingButton:
+            self.navigationMenu.hide()
         self.resize(self.navigationBar.width(), self.height())
         self.displayModeChanged.emit(self.__displayMode)
 

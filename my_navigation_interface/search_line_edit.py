@@ -10,6 +10,7 @@ from my_widget.my_button import ThreeStateButton
 
 class SearchLineEdit(QLineEdit):
     """ 单行搜索框 """
+
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -49,11 +50,10 @@ class SearchLineEdit(QLineEdit):
         self.textChanged.connect(self.textChangedEvent)
         self.setWindowFlags(Qt.FramelessWindowHint)
         # 设置外边距
-        self.setTextMargins(
-            0, 0,
-            self.clearButton.width() + self.searchButton.width(), 0)
+        self.setTextMargins(0, 0, self.clearButton.width() +
+                            self.searchButton.width(), 0)
         # 调整按钮位置
-        self.adjustButtonPos()
+        self.__adjustButtonPos()
         # 安装监听
         self.clearButton.installEventFilter(self)
         self.searchButton.installEventFilter(self)
@@ -65,7 +65,7 @@ class SearchLineEdit(QLineEdit):
         else:
             self.clearButton.hide()
 
-    def adjustButtonPos(self):
+    def __adjustButtonPos(self):
         """ 调整按钮的位置 """
         # 需要补上margin的位置
         self.searchButton.move(self.width() - self.searchButton.width() - 8, 0)
@@ -74,15 +74,16 @@ class SearchLineEdit(QLineEdit):
 
     def resizeEvent(self, e):
         """ 调整大小的同时改变按钮位置 """
-        self.adjustButtonPos()
+        self.__adjustButtonPos()
 
     def mousePressEvent(self, e):
-        if e.button() == Qt.LeftButton:
-            # 需要调用父类的鼠标点击事件，不然无法部分选中
-            super().mousePressEvent(e)
-            # 如果输入框中有文本，就设置为只读并显示清空按钮
-            if self.text():
-                self.clearButton.show()
+        if e.button() != Qt.LeftButton:
+            return
+        # 需要调用父类的鼠标点击事件，不然无法部分选中
+        super().mousePressEvent(e)
+        # 如果输入框中有文本，就设置为只读并显示清空按钮
+        if self.text():
+            self.clearButton.show()
 
     def focusOutEvent(self, e):
         """ 当焦点移到别的输入框时隐藏按钮 """
@@ -103,8 +104,6 @@ class SearchLineEdit(QLineEdit):
             ) == Qt.LeftButton:
                 self.searchButton.setIcon(
                     QIcon(self.__search_iconPath_dict['hover']))
-                """ 搜索槽函数有待补充 """
-                pass
                 return True
         return super().eventFilter(obj, e)
 

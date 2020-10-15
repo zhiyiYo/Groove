@@ -26,7 +26,10 @@ def modifySongInfo(id_card, songInfo: dict):
     elif songInfo['suffix'] == '.m4a':
         # m4a写入曲目时还需要指定总曲目数
         tag = TinyTag.get(id_card.filename)
-        id_card['trkn'] = [(int(tag.track), int(tag.track_total))]
+        trackNum = int(songInfo['tracknumber'])
+        trackTotal = 1 if not tag.track_total else int(tag.track_total)
+        trackTotal = max(trackNum, trackTotal)
+        id_card['trkn'] = [(trackNum, trackTotal)]
         id_card['©nam'] = songInfo['songName']
         id_card['©day'] = songInfo['year'][:4]
         id_card['©ART'] = songInfo['songer']
