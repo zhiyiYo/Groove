@@ -81,10 +81,10 @@ class PlayBar(QWidget):
         """ 显示音量滑动条 """
         # 显示播放栏
         if not self.volumeSlider.isVisible():
-            if self.parent():
-                self.volumeSlider.move(166, self.y())
-            else:
-                self.volumeSlider.move(166, 0)
+            pos = self.mapToGlobal(self.volumeButton.pos())
+            x = pos.x() + int(self.volumeButton.width() / 2 - self.volumeSlider.width() / 2)
+            y = self.y() + 15
+            self.volumeSlider.move(x, y)
             self.volumeSlider.show()
         else:
             # 隐藏音量条

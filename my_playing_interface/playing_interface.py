@@ -126,11 +126,12 @@ class PlayingInterface(QWidget):
 
     def mousePressEvent(self, e: QMouseEvent):
         """ 鼠标点击界面其他位置时隐藏音量条 """
-        condX = 166 < e.pos().x() <= self.playBar.volumeSlider.width() + 166
+        pass
+        """ condX = 166 < e.pos().x() <= self.playBar.volumeSlider.width() + 166
         condY = self.playBar.y() <= e.pos().y() <= self.playBar.y() + \
             self.playBar.volumeSlider.height()
         if not (condX and condY):
-            self.playBar.volumeSlider.hide()
+            self.playBar.volumeSlider.hide() """
 
     def resizeEvent(self, e):
         """ 改变尺寸时也改变小部件的大小 """

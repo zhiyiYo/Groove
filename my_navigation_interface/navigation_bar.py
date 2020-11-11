@@ -70,6 +70,7 @@ class NavigationBar(BasicNavigationWidget):
         self._connectButtonClickedSigToSlot()
         # 初始化布局
         self.__initLayout()
+        
 
     def __initLayout(self):
         """ 初始化布局 """

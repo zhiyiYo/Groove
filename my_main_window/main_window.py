@@ -70,11 +70,11 @@ class MainWindow(QWidget):
             self.settingInterface.config.get('selected-folders', []), self.subMainWindow)
         t4 = time()
         print('创建整个我的音乐界面耗时：'.ljust(15), t4 - t3)
-        # 将最后一首歌作为playBar初始化时用的songInfo
-        self.lastSongInfo = self.settingInterface.config.get('last-song', {})
         # 创建缩略图任务栏
         self.thumbnailToolBar = ThumbnailToolBar(self)
         self.thumbnailToolBar.setWindow(self.windowHandle())
+        # 将最后一首歌作为playBar初始化时用的songInfo
+        self.lastSongInfo = self.settingInterface.config.get('last-song', {})
         # 创建左上角播放窗口
         self.subPlayWindow = SubPlayWindow(self, self.lastSongInfo)
         # 创建正在播放界面
@@ -148,7 +148,7 @@ class MainWindow(QWidget):
         # 初始化播放列表
         self.initPlaylist()
         # todo:设置全局热键
-        # self.setHotKey()
+        self.setHotKey()
         # 将信号连接到槽函数
         self.connectSignalToSlot()
         # 初始化播放栏

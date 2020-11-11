@@ -1,5 +1,6 @@
 # 忽略.vscode文件夹
 .vscode/
+.VSCodeCounter
 
 # 忽略数据文件夹
 Data/
@@ -21,7 +22,7 @@ resource/crawl_albums/
 *.eddx
 
 # 忽略python缓存文件
-__pycache__/
+*/__pycache__
 *.py[cod]
 
 # 忽略日志文件

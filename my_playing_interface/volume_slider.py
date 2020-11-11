@@ -29,10 +29,10 @@ class VolumeSlider(QWidget):
         self.volumeSlider.move(108, 25)
         self.volumeSlider.setSingleStep(1)
         self.volumeSlider.setRange(0,100)
-        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setWindowFlags(Qt.FramelessWindowHint|Qt.Popup|Qt.NoDropShadowWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.__setQss()
-        self.__setShadowEffect()
+        #self.__setShadowEffect()
         # 信号连接到槽
         self.volumeButton.muteStateChanged.connect(
             lambda muteState: self.muteStateChanged.emit(muteState))
