@@ -120,7 +120,7 @@ class NavigationInterface(QWidget):
             self.navigationMenu.move(self.mapToGlobal(QPoint(0, 0)))
             self.navigationMenu.updateWindow()
             self.navigationMenu.aniShow()
-            # self.displayModeChanged.emit(self.OVERLAY)
+            self.displayModeChanged.emit(self.OVERLAY)
             self.navigationBar.hide()
 
     def __collapseWindow(self):

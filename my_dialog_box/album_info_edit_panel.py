@@ -317,13 +317,14 @@ class SubAlbumInfoEditPanel(QWidget):
 
     def __setWidgetEnable(self, isEnable: bool):
         """ 设置编辑框是否启用 """
-        self.albumCover.setEnabled(isEnable)
+        self.setEnabled(isEnable)
+        """ self.albumCover.setEnabled(isEnable)
         self.saveButton.setEnabled(isEnable)
         self.tconLineEdit.setEnabled(isEnable)
         self.albumNameLineEdit.setEnabled(isEnable)
         self.albumSongerLineEdit.setEnabled(isEnable)
         for songInfoWidget in self.songInfoWidget_list:
-            songInfoWidget.setLineEditEnable(isEnable)
+            songInfoWidget.setLineEditEnable(isEnable) """
         # 更新样式
         self.setStyle(QApplication.style())
 

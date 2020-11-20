@@ -29,6 +29,7 @@ from my_setting_interface import SettingInterface
 from my_sub_play_window import SubPlayWindow
 from my_thumbnail_tool_bar import ThumbnailToolBar
 from my_title_bar import TitleBar
+from my_widget.label_navigation_interface import LabelNavigationInterface
 from my_widget.opacity_ani_stacked_widget import OpacityAniStackedWidget
 from my_widget.pop_up_ani_stacked_widget import PopUpAniStackedWidget
 from my_navigation_interface import NavigationInterface
@@ -55,14 +56,19 @@ class MainWindow(QWidget):
 
     def createWidgets(self):
         """ 创建小部件 """
+        # 主界面放置totalStackWidget、playBar 和 titleBar
+        # totalStackWidget用来放置subMainWindow和playingInterface
         self.totalStackWidget = OpacityAniStackedWidget(self)
+        # subMainWindow用来放置堆叠窗口subStackWidget
         self.subMainWindow = QWidget(self)
         self.titleBar = TitleBar(self)
         # 实例化播放器和播放列表
         self.player = QMediaPlayer(self)
         self.playlist = MediaPlaylist(self)
-        # 实例化小部件
+        # subStackWidget用来放置myMusicInterface、albumInterface、settingInterface、
+        # playlistCardInterface等需要在导航栏右边显示的窗口
         self.subStackWidget = PopUpAniStackedWidget(self.subMainWindow)
+        # 创建设置界面
         self.settingInterface = SettingInterface(self.subMainWindow)
         # 从配置文件中的选择文件夹读取音频文件
         t3 = time()
@@ -87,6 +93,9 @@ class MainWindow(QWidget):
             self.customPlaylists, self)
         # 创建导航界面
         self.navigationInterface = NavigationInterface(self.subMainWindow)
+        # 创建标签导航界面
+        self.labelNavigationInterface = LabelNavigationInterface(
+            self.subMainWindow)
         # 创建播放栏
         self.playBar = PlayBar(self.lastSongInfo, self)
         # 创建快捷键
@@ -127,9 +136,11 @@ class MainWindow(QWidget):
         # todo:将窗口添加到StackWidget中
         self.subStackWidget.addWidget(self.myMusicInterface, 0, 70, False)
         self.subStackWidget.addWidget(
-            self.playlistCardInterface, 0, 160, False)
-        self.subStackWidget.addWidget(self.settingInterface, 0, 160, False)
+            self.playlistCardInterface, 0, 120, False)
+        self.subStackWidget.addWidget(self.settingInterface, 0, 120, False)
         self.subStackWidget.addWidget(self.albumInterface, 0, 70)
+        self.subStackWidget.addWidget(
+            self.labelNavigationInterface, 0, 100, False)
         self.totalStackWidget.addWidget(self.subMainWindow)
         self.totalStackWidget.addWidget(self.playingInterface)
         # 初始化标题栏的下标列表
@@ -189,9 +200,8 @@ class MainWindow(QWidget):
                 self.width() - self.navigationInterface.width(), self.height())
             self.navigationInterface.resize(
                 self.navigationInterface.width(), self.height())
-        if hasattr(self, 'albumInterface'):
-            if not self.playingInterface.smallestModeInterface.isVisible():
-                self.albumInterface.resize(self.myMusicInterface.size())
+            self.labelNavigationInterface.resize(
+                self.subMainWindow.width(), self.height())
         if hasattr(self, 'playBar'):
             if not self.playingInterface.smallestModeInterface.isVisible():
                 self.playBar.resize(self.width(), self.playBar.height())
@@ -453,6 +463,8 @@ class MainWindow(QWidget):
             lambda songInfo_list: self.showCreatePlaylistPanel(songInfo_list))
         self.myMusicInterface.addSongsToPlayingPlaylistSig.connect(
             self.addSongsToPlayingPlaylist)
+        self.myMusicInterface.showLabelNavigationInterfaceSig.connect(
+            self.showLabelNavigationInterface)
         # todo:将自己的信号连接到槽函数
         self.showSubPlayWindowSig.connect(self.subPlayWindow.show)
         # todo:将专辑界面的信号连接到槽函数
@@ -490,6 +502,9 @@ class MainWindow(QWidget):
         self.playlistCardInterface.playSig.connect(self.playCustomPlaylist)
         self.playlistCardInterface.nextToPlaySig.connect(
             self.multiSongsNextPlaySlot)
+        # todo:将标签导航界面的信号连接到槽函数
+        self.labelNavigationInterface.labelClicked.connect(
+            self.navigationLabelClickedSlot)
 
     def referenceWidgets(self):
         """ 引用小部件 """
@@ -501,6 +516,9 @@ class MainWindow(QWidget):
         self.titleBar.title.setVisible(self.navigationInterface.isExpanded)
         self.adjustWidgetGeometry()
         self.navigationInterface.navigationMenu.stackUnder(self.playBar)
+        # 如果现在显示的是字母导航界面就将其隐藏
+        if self.subStackWidget.currentWidget() is self.labelNavigationInterface:
+            self.subStackWidget.setCurrentIndex(0)
 
     def initPlaylist(self):
         """ 初始化播放列表 """
@@ -710,20 +728,23 @@ class MainWindow(QWidget):
             self.playingInterface.songInfoCardChute.move(
                 0, -self.playingInterface.playBar.height() + 68)
             self.playingInterface.playBar.show()
+        self.subStackWidget.setCurrentIndex(0)
         self.totalStackWidget.setCurrentIndex(1)
         self.titleBar.setWhiteIcon(True)
 
     def hidePlayingInterface(self):
-        """ 隐藏正在播放界面 """
+        """ 隐藏正在播放界面，返回我的音乐界面 """
         self.playBar.show()
         self.totalStackWidget.setCurrentIndex(0)
         # 根据当前界面设置标题栏按钮颜色
-        if self.subStackWidget.currentWidget() == self.albumInterface:
+        if self.subStackWidget.currentWidget() is self.albumInterface:
             self.titleBar.returnBt.setWhiteIcon(False)
         else:
             self.titleBar.setWhiteIcon(False)
         # 隐藏返回按钮
-        if len(self.titleBar.stackWidgetIndex_list) == 1 and self.subStackWidget.currentWidget() != self.albumInterface:
+        cond = self.subStackWidget.currentWidget(
+        ) not in [self.albumInterface, self.labelNavigationInterface]
+        if len(self.titleBar.stackWidgetIndex_list) == 1 and cond:
             self.titleBar.returnBt.hide()
         self.titleBar.title.setVisible(self.navigationInterface.isExpanded)
 
@@ -876,8 +897,10 @@ class MainWindow(QWidget):
         if self.totalStackWidget.currentWidget() == self.playingInterface:
             self.hidePlayingInterface()
         else:
-            # 当前界面不是albumInterface时弹出下标列表的最后一个下标
-            if self.titleBar.stackWidgetIndex_list and self.subStackWidget.currentWidget() != self.albumInterface:
+            # 当前界面不是albumInterface或者labelNavigationInterface时弹出下标列表的最后一个下标
+            cond = self.subStackWidget.currentWidget(
+            ) not in [self.albumInterface, self.labelNavigationInterface]
+            if self.titleBar.stackWidgetIndex_list and cond:
                 self.titleBar.stackWidgetIndex_list.pop()
             if self.titleBar.stackWidgetIndex_list:
                 stackWidgetName, index = self.titleBar.stackWidgetIndex_list[-1]
@@ -1053,3 +1076,15 @@ class MainWindow(QWidget):
             if playlist['playlistName'] == playlistName:
                 return index
         raise Exception(f'指定的播放列表"{playlistName}"不存在')
+
+    def showLabelNavigationInterface(self, label_list: list, layout: str):
+        """ 显示标签导航界面 """
+        self.labelNavigationInterface.setLabels(label_list, layout)
+        self.subStackWidget.setCurrentWidget(
+            self.labelNavigationInterface, duration=300)
+
+    def navigationLabelClickedSlot(self, label: str):
+        """ 导航标签点击槽函数 """
+        self.myMusicInterface.scrollToLabel(label)
+        self.subStackWidget.setCurrentWidget(
+            self.subStackWidget.previousWidget)

@@ -30,9 +30,10 @@ class MyMusicInterface(QWidget):
     playCheckedCardsSig = pyqtSignal(list)
     selectionModeStateChanged = pyqtSignal(bool)
     nextToPlayCheckedCardsSig = pyqtSignal(list)
-    addSongsToPlayingPlaylistSig = pyqtSignal(list)      # 将歌曲添加到正在播放列表
-    addSongsToNewCustomPlaylistSig = pyqtSignal(list)    # 将歌曲添加到新建播放列表中
-    addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 将歌曲添加到已存在的自定义播放列表中
+    addSongsToPlayingPlaylistSig = pyqtSignal(list)          # 将歌曲添加到正在播放列表
+    addSongsToNewCustomPlaylistSig = pyqtSignal(list)        # 将歌曲添加到新建播放列表中
+    addSongsToCustomPlaylistSig = pyqtSignal(str, list)      # 将歌曲添加到已存在的自定义播放列表中
+    showLabelNavigationInterfaceSig = pyqtSignal(list, str)  # 显示标签导航界面
 
     def __init__(self, targetFolderPath_list: list, parent=None):
         super().__init__(parent)
@@ -260,7 +261,8 @@ class MyMusicInterface(QWidget):
         """ 更新专辑卡界面 """
         self.__albumCoverGetter.updateAlbumCover(self.__targetFolderPath_list)
         self.__albumInfoGetter.updateAlbumInfo(songInfo_list)
-        self.albumCardViewer.updateAllAlbumCards(self.__albumInfoGetter.albumInfo_list)
+        self.albumCardViewer.updateAllAlbumCards(
+            self.__albumInfoGetter.albumInfo_list)
 
     def __showSortModeMenu(self):
         """ 显示排序方式菜单 """
@@ -355,6 +357,10 @@ class MyMusicInterface(QWidget):
         """ 添加到菜单上的动作被触发时标志位置位 """
         self.__actionTriggeredFlag = True
 
+    def scrollToLabel(self, label: str):
+        """ 滚动到label指定的位置 """
+        self.stackedWidget.currentWidget().scrollToLabel(label)
+
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
         # 将按钮点击信号连接到槽
@@ -396,6 +402,8 @@ class MyMusicInterface(QWidget):
             self.__selectionModeStateChangedSlot)
         self.albumCardViewer.checkedAlbumCardNumChanged.connect(
             self.__checkedCardNumChangedSlot)
+        self.albumCardViewer.showLabelNavigationInterfaceSig.connect(
+            self.showLabelNavigationInterfaceSig)
         self.albumCardViewer.albumNumChanged.connect(
             lambda: self.__changeTabSlot(self.stackedWidget.currentIndex()))
         # 歌曲界面选择栏各按钮信号连接到槽函数

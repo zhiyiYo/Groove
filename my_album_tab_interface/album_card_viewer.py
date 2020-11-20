@@ -6,7 +6,7 @@ from my_widget.my_groupBox import GroupBox
 from my_widget.my_scrollArea import ScrollArea
 from PyQt5.QtCore import (QParallelAnimationGroup, QPoint, QPropertyAnimation,
                           Qt, pyqtSignal)
-from PyQt5.QtWidgets import QApplication, QGroupBox, QLabel, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget, QScrollBar
 
 from .album_blur_background import AlbumBlurBackground
 from .album_card import AlbumCard
@@ -20,27 +20,31 @@ class AlbumCardViewer(QWidget):
     nextPlaySignal = pyqtSignal(list)
     albumNumChanged = pyqtSignal(int)
     saveAlbumInfoSig = pyqtSignal(dict, dict)
-    addAlbumToPlayingSignal = pyqtSignal(list)            # 将专辑添加到正在播放
+    addAlbumToPlayingSignal = pyqtSignal(list)              # 将专辑添加到正在播放
     switchToAlbumInterfaceSig = pyqtSignal(dict)
     selectionModeStateChanged = pyqtSignal(bool)
     checkedAlbumCardNumChanged = pyqtSignal(int)
-    addAlbumToNewCustomPlaylistSig = pyqtSignal(list)     # 将专辑添加到新建的播放列表
-    addAlbumToCustomPlaylistSig = pyqtSignal(str, list)   # 将专辑添加到已存在的自定义播放列表
+    addAlbumToNewCustomPlaylistSig = pyqtSignal(list)       # 将专辑添加到新建的播放列表
+    addAlbumToCustomPlaylistSig = pyqtSignal(str, list)     # 将专辑添加到已存在的自定义播放列表
+    showLabelNavigationInterfaceSig = pyqtSignal(list, str)  # 显示标签导航界面
 
     def __init__(self, albumInfo_list: list, parent=None):
         super().__init__(parent)
         self.albumInfo_list = albumInfo_list
         # 初始化网格的列数
         self.columnNum = 1
-        self.albumCardDict_list = []
         self.albumCard_list = []
+        self.albumCardDict_list = []
         self.checkedAlbumCard_list = []
         self.currentGroupDict_list = []
+        self.groupTitle_dict = {}      # 记录首字母或年份及其对应的第一个分组
         # 初始化标志位
         self.isInSelectionMode = False
         self.isAllAlbumCardsChecked = False
         # 设置当前排序方式
         self.sortMode = '添加时间'
+        # 分组标签列表
+        self.groupTitle_list = []
         # 实例化滚动部件的竖直布局
         self.scrollWidgetVBoxLayout = QVBoxLayout()
         # 实例化滚动区域和滚动区域的窗口
@@ -132,6 +136,7 @@ class AlbumCardViewer(QWidget):
         # 按照添加时间分组
         self.sortByAddTime()
         self.scrollWidgetVBoxLayout.setSpacing(30)
+        # 顶部留出工具栏的位置
         self.scrollWidgetVBoxLayout.setContentsMargins(10, 245, 0, 120)
         self.scrollWidget.setLayout(self.scrollWidgetVBoxLayout)
         self.scrollArea.setWidget(self.scrollWidget)
@@ -212,6 +217,8 @@ class AlbumCardViewer(QWidget):
         gridLayout.setVerticalSpacing(20)
         gridLayout.setHorizontalSpacing(10)
         container.setLayout(gridLayout)
+        # 清空分组标签列表
+        self.groupTitle_list.clear()
         # 从竖直布局中移除小部件
         self.__removeContainerFromVBoxLayout()
         # 构造一个包含布局和小部件列表字典的列表
@@ -231,6 +238,7 @@ class AlbumCardViewer(QWidget):
         self.sortMode = 'A到Z'
         # 将专辑卡从旧布局中移除
         self.__removeContainerFromVBoxLayout()
+        self.groupTitle_list.clear()
         # 创建分组
         firstLetter_list = []
         self.firsetLetterGroupDict_list = []
@@ -252,6 +260,7 @@ class AlbumCardViewer(QWidget):
                 self.firsetLetterGroupDict_list.append(
                     {'container': group, 'firstLetter': firstLetter,
                      'gridLayout': gridLayout, 'albumCard_list': []})
+                self.groupTitle_list.append(group.title())
             # 将专辑卡添加到分组中
             index = firstLetter_list.index(firstLetter)
             self.firsetLetterGroupDict_list[index]['albumCard_list'].append(
@@ -269,10 +278,14 @@ class AlbumCardViewer(QWidget):
         self.__addAlbumCardToGridLayout()
         self.__addContainterToVBoxLayout()
         self.__adjustScrollWidgetSize()
+        self.__getFirstLetterFirstGroupBox()
+        self.__connectGroupBoxSigToSlot('letterGridLayout')
 
     def sortByYear(self):
         """ 按照专辑的年份进行分组排序 """
         self.sortMode = '发行年份'
+        self.groupTitle_list.clear()
+        self.groupTitle_dict.clear()
         # 将专辑卡从旧布局中移除
         self.__removeContainerFromVBoxLayout()
         # 创建分组
@@ -292,13 +305,21 @@ class AlbumCardViewer(QWidget):
                 gridLayout.setVerticalSpacing(20)
                 gridLayout.setHorizontalSpacing(10)
                 self.yearGroupDict_list.append(
-                    {'container': group, 'year': year,
-                     'gridLayout': gridLayout, 'albumCard_list': []})
+                    {
+                        'year': year,
+                        'container': group,
+                        'albumCard_list': [],
+                        'gridLayout': gridLayout
+                    }
+                )
+                self.groupTitle_list.append(group.title())
+                self.groupTitle_dict[year] = group
             # 将专辑卡添加到分组中
             index = year_list.index(year)
             self.yearGroupDict_list[index]['albumCard_list'].append(
                 albumCard_dict['albumCard'])
         # 按照年份从进到远排序
+        self.groupTitle_list.sort(reverse=True)
         self.yearGroupDict_list.sort(
             key=lambda item: item['year'], reverse=True)
         # 检测是否含有未知分组,有的话将其移到最后一个
@@ -310,11 +331,13 @@ class AlbumCardViewer(QWidget):
         self.__addAlbumCardToGridLayout()
         self.__addContainterToVBoxLayout()
         self.__adjustScrollWidgetSize()
+        self.__connectGroupBoxSigToSlot('listLayout')
 
     def sortBySonger(self):
         """ 按照专辑的专辑进行分组排序 """
         self.sortMode = '歌手'
         # 将专辑卡从旧布局中移除
+        self.groupTitle_list.clear()
         self.__removeContainerFromVBoxLayout()
         # 创建列表
         songer_list = []
@@ -330,19 +353,28 @@ class AlbumCardViewer(QWidget):
                 gridLayout.setVerticalSpacing(20)
                 gridLayout.setHorizontalSpacing(10)
                 self.songerGroupDict_list.append(
-                    {'container': group, 'songer': songer,
-                     'gridLayout': gridLayout, 'albumCard_list': []})
+                    {'songer': songer,
+                     'container': group,
+                     'albumCard_list': [],
+                     'gridLayout': gridLayout
+                     }
+                )
+                # 点击分组的标题时显示导航界面
+                self.groupTitle_list.append(group.title())
             # 将专辑卡添加到分组中
             index = songer_list.index(songer)
             self.songerGroupDict_list[index]['albumCard_list'].append(
                 albumCard_dict['albumCard'])
         # 排序列表
-        self.songerGroupDict_list.sort(key=lambda item: item['songer'].lower())
+        self.songerGroupDict_list.sort(
+            key=lambda item: pinyin.get_initial(item['songer'])[0].lower())
         # 将专辑加到分组的网格布局中
         self.currentGroupDict_list = self.songerGroupDict_list
         self.__addAlbumCardToGridLayout()
         self.__addContainterToVBoxLayout()
         self.__adjustScrollWidgetSize()
+        self.__getFirstLetterFirstGroupBox()
+        self.__connectGroupBoxSigToSlot('letterGridLayout')
 
     def __setQss(self):
         """ 设置层叠样式 """
@@ -533,3 +565,27 @@ class AlbumCardViewer(QWidget):
         for albumInfo in albumInfo_list:
             self.albumInfo_list.remove(albumInfo)
         self.updateAllAlbumCards(self.albumInfo_list)
+
+    def __connectGroupBoxSigToSlot(self, layout):
+        """ 分组框信号连接到槽函数 """
+        for group_dict in self.currentGroupDict_list:
+            group_dict['container'].titleClicked.connect(
+                lambda: self.showLabelNavigationInterfaceSig.emit(self.groupTitle_list, layout))
+
+    def scrollToLabel(self, label: str):
+        """ 滚动到label指定的位置 """
+        group = self.groupTitle_dict[label]
+        self.scrollArea.verticalScrollBar().setValue(group.y() - 245)
+
+    def __getFirstLetterFirstGroupBox(self):
+        """ 获取首字母对应的第一个分组框 """
+        letter_list = []
+        self.groupTitle_dict.clear()
+        for group_dict in self.currentGroupDict_list:
+            group = group_dict['container']
+            letter = pinyin.get_initial(group.title())[0].upper()
+            letter = '...' if not 65 <= ord(letter) <= 90 else letter
+            # 将字母对应的第一个分组框添加到字典中
+            if letter not in letter_list:
+                letter_list.append(letter)
+                self.groupTitle_dict[letter] = group

@@ -1,8 +1,8 @@
 # coding:utf-8
 
 from PyQt5.QtCore import (
-    QEasingCurve, QParallelAnimationGroup, QPropertyAnimation, QRect, QMargins,
-    QSequentialAnimationGroup, Qt, pyqtSignal,QAbstractAnimation)
+    QEasingCurve, QParallelAnimationGroup, QPropertyAnimation, QRect, QMargins, QPoint,
+    QSequentialAnimationGroup, Qt, pyqtSignal, QAbstractAnimation)
 from PyQt5.QtWidgets import QGraphicsOpacityEffect, QStackedWidget, QWidget, QApplication
 
 
@@ -17,10 +17,13 @@ class PopUpAniStackedWidget(QStackedWidget):
         self.__widgetAni_list = []
         self.__nextIndex = None
         self.__sequentAniGroup = None
-        self.__currentAniGroup=None
+        self.__currentAniGroup = None
+        self.__previousWidget = None
+        self.__previousIndex = 0
 
     def addWidget(self, widget, deltaX: int = 0, deltaY: int = 22, isNeedOpacityAni=True):
-        """ 添加堆叠窗口\n
+        """ 添加堆叠窗口
+
         Parameters
         -----------
         widget : 窗口\n
@@ -30,7 +33,7 @@ class PopUpAniStackedWidget(QStackedWidget):
         """
         super().addWidget(widget)
         # 创建动画
-        popUpAni = QPropertyAnimation(widget, b'geometry')
+        popUpAni = QPropertyAnimation(widget, b'pos')
         aniGroup = QParallelAnimationGroup(self)
         aniGroup.addAnimation(popUpAni)
         self.__widgetAni_list.append({'widget': widget,
@@ -40,8 +43,10 @@ class PopUpAniStackedWidget(QStackedWidget):
                                       'popUpAni': popUpAni,
                                       'isNeedOpacityAni': isNeedOpacityAni})
 
-    def setCurrentIndex(self, index: int, isNeedPopOut: bool = False, isShowNextWidgetDirectly: bool = True, duration: int = 250, easingCurve=QEasingCurve.OutQuad):
-        """ 切换当前窗口\n
+    def setCurrentIndex(self, index: int, isNeedPopOut: bool = False, isShowNextWidgetDirectly: bool = True,
+                        duration: int = 250, easingCurve=QEasingCurve.OutQuad):
+        """ 切换当前窗口
+
         Parameters
         ----------
         index : 目标窗口下标\n
@@ -58,6 +63,8 @@ class PopUpAniStackedWidget(QStackedWidget):
             return
         # 记录需要切换到的窗口下标
         self.__nextIndex = index
+        self.__previousIndex = self.currentIndex()
+        self.__previousWidget = self.currentWidget()
         # 记录弹入弹出方式
         self.__isNeedPopOut = isNeedPopOut
         # 引用部件和动画
@@ -70,7 +77,7 @@ class PopUpAniStackedWidget(QStackedWidget):
         self.__isNextWidgetNeedOpAni = nextWidgetAni_dict['isNeedOpacityAni']
         self.__isCurrentWidgetNeedOpAni = currentWidgetAni_dict['isNeedOpacityAni']
         self.__currentAniGroup = currentWidgetAni_dict[
-            'aniGroup'] if isNeedPopOut else nextWidgetAni_dict['aniGroup']  #type:QParallelAnimationGroup
+            'aniGroup'] if isNeedPopOut else nextWidgetAni_dict['aniGroup']  # type:QParallelAnimationGroup
         # 设置透明度动画
         if self.__isNextWidgetNeedOpAni:
             nextOpacityEffect = QGraphicsOpacityEffect(self)
@@ -90,20 +97,19 @@ class PopUpAniStackedWidget(QStackedWidget):
         if isNeedPopOut:
             deltaX = currentWidgetAni_dict['deltaX']
             deltaY = currentWidgetAni_dict['deltaY']
-            rect = self.__currentWidget.rect() - QMargins(deltaX, deltaY, deltaX, 0)
+            pos = self.__currentWidget.pos() + QPoint(deltaX, deltaY)
             # 当前窗口向内淡出
-            self.__setAnimation(currentPopUpAni, self.__currentWidget.rect(
-            ), rect, duration, easingCurve)
+            self.__setAnimation(
+                currentPopUpAni, self.__currentWidget.pos(), pos, duration, easingCurve)
             # 显示下一窗口
             self.__nextWidget.setVisible(isShowNextWidgetDirectly)
         else:
             # 设置下一个窗口的动画初始值
             deltaX = nextWidgetAni_dict['deltaX']
             deltaY = nextWidgetAni_dict['deltaY']
-            rect = self.__nextWidget.rect() - QMargins(deltaX, deltaY, deltaX, 0)
-            self.__nextWidget.setGeometry(rect)
-            self.__setAnimation(nextPopUpAni, rect,
-                                self.rect(), duration, easingCurve)
+            pos = self.__nextWidget.pos() + QPoint(deltaX, deltaY)
+            self.__setAnimation(nextPopUpAni, pos,
+                                QPoint(self.__nextWidget.x(), self.y()), duration, easingCurve)
             # 直接切换当前窗口
             super().setCurrentIndex(index)
         # 开始动画
@@ -111,8 +117,10 @@ class PopUpAniStackedWidget(QStackedWidget):
         self.__currentAniGroup.start()
         self.aniStart.emit()
 
-    def setCurrentWidget(self, widget, isNeedPopOut: bool = False, isShowNextWidgetDirectly: bool = True, duration: int = 250, easingCurve=QEasingCurve.OutQuad):
-        """ 切换当前窗口\n
+    def setCurrentWidget(self, widget, isNeedPopOut: bool = False, isShowNextWidgetDirectly: bool = True,
+                         duration: int = 250, easingCurve=QEasingCurve.OutQuad):
+        """ 切换当前窗口
+
         Parameters
         ----------
         index : 目标窗口下标\n
@@ -144,7 +152,10 @@ class PopUpAniStackedWidget(QStackedWidget):
         super().setCurrentIndex(self.__nextIndex)
         self.aniFinished.emit()
 
-    def resizeEvent(self, e):
-        """ 调整子窗口的尺寸 """
-        for i in range(self.count()):
-            self.widget(i).resize(self.size())
+    @property
+    def previousWidget(self):
+        return self.__previousWidget
+
+    @property
+    def previousIndex(self):
+        return self.__previousIndex

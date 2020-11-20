@@ -180,7 +180,8 @@ class SubSelectSongFolderPanel(QWidget):
         with open('config\\config.json', 'w', encoding='utf-8') as f:
             json.dump(self.__config, f)
         QApplication.processEvents()
-        self.completeButton.setEnabled(False)
+        # 保存设置后禁用窗口
+        self.setEnabled(False)
         self.updateSelectedFoldersSig.emit(self.__config['selected-folders'])
         self.parent().deleteLater()
 
