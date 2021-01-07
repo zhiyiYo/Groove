@@ -17,7 +17,7 @@ fuzzywuzzy==0.18.0
 idna==2.10
 isort==4.3.21
 lazy-object-proxy==1.4.3
-lxml==4.5.2
+lxml==4.6.2
 mccabe==0.6.1
 mutagen==1.44.0
 numpy==1.18.1
