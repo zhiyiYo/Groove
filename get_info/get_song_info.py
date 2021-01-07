@@ -135,7 +135,8 @@ class GetSongInfo():
 
     def __getAlbumTconYear(self, suffix: str, id_card: TinyTag, songPath: str):
         """ 根据文件的后缀名来获取专辑信息及时长 """
-        album = id_card.album if id_card.album else '未知专辑'
+        # 有可能出现专辑为'   '的情况
+        album = id_card.album if id_card.album and id_card.album.strip() else '未知专辑'
         tracknumber = str(id_card.track) if id_card.track else '0'
         tcon = id_card.genre if id_card.genre else '未知流派'
         duration = f'{int(id_card.duration//60)}:{int(id_card.duration%60):02}'

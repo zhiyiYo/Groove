@@ -27,7 +27,8 @@ class BasicSongListWidget(ListWidget):
     addSongsToNewCustomPlaylistSig = pyqtSignal(list)    # 将歌曲添加到新的自定义播放列表
     addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 将歌曲添加到已存在的自定义播放列表
 
-    def __init__(self, songInfo_list: list, songCardType: SongCardType, parent=None, viewportMargins=QMargins(0, 0, 0, 0), paddingBottomHeight: int = 116):
+    def __init__(self, songInfo_list: list, songCardType: SongCardType, parent=None,
+                 viewportMargins=QMargins(30, 0, 30, 0), paddingBottomHeight: int = 116):
         """ 创建歌曲卡列表控件对象
 
         Parameters
@@ -161,12 +162,8 @@ class BasicSongListWidget(ListWidget):
             # 歌曲卡默认为当前右键点击的歌曲卡
             songCard = self.songCard_list[self.currentRow()]
         # 获取歌曲卡下标和歌曲信息
-        index = self.songCard_list.index(songCard)
-        newSongInfo = songCard.songInfo
-        oldSongInfo = deepcopy(newSongInfo)
-        songInfoEditPanel = SongInfoEditPanel(newSongInfo, self.window())
-        songInfoEditPanel.saveInfoSig.connect(
-            lambda: self.__saveModifidiedSongInfo(oldSongInfo, newSongInfo))
+        songInfoEditPanel = SongInfoEditPanel(songCard.songInfo, self.window())
+        songInfoEditPanel.saveInfoSig.connect(self.__saveModifidiedSongInfo)
         songInfoEditPanel.exec_()
 
     def __saveModifidiedSongInfo(self, oldSongInfo, newSongInfo):
@@ -361,3 +358,7 @@ class BasicSongListWidget(ListWidget):
         """ 将一个歌曲卡的信号连接到槽函数 """
         # 必须被子类重写
         raise NotImplementedError
+
+    def songCardNum(self) -> int:
+        """ 返回歌曲卡数量 """
+        return len(self.songCard_list)

@@ -4,7 +4,7 @@ from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
                           QParallelAnimationGroup, QPropertyAnimation, QRect,
                           Qt, pyqtSignal, QPoint)
 from PyQt5.QtGui import QFont, QFontMetrics, QMouseEvent
-from PyQt5.QtWidgets import QApplication, QLabel, QWidget
+from PyQt5.QtWidgets import QApplication, QWidget
 
 from .song_card_sub_unit import TrackNumSongNameCard
 from .song_card_sub_unit import SongNameCard as SongTabSongNameCard

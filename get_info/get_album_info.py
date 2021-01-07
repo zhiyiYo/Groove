@@ -2,6 +2,7 @@
 
 import json
 import os
+from pprint import pprint
 
 
 class GetAlbumInfo:
