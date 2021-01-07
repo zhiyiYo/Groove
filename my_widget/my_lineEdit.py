@@ -66,27 +66,6 @@ class LineEdit(QLineEdit):
         self.clickedTime = 0
         self.clearButton.hide()
 
-    def enterEvent(self, e):
-        """ 鼠标进入时显示提示条 """
-        if self.customToolTip:
-            self.customToolTip.setText(self.customToolTipText)
-            self.customToolTip.move(e.globalX() - int(self.customToolTip.width() / 2),
-                                    e.globalY() - 140 - self.customToolTip.isWordWrap * 30)
-            self.customToolTip.show()
-
-    def leaveEvent(self, e):
-        """ 判断鼠标是否离开标签 """
-        if self.parent() and self.customToolTip:
-            notLeave = isNotLeave(self)
-            if notLeave:
-                return
-            self.customToolTip.hide()
-
-    def setCustomToolTip(self, toolTip, text: str):
-        """ 设置提示条和提示条内容 """
-        self.customToolTip = toolTip
-        self.customToolTipText = text
-
     def textChangedEvent(self):
         """ 如果输入框中文本改变且此时清空按钮不可见，就显示清空按钮 """
         if self.text() and not self.clearButton.isVisible() and self.isNeedClearBt:

@@ -1,27 +1,25 @@
 # coding:utf-8
 
 import json
+from copy import deepcopy
 
 from mutagen import File, MutagenError
-from PyQt5.QtCore import QEvent, QRegExp, Qt, pyqtSignal
-from PyQt5.QtGui import (QColor, QContextMenuEvent, QFont, QPainter, QPen,
-                         QPixmap, QRegExpValidator)
-from PyQt5.QtWidgets import (QApplication, QDialog, QGraphicsDropShadowEffect,
-                             QLabel, QLineEdit, QWidget)
-
-from my_functions.auto_wrap import autoWrap
 from my_functions.adjust_album_name import adjustAlbumName
+from my_functions.auto_wrap import autoWrap
 from my_functions.modify_songInfo import modifySongInfo
 from my_widget.my_label import ErrorIcon
 from my_widget.my_lineEdit import LineEdit
 from my_widget.perspective_button import PerspectivePushButton
+from PyQt5.QtCore import QRegExp, Qt, pyqtSignal
+from PyQt5.QtGui import QColor, QPainter, QPen, QRegExpValidator
+from PyQt5.QtWidgets import (QApplication, QGraphicsDropShadowEffect, QLabel,
+                             QWidget)
 
 from .sub_panel_frame import SubPanelFrame
 
 
 class SongInfoEditPanel(SubPanelFrame):
     """ 歌曲信息编辑面板 """
-    saveInfoSig = pyqtSignal()
 
     def __init__(self, songInfo: dict, parent=None):
         super().__init__(parent)
@@ -36,8 +34,7 @@ class SongInfoEditPanel(SubPanelFrame):
         # deleteLater才能真正释放内存
         self.subSongInfoEditPanel.cancelButton.clicked.connect(
             self.deleteLater)
-        self.subSongInfoEditPanel.saveInfoSig.connect(
-            self.saveInfoSig)
+        self.saveInfoSig = self.subSongInfoEditPanel.saveInfoSig
         self.showMask()
 
     def __initLayout(self):
@@ -49,12 +46,13 @@ class SongInfoEditPanel(SubPanelFrame):
 
 class SubSongInfoEditPanel(QWidget):
     """ 歌曲信息编辑面板的子窗口 """
-    saveInfoSig = pyqtSignal()
+    saveInfoSig = pyqtSignal(dict, dict)
 
     def __init__(self, songInfo: dict, parent):
         super().__init__(parent)
 
-        self.songInfo = songInfo
+        self.songInfo = deepcopy(songInfo)
+        self.oldSongInfo = deepcopy(songInfo)
         # 实例化标签卡
         self.id_card = File(songInfo['songPath'])
         # 实例化小部件
@@ -239,7 +237,7 @@ class SubSongInfoEditPanel(QWidget):
             self.bottomErrorLabel.show()
             self.bottomErrorIcon.show()
         else:
-            self.saveInfoSig.emit()
+            self.saveInfoSig.emit(self.oldSongInfo, self.songInfo)
             self.parent().deleteLater()
 
     def checkTrackEditLine(self):

@@ -3,7 +3,7 @@ from time import time
 
 from PyQt5.QtCore import QPoint, Qt, pyqtSignal
 from PyQt5.QtGui import QPalette
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget, QScroller
 
 from get_info.get_album_cover import GetAlbumCover
 from get_info.get_album_info import GetAlbumInfo

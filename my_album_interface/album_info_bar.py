@@ -49,7 +49,7 @@ class AlbumInfoBar(QWidget):
             r'resource\images\album_interface\更多操作.png', '', self)
         self.deleteButton = BasicButton(
             r'resource\images\album_interface\删除.png', '删除', self)
-        self.albumCover.setFixedSize(295, 295)
+        self.albumCover.resize(295, 295)
         self.albumCover.setPixmap(QPixmap(self.albumCoverPath).scaled(
             295, 295, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
 
@@ -110,12 +110,12 @@ class AlbumInfoBar(QWidget):
                 newAlbumName[index + 1:], Qt.ElideRight, maxWidth)
             newAlbumName = newAlbumName[: index + 1] + secondLineText
             self.albumNameLabel.setText(newAlbumName)
-            self.albumNameLabel.setFixedSize(maxWidth, 110)
+            self.albumNameLabel.resize(maxWidth, 110)
             self.songerNameLabel.move(self.albumNameLabel.x(), 155)
             self.yearTconLabel.move(self.albumNameLabel.x(), 177)
         else:
             self.albumNameLabel.setText(self.albumName)
-            self.albumNameLabel.setFixedSize(totalWidth, 54)
+            self.albumNameLabel.resize(totalWidth, 54)
             self.songerNameLabel.move(self.albumNameLabel.x(), 93)
             self.yearTconLabel.move(self.albumNameLabel.x(), 115)
 
