@@ -9,7 +9,7 @@ from random import shuffle
 from time import time
 from pprint import pp
 
-from PyQt5.QtCore import QEasingCurve, Qt, pyqtSignal, QDateTime, QEvent
+from PyQt5.QtCore import QEasingCurve, Qt, pyqtSignal, QDateTime, QEvent, QThread
 from PyQt5.QtGui import QCloseEvent, QIcon
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist
 from PyQt5.QtWidgets import QAction, QApplication, QWidget
@@ -17,22 +17,22 @@ from system_hotkey import SystemHotkey
 from win32 import win32api, win32gui
 from win32.lib import win32con
 
-from effects import WindowEffect
-from media_player import MediaPlaylist, PlaylistType
-from my_album_interface import AlbumInterface
-from my_playlist_panel_interface .create_playlist_panel import CreatePlaylistPanel
-from my_music_interface import MyMusicInterface
 from my_play_bar import PlayBar
-from my_playing_interface import PlayingInterface
-from my_playlist_card_interface import PlaylistCardInterface
-from my_setting_interface import SettingInterface
-from my_sub_play_window import SubPlayWindow
-from my_thumbnail_tool_bar import ThumbnailToolBar
+from effects import WindowEffect
 from my_title_bar import TitleBar
+from my_sub_play_window import SubPlayWindow
+from my_album_interface import AlbumInterface
+from my_music_interface import MyMusicInterface
+from my_playing_interface import PlayingInterface
+from my_setting_interface import SettingInterface
+from my_thumbnail_tool_bar import ThumbnailToolBar
+from media_player import MediaPlaylist, PlaylistType
+from my_navigation_interface import NavigationInterface
+from my_playlist_card_interface import PlaylistCardInterface
+from my_widget.pop_up_ani_stacked_widget import PopUpAniStackedWidget
 from my_widget.label_navigation_interface import LabelNavigationInterface
 from my_widget.opacity_ani_stacked_widget import OpacityAniStackedWidget
-from my_widget.pop_up_ani_stacked_widget import PopUpAniStackedWidget
-from my_navigation_interface import NavigationInterface
+from my_playlist_panel_interface .create_playlist_panel import CreatePlaylistPanel
 
 from .c_structures import MINMAXINFO
 from .monitor_functions import isMaximized
@@ -45,8 +45,6 @@ class MainWindow(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        # 实例化窗口特效
-        self.windowEffect = WindowEffect()
         # 实例化小部件
         self.createWidgets()
         # 初始化标志位
@@ -184,9 +182,9 @@ class MainWindow(QWidget):
         """ 设置窗口特效 """
         self.hWnd = HWND(int(self.winId()))
         # 开启窗口动画
-        self.windowEffect.setWindowAnimation(int(self.winId()))
+        WindowEffect.setWindowAnimation(self.winId())
         # 开启亚克力效果和阴影效果
-        self.windowEffect.setAcrylicEffect(self.hWnd, 'F2F2F299', True)
+        WindowEffect.setAcrylicEffect(self.winId(), 'F2F2F299', True)
 
     def adjustWidgetGeometry(self):
         """ 调整小部件的geometry """
@@ -295,7 +293,7 @@ class MainWindow(QWidget):
                 return True, win32con.HTRIGHT
         elif msg.message == win32con.WM_NCCALCSIZE:
             if isMaximized(msg.hWnd):
-                self.windowEffect.adjustMaximizedClientRect(
+                WindowEffect.adjustMaximizedClientRect(
                     HWND(msg.hWnd), msg.lParam)
             return True, 0
         if msg.message == win32con.WM_GETMINMAXINFO:
@@ -966,6 +964,9 @@ class MainWindow(QWidget):
         # 更新专辑标签界面
         with open('Data\\songInfo.json', encoding='utf-8') as f:
             songInfo_list = json.load(f)
+        # 如果在专辑界面更新了专辑信息需要刷新对应的专辑卡的封面
+        if self.sender() is self.albumInterface:
+            self.currentAlbumCard.updateAlbumCover(newAlbumInfo['cover_path'])
         self.myMusicInterface.updateAlbumCardViewer(songInfo_list)
 
     def smallestModeStateChanedSlot(self, state: bool):
@@ -974,7 +975,7 @@ class MainWindow(QWidget):
         self.titleBar.returnBt.setHidden(state)
         self.titleBar.minBt.setHidden(state)
         self.titleBar.maxBt.setHidden(state)
-        self.windowEffect.setWindowStayOnTop(self.winId(), state)
+        WindowEffect.setWindowStayOnTop(self.winId(), state)
 
     def showSmallestModeInterface(self):
         """ 切换到最小化播放模式 """

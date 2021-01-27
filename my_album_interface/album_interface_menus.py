@@ -16,7 +16,6 @@ class MoreActionsMenu(QMenu):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.windowEffect = WindowEffect()
         # 添加动画
         self.animation = QPropertyAnimation(self, b'geometry')
         self.__initWidget()
@@ -33,8 +32,8 @@ class MoreActionsMenu(QMenu):
 
     def event(self, e: QEvent):
         if e.type() == QEvent.WinIdChange:
-            self.hWnd = HWND(int(self.winId()))
-            self.windowEffect.addShadowEffect(self.hWnd)
+            # self.hWnd = HWND(int(self.winId()))
+            WindowEffect.addShadowEffect(self.winId())
         return QMenu.event(self, e)
 
     def __setQss(self):
@@ -75,7 +74,6 @@ class AddToMenu(QMenu):
 
     def __init__(self, parent=None):
         super().__init__(parent=None)
-        self.windowEffect = WindowEffect()
         # 添加动画
         self.animation = QPropertyAnimation(self, b'geometry')
         # 创建动作
@@ -94,8 +92,8 @@ class AddToMenu(QMenu):
 
     def event(self, e: QEvent):
         if e.type() == QEvent.WinIdChange:
-            self.hWnd = HWND(int(self.winId()))
-            self.windowEffect.addShadowEffect(self.hWnd)
+            # self.hWnd = HWND(int(self.winId()))
+            WindowEffect.addShadowEffect(self.winId())
         return QMenu.event(self, e)
 
     def createActions(self):

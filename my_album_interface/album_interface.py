@@ -2,16 +2,17 @@
 
 from copy import deepcopy
 
-from PyQt5.QtCore import Qt, pyqtSignal, QPoint
-from PyQt5.QtGui import QPalette
+from PyQt5.QtCore import Qt, pyqtSignal, QPoint, QThread
 from PyQt5.QtWidgets import QApplication, QWidget
+from PyQt5.QtGui import QPalette
 
+from my_widget.my_menu import AddToMenu
+from my_object.save_info_object import SaveInfoObject
 from my_dialog_box.album_info_edit_panel import AlbumInfoEditPanel
 
+from .album_info_bar import AlbumInfoBar
 from .selection_mode_bar import SelectionModeBar
 from .song_card_list_widget import SongCardListWidget
-from .album_info_bar import AlbumInfoBar
-from my_widget.my_menu import AddToMenu
 
 
 class AlbumInterface(QWidget):
@@ -38,6 +39,10 @@ class AlbumInterface(QWidget):
         self.songListWidget = SongCardListWidget(self.songInfo_list, self)
         self.albumInfoBar = AlbumInfoBar(albumInfo, self)
         self.selectionModeBar = SelectionModeBar(self)
+        # 创建线程
+        self.saveAlbumInfoObject = SaveInfoObject()
+        self.saveInfoThread = QThread(self.parent())
+        self.saveAlbumInfoObject.moveToThread(self.saveInfoThread)
         # 初始化
         self.__initWidget()
 
@@ -81,15 +86,18 @@ class AlbumInterface(QWidget):
         self.songListWidget.updateOneSongCard(oldSongInfo, newSongInfo, False)
         self.albumInfo['songInfo_list'] = self.songListWidget.songInfo_list
 
-    def showAlbumInfoEditPanel(self):
+    def __showAlbumInfoEditPanel(self):
         """ 显示专辑信息编辑面板 """
         oldAlbumInfo = deepcopy(self.albumInfo)
         infoEditPanel = AlbumInfoEditPanel(
             deepcopy(self.albumInfo), self.window())
         infoEditPanel.saveInfoSig.connect(
             lambda newAlbumInfo: self.__saveAlbumInfoSlot(oldAlbumInfo, newAlbumInfo))
+        self.saveAlbumInfoObject.saveCompleteSig.connect(infoEditPanel.saveCompleteSlot)
+        self.saveAlbumInfoObject.saveErrorSig.connect(infoEditPanel.saveErrorSlot)
         infoEditPanel.setStyle(QApplication.style())
         infoEditPanel.exec_()
+        self.saveAlbumInfoObject.disconnect()
 
     def __selectionModeStateChangedSlot(self, isOpenSelectionMode: bool):
         """ 选择状态改变对应的槽函数 """
@@ -104,6 +112,7 @@ class AlbumInterface(QWidget):
 
     def __saveAlbumInfoSlot(self, oldAlbumInfo: dict, newAlbumInfo: dict):
         """ 保存专辑信息 """
+        self.saveAlbumInfoObject.saveAlbumInfoSlot(newAlbumInfo['songInfo_list'])
         newAlbumInfo_copy = deepcopy(newAlbumInfo)
         self.updateWindow(newAlbumInfo)
         # 如果只更改了专辑封面需要直接刷新信息栏
@@ -192,12 +201,12 @@ class AlbumInterface(QWidget):
         self.albumInfoBar.addToPlayingPlaylistSig.connect(
             lambda: self.addSongsToPlayingPlaylistSig.emit(self.songInfo_list))
         self.albumInfoBar.editInfoBt.clicked.connect(
-            self.showAlbumInfoEditPanel)
+            self.__showAlbumInfoEditPanel)
         self.albumInfoBar.addToNewCustomPlaylistSig.connect(
             lambda: self.addSongsToNewCustomPlaylistSig.emit(self.songInfo_list))
         self.albumInfoBar.addToCustomPlaylistSig.connect(
             lambda name: self.addSongsToCustomPlaylistSig.emit(name, self.songInfo_list))
-        self.albumInfoBar.editInfoSig.connect(self.showAlbumInfoEditPanel)
+        self.albumInfoBar.editInfoSig.connect(self.__showAlbumInfoEditPanel)
         # 歌曲列表信号
         self.songListWidget.playSignal.connect(self.songCardPlaySig)
         self.songListWidget.playOneSongSig.connect(self.playOneSongCardSig)

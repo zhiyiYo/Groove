@@ -28,14 +28,15 @@ class AlbumCard(PerspectiveWidget):
     playSignal = pyqtSignal(list)
     deleteCardSig = pyqtSignal(dict)
     nextPlaySignal = pyqtSignal(list)
-    addToPlayingSignal = pyqtSignal(list)                 # 将专辑添加到正在播放
+    addToPlayingSignal = pyqtSignal(list)                       # 将专辑添加到正在播放
     hideBlurAlbumBackgroundSig = pyqtSignal()
     saveAlbumInfoSig = pyqtSignal(dict, dict)
     switchToAlbumInterfaceSig = pyqtSignal(dict)
     checkedStateChanged = pyqtSignal(QWidget, bool)
-    addAlbumToNewCustomPlaylistSig = pyqtSignal(list)     # 将专辑添加到新建的播放列表
-    addAlbumToCustomPlaylistSig = pyqtSignal(str, list)   # 将专辑添加到已存在的自定义播放列表
-    showBlurAlbumBackgroundSig = pyqtSignal(QPoint, str)  # 发送专辑卡全局坐标
+    addAlbumToNewCustomPlaylistSig = pyqtSignal(list)           # 将专辑添加到新建的播放列表
+    addAlbumToCustomPlaylistSig = pyqtSignal(str, list)         # 将专辑添加到已存在的自定义播放列表
+    showBlurAlbumBackgroundSig = pyqtSignal(QPoint, str)        # 发送专辑卡全局坐标
+    showAlbumInfoEditPanelSig = pyqtSignal(AlbumInfoEditPanel)  # 发送显示专辑信息面板信号
 
     def __init__(self, albumInfo: dict, parent):
         super().__init__(parent, True)
@@ -194,16 +195,27 @@ class AlbumCard(PerspectiveWidget):
         infoEditPanel = AlbumInfoEditPanel(self.albumInfo, self.window())
         infoEditPanel.saveInfoSig.connect(
             lambda newAlbumInfo: self.__saveAlbumInfoSlot(oldAlbumInfo, newAlbumInfo))
+        self.showAlbumInfoEditPanelSig.emit(infoEditPanel)
         infoEditPanel.setStyle(QApplication.style())
         infoEditPanel.exec_()
 
     def __saveAlbumInfoSlot(self, oldAlbumInfo: dict, newAlbumInfo: dict):
         """ 保存专辑信息并更新界面 """
         newAlbumInfo_copy = deepcopy(newAlbumInfo)
-        self.albumInfo['songInfo_list'].sort(
-            key=lambda songInfo: int(songInfo['tracknumber']))
         # self.updateWindow(newAlbumInfo)
         self.saveAlbumInfoSig.emit(oldAlbumInfo, newAlbumInfo_copy)
+        self.albumInfo['songInfo_list'].sort(
+            key=lambda songInfo: int(songInfo['tracknumber']))
+        # 更新专辑封面
+        self.updateAlbumCover(newAlbumInfo['cover_path'])
+
+    def updateAlbumCover(self, coverPath: str):
+        """ 更新专辑封面 """
+        self.picPath = coverPath
+        self.albumPic.setPixmap(QPixmap(self.picPath).scaled(
+            200, 200, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
+        self.playButton.setBlurPic(coverPath, 30)
+        self.addToButton.setBlurPic(coverPath, 30)
 
     def __checkedStateChangedSlot(self):
         """ 复选框选中状态改变对应的槽函数 """
@@ -250,4 +262,3 @@ class AlbumCard(PerspectiveWidget):
         addToMenu.addSongsToPlaylistSig.connect(
             lambda name: self.addAlbumToCustomPlaylistSig.emit(name, self.songInfo_list))
         addToMenu.exec(QPoint(x, y))
-        

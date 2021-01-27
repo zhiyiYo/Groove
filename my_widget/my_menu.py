@@ -2,8 +2,6 @@
 
 import os
 
-from ctypes.wintypes import HWND
-
 from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
                           QPropertyAnimation, QRect, Qt, pyqtSignal)
 from PyQt5.QtGui import QBrush, QColor, QIcon, QPainter, QPen
@@ -15,7 +13,6 @@ from effects.window_effect import WindowEffect
 
 class AeroMenu(QMenu):
     """ Aero菜单 """
-    windowEffect = WindowEffect()
 
     def __init__(self, string='', parent=None):
         super().__init__(string, parent)
@@ -27,14 +24,13 @@ class AeroMenu(QMenu):
 
     def event(self, e: QEvent):
         if e.type() == QEvent.WinIdChange:
-            self.hWnd = HWND(int(self.winId()))
             self.setMenuEffect()
         return QMenu.event(self, e)
 
     def setMenuEffect(self):
         """ 开启特效 """
-        self.windowEffect.setAeroEffect(self.hWnd)
-        self.windowEffect.addShadowEffect(self.hWnd)
+        WindowEffect.setAeroEffect(self.winId())
+        WindowEffect.addShadowEffect(self.winId())
 
     def setQss(self):
         """ 设置层叠样式 """
@@ -44,7 +40,6 @@ class AeroMenu(QMenu):
 
 class AcrylicMenu(QMenu):
     """ 亚克力菜单 """
-    windowEffect = WindowEffect()
 
     def __init__(self, string='', parent=None, acrylicColor='e5e5e5CC'):
         super().__init__(string, parent)
@@ -53,9 +48,8 @@ class AcrylicMenu(QMenu):
 
     def event(self, e: QEvent):
         if e.type() == QEvent.WinIdChange:
-            self.hWnd = HWND(int(self.winId()))
-            self.windowEffect.setAcrylicEffect(
-                self.hWnd, self.acrylicColor, True)
+            WindowEffect.setAcrylicEffect(
+                self.winId(), self.acrylicColor, True)
         return QMenu.event(self, e)
 
     def __initWidget(self):

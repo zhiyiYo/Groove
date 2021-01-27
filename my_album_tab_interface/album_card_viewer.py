@@ -5,12 +5,13 @@ from my_widget.my_grid_layout import GridLayout
 from my_widget.my_groupBox import GroupBox
 from my_widget.my_scrollArea import ScrollArea
 from PyQt5.QtCore import (QParallelAnimationGroup, QPoint, QPropertyAnimation,
-                          Qt, pyqtSignal)
+                          Qt, pyqtSignal, QThread)
 from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget, QScrollBar
 
-from .album_blur_background import AlbumBlurBackground
 from .album_card import AlbumCard
+from .album_blur_background import AlbumBlurBackground
 from my_dialog_box.delete_card_panel import DeleteCardPanel
+from my_object.save_info_object import SaveInfoObject
 
 
 class AlbumCardViewer(QWidget):
@@ -54,6 +55,10 @@ class AlbumCardViewer(QWidget):
         self.albumBlurBackground = AlbumBlurBackground(self.scrollWidget)
         # 创建专辑卡并将其添加到布局中
         self.__createAlbumCards()
+        # 创建线程
+        self.saveAlbumInfoObject = SaveInfoObject()
+        self.saveInfoThread = QThread(self.parent())
+        self.saveAlbumInfoObject.moveToThread(self.saveInfoThread)
         # 初始化小部件
         self.__initWidget()
 
@@ -109,7 +114,7 @@ class AlbumCardViewer(QWidget):
         # 专辑卡信号连接到槽函数
         albumCard.playSignal.connect(self.playSignal)
         albumCard.nextPlaySignal.connect(self.nextPlaySignal)
-        albumCard.saveAlbumInfoSig.connect(self.saveAlbumInfoSig)
+        albumCard.saveAlbumInfoSig.connect(self.__saveAlbumInfoSlot)
         albumCard.deleteCardSig.connect(self.showDeleteOneCardPanel)
         albumCard.addToPlayingSignal.connect(
             self.addAlbumToPlayingSignal)
@@ -125,6 +130,8 @@ class AlbumCardViewer(QWidget):
             self.addAlbumToCustomPlaylistSig)
         albumCard.addAlbumToNewCustomPlaylistSig.connect(
             self.addAlbumToNewCustomPlaylistSig)
+        albumCard.showAlbumInfoEditPanelSig.connect(
+            self.__showAlbumInfoEditPanelSlot)
 
     def __connectSignalToSlot(self):
         """ 将信号连接到槽函数 """
@@ -383,10 +390,7 @@ class AlbumCardViewer(QWidget):
 
     def findAlbumCardByAlbumInfo(self, albumInfo: dict) -> AlbumCard:
         """ 通过albumInfo获取对AlbumCard实例的引用 """
-        for albumCard in self.albumCard_list:
-            if albumCard.albumInfo == albumInfo:
-                return albumCard
-        return None
+        return self.albumCard_list[self.albumInfo_list.index(albumInfo)]
 
     def findAlbumCardByName(self, albumName: str, songerName: str) -> AlbumCard:
         """ 通过名字查找专辑卡 """
@@ -395,10 +399,10 @@ class AlbumCardViewer(QWidget):
                 # 如果歌手名也相同就直接返回，否则在歌曲列表中寻找
                 if albumCard.albumInfo['songer'] == songerName:
                     return albumCard
-                else:
+                """ else:
                     for songInfo in albumCard.albumInfo['songInfo_list']:
                         if songInfo['songer'] == songerName:
-                            return albumCard
+                            return albumCard """
         return None
 
     def __albumCardCheckedStateChangedSlot(self, albumCard: AlbumCard, isChecked: bool):
@@ -589,3 +593,17 @@ class AlbumCardViewer(QWidget):
             if letter not in letter_list:
                 letter_list.append(letter)
                 self.groupTitle_dict[letter] = group
+
+    def __showAlbumInfoEditPanelSlot(self, albumInfoEditPanel):
+        """ 显示专辑信息编辑界面信号 """
+        self.saveAlbumInfoObject.saveErrorSig.connect(
+            albumInfoEditPanel.saveErrorSlot)
+        self.saveAlbumInfoObject.saveCompleteSig.connect(
+            albumInfoEditPanel.saveCompleteSlot)
+
+    def __saveAlbumInfoSlot(self, oldAlbumInfo: dict, newAlbumInfo: dict):
+        """ 保存专辑信息槽函数 """
+        self.saveAlbumInfoObject.saveAlbumInfoSlot(
+            newAlbumInfo['songInfo_list'])
+        self.saveAlbumInfoSig.emit(oldAlbumInfo, newAlbumInfo)
+        # self.saveAlbumInfoObject.disconnect()

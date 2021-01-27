@@ -13,7 +13,6 @@ class NavigationMenu(NavigationWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.windowEffect = WindowEffect()
         # 是否削减设置按钮底部空白标志位
         self.__isShowBottomSpacing = False
         self.__ani = QPropertyAnimation(self, b'geometry')
@@ -24,8 +23,8 @@ class NavigationMenu(NavigationWidget):
         self.resize(60, 800)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setWindowFlags(Qt.NoDropShadowWindowHint | Qt.Popup)
-        self.hWnd = HWND(int(self.winId()))
-        self.windowEffect.setAcrylicEffect(self.hWnd, 'F2F2F299')
+        # self.hWnd = HWND(int(self.winId()))
+        WindowEffect.setAcrylicEffect(self.winId(), 'F2F2F299')
 
     def resizeEvent(self, e):
         """ 调整小部件尺寸 """
@@ -61,7 +60,7 @@ class NavigationMenu(NavigationWidget):
     def setBottomSpacingVisible(self, isBottomSpacingVisible: bool):
         """ 是否削减设置按钮底部空白 """
         self.__isShowBottomSpacing = isBottomSpacingVisible
-        
+
     @property
     def isShowBottomSpacing(self):
         return self.__isShowBottomSpacing

@@ -7,13 +7,19 @@ from mutagen.id3 import APIC
 from mutagen.flac import Picture
 
 
-def writeAlbumCover(songPath: str, coverPath: str, picData=None):
+def writeAlbumCover(songPath: str, coverPath: str, picData=None) -> int:
     """ 给音频文件写入封面
+
     Parameters
     ----------
-    songPath: 音频文件路径\n
-    coverPath: 封面图片路径\n
-    picData: 封面图片二进制数据
+    songPath : str
+        音频文件路径
+
+    coverPath : str
+        封面图片路径
+
+    picData : str
+        封面图片二进制数据
     """
     id_card = File(songPath)
     # 读取封面数据
@@ -60,4 +66,8 @@ def writeAlbumCover(songPath: str, coverPath: str, picData=None):
             id_card['covr'][0] = picData
         except:
             id_card['covr'] = [picData]  # 没有键时需要创建一个
-    id_card.save()
+    try:
+        id_card.save()
+        return 1
+    except:
+        return 0

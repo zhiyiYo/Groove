@@ -15,7 +15,7 @@ class BlurCoverThread(QThread):
         # 设置磨砂标志位
         self.albumCoverPath = ''
         self.blurPixmap = None
-        self.blurRadius = 6
+        self.blurRadius = 7
         self.bluredPicMaxSize = (450, 450)
 
     def __blurAlbumCover(self):

@@ -1,7 +1,5 @@
 # coding:utf-8
 
-from ctypes.wintypes import HWND
-
 from PyQt5.QtCore import QPoint, Qt
 from PyQt5.QtWidgets import QWidget
 
@@ -21,8 +19,6 @@ class PlayBar(QWidget):
         super().__init__(parent)
         self.originWidth = 1280
         # 实例化窗口特效
-        self.windowEffect = WindowEffect()
-        self.hWnd = HWND(int(self.winId()))
         self.acrylicColor = '225c7fCC'
         self.dominantColor = DominantColor()
         # 记录移动次数
@@ -71,7 +67,7 @@ class PlayBar(QWidget):
 
     def setAcrylicColor(self, gradientColor: str):
         """ 设置亚克力效果的混合色 """
-        self.windowEffect.setAcrylicEffect(self.hWnd, gradientColor)
+        WindowEffect.setAcrylicEffect(self.winId(), gradientColor)
 
     def __setQss(self):
         """ 设置层叠样式 """

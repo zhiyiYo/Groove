@@ -53,8 +53,6 @@ class SubSongInfoEditPanel(QWidget):
 
         self.songInfo = deepcopy(songInfo)
         self.oldSongInfo = deepcopy(songInfo)
-        # 实例化标签卡
-        self.id_card = File(songInfo['songPath'])
         # 实例化小部件
         self.__createWidgets()
         # 初始化小部件
@@ -229,10 +227,7 @@ class SubSongInfoEditPanel(QWidget):
             self.songInfo['year'] = self.yearEditLine.text()[:4] + '年'
         else:
             self.songInfo['year'] = '未知年份'
-        modifySongInfo(self.id_card, self.songInfo)
-        try:
-            self.id_card.save()
-        except MutagenError:
+        if not modifySongInfo(self.songInfo):
             self.bottomErrorLabel.setText('遇到未知错误，请稍后再试')
             self.bottomErrorLabel.show()
             self.bottomErrorIcon.show()

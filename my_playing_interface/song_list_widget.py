@@ -4,7 +4,7 @@ from json import load
 
 from PyQt5.QtCore import QSize, Qt, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent
-from PyQt5.QtWidgets import QListWidgetItem,QApplication
+from PyQt5.QtWidgets import QListWidgetItem, QApplication
 
 from my_dialog_box import PropertyPanel
 from my_widget.my_listWidget import ListWidget
@@ -167,6 +167,7 @@ class SongListWidget(ListWidget):
 
     def __switchToAlbumInterface(self, albumName: str, songerName: str):
         """ 切换到专辑界面 """
+        print('发送切换到专辑界面信号')
         self.switchToAlbumInterfaceSig.emit(albumName, songerName)
 
     def updateOneSongCard(self, oldSongInfo: dict, newSongInfo: dict):

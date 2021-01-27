@@ -8,7 +8,6 @@ from PyQt5.QtWidgets import QWidget
 from .navigation_bar import NavigationBar
 from .navigation_widget import NavigationWidget
 from .navigation_menu import NavigationMenu
-from effects import WindowEffect
 
 
 class NavigationInterface(QWidget):
@@ -27,7 +26,6 @@ class NavigationInterface(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.effect = WindowEffect()
         # 创建部件
         self.navigationBar = NavigationBar(self)
         self.navigationWidget = NavigationWidget(self)
