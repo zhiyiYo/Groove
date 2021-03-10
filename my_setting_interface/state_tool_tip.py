@@ -1,19 +1,21 @@
 # coding:utf-8
 
-from PyQt5.QtCore import QEasingCurve, QPropertyAnimation, Qt, QTimer
-from PyQt5.QtGui import QBrush, QPainter, QPen, QPixmap
-from PyQt5.QtWidgets import QApplication, QLabel, QWidget
-
 from my_widget.my_button import ThreeStateButton
+from PyQt5.QtCore import (QEasingCurve, QPropertyAnimation, Qt, QTimer,
+                          pyqtSignal)
+from PyQt5.QtGui import QPainter, QPixmap
+from PyQt5.QtWidgets import QLabel, QWidget
 
 
 class StateToolTip(QWidget):
     """ 进度提示框 """
-    def __init__(self, title='', content='',associatedThread=None, parent=None):
+
+    closedSignal = pyqtSignal()
+
+    def __init__(self, title='', content='', parent=None):
         super().__init__(parent)
         self.title = title
         self.content = content
-        self.associatedThread = associatedThread
         # 实例化小部件
         self.createWidgets()
         # 初始化参数
@@ -21,9 +23,7 @@ class StateToolTip(QWidget):
         self.rotateAngle = 0
         self.deltaAngle = 18
         # 初始化
-        self.initWidget()
-        self.initLayout()
-        self.setQss()
+        self.__initWidget()
 
     def createWidgets(self):
         """ 创建小部件 """
@@ -36,7 +36,6 @@ class StateToolTip(QWidget):
             r'resource\images\createPlaylistPanel\stateToolTip_closeBt_hover_14_14.png'
         }
 
-        self.closeButton = ThreeStateButton(icon_path, self, (14, 14))
         self.titleLabel = QLabel(self.title, self)
         self.contentLabel = QLabel(self.content, self)
         self.rotateTimer = QTimer(self)
@@ -46,11 +45,14 @@ class StateToolTip(QWidget):
             r'resource\images\createPlaylistPanel\running_22_22.png')
         self.doneImage = QPixmap(
             r'resource\images\createPlaylistPanel\complete_20_20.png')
+        self.closeButton = ThreeStateButton(icon_path, self, (14, 14))
 
-    def initWidget(self):
+
+    def __initWidget(self):
         """ 初始化小部件 """
         self.setFixedSize(370, 60)
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.Window)
+        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setAttribute(Qt.WA_StyledBackground)
         self.rotateTimer.setInterval(50)
         self.closeTimer.setInterval(3000)
         self.contentLabel.setMinimumWidth(200)
@@ -58,19 +60,21 @@ class StateToolTip(QWidget):
         self.titleLabel.setObjectName('titleLabel')
         self.contentLabel.setObjectName('contentLabel')
         # 将信号连接到槽函数
-        self.closeButton.clicked.connect(self.closeButtonEvent)
-        self.rotateTimer.timeout.connect(self.timeOutEvent)
-        self.closeTimer.timeout.connect(self.slowlyClose)
+        self.closeButton.clicked.connect(self.__closeButtonClickedSlot)
+        self.rotateTimer.timeout.connect(self.__rotateTimerFlowSlot)
+        self.closeTimer.timeout.connect(self.__slowlyClose)
+        self.__initLayout()
+        self.__setQss()
         # 打开定时器
         self.rotateTimer.start()
 
-    def initLayout(self):
+    def __initLayout(self):
         """ 初始化布局 """
         self.titleLabel.move(39, 11)
         self.contentLabel.move(15, 34)
         self.closeButton.move(self.width() - 29, 23)
 
-    def setQss(self):
+    def __setQss(self):
         """ 设置层叠样式 """
         with open(r'resource\css\stateToolTip.qss', encoding='utf-8') as f:
             self.setStyleSheet(f.read())
@@ -93,16 +97,12 @@ class StateToolTip(QWidget):
         if self.isDone:
             self.closeTimer.start()
 
-    def closeButtonEvent(self):
+    def __closeButtonClickedSlot(self):
         """ 按下关闭按钮前摧毁相关线程 """
-        if self.associatedThread:
-            self.associatedThread.stop()
-            self.associatedThread.requestInterruption()
-            self.associatedThread.wait()
+        self.closedSignal.emit()
         self.deleteLater()
 
-
-    def slowlyClose(self):
+    def __slowlyClose(self):
         """ 缓慢关闭窗口 """
         self.rotateTimer.stop()
         self.animation.setEasingCurve(QEasingCurve.Linear)
@@ -112,7 +112,7 @@ class StateToolTip(QWidget):
         self.animation.finished.connect(self.deleteLater)
         self.animation.start()
 
-    def timeOutEvent(self):
+    def __rotateTimerFlowSlot(self):
         """ 定时器溢出时旋转箭头 """
         self.rotateAngle = (self.rotateAngle + self.deltaAngle) % 360
         self.update()
@@ -136,8 +136,5 @@ class StateToolTip(QWidget):
 
     def show(self):
         """ 重写show()函数 """
-        if self.parent():
-            self.move(self.parent().x() + self.parent().width()-self.width() - 30,
-                      self.parent().y() + 70)
+        self.move(self.window().width() - self.width() - 30, 70)
         super().show()
-

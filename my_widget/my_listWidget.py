@@ -3,14 +3,13 @@ from collections import deque
 from enum import Enum
 from math import cos, pi
 
-from PyQt5.QtCore import QDateTime, Qt, QTimer
+from PyQt5.QtCore import QDateTime, Qt, QTimer,QPoint
 from PyQt5.QtGui import QWheelEvent
-from PyQt5.QtWidgets import QApplication, QListWidget
+from PyQt5.QtWidgets import QApplication, QListWidget, QListWidgetItem
 
 
 class ListWidget(QListWidget):
     """ 一个可以平滑滚动的列表控件"""
-
     def __init__(self, parent=None):
         super().__init__(parent)
         self.fps = 60
@@ -53,7 +52,7 @@ class ListWidget(QListWidget):
         # 将移动距离和步数组成列表，插入队列等待处理
         self.stepsLeftQueue.append([delta, self.stepsTotal])
         # 定时器的溢出时间t=1000ms/帧数
-        self.smoothMoveTimer.start(1000 / self.fps)
+        self.smoothMoveTimer.start(1000 // self.fps)
 
     def __smoothMove(self):
         """ 计时器溢出时进行平滑滚动 """
@@ -70,10 +69,14 @@ class ListWidget(QListWidget):
                         self.lastWheelEvent.globalPos(),
                         self.lastWheelEvent.pos(),
                         self.lastWheelEvent.globalPos(),
-                        round(totalDelta),
-                        Qt.Vertical,
-                        self.lastWheelEvent.buttons(),
-                        Qt.NoModifier)
+                        round(totalDelta), Qt.Vertical,
+                        self.lastWheelEvent.buttons(), Qt.NoModifier)
+        """ e = QWheelEvent(self.lastWheelEvent.pos(),
+                        self.lastWheelEvent.globalPos(),
+                        QPoint(),
+                        self.lastWheelEvent.angleDelta(),
+                        round(totalDelta), Qt.Vertical,
+                        self.lastWheelEvent.buttons(), Qt.NoModifier) """
         # 将构造出来的滚轮事件发送给app处理
         QApplication.sendEvent(self.verticalScrollBar(), e)
         # 如果队列已空，停止滚动
@@ -99,6 +102,7 @@ class ListWidget(QListWidget):
         return res
 
 
+
 class SmoothMode(Enum):
     """ 滚动模式 """
     NO_SMOOTH = 0
@@ -106,3 +110,12 @@ class SmoothMode(Enum):
     LINEAR = 2
     QUADRATI = 3
     COSINE = 4
+
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    demo = ListWidget()
+    for i in range(50):
+        demo.addItem(QListWidgetItem(f'item{i}'))
+    demo.show()
+    sys.exit(app.exec_())

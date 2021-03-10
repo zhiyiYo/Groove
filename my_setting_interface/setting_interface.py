@@ -58,9 +58,10 @@ class SettingInterface(QWidget):
         # 将信号连接到槽函数
         self.getMetaDataCheckBox.stateChanged.connect(
             self.checkBoxStatedChangedSlot)
-        self.selectFolderLabel.clicked.connect(self.showSelectSongFolderPanel)
-        self.lightColorButton.clicked.connect(self.colorModeChangeSlot)
-        self.darkColorButton.clicked.connect(self.colorModeChangeSlot)
+        self.selectFolderLabel.clicked.connect(
+            self.__showSelectSongFolderPanel)
+        self.lightColorButton.clicked.connect(self.__colorModeChangeSlot)
+        self.darkColorButton.clicked.connect(self.__colorModeChangeSlot)
         # 设置鼠标光标
         self.selectFolderLabel.setCursor(Qt.PointingHandCursor)
         self.equalizerLabel.setCursor(Qt.PointingHandCursor)
@@ -76,7 +77,7 @@ class SettingInterface(QWidget):
         self.equalizerLabel.setObjectName('clickableLabel')
         self.selectFolderLabel.setObjectName('clickableLabel')
         # 根据是否有选中目录来设置爬虫复选框的启用与否
-        self.updateCheckBoxEnabled()
+        self.__updateCheckBoxEnabled()
         # 设置选中的主题颜色
         if self.config.get('color-mode', 'light-color') == 'light-color':
             self.lightColorButton.setChecked(True)
@@ -105,7 +106,7 @@ class SettingInterface(QWidget):
         self.all_h_layout.addWidget(self.scrollArea)
         self.all_h_layout.setContentsMargins(0, 0, 0, 0)
 
-    def updateCheckBoxEnabled(self):
+    def __updateCheckBoxEnabled(self):
         """ 根据是否有选中目录来设置爬虫复选框的启用与否 """
         if self.config.get('selected-folders'):
             self.getMetaDataCheckBox.setEnabled(True)
@@ -118,38 +119,41 @@ class SettingInterface(QWidget):
             self.getMetaDataCheckBox.setText('开')
             self.getMetaDataCheckBox.setEnabled((False))
             # 创建一个爬虫线程
-            self.createCrawlThread()
+            self.__createCrawlThread()
         else:
             self.getMetaDataCheckBox.setEnabled(True)
             self.getMetaDataCheckBox.setText('关')
 
-    def createCrawlThread(self):
+    def __createCrawlThread(self):
         """ 创建一个爬虫线程 """
         self.getMetaDataThread = GetMetaDataThread(
             self.config['selected-folders'])
-        self.stateToolTip = StateToolTip(
-            '正在爬取专辑信息', '正在启动浏览器...', self.getMetaDataThread, self.window())
+        self.stateToolTip = StateToolTip('正在爬取专辑信息', '正在启动浏览器...',
+                                         self.window())
+        # 信号连接到槽
         self.getMetaDataThread.crawlSignal.connect(self.__updateStateToolTip)
-        self.getMetaDataThread.finished.connect(
-            self.getMetaDataThread.deleteLater)
+        self.stateToolTip.closedSignal.connect(self.__stopCrawlThread)
+        # 启用线程
         self.stateToolTip.show()
         self.getMetaDataThread.start()
 
-    def __updateStateToolTip(self, crawlState):
+    def __updateStateToolTip(self, crawlState: str):
         """ 根据爬取进度更新进度提示框 """
         if crawlState == '酷狗爬取完成':
             self.stateToolTip.setTitle('正在爬取流派信息')
         elif crawlState == '全部完成':
             self.stateToolTip.setState(True)
             # 摧毁线程
-            self.getMetaDataThread.requestInterruption()
-            self.getMetaDataThread.wait()
-            # 更新json文件
-            self.__updateSongInfo()
-        elif crawlState == '强制退出':
-            self.__updateSongInfo()
+            self.__stopCrawlThread()
         else:
             self.stateToolTip.setContent(crawlState)
+
+    def __stopCrawlThread(self):
+        """ 退出爬虫线程 """
+        self.getMetaDataThread.stop()
+        self.getMetaDataThread.quit()
+        self.getMetaDataThread.deleteLater()
+        self.__updateSongInfo()
 
     def __updateSongInfo(self):
         """ 更新歌曲信息 """
@@ -157,7 +161,7 @@ class SettingInterface(QWidget):
         # 发送爬取完成的信号
         self.crawlComplete.emit()
 
-    def colorModeChangeSlot(self):
+    def __colorModeChangeSlot(self):
         """ 主题颜色改变时更新Json文件 """
         if self.sender() == self.lightColorButton:
             self.config['color-mode'] = 'light-color'
@@ -167,7 +171,8 @@ class SettingInterface(QWidget):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open('resource\\css\\settingInterface.qss', encoding='utf-8') as f:
+        with open('resource\\css\\settingInterface.qss',
+                  encoding='utf-8') as f:
             self.setStyleSheet(f.read())
 
     def resizeEvent(self, e):
@@ -176,21 +181,22 @@ class SettingInterface(QWidget):
         self.widget.resize(self.width(), self.widget.height())
         super().resizeEvent(e)
 
-    def showSelectSongFolderPanel(self):
+    def __showSelectSongFolderPanel(self):
         """ 显示歌曲文件夹选择面板 """
         selectSongFolderPanel = SelectSongFolderPanel(self.window())
         # 如果歌曲文件夹选择面板更新了json文件那么自己也得更新
-        selectSongFolderPanel.updateSelectedFoldersSig.connect(self.__updateSelectedFolders)
+        selectSongFolderPanel.updateSelectedFoldersSig.connect(
+            self.__updateSelectedFolders)
         selectSongFolderPanel.exec_()
 
-    def __updateSelectedFolders(self,selectedFolder_list:list):
+    def __updateSelectedFolders(self, selectedFolder_list: list):
         """ 更新选中的歌曲列表 """
         if self.config['selected-folders'] == selectedFolder_list:
             return
         self.config['selected-folders'] = selectedFolder_list
         # 发送更新歌曲文件夹列表的信号
         self.selectedFoldersChanged.emit(selectedFolder_list)
-        
+
     def __readConfig(self):
         """ 读入配置文件数据 """
         # 如果配置文件夹不存在就创建一个
@@ -200,9 +206,9 @@ class SettingInterface(QWidget):
             with open('config\\config.json', encoding='utf-8') as f:
                 self.config = load(f)  # type:dict
         except:
-            self.config = {'selected-folders':[]}
+            self.config = {'selected-folders': []}
         if hasattr(self, 'getMetaDataCheckBox'):
-            self.updateCheckBoxEnabled()
+            self.__updateCheckBoxEnabled()
 
     def writeConfig(self):
         """ 读入配置文件数据 """

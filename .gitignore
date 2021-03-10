@@ -2,6 +2,9 @@
 .vscode/
 .VSCodeCounter
 
+# 忽略工作区文件
+*.code-workspace
+
 # 忽略数据文件夹
 Data/
 

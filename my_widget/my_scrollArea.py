@@ -3,7 +3,7 @@ from collections import deque
 from enum import Enum
 from math import cos, pi
 
-from PyQt5.QtCore import QDateTime, Qt, QTimer,QPoint
+from PyQt5.QtCore import QDateTime, Qt, QTimer
 from PyQt5.QtGui import QWheelEvent
 from PyQt5.QtWidgets import QApplication, QScrollArea
 
@@ -23,8 +23,8 @@ class ScrollArea(QScrollArea):
         self.stepsLeftQueue = deque()
         self.smoothMoveTimer = QTimer(self)
         self.smoothMode = SmoothMode(SmoothMode.COSINE)
-        self.smoothMoveTimer.timeout.connect(self.smoothMove)
-    
+        self.smoothMoveTimer.timeout.connect(self.__smoothMove)
+
     def setSMoothMode(self, smoothMode):
         """ 设置滚动模式 """
         self.smoothMode = smoothMode
@@ -56,12 +56,12 @@ class ScrollArea(QScrollArea):
         # 定时器的溢出时间t=1000ms/帧数
         self.smoothMoveTimer.start(1000 / self.fps)
 
-    def smoothMove(self):
+    def __smoothMove(self):
         """ 计时器溢出时进行平滑滚动 """
         totalDelta = 0
         # 计算所有未处理完事件的滚动距离，定时器每溢出一次就将步数-1
         for i in self.stepsLeftQueue:
-            totalDelta += self.subDelta(i[0], i[1])
+            totalDelta += self.__subDelta(i[0], i[1])
             i[1] -= 1
         # 如果事件已处理完，就将其移出队列
         while self.stepsLeftQueue and self.stepsLeftQueue[0][1] == 0:
@@ -81,7 +81,7 @@ class ScrollArea(QScrollArea):
         if not self.stepsLeftQueue:
             self.smoothMoveTimer.stop()
 
-    def subDelta(self, delta, stepsLeft):
+    def __subDelta(self, delta, stepsLeft):
         """ 计算每一步的插值 """
         m = self.stepsTotal / 2
         x = abs(self.stepsTotal - stepsLeft - m)

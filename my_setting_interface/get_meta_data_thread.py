@@ -15,7 +15,7 @@ class GetMetaDataThread(QThread):
     """ 爬取元数据的线程 """
     # 负责传递状态的信号
     crawlSignal = pyqtSignal(str)
-    
+
     def __init__(self, targetPath_list=None, parent=None):
         super().__init__(parent=parent)
         # 循环标志位
@@ -48,7 +48,7 @@ class GetMetaDataThread(QThread):
                     print(f'{songPath} 写入发生异常')
         else:
             self.crawlSignal.emit(f'当前进度：{index+1}/{len(self.songPath_list)}')
-            
+
         self.kuGouCrawler.browser.quit()
         # 爬取流派
         albumTcon_dict = {}
@@ -58,6 +58,7 @@ class GetMetaDataThread(QThread):
         self.crawlSignal.emit('酷狗爬取完成')
         for index, (songname, songPath) in enumerate(zip(self.songname_list, self.songPath_list)):
             if not self.keepRunning:
+                self.qqMusicCrawler.browser.quit()
                 break
             self.crawlSignal.emit(f'当前进度：{index}/{len(self.songPath_list)}')
             song = os.path.basename(songPath)
@@ -70,7 +71,6 @@ class GetMetaDataThread(QThread):
     def stop(self):
         """ 停止爬取 """
         self.keepRunning = False
-        self.crawlSignal.emit('强制退出')
 
     def splitText(self):
         """ 扫描文件夹，提取符合匹配条件的音频文件的信息 """
@@ -90,7 +90,7 @@ class GetMetaDataThread(QThread):
             os.mkdir(self.albumCoverFolder)
         for _, _, albumCover_list in os.walk(self.albumCoverFolder):
             break
-        
+
         self.albumCover_set = set(albumCover_list)
 
     def filterAudioFile(self, filePath_list):
