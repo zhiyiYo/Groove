@@ -1,6 +1,10 @@
 # Groove
 一个可以联网的Groove音乐
 
+# 界面
+![示例动图1](docs/screenshot/界面2.png)
+![示例动图1](docs/screenshot/界面1.png)
+
 # 功能
 
 * 播放音乐
