@@ -254,8 +254,11 @@ class PlayingInterface(QWidget):
 
         Parameters
         ----------
-        playlist : 播放列表，每一个元素都是songInfo字典\n
-        isResetIndex : 是否将下标重置为0
+        playlist: list
+            播放列表，每一个元素都是songInfo字典
+            
+        isResetIndex: bool
+            是否将下标重置为0
         """
         self.playlist = deepcopy(playlist)
         self.currentIndex = 0 if isResetIndex else self.currentIndex

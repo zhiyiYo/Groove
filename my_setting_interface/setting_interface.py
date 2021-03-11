@@ -1,11 +1,19 @@
 # coding:utf-8
 
-from json import dump, load
 import os
+from copy import deepcopy
+from json import dump, load
 
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import (QApplication, QCheckBox, QHBoxLayout, QLabel,
-                             QRadioButton, QScrollArea, QWidget)
+from PyQt5.QtWidgets import (
+    QApplication,
+    QCheckBox,
+    QHBoxLayout,
+    QLabel,
+    QRadioButton,
+    QScrollArea,
+    QWidget,
+)
 
 from my_setting_interface.get_meta_data_thread import GetMetaDataThread
 from my_setting_interface.select_song_folder_panel import SelectSongFolderPanel
@@ -36,19 +44,19 @@ class SettingInterface(QWidget):
         self.scrollArea = QScrollArea(self)
         self.widget = QWidget()
         # 实例化标签
-        self.appLabel = QLabel('应用', self.widget)
-        self.playLabel = QLabel('播放', self.widget)
-        self.settingLabel = QLabel('设置', self.widget)
-        self.colorModeLabel = QLabel('模式', self.widget)
-        self.mediaInfoLabel = QLabel('媒体信息', self.widget)
-        self.loginLabel = ClickableLabel('登录', self.widget)
-        self.getMetaDataCheckBox = QCheckBox('关', self.widget)
-        self.darkColorButton = QRadioButton('深色', self.widget)
-        self.lightColorButton = QRadioButton('浅色', self.widget)
-        self.equalizerLabel = ClickableLabel('均衡器', self.widget)
-        self.musicInThisPCLabel = QLabel('此PC上的音乐', self.widget)
-        self.selectFolderLabel = ClickableLabel('选择查找音乐的位置', self.widget)
-        self.getMetaDataLabel = QLabel('自动检索并更新缺失的专辑封面和元数据', self.widget)
+        self.appLabel = QLabel("应用", self.widget)
+        self.playLabel = QLabel("播放", self.widget)
+        self.settingLabel = QLabel("设置", self.widget)
+        self.colorModeLabel = QLabel("模式", self.widget)
+        self.mediaInfoLabel = QLabel("媒体信息", self.widget)
+        self.loginLabel = ClickableLabel("登录", self.widget)
+        self.getMetaDataCheckBox = QCheckBox("关", self.widget)
+        self.darkColorButton = QRadioButton("深色", self.widget)
+        self.lightColorButton = QRadioButton("浅色", self.widget)
+        self.equalizerLabel = ClickableLabel("均衡器", self.widget)
+        self.musicInThisPCLabel = QLabel("此PC上的音乐", self.widget)
+        self.selectFolderLabel = ClickableLabel("选择查找音乐的位置", self.widget)
+        self.getMetaDataLabel = QLabel("自动检索并更新缺失的专辑封面和元数据", self.widget)
 
     def __initWidget(self):
         """ 初始化小部件 """
@@ -56,10 +64,8 @@ class SettingInterface(QWidget):
         self.widget.resize(self.width(), 800)
         self.scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         # 将信号连接到槽函数
-        self.getMetaDataCheckBox.stateChanged.connect(
-            self.checkBoxStatedChangedSlot)
-        self.selectFolderLabel.clicked.connect(
-            self.__showSelectSongFolderPanel)
+        self.getMetaDataCheckBox.stateChanged.connect(self.checkBoxStatedChangedSlot)
+        self.selectFolderLabel.clicked.connect(self.__showSelectSongFolderPanel)
         self.lightColorButton.clicked.connect(self.__colorModeChangeSlot)
         self.darkColorButton.clicked.connect(self.__colorModeChangeSlot)
         # 设置鼠标光标
@@ -67,19 +73,19 @@ class SettingInterface(QWidget):
         self.equalizerLabel.setCursor(Qt.PointingHandCursor)
         self.loginLabel.setCursor(Qt.PointingHandCursor)
         # 分配ID
-        self.appLabel.setObjectName('titleLabel')
-        self.playLabel.setObjectName('titleLabel')
-        self.colorModeLabel.setObjectName('titleLabel')
-        self.settingLabel.setObjectName('settingLabel')
-        self.mediaInfoLabel.setObjectName('titleLabel')
-        self.loginLabel.setObjectName('clickableLabel')
-        self.musicInThisPCLabel.setObjectName('titleLabel')
-        self.equalizerLabel.setObjectName('clickableLabel')
-        self.selectFolderLabel.setObjectName('clickableLabel')
+        self.appLabel.setObjectName("titleLabel")
+        self.playLabel.setObjectName("titleLabel")
+        self.colorModeLabel.setObjectName("titleLabel")
+        self.settingLabel.setObjectName("settingLabel")
+        self.mediaInfoLabel.setObjectName("titleLabel")
+        self.loginLabel.setObjectName("clickableLabel")
+        self.musicInThisPCLabel.setObjectName("titleLabel")
+        self.equalizerLabel.setObjectName("clickableLabel")
+        self.selectFolderLabel.setObjectName("clickableLabel")
         # 根据是否有选中目录来设置爬虫复选框的启用与否
         self.__updateCheckBoxEnabled()
         # 设置选中的主题颜色
-        if self.config.get('color-mode', 'light-color') == 'light-color':
+        if self.config.get("color-mode", "light-color") == "light-color":
             self.lightColorButton.setChecked(True)
         else:
             self.darkColorButton.setChecked(True)
@@ -108,7 +114,7 @@ class SettingInterface(QWidget):
 
     def __updateCheckBoxEnabled(self):
         """ 根据是否有选中目录来设置爬虫复选框的启用与否 """
-        if self.config.get('selected-folders'):
+        if self.config.get("selected-folders"):
             self.getMetaDataCheckBox.setEnabled(True)
         else:
             self.getMetaDataCheckBox.setEnabled(False)
@@ -116,20 +122,18 @@ class SettingInterface(QWidget):
     def checkBoxStatedChangedSlot(self):
         """ 复选框状态改变对应的槽函数 """
         if self.getMetaDataCheckBox.isChecked():
-            self.getMetaDataCheckBox.setText('开')
+            self.getMetaDataCheckBox.setText("开")
             self.getMetaDataCheckBox.setEnabled((False))
             # 创建一个爬虫线程
             self.__createCrawlThread()
         else:
             self.getMetaDataCheckBox.setEnabled(True)
-            self.getMetaDataCheckBox.setText('关')
+            self.getMetaDataCheckBox.setText("关")
 
     def __createCrawlThread(self):
         """ 创建一个爬虫线程 """
-        self.getMetaDataThread = GetMetaDataThread(
-            self.config['selected-folders'])
-        self.stateToolTip = StateToolTip('正在爬取专辑信息', '正在启动浏览器...',
-                                         self.window())
+        self.getMetaDataThread = GetMetaDataThread(self.config["selected-folders"])
+        self.stateToolTip = StateToolTip("正在爬取专辑信息", "正在启动浏览器...", self.window())
         # 信号连接到槽
         self.getMetaDataThread.crawlSignal.connect(self.__updateStateToolTip)
         self.stateToolTip.closedSignal.connect(self.__stopCrawlThread)
@@ -139,9 +143,9 @@ class SettingInterface(QWidget):
 
     def __updateStateToolTip(self, crawlState: str):
         """ 根据爬取进度更新进度提示框 """
-        if crawlState == '酷狗爬取完成':
-            self.stateToolTip.setTitle('正在爬取流派信息')
-        elif crawlState == '全部完成':
+        if crawlState == "酷狗爬取完成":
+            self.stateToolTip.setTitle("正在爬取流派信息")
+        elif crawlState == "全部完成":
             self.stateToolTip.setState(True)
             # 摧毁线程
             self.__stopCrawlThread()
@@ -164,15 +168,14 @@ class SettingInterface(QWidget):
     def __colorModeChangeSlot(self):
         """ 主题颜色改变时更新Json文件 """
         if self.sender() == self.lightColorButton:
-            self.config['color-mode'] = 'light-color'
+            self.config["color-mode"] = "light-color"
         else:
-            self.config['color-mode'] = 'dark-color'
-        self.writeConfig()
+            self.config["color-mode"] = "dark-color"
+        self.updateConfig()
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open('resource\\css\\settingInterface.qss',
-                  encoding='utf-8') as f:
+        with open("resource\\css\\settingInterface.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
 
     def resizeEvent(self, e):
@@ -183,39 +186,69 @@ class SettingInterface(QWidget):
 
     def __showSelectSongFolderPanel(self):
         """ 显示歌曲文件夹选择面板 """
-        selectSongFolderPanel = SelectSongFolderPanel(self.window())
+        selectSongFolderPanel = SelectSongFolderPanel(
+            self.config["selected-folders"], self.window()
+        )
         # 如果歌曲文件夹选择面板更新了json文件那么自己也得更新
         selectSongFolderPanel.updateSelectedFoldersSig.connect(
-            self.__updateSelectedFolders)
+            self.__updateSelectedFolders
+        )
         selectSongFolderPanel.exec_()
 
-    def __updateSelectedFolders(self, selectedFolder_list: list):
-        """ 更新选中的歌曲列表 """
-        if self.config['selected-folders'] == selectedFolder_list:
+    def __updateSelectedFolders(self, selectedFolders: list):
+        """ 更新选中的歌曲文件夹列表 """
+        if self.config["selected-folders"] == selectedFolders:
             return
-        self.config['selected-folders'] = selectedFolder_list
+        self.config["selected-folders"] = selectedFolders
+        # 更新配置文件
+        self.updateConfig({"selected-folders": selectedFolders})
         # 发送更新歌曲文件夹列表的信号
-        self.selectedFoldersChanged.emit(selectedFolder_list)
+        self.selectedFoldersChanged.emit(selectedFolders)
 
     def __readConfig(self):
         """ 读入配置文件数据 """
-        # 如果配置文件夹不存在就创建一个
-        if not os.path.exists('config'):
-            os.mkdir('config')
+        self.__checkConfigDir()
         try:
-            with open('config\\config.json', encoding='utf-8') as f:
+            with open("config\\config.json", encoding="utf-8") as f:
                 self.config = load(f)  # type:dict
         except:
-            self.config = {'selected-folders': []}
-        if hasattr(self, 'getMetaDataCheckBox'):
+            self.config = {"selected-folders": []}
+        # 检查文件夹是否存在，不存在则从配置中移除
+        for folder in self.config["selected-folders"].copy():
+            if not os.path.exists(folder):
+                self.config["selected-folders"].remove(folder)
+
+        # 根据是否有选中目录来设置爬虫复选框的启用与否
+        if hasattr(self, "getMetaDataCheckBox"):
             self.__updateCheckBoxEnabled()
 
-    def writeConfig(self):
-        """ 读入配置文件数据 """
-        with open('config\\config.json', 'w', encoding='utf-8') as f:
+    def getConfig(self, configName: str, default=None):
+        """ 获取配置
+
+        Parameters
+        ----------
+        configName : str
+            配置名称
+
+        default : Any
+            配置的默认值
+        """
+        return self.config.get(configName, default)
+
+    def updateConfig(self, config: dict):
+        """ 更新并保存配置数据
+
+        Parameters
+        ----------
+        config : dict
+            配置信息字典
+        """
+        self.__checkConfigDir()
+        self.config.update(config)
+        with open("config\\config.json", "w", encoding="utf-8") as f:
             dump(self.config, f)
 
-    def closeEvent(self, e):
-        """ 关闭窗口之前更新json文件 """
-        self.writeConfig()
-        e.accept()
+    def __checkConfigDir(self):
+        """ 检查配置文件夹是否存在，不存在则创建 """
+        if not os.path.exists("config"):
+            os.mkdir("config")

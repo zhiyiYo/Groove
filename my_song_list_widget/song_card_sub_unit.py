@@ -2,9 +2,9 @@
 
 """ 歌曲卡组件库 """
 
-from PyQt5.QtCore import QSize, Qt,QEvent
+from PyQt5.QtCore import QSize, Qt, QEvent
 from PyQt5.QtGui import QFont, QFontMetrics, QIcon, QPixmap
-from PyQt5.QtWidgets import QCheckBox, QLabel, QToolButton, QWidget,QApplication
+from PyQt5.QtWidgets import QCheckBox, QLabel, QToolButton, QWidget, QApplication
 
 
 class ToolButton(QToolButton):
@@ -16,33 +16,42 @@ class ToolButton(QToolButton):
         # 设置按钮状态标志位
         self.setFixedSize(60, 60)
         self.setIconSize(QSize(60, 60))
-        self.setState('notSelected-notPlay')
+        self.setState("notSelected-notPlay")
         self.setStyleSheet("QToolButton{border:none;margin:0}")
 
     def setState(self, state: str):
         """ 设置按钮状态，更新按钮图标，状态有notSelected-notPlay、notSelected-play、selected这三种 """
         self.state = state
         self.setIcon(QIcon(self.iconPath_dict[state]))
-        self.setProperty('state',state)
+        self.setProperty("state", state)
+
 
 class ButtonGroup(QWidget):
     """
     按钮组, 按钮窗口的state有6种状态:
         notSelected-leave、notSelected-enter、notSelected-pressed
-        selected-leave、selected-enter、selected-pressed 
+        selected-leave、selected-enter、selected-pressed
     """
 
     def __init__(self, parent=None):
         super().__init__(parent)
         # 创建按钮
         self.playButton = ToolButton(
-            {'notSelected-notPlay': r'resource\images\song_tab_interface\黑色播放_60_60.png',
-             'notSelected-play': r'resource\images\song_tab_interface\绿色播放_60_60.png',
-             'selected': r'resource\images\song_tab_interface\白色播放_60_60.png'}, self)
+            {
+                "notSelected-notPlay": r"resource\images\song_tab_interface\黑色播放_60_60.png",
+                "notSelected-play": r"resource\images\song_tab_interface\绿色播放_60_60.png",
+                "selected": r"resource\images\song_tab_interface\白色播放_60_60.png",
+            },
+            self,
+        )
         self.addToButton = ToolButton(
-            {'notSelected-notPlay': r'resource\images\song_tab_interface\黑色添加到_60_60.png',
-             'notSelected-play': r'resource\images\song_tab_interface\绿色添加到_60_60.png',
-             'selected': r'resource\images\song_tab_interface\白色添加到_60_60.png'}, self)
+            {
+                "notSelected-notPlay": r"resource\images\song_tab_interface\黑色添加到_60_60.png",
+                "notSelected-play": r"resource\images\song_tab_interface\绿色添加到_60_60.png",
+                "selected": r"resource\images\song_tab_interface\白色添加到_60_60.png",
+            },
+            self,
+        )
         # 初始化
         self.__initWidget()
 
@@ -54,8 +63,8 @@ class ButtonGroup(QWidget):
         self.addToButton.move(80, 0)
         self.playButton.move(20, 0)
         # 分配ID并设置属性
-        self.setObjectName('buttonGroup')
-        self.setProperty('state', 'notSelected-leave')
+        self.setObjectName("buttonGroup")
+        self.setProperty("state", "notSelected-leave")
         # 隐藏按钮
         # self.setButtonHidden(True)
         self.installEventFilter(self)
@@ -72,9 +81,9 @@ class ButtonGroup(QWidget):
 
     def setState(self, state: str):
         """ 设置按钮组状态 """
-        self.setProperty('state', state)
+        self.setProperty("state", state)
 
-    def eventFilter(self, obj, e:QEvent):
+    def eventFilter(self, obj, e: QEvent):
         """ 过滤事件 """
         if obj == self:
             if e.type() == QEvent.Hide:
@@ -82,7 +91,7 @@ class ButtonGroup(QWidget):
                 e = QEvent(QEvent.Leave)
                 QApplication.sendEvent(self.playButton, e)
                 QApplication.sendEvent(self.addToButton, e)
-        return super().eventFilter(obj,e)
+        return super().eventFilter(obj, e)
 
 
 class SongNameCard(QWidget):
@@ -93,7 +102,7 @@ class SongNameCard(QWidget):
         self.songName = songName
         self.isPlay = False
         # 创建小部件
-        self.checkBox = QCheckBox(self)  #type:QCheckBox
+        self.checkBox = QCheckBox(self)  # type:QCheckBox
         self.playingLabel = QLabel(self)
         self.songNameLabel = QLabel(songName, self)
         self.buttonGroup = ButtonGroup(self)
@@ -111,8 +120,8 @@ class SongNameCard(QWidget):
         self.playingLabel.hide()
         self.setWidgetHidden(True)
         # 分配属性和ID
-        self.setObjectName('songNameCard')
-        self.songNameLabel.setObjectName('songNameLabel')
+        self.setObjectName("songNameCard")
+        self.songNameLabel.setObjectName("songNameLabel")
         # 计算歌名的长度
         self.__getSongNameWidth()
         self.__initLayout()
@@ -126,7 +135,7 @@ class SongNameCard(QWidget):
 
     def __getSongNameWidth(self):
         """ 计算歌名的长度 """
-        fontMetrics = QFontMetrics(QFont('Microsoft YaHei', 10))
+        fontMetrics = QFontMetrics(QFont("Microsoft YaHei", 10))
         self.songNameWidth = sum([fontMetrics.width(i) for i in self.songName])
 
     def __moveButtonGroup(self):
@@ -156,26 +165,44 @@ class SongNameCard(QWidget):
         super().resizeEvent(e)
         self.__moveButtonGroup()
 
-    def setCheckBoxBtLabelState(self, state: str):
-        """ 设置复选框、按钮和标签的状态并更新样式,有notSelected-notPlay、notSelected-play、selected这3种状态 """
-        self.checkBox.setProperty('state', state)
-        self.songNameLabel.setProperty('state', state)
+    def setCheckBoxBtLabelState(self, state: str, isSongExit=True):
+        """ 设置复选框、按钮和标签的状态并更新样式
+
+        Parameters
+        ----------
+        state: str
+            有 `notSelected-notPlay`、`notSelected-play`、`selected` 3种状态
+
+        isSongExist: bool
+            歌曲是否存在，默认为 True，当 False 时会出现报警图标
+        """
+        self.checkBox.setProperty("state", state)
+        self.songNameLabel.setProperty("state", state)
         self.buttonGroup.setButtonState(state)
-        # 根据选中状态更新正在播放图标颜色
-        color = '白' if state == 'selected' else '绿'
-        self.playingLabel.setPixmap(
-            QPixmap(r'resource\images\song_tab_interface\{0}色正在播放_16_16.png'.format(color)))
+        # 根据选中状态和歌曲状态选择图标
+        if isSongExit:
+            color = "白" if state == "selected" else "绿"
+            path = r"resource\images\song_tab_interface\{0}色正在播放_16_16.png".format(
+                color
+            )
+        else:
+            color = "白" if state == "selected" else "红"
+            path = r"resource\images\song_tab_interface\{0}色警告.png".format(color)
+        self.playingLabel.setPixmap(QPixmap(path))
 
     def setButtonGroupState(self, state: str):
         """ 设置按钮组窗口状态，按钮组状态与歌曲卡始终相同，总共6种状态 """
         self.buttonGroup.setState(state)
 
-    def setPlay(self, isPlay: bool):
+    def setPlay(self, isPlay: bool, isSongExist: bool = True):
         """ 设置播放状态并决定是否显示正在播放图标 """
         self.isPlay = isPlay
-        self.playingLabel.setHidden(not isPlay)
+        self.playingLabel.setVisible(isPlay or (not isSongExist))
         self.setWidgetHidden(not isPlay)
-        self.songNameLabel.move([57,83][isPlay], self.songNameLabel.y())
+        # 歌曲不存在时仍需显示图标
+        self.songNameLabel.move(
+            [57, 83][isPlay or (not isSongExist)], self.songNameLabel.y()
+        )
         # 更新按钮位置
         self.__moveButtonGroup()
 
@@ -204,14 +231,14 @@ class TrackNumSongNameCard(SongNameCard):
         """ 初始化 """
         self.__adjustTrackNumLabelPos()
         self.trackNumLabel.setFixedWidth(25)
-        self.trackNumLabel.setObjectName('songNameLabel')
+        self.trackNumLabel.setObjectName("songNameLabel")
         # 安装事件过滤器
         self.checkBox.installEventFilter(self)
 
-    def setCheckBoxBtLabelState(self, state: str):
+    def setCheckBoxBtLabelState(self, state: str, isSongExist=True):
         """ 设置复选框、按钮和标签的状态并更新样式,有notSelected-notPlay、notSelected-play、selected这3种状态 """
-        super().setCheckBoxBtLabelState(state)
-        self.trackNumLabel.setProperty('state', state)
+        super().setCheckBoxBtLabelState(state, isSongExist)
+        self.trackNumLabel.setProperty("state", state)
 
     def updateSongNameCard(self, songName, trackNum: str):
         """ 设置卡片的信息 """
@@ -225,9 +252,9 @@ class TrackNumSongNameCard(SongNameCard):
         # 如果是M4a需要转化一下
         if not trackNum[0].isnumeric():
             self.trackNum = str(eval(trackNum)[0])
-        self.trackNumLabel.setText(self.trackNum + '.')
-        if self.trackNum == '0':
-            self.trackNumLabel.setText('')
+        self.trackNumLabel.setText(self.trackNum + ".")
+        if self.trackNum == "0":
+            self.trackNumLabel.setText("")
 
     def setWidgetsHidden(self, isHidden: bool):
         """ 显示/隐藏小部件 """
@@ -241,9 +268,9 @@ class TrackNumSongNameCard(SongNameCard):
         else:
             self.trackNumLabel.move(28, 18)
 
-    def setPlay(self, isPlay):
+    def setPlay(self, isPlay, isSongExist=True):
         """ 设置播放状态 """
-        super().setPlay(isPlay)
+        super().setPlay(isPlay, isSongExist)
         self.trackNumLabel.setHidden(isPlay)
 
     def eventFilter(self, obj, e: QEvent):

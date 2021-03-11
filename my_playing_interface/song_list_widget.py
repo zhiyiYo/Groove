@@ -109,15 +109,16 @@ class SongListWidget(ListWidget):
         # 发送信号
         self.removeItemSignal.emit(index)
 
-    def setCurrentIndex(self, index):
+    def setCurrentIndex(self, index: int):
         """ 设置当前播放歌曲下标，同时更新样式 """
-        if self.songCard_list:
-            # 将之前播放的歌曲卡的播放状态设置为False
-            self.songCard_list[self.currentIndex].setPlay(False)
-            # 更新当前播放歌曲下标
-            self.currentIndex = index
-            # 更新当前播放歌曲卡样式
-            self.songCard_list[index].setPlay(True)
+        if not self.songCard_list:
+            return
+        # 将之前播放的歌曲卡的播放状态设置为False
+        self.songCard_list[self.currentIndex].setPlay(False)
+        # 更新当前播放歌曲下标
+        self.currentIndex = index
+        # 更新当前播放歌曲卡样式
+        self.songCard_list[index].setPlay(True)
 
     def setPlaylist(self, playlist: list, isResetIndex: bool = True):
         """ 直接清空并更新播放列表 """

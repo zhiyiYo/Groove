@@ -6,6 +6,7 @@
 *.code-workspace
 
 # 忽略数据文件夹
+data/
 Data/
 
 # 忽略配置文件夹

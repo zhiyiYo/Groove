@@ -46,7 +46,7 @@ class SongCardListWidget(BasicSongListWidget):
         """ 歌曲卡播放按钮槽函数 """
         self.playSignal.emit(self.songCard_list[index].songInfo)
         self.setCurrentIndex(index)
-        self.setPlay(index)
+        # self.setPlay(index)
 
     def contextMenuEvent(self, e: QContextMenuEvent):
         """ 重写鼠标右击时间的响应函数 """
@@ -62,7 +62,7 @@ class SongCardListWidget(BasicSongListWidget):
         # 处于选择模式时不发送信号
         if self.isInSelectionMode:
             return
-        self.setPlay(index)
+        # self.setPlay(index)
         # 发送歌曲信息更新信号
         self.playSignal.emit(self.songCard_list[index].songInfo)
 

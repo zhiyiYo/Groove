@@ -1,5 +1,7 @@
 # coding:utf-8
 
+import os
+
 from PyQt5.QtCore import QPoint, Qt
 from PyQt5.QtWidgets import QWidget
 
@@ -126,6 +128,8 @@ class PlayBar(QWidget):
 
     def updateSongInfoCard(self, songInfo: dict):
         """ 更新歌曲信息卡 """
+        if not os.path.exists(songInfo.get('songPath')):
+            return
         self.songInfoCard.updateSongInfoCard(songInfo)
         self.__adjustSongInfoCardWidth()
 
