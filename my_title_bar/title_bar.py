@@ -94,8 +94,6 @@ class TitleBar(QWidget):
             SendMessage(self.window().winId(), win32con.WM_SYSCOMMAND,
                         win32con.SC_MOVE + win32con.HTCAPTION, 0)
             event.ignore()
-            # 也可以通过调用windowEffect.dll的接口函数来实现窗口拖动
-            # self.windowEffect.moveWindow(HWND(int(self.parent().winId())))
 
     def __showRestoreWindow(self):
         """ 复原窗口并更换最大化按钮的图标 """

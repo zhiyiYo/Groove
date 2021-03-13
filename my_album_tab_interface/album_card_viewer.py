@@ -1,5 +1,7 @@
 # coding:utf-8
 
+from typing import List, Dict
+
 import pinyin
 from my_widget.my_grid_layout import GridLayout
 from my_widget.my_groupBox import GroupBox
@@ -21,12 +23,12 @@ class AlbumCardViewer(QWidget):
     nextPlaySignal = pyqtSignal(list)
     albumNumChanged = pyqtSignal(int)
     saveAlbumInfoSig = pyqtSignal(dict, dict)
-    addAlbumToPlayingSignal = pyqtSignal(list)              # 将专辑添加到正在播放
+    addAlbumToPlayingSignal = pyqtSignal(list)  # 将专辑添加到正在播放
     switchToAlbumInterfaceSig = pyqtSignal(dict)
     selectionModeStateChanged = pyqtSignal(bool)
     checkedAlbumCardNumChanged = pyqtSignal(int)
-    addAlbumToNewCustomPlaylistSig = pyqtSignal(list)       # 将专辑添加到新建的播放列表
-    addAlbumToCustomPlaylistSig = pyqtSignal(str, list)     # 将专辑添加到已存在的自定义播放列表
+    addAlbumToNewCustomPlaylistSig = pyqtSignal(list)  # 将专辑添加到新建的播放列表
+    addAlbumToCustomPlaylistSig = pyqtSignal(str, list)  # 将专辑添加到已存在的自定义播放列表
     showLabelNavigationInterfaceSig = pyqtSignal(list, str)  # 显示标签导航界面
 
     def __init__(self, albumInfo_list: list, parent=None):
@@ -34,11 +36,13 @@ class AlbumCardViewer(QWidget):
         self.albumInfo_list = albumInfo_list
         # 初始化网格的列数
         self.columnNum = 1
-        self.albumCard_list = []
+        self.albumCard_list = []  # type:List[AlbumCard]
         self.albumCardDict_list = []
         self.checkedAlbumCard_list = []
         self.currentGroupDict_list = []
-        self.groupTitle_dict = {}      # 记录首字母或年份及其对应的第一个分组
+        self.groupTitle_dict = {}  # 记录首字母或年份及其对应的第一个分组
+        # 由键值对 "albumName.songer":albumCard组成的字典
+        self.albumSonger2AlbumCard_dict = {}  # type:Dict[str,AlbumCard]
         # 初始化标志位
         self.isInSelectionMode = False
         self.isAllAlbumCardsChecked = False
@@ -71,8 +75,7 @@ class AlbumCardViewer(QWidget):
         self.guideLabel.raise_()
         self.guideLabel.setHidden(bool(self.albumCard_list))
         # 初始化滚动条
-        self.scrollArea.setHorizontalScrollBarPolicy(
-            Qt.ScrollBarAlwaysOff)
+        self.scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scrollWidget.setObjectName('scrollWidget')
         self.__connectSignalToSlot()
         self.__initLayout()
@@ -106,11 +109,15 @@ class AlbumCardViewer(QWidget):
         # 将含有专辑卡及其信息的字典插入列表
         album = albumInfo['album']
         self.albumCard_list.append(albumCard)
-        self.albumCardDict_list.append({'albumCard': albumCard,
-                                        'albumName': album,
-                                        'year': albumInfo['year'][:4],
-                                        'songer': albumInfo['songer'],
-                                        'firstLetter': pinyin.get_initial(album[0])[0].upper()})
+        self.albumCardDict_list.append({
+            'albumCard': albumCard,
+            'albumName': album,
+            'year': albumInfo['year'][:4],
+            'songer': albumInfo['songer'],
+            'firstLetter': pinyin.get_initial(album[0])[0].upper()
+        })
+        self.albumSonger2AlbumCard_dict[albumInfo['album'] +
+                                        '.' + albumInfo['songer']] = albumCard
         # 专辑卡信号连接到槽函数
         albumCard.playSignal.connect(self.playSignal)
         albumCard.nextPlaySignal.connect(self.nextPlaySignal)
@@ -182,8 +189,10 @@ class AlbumCardViewer(QWidget):
 
     def __adjustScrollWidgetSize(self):
         """ 调整滚动部件的高度 """
-        rowCount = sum([currentGroup_dict['gridLayout'].rowCount()
-                        for currentGroup_dict in self.currentGroupDict_list])
+        rowCount = sum([
+            currentGroup_dict['gridLayout'].rowCount()
+            for currentGroup_dict in self.currentGroupDict_list
+        ])
         containerCount = len(self.currentGroupDict_list)
         self.scrollWidget.resize(
             self.width(), 310 * rowCount + 60 * containerCount * (self.sortMode != '添加日期') + 120 + 245)
@@ -229,10 +238,11 @@ class AlbumCardViewer(QWidget):
         # 从竖直布局中移除小部件
         self.__removeContainerFromVBoxLayout()
         # 构造一个包含布局和小部件列表字典的列表
-        self.addTimeGroup_list = [
-            {'container': container,
-             'gridLayout': gridLayout,
-             'albumCard_list': self.albumCard_list}]
+        self.addTimeGroup_list = [{
+            'container': container,
+            'gridLayout': gridLayout,
+            'albumCard_list': self.albumCard_list
+        }]
         # 创建一个对当前分组列表引用的列表
         self.currentGroupDict_list = self.addTimeGroup_list
         # 将专辑卡添加到布局中
@@ -264,9 +274,12 @@ class AlbumCardViewer(QWidget):
                 group.setLayout(gridLayout)
                 gridLayout.setVerticalSpacing(20)
                 gridLayout.setHorizontalSpacing(10)
-                self.firsetLetterGroupDict_list.append(
-                    {'container': group, 'firstLetter': firstLetter,
-                     'gridLayout': gridLayout, 'albumCard_list': []})
+                self.firsetLetterGroupDict_list.append({
+                    'container': group,
+                    'firstLetter': firstLetter,
+                    'gridLayout': gridLayout,
+                    'albumCard_list': []
+                })
                 self.groupTitle_list.append(group.title())
             # 将专辑卡添加到分组中
             index = firstLetter_list.index(firstLetter)
@@ -311,14 +324,12 @@ class AlbumCardViewer(QWidget):
                 group.setLayout(gridLayout)
                 gridLayout.setVerticalSpacing(20)
                 gridLayout.setHorizontalSpacing(10)
-                self.yearGroupDict_list.append(
-                    {
-                        'year': year,
-                        'container': group,
-                        'albumCard_list': [],
-                        'gridLayout': gridLayout
-                    }
-                )
+                self.yearGroupDict_list.append({
+                    'year': year,
+                    'container': group,
+                    'albumCard_list': [],
+                    'gridLayout': gridLayout
+                })
                 self.groupTitle_list.append(group.title())
                 self.groupTitle_dict[year] = group
             # 将专辑卡添加到分组中
@@ -359,13 +370,12 @@ class AlbumCardViewer(QWidget):
                 group.setLayout(gridLayout)
                 gridLayout.setVerticalSpacing(20)
                 gridLayout.setHorizontalSpacing(10)
-                self.songerGroupDict_list.append(
-                    {'songer': songer,
-                     'container': group,
-                     'albumCard_list': [],
-                     'gridLayout': gridLayout
-                     }
-                )
+                self.songerGroupDict_list.append({
+                    'songer': songer,
+                    'container': group,
+                    'albumCard_list': [],
+                    'gridLayout': gridLayout
+                })
                 # 点击分组的标题时显示导航界面
                 self.groupTitle_list.append(group.title())
             # 将专辑卡添加到分组中
@@ -394,16 +404,9 @@ class AlbumCardViewer(QWidget):
 
     def findAlbumCardByName(self, albumName: str, songerName: str) -> AlbumCard:
         """ 通过名字查找专辑卡 """
-        for albumCard in self.albumCard_list:
-            if albumCard.albumInfo['album'] == albumName:
-                # 如果歌手名也相同就直接返回，否则在歌曲列表中寻找
-                if albumCard.albumInfo['songer'] == songerName:
-                    return albumCard
-                """ else:
-                    for songInfo in albumCard.albumInfo['songInfo_list']:
-                        if songInfo['songer'] == songerName:
-                            return albumCard """
-        return None
+        albumCard = self.albumSonger2AlbumCard_dict.get(
+            albumName+'.'+songerName, None)
+        return albumCard
 
     def __albumCardCheckedStateChangedSlot(self, albumCard: AlbumCard, isChecked: bool):
         """ 专辑卡选中状态改变对应的槽函数 """
@@ -480,13 +483,13 @@ class AlbumCardViewer(QWidget):
 
     def updateOneAlbumCardSongInfo(self, newSongInfo: dict):
         """ 更新一个专辑卡的一首歌的信息 """
-        for albumCard in self.albumCard_list:
-            albumInfo = albumCard.albumInfo
-            if albumInfo['album'] == newSongInfo['album'] and albumInfo['songer'] == newSongInfo['songer']:
-                for i, songInfo in enumerate(albumInfo['songInfo_list']):
-                    if songInfo['songPath'] == newSongInfo['songPath']:
-                        albumInfo['songInfo_list'][i] = newSongInfo.copy()
-                        return albumInfo
+        key = newSongInfo['album']+'.'+newSongInfo['songer']
+        if key in self.albumSonger2AlbumCard_dict.keys():
+            albumInfo = self.albumSonger2AlbumCard_dict[key].albumInfo
+            for i, songInfo in enumerate(albumInfo['songInfo_list']):
+                if songInfo['songPath'] == newSongInfo['songPath']:
+                    albumInfo['songInfo_list'][i] = newSongInfo.copy()
+                    return albumInfo
         return {}
 
     def updateAllAlbumCards(self, albumInfo_list: list):
@@ -520,15 +523,23 @@ class AlbumCardViewer(QWidget):
             album = albumInfo['album']
             self.albumCard_list[i].updateWindow(albumInfo)
             QApplication.processEvents()
-            self.albumCardDict_list[i] = {'albumCard': self.albumCard_list[i],
-                                          'albumName': album,
-                                          'year': albumInfo['year'][:4],
-                                          'songer': albumInfo['songer'],
-                                          'firstLetter': pinyin.get_initial(album)[0].upper()}
+            self.albumCardDict_list[i] = {
+                'albumCard': self.albumCard_list[i],
+                'albumName': album,
+                'year': albumInfo['year'][:4],
+                'songer': albumInfo['songer'],
+                'firstLetter': pinyin.get_initial(album)[0].upper()
+            }
         # 重新排序专辑卡
         self.setSortMode(self.sortMode)
         # 根据当前专辑卡数决定是否显示导航标签
         self.guideLabel.setHidden(bool(albumInfo_list))
+        # 更新 "专辑名.歌手名"：专辑卡 字典
+        self.albumSonger2AlbumCard_dict = {}
+        for albumCard in self.albumCard_list:
+            albumInfo = albumCard.albumInfo
+            self.albumSonger2AlbumCard_dict[albumInfo['album'] +
+                                            '.'+albumInfo['songer']] = albumCard
         if deltaNum != 0:
             self.albumNumChanged.emit(newCardNum)
 
@@ -603,6 +614,11 @@ class AlbumCardViewer(QWidget):
 
     def __saveAlbumInfoSlot(self, oldAlbumInfo: dict, newAlbumInfo: dict):
         """ 保存专辑信息槽函数 """
+        # 更新字典
+        self.albumSonger2AlbumCard_dict.pop(
+            oldAlbumInfo['album']+'.'+oldAlbumInfo['songer'])
+        self.albumSonger2AlbumCard_dict[newAlbumInfo['album']+'.'+newAlbumInfo['songer']] = self.sender(
+        )
         self.saveAlbumInfoObject.saveAlbumInfoSlot(
             newAlbumInfo['songInfo_list'])
         self.saveAlbumInfoSig.emit(oldAlbumInfo, newAlbumInfo)

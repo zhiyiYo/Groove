@@ -4,10 +4,9 @@ from ctypes import sizeof, byref, cast, POINTER
 from ctypes.wintypes import HWND, RECT
 
 from win32.lib import win32con
-from win32.win32api import GetMonitorInfo, GetWindowLong, MonitorFromWindow, MonitorFromRect
-from win32.win32gui import GetWindowPlacement, ReleaseCapture, GetWindowRect, GetClientRect
+from win32.win32api import GetMonitorInfo, MonitorFromWindow
+from win32.win32gui import GetWindowPlacement
 
-from .c_structures import WINDOWPLACEMENT, MONITORINFO
 
 
 def isMaximized(hWnd: int) -> bool:

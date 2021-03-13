@@ -21,10 +21,8 @@
 
 # 环境
 * Python 3.8
-* **MSVC**
 * LAV Filter
 * Firefox
 
 # 注意
-1. 为了载入 dll，MSVC是必不可少的
-2. 为了驱动 Firefox，需要下载 **geckodriver.exe**，并将其所在目录添加到环境变量中
+* 为了驱动 Firefox，需要下载 **geckodriver.exe**，并将其所在目录添加到环境变量中

@@ -8,7 +8,7 @@ from PyQt5.QtCore import QEasingCurve, QPropertyAnimation, QRect, Qt, QEvent
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction, QApplication, QMenu
 
-from effects import WindowEffect
+from my_window_effect import WindowEffect
 
 
 class MoreActionsMenu(QMenu):
@@ -18,6 +18,8 @@ class MoreActionsMenu(QMenu):
         super().__init__(parent)
         # 添加动画
         self.animation = QPropertyAnimation(self, b'geometry')
+        # 创建窗口效果实例
+        self.windowEffect=WindowEffect()
         self.__initWidget()
 
     def __initWidget(self):
@@ -33,7 +35,7 @@ class MoreActionsMenu(QMenu):
     def event(self, e: QEvent):
         if e.type() == QEvent.WinIdChange:
             # self.hWnd = HWND(int(self.winId()))
-            WindowEffect.addShadowEffect(self.winId())
+            self.windowEffect.addShadowEffect(self.winId())
         return QMenu.event(self, e)
 
     def __setQss(self):
@@ -93,7 +95,7 @@ class AddToMenu(QMenu):
     def event(self, e: QEvent):
         if e.type() == QEvent.WinIdChange:
             # self.hWnd = HWND(int(self.winId()))
-            WindowEffect.addShadowEffect(self.winId())
+            self.windowEffect.addShadowEffect(self.winId())
         return QMenu.event(self, e)
 
     def createActions(self):

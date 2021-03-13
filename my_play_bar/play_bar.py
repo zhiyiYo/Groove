@@ -5,7 +5,7 @@ import os
 from PyQt5.QtCore import QPoint, Qt
 from PyQt5.QtWidgets import QWidget
 
-from effects.window_effect import WindowEffect
+from my_window_effect import WindowEffect
 from my_functions.get_dominant_color import DominantColor
 from my_play_bar.central_button_group import CentralButtonGroup
 from my_play_bar.more_actions_menu import MoreActionsMenu
@@ -23,6 +23,7 @@ class PlayBar(QWidget):
         # 实例化窗口特效
         self.acrylicColor = '225c7fCC'
         self.dominantColor = DominantColor()
+        self.windowEffect = WindowEffect()
         # 记录移动次数
         self.moveTime = 0
         self.resizeTime = 0
@@ -69,7 +70,7 @@ class PlayBar(QWidget):
 
     def setAcrylicColor(self, gradientColor: str):
         """ 设置亚克力效果的混合色 """
-        WindowEffect.setAcrylicEffect(self.winId(), gradientColor)
+        self.windowEffect.setAcrylicEffect(self.winId(), gradientColor)
 
     def __setQss(self):
         """ 设置层叠样式 """

@@ -2,13 +2,11 @@
 
 import os
 
-from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
-                          QPropertyAnimation, QRect, Qt, pyqtSignal)
-from PyQt5.QtGui import QBrush, QColor, QIcon, QPainter, QPen
-from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsDropShadowEffect,
-                             QHBoxLayout, QMenu, QWidget)
-
-from effects.window_effect import WindowEffect
+from my_window_effect import WindowEffect
+from PyQt5.QtCore import (QEasingCurve, QEvent, QPropertyAnimation, QRect, Qt,
+                          pyqtSignal)
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QAction, QApplication, QMenu
 
 
 class AeroMenu(QMenu):
@@ -16,6 +14,8 @@ class AeroMenu(QMenu):
 
     def __init__(self, string='', parent=None):
         super().__init__(string, parent)
+        # 创建窗口特效
+        self.windowEffect = WindowEffect()
         self.setWindowFlags(Qt.FramelessWindowHint |
                             Qt.Popup | Qt.NoDropShadowWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground | Qt.WA_StyledBackground)
@@ -29,8 +29,8 @@ class AeroMenu(QMenu):
 
     def setMenuEffect(self):
         """ 开启特效 """
-        WindowEffect.setAeroEffect(self.winId())
-        WindowEffect.addShadowEffect(self.winId())
+        self.windowEffect.setAeroEffect(self.winId())
+        self.windowEffect.addShadowEffect(self.winId())
 
     def setQss(self):
         """ 设置层叠样式 """
@@ -44,11 +44,12 @@ class AcrylicMenu(QMenu):
     def __init__(self, string='', parent=None, acrylicColor='e5e5e5CC'):
         super().__init__(string, parent)
         self.acrylicColor = acrylicColor
+        self.windowEffect = WindowEffect()
         self.__initWidget()
 
     def event(self, e: QEvent):
         if e.type() == QEvent.WinIdChange:
-            WindowEffect.setAcrylicEffect(
+            self.windowEffect.setAcrylicEffect(
                 self.winId(), self.acrylicColor, True)
         return QMenu.event(self, e)
 
@@ -104,7 +105,8 @@ class AddToMenu(AcrylicMenu):
         # 扫描播放列表文件夹下的播放列表名字
         if not os.path.exists('Playlists'):
             os.mkdir('Playlists')
-        playlistName_list = [i[:-5] for i in os.listdir('Playlists') if i.endswith('.json')]
+        playlistName_list = [i[:-5]
+                             for i in os.listdir('Playlists') if i.endswith('.json')]
         return playlistName_list
 
     def actionCount(self):

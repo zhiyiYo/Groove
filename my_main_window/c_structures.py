@@ -1,7 +1,7 @@
 # coding:utf-8
 
-from ctypes import POINTER, cast, Structure
-from ctypes.wintypes import POINT, UINT, DWORD, RECT
+from ctypes import POINTER, Structure, c_int
+from ctypes.wintypes import POINT, UINT, RECT, HWND
 
 
 class MINMAXINFO(Structure):
@@ -14,23 +14,20 @@ class MINMAXINFO(Structure):
     ]
 
 
-class WINDOWPLACEMENT(Structure):
+class PWINDOWPOS(Structure):
     _fields_ = [
-        ("length",           UINT),
-        ("flags",            UINT),
-        ("showCmd",          UINT),
-        ("ptMinPosition",    POINT),
-        ("ptMaxPosition",    POINT),
-        ("rcNormalPosition", RECT),
-        ("rcDevice",         RECT)
+        ('hWnd',            HWND),
+        ('hwndInsertAfter', HWND),
+        ('x',               c_int),
+        ('y',               c_int),
+        ('cx',              c_int),
+        ('cy',              c_int),
+        ('flags',           UINT)
     ]
 
 
-class MONITORINFO(Structure):
+class NCCALCSIZE_PARAMS(Structure):
     _fields_ = [
-        ("cbSize",    DWORD),
-        ("rcMonitor", RECT),
-        ("rcWork",    RECT),
-        ("dwFlags",   DWORD),
+        ('rgrc', RECT*3),
+        ('lppos', POINTER(PWINDOWPOS))
     ]
-

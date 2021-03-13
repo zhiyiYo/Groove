@@ -5,7 +5,7 @@ from ctypes.wintypes import HWND
 from PyQt5.QtCore import QEasingCurve, QPropertyAnimation, Qt, QRect
 
 from .navigation_widget import NavigationWidget
-from effects import WindowEffect
+from my_window_effect import WindowEffect
 
 
 class NavigationMenu(NavigationWidget):
@@ -16,6 +16,8 @@ class NavigationMenu(NavigationWidget):
         # 是否削减设置按钮底部空白标志位
         self.__isShowBottomSpacing = False
         self.__ani = QPropertyAnimation(self, b'geometry')
+        # 才叫你窗口效果
+        self.windowEffect = WindowEffect()
         self.__initWidget()
 
     def __initWidget(self):
@@ -24,7 +26,7 @@ class NavigationMenu(NavigationWidget):
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setWindowFlags(Qt.NoDropShadowWindowHint | Qt.Popup)
         # self.hWnd = HWND(int(self.winId()))
-        WindowEffect.setAcrylicEffect(self.winId(), 'F2F2F299')
+        self.windowEffect.setAcrylicEffect(self.winId(), 'F2F2F299')
 
     def resizeEvent(self, e):
         """ 调整小部件尺寸 """

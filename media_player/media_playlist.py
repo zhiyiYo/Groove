@@ -196,10 +196,10 @@ class MediaPlaylist(QMediaPlaylist):
             self.lastSongInfo = {}
         else:
             # 弹出已经不存在的歌曲
-            if not os.path.exists(self.lastSongInfo.get("songPath")):
+            if not os.path.exists(self.lastSongInfo.get("songPath",'')):
                 self.lastSongInfo = {}
             for songInfo in deepcopy(self.playlist):
-                if not os.path.exists(songInfo.get("songPath")):
+                if not os.path.exists(songInfo.get("songPath",'')):
                     self.playlist.remove(songInfo)
 
     def removeMedia(self, index):

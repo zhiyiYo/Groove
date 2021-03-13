@@ -168,7 +168,6 @@ class SongListWidget(ListWidget):
 
     def __switchToAlbumInterface(self, albumName: str, songerName: str):
         """ 切换到专辑界面 """
-        print('发送切换到专辑界面信号')
         self.switchToAlbumInterfaceSig.emit(albumName, songerName)
 
     def updateOneSongCard(self, oldSongInfo: dict, newSongInfo: dict):
