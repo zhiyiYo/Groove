@@ -8,8 +8,9 @@ from ctypes.wintypes import MSG
 from random import shuffle
 from time import time
 
-from PyQt5.QtCore import QEasingCurve, Qt, pyqtSignal, QEvent
+from PyQt5.QtWinExtras import QtWin
 from PyQt5.QtGui import QCloseEvent, QIcon
+from PyQt5.QtCore import QEasingCurve, Qt, pyqtSignal, QEvent
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist
 from PyQt5.QtWidgets import QAction, QApplication, QWidget
 from system_hotkey import SystemHotkey
@@ -79,6 +80,7 @@ class MainWindow(QWidget):
         t4 = time()
         print("创建整个我的音乐界面耗时：".ljust(15), t4 - t3)
         # 创建缩略图任务栏
+        QtWin.enableBlurBehindWindow(self)
         self.thumbnailToolBar = ThumbnailToolBar(self)
         self.thumbnailToolBar.setWindow(self.windowHandle())
         # 创建左上角播放窗口
