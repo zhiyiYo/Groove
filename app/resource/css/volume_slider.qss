@@ -1,0 +1,46 @@
+QWidget{
+    background-color: rgb(217,217,217);
+}
+
+/*音量滑动条*/
+QSlider:horizontal {
+    height: 25px;
+    width: 188px;
+    background-color: transparent;
+    /*padding:10px 0px 10px 0px;*/
+}
+
+
+QSlider::groove:horizontal {
+    width: 188px;
+    border: none;
+    background-color: transparent;
+}
+
+QSlider::handle:horizontal {
+    width: 25px;
+    height: 25px;
+    border-image: url(app/resource/images/playing_interface/volume_slider_handle_normal_25_25.png);
+}
+
+QSlider::handle:horizontal:hover {
+    border-image: url(app/resource/images/playing_interface/volume_slider_handle_hover_25_25.png);
+}
+
+QSlider::handle:horizontal:pressed {
+    border-image: url(app/resource/images/playing_interface/volume_slider_handle_pressed_25_25.png);
+}
+
+
+QSlider::sub-page:horizontal {
+    /*已划过部分的颜色*/
+    background: rgb(0, 153, 187);
+    margin-top: 11px;
+    margin-bottom: 11px;
+}
+
+QSlider::add-page:horizontal {
+    background-color: rgb(130, 131, 134);
+    margin-top: 11px;
+    margin-bottom: 11px;
+}

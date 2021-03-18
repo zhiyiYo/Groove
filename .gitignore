@@ -16,8 +16,8 @@ config/
 Playlists/
 
 # 忽略专辑封面文件夹
-resource/Album_Cover/
-resource/crawl_albums/
+app/resource/Album_Cover/
+app/resource/crawl_albums/
 
 # 忽略json文件
 *.json
@@ -33,7 +33,7 @@ resource/crawl_albums/
 *.log
 
 # 忽略音频文件
-resource/test_audio/
+app/resource/test_audio/
 
 # 忽略测试文件
 test.py

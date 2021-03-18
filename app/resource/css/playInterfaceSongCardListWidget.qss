@@ -1,0 +1,145 @@
+QListWidget {
+    /*selection-color:white;*/
+    border: transparent;
+    outline: none;
+    background:transparent;
+    padding: 0px;
+}
+
+/*设置鼠标悬浮时的颜色*/
+QListWidget::item {
+    background-color: transparent;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/*歌曲卡样式*/
+QWidget#songNameCard {
+    background: transparent;
+}
+
+QLabel {
+    font-family: 'Microsoft YaHei';
+    font-size: 9pt;
+    background-color: transparent;
+}
+
+QLabel#songNameLabel {
+    font-size: 9pt;
+}
+
+QLabel[state='leave-notPlay'] {
+    color: rgb(161, 159, 159);
+}
+
+QLabel[state='leave-play'] {
+    /*color: rgb(72,210,242);*/
+    color: rgb(121, 230, 255);
+}
+
+QLabel[state='enter-notPlay'] {
+    color: white;
+}
+
+QLabel[state='enter-play'] {
+    /*color: rgb(67, 178, 204);*/
+    color: rgb(72, 210, 242);
+}
+
+QLabel#clickableLabel[state='enter-play']:hover {
+    color: rgb(67, 178, 204);
+}
+
+QLabel#clickableLabel[state='enter-notPlay']:hover {
+    color: rgb(212, 214, 215)
+}
+
+QLabel#songNameLabel[isPlay='False'] {
+    color: white;
+}
+
+QLabel#songNameLabel[isPlay='True'] {
+    /*color: rgb(72, 210, 242);*/
+    color: rgb(121, 230, 255)
+}
+
+
+QWidget[state='leave'] {
+    background-color: transparent;
+}
+
+QWidget[state='hover'] {
+    background-color: rgb(41, 50, 54);
+}
+
+QWidget[state='pressed'] {
+    background-color: rgb(86, 77, 77);
+}
+
+
+QToolButton {
+    background-color: transparent;
+    border: none;
+    margin: 0
+}
+
+QToolButton:hover {
+    background: rgb(62, 61, 60);
+}
+
+QToolButton:pressed {
+    background-color: rgb(82, 89, 93);
+}
+
+
+QCheckBox {
+    background-color: transparent;
+    spacing: 0px
+}
+
+QCheckBox::indicator {
+    width: 23px;
+    height: 23px;
+    background-color: transparent;
+}
+
+QCheckBox::indicator[isPlay='False'] {
+    border: 1px solid white;
+}
+
+QCheckBox::indicator[isPlay='True'] {
+    border: 1px solid rgb(72, 210, 242);
+}
+
+QCheckBox::indicator:checked {
+    border-image: url(app/resource/images/playing_interface/indicator_checked_25_25.png);
+}
+
+
+
+/*滚动条*/
+QScrollBar:vertical {
+    background: transparent;
+    width: 6px;
+    border: none;
+    margin-right: 3px;
+}
+
+
+QScrollBarr::sub-line:vertical {
+    background: transparent;
+}
+
+QScrollBar::add-line:vertical {
+    background: transparent;
+}
+
+QScrollBar::handle:vertical {
+    background: rgb(122, 122, 122);
+    border: 2px solid rgb(122,122,122);
+    border-radius: 1px;
+}
+
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical {
+    background: none;
+}
