@@ -169,13 +169,13 @@
 <g id="node17" class="node">
 <title>16</title>
 <polygon fill="none" stroke="black" points="2696.5,-36 2520.5,-36 2520.5,0 2696.5,0 2696.5,-36"/>
-<text text-anchor="middle" x="2608.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_album_interface</text>
+<text text-anchor="middle" x="2608.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.album_interface</text>
 </g>
 <!-- 18 -->
 <g id="node19" class="node">
 <title>18</title>
 <polygon fill="none" stroke="black" points="2743,-108 2474,-108 2474,-72 2743,-72 2743,-108"/>
-<text text-anchor="middle" x="2608.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_album_interface.album_interface</text>
+<text text-anchor="middle" x="2608.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.album_interface.album_interface</text>
 </g>
 <!-- 16&#45;&gt;18 -->
 <g id="edge10" class="edge">
@@ -187,13 +187,13 @@
 <g id="node18" class="node">
 <title>17</title>
 <polygon fill="none" stroke="black" points="2444,-180 2175,-180 2175,-144 2444,-144 2444,-180"/>
-<text text-anchor="middle" x="2309.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_album_interface.album_info_bar</text>
+<text text-anchor="middle" x="2309.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.album_interface.album_info_bar</text>
 </g>
 <!-- 19 -->
 <g id="node20" class="node">
 <title>19</title>
 <polygon fill="none" stroke="black" points="2269.5,-252 1951.5,-252 1951.5,-216 2269.5,-216 2269.5,-252"/>
-<text text-anchor="middle" x="2110.5" y="-230.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_album_interface.album_interface_buttons</text>
+<text text-anchor="middle" x="2110.5" y="-230.3" font-family="Times New Roman,serif" font-size="14.00">Groove.album_interface.album_interface_buttons</text>
 </g>
 <!-- 17&#45;&gt;19 -->
 <g id="edge11" class="edge">
@@ -205,7 +205,7 @@
 <g id="node21" class="node">
 <title>20</title>
 <polygon fill="none" stroke="black" points="2599.5,-252 2287.5,-252 2287.5,-216 2599.5,-216 2599.5,-252"/>
-<text text-anchor="middle" x="2443.5" y="-230.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_album_interface.album_interface_menus</text>
+<text text-anchor="middle" x="2443.5" y="-230.3" font-family="Times New Roman,serif" font-size="14.00">Groove.album_interface.album_interface_menus</text>
 </g>
 <!-- 17&#45;&gt;20 -->
 <g id="edge12" class="edge">
@@ -223,7 +223,7 @@
 <g id="node22" class="node">
 <title>21</title>
 <polygon fill="none" stroke="black" points="2755,-180 2462,-180 2462,-144 2755,-144 2755,-180"/>
-<text text-anchor="middle" x="2608.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_album_interface.selection_mode_bar</text>
+<text text-anchor="middle" x="2608.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.album_interface.selection_mode_bar</text>
 </g>
 <!-- 18&#45;&gt;21 -->
 <g id="edge14" class="edge">
@@ -235,7 +235,7 @@
 <g id="node24" class="node">
 <title>23</title>
 <polygon fill="none" stroke="black" points="3080,-180 2773,-180 2773,-144 3080,-144 3080,-180"/>
-<text text-anchor="middle" x="2926.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_album_interface.song_card_list_widget</text>
+<text text-anchor="middle" x="2926.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.album_interface.song_card_list_widget</text>
 </g>
 <!-- 18&#45;&gt;23 -->
 <g id="edge15" class="edge">
@@ -247,7 +247,7 @@
 <g id="node23" class="node">
 <title>22</title>
 <polygon fill="none" stroke="black" points="3101,-252 2752,-252 2752,-216 3101,-216 3101,-252"/>
-<text text-anchor="middle" x="2926.5" y="-230.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_album_interface.song_card_list_context_menu</text>
+<text text-anchor="middle" x="2926.5" y="-230.3" font-family="Times New Roman,serif" font-size="14.00">Groove.album_interface.song_card_list_context_menu</text>
 </g>
 <!-- 23&#45;&gt;22 -->
 <g id="edge16" class="edge">
@@ -259,13 +259,13 @@
 <g id="node25" class="node">
 <title>24</title>
 <polygon fill="none" stroke="black" points="3532,-36 3331,-36 3331,0 3532,0 3532,-36"/>
-<text text-anchor="middle" x="3431.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_album_tab_interface</text>
+<text text-anchor="middle" x="3431.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.album_tab_interface</text>
 </g>
 <!-- 28 -->
 <g id="node29" class="node">
 <title>28</title>
 <polygon fill="none" stroke="black" points="3588.5,-108 3274.5,-108 3274.5,-72 3588.5,-72 3588.5,-108"/>
-<text text-anchor="middle" x="3431.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_album_tab_interface.album_card_viewer</text>
+<text text-anchor="middle" x="3431.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.album_tab_interface.album_card_viewer</text>
 </g>
 <!-- 24&#45;&gt;28 -->
 <g id="edge17" class="edge">
@@ -277,19 +277,19 @@
 <g id="node26" class="node">
 <title>25</title>
 <polygon fill="none" stroke="black" points="3440.5,-180 3098.5,-180 3098.5,-144 3440.5,-144 3440.5,-180"/>
-<text text-anchor="middle" x="3269.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_album_tab_interface.album_blur_background</text>
+<text text-anchor="middle" x="3269.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.album_tab_interface.album_blur_background</text>
 </g>
 <!-- 26 -->
 <g id="node27" class="node">
 <title>26</title>
 <polygon fill="none" stroke="black" points="3730,-180 3459,-180 3459,-144 3730,-144 3730,-180"/>
-<text text-anchor="middle" x="3594.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_album_tab_interface.album_card</text>
+<text text-anchor="middle" x="3594.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.album_tab_interface.album_card</text>
 </g>
 <!-- 27 -->
 <g id="node28" class="node">
 <title>27</title>
 <polygon fill="none" stroke="black" points="3625,-252 3268,-252 3268,-216 3625,-216 3625,-252"/>
-<text text-anchor="middle" x="3446.5" y="-230.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_album_tab_interface.album_card_context_menu</text>
+<text text-anchor="middle" x="3446.5" y="-230.3" font-family="Times New Roman,serif" font-size="14.00">Groove.album_tab_interface.album_card_context_menu</text>
 </g>
 <!-- 26&#45;&gt;27 -->
 <g id="edge18" class="edge">
@@ -301,7 +301,7 @@
 <g id="node30" class="node">
 <title>29</title>
 <polygon fill="none" stroke="black" points="3910,-252 3643,-252 3643,-216 3910,-216 3910,-252"/>
-<text text-anchor="middle" x="3776.5" y="-230.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_album_tab_interface.check_box</text>
+<text text-anchor="middle" x="3776.5" y="-230.3" font-family="Times New Roman,serif" font-size="14.00">Groove.album_tab_interface.check_box</text>
 </g>
 <!-- 26&#45;&gt;29 -->
 <g id="edge19" class="edge">
@@ -325,19 +325,19 @@
 <g id="node31" class="node">
 <title>30</title>
 <polygon fill="none" stroke="black" points="3946.5,-36 3628.5,-36 3628.5,0 3946.5,0 3946.5,-36"/>
-<text text-anchor="middle" x="3787.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_album_tab_interface.selection_mode_bar</text>
+<text text-anchor="middle" x="3787.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.album_tab_interface.selection_mode_bar</text>
 </g>
 <!-- 31 -->
 <g id="node32" class="node">
 <title>31</title>
 <polygon fill="none" stroke="black" points="4155,-36 4004,-36 4004,0 4155,0 4155,-36"/>
-<text text-anchor="middle" x="4079.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_dialog_box</text>
+<text text-anchor="middle" x="4079.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.dialog_box</text>
 </g>
 <!-- 34 -->
 <g id="node35" class="node">
 <title>34</title>
 <polygon fill="none" stroke="black" points="3964,-108 3725,-108 3725,-72 3964,-72 3964,-108"/>
-<text text-anchor="middle" x="3844.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_dialog_box.property_panel</text>
+<text text-anchor="middle" x="3844.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.dialog_box.property_panel</text>
 </g>
 <!-- 31&#45;&gt;34 -->
 <g id="edge22" class="edge">
@@ -349,7 +349,7 @@
 <g id="node36" class="node">
 <title>35</title>
 <polygon fill="none" stroke="black" points="4257,-108 3982,-108 3982,-72 4257,-72 4257,-108"/>
-<text text-anchor="middle" x="4119.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_dialog_box.song_info_edit_panel</text>
+<text text-anchor="middle" x="4119.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.dialog_box.song_info_edit_panel</text>
 </g>
 <!-- 31&#45;&gt;35 -->
 <g id="edge23" class="edge">
@@ -361,13 +361,13 @@
 <g id="node33" class="node">
 <title>32</title>
 <polygon fill="none" stroke="black" points="4557.5,-108 4275.5,-108 4275.5,-72 4557.5,-72 4557.5,-108"/>
-<text text-anchor="middle" x="4416.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_dialog_box.album_info_edit_panel</text>
+<text text-anchor="middle" x="4416.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.dialog_box.album_info_edit_panel</text>
 </g>
 <!-- 36 -->
 <g id="node37" class="node">
 <title>36</title>
 <polygon fill="none" stroke="black" points="4394,-180 4143,-180 4143,-144 4394,-144 4394,-180"/>
-<text text-anchor="middle" x="4268.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_dialog_box.sub_panel_frame</text>
+<text text-anchor="middle" x="4268.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.dialog_box.sub_panel_frame</text>
 </g>
 <!-- 32&#45;&gt;36 -->
 <g id="edge24" class="edge">
@@ -379,7 +379,7 @@
 <g id="node34" class="node">
 <title>33</title>
 <polygon fill="none" stroke="black" points="4831.5,-108 4575.5,-108 4575.5,-72 4831.5,-72 4831.5,-108"/>
-<text text-anchor="middle" x="4703.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_dialog_box.delete_card_panel</text>
+<text text-anchor="middle" x="4703.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.dialog_box.delete_card_panel</text>
 </g>
 <!-- 33&#45;&gt;36 -->
 <g id="edge25" class="edge">
@@ -403,115 +403,115 @@
 <g id="node38" class="node">
 <title>37</title>
 <polygon fill="none" stroke="black" points="4313.5,-36 4173.5,-36 4173.5,0 4313.5,0 4313.5,-36"/>
-<text text-anchor="middle" x="4243.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_functions</text>
+<text text-anchor="middle" x="4243.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.utils</text>
 </g>
 <!-- 38 -->
 <g id="node39" class="node">
 <title>38</title>
 <polygon fill="none" stroke="black" points="4585.5,-36 4331.5,-36 4331.5,0 4585.5,0 4585.5,-36"/>
-<text text-anchor="middle" x="4458.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_functions.adjust_album_name</text>
+<text text-anchor="middle" x="4458.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.utils.adjust_album_name</text>
 </g>
 <!-- 39 -->
 <g id="node40" class="node">
 <title>39</title>
 <polygon fill="none" stroke="black" points="4807,-36 4604,-36 4604,0 4807,0 4807,-36"/>
-<text text-anchor="middle" x="4705.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_functions.auto_wrap</text>
+<text text-anchor="middle" x="4705.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.utils.auto_wrap</text>
 </g>
 <!-- 40 -->
 <g id="node41" class="node">
 <title>40</title>
 <polygon fill="none" stroke="black" points="5054,-36 4825,-36 4825,0 5054,0 5054,-36"/>
-<text text-anchor="middle" x="4939.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_functions.detect_Chinese</text>
+<text text-anchor="middle" x="4939.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.utils.detect_Chinese</text>
 </g>
 <!-- 41 -->
 <g id="node42" class="node">
 <title>41</title>
 <polygon fill="none" stroke="black" points="5274.5,-36 5072.5,-36 5072.5,0 5274.5,0 5274.5,-36"/>
-<text text-anchor="middle" x="5173.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_functions.find_caller</text>
+<text text-anchor="middle" x="5173.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.utils.find_caller</text>
 </g>
 <!-- 42 -->
 <g id="node43" class="node">
 <title>42</title>
 <polygon fill="none" stroke="black" points="5512.5,-36 5292.5,-36 5292.5,0 5512.5,0 5512.5,-36"/>
-<text text-anchor="middle" x="5402.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_functions.gaussian_blur</text>
+<text text-anchor="middle" x="5402.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.utils.gaussian_blur</text>
 </g>
 <!-- 43 -->
 <g id="node44" class="node">
 <title>43</title>
 <polygon fill="none" stroke="black" points="5760.5,-36 5530.5,-36 5530.5,0 5760.5,0 5760.5,-36"/>
-<text text-anchor="middle" x="5645.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_functions.get_cover_path</text>
+<text text-anchor="middle" x="5645.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.utils.get_cover_path</text>
 </g>
 <!-- 44 -->
 <g id="node45" class="node">
 <title>44</title>
 <polygon fill="none" stroke="black" points="6034.5,-36 5778.5,-36 5778.5,0 6034.5,0 6034.5,-36"/>
-<text text-anchor="middle" x="5906.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_functions.get_dominant_color</text>
+<text text-anchor="middle" x="5906.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.utils.get_dominant_color</text>
 </g>
 <!-- 45 -->
 <g id="node46" class="node">
 <title>45</title>
 <polygon fill="none" stroke="black" points="6276.5,-36 6052.5,-36 6052.5,0 6276.5,0 6276.5,-36"/>
-<text text-anchor="middle" x="6164.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_functions.get_pic_suffix</text>
+<text text-anchor="middle" x="6164.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.utils.get_pic_suffix</text>
 </g>
 <!-- 46 -->
 <g id="node47" class="node">
 <title>46</title>
 <polygon fill="none" stroke="black" points="6488.5,-36 6294.5,-36 6294.5,0 6488.5,0 6488.5,-36"/>
-<text text-anchor="middle" x="6391.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_functions.get_pixel</text>
+<text text-anchor="middle" x="6391.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.utils.get_pixel</text>
 </g>
 <!-- 47 -->
 <g id="node48" class="node">
 <title>47</title>
 <polygon fill="none" stroke="black" points="6746,-36 6507,-36 6507,0 6746,0 6746,-36"/>
-<text text-anchor="middle" x="6626.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_functions.get_pressed_pos</text>
+<text text-anchor="middle" x="6626.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.utils.get_pressed_pos</text>
 </g>
 <!-- 48 -->
 <g id="node49" class="node">
 <title>48</title>
 <polygon fill="none" stroke="black" points="7018.5,-36 6764.5,-36 6764.5,0 7018.5,0 7018.5,-36"/>
-<text text-anchor="middle" x="6891.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_functions.get_system_volume</text>
+<text text-anchor="middle" x="6891.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.utils.get_system_volume</text>
 </g>
 <!-- 49 -->
 <g id="node50" class="node">
 <title>49</title>
 <polygon fill="none" stroke="black" points="7250,-36 7037,-36 7037,0 7250,0 7250,-36"/>
-<text text-anchor="middle" x="7143.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_functions.is_not_leave</text>
+<text text-anchor="middle" x="7143.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.utils.is_not_leave</text>
 </g>
 <!-- 50 -->
 <g id="node51" class="node">
 <title>50</title>
 <polygon fill="none" stroke="black" points="7509,-36 7268,-36 7268,0 7509,0 7509,-36"/>
-<text text-anchor="middle" x="7388.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_functions.modify_songInfo</text>
+<text text-anchor="middle" x="7388.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.utils.modify_song_info</text>
 </g>
 <!-- 51 -->
 <g id="node52" class="node">
 <title>51</title>
 <polygon fill="none" stroke="black" points="7817.5,-36 7527.5,-36 7527.5,0 7817.5,0 7817.5,-36"/>
-<text text-anchor="middle" x="7672.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_functions.perspective_transform_cv</text>
+<text text-anchor="middle" x="7672.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.utils.perspective_transform_cv</text>
 </g>
 <!-- 52 -->
 <g id="node53" class="node">
 <title>52</title>
 <polygon fill="none" stroke="black" points="8125.5,-36 7835.5,-36 7835.5,0 8125.5,0 8125.5,-36"/>
-<text text-anchor="middle" x="7980.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_functions.perspective_transform_pil</text>
+<text text-anchor="middle" x="7980.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.utils.perspective_transform_pil</text>
 </g>
 <!-- 53 -->
 <g id="node54" class="node">
 <title>53</title>
 <polygon fill="none" stroke="black" points="8413,-36 8144,-36 8144,0 8413,0 8413,-36"/>
-<text text-anchor="middle" x="8278.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_functions.smooth_image_jagged</text>
+<text text-anchor="middle" x="8278.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.utils.smooth_image_jagged</text>
 </g>
 <!-- 54 -->
 <g id="node55" class="node">
 <title>54</title>
 <polygon fill="none" stroke="black" points="8655.5,-36 8431.5,-36 8431.5,0 8655.5,0 8655.5,-36"/>
-<text text-anchor="middle" x="8543.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_functions.test_colorthief</text>
+<text text-anchor="middle" x="8543.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.utils.test_colorthief</text>
 </g>
 <!-- 55 -->
 <g id="node56" class="node">
 <title>55</title>
 <polygon fill="none" stroke="black" points="8925,-36 8674,-36 8674,0 8925,0 8925,-36"/>
-<text text-anchor="middle" x="8799.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_functions.write_album_cover</text>
+<text text-anchor="middle" x="8799.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.utils.write_album_cover</text>
 </g>
 <!-- 58 -->
 <g id="node59" class="node">
@@ -607,13 +607,13 @@
 <g id="node65" class="node">
 <title>64</title>
 <polygon fill="none" stroke="black" points="9359,-36 9222,-36 9222,0 9359,0 9359,-36"/>
-<text text-anchor="middle" x="9290.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_play_bar</text>
+<text text-anchor="middle" x="9290.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.play_bar</text>
 </g>
 <!-- 68 -->
 <g id="node69" class="node">
 <title>68</title>
 <polygon fill="none" stroke="black" points="9385,-108 9196,-108 9196,-72 9385,-72 9385,-108"/>
-<text text-anchor="middle" x="9290.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_play_bar.play_bar</text>
+<text text-anchor="middle" x="9290.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.play_bar.play_bar</text>
 </g>
 <!-- 64&#45;&gt;68 -->
 <g id="edge36" class="edge">
@@ -625,13 +625,13 @@
 <g id="node66" class="node">
 <title>65</title>
 <polygon fill="none" stroke="black" points="9638,-36 9377,-36 9377,0 9638,0 9638,-36"/>
-<text text-anchor="middle" x="9507.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_play_bar.central_button_group</text>
+<text text-anchor="middle" x="9507.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.play_bar.central_button_group</text>
 </g>
 <!-- 69 -->
 <g id="node70" class="node">
 <title>69</title>
 <polygon fill="none" stroke="black" points="9772,-108 9533,-108 9533,-72 9772,-72 9772,-108"/>
-<text text-anchor="middle" x="9652.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_play_bar.play_bar_buttons</text>
+<text text-anchor="middle" x="9652.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.play_bar.play_bar_buttons</text>
 </g>
 <!-- 65&#45;&gt;69 -->
 <g id="edge37" class="edge">
@@ -643,25 +643,25 @@
 <g id="node67" class="node">
 <title>66</title>
 <polygon fill="none" stroke="black" points="10178.5,-36 9924.5,-36 9924.5,0 10178.5,0 10178.5,-36"/>
-<text text-anchor="middle" x="10051.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_play_bar.more_actions_menu</text>
+<text text-anchor="middle" x="10051.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.play_bar.more_actions_menu</text>
 </g>
 <!-- 67 -->
 <g id="node68" class="node">
 <title>67</title>
 <polygon fill="none" stroke="black" points="10496,-36 10197,-36 10197,0 10496,0 10496,-36"/>
-<text text-anchor="middle" x="10346.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_play_bar.more_actions_menu_noaero</text>
+<text text-anchor="middle" x="10346.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.play_bar.more_actions_menu_noaero</text>
 </g>
 <!-- 70 -->
 <g id="node71" class="node">
 <title>70</title>
 <polygon fill="none" stroke="black" points="10759,-36 10514,-36 10514,0 10759,0 10759,-36"/>
-<text text-anchor="middle" x="10636.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_play_bar.play_progress_bar</text>
+<text text-anchor="middle" x="10636.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.play_bar.play_progress_bar</text>
 </g>
 <!-- 71 -->
 <g id="node72" class="node">
 <title>71</title>
 <polygon fill="none" stroke="black" points="9906.5,-36 9656.5,-36 9656.5,0 9906.5,0 9906.5,-36"/>
-<text text-anchor="middle" x="9781.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_play_bar.right_widget_group</text>
+<text text-anchor="middle" x="9781.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.play_bar.right_widget_group</text>
 </g>
 <!-- 71&#45;&gt;69 -->
 <g id="edge38" class="edge">
@@ -673,13 +673,13 @@
 <g id="node73" class="node">
 <title>72</title>
 <polygon fill="none" stroke="black" points="11006,-36 10777,-36 10777,0 11006,0 11006,-36"/>
-<text text-anchor="middle" x="10891.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_play_bar.song_info_card</text>
+<text text-anchor="middle" x="10891.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.play_bar.song_info_card</text>
 </g>
 <!-- 73 -->
 <g id="node74" class="node">
 <title>73</title>
 <polygon fill="none" stroke="black" points="11002,-108 10781,-108 10781,-72 11002,-72 11002,-108"/>
-<text text-anchor="middle" x="10891.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_play_bar.window_mask</text>
+<text text-anchor="middle" x="10891.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.play_bar.window_mask</text>
 </g>
 <!-- 72&#45;&gt;73 -->
 <g id="edge39" class="edge">
@@ -691,13 +691,13 @@
 <g id="node75" class="node">
 <title>74</title>
 <polygon fill="none" stroke="black" points="11251.5,-36 11069.5,-36 11069.5,0 11251.5,0 11251.5,-36"/>
-<text text-anchor="middle" x="11160.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_playing_interface</text>
+<text text-anchor="middle" x="11160.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playing_interface</text>
 </g>
 <!-- 80 -->
 <g id="node81" class="node">
 <title>80</title>
 <polygon fill="none" stroke="black" points="11301,-108 11020,-108 11020,-72 11301,-72 11301,-108"/>
-<text text-anchor="middle" x="11160.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_playing_interface.playing_interface</text>
+<text text-anchor="middle" x="11160.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playing_interface.playing_interface</text>
 </g>
 <!-- 74&#45;&gt;80 -->
 <g id="edge40" class="edge">
@@ -709,25 +709,25 @@
 <g id="node76" class="node">
 <title>75</title>
 <polygon fill="none" stroke="black" points="10712,-180 10423,-180 10423,-144 10712,-144 10712,-180"/>
-<text text-anchor="middle" x="10567.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_playing_interface.blur_cover_thread</text>
+<text text-anchor="middle" x="10567.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playing_interface.blur_cover_thread</text>
 </g>
 <!-- 76 -->
 <g id="node77" class="node">
 <title>76</title>
 <polygon fill="none" stroke="black" points="11929.5,-252 11713.5,-252 11713.5,-216 11929.5,-216 11929.5,-252"/>
-<text text-anchor="middle" x="11821.5" y="-230.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_playing_interface.menu</text>
+<text text-anchor="middle" x="11821.5" y="-230.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playing_interface.menu</text>
 </g>
 <!-- 77 -->
 <g id="node78" class="node">
 <title>77</title>
 <polygon fill="none" stroke="black" points="10965,-180 10730,-180 10730,-144 10965,-144 10965,-180"/>
-<text text-anchor="middle" x="10847.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_playing_interface.play_bar</text>
+<text text-anchor="middle" x="10847.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playing_interface.play_bar</text>
 </g>
 <!-- 78 -->
 <g id="node79" class="node">
 <title>78</title>
 <polygon fill="none" stroke="black" points="11000.5,-324 10716.5,-324 10716.5,-288 11000.5,-288 11000.5,-324"/>
-<text text-anchor="middle" x="10858.5" y="-302.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_playing_interface.play_bar_buttons</text>
+<text text-anchor="middle" x="10858.5" y="-302.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playing_interface.play_bar_buttons</text>
 </g>
 <!-- 77&#45;&gt;78 -->
 <g id="edge41" class="edge">
@@ -739,7 +739,7 @@
 <g id="node80" class="node">
 <title>79</title>
 <polygon fill="none" stroke="black" points="10708,-252 10417,-252 10417,-216 10708,-216 10708,-252"/>
-<text text-anchor="middle" x="10562.5" y="-230.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_playing_interface.play_progress_bar</text>
+<text text-anchor="middle" x="10562.5" y="-230.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playing_interface.play_progress_bar</text>
 </g>
 <!-- 77&#45;&gt;79 -->
 <g id="edge42" class="edge">
@@ -751,7 +751,7 @@
 <g id="node89" class="node">
 <title>88</title>
 <polygon fill="none" stroke="black" points="10990.5,-252 10726.5,-252 10726.5,-216 10990.5,-216 10990.5,-252"/>
-<text text-anchor="middle" x="10858.5" y="-230.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_playing_interface.volume_slider</text>
+<text text-anchor="middle" x="10858.5" y="-230.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playing_interface.volume_slider</text>
 </g>
 <!-- 77&#45;&gt;88 -->
 <g id="edge43" class="edge">
@@ -775,7 +775,7 @@
 <g id="node83" class="node">
 <title>82</title>
 <polygon fill="none" stroke="black" points="11338,-180 10983,-180 10983,-144 11338,-144 11338,-180"/>
-<text text-anchor="middle" x="11160.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_playing_interface.smallest_play_mode_interface</text>
+<text text-anchor="middle" x="11160.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playing_interface.smallest_play_mode_interface</text>
 </g>
 <!-- 80&#45;&gt;82 -->
 <g id="edge46" class="edge">
@@ -787,7 +787,7 @@
 <g id="node87" class="node">
 <title>86</title>
 <polygon fill="none" stroke="black" points="11668.5,-180 11356.5,-180 11356.5,-144 11668.5,-144 11668.5,-180"/>
-<text text-anchor="middle" x="11512.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_playing_interface.song_info_card_chute</text>
+<text text-anchor="middle" x="11512.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playing_interface.song_info_card_chute</text>
 </g>
 <!-- 80&#45;&gt;86 -->
 <g id="edge47" class="edge">
@@ -799,7 +799,7 @@
 <g id="node88" class="node">
 <title>87</title>
 <polygon fill="none" stroke="black" points="11968,-180 11687,-180 11687,-144 11968,-144 11968,-180"/>
-<text text-anchor="middle" x="11827.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_playing_interface.song_list_widget</text>
+<text text-anchor="middle" x="11827.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playing_interface.song_list_widget</text>
 </g>
 <!-- 80&#45;&gt;87 -->
 <g id="edge48" class="edge">
@@ -811,7 +811,7 @@
 <g id="node82" class="node">
 <title>81</title>
 <polygon fill="none" stroke="black" points="11396.5,-252 11046.5,-252 11046.5,-216 11396.5,-216 11396.5,-252"/>
-<text text-anchor="middle" x="11221.5" y="-230.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_playing_interface.smallest_play_mode_buttons</text>
+<text text-anchor="middle" x="11221.5" y="-230.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playing_interface.smallest_play_mode_buttons</text>
 </g>
 <!-- 82&#45;&gt;78 -->
 <g id="edge49" class="edge">
@@ -829,13 +829,13 @@
 <g id="node84" class="node">
 <title>83</title>
 <polygon fill="none" stroke="black" points="12193,-252 11948,-252 11948,-216 12193,-216 12193,-252"/>
-<text text-anchor="middle" x="12070.5" y="-230.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_playing_interface.song_card</text>
+<text text-anchor="middle" x="12070.5" y="-230.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playing_interface.song_card</text>
 </g>
 <!-- 84 -->
 <g id="node85" class="node">
 <title>84</title>
 <polygon fill="none" stroke="black" points="12221,-324 11920,-324 11920,-288 12221,-288 12221,-324"/>
-<text text-anchor="middle" x="12070.5" y="-302.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_playing_interface.song_card_sub_unit</text>
+<text text-anchor="middle" x="12070.5" y="-302.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playing_interface.song_card_sub_unit</text>
 </g>
 <!-- 83&#45;&gt;84 -->
 <g id="edge51" class="edge">
@@ -847,7 +847,7 @@
 <g id="node86" class="node">
 <title>85</title>
 <polygon fill="none" stroke="black" points="11690,-252 11415,-252 11415,-216 11690,-216 11690,-252"/>
-<text text-anchor="middle" x="11552.5" y="-230.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_playing_interface.song_info_card</text>
+<text text-anchor="middle" x="11552.5" y="-230.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playing_interface.song_info_card</text>
 </g>
 <!-- 86&#45;&gt;85 -->
 <g id="edge52" class="edge">
@@ -877,13 +877,13 @@
 <g id="node90" class="node">
 <title>89</title>
 <polygon fill="none" stroke="black" points="12570.5,-36 12356.5,-36 12356.5,0 12570.5,0 12570.5,-36"/>
-<text text-anchor="middle" x="12463.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_playlist_card_interface</text>
+<text text-anchor="middle" x="12463.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playlist_card_interface</text>
 </g>
 <!-- 93 -->
 <g id="node94" class="node">
 <title>93</title>
 <polygon fill="none" stroke="black" points="12635.5,-108 12291.5,-108 12291.5,-72 12635.5,-72 12635.5,-108"/>
-<text text-anchor="middle" x="12463.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_playlist_card_interface.playlist_card_interface</text>
+<text text-anchor="middle" x="12463.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playlist_card_interface.playlist_card_interface</text>
 </g>
 <!-- 89&#45;&gt;93 -->
 <g id="edge56" class="edge">
@@ -895,19 +895,19 @@
 <g id="node91" class="node">
 <title>90</title>
 <polygon fill="none" stroke="black" points="12300.5,-180 11986.5,-180 11986.5,-144 12300.5,-144 12300.5,-180"/>
-<text text-anchor="middle" x="12143.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_playlist_card_interface.blur_background</text>
+<text text-anchor="middle" x="12143.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playlist_card_interface.blur_background</text>
 </g>
 <!-- 91 -->
 <g id="node92" class="node">
 <title>91</title>
 <polygon fill="none" stroke="black" points="12608,-180 12319,-180 12319,-144 12608,-144 12608,-180"/>
-<text text-anchor="middle" x="12463.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_playlist_card_interface.playlist_card</text>
+<text text-anchor="middle" x="12463.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playlist_card_interface.playlist_card</text>
 </g>
 <!-- 92 -->
 <g id="node93" class="node">
 <title>92</title>
 <polygon fill="none" stroke="black" points="12651,-252 12276,-252 12276,-216 12651,-216 12651,-252"/>
-<text text-anchor="middle" x="12463.5" y="-230.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_playlist_card_interface.playlist_card_context_menu</text>
+<text text-anchor="middle" x="12463.5" y="-230.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playlist_card_interface.playlist_card_context_menu</text>
 </g>
 <!-- 91&#45;&gt;92 -->
 <g id="edge57" class="edge">
@@ -931,7 +931,7 @@
 <g id="node95" class="node">
 <title>94</title>
 <polygon fill="none" stroke="black" points="12957,-180 12626,-180 12626,-144 12957,-144 12957,-180"/>
-<text text-anchor="middle" x="12791.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_playlist_card_interface.selection_mode_bar</text>
+<text text-anchor="middle" x="12791.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playlist_card_interface.selection_mode_bar</text>
 </g>
 <!-- 93&#45;&gt;94 -->
 <g id="edge60" class="edge">
@@ -943,19 +943,19 @@
 <g id="node96" class="node">
 <title>95</title>
 <polygon fill="none" stroke="black" points="12806.5,-36 12588.5,-36 12588.5,0 12806.5,0 12806.5,-36"/>
-<text text-anchor="middle" x="12697.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_playlist_panel_interface</text>
+<text text-anchor="middle" x="12697.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playlist_panel_interface</text>
 </g>
 <!-- 96 -->
 <g id="node97" class="node">
 <title>96</title>
 <polygon fill="none" stroke="black" points="13399,-108 13064,-108 13064,-72 13399,-72 13399,-108"/>
-<text text-anchor="middle" x="13231.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_playlist_panel_interface.basic_playlist_panel</text>
+<text text-anchor="middle" x="13231.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playlist_panel_interface.basic_playlist_panel</text>
 </g>
 <!-- 99 -->
 <g id="node100" class="node">
 <title>99</title>
 <polygon fill="none" stroke="black" points="13366,-180 13097,-180 13097,-144 13366,-144 13366,-180"/>
-<text text-anchor="middle" x="13231.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_playlist_panel_interface.line_edit</text>
+<text text-anchor="middle" x="13231.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playlist_panel_interface.line_edit</text>
 </g>
 <!-- 96&#45;&gt;99 -->
 <g id="edge61" class="edge">
@@ -967,13 +967,13 @@
 <g id="node98" class="node">
 <title>97</title>
 <polygon fill="none" stroke="black" points="13889,-36 13544,-36 13544,0 13889,0 13889,-36"/>
-<text text-anchor="middle" x="13716.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_playlist_panel_interface.create_playlist_button</text>
+<text text-anchor="middle" x="13716.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playlist_panel_interface.create_playlist_button</text>
 </g>
 <!-- 98 -->
 <g id="node99" class="node">
 <title>98</title>
 <polygon fill="none" stroke="black" points="13162.5,-36 12824.5,-36 12824.5,0 13162.5,0 13162.5,-36"/>
-<text text-anchor="middle" x="12993.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_playlist_panel_interface.create_playlist_panel</text>
+<text text-anchor="middle" x="12993.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playlist_panel_interface.create_playlist_panel</text>
 </g>
 <!-- 98&#45;&gt;96 -->
 <g id="edge62" class="edge">
@@ -985,7 +985,7 @@
 <g id="node101" class="node">
 <title>100</title>
 <polygon fill="none" stroke="black" points="13526,-36 13181,-36 13181,0 13526,0 13526,-36"/>
-<text text-anchor="middle" x="13353.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_playlist_panel_interface.rename_playlist_panel</text>
+<text text-anchor="middle" x="13353.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playlist_panel_interface.rename_playlist_panel</text>
 </g>
 <!-- 100&#45;&gt;96 -->
 <g id="edge63" class="edge">
@@ -997,13 +997,13 @@
 <g id="node102" class="node">
 <title>101</title>
 <polygon fill="none" stroke="black" points="14086,-36 13907,-36 13907,0 14086,0 14086,-36"/>
-<text text-anchor="middle" x="13996.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_setting_interface</text>
+<text text-anchor="middle" x="13996.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.setting_interface</text>
 </g>
 <!-- 107 -->
 <g id="node108" class="node">
 <title>107</title>
 <polygon fill="none" stroke="black" points="14133,-108 13860,-108 13860,-72 14133,-72 14133,-108"/>
-<text text-anchor="middle" x="13996.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_setting_interface.setting_interface</text>
+<text text-anchor="middle" x="13996.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.setting_interface.setting_interface</text>
 </g>
 <!-- 101&#45;&gt;107 -->
 <g id="edge64" class="edge">
@@ -1015,19 +1015,19 @@
 <g id="node103" class="node">
 <title>102</title>
 <polygon fill="none" stroke="black" points="14477.5,-108 14151.5,-108 14151.5,-72 14477.5,-72 14477.5,-108"/>
-<text text-anchor="middle" x="14314.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_setting_interface.delete_song_folder_panel</text>
+<text text-anchor="middle" x="14314.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.setting_interface.delete_song_folder_panel</text>
 </g>
 <!-- 103 -->
 <g id="node104" class="node">
 <title>103</title>
 <polygon fill="none" stroke="black" points="14743.5,-108 14495.5,-108 14495.5,-72 14743.5,-72 14743.5,-108"/>
-<text text-anchor="middle" x="14619.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_setting_interface.folder_card</text>
+<text text-anchor="middle" x="14619.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.setting_interface.folder_card</text>
 </g>
 <!-- 104 -->
 <g id="node105" class="node">
 <title>104</title>
 <polygon fill="none" stroke="black" points="14832,-180 14559,-180 14559,-144 14832,-144 14832,-180"/>
-<text text-anchor="middle" x="14695.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_setting_interface.folding_window</text>
+<text text-anchor="middle" x="14695.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.setting_interface.folding_window</text>
 </g>
 <!-- 103&#45;&gt;104 -->
 <g id="edge65" class="edge">
@@ -1039,13 +1039,13 @@
 <g id="node106" class="node">
 <title>105</title>
 <polygon fill="none" stroke="black" points="15106,-36 14801,-36 14801,0 15106,0 15106,-36"/>
-<text text-anchor="middle" x="14953.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_setting_interface.get_meta_data_thread</text>
+<text text-anchor="middle" x="14953.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.setting_interface.get_meta_data_thread</text>
 </g>
 <!-- 106 -->
 <g id="node107" class="node">
 <title>106</title>
 <polygon fill="none" stroke="black" points="14782.5,-36 14456.5,-36 14456.5,0 14782.5,0 14782.5,-36"/>
-<text text-anchor="middle" x="14619.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_setting_interface.select_song_folder_panel</text>
+<text text-anchor="middle" x="14619.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.setting_interface.select_song_folder_panel</text>
 </g>
 <!-- 106&#45;&gt;102 -->
 <g id="edge66" class="edge">
@@ -1069,25 +1069,25 @@
 <g id="node109" class="node">
 <title>108</title>
 <polygon fill="none" stroke="black" points="15383,-36 15124,-36 15124,0 15383,0 15383,-36"/>
-<text text-anchor="middle" x="15253.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_setting_interface.state_tool_tip</text>
+<text text-anchor="middle" x="15253.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.setting_interface.state_tool_tip</text>
 </g>
 <!-- 109 -->
 <g id="node110" class="node">
 <title>109</title>
 <polygon fill="none" stroke="black" points="15583.5,-36 15401.5,-36 15401.5,0 15583.5,0 15583.5,-36"/>
-<text text-anchor="middle" x="15492.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_song_list_widget</text>
+<text text-anchor="middle" x="15492.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.song_list_widget</text>
 </g>
 <!-- 110 -->
 <g id="node111" class="node">
 <title>110</title>
 <polygon fill="none" stroke="black" points="15747.5,-180 15465.5,-180 15465.5,-144 15747.5,-144 15747.5,-180"/>
-<text text-anchor="middle" x="15606.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_song_list_widget.basic_song_card</text>
+<text text-anchor="middle" x="15606.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.song_list_widget.basic_song_card</text>
 </g>
 <!-- 113 -->
 <g id="node114" class="node">
 <title>113</title>
 <polygon fill="none" stroke="black" points="15638,-252 15337,-252 15337,-216 15638,-216 15638,-252"/>
-<text text-anchor="middle" x="15487.5" y="-230.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_song_list_widget.song_card_sub_unit</text>
+<text text-anchor="middle" x="15487.5" y="-230.3" font-family="Times New Roman,serif" font-size="14.00">Groove.song_list_widget.song_card_sub_unit</text>
 </g>
 <!-- 110&#45;&gt;113 -->
 <g id="edge69" class="edge">
@@ -1099,7 +1099,7 @@
 <g id="node115" class="node">
 <title>114</title>
 <polygon fill="none" stroke="black" points="15933,-252 15656,-252 15656,-216 15933,-216 15933,-252"/>
-<text text-anchor="middle" x="15794.5" y="-230.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_song_list_widget.song_card_type</text>
+<text text-anchor="middle" x="15794.5" y="-230.3" font-family="Times New Roman,serif" font-size="14.00">Groove.song_list_widget.song_card_type</text>
 </g>
 <!-- 110&#45;&gt;114 -->
 <g id="edge70" class="edge">
@@ -1111,13 +1111,13 @@
 <g id="node112" class="node">
 <title>111</title>
 <polygon fill="none" stroke="black" points="15919,-36 15602,-36 15602,0 15919,0 15919,-36"/>
-<text text-anchor="middle" x="15760.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_song_list_widget.basic_song_list_widget</text>
+<text text-anchor="middle" x="15760.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.song_list_widget.basic_song_list_widget</text>
 </g>
 <!-- 112 -->
 <g id="node113" class="node">
 <title>112</title>
 <polygon fill="none" stroke="black" points="15785,-108 15540,-108 15540,-72 15785,-72 15785,-108"/>
-<text text-anchor="middle" x="15662.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_song_list_widget.song_card</text>
+<text text-anchor="middle" x="15662.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.song_list_widget.song_card</text>
 </g>
 <!-- 111&#45;&gt;112 -->
 <g id="edge71" class="edge">
@@ -1147,13 +1147,13 @@
 <g id="node116" class="node">
 <title>115</title>
 <polygon fill="none" stroke="black" points="16175.5,-36 15981.5,-36 15981.5,0 16175.5,0 16175.5,-36"/>
-<text text-anchor="middle" x="16078.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_song_tab_interface</text>
+<text text-anchor="middle" x="16078.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.song_tab_interface</text>
 </g>
 <!-- 118 -->
 <g id="node119" class="node">
 <title>118</title>
 <polygon fill="none" stroke="black" points="16241,-108 15916,-108 15916,-72 16241,-72 16241,-108"/>
-<text text-anchor="middle" x="16078.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_song_tab_interface.song_card_list_widget</text>
+<text text-anchor="middle" x="16078.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.song_tab_interface.song_card_list_widget</text>
 </g>
 <!-- 115&#45;&gt;118 -->
 <g id="edge75" class="edge">
@@ -1165,13 +1165,13 @@
 <g id="node117" class="node">
 <title>116</title>
 <polygon fill="none" stroke="black" points="16505,-36 16194,-36 16194,0 16505,0 16505,-36"/>
-<text text-anchor="middle" x="16349.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_song_tab_interface.selection_mode_bar</text>
+<text text-anchor="middle" x="16349.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.song_tab_interface.selection_mode_bar</text>
 </g>
 <!-- 117 -->
 <g id="node118" class="node">
 <title>117</title>
 <polygon fill="none" stroke="black" points="16262,-180 15895,-180 15895,-144 16262,-144 16262,-180"/>
-<text text-anchor="middle" x="16078.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_song_tab_interface.song_card_list_context_menu</text>
+<text text-anchor="middle" x="16078.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.song_tab_interface.song_card_list_context_menu</text>
 </g>
 <!-- 118&#45;&gt;117 -->
 <g id="edge76" class="edge">
@@ -1225,13 +1225,13 @@
 <g id="node124" class="node">
 <title>123</title>
 <polygon fill="none" stroke="black" points="17051,-36 16860,-36 16860,0 17051,0 17051,-36"/>
-<text text-anchor="middle" x="16955.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_sub_play_window</text>
+<text text-anchor="middle" x="16955.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.sub_play_window</text>
 </g>
 <!-- 125 -->
 <g id="node126" class="node">
 <title>125</title>
 <polygon fill="none" stroke="black" points="17104,-108 16807,-108 16807,-72 17104,-72 17104,-108"/>
-<text text-anchor="middle" x="16955.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_sub_play_window.sub_play_window</text>
+<text text-anchor="middle" x="16955.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.sub_play_window.sub_play_window</text>
 </g>
 <!-- 123&#45;&gt;125 -->
 <g id="edge80" class="edge">
@@ -1243,7 +1243,7 @@
 <g id="node125" class="node">
 <title>124</title>
 <polygon fill="none" stroke="black" points="17076,-180 16815,-180 16815,-144 17076,-144 17076,-180"/>
-<text text-anchor="middle" x="16945.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_sub_play_window.play_button</text>
+<text text-anchor="middle" x="16945.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.sub_play_window.play_button</text>
 </g>
 <!-- 125&#45;&gt;124 -->
 <g id="edge81" class="edge">
@@ -1255,7 +1255,7 @@
 <g id="node127" class="node">
 <title>126</title>
 <polygon fill="none" stroke="black" points="17375,-180 17094,-180 17094,-144 17375,-144 17375,-180"/>
-<text text-anchor="middle" x="17234.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_sub_play_window.system_volume</text>
+<text text-anchor="middle" x="17234.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.sub_play_window.system_volume</text>
 </g>
 <!-- 125&#45;&gt;126 -->
 <g id="edge82" class="edge">
@@ -1267,13 +1267,13 @@
 <g id="node128" class="node">
 <title>127</title>
 <polygon fill="none" stroke="black" points="17375,-36 17178,-36 17178,0 17375,0 17375,-36"/>
-<text text-anchor="middle" x="17276.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_thumbnail_tool_bar</text>
+<text text-anchor="middle" x="17276.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.thumbnail_tool_bar</text>
 </g>
 <!-- 128 -->
 <g id="node129" class="node">
 <title>128</title>
 <polygon fill="none" stroke="black" points="17431,-108 17122,-108 17122,-72 17431,-72 17431,-108"/>
-<text text-anchor="middle" x="17276.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_thumbnail_tool_bar.thumbnail_tool_bar</text>
+<text text-anchor="middle" x="17276.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.thumbnail_tool_bar.thumbnail_tool_bar</text>
 </g>
 <!-- 127&#45;&gt;128 -->
 <g id="edge83" class="edge">
@@ -1285,13 +1285,13 @@
 <g id="node130" class="node">
 <title>129</title>
 <polygon fill="none" stroke="black" points="17607,-36 17474,-36 17474,0 17607,0 17607,-36"/>
-<text text-anchor="middle" x="17540.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_title_bar</text>
+<text text-anchor="middle" x="17540.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.title_bar</text>
 </g>
 <!-- 130 -->
 <g id="node131" class="node">
 <title>130</title>
 <polygon fill="none" stroke="black" points="17631.5,-108 17449.5,-108 17449.5,-72 17631.5,-72 17631.5,-108"/>
-<text text-anchor="middle" x="17540.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_title_bar.title_bar</text>
+<text text-anchor="middle" x="17540.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.title_bar.title_bar</text>
 </g>
 <!-- 129&#45;&gt;130 -->
 <g id="edge84" class="edge">
@@ -1303,7 +1303,7 @@
 <g id="node132" class="node">
 <title>131</title>
 <polygon fill="none" stroke="black" points="17656,-180 17425,-180 17425,-144 17656,-144 17656,-180"/>
-<text text-anchor="middle" x="17540.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_title_bar.title_bar_buttons</text>
+<text text-anchor="middle" x="17540.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.title_bar.title_bar_buttons</text>
 </g>
 <!-- 130&#45;&gt;131 -->
 <g id="edge85" class="edge">
@@ -1315,133 +1315,133 @@
 <g id="node133" class="node">
 <title>132</title>
 <polygon fill="none" stroke="black" points="17750,-36 17625,-36 17625,0 17750,0 17750,-36"/>
-<text text-anchor="middle" x="17687.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_widget</text>
+<text text-anchor="middle" x="17687.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.widgets</text>
 </g>
 <!-- 133 -->
 <g id="node134" class="node">
 <title>133</title>
 <polygon fill="none" stroke="black" points="18046.5,-36 17768.5,-36 17768.5,0 18046.5,0 18046.5,-36"/>
-<text text-anchor="middle" x="17907.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_widget.basic_selection_mode_bar</text>
+<text text-anchor="middle" x="17907.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.widgets.basic_selection_mode_bar</text>
 </g>
 <!-- 134 -->
 <g id="node135" class="node">
 <title>134</title>
 <polygon fill="none" stroke="black" points="18258.5,-36 18064.5,-36 18064.5,0 18258.5,0 18258.5,-36"/>
-<text text-anchor="middle" x="18161.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_widget.blur_button</text>
+<text text-anchor="middle" x="18161.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.widgets.buttons.blur_button</text>
 </g>
 <!-- 135 -->
 <g id="node136" class="node">
 <title>135</title>
 <polygon fill="none" stroke="black" points="18482,-36 18277,-36 18277,0 18482,0 18482,-36"/>
-<text text-anchor="middle" x="18379.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_widget.button_group</text>
+<text text-anchor="middle" x="18379.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.widgets.button_group</text>
 </g>
 <!-- 136 -->
 <g id="node137" class="node">
 <title>136</title>
 <polygon fill="none" stroke="black" points="18689,-36 18500,-36 18500,0 18689,0 18689,-36"/>
-<text text-anchor="middle" x="18594.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_widget.my_button</text>
+<text text-anchor="middle" x="18594.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.widgets.buttons.three_state_button</text>
 </g>
 <!-- 137 -->
 <g id="node138" class="node">
 <title>137</title>
 <polygon fill="none" stroke="black" points="18922,-36 18707,-36 18707,0 18922,0 18922,-36"/>
-<text text-anchor="middle" x="18814.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_widget.my_check_box</text>
+<text text-anchor="middle" x="18814.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.widgets.my_check_box</text>
 </g>
 <!-- 138 -->
 <g id="node139" class="node">
 <title>138</title>
 <polygon fill="none" stroke="black" points="19156.5,-36 18940.5,-36 18940.5,0 19156.5,0 19156.5,-36"/>
-<text text-anchor="middle" x="19048.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_widget.my_grid_layout</text>
+<text text-anchor="middle" x="19048.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.widgets.layout.grid_layout</text>
 </g>
 <!-- 139 -->
 <g id="node140" class="node">
 <title>139</title>
 <polygon fill="none" stroke="black" points="19384,-36 19175,-36 19175,0 19384,0 19384,-36"/>
-<text text-anchor="middle" x="19279.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_widget.my_groupBox</text>
+<text text-anchor="middle" x="19279.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.widgets.group_box</text>
 </g>
 <!-- 140 -->
 <g id="node141" class="node">
 <title>140</title>
 <polygon fill="none" stroke="black" points="19581,-36 19402,-36 19402,0 19581,0 19581,-36"/>
-<text text-anchor="middle" x="19491.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_widget.my_label</text>
+<text text-anchor="middle" x="19491.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.widgets.label</text>
 </g>
 <!-- 141 -->
 <g id="node142" class="node">
 <title>141</title>
 <polygon fill="none" stroke="black" points="19793.5,-36 19599.5,-36 19599.5,0 19793.5,0 19793.5,-36"/>
-<text text-anchor="middle" x="19696.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_widget.my_lineEdit</text>
+<text text-anchor="middle" x="19696.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.widgets.line_edit</text>
 </g>
 <!-- 142 -->
 <g id="node143" class="node">
 <title>142</title>
 <polygon fill="none" stroke="black" points="20021,-36 19812,-36 19812,0 20021,0 20021,-36"/>
-<text text-anchor="middle" x="19916.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_widget.my_listWidget</text>
+<text text-anchor="middle" x="19916.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.widgets.list_widget</text>
 </g>
 <!-- 143 -->
 <g id="node144" class="node">
 <title>143</title>
 <polygon fill="none" stroke="black" points="20222,-36 20039,-36 20039,0 20222,0 20222,-36"/>
-<text text-anchor="middle" x="20130.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_widget.my_menu</text>
+<text text-anchor="middle" x="20130.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.widgets.menu</text>
 </g>
 <!-- 144 -->
 <g id="node145" class="node">
 <title>144</title>
 <polygon fill="none" stroke="black" points="20450.5,-36 20240.5,-36 20240.5,0 20450.5,0 20450.5,-36"/>
-<text text-anchor="middle" x="20345.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_widget.my_scrollArea</text>
+<text text-anchor="middle" x="20345.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.widgets.scroll_area</text>
 </g>
 <!-- 145 -->
 <g id="node146" class="node">
 <title>145</title>
 <polygon fill="none" stroke="black" points="20678,-36 20469,-36 20469,0 20678,0 20678,-36"/>
-<text text-anchor="middle" x="20573.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_widget.my_scroll_bar</text>
+<text text-anchor="middle" x="20573.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.widgets.my_scroll_bar</text>
 </g>
 <!-- 146 -->
 <g id="node147" class="node">
 <title>146</title>
 <polygon fill="none" stroke="black" points="20879,-36 20696,-36 20696,0 20879,0 20879,-36"/>
-<text text-anchor="middle" x="20787.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_widget.my_slider</text>
+<text text-anchor="middle" x="20787.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.widgets.slider</text>
 </g>
 <!-- 147 -->
 <g id="node148" class="node">
 <title>147</title>
 <polygon fill="none" stroke="black" points="21091.5,-36 20897.5,-36 20897.5,0 21091.5,0 21091.5,-36"/>
-<text text-anchor="middle" x="20994.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_widget.my_toolTip</text>
+<text text-anchor="middle" x="20994.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.widgets.my_toolTip</text>
 </g>
 <!-- 148 -->
 <g id="node149" class="node">
 <title>148</title>
 <polygon fill="none" stroke="black" points="21397,-36 21110,-36 21110,0 21397,0 21397,-36"/>
-<text text-anchor="middle" x="21253.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_widget.opacity_ani_stacked_widget</text>
+<text text-anchor="middle" x="21253.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.widgets.opacity_ani_stacked_widget</text>
 </g>
 <!-- 149 -->
 <g id="node150" class="node">
 <title>149</title>
 <polygon fill="none" stroke="black" points="21651.5,-36 21415.5,-36 21415.5,0 21651.5,0 21651.5,-36"/>
-<text text-anchor="middle" x="21533.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_widget.perspective_button</text>
+<text text-anchor="middle" x="21533.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.widgets.buttons.perspective_button</text>
 </g>
 <!-- 150 -->
 <g id="node151" class="node">
 <title>150</title>
 <polygon fill="none" stroke="black" points="21905.5,-36 21669.5,-36 21669.5,0 21905.5,0 21905.5,-36"/>
-<text text-anchor="middle" x="21787.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_widget.perspective_widget</text>
+<text text-anchor="middle" x="21787.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.widgets.perspective_widget</text>
 </g>
 <!-- 151 -->
 <g id="node152" class="node">
 <title>151</title>
 <polygon fill="none" stroke="black" points="22213.5,-36 21923.5,-36 21923.5,0 22213.5,0 22213.5,-36"/>
-<text text-anchor="middle" x="22068.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_widget.pop_up_ani_stacked_widget</text>
+<text text-anchor="middle" x="22068.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.widgets.pop_up_ani_stacked_widget</text>
 </g>
 <!-- 152 -->
 <g id="node153" class="node">
 <title>152</title>
 <polygon fill="none" stroke="black" points="22403,-36 22232,-36 22232,0 22403,0 22403,-36"/>
-<text text-anchor="middle" x="22317.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_window_effect</text>
+<text text-anchor="middle" x="22317.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.window_effect</text>
 </g>
 <!-- 154 -->
 <g id="node155" class="node">
 <title>154</title>
 <polygon fill="none" stroke="black" points="22446.5,-108 22188.5,-108 22188.5,-72 22446.5,-72 22446.5,-108"/>
-<text text-anchor="middle" x="22317.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_window_effect.window_effect</text>
+<text text-anchor="middle" x="22317.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.window_effect.window_effect</text>
 </g>
 <!-- 152&#45;&gt;154 -->
 <g id="edge86" class="edge">
@@ -1453,7 +1453,7 @@
 <g id="node154" class="node">
 <title>153</title>
 <polygon fill="none" stroke="black" points="22439.5,-180 22195.5,-180 22195.5,-144 22439.5,-144 22439.5,-180"/>
-<text text-anchor="middle" x="22317.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.my_window_effect.c_structures</text>
+<text text-anchor="middle" x="22317.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.window_effect.c_structures</text>
 </g>
 <!-- 154&#45;&gt;153 -->
 <g id="edge87" class="edge">
