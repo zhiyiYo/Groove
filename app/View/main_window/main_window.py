@@ -1,38 +1,38 @@
 # coding:utf-8
 
-import os
 import json
+import os
 from copy import deepcopy
 from ctypes import POINTER, cast
 from ctypes.wintypes import MSG
 from random import shuffle
 from time import time
 
-from PyQt5.QtWinExtras import QtWin
+from app.common.window_effect import WindowEffect
+from app.components.label_navigation_interface import LabelNavigationInterface
+from app.components.media_player import MediaPlaylist, PlaylistType
+from app.components.opacity_ani_stacked_widget import OpacityAniStackedWidget
+from app.components.pop_up_ani_stacked_widget import PopUpAniStackedWidget
+from app.components.state_tooltip import StateTooltip
+from app.components.thumbnail_tool_bar import ThumbnailToolBar
+from app.components.title_bar import TitleBar
+from app.View.album_interface import AlbumInterface
+from app.View.my_music_interface import MyMusicInterface
+from app.View.navigation_interface import NavigationInterface
+from app.View.play_bar import PlayBar
+from app.View.playing_interface import PlayingInterface
+from app.View.playlist_card_interface import PlaylistCardInterface
+from app.View.playlist_panel_interface.create_playlist_panel import CreatePlaylistPanel
+from app.View.setting_interface import SettingInterface
+from app.View.sub_play_window import SubPlayWindow
+from PyQt5.QtCore import QEasingCurve, QEvent, Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QCloseEvent, QIcon
-from PyQt5.QtCore import QEasingCurve, Qt, pyqtSignal, QEvent
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist
 from PyQt5.QtWidgets import QAction, QApplication, QWidget
+from PyQt5.QtWinExtras import QtWin
 from system_hotkey import SystemHotkey
 from win32 import win32api, win32gui
 from win32.lib import win32con
-
-from app.View.play_bar import PlayBar
-from app.components.title_bar import TitleBar
-from app.common.window_effect import WindowEffect
-from app.View.sub_play_window import SubPlayWindow
-from app.View.album_interface import AlbumInterface
-from app.View.my_music_interface import MyMusicInterface
-from app.View.playing_interface import PlayingInterface
-from app.View.setting_interface import SettingInterface
-from app.components.thumbnail_tool_bar import ThumbnailToolBar
-from app.components.media_player import MediaPlaylist, PlaylistType
-from app.View.navigation_interface import NavigationInterface
-from app.View.playlist_card_interface import PlaylistCardInterface
-from app.components.pop_up_ani_stacked_widget import PopUpAniStackedWidget
-from app.components.label_navigation_interface import LabelNavigationInterface
-from app.components.opacity_ani_stacked_widget import OpacityAniStackedWidget
-from app.View.playlist_panel_interface.create_playlist_panel import CreatePlaylistPanel
 
 from .c_structures import *
 
@@ -79,6 +79,8 @@ class MainWindow(QWidget):
         )
         t4 = time()
         print("创建整个我的音乐界面耗时：".ljust(15), t4 - t3)
+        # 创建定时扫描歌曲信息的定时器
+        self.rescanSongInfoTimer = QTimer(self)
         # 创建缩略图任务栏
         QtWin.enableBlurBehindWindow(self)
         self.thumbnailToolBar = ThumbnailToolBar(self)
@@ -171,6 +173,8 @@ class MainWindow(QWidget):
         self.subStackWidget.setObjectName("subStackWidget")
         self.playingInterface.setObjectName("playingInterface")
         self.setQss()
+        # 设置定时器溢出时间
+        self.rescanSongInfoTimer.setInterval(30000)
         # 初始化播放列表
         self.initPlaylist()
         # todo:设置全局热键
@@ -181,6 +185,7 @@ class MainWindow(QWidget):
         self.initPlayBar()
         # 安装事件过滤器
         self.navigationInterface.navigationMenu.installEventFilter(self)
+        self.rescanSongInfoTimer.start()
 
     def setHotKey(self):
         """ 设置全局热键 """
@@ -368,7 +373,9 @@ class MainWindow(QWidget):
     def connectSignalToSlot(self):
         """ 将信号连接到槽 """
         # todo:设置界面信号连接到槽函数
-        self.settingInterface.crawlComplete.connect(self.crawCompleteSlot)
+        self.settingInterface.crawlComplete.connect(
+            self.myMusicInterface.rescanSongInfo
+        )
         self.settingInterface.selectedFoldersChanged.connect(
             self.myMusicInterface.scanTargetPathSongInfo
         )
@@ -523,6 +530,8 @@ class MainWindow(QWidget):
         self.myMusicInterface.showLabelNavigationInterfaceSig.connect(
             self.showLabelNavigationInterface
         )
+        # todo:将定时器信号连接到槽函数
+        self.rescanSongInfoTimer.timeout.connect(self.rescanSongInfoTimerSlot)
         # todo:将自己的信号连接到槽函数
         self.showSubPlayWindowSig.connect(self.subPlayWindow.show)
         # todo:将专辑界面的信号连接到槽函数
@@ -883,12 +892,6 @@ class MainWindow(QWidget):
         if self.playingInterface.isPlaylistVisible:
             self.playingInterface.songInfoCardChute.move(0, 258 - self.height())
 
-    def crawCompleteSlot(self):
-        """ 爬虫完成信号槽函数 """
-        self.myMusicInterface.scanTargetPathSongInfo(
-            self.settingInterface.getConfig("selected-folders", [])
-        )
-
     def showPlaylist(self):
         """ 显示正在播放界面的播放列表 """
         self.playingInterface.showPlaylist()
@@ -1190,3 +1193,10 @@ class MainWindow(QWidget):
         self.myMusicInterface.scrollToLabel(label)
         self.subStackWidget.setCurrentWidget(self.subStackWidget.previousWidget)
 
+    def rescanSongInfoTimerSlot(self):
+        """ 重新扫描歌曲信息 """
+        if not self.isInSelectionMode and self.myMusicInterface.hasSongModified():
+            stateTooltip = StateTooltip("正在更新歌曲列表", "要耐心等待哦 ٩(๑>◡<๑)۶ ", self)
+            stateTooltip.show()
+            self.myMusicInterface.rescanSongInfo()
+            stateTooltip.setState(True)

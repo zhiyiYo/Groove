@@ -6,7 +6,7 @@ from PyQt5.QtGui import QPainter, QPixmap
 from PyQt5.QtWidgets import QLabel, QWidget
 
 
-class StateToolTip(QWidget):
+class StateTooltip(QWidget):
     """ 进度提示框 """
 
     closedSignal = pyqtSignal()
@@ -16,7 +16,7 @@ class StateToolTip(QWidget):
         self.title = title
         self.content = content
         # 实例化小部件
-        self.createWidgets()
+        self.__createWidgets()
         # 初始化参数
         self.isDone = False
         self.rotateAngle = 0
@@ -24,7 +24,7 @@ class StateToolTip(QWidget):
         # 初始化
         self.__initWidget()
 
-    def createWidgets(self):
+    def __createWidgets(self):
         """ 创建小部件 """
         icon_path = {
             "normal": r"app\resource\images\createPlaylistPanel\stateToolTip_closeBt_normal_14_14.png",

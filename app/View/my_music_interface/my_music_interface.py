@@ -253,11 +253,24 @@ class MyMusicInterface(QWidget):
         self.__targetFolderPath_list = targetFolderPath_list
         # 重新扫描歌曲信息和专辑信息
         self.__songInfoGetter.scanTargetFolderSongInfo(targetFolderPath_list)
-        self.__albumCoverGetter.updateAlbumCover(targetFolderPath_list)
+        self.__albumCoverGetter.updateAlbumCover(self.__targetFolderPath_list)
         self.__albumInfoGetter.updateAlbumInfo(self.__songInfoGetter.songInfo_list)
         # 更新界面
         self.songCardListWidget.updateAllSongCards(self.__songInfoGetter.songInfo_list)
         self.albumCardViewer.updateAllAlbumCards(self.__albumInfoGetter.albumInfo_list)
+
+    def rescanSongInfo(self):
+        """ 重新当前的歌曲文件夹的歌曲信息 """
+        if not self.__songInfoGetter.rescanSongInfo():
+            return
+        self.__albumCoverGetter.updateAlbumCover(self.__targetFolderPath_list)
+        self.__albumInfoGetter.updateAlbumInfo(self.__songInfoGetter.songInfo_list)
+        # 更新界面
+        self.songCardListWidget.updateAllSongCards(self.__songInfoGetter.songInfo_list)
+        self.albumCardViewer.updateAllAlbumCards(self.__albumInfoGetter.albumInfo_list)
+
+    def hasSongModified(self):
+        return self.__songInfoGetter.hasSongModified()
 
     def updateWindow(self, songInfo_list: list):
         """ 更新我的音乐界面 """

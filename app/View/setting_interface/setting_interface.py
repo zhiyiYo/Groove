@@ -5,7 +5,7 @@ from json import dump, load
 
 from app.View.setting_interface.get_meta_data_thread import GetMetaDataThread
 from app.View.setting_interface.select_song_folder_panel import SelectSongFolderPanel
-from app.View.setting_interface.state_tool_tip import StateToolTip
+from app.components.state_tooltip import StateTooltip
 from app.components.label import ClickableLabel
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import (
@@ -129,7 +129,7 @@ class SettingInterface(QWidget):
     def __createCrawlThread(self):
         """ 创建一个爬虫线程 """
         self.getMetaDataThread = GetMetaDataThread(self.config["selected-folders"])
-        self.stateToolTip = StateToolTip("正在爬取专辑信息", "正在启动浏览器...", self.window())
+        self.stateToolTip = StateTooltip("正在爬取专辑信息", "正在启动浏览器...", self.window())
         # 信号连接到槽
         self.getMetaDataThread.crawlSignal.connect(self.__updateStateToolTip)
         self.stateToolTip.closedSignal.connect(self.__stopCrawlThread)

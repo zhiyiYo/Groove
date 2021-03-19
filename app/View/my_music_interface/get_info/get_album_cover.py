@@ -43,14 +43,10 @@ class GetAlbumCover:
             elif suffix == ".m4a":
                 self.__getM4aAlbumCover(songInfo)
 
-    def updateAlbumCover(self, target_path_list: list, isRescanFolders: bool = False):
+    def updateAlbumCover(self, target_path_list: list):
         """ 重新扫描指定的文件下的音频文件的专辑封面 """
         self.target_path_list = target_path_list
-        self.songInfo.scanTargetFolderSongInfo(target_path_list)
-        if isRescanFolders:
-            self.songInfo.scanTargetFolderSongInfo(target_path_list)
-        else:
-            self.songInfo.getInfo(target_path_list)
+        self.songInfo.getInfo(target_path_list)
         self.getAlbum()
 
     def __getID3AlbumCover(self, songInfo: dict):
