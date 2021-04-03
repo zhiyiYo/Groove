@@ -8,7 +8,7 @@ autopep8==1.5
 backcall==0.2.0
 beautifulsoup4==4.9.1
 black==19.10b0
-bleach==3.2.1
+bleach==3.3.0
 bs4==0.0.1
 cachetools==4.2.1
 certifi==2020.6.20
