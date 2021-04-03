@@ -72,7 +72,7 @@ pycodestyle==2.5.0
 pycparser==2.20
 pyee==7.0.2
 pyflakes==2.2.0
-Pygments==2.7.1
+Pygments==2.7.4
 pylint==2.4.4
 pyparsing==2.4.7
 pyppeteer==0.2.2
