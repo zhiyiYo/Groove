@@ -55,7 +55,8 @@ class BasicButton(QToolButton):
 
     def __updateIcon(self, iconState: str):
         """ 更新图标 """
-        self.setIcon(QIcon(self.iconPathDict_list[self.isWhiteIcon][iconState]))
+        self.setIcon(
+            QIcon(self.iconPathDict_list[self.isWhiteIcon][iconState]))
 
 
 class MaximizeButton(QPushButton):
@@ -94,7 +95,8 @@ class MaximizeButton(QPushButton):
         self.isMax = False
         self.isWhiteIcon = False
         self.setStyleSheet("QPushButton{border:none;margin:0}")
-        self.setIcon(QIcon("app\\resource\\images\\titleBar\\透明黑色最大化按钮_57_40.png"))
+        self.setIcon(
+            QIcon("app\\resource\\images\\titleBar\\透明黑色最大化按钮_57_40.png"))
         self.setIconSize(QSize(57, 40))
 
     def setWhiteIcon(self, isWhite: bool):
@@ -105,7 +107,8 @@ class MaximizeButton(QPushButton):
     def __updateIcon(self, iconState: str):
         """ 更新图标 """
         self.setIcon(
-            QIcon(self.iconPathDict_list[self.isMax][self.isWhiteIcon][iconState])
+            QIcon(self.iconPathDict_list[self.isMax]
+                  [self.isWhiteIcon][iconState])
         )
 
     def enterEvent(self, e):
@@ -133,5 +136,7 @@ class MaximizeButton(QPushButton):
 
     def setMaxState(self, isMax: bool):
         """ 更新最大化标志位和图标 """
+        if self.isMax == isMax:
+            return
         self.isMax = isMax
         self.__updateIcon("normal")

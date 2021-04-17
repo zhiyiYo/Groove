@@ -274,8 +274,8 @@ class MainWindow(QWidget):
         super().resizeEvent(e)
         self.adjustWidgetGeometry()
         # 更新标题栏图标
-        if self.isWindowMaximized(int(self.winId())):
-            self.titleBar.maxBt.setMaxState(True)
+        self.titleBar.maxBt.setMaxState(
+            self.isWindowMaximized(int(self.winId())))
 
     def moveEvent(self, e):
         if hasattr(self, "playBar"):
