@@ -303,7 +303,8 @@ class MainWindow(QWidget):
         """ 处理windows消息 """
         msg = MSG.from_address(message.__int__())
         if msg.message == win32con.WM_NCHITTEST:
-            xPos = win32api.LOWORD(msg.lParam) - self.frameGeometry().x()
+            xPos = (win32api.LOWORD(msg.lParam) -
+                    self.frameGeometry().x()) % 65536
             yPos = win32api.HIWORD(msg.lParam) - self.frameGeometry().y()
             w, h = self.width(), self.height()
             lx = xPos < self.BORDER_WIDTH
