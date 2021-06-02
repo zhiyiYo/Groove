@@ -109,7 +109,7 @@ toml==0.10.1
 torch-tb-profiler==0.1.0
 tqdm==4.48.2
 traitlets==5.0.4
-urllib3==1.25.10
+urllib3==1.26.5
 w3lib==1.22.0
 wcwidth==0.2.5
 webencodings==0.5.1
