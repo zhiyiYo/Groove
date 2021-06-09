@@ -2,7 +2,7 @@
 
 from copy import deepcopy
 
-from app.components.buttons.three_state_button import ThreeStateButton
+from app.components.buttons.three_state_button import ThreeStatePushButton
 from PyQt5.QtCore import (
     QAbstractAnimation,
     QEasingCurve,
@@ -59,14 +59,15 @@ class PlayingInterface(QWidget):
         self.playBarAni = QPropertyAnimation(self.playBar, b"geometry")
         self.songListWidgetAni = QPropertyAnimation(self.songListWidget, b"geometry")
         self.guideLabel = QLabel("在这里，你将看到正在播放的歌曲以及即将播放的歌曲。", self)
-        self.randomPlayAllButton = ThreeStateButton(
+        self.randomPlayAllButton = ThreeStatePushButton(
             {
-                "normal": r"app\resource\images\playing_interface\全部随机播放_normal_256_39.png",
-                "hover": r"app\resource\images\playing_interface\全部随机播放_hover_256_39.png",
-                "pressed": r"app\resource\images\playing_interface\全部随机播放_pressed_256_39.png",
+                "normal": r"app\resource\images\playing_interface\全部随机播放_normal.png",
+                "hover": r"app\resource\images\playing_interface\全部随机播放_hover.png",
+                "pressed": r"app\resource\images\playing_interface\全部随机播放_pressed.png",
             },
-            self,
-            (256, 39),
+            " 随机播放你收藏中的所有内容",
+            (30, 22),
+            self
         )
         # 创建定时器
         self.showPlaylistTimer = QTimer(self)
@@ -90,6 +91,7 @@ class PlayingInterface(QWidget):
         # 设置层叠样式
         self.setObjectName("playingInterface")
         self.guideLabel.setObjectName("guideLabel")
+        self.randomPlayAllButton.setObjectName("randomPlayAllButton")
         self.__setQss()
         # 开启磨砂线程
         if self.playlist:

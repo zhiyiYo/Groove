@@ -33,5 +33,5 @@ class ErrorIcon(QLabel):
         super().__init__(parent)
         # 设置提示条
         self.customToolTip = None
-        self.setPixmap(QPixmap("app\\resource\\images\\empty_lineEdit_error.png"))
+        self.setPixmap(QPixmap(r"app\resource\images\empty_lineEdit_error.png"))
         self.setFixedSize(21, 21)

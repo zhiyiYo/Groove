@@ -29,11 +29,13 @@ class ToolBar(QWidget):
         # 创建底部按钮
         self.randomPlayAllButton = ThreeStatePushButton(
             {
-                "normal": r"app\resource\images\无序播放所有_130_17.png",
-                "hover": r"app\resource\images\无序播放所有_hover_130_17.png",
-                "pressed": r"app\resource\images\无序播放所有_pressed_130_17.png",
+                "normal": r"app\resource\images\ramdom_play_all\无序播放所有.png",
+                "hover": r"app\resource\images\ramdom_play_all\无序播放所有_hover.png",
+                "pressed": r"app\resource\images\ramdom_play_all\无序播放所有_pressed.png",
             },
             parent=self,
+            text=" 无序播放所有",
+            iconSize=(19, 15),
         )
         self.sortModeLabel = QLabel("排序依据:", self)
         self.songSortModeButton = QPushButton("添加日期", self)
@@ -103,7 +105,5 @@ class ToolBar(QWidget):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open(
-            "app\\resource\\css\\myMusicInterfaceToolBar.qss", encoding="utf-8"
-        ) as f:
+        with open(r"app\resource\css\myMusicInterfaceToolBar.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())

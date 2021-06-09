@@ -7,7 +7,7 @@ from os import remove
 import pinyin
 from app.components.dialog_box.delete_card_panel import DeleteCardPanel
 from app.View.playlist_panel_interface.rename_playlist_panel import RenamePlaylistPanel
-from app.components.buttons.three_state_button import ThreeStateButton
+from app.components.buttons.three_state_button import ThreeStatePushButton
 from app.components.layout.grid_layout import GridLayout
 from app.components.menu import AeroMenu
 from app.components.scroll_area import ScrollArea
@@ -64,14 +64,15 @@ class PlaylistCardInterface(QWidget):
         self.sortModeLabel = QLabel("排序依据:", self)
         self.playlistLabel = QLabel("播放列表", self)
         self.sortModeButton = QPushButton("修改日期", self)
-        self.createPlaylistButton = ThreeStateButton(
+        self.createPlaylistButton = ThreeStatePushButton(
             {
                 "normal": r"app\resource\images\playlist_card_interface\newPlaylist_normal.png",
                 "hover": r"app\resource\images\playlist_card_interface\newPlaylist_hover.png",
                 "pressed": r"app\resource\images\playlist_card_interface\newPlaylist_pressed.png",
             },
+            " 新的播放列表",
+            (19, 19),
             self,
-            (129, 19),
         )
         # 创建导航标签
         self.guideLabel = QLabel("这里没有可显示的内容。请尝试其他筛选器。", self)
@@ -139,6 +140,7 @@ class PlaylistCardInterface(QWidget):
         self.playlistLabel.setObjectName("playlistLabel")
         self.sortModeLabel.setObjectName("sortModeLabel")
         self.sortModeButton.setObjectName("sortModeButton")
+        self.createPlaylistButton.setObjectName("createPlaylistButton")
         self.sortModeMenu.setObjectName("sortModeMenu")
         self.sortModeMenu.setProperty("modeNumber", "2")
         self.__setQss()

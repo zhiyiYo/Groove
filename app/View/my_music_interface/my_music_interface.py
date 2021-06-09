@@ -80,7 +80,7 @@ class MyMusicInterface(QWidget):
         self.songTabButton.setSelected(True)
         # 初始化按钮
         self.toolBar.randomPlayAllButton.setText(
-            f"({len(self.songCardListWidget.songCard_list)})"
+            f" 无序播放所有({len(self.songCardListWidget.songCard_list)})"
         )
         # 隐藏底部选择栏和磨砂背景
         self.songTabSelectionModeBar.hide()
@@ -98,11 +98,11 @@ class MyMusicInterface(QWidget):
         self.toolBar.albumSortModeButton.setVisible(index == 1)
         if index == 0:
             self.toolBar.randomPlayAllButton.setText(
-                f"({len(self.songCardListWidget.songCard_list)})"
+                f" 无序播放所有({len(self.songCardListWidget.songCard_list)})"
             )
         elif index == 1:
             self.toolBar.randomPlayAllButton.setText(
-                f"({len(self.albumCardViewer.albumCard_list)})"
+                f" 无序播放所有({len(self.albumCardViewer.albumCard_list)})"
             )
         self.toolBar.randomPlayAllButton.adjustSize()
 

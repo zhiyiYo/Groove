@@ -123,6 +123,13 @@ QPushButton#sortModeButton:pressed {
     color: rgb(153,195,205);
 }
 
+QPushButton#createPlaylistButton:hover{
+    color: rgb(110, 110, 110);
+}
+
+QPushButton#createPlaylistButton:pressed{
+    color: rgb(153, 153, 153);
+}
 
 /*复选框样式*/
 QCheckBox {

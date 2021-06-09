@@ -61,6 +61,7 @@ class GetSongInfo:
             hasSongModified = True
             self.songInfo_list.append(self.getOneSongInfo(songPath))
         # 保存歌曲信息
+        self.sortByCreateTime()
         self.save()
         return hasSongModified
 
@@ -140,7 +141,7 @@ class GetSongInfo:
         return songInfo
 
     def sortByCreateTime(self):
-        """ 依据文件修改日期排序文件信息列表 """
+        """ 依据文件创建日期排序文件信息列表 """
         self.songInfo_list.sort(
             key=lambda songInfo: songInfo["createTime"], reverse=True
         )

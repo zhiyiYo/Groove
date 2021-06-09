@@ -10,7 +10,7 @@ from app.View.main_window import MainWindow
 
 app = QApplication(sys.argv)
 app.setAttribute(Qt.AA_DontCreateNativeWidgetSiblings)
-font = QFont("Microsoft YaHei")
+font = QFont("Microsoft YaHei", 11)
 font.setStyleStrategy(QFont.PreferAntialias)
 app.setFont(font)
 t1 = time()

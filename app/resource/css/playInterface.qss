@@ -26,7 +26,19 @@ QLabel[name='smallestModeSongerNameLabel'] {
     font: 11pt 'Microsoft YaHei';
 }
 
+QPushButton#randomPlayAllButton{
+    color: rgb(72, 210, 242);
+    font: 23px "Microsoft YaHei";
+    background-color: transparent;
+}
 
+QPushButton#randomPlayAllButton:hover {
+    color: rgb(57, 168, 193);
+}
+
+QPushButton#randomPlayAllButton:pressed {
+    color: rgb(28, 84, 96);
+}
 
 QSlider#smallestModeSlider{
     height: 5px;

@@ -10,7 +10,13 @@ from app.components.line_edit import LineEdit
 from app.components.buttons.perspective_button import PerspectivePushButton
 from PyQt5.QtCore import QRegExp, Qt, pyqtSignal
 from PyQt5.QtGui import QColor, QPainter, QPen, QRegExpValidator
-from PyQt5.QtWidgets import QApplication, QGraphicsDropShadowEffect, QLabel, QWidget
+from PyQt5.QtWidgets import (
+    QApplication,
+    QGraphicsDropShadowEffect,
+    QLabel,
+    QWidget,
+    QCompleter,
+)
 
 from .sub_panel_frame import SubPanelFrame
 
@@ -89,6 +95,28 @@ class SubSongInfoEditPanel(QWidget):
         self.songerNameEditLine = LineEdit(self.songInfo["songer"], self)
         self.albumSongerEditLine = LineEdit(self.songInfo["songer"], self)
         self.trackNumEditLine = LineEdit(self.songInfo["tracknumber"], self)
+        # 流派补全
+        tcons = [
+            "POP流行",
+            "Blues",
+            "SOUNDTRACK原声",
+            "Japanese Pop & Rock",
+            "摇滚",
+            "Soundtrack",
+            "J-Pop",
+            "RAP/HIP HOP",
+            "Soundtrack",
+            "古典",
+            "经典",
+            "Country",
+            "R&B",
+            "ROCK摇滚",
+            "anime",
+        ]
+        self.tconCompleter = QCompleter(tcons, self)
+        self.tconCompleter.setCompletionMode(QCompleter.InlineCompletion)
+        self.tconCompleter.setCaseSensitivity(Qt.CaseInsensitive)
+        self.tconEditLine.setCompleter(self.tconCompleter)
 
         # 创建集中管理小部件的列表
         self.leftLabel_list = [
