@@ -113,7 +113,7 @@ urllib3==1.25.10
 w3lib==1.22.0
 wcwidth==0.2.5
 webencodings==0.5.1
-websockets==8.1
+websockets==9.1
 wincertstore==0.2
 wrapt==1.11.2
 yapf==0.30.0
