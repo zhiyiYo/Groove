@@ -34,7 +34,7 @@ class AeroMenu(QMenu):
 
     def setQss(self):
         """ 设置层叠样式 """
-        with open("app\\resource\\css\\menu.qss", encoding="utf-8") as f:
+        with open("app/resource/css/menu.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
 
 
@@ -64,7 +64,7 @@ class AcrylicMenu(QMenu):
 
     def setQss(self):
         """ 设置层叠样式 """
-        with open("app\\resource\\css\\menu.qss", encoding="utf-8") as f:
+        with open("app/resource/css/menu.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
 
 
@@ -83,10 +83,10 @@ class AddToMenu(AcrylicMenu):
     def createActions(self):
         """ 创建三个动作 """
         self.playingAct = QAction(
-            QIcon("app\\resource\\images\\menu\\正在播放.png"), "正在播放", self
+            QIcon("app/resource/images/menu/正在播放.png"), "正在播放", self
         )
         self.newPlayList = QAction(
-            QIcon("app\\resource\\images\\menu\\黑色加号.png"), "新的播放列表", self
+            QIcon("app/resource/images/menu/黑色加号.png"), "新的播放列表", self
         )
         # 根据播放列表创建动作
         playlistName_list = self.__getPlaylistNames()
@@ -113,10 +113,10 @@ class AddToMenu(AcrylicMenu):
     def __getPlaylistNames(self):
         """ 扫描播放列表文件夹下的播放列表名字 """
         # 扫描播放列表文件夹下的播放列表名字
-        if not os.path.exists("app\\Playlists"):
-            os.mkdir("app\\Playlists")
+        if not os.path.exists("app/Playlists"):
+            os.mkdir("app/Playlists")
         playlistName_list = [
-            i[:-5] for i in os.listdir("app\\Playlists") if i.endswith(".json")
+            i[:-5] for i in os.listdir("app/Playlists") if i.endswith(".json")
         ]
         return playlistName_list
 
@@ -144,28 +144,28 @@ class LineEditMenu(AeroMenu):
     def createActions(self):
         # 创建动作
         self.cutAct = QAction(
-            QIcon("app\\resource\\images\\menu\\黑色剪刀.png"),
+            QIcon("app/resource/images/menu/黑色剪刀.png"),
             "剪切",
             self,
             shortcut="Ctrl+X",
             triggered=self.parent().cut,
         )
         self.copyAct = QAction(
-            QIcon("app\\resource\\images\\menu\\黑色复制.png"),
+            QIcon("app/resource/images/menu/黑色复制.png"),
             "复制",
             self,
             shortcut="Ctrl+C",
             triggered=self.parent().copy,
         )
         self.pasteAct = QAction(
-            QIcon("app\\resource\\images\\menu\\黑色粘贴.png"),
+            QIcon("app/resource/images/menu/黑色粘贴.png"),
             "粘贴",
             self,
             shortcut="Ctrl+V",
             triggered=self.parent().paste,
         )
         self.cancelAct = QAction(
-            QIcon("app\\resource\\images\\menu\\黑色撤销.png"),
+            QIcon("app/resource/images/menu/黑色撤销.png"),
             "取消操作",
             self,
             shortcut="Ctrl+Z",

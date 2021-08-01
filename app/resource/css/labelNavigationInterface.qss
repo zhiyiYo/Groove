@@ -24,6 +24,7 @@ QScrollBar {
     background: transparent;
     width: 4px;
     padding-left: 1px;
+    margin-top: 40px;
 }
 
 /*隐藏上箭头*/

@@ -28,17 +28,17 @@ class MoreActionsMenu(AeroMenu):
     def createActions(self):
         """ 创建动作"""
         self.savePlayListAct = QAction(
-            QIcon("app\\resource\\images\\menu\\保存为播放列表.png"), "保存为播放列表", self
+            QIcon("app/resource/images/menu/保存为播放列表.png"), "保存为播放列表", self
         )
         self.clearPlayListAct = QAction(
-            QIcon("app\\resource\\images\\menu\\清空正在播放_16_16.png"), '清空"正在播放"', self
+            QIcon("app/resource/images/menu/清空正在播放_16_16.png"), '清空"正在播放"', self
         )
         if self.actionFlag:
             self.showPlayListAct = QAction(
-                QIcon("app\\resource\\images\\menu\\显示正在播放列表.png"), "显示正在播放列表", self
+                QIcon("app/resource/images/menu/显示正在播放列表.png"), "显示正在播放列表", self
             )
             self.fillScreenAct = QAction(
-                QIcon("app\\resource\\images\\menu\\转到全屏.png"), "转到全屏", self
+                QIcon("app/resource/images/menu/转到全屏.png"), "转到全屏", self
             )
             self.action_list = [
                 self.showPlayListAct,

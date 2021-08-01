@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QWidget
 
 class BasicNavigationWidget(QWidget):
     """ 导航部件基类 """
+    
     switchInterfaceSig = pyqtSignal(int)
     selectedButtonChanged = pyqtSignal(str)
 
@@ -14,8 +15,11 @@ class BasicNavigationWidget(QWidget):
         # 初始化按钮及其名字列表
         self._selectableButton_list = []
         self._selectableButtonName_list = []
-        self.__switchInterfaceButtonIndex_dict = {'musicGroupButton': 0,
-                                                  'playlistButton': 1, 'settingButton': 2}
+        self.__switchInterfaceButtonIndex_dict = {
+            'musicGroupButton': 0,
+            'playlistButton': 1,
+            'settingButton': 2
+        }
         # 初始化当前按钮
         self.currentButton = None
         # 设置样式
@@ -39,7 +43,13 @@ class BasicNavigationWidget(QWidget):
             self.__updateButtonSelectedState(selectedButtonName_list[0])
 
     def setSelectedButton(self, buttonName: str):
-        """ 设置当前选中的按钮 """
+        """ 设置当前选中的按钮
+
+        Parameters
+        ----------
+        buttonName: str
+            由 `btn.objectName()` 返回的按钮名字
+        """
         self.__updateButtonSelectedState(buttonName)
 
     def __buttonClickedSlot(self, selectedButtonName: str):

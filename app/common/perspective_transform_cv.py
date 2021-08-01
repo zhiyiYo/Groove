@@ -1,7 +1,6 @@
 # coding:utf-8
-
 import cv2 as cv
-import numpy
+import numpy as np
 from PyQt5.QtGui import QImage, QPixmap
 
 
@@ -18,26 +17,34 @@ class PixmapPerspectiveTransform():
     def setPixmap(self, pixmap: QPixmap):
         """ 设置被变换的QPixmap """
         self.pixmap = QPixmap
-        self.src=self.transQPixmapToNdarray(pixmap)
+        self.src = self.transQPixmapToNdarray(pixmap)
         self.height, self.width = self.src.shape[:2]
         # 变换前后的边角坐标
-        self.srcPoints = numpy.float32(
+        self.srcPoints = np.float32(
             [[0, 0], [self.width - 1, 0], [0, self.height - 1],
              [self.width - 1, self.height - 1]])
 
     def setDstPoints(self, leftTop: list, rightTop, leftBottom, rightBottom):
         """ 设置变换后的边角坐标 """
-        self.dstPoints = numpy.float32(
+        self.dstPoints = np.float32(
             [leftTop, rightTop, leftBottom, rightBottom])
 
-    def getPerspectiveTransform(self, imWidth, imHeight, borderMode=cv.BORDER_CONSTANT, borderValue=[255, 255, 255, 0]) -> QPixmap:
-        """ 透视变换图像，返回QPixmap\n
+    def getPerspectiveTransform(self, imWidth: int, imHeight: int, borderMode=cv.BORDER_CONSTANT, borderValue=[255, 255, 255, 0]) -> QPixmap:
+        """ 透视变换图像
+
         Parameters
         ----------
-        imWidth : 变换后的图像宽度\n
-        imHeight : 变换后的图像高度\n
-        borderMode : 边框插值方式\n
-        borderValue : 边框颜色\n
+        imWidth: int
+            变换后的图像宽度
+
+        imHeight: int
+            变换后的图像高度
+
+        borderMode: int
+            边框插值方式
+
+        borderValue: list
+            边框颜色
         """
         # 如果是jpg需要加上一个透明通道
         if self.src.shape[-1] == 3:
@@ -58,11 +65,11 @@ class PixmapPerspectiveTransform():
         image = pixmap.toImage()  # type:QImage
         s = image.bits().asstring(height * width * channels_count)
         # 得到BGRA格式数组
-        array = numpy.fromstring(s, numpy.uint8).reshape(
+        array = np.fromstring(s, np.uint8).reshape(
             (height, width, channels_count))
         return array
 
-    def transNdarrayToQPixmap(self, array):
+    def transNdarrayToQPixmap(self, array:np.ndarray):
         """ 将numpy数组转换为QPixmap """
         height, width, bytesPerComponent = array.shape
         bytesPerLine = 4 * width

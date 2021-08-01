@@ -72,12 +72,7 @@ class ListWidget(QListWidget):
                         self.lastWheelEvent.globalPos(),
                         round(totalDelta), Qt.Vertical,
                         self.lastWheelEvent.buttons(), Qt.NoModifier)
-        """ e = QWheelEvent(self.lastWheelEvent.pos(),
-                        self.lastWheelEvent.globalPos(),
-                        QPoint(),
-                        self.lastWheelEvent.angleDelta(),
-                        round(totalDelta), Qt.Vertical,
-                        self.lastWheelEvent.buttons(), Qt.NoModifier) """
+
         # 将构造出来的滚轮事件发送给app处理
         QApplication.sendEvent(self.verticalScrollBar(), e)
         # 如果队列已空，停止滚动

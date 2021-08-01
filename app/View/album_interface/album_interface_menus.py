@@ -39,7 +39,7 @@ class MoreActionsMenu(QMenu):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open("app\\resource\\css\\menu.qss", encoding="utf-8") as f:
+        with open("app/resource/css/menu.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
 
     def setActionNum(self, actionNum):
@@ -101,10 +101,10 @@ class AddToMenu(QMenu):
     def createActions(self):
         """ 创建三个动作 """
         self.playingAct = QAction(
-            QIcon("app\\resource\\images\\menu\\正在播放.png"), "正在播放", self
+            QIcon("app/resource/images/menu/正在播放.png"), "正在播放", self
         )
         self.newPlayList = QAction(
-            QIcon("app\\resource\\images\\menu\\黑色加号.png"), "新的播放列表", self
+            QIcon("app/resource/images/menu/黑色加号.png"), "新的播放列表", self
         )
         # 根据播放列表创建动作
         playlistName_list = self.__getPlaylistNames()
@@ -123,16 +123,16 @@ class AddToMenu(QMenu):
     def __getPlaylistNames(self):
         """ 扫描播放列表文件夹下的播放列表名字 """
         # 扫描播放列表文件夹下的播放列表名字
-        if not os.path.exists("app\\Playlists"):
-            os.mkdir("app\\Playlists")
+        if not os.path.exists("app/Playlists"):
+            os.mkdir("app/Playlists")
         playlistName_list = [
-            os.path.splitext(i)[0] for i in os.listdir("app\\Playlists")
+            os.path.splitext(i)[0] for i in os.listdir("app/Playlists")
         ]
         return playlistName_list
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open("app\\resource\\css\\menu.qss", encoding="utf-8") as f:
+        with open("app/resource/css/menu.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
 
     def exec(self, pos):

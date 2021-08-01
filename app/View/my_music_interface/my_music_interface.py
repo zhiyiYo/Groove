@@ -35,6 +35,14 @@ class MyMusicInterface(QWidget):
     showLabelNavigationInterfaceSig = pyqtSignal(list, str)  # 显示标签导航界面
 
     def __init__(self, targetFolderPath_list: list, parent=None):
+        """
+        Parameters
+        ----------
+        targetFolderPath_list: list
+            歌曲文件夹列表
+
+        parent:
+            父级窗口 """
         super().__init__(parent)
         self.__targetFolderPath_list = targetFolderPath_list
         # 初始化标志位
@@ -51,7 +59,8 @@ class MyMusicInterface(QWidget):
         # 扫描文件夹列表下的音频文件信息，顺序不能改动
         self.__songInfoGetter = GetSongInfo(self.__targetFolderPath_list)
         self.__albumCoverGetter = GetAlbumCover(self.__targetFolderPath_list)
-        self.__albumInfoGetter = GetAlbumInfo(self.__songInfoGetter.songInfo_list)
+        self.__albumInfoGetter = GetAlbumInfo(
+            self.__songInfoGetter.songInfo_list)
         t1 = time()
         self.songCardListWidget = SongCardListWidget(
             self.__songInfoGetter.songInfo_list, self
@@ -198,7 +207,7 @@ class MyMusicInterface(QWidget):
         if self.sender() == self.songTabSelectionModeBar.editInfoButton:
             songCard = self.songCardListWidget.checkedSongCard_list[0]
             self.__unCheckSongCards()
-            self.songCardListWidget.showSongInfoEditPanel(songCard)
+            self.songCardListWidget.showSongInfoEditDialog(songCard)
         elif self.sender() == self.albumTabSelectionModeBar.editInfoButton:
             albumCard = self.albumCardViewer.checkedAlbumCard_list[0]
             self.__unCheckAlbumCards()
@@ -254,20 +263,26 @@ class MyMusicInterface(QWidget):
         # 重新扫描歌曲信息和专辑信息
         self.__songInfoGetter.scanTargetFolderSongInfo(targetFolderPath_list)
         self.__albumCoverGetter.updateAlbumCover(self.__targetFolderPath_list)
-        self.__albumInfoGetter.updateAlbumInfo(self.__songInfoGetter.songInfo_list)
+        self.__albumInfoGetter.updateAlbumInfo(
+            self.__songInfoGetter.songInfo_list)
         # 更新界面
-        self.songCardListWidget.updateAllSongCards(self.__songInfoGetter.songInfo_list)
-        self.albumCardViewer.updateAllAlbumCards(self.__albumInfoGetter.albumInfo_list)
+        self.songCardListWidget.updateAllSongCards(
+            self.__songInfoGetter.songInfo_list)
+        self.albumCardViewer.updateAllAlbumCards(
+            self.__albumInfoGetter.albumInfo_list)
 
     def rescanSongInfo(self):
         """ 重新当前的歌曲文件夹的歌曲信息 """
         if not self.__songInfoGetter.rescanSongInfo():
             return
         self.__albumCoverGetter.updateAlbumCover(self.__targetFolderPath_list)
-        self.__albumInfoGetter.updateAlbumInfo(self.__songInfoGetter.songInfo_list)
+        self.__albumInfoGetter.updateAlbumInfo(
+            self.__songInfoGetter.songInfo_list)
         # 更新界面
-        self.songCardListWidget.updateAllSongCards(self.__songInfoGetter.songInfo_list)
-        self.albumCardViewer.updateAllAlbumCards(self.__albumInfoGetter.albumInfo_list)
+        self.songCardListWidget.updateAllSongCards(
+            self.__songInfoGetter.songInfo_list)
+        self.albumCardViewer.updateAllAlbumCards(
+            self.__albumInfoGetter.albumInfo_list)
 
     def hasSongModified(self):
         return self.__songInfoGetter.hasSongModified()
@@ -282,24 +297,31 @@ class MyMusicInterface(QWidget):
         """ 更新专辑卡界面 """
         self.__albumCoverGetter.updateAlbumCover(self.__targetFolderPath_list)
         self.__albumInfoGetter.updateAlbumInfo(songInfo_list)
-        self.albumCardViewer.updateAllAlbumCards(self.__albumInfoGetter.albumInfo_list)
+        self.albumCardViewer.updateAllAlbumCards(
+            self.__albumInfoGetter.albumInfo_list)
 
     def __showSortModeMenu(self):
         """ 显示排序方式菜单 """
         if self.sender() is self.toolBar.songSortModeButton:
-            self.toolBar.songSortModeMenu.setDefaultAction(self.currentSongSortAct)
-            actIndex = self.toolBar.songSortAction_list.index(self.currentSongSortAct)
+            self.toolBar.songSortModeMenu.setDefaultAction(
+                self.currentSongSortAct)
+            actIndex = self.toolBar.songSortAction_list.index(
+                self.currentSongSortAct)
             self.toolBar.songSortModeMenu.exec(
                 self.mapToGlobal(
-                    QPoint(self.sender().x(), self.sender().y() - 37 * actIndex - 1)
+                    QPoint(self.sender().x(),
+                           self.sender().y() - 37 * actIndex - 1)
                 )
             )
         elif self.sender() is self.toolBar.albumSortModeButton:
-            self.toolBar.albumSortModeMenu.setDefaultAction(self.currentAlbumSortAct)
-            actIndex = self.toolBar.albumSortAction_list.index(self.currentAlbumSortAct)
+            self.toolBar.albumSortModeMenu.setDefaultAction(
+                self.currentAlbumSortAct)
+            actIndex = self.toolBar.albumSortAction_list.index(
+                self.currentAlbumSortAct)
             self.toolBar.albumSortModeMenu.exec(
                 self.mapToGlobal(
-                    QPoint(self.sender().x(), self.sender().y() - 37 * actIndex - 1)
+                    QPoint(self.sender().x(),
+                           self.sender().y() - 37 * actIndex - 1)
                 )
             )
 
@@ -392,7 +414,8 @@ class MyMusicInterface(QWidget):
             lambda: self.addSongsToNewCustomPlaylistSig.emit(songInfo_list)
         )
         addToMenu.addSongsToPlaylistSig.connect(
-            lambda name: self.addSongsToCustomPlaylistSig.emit(name, songInfo_list)
+            lambda name: self.addSongsToCustomPlaylistSig.emit(
+                name, songInfo_list)
         )
         for act in addToMenu.action_list:
             act.triggered.connect(self.__addToMenuTriggeredSlot)
@@ -415,8 +438,10 @@ class MyMusicInterface(QWidget):
         self.songTabButton.buttonSelected.connect(self.__buttonSelectedSlot)
         self.albumTabButton.buttonSelected.connect(self.__buttonSelectedSlot)
         # 将工具栏信号连接到槽函数
-        self.toolBar.songSortModeButton.clicked.connect(self.__showSortModeMenu)
-        self.toolBar.albumSortModeButton.clicked.connect(self.__showSortModeMenu)
+        self.toolBar.songSortModeButton.clicked.connect(
+            self.__showSortModeMenu)
+        self.toolBar.albumSortModeButton.clicked.connect(
+            self.__showSortModeMenu)
         self.toolBar.randomPlayAllButton.clicked.connect(self.randomPlayAllSig)
         for act in self.toolBar.songSortAction_list:
             act.triggered.connect(self.__sortSongCard)
@@ -478,11 +503,13 @@ class MyMusicInterface(QWidget):
         self.songTabSelectionModeBar.showAlbumButton.clicked.connect(
             self.__switchToAlbumInterface
         )
-        self.songTabSelectionModeBar.editInfoButton.clicked.connect(self.__editCardInfo)
+        self.songTabSelectionModeBar.editInfoButton.clicked.connect(
+            self.__editCardInfo)
         self.songTabSelectionModeBar.propertyButton.clicked.connect(
             self.__showCheckedSongCardProperty
         )
-        self.songTabSelectionModeBar.addToButton.clicked.connect(self.__showAddToMenu)
+        self.songTabSelectionModeBar.addToButton.clicked.connect(
+            self.__showAddToMenu)
         # 专辑界面选择栏信号连接到槽函数
         self.albumTabSelectionModeBar.cancelButton.clicked.connect(
             self.__unCheckAlbumCards
@@ -499,5 +526,5 @@ class MyMusicInterface(QWidget):
         self.albumTabSelectionModeBar.checkAllButton.clicked.connect(
             self.__albumTabSelectAllButtonSlot
         )
-        self.albumTabSelectionModeBar.addToButton.clicked.connect(self.__showAddToMenu)
-
+        self.albumTabSelectionModeBar.addToButton.clicked.connect(
+            self.__showAddToMenu)

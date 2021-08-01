@@ -143,10 +143,9 @@ class NavigationWidget(BasicNavigationWidget):
 
     def getPlaylistNames(self):
         """ 扫描播放列表名字 """
-        if not os.path.exists("app\\Playlists"):
-            os.mkdir("app\\Playlists")
+        os.makedirs('app/Playlists',exist_ok=True)
         playlists = [
-            i[:-5] for i in os.listdir("app\\Playlists") if i.endswith(".json")
+            i[:-5] for i in os.listdir("app/Playlists") if i.endswith(".json")
         ]
         return playlists
 
@@ -194,9 +193,6 @@ class NavigationWidget(BasicNavigationWidget):
 
 class ScrollWidget(QWidget):
     """ 滚动部件 """
-
-    def __init(self, parent=None):
-        super().__init__(parent)
 
     def paintEvent(self, e):
         """ 绘制分隔符 """

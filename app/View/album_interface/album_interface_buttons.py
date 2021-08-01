@@ -8,7 +8,19 @@ from PyQt5.QtWidgets import QPushButton
 class BasicButton(QPushButton):
     """ 专辑界面信息栏按钮 """
 
-    def __init__(self, iconPath, text, parent=None):
+    def __init__(self, iconPath: str, text: str, parent=None):
+        """
+        Parameters
+        ----------
+        iconPath: str
+            图标路径
+
+        text: str
+            按钮文字
+
+        parent:
+            父级窗口
+        """
         super().__init__(parent=parent)
         self.iconPath = iconPath
         self.text = text

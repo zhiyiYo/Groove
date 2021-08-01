@@ -8,9 +8,7 @@ from PyQt5.QtWidgets import QPushButton, QToolButton
 class BasicButton(QToolButton):
     """ 基本六态按钮 """
 
-    def __init__(
-        self, iconPathDict_list: list, parent=None, iconSize_tuple: tuple = (57, 40)
-    ):
+    def __init__(self, iconPathDict_list: list, parent=None, iconSize_tuple: tuple = (57, 40)):
         super().__init__(parent=parent)
         self.iconPathDict_list = iconPathDict_list
         self.iconWidth, self.iconHeight = iconSize_tuple

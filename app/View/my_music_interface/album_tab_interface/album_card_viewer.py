@@ -18,7 +18,7 @@ from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget
 
 from .album_card import AlbumCard
 from .album_blur_background import AlbumBlurBackground
-from app.components.dialog_box.delete_card_panel import DeleteCardPanel
+from app.components.dialog_box.delete_card_dialog import DeleteCardDialog
 from app.common.object.save_info_object import SaveInfoObject
 
 
@@ -177,11 +177,6 @@ class AlbumCardViewer(QWidget):
             self.__updateColumnNum(3)
         elif self.width() <= 690:
             self.__updateColumnNum(2)
-        # 调整滚动条
-        self.scrollArea.verticalScrollBar().move(-1, 40)
-        self.scrollArea.verticalScrollBar().resize(
-            self.scrollArea.verticalScrollBar().width(), self.height() - 156
-        )
 
     def __updateColumnNum(self, columnNum: int):
         """ 更新网格列数 """
@@ -414,7 +409,7 @@ class AlbumCardViewer(QWidget):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open("app\\resource\\css\\albumCardViewer.qss", encoding="utf-8") as f:
+        with open("app/resource/css/albumCardViewer.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
 
     def findAlbumCardByAlbumInfo(self, albumInfo: dict) -> AlbumCard:
@@ -578,7 +573,7 @@ class AlbumCardViewer(QWidget):
         """ 显示删除一个专辑卡的对话框 """
         title = "是否确定要删除此项？"
         content = f"""如果删除"{albumInfo['album']}"，它将不再位于此设备上。"""
-        deleteCardPanel = DeleteCardPanel(title, content, self.window())
+        deleteCardPanel = DeleteCardDialog(title, content, self.window())
         deleteCardPanel.deleteCardSig.connect(
             lambda: self.__deleteAlbumCards([albumInfo])
         )
@@ -588,7 +583,7 @@ class AlbumCardViewer(QWidget):
         """ 显示删除多个专辑卡的对话框 """
         title = "确定要删除这些项？"
         content = "如果你删除这些专辑，它们将不再位于此设备上。"
-        deleteCardPanel = DeleteCardPanel(title, content, self.window())
+        deleteCardPanel = DeleteCardDialog(title, content, self.window())
         deleteCardPanel.deleteCardSig.connect(
             lambda: self.__deleteAlbumCards(albumInfo_list)
         )

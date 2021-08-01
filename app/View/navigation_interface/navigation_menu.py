@@ -25,12 +25,12 @@ class NavigationMenu(NavigationWidget):
         self.resize(60, 800)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setWindowFlags(Qt.NoDropShadowWindowHint | Qt.Popup)
-        # self.hWnd = HWND(int(self.winId()))
         self.windowEffect.setAcrylicEffect(self.winId(), "F2F2F299", False)
 
     def resizeEvent(self, e):
         """ 调整小部件尺寸 """
         super().resizeEvent(e)
+        self.scrollArea.resize(self.width(), self.height() - 232)
         self.settingButton.move(
             0, self.height() - 62 - 10 - self.__isShowBottomSpacing * 115
         )

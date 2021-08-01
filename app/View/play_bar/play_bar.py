@@ -65,16 +65,17 @@ class PlayBar(QWidget):
 
     def updateDominantColor(self, albumPath: str):
         """ 更新主色调 """
-        self.acrylicColor = self.dominantColor.getDominantColor(albumPath) + "CC"
-        self.setAcrylicColor(self.acrylicColor)
+        color = self.dominantColor.getDominantColor(albumPath) + "CC"
+        self.setAcrylicColor(color)
 
     def setAcrylicColor(self, gradientColor: str):
         """ 设置亚克力效果的混合色 """
+        self.acrylicColor = gradientColor
         self.windowEffect.setAcrylicEffect(self.winId(), gradientColor, False)
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open("app\\resource\\css\\playBar.qss", encoding="utf-8") as f:
+        with open(r"app\resource\css\playBar.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
 
     def resizeEvent(self, e):

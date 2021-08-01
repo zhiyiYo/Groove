@@ -8,7 +8,7 @@ from PyQt5.QtGui import QPalette
 
 from app.components.menu import AddToMenu
 from app.common.object.save_info_object import SaveInfoObject
-from app.components.dialog_box.album_info_edit_panel import AlbumInfoEditPanel
+from app.components.dialog_box.album_info_edit_dialog import AlbumInfoEditDialog
 
 from .album_info_bar import AlbumInfoBar
 from .selection_mode_bar import SelectionModeBar
@@ -32,6 +32,15 @@ class AlbumInterface(QWidget):
     addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 添加歌曲到自定义的播放列表中
 
     def __init__(self, albumInfo: dict, parent=None):
+        """
+        Parameters
+        ----------
+        albumInfo: dict
+            专辑信息
+
+        parent:
+            父级窗口
+        """
         super().__init__(parent)
         self.albumInfo = deepcopy(albumInfo)
         self.songInfo_list = albumInfo.get("songInfo_list")  # type:list
@@ -74,11 +83,22 @@ class AlbumInterface(QWidget):
         super().resizeEvent(e)
         self.albumInfoBar.resize(self.width(), self.albumInfoBar.height())
         self.songListWidget.resize(self.size())
-        self.selectionModeBar.resize(self.width(), self.selectionModeBar.height())
-        self.selectionModeBar.move(0, self.height() - self.selectionModeBar.height())
+        self.selectionModeBar.resize(
+            self.width(), self.selectionModeBar.height())
+        self.selectionModeBar.move(
+            0, self.height() - self.selectionModeBar.height())
 
     def updateOneSongCard(self, oldSongInfo: dict, newSongInfo):
-        """ 更新一个歌曲卡 """
+        """ 更新一个歌曲卡
+
+        Parameters
+        ----------
+        oldSongInfo: dict
+            旧的歌曲信息
+
+        newSongInfo: dict
+            更新后的歌曲信息
+        """
         # 不将歌曲信息写入json文件
         self.songListWidget.updateOneSongCard(oldSongInfo, newSongInfo, False)
         self.albumInfo["songInfo_list"] = self.songListWidget.songInfo_list
@@ -86,12 +106,16 @@ class AlbumInterface(QWidget):
     def __showAlbumInfoEditPanel(self):
         """ 显示专辑信息编辑面板 """
         oldAlbumInfo = deepcopy(self.albumInfo)
-        infoEditPanel = AlbumInfoEditPanel(deepcopy(self.albumInfo), self.window())
+        infoEditPanel = AlbumInfoEditDialog(
+            deepcopy(self.albumInfo), self.window())
         infoEditPanel.saveInfoSig.connect(
-            lambda newAlbumInfo: self.__saveAlbumInfoSlot(oldAlbumInfo, newAlbumInfo)
+            lambda newAlbumInfo: self.__saveAlbumInfoSlot(
+                oldAlbumInfo, newAlbumInfo)
         )
-        self.saveAlbumInfoObject.saveCompleteSig.connect(infoEditPanel.saveCompleteSlot)
-        self.saveAlbumInfoObject.saveErrorSig.connect(infoEditPanel.saveErrorSlot)
+        self.saveAlbumInfoObject.saveCompleteSig.connect(
+            infoEditPanel.saveCompleteSlot)
+        self.saveAlbumInfoObject.saveErrorSig.connect(
+            infoEditPanel.saveErrorSlot)
         infoEditPanel.setStyle(QApplication.style())
         infoEditPanel.exec_()
         self.saveAlbumInfoObject.disconnect()
@@ -109,7 +133,8 @@ class AlbumInterface(QWidget):
 
     def __saveAlbumInfoSlot(self, oldAlbumInfo: dict, newAlbumInfo: dict):
         """ 保存专辑信息 """
-        self.saveAlbumInfoObject.saveAlbumInfoSlot(newAlbumInfo["songInfo_list"])
+        self.saveAlbumInfoObject.saveAlbumInfoSlot(
+            newAlbumInfo["songInfo_list"])
         newAlbumInfo_copy = deepcopy(newAlbumInfo)
         self.updateWindow(newAlbumInfo)
         # 如果只更改了专辑封面需要直接刷新信息栏
@@ -138,7 +163,7 @@ class AlbumInterface(QWidget):
         """ 编辑歌曲卡信息 """
         songCard = self.songListWidget.checkedSongCard_list[0]
         self.__unCheckSongCards()
-        self.songListWidget.showSongInfoEditPanel(songCard)
+        self.songListWidget.showSongInfoEditDialog(songCard)
 
     def __selectAllButtonSlot(self):
         """ 歌曲卡全选/取消全选 """
@@ -182,7 +207,8 @@ class AlbumInterface(QWidget):
             lambda: self.addSongsToPlayingPlaylistSig.emit(songInfo_list)
         )
         addToMenu.addSongsToPlaylistSig.connect(
-            lambda name: self.addSongsToCustomPlaylistSig.emit(name, songInfo_list)
+            lambda name: self.addSongsToCustomPlaylistSig.emit(
+                name, songInfo_list)
         )
         addToMenu.newPlayList.triggered.connect(
             lambda: self.addSongsToNewCustomPlaylistSig.emit(songInfo_list)
@@ -207,19 +233,24 @@ class AlbumInterface(QWidget):
         self.albumInfoBar.addToPlayingPlaylistSig.connect(
             lambda: self.addSongsToPlayingPlaylistSig.emit(self.songInfo_list)
         )
-        self.albumInfoBar.editInfoBt.clicked.connect(self.__showAlbumInfoEditPanel)
+        self.albumInfoBar.editInfoBt.clicked.connect(
+            self.__showAlbumInfoEditPanel)
         self.albumInfoBar.addToNewCustomPlaylistSig.connect(
-            lambda: self.addSongsToNewCustomPlaylistSig.emit(self.songInfo_list)
+            lambda: self.addSongsToNewCustomPlaylistSig.emit(
+                self.songInfo_list)
         )
         self.albumInfoBar.addToCustomPlaylistSig.connect(
-            lambda name: self.addSongsToCustomPlaylistSig.emit(name, self.songInfo_list)
+            lambda name: self.addSongsToCustomPlaylistSig.emit(
+                name, self.songInfo_list)
         )
         self.albumInfoBar.editInfoSig.connect(self.__showAlbumInfoEditPanel)
         # 歌曲列表信号
         self.songListWidget.playSignal.connect(self.songCardPlaySig)
         self.songListWidget.playOneSongSig.connect(self.playOneSongCardSig)
-        self.songListWidget.nextToPlayOneSongSig.connect(self.nextToPlayOneSongSig)
-        self.songListWidget.addSongToPlayingSignal.connect(self.addOneSongToPlayingSig)
+        self.songListWidget.nextToPlayOneSongSig.connect(
+            self.nextToPlayOneSongSig)
+        self.songListWidget.addSongToPlayingSignal.connect(
+            self.addOneSongToPlayingSig)
         self.songListWidget.selectionModeStateChanged.connect(
             self.__selectionModeStateChangedSlot
         )
@@ -233,13 +264,16 @@ class AlbumInterface(QWidget):
             self.addSongsToNewCustomPlaylistSig
         )
         # 选择栏信号连接到槽函数
-        self.selectionModeBar.cancelButton.clicked.connect(self.__unCheckSongCards)
+        self.selectionModeBar.cancelButton.clicked.connect(
+            self.__unCheckSongCards)
         self.selectionModeBar.playButton.clicked.connect(self.__emitPlaylist)
-        self.selectionModeBar.nextToPlayButton.clicked.connect(self.__emitPlaylist)
-        self.selectionModeBar.editInfoButton.clicked.connect(self.__editSongCardInfo)
+        self.selectionModeBar.nextToPlayButton.clicked.connect(
+            self.__emitPlaylist)
+        self.selectionModeBar.editInfoButton.clicked.connect(
+            self.__editSongCardInfo)
         self.selectionModeBar.propertyButton.clicked.connect(
             self.__showCheckedSongCardProperty
         )
-        self.selectionModeBar.checkAllButton.clicked.connect(self.__selectAllButtonSlot)
+        self.selectionModeBar.checkAllButton.clicked.connect(
+            self.__selectAllButtonSlot)
         self.selectionModeBar.addToButton.clicked.connect(self.__showAddToMenu)
-

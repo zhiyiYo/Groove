@@ -1,6 +1,6 @@
 # coding:utf-8
 
-from app.components.dialog_box import PropertyPanel
+from app.components.dialog_box.song_property_dialog import SongPropertyDialog
 from app.components.list_widget import ListWidget
 from PyQt5.QtCore import QSize, Qt, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent
@@ -50,9 +50,7 @@ class SongListWidget(ListWidget):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open(
-            "app\\resource\\css\\playInterfaceSongCardListWidget.qss", encoding="utf-8"
-        ) as f:
+        with open("app/resource/css/playInterfaceSongCardListWidget.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
 
     def resizeEvent(self, e):
@@ -79,11 +77,11 @@ class SongListWidget(ListWidget):
                 self.menu.moveUpAct.setEnabled(False)
             self.menu.exec_(e.globalPos())
 
-    def __showPropertyPanel(self):
+    def __showSongPropertyDialog(self):
         """ 显示属性面板 """
         songInfo = self.songCard_list[self.currentRow()].songInfo
-        propertyPanel = PropertyPanel(songInfo, self.window())
-        propertyPanel.exec_()
+        w = SongPropertyDialog(songInfo, self.window())
+        w.exec_()
 
     def __removeSongCard(self, index):
         """ 移除选中的一个歌曲卡 """
@@ -212,7 +210,7 @@ class SongListWidget(ListWidget):
         self.menu.playAct.triggered.connect(
             lambda: self.__emitCurrentChangedSignal(self.currentRow())
         )
-        self.menu.propertyAct.triggered.connect(self.__showPropertyPanel)
+        self.menu.propertyAct.triggered.connect(self.__showSongPropertyDialog)
         self.menu.removeAct.triggered.connect(
             lambda: self.__removeSongCard(self.currentRow())
         )

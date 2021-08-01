@@ -15,10 +15,10 @@ class CollapsingToolbarLayout(QWidget):
 
         Parameters
         ----------
-        maxFolding : int
+        maxFolding: int
             工具栏最大折叠量
 
-        parent : 父级窗口
+        parent: 父级窗口
         """
         super().__init__(parent)
         self.__maxFolding = maxFolding

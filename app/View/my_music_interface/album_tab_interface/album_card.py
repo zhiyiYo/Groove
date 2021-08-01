@@ -1,8 +1,7 @@
 # coding:utf-8
-
 from copy import deepcopy
 
-from app.components.dialog_box.album_info_edit_panel import AlbumInfoEditPanel
+from app.components.dialog_box.album_info_edit_dialog import AlbumInfoEditDialog
 from app.common.auto_wrap import autoWrap
 from app.components.buttons.blur_button import BlurButton
 from app.components.check_box import CheckBox
@@ -30,7 +29,7 @@ class AlbumCard(PerspectiveWidget):
     addAlbumToNewCustomPlaylistSig = pyqtSignal(list)  # 将专辑添加到新建的播放列表
     addAlbumToCustomPlaylistSig = pyqtSignal(str, list)  # 将专辑添加到已存在的自定义播放列表
     showBlurAlbumBackgroundSig = pyqtSignal(QPoint, str)  # 发送专辑卡全局坐标
-    showAlbumInfoEditPanelSig = pyqtSignal(AlbumInfoEditPanel)  # 发送显示专辑信息面板信号
+    showAlbumInfoEditPanelSig = pyqtSignal(AlbumInfoEditDialog)  # 发送显示专辑信息面板信号
 
     def __init__(self, albumInfo: dict, parent):
         super().__init__(parent, True)
@@ -208,7 +207,7 @@ class AlbumCard(PerspectiveWidget):
     def showAlbumInfoEditPanel(self):
         """ 显示专辑信息编辑面板 """
         oldAlbumInfo = deepcopy(self.albumInfo)
-        infoEditPanel = AlbumInfoEditPanel(self.albumInfo, self.window())
+        infoEditPanel = AlbumInfoEditDialog(self.albumInfo, self.window())
         infoEditPanel.saveInfoSig.connect(
             lambda newAlbumInfo: self.__saveAlbumInfoSlot(oldAlbumInfo, newAlbumInfo)
         )

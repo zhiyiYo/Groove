@@ -10,17 +10,29 @@ from app.common.get_pressed_pos import getPressedPos
 class NavigationButton(QPushButton):
     """ 侧边导航栏按钮 """
 
-    def __init__(
-        self,
-        icon_path,
-        text="",
-        parent=None,
-        buttonSize: tuple = (60, 60),
-        iconSize: tuple = (60, 60),
-    ):
+    def __init__(self, iconPath: str, text="", parent=None, buttonSize: tuple = (60, 60),
+                 iconSize: tuple = (60, 60)):
+        """
+        Parameters
+        ----------
+        iconPath: str
+            图标路径
+
+        text: str
+            按钮文本
+
+        parent:
+            父级窗口
+
+        buttonSize: tuple
+            按钮大小
+
+        iconSize: tuple
+            图标大小
+        """
         super().__init__(text, parent)
         # 保存数据
-        self.image = QPixmap(icon_path)
+        self.image = QPixmap(iconPath)
         self.iconSizeTuple = iconSize
         self.buttonSizeTuple = buttonSize
         self.initWidget()
@@ -76,21 +88,29 @@ class NavigationButton(QPushButton):
 class ToolButton(NavigationButton):
     """ 只显示图标的按钮 """
 
-    def __init__(self, icon_path, parent=None, buttonSize=(60, 60)):
-        super().__init__(
-            icon_path,
-            text="",
-            parent=parent,
-            buttonSize=buttonSize,
-            iconSize=buttonSize,
-        )
+    def __init__(self, iconPath, parent=None, buttonSize=(60, 60)):
+        """
+        Parameters
+        ----------
+        iconPath: str
+            图标路径
+
+        parent:
+            父级窗口
+
+        buttonSize: tuple
+            按钮大小
+        """
+        super().__init__(iconPath, text="", parent=parent,
+                         buttonSize=buttonSize, iconSize=buttonSize)
 
     def paintEvent(self, e):
         """ 绘制背景 """
         super().paintEvent(e)
         painter = QPainter(self)
         painter.setPen(Qt.NoPen)
-        painter.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
+        painter.setRenderHints(QPainter.Antialiasing |
+                               QPainter.SmoothPixmapTransform)
 
         if self.isSelected == True:
             # 已选中且再次点击时根据点击方位的不同更新左边选中标志的形状
@@ -139,17 +159,13 @@ class ToolButton(NavigationButton):
         painter.setPen(Qt.NoPen)
         brush = QBrush(QColor(0, 107, 133))
         painter.setBrush(brush)
-        points = [QPoint(x1, y1), QPoint(x2, y2), QPoint(x3, y3), QPoint(x4, y4)]
+        points = [QPoint(x1, y1), QPoint(x2, y2),
+                  QPoint(x3, y3), QPoint(x4, y4)]
         painter.drawPolygon(QPolygon(points), 4)
 
 
 class PushButton(NavigationButton):
     """ 显示图标和文字的按钮 """
-
-    def __init__(
-        self, icon_path, text="", parent=None, buttonSize=(60, 60), iconSize=(60, 60)
-    ):
-        super().__init__(icon_path, text, parent, buttonSize, iconSize)
 
     def paintEvent(self, e):
         """ 绘制背景 """
@@ -267,7 +283,8 @@ class PushButton(NavigationButton):
         painter.setPen(Qt.NoPen)
         brush = QBrush(QColor(0, 107, 133))
         painter.setBrush(brush)
-        points = [QPoint(x1, y1), QPoint(x2, y2), QPoint(x3, y3), QPoint(x4, y4)]
+        points = [QPoint(x1, y1), QPoint(x2, y2),
+                  QPoint(x3, y3), QPoint(x4, y4)]
         painter.drawPolygon(QPolygon(points), 4)
 
 
@@ -275,15 +292,16 @@ class CreatePlaylistButton(NavigationButton):
     """ 导航栏创建播放列表按钮 """
 
     def __init__(self, parent):
-        self.icon_path = r"app\resource\images\navigationBar\黑色新建播放列表.png"
-        super().__init__(self.icon_path, parent=parent)
+        self.iconPath = r"app\resource\images\navigationBar\黑色新建播放列表.png"
+        super().__init__(self.iconPath, parent=parent)
 
     def paintEvent(self, e):
         """ 绘制背景 """
         super().paintEvent(e)
         painter = QPainter(self)
         painter.setPen(Qt.NoPen)
-        painter.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
+        painter.setRenderHints(QPainter.Antialiasing |
+                               QPainter.SmoothPixmapTransform)
         # 已选中且再次点击时根据点击方位的不同更新左边选中标志的形状
         if not self.pressedPos:
             self.drawIcon(painter, self.image)

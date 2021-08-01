@@ -61,10 +61,10 @@ class LabelNavigationInterface(QWidget):
 
         Parameters
         ----------
-        label_list : List[str]
+        label_list: List[str]
             需要显示的标签列表
 
-        layout : str
+        layout: str
             显示的标签的布局，有字母网格布局`letterGridLayout`和列表布局`listLayout`两种
         """
         self.vBox.removeAllWidget()
@@ -114,10 +114,6 @@ class LabelNavigationInterface(QWidget):
         """ 调整部件尺寸 """
         self.stackWidget.resize(self.size())
         self.scrollWidget.resize(self.width(), self.scrollWidget.height())
-        self.scrollArea.verticalScrollBar().move(-1, 40)
-        self.scrollArea.verticalScrollBar().resize(
-            self.scrollArea.verticalScrollBar().width(), self.height() - 156
-        )
 
     def __setQss(self):
         """ 设置层叠样式 """

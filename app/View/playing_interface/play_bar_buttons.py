@@ -9,13 +9,7 @@ from PyQt5.QtMultimedia import QMediaPlaylist
 class BasicCircleButton(QToolButton):
     """ 圆形按钮 """
 
-    def __init__(
-        self,
-        iconPath,
-        parent=None,
-        iconSize: tuple = (47, 47),
-        buttonSize: tuple = (47, 47),
-    ):
+    def __init__(self, iconPath, parent=None, iconSize: tuple = (47, 47), buttonSize: tuple = (47, 47)):
         super().__init__(parent)
         self.iconWidth, self.iconHeight = iconSize
         self.buttonSize_tuple = buttonSize

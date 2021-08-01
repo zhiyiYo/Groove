@@ -6,22 +6,45 @@ from scipy.ndimage.filters import gaussian_filter
 from PyQt5.QtGui import QPixmap, QImage
 
 
-def gaussianBlur(rawImagePath, savePath='', blurRadius=18, brightnessFactor=1,blurPicSize:tuple=None):
-    """ 对图片进行高斯模糊处理，返回numpy数组 """
+def gaussianBlur(imagePath, savePath='', blurRadius=18, brightnessFactor=1, blurPicSize: tuple = None) -> np.ndarray:
+    """ 对图片进行高斯模糊处理
+
+    Parameters
+    ----------
+    imagePath: str
+        图片路径
+
+    savePath: str
+        保存路径
+
+    blurRadius: int
+        模糊半径
+
+    brightnessFactor：float
+        亮度缩放因子
+
+    blurPicSize: tuple
+        高斯模糊前将图片缩放到指定大小，可以加快模糊速度
+
+    Returns
+    -------
+    blurImageArray: `~np.ndarray`
+        高斯模糊后的图像数组
+    """
     if blurPicSize:
         # 调整图片尺寸，减小计算量，还能增加额外的模糊(手动滑稽)
-        image=Image.open(rawImagePath)
+        image = Image.open(imagePath)
         oldWidth, oldHeight = image.size
         ratio = min(blurPicSize[0] / oldWidth, blurPicSize[1] / oldHeight)
         newWidth, newHeight = oldWidth * ratio, oldHeight * ratio
         # 如果新的尺寸小于旧尺寸才resize
         if newWidth < oldWidth:
             imageArray = np.array(image.resize(
-                (int(newWidth), int(newHeight)),Image.ANTIALIAS))
+                (int(newWidth), int(newHeight)), Image.ANTIALIAS))
         else:
             imageArray = np.array(image)
     else:
-        imageArray = np.array(Image.open(rawImagePath))
+        imageArray = np.array(Image.open(imagePath))
     blurImageArray = imageArray
     # 对每一个颜色通道分别磨砂
     for i in range(imageArray.shape[-1]):
@@ -35,7 +58,27 @@ def gaussianBlur(rawImagePath, savePath='', blurRadius=18, brightnessFactor=1,bl
 
 
 def getBlurPixmap(imagePath, blurRadius=30, brightnessFactor=1, blurPicSize: tuple = None) -> QPixmap:
-    """ 对原图进行高斯模糊处理，返回QPixmap """
+    """ 对原图进行高斯模糊处理
+
+    Parameters
+    ----------
+    imagePath: str
+        图片路径
+
+    blurRadius: int
+        模糊半径
+
+    brightnessFactor：float
+        亮度缩放因子
+
+    blurPicSize: tuple
+        高斯模糊前将图片缩放到指定大小，可以加快模糊速度
+
+    Returns
+    -------
+    blurPixmap: QPixmap
+        高斯模糊后的图像
+    """
     blurArray = gaussianBlur(
         imagePath, blurRadius=blurRadius, brightnessFactor=brightnessFactor, blurPicSize=blurPicSize)
     height, width, bytesPerComponent = blurArray.shape

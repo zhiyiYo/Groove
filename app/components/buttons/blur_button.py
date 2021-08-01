@@ -14,13 +14,24 @@ class BlurButton(QToolButton):
 
         Parameters
         ----------
-        parent : 父级\n
-        cropPos : 图像裁剪位置坐标\n
-        iconPath : 按钮图标路径\n
-        blurPicPath : 磨砂图片路径\n
-        buttonSize : 按钮大小\n
-        blurRadius : 磨砂半径
-         """
+        parent:
+            父级
+
+        cropPos: tuple
+            图像裁剪位置坐标
+
+        iconPath: str
+            按钮图标路径
+
+        blurPicPath: str
+            磨砂图片路径
+
+        buttonSize: tuple
+            按钮大小
+
+        blurRadius: int
+            磨砂半径
+        """
         super().__init__(parent)
         # 保存属性
         self.blurPicPath = blurPicPath
@@ -41,7 +52,6 @@ class BlurButton(QToolButton):
     def initWidget(self):
         """ 初始化小部件 """
         self.resize(*self.buttonSize)
-        #self.move(self.cropX, self.cropY)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.__setBlurEffect()
 
@@ -50,12 +60,10 @@ class BlurButton(QToolButton):
         if not self.blurPicPath:
             return
         # 裁剪下需要磨砂的部分
-        img = Image.open(self.blurPicPath).convert('RGB').resize(
-            (200, 200))  # type:Image.Image
+        img = Image.open(self.blurPicPath).convert('RGB').resize((200, 200))
         img = img.crop((self.cropX, self.cropY,
                         self.width() + self.cropX, self.height() + self.cropY))
-        img = img.filter(GaussianBlur(self.blurRadius)
-                            ).point(lambda x: int(x * 0.7))
+        img = img.filter(GaussianBlur(self.blurRadius)).point(lambda x: int(x * 0.7))
         self.blurPic = img.toqpixmap()
         self.update()
 

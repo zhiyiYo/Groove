@@ -943,19 +943,19 @@
 <g id="node96" class="node">
 <title>95</title>
 <polygon fill="none" stroke="black" points="12806.5,-36 12588.5,-36 12588.5,0 12806.5,0 12806.5,-36"/>
-<text text-anchor="middle" x="12697.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playlist_panel_interface</text>
+<text text-anchor="middle" x="12697.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playlist_dialogs</text>
 </g>
 <!-- 96 -->
 <g id="node97" class="node">
 <title>96</title>
 <polygon fill="none" stroke="black" points="13399,-108 13064,-108 13064,-72 13399,-72 13399,-108"/>
-<text text-anchor="middle" x="13231.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playlist_panel_interface.basic_playlist_panel</text>
+<text text-anchor="middle" x="13231.5" y="-86.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playlist_dialogs.basic_playlist_panel</text>
 </g>
 <!-- 99 -->
 <g id="node100" class="node">
 <title>99</title>
 <polygon fill="none" stroke="black" points="13366,-180 13097,-180 13097,-144 13366,-144 13366,-180"/>
-<text text-anchor="middle" x="13231.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playlist_panel_interface.line_edit</text>
+<text text-anchor="middle" x="13231.5" y="-158.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playlist_dialogs.line_edit</text>
 </g>
 <!-- 96&#45;&gt;99 -->
 <g id="edge61" class="edge">
@@ -967,13 +967,13 @@
 <g id="node98" class="node">
 <title>97</title>
 <polygon fill="none" stroke="black" points="13889,-36 13544,-36 13544,0 13889,0 13889,-36"/>
-<text text-anchor="middle" x="13716.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playlist_panel_interface.create_playlist_button</text>
+<text text-anchor="middle" x="13716.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playlist_dialogs.create_playlist_button</text>
 </g>
 <!-- 98 -->
 <g id="node99" class="node">
 <title>98</title>
 <polygon fill="none" stroke="black" points="13162.5,-36 12824.5,-36 12824.5,0 13162.5,0 13162.5,-36"/>
-<text text-anchor="middle" x="12993.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playlist_panel_interface.create_playlist_panel</text>
+<text text-anchor="middle" x="12993.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playlist_dialogs.create_playlist_panel</text>
 </g>
 <!-- 98&#45;&gt;96 -->
 <g id="edge62" class="edge">
@@ -985,7 +985,7 @@
 <g id="node101" class="node">
 <title>100</title>
 <polygon fill="none" stroke="black" points="13526,-36 13181,-36 13181,0 13526,0 13526,-36"/>
-<text text-anchor="middle" x="13353.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playlist_panel_interface.rename_playlist_panel</text>
+<text text-anchor="middle" x="13353.5" y="-14.3" font-family="Times New Roman,serif" font-size="14.00">Groove.playlist_dialogs.rename_playlist_panel</text>
 </g>
 <!-- 100&#45;&gt;96 -->
 <g id="edge63" class="edge">

@@ -182,14 +182,23 @@ class TwoStateButton(BasicButton):
     """ 双态按钮 """
 
     def __init__(self, iconPath_list: list, text_list: list, parent=None, buttonSize: tuple = (84, 70), isState_1=0):
-        """ 实例化双态按钮
+        """
         Parameters
         ----------
-        iconPath_list : 存状态0和状态1对应按钮图标地址的列表\n
-        text_list : 与状态0和状态1相对应的按钮文字列表\n
-        parent : 父级窗口\n
-        buttonSize : 按钮大小元组\n
-        isState_0 : 是否处于状态1
+        iconPath_list: list
+            存状态0和状态1对应按钮图标地址的列表
+
+        text_list: list
+            与状态0和状态1相对应的按钮文字列表
+
+        parent:
+            父级窗口
+
+        buttonSize: tuple
+            按钮大小元组
+
+        isState_0: bool
+            是否处于状态1
         """
         super().__init__(
             iconPath_list[isState_1], text_list[isState_1], parent, buttonSize)

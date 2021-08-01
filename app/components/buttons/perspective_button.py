@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QPushButton
 
 
 class PerspectivePushButton(QPushButton):
-    """ 可以进行透视变换的PushButton """
+    """ 可以进行透视变换的 PushButton """
 
     def __init__(self, text: str = "", parent=None, icon: QIcon = None):
         super().__init__(text, parent)
@@ -21,8 +21,8 @@ class PerspectivePushButton(QPushButton):
     def mousePressEvent(self, e):
         """ 鼠标点击窗口时进行透视变换 """
         super().mousePressEvent(e)
-        self.grabMouse()
         # 截屏
+        self.grabMouse()
         self.__perspectiveTrans.setPixmap(self.grab())
         # 获取鼠标点击位置
         self.__pressedPos = getPressedPos(self, e)
@@ -99,7 +99,7 @@ class PerspectivePushButton(QPushButton):
         """ 鼠标松开时显示小部件 """
         self.releaseMouse()
         self.__pressedPos = None
-        self.update()
+        # self.update()
         super().mouseReleaseEvent(e)
 
     def paintEvent(self, e):

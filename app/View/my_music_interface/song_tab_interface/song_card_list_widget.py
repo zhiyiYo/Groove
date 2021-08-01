@@ -67,13 +67,17 @@ class SongCardListWidget(BasicSongListWidget):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open(
-            "app\\resource\\css\\songTabInterfaceSongListWidget.qss", encoding="utf-8"
-        ) as f:
+        with open("app/resource/css/songTabInterfaceSongListWidget.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
 
     def setSortMode(self, sortMode: str):
-        """ 根据当前的排序模式来排序歌曲卡 """
+        """ 根据当前的排序模式来排序歌曲卡
+
+        Parameters
+        ----------
+        sortMode: str
+            排序方式，有 `添加时间`、`A到Z` 和 `歌手` 三种
+        """
         self.sortMode = sortMode
         if self.sortMode == "添加时间":
             self.sortSongInfo("createTime")
@@ -89,14 +93,6 @@ class SongCardListWidget(BasicSongListWidget):
         """ 更新所有歌曲卡，根据给定的信息决定创建或者删除歌曲卡 """
         super().updateAllSongCards(songInfo_list, self.__connectSongCardSignalToSlot)
 
-    def resizeEvent(self, e):
-        """ 改变尺寸时调整竖直滚动条大小 """
-        super().resizeEvent(e)
-        self.verticalScrollBar().move(-1, 40)
-        self.verticalScrollBar().resize(
-            self.verticalScrollBar().width(), self.height() - 156
-        )
-
     def __connectMenuSignalToSlot(self, contextMenu: SongCardListContextMenu):
         """ 信号连接到槽 """
         contextMenu.playAct.triggered.connect(
@@ -110,9 +106,10 @@ class SongCardListWidget(BasicSongListWidget):
             )
         )
         # 显示歌曲信息编辑面板
-        contextMenu.editInfoAct.triggered.connect(self.showSongInfoEditPanel)
+        contextMenu.editInfoAct.triggered.connect(self.showSongInfoEditDialog)
         # 显示属性面板
-        contextMenu.showPropertyAct.triggered.connect(self.showPropertyPanel)
+        contextMenu.showPropertyAct.triggered.connect(
+            self.showSongPropertyDialog)
         # 显示专辑界面
         contextMenu.showAlbumAct.triggered.connect(
             lambda: self.switchToAlbumInterfaceSig.emit(
@@ -122,7 +119,7 @@ class SongCardListWidget(BasicSongListWidget):
         )
         # 删除歌曲卡
         contextMenu.deleteAct.triggered.connect(
-            lambda: self.__removeSongCard(self.currentRow())
+            lambda: self.removeSongCard(self.currentRow())
         )
         # 将歌曲添加到正在播放列表
         contextMenu.addToMenu.playingAct.triggered.connect(
@@ -153,6 +150,9 @@ class SongCardListWidget(BasicSongListWidget):
         songCard.doubleClicked.connect(self.__emitCurrentChangedSignal)
         songCard.playButtonClicked.connect(self.__playButtonSlot)
         songCard.clicked.connect(self.setCurrentIndex)
-        songCard.switchToAlbumInterfaceSig.connect(self.switchToAlbumInterfaceSig)
-        songCard.checkedStateChanged.connect(self.songCardCheckedStateChangedSlot)
-        songCard.addSongsToCustomPlaylistSig.connect(self.addSongsToCustomPlaylistSig)
+        songCard.switchToAlbumInterfaceSig.connect(
+            self.switchToAlbumInterfaceSig)
+        songCard.checkedStateChanged.connect(
+            self.songCardCheckedStateChangedSlot)
+        songCard.addSongsToCustomPlaylistSig.connect(
+            self.addSongsToCustomPlaylistSig)

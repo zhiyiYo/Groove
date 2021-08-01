@@ -13,6 +13,17 @@ class TabButton(QPushButton):
     buttonSelected = pyqtSignal(int)
 
     def __init__(self, text: str, parent=None, tabIndex: int = 0):
+        """
+        Parameters
+        ----------
+        text: str
+            按钮文本
+
+        parent:
+            父级窗口
+
+        tabIndex: int
+            按钮对应的标签窗口索引，范围为 `0 ~ N-1`"""
         super().__init__(parent)
         self.text = text
         self.isEnter = False

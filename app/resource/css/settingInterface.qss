@@ -1,4 +1,4 @@
-QWidget{
+QWidget {
     background-color: white;
 }
 
@@ -7,34 +7,34 @@ QScrollArea {
     border: none;
 }
 
-QLabel{
-    font:18px 'Microsoft YaHei';
+QLabel {
+    font: 18px 'Microsoft YaHei';
 }
 
-QLabel#settingLabel{
-    font:41px 'Microsoft YaHei Light';
+QLabel#settingLabel {
+    font: 41px 'Microsoft YaHei Light';
 }
 
-QLabel#titleLabel{
-    font:29px 'Microsoft YaHei';
+QLabel#titleLabel {
+    font: 29px 'Microsoft YaHei';
 }
 
-QLabel#clickableLabel{
-    color: rgb(0,107,131);
-    font:18px 'Microsoft YaHei';
+QLabel#clickableLabel {
+    color: rgb(0, 107, 131);
+    font: 18px 'Microsoft YaHei';
 }
 
 QLabel#clickableLabel:hover {
-    color: rgb(154,154,154);
+    color: rgb(154, 154, 154);
 }
 
-QCheckBox{
-    spacing:15px;
-    color:black;
-    font:18px 'Microsoft YaHei';
+QCheckBox {
+    spacing: 15px;
+    color: black;
+    font: 18px 'Microsoft YaHei';
 }
 
-QCheckBox::indicator{
+QCheckBox::indicator {
     width: 50px;
     height: 25px;
 }
@@ -64,45 +64,60 @@ QCheckBox::indicator:checked:pressed {
 }
 
 
-QRadioButton{
-    spacing:10px;
-    color:black;
-    font:18px 'Microsoft YaHei';
+QRadioButton {
+    spacing: 10px;
+    color: black;
+    font: 18px 'Microsoft YaHei';
+    background-color: transparent;
 }
 
 QRadioButton::indicator {
-    height: 26px;
-    width: 25px;
+    background-color: transparent;
 }
 
 QRadioButton::indicator:unchecked {
-    border-image: url(app/resource/images/setting_interface/radioButton_unchecked.png);
+    height: 22px;
+    width: 22px;
+    border: 2px solid rgb(154, 154, 154);
+    border-radius: 13px;
 }
 
 
 QRadioButton::indicator:checked {
-    border-image: url(app/resource/images/setting_interface/radioButton_checked.png);
-
+    height: 12px;
+    width: 12px;
+    border: 7px solid rgb(0, 153, 188);
+    border-radius: 13px;
 }
 
 QRadioButton::indicator:unchecked:hover {
-    border-image: url(app/resource/images/setting_interface/radioButton_unchecked_hover.png);
-
+    height: 22px;
+    width: 22px;
+    border: 2px solid rgb(120, 120, 120);
+    border-radius: 13px;
 }
 
 QRadioButton::indicator:checked:hover {
-    border-image: url(app/resource/images/setting_interface/radioButton_checked_hover.png);
-
+    height: 12px;
+    width: 12px;
+    border: 7px solid rgb(72, 210, 242);
+    border-radius: 13px;
 }
 
 QRadioButton::indicator:unchecked:pressed {
-    border-image: url(app/resource/images/setting_interface/radioButton_unchecked_pressed.png);
+    height: 22px;
+    width: 22px;
+    background-color: rgb(153, 153, 153);
+    border: 2px solid rgb(84, 84, 84);
+    border-radius: 13px;
 
 }
 
 QRadioButton::indicator:checked:pressed {
-    border-image: url(app/resource/images/setting_interface/radioButton_checked_pressed.png);
-
+    height: 12px;
+    width: 12px;
+    border: 7px solid rgb(0, 107, 131);
+    border-radius: 13px;
 }
 
 QScrollBar {

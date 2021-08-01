@@ -28,10 +28,10 @@ class SaveInfoObject(QObject):
 
         Parameters
         ----------
-        songInfo_list : list
+        songInfo_list: list
             歌曲信息列表
 
-        newAlbumCoverPath : str
+        newAlbumCoverPath: str
             新的专辑封面路径，如果为空则不改封面
         """
         # 修改专辑封面

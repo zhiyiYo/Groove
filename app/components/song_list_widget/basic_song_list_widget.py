@@ -2,11 +2,11 @@
 
 from json import dump
 
+from app.components.dialog_box.song_info_edit_dialog import SongInfoEditDialog
+from app.components.dialog_box.song_property_dialog import SongPropertyDialog
+from app.components.list_widget import ListWidget
 from PyQt5.QtCore import QMargins, QSize, Qt, pyqtSignal
 from PyQt5.QtWidgets import QLabel, QListWidgetItem, QWidget
-
-from app.components.dialog_box import PropertyPanel, SongInfoEditPanel
-from app.components.list_widget import ListWidget
 
 from .song_card import AlbumInterfaceSongCard, SongTabSongCard
 from .song_card_type import SongCardType
@@ -25,29 +25,33 @@ class BasicSongListWidget(ListWidget):
     addSongsToNewCustomPlaylistSig = pyqtSignal(list)  # 将歌曲添加到新的自定义播放列表
     addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 将歌曲添加到已存在的自定义播放列表
 
-    def __init__(
-        self,
-        songInfo_list: list,
-        songCardType: SongCardType,
-        parent=None,
-        viewportMargins=QMargins(30, 0, 30, 0),
-        paddingBottomHeight: int = 116,
-    ):
+    def __init__(self, songInfo_list: list, songCardType: SongCardType, parent=None,
+                 viewportMargins=QMargins(30, 0, 30, 0), paddingBottomHeight: int = 116):
         """ 创建歌曲卡列表控件对象
 
         Parameters
         ----------
-        songInfo_list : 歌曲信息列表\n
-        songCardType : 歌曲卡类型\n
-        parent : 父级窗口\n
-        viewportMargins : 视口的外边距\n
-        paddingBottomHeight : 列表视图底部留白
+        songInfo_list: list
+            歌曲信息列表
+
+        songCardType: SongCardType
+            歌曲卡类型
+
+        parent:
+            父级窗口
+
+        viewportMargins: QMargins
+            视口的外边距
+
+        paddingBottomHeight: int
+            列表视图底部留白
         """
         super().__init__(parent)
         self.__songCardType = songCardType
         self.paddingBottomHeight = paddingBottomHeight
         # 使用指定的歌曲卡类创建歌曲卡对象
-        self.__SongCard = [SongTabSongCard, AlbumInterfaceSongCard][songCardType.value]
+        self.__SongCard = [SongTabSongCard,
+                           AlbumInterfaceSongCard][songCardType.value]
         self.songInfo_list = songInfo_list if songInfo_list else []
         self.currentIndex = None
         self.playingIndex = None  # 正在播放的歌曲卡下标
@@ -68,9 +72,11 @@ class BasicSongListWidget(ListWidget):
 
     def createSongCards(self, connectSongCardToSlotFunc):
         """ 清空列表并创建新歌曲卡，该函数必须被子类重写
+
         Parameter
         ----------
-        connectSongCardSigToSlotFunc : 将歌曲卡信号连接到槽函数的函数对象 """
+        connectSongCardSigToSlotFunc:
+             将歌曲卡信号连接到槽函数的函数对象 """
         self.clearSongCards()
         for songInfo in self.songInfo_list:
             # 添加空项目
@@ -83,16 +89,21 @@ class BasicSongListWidget(ListWidget):
     def __createGuideLabel(self):
         """ 创建导航标签 """
         self.guideLabel = QLabel("这里没有可显示的内容。请尝试其他筛选器。", self)
-        self.guideLabel.setStyleSheet("color: black; font: 25px 'Microsoft YaHei'")
+        self.guideLabel.setStyleSheet(
+            "color: black; font: 25px 'Microsoft YaHei'")
         self.guideLabel.resize(500, 26)
         self.guideLabel.move(35, 286)
 
     def appendOneSongCard(self, songInfo: dict, connectSongCardSigToSlotFunc=None):
         """ 在列表尾部添加一个歌曲卡
+
         Parameters
         ----------
-        songInfo : 歌曲信息字典\n
-        connectSongCardSigToSlotFunc : 将歌曲卡信号连接到槽函数的函数对象
+        songInfo: dict
+            歌曲信息字典
+
+        connectSongCardSigToSlotFunc:
+             将歌曲卡信号连接到槽函数的函数对象
         """
         item = QListWidgetItem()
         songCard = self.__SongCard(songInfo)
@@ -151,23 +162,22 @@ class BasicSongListWidget(ListWidget):
             self.songCard_list[index].setPlay(True)
             self.playingSongInfo = self.songInfo_list[index]
 
-    def showPropertyPanel(self, songInfo: dict = None):
+    def showSongPropertyDialog(self, songInfo: dict = None):
         """ 显示selected的歌曲卡的属性 """
-        songInfo = (
-            self.songCard_list[self.currentRow()].songInfo if not songInfo else songInfo
-        )
-        propertyPanel = PropertyPanel(songInfo, self.window())
-        propertyPanel.exec_()
+        songInfo = self.songCard_list[self.currentRow(
+        )].songInfo if not songInfo else songInfo
+        w = SongPropertyDialog(songInfo, self.window())
+        w.exec_()
 
-    def showSongInfoEditPanel(self, songCard=None):
+    def showSongInfoEditDialog(self, songCard=None):
         """ 显示编辑歌曲信息面板 """
         if not songCard:
             # 歌曲卡默认为当前右键点击的歌曲卡
             songCard = self.songCard_list[self.currentRow()]
         # 获取歌曲卡下标和歌曲信息
-        songInfoEditPanel = SongInfoEditPanel(songCard.songInfo, self.window())
-        songInfoEditPanel.saveInfoSig.connect(self.__saveModifidiedSongInfo)
-        songInfoEditPanel.exec_()
+        w = SongInfoEditDialog(songCard.songInfo, self.window())
+        w.saveInfoSig.connect(self.__saveModifidiedSongInfo)
+        w.exec_()
 
     def __saveModifidiedSongInfo(self, oldSongInfo, newSongInfo):
         """ 保存被更改的歌曲信息 """
@@ -185,7 +195,7 @@ class BasicSongListWidget(ListWidget):
         self.songCard_list[index].updateSongCard(newSongInfo)
         if isNeedWriteToFile:
             # 将修改的信息存入json文件
-            with open("app\\data\\songInfo.json", "w", encoding="utf-8") as f:
+            with open("app/data/songInfo.json", "w", encoding="utf-8") as f:
                 dump(self.songInfo_list, f)
 
     def updateMultiSongCards(self, oldSongInfo_list: list, newSongInfo_list: list):
@@ -193,7 +203,7 @@ class BasicSongListWidget(ListWidget):
         for oldSongInfo, newSongInfo in zip(oldSongInfo_list, newSongInfo_list):
             self.updateOneSongCard(oldSongInfo, newSongInfo, False)
         # 将修改的信息存入json文件
-        with open("app\\data\\songInfo.json", "w", encoding="utf-8") as f:
+        with open("app/data/songInfo.json", "w", encoding="utf-8") as f:
             dump(self.songInfo_list, f)
 
     def resizeEvent(self, e):
@@ -201,7 +211,8 @@ class BasicSongListWidget(ListWidget):
         super().resizeEvent(e)
         margins = self.viewportMargins()  # type:QMargins
         for item in self.item_list:
-            item.setSizeHint(QSize(self.width() - margins.left() - margins.right(), 60))
+            item.setSizeHint(
+                QSize(self.width() - margins.left() - margins.right(), 60))
         self.paddingBottomItem.setSizeHint(
             QSize(
                 self.width() - margins.left() - margins.right(),
@@ -218,7 +229,8 @@ class BasicSongListWidget(ListWidget):
             self.checkedSongCardNumChanged.emit(len(self.checkedSongCard_list))
         # 如果歌曲卡已经在列表中且该歌曲卡变为非选中状态就弹出该歌曲卡
         elif songCard in self.checkedSongCard_list and not isChecked:
-            self.checkedSongCard_list.pop(self.checkedSongCard_list.index(songCard))
+            self.checkedSongCard_list.pop(
+                self.checkedSongCard_list.index(songCard))
             self.checkedSongCardNumChanged.emit(len(self.checkedSongCard_list))
         # 如果先前不处于选择模式那么这次发生选中状态改变就进入选择模式
         if not self.isInSelectionMode:
@@ -261,14 +273,16 @@ class BasicSongListWidget(ListWidget):
         for songCard in checkedSongCard_list_copy:
             songCard.setChecked(False)
 
-    def updateAllSongCards(
-        self, songInfo_list: list, connectSongCardSigToSlotFunc=None
-    ):
+    def updateAllSongCards(self, songInfo_list: list, connectSongCardSigToSlotFunc=None):
         """ 更新所有歌曲卡，根据给定的信息决定创建或者删除歌曲卡，该函数必须被子类重写
+
         Parameters
         ----------
-        songInfo_list : 歌曲信息列表\n
-        connectSongCardSigToSlotFunc : 将歌曲卡信号连接到槽函数的函数对象 """
+        songInfo_list: list
+            歌曲信息列表
+
+        connectSongCardSigToSlotFunc:
+            将歌曲卡信号连接到槽函数的函数对象 """
         # 删除旧占位行
         self.removeItemWidget(self.paddingBottomItem)
         self.takeItem(len(self.songCard_list))
@@ -329,6 +343,7 @@ class BasicSongListWidget(ListWidget):
 
     def sortSongInfo(self, key: str, isReverse=True):
         """ 依据指定的键排序歌曲信息列表
+
         Parameters
         ----------
         key: str
@@ -339,10 +354,10 @@ class BasicSongListWidget(ListWidget):
         """
         if key != "tracknumber":
             self.songInfo_list.sort(
-                key=lambda songInfo: songInfo[key], reverse=isReverse
-            )
+                key=lambda songInfo: songInfo[key], reverse=isReverse)
         else:
-            self.songInfo_list.sort(key=lambda songInfo: int(songInfo["tracknumber"]))
+            self.songInfo_list.sort(
+                key=lambda songInfo: int(songInfo["tracknumber"]))
 
     def __createPaddingBottomItem(self):
         """ 创建底部占位行 """
@@ -355,7 +370,8 @@ class BasicSongListWidget(ListWidget):
         margins = self.viewportMargins()  # type:QMargins
         width = self.width() - margins.left() - margins.right()
         self.paddingBottomWidget.resize(width, self.paddingBottomHeight)
-        self.paddingBottomItem.setSizeHint(QSize(width, self.paddingBottomHeight))
+        self.paddingBottomItem.setSizeHint(
+            QSize(width, self.paddingBottomHeight))
         self.setItemWidget(self.paddingBottomItem, self.paddingBottomWidget)
         self.addItem(self.paddingBottomItem)
 

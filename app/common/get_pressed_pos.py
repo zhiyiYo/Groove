@@ -1,8 +1,23 @@
+# coding:utf-8
 from PyQt5.QtGui import QMouseEvent
 
 
-def getPressedPos(widget, e: QMouseEvent) -> str:
-    """ 检测鼠标并返回按下的方位 """
+def getPressedPos(widget, e: QMouseEvent):
+    """ 检测鼠标并返回按下的方位
+
+    Parameters
+    ----------
+    widget:
+        小部件
+
+    e: QMouseEvent
+        鼠标点击事件
+
+    Returns
+    -------
+    pressedPos: str or None
+        鼠标点击位置
+    """
     pressedPos = None
     width = widget.width()
     height = widget.height()

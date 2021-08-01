@@ -13,12 +13,19 @@ class AlbumBlurBackground(QWidget):
     """ 专辑卡磨砂背景 """
 
     def __init__(self, parent=None, imagePath: str = '', imageSize: tuple = (210, 210), blurRadius=30):
-        """ 创建专辑卡磨砂背景窗口
+        """
         Parameters
         ----------
-        imagePath : 专辑封面路径\n
-        imageSize : 调整大小后的图片尺寸\n
-        blurRadius : 磨砂半径, 磨砂后的图片尺寸将等于磨砂半径*2加上宽和高 """
+        parent:
+            父级窗口
+        imagePath: str
+            专辑封面路径
+
+        imageSize: tuple
+            调整大小后的图片尺寸
+
+        blurRadius: int
+            磨砂半径, 磨砂后的图片尺寸将等于磨砂半径*2加上宽和高 """
         super().__init__(parent)
         self.__blurImage = None
         self.setBlurAlbum(imagePath, imageSize, blurRadius)

@@ -607,7 +607,7 @@
 <g id="node17" class="node">
 <title>16</title>
 <polygon fill="none" stroke="black" points="7401.5,-3416 7401.5,-3530 7551.5,-3530 7551.5,-3416 7401.5,-3416"/>
-<text text-anchor="middle" x="7476.5" y="-3514.8" font-family="Times New Roman,serif" font-size="14.00">AlbumInfoEditPanel</text>
+<text text-anchor="middle" x="7476.5" y="-3514.8" font-family="Times New Roman,serif" font-size="14.00">AlbumInfoEditDialog</text>
 <polyline fill="none" stroke="black" points="7401.5,-3507 7551.5,-3507 "/>
 <text text-anchor="start" x="7409.5" y="-3491.8" font-family="Times New Roman,serif" font-size="14.00">albumInfo</text>
 <text text-anchor="start" x="7409.5" y="-3476.8" font-family="Times New Roman,serif" font-size="14.00">saveInfoSig</text>
@@ -1121,7 +1121,7 @@
 <text text-anchor="start" x="10389.5" y="-143.3" font-family="Times New Roman,serif" font-size="14.00">setCurrentIndex(index)</text>
 <text text-anchor="start" x="10389.5" y="-128.3" font-family="Times New Roman,serif" font-size="14.00">setPlay(index)</text>
 <text text-anchor="start" x="10389.5" y="-113.3" font-family="Times New Roman,serif" font-size="14.00">showPropertyPanel(songInfo)</text>
-<text text-anchor="start" x="10389.5" y="-98.3" font-family="Times New Roman,serif" font-size="14.00">showSongInfoEditPanel(songCard)</text>
+<text text-anchor="start" x="10389.5" y="-98.3" font-family="Times New Roman,serif" font-size="14.00">showSongInfoEditDialog(songCard)</text>
 <text text-anchor="start" x="10389.5" y="-83.3" font-family="Times New Roman,serif" font-size="14.00">songCardCheckedStateChanedSlot(itemIndex, isChecked)</text>
 <text text-anchor="start" x="10389.5" y="-68.3" font-family="Times New Roman,serif" font-size="14.00">sortSongInfo(key, isReverse)</text>
 <text text-anchor="start" x="10389.5" y="-53.3" font-family="Times New Roman,serif" font-size="14.00">unCheckSongCards()</text>
@@ -1608,7 +1608,7 @@
 <g id="node44" class="node">
 <title>43</title>
 <polygon fill="none" stroke="black" points="9662.5,-1246.5 9662.5,-1315.5 9784.5,-1315.5 9784.5,-1246.5 9662.5,-1246.5"/>
-<text text-anchor="middle" x="9723.5" y="-1300.3" font-family="Times New Roman,serif" font-size="14.00">CreatePlaylistPanel</text>
+<text text-anchor="middle" x="9723.5" y="-1300.3" font-family="Times New Roman,serif" font-size="14.00">CreatePlaylistDialog</text>
 <polyline fill="none" stroke="black" points="9662.5,-1292.5 9784.5,-1292.5 "/>
 <text text-anchor="start" x="9670.5" y="-1277.3" font-family="Times New Roman,serif" font-size="14.00">createPlaylistSig</text>
 <polyline fill="none" stroke="black" points="9662.5,-1269.5 9784.5,-1269.5 "/>

@@ -4,9 +4,12 @@ import re
 
 
 def adjustAlbumName(album: str) -> list:
-    """ 
-    调整专辑名，返回一个列表，第一个元素为原始专辑名，\n
-    如果有调整，第二个元素为调整后的专辑名
+    """ 调整专辑名
+
+    Returns
+    -------
+    album_list: list
+        第一个元素为原始专辑名，如果有调整，第二个元素为调整后的专辑名
     """
     rex = r'[><:\\/\*\?]'
     album_list = []

@@ -25,13 +25,14 @@ QSlider::groove:horizontal{
 QSlider::handle:horizontal{
     width: 30px;
     height: 30px;
-    border-image: url(app/resource/images/playBar/滑动条手柄_30_30.png);
+    border-radius: 15px;
+    background: qradialgradient(cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5,stop:0.7 white, stop:0.76 rgba(255, 255, 255, 0));
 }
 
 QSlider::handle:horizontal:pressed {
     width: 30px;
     height: 30px;
-    border-image: url(app/resource/images/playBar/滑动条手柄_pressed_30_30.png);
+    background: white;
 }
 
 QSlider::sub-page:horizontal {

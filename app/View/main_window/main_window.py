@@ -22,7 +22,7 @@ from app.View.navigation_interface import NavigationInterface
 from app.View.play_bar import PlayBar
 from app.View.playing_interface import PlayingInterface
 from app.View.playlist_card_interface import PlaylistCardInterface
-from app.View.playlist_panel_interface.create_playlist_panel import CreatePlaylistPanel
+from app.components.dialog_box.create_playlist_dialog import CreatePlaylistDialog
 from app.View.setting_interface import SettingInterface
 from app.View.sub_play_window import SubPlayWindow
 from PyQt5.QtCore import QEasingCurve, QEvent, Qt, QTimer, pyqtSignal
@@ -87,8 +87,7 @@ class MainWindow(QWidget):
         self.thumbnailToolBar = ThumbnailToolBar(self)
         self.thumbnailToolBar.setWindow(self.windowHandle())
         # 创建左上角播放窗口
-        self.subPlayWindow = SubPlayWindow(
-            self, self.mediaPlaylist.lastSongInfo)
+        # self.subPlayWindow = SubPlayWindow(self, self.mediaPlaylist.lastSongInfo)
         # 创建正在播放界面
         self.playingInterface = PlayingInterface(
             self.mediaPlaylist.playlist, self)
@@ -147,7 +146,7 @@ class MainWindow(QWidget):
         self.setWindowTitle("Groove音乐")
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowSystemMenuHint |
                             Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint)
-        self.setWindowIcon(QIcon("app\\resource\\images\\透明icon.png"))
+        self.setWindowIcon(QIcon("app/resource/images/透明icon.png"))
         self.setAttribute(Qt.WA_TranslucentBackground | Qt.WA_StyledBackground)
         # 在去除任务栏的显示区域居中显示
         desktop = QApplication.desktop().availableGeometry()
@@ -251,7 +250,7 @@ class MainWindow(QWidget):
                 self.titleBar.title.setParent(obj)
                 self.titleBar.title.move(15, 10)
                 self.titleBar.title.show()
-                # 如果播放栏课件就缩短导航菜单
+                # 如果播放栏可见就缩短导航菜单
                 isScaled = self.playBar.isVisible()
                 height = self.height() - isScaled * self.playBar.height()
                 self.navigationInterface.navigationMenu.setBottomSpacingVisible(
@@ -295,7 +294,7 @@ class MainWindow(QWidget):
         config["playBar.acrylicColor"] = self.playBar.acrylicColor
         self.settingInterface.updateConfig(config)
         self.playBar.close()
-        self.subPlayWindow.close()
+        # self.subPlayWindow.close()
         self.mediaPlaylist.save()
         e.accept()
 
@@ -523,11 +522,11 @@ class MainWindow(QWidget):
         )
         self.albumCardViewer.saveAlbumInfoSig.connect(self.updateAlbumInfo)
         # todo:将子播放窗口的信号连接槽槽函数
-        self.subPlayWindow.nextSongButton.clicked.connect(
-            self.mediaPlaylist.next)
-        self.subPlayWindow.lastSongButton.clicked.connect(
-            self.mediaPlaylist.previous)
-        self.subPlayWindow.playButton.clicked.connect(self.switchPlayState)
+        # self.subPlayWindow.nextSongButton.clicked.connect(
+        #     self.mediaPlaylist.next)
+        # self.subPlayWindow.lastSongButton.clicked.connect(
+        #     self.mediaPlaylist.previous)
+        # self.subPlayWindow.playButton.clicked.connect(self.switchPlayState)
         # todo:将我的音乐界面连接到槽函数
         self.myMusicInterface.randomPlayAllSig.connect(self.disorderPlayAll)
         self.myMusicInterface.playCheckedCardsSig.connect(
@@ -556,7 +555,7 @@ class MainWindow(QWidget):
         # todo:将定时器信号连接到槽函数
         self.rescanSongInfoTimer.timeout.connect(self.rescanSongInfoTimerSlot)
         # todo:将自己的信号连接到槽函数
-        self.showSubPlayWindowSig.connect(self.subPlayWindow.show)
+        # self.showSubPlayWindowSig.connect(self.subPlayWindow.show)
         # todo:将专辑界面的信号连接到槽函数
         self.albumInterface.playAlbumSignal.connect(self.playAlbum)
         self.albumInterface.songCardPlaySig.connect(
@@ -651,7 +650,7 @@ class MainWindow(QWidget):
 
     def setPlayButtonState(self, isPlay: bool):
         """ 设置播放按钮状态 """
-        self.subPlayWindow.setPlay(isPlay)
+        # self.subPlayWindow.setPlay(isPlay)
         self.playBar.playButton.setPlay(isPlay)
         self.thumbnailToolBar.playButton.setPlay(isPlay)
         self.playingInterface.playBar.playButton.setPlay(isPlay)
@@ -778,7 +777,7 @@ class MainWindow(QWidget):
         if index is not None:
             self.songTabSongListWidget.setPlay(index)
             self.playBar.updateSongInfoCard(songInfo)
-            self.subPlayWindow.updateWindow(songInfo)
+            # self.subPlayWindow.updateWindow(songInfo)
         # 更新专辑界面的歌曲卡
         if songInfo in self.albumInterface.songListWidget.songInfo_list:
             index = self.albumInterface.songListWidget.songInfo_list.index(
@@ -1112,7 +1111,7 @@ class MainWindow(QWidget):
             deepcopy(oldSongInfo_list), deepcopy(newSongInfo_list)
         )
         # 更新专辑标签界面
-        with open("app\\data\\songInfo.json", encoding="utf-8") as f:
+        with open("app/data/songInfo.json", encoding="utf-8") as f:
             songInfo_list = json.load(f)
         # 如果在专辑界面更新了专辑信息需要刷新对应的专辑卡的封面
         if self.sender() is self.albumInterface:
@@ -1177,9 +1176,8 @@ class MainWindow(QWidget):
     def readCustomPlaylists(self):
         """ 读取自定义播放列表 """
         # 如果没有播放列表文件夹就创建一个
-        path = "app\\Playlists"
-        if not os.path.exists(path):
-            os.mkdir(path)
+        path = "app/Playlists"
+        os.makedirs(path, exist_ok=True)
         # 获取播放列表
         self.customPlaylists = []
         playlistFile_list = os.listdir(path)
@@ -1189,7 +1187,7 @@ class MainWindow(QWidget):
 
     def showCreatePlaylistPanel(self, songInfo_list: list = None):
         """ 显示创建播放列表面板 """
-        createPlaylistPanel = CreatePlaylistPanel(self, songInfo_list)
+        createPlaylistPanel = CreatePlaylistDialog(songInfo_list, self)
         createPlaylistPanel.createPlaylistSig.connect(self.createPlaylistSlot)
         createPlaylistPanel.exec_()
 

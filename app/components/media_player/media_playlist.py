@@ -51,7 +51,8 @@ class MediaPlaylist(QMediaPlaylist):
         if self.playlist:
             for songInfo_dict in self.playlist:
                 super().addMedia(
-                    QMediaContent(QUrl.fromLocalFile(songInfo_dict["songPath"]))
+                    QMediaContent(QUrl.fromLocalFile(
+                        songInfo_dict["songPath"]))
                 )
         self.currentIndexChanged.connect(
             lambda index: self.switchSongSignal.emit(self.playlist[index])
@@ -62,7 +63,8 @@ class MediaPlaylist(QMediaPlaylist):
         if not songInfo_dict:
             return
         self.playlist.append(songInfo_dict)
-        super().addMedia(QMediaContent(QUrl.fromLocalFile(songInfo_dict["songPath"])))
+        super().addMedia(QMediaContent(
+            QUrl.fromLocalFile(songInfo_dict["songPath"])))
 
     def addMedias(self, songInfoDict_list: list):
         """ 向尾部添加要播放的音频文件列表 """
@@ -178,17 +180,19 @@ class MediaPlaylist(QMediaPlaylist):
             "lastSongInfo": self.getCurrentSong(),
         }
         self.__checkDataDir()
-        with open("app\\data\\lastPlaylistInfo.json", "w", encoding="utf-8") as f:
+        with open("app/data/lastPlaylistInfo.json", "w", encoding="utf-8") as f:
             dump(playlistInfo, f)
 
     def __readLastPlaylist(self):
         """ 从json文件中读取播放列表 """
         self.__checkDataDir()
         try:
-            with open("app\\data\\lastPlaylistInfo.json", encoding="utf-8") as f:
+            with open("app/data/lastPlaylistInfo.json", encoding="utf-8") as f:
                 playlistInfo = load(f)  # type:dict
-                self.playlist = playlistInfo.get("lastPlaylist", [])  # type:list
-                self.lastSongInfo = playlistInfo.get("lastSongInfo", {})  # type:dict
+                self.playlist = playlistInfo.get(
+                    "lastPlaylist", [])  # type:list
+                self.lastSongInfo = playlistInfo.get(
+                    "lastSongInfo", {})  # type:dict
 
         except:
             self.playlist = []
@@ -224,5 +228,4 @@ class MediaPlaylist(QMediaPlaylist):
 
     def __checkDataDir(self):
         """ 检查数据文件夹是否存在，不存在则创建 """
-        if not os.path.exists("app\\data"):
-            os.mkdir("app\\data")
+        os.makedirs('app/data', exist_ok=True)

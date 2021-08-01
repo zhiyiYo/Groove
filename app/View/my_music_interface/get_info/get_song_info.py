@@ -26,7 +26,7 @@ class GetSongInfo:
         """ 扫描指定文件夹的歌曲信息并更新歌曲信息 """
         self.targetFolderPath_list = targetFolderPath_list
         self.__checkDataDir()
-        with open("app\\data\\songInfo.json", "w", encoding="utf-8") as f:
+        with open("app/data/songInfo.json", "w", encoding="utf-8") as f:
             json.dump([{}], f)
         self.songInfo_list = []
         self.getInfo(targetFolderPath_list)
@@ -35,7 +35,7 @@ class GetSongInfo:
         """ 重新扫描歌曲信息，检查是否有歌曲信息的更新 """
         hasSongModified = False
         # 如果歌曲信息被删除了，就重新扫描一遍
-        if not os.path.exists("app\\data\\songInfo.json"):
+        if not os.path.exists("app/data/songInfo.json"):
             self.scanTargetFolderSongInfo(self.targetFolderPath_list)
             return True
         # 利用当前的歌曲信息进行更新
@@ -167,13 +167,13 @@ class GetSongInfo:
 
     def __checkDataDir(self):
         """ 检查数据文件夹是否存在，若不存在就创建一个 """
-        if not os.path.exists("app\\data"):
-            os.mkdir("app\\data")
+        if not os.path.exists("app/data"):
+            os.mkdir("app/data")
 
     def __readSongInfoFromJson(self) -> list:
         """ 从 json 文件中读取歌曲信息 """
         try:
-            with open("app\\data\\songInfo.json", "r", encoding="utf-8") as f:
+            with open("app/data/songInfo.json", "r", encoding="utf-8") as f:
                 songInfo_list = json.load(f)
         except:
             songInfo_list = [{}]
@@ -182,7 +182,7 @@ class GetSongInfo:
     def save(self):
         """ 保存歌曲信息 """
         self.__checkDataDir()
-        with open("app\\data\\songInfo.json", "w", encoding="utf-8") as f:
+        with open("app/data/songInfo.json", "w", encoding="utf-8") as f:
             json.dump(self.songInfo_list, f)
 
     def __getSongFiles(self):
@@ -193,7 +193,7 @@ class GetSongInfo:
     def hasSongModified(self):
         """ 检测是否有歌曲被修改 """
         # 如果歌曲信息被删除了，就重新扫描一遍
-        if not os.path.exists("app\\data\\songInfo.json"):
+        if not os.path.exists("app/data/songInfo.json"):
             return True
         # 利用当前的歌曲信息进行更新
         songInfo_list = self.__readSongInfoFromJson()

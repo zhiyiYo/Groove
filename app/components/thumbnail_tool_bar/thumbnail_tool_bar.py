@@ -17,12 +17,12 @@ class ThumbnailPlayButton(QWinThumbnailToolButton):
         if self.isPlaying:
             self.setToolTip("暂停")
             self.setIcon(
-                QIcon(r"app\resource\images\thumbnail_tool_bar\播放_32_32_2.png")
+                QIcon(r"app/resource/images/thumbnail_tool_bar/播放_32_32_2.png")
             )
         else:
             self.setToolTip("播放")
             self.setIcon(
-                QIcon(r"app\resource\images\thumbnail_tool_bar\暂停_32_32_2.png")
+                QIcon(r"app/resource/images/thumbnail_tool_bar/暂停_32_32_2.png")
             )
 
 
@@ -43,10 +43,10 @@ class ThumbnailToolBar(QWinThumbnailToolBar):
         self.lastSongButton.setToolTip("上一首")
         self.nextSongButton.setToolTip("下一首")
         self.lastSongButton.setIcon(
-            QIcon(r"app\resource\images\thumbnail_tool_bar\上一首_32_32_2.png")
+            QIcon(r"app/resource/images/thumbnail_tool_bar/上一首_32_32_2.png")
         )
         self.nextSongButton.setIcon(
-            QIcon(r"app\resource\images\thumbnail_tool_bar\下一首_32_32_2.png")
+            QIcon(r"app/resource/images/thumbnail_tool_bar/下一首_32_32_2.png")
         )
         # 将按钮添加到任务栏
         self.addButton(self.lastSongButton)

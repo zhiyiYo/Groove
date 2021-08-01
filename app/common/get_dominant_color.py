@@ -17,12 +17,16 @@ class DominantColor:
         self.imagePath = imagePath
         self.rgb = tuple()
 
-    def getDominantColor(self, imagePath, resType=str):
-        """ 获取指定图片的主色调\n
+    def getDominantColor(self, imagePath: str, resType=str):
+        """ 获取指定图片的主色调
+
         Parameters
         ----------
-        imagePath : 图片路径\n
-        reType : 返回类型，str返回十六进制字符串，否则为rgb元组
+        imagePath: str
+            图片路径
+
+        reType:
+            返回类型，str 返回十六进制字符串，否则为 rgb 元组
         """
         self.imagePath = imagePath
         colorThief = ColorThief(imagePath)
@@ -113,7 +117,7 @@ class Demo(QWidget):
         self.dominantColor = DominantColor()
         self.setFixedSize(400, 400)
         self.currentAlbumIndex = 0
-        self.albumFolder = "app\\resource\\Album_Cover"
+        self.albumFolder = "app/resource/Album_Cover"
         self.getPicPaths()
         self.albumCoverLabel = QLabel(self)
         self.albumCoverLabel.setFixedSize(240, 240)

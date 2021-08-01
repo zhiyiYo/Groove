@@ -4,10 +4,9 @@ QWidget{
 
 /*音量滑动条*/
 QSlider:horizontal {
-    height: 25px;
+    height: 26px;
     width: 188px;
     background-color: transparent;
-    /*padding:10px 0px 10px 0px;*/
 }
 
 
@@ -18,17 +17,18 @@ QSlider::groove:horizontal {
 }
 
 QSlider::handle:horizontal {
-    width: 25px;
-    height: 25px;
-    border-image: url(app/resource/images/playing_interface/volume_slider_handle_normal_25_25.png);
+    width: 26px;
+    height: 26px;
+    border-radius: 13px;
+    background-color: rgb(0, 153, 188);
 }
 
 QSlider::handle:horizontal:hover {
-    border-image: url(app/resource/images/playing_interface/volume_slider_handle_hover_25_25.png);
+    background-color: rgb(72, 210, 242);
 }
 
 QSlider::handle:horizontal:pressed {
-    border-image: url(app/resource/images/playing_interface/volume_slider_handle_pressed_25_25.png);
+    background-color: rgb(0, 107, 131);
 }
 
 

@@ -3,8 +3,18 @@ from tinytag import TinyTag
 from mutagen.id3 import TDRC, TIT2, TALB, TCON, TPE1, TPE2, TRCK
 
 
-def modifySongInfo(songInfo: dict) -> str:
-    """ 从字典中读取信息并修改歌曲的标签卡信息 """
+def modifySongInfo(songInfo: dict) -> bool:
+    """ 从字典中读取信息并修改歌曲的标签卡信息
+
+    Parameters
+    ----------
+    songInfo: dict
+        歌曲信息
+
+    Returns
+    -------
+    isModifyOk: bool
+        是否成功修改歌曲信息 """
     id_card = File(songInfo['songPath'])
 
     if songInfo['suffix'] == '.mp3':
@@ -39,6 +49,6 @@ def modifySongInfo(songInfo: dict) -> str:
     try:
         id_card.save()
     except MutagenError:
-        return 0    # 保存失败返回0
+        return False    # 保存失败返回0
     else:
-        return 1    # 保存成功返回1
+        return True    # 保存成功返回1

@@ -48,7 +48,7 @@ class PlayProgressBar(QWidget):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open("app\\resource\\css\\playProgressBar.qss", encoding="utf-8") as f:
+        with open("app/resource/css/playProgressBar.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
 
     def resizeEvent(self, e):

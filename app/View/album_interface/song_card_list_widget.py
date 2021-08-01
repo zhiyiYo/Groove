@@ -64,22 +64,12 @@ class SongCardListWidget(BasicSongListWidget):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open(
-            "app\\resource\\css\\songTabInterfaceSongListWidget.qss", encoding="utf-8"
-        ) as f:
+        with open("app/resource/css/albumInterfaceSongListWidget.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
 
     def updateAllSongCards(self, songInfo_list: list):
         """ 更新所有歌曲卡，根据给定的信息决定创建或者删除歌曲卡 """
         super().updateAllSongCards(songInfo_list, self.__connectSongCardSignalToSlot)
-
-    def resizeEvent(self, e):
-        """ 调整尺寸的同时调整滚动条的位置和尺寸 """
-        super().resizeEvent(e)
-        self.verticalScrollBar().move(-1, 40)
-        self.verticalScrollBar().resize(
-            self.verticalScrollBar().width(), self.height() - 156
-        )
 
     def sortSongCardByTrackNum(self):
         """ 以曲序为基准排序歌曲卡 """
@@ -98,7 +88,7 @@ class SongCardListWidget(BasicSongListWidget):
                 self.songCard_list[self.currentRow()].songInfo
             )
         )
-        contextMenu.editInfoAct.triggered.connect(self.showSongInfoEditPanel)
+        contextMenu.editInfoAct.triggered.connect(self.showSongInfoEditDialog)
         contextMenu.showPropertyAct.triggered.connect(self.showPropertyPanel)
         contextMenu.deleteAct.triggered.connect(
             lambda: self.__removeSongCard(self.currentRow())
@@ -112,7 +102,8 @@ class SongCardListWidget(BasicSongListWidget):
             lambda: self.songCard_list[self.currentRow()].setChecked(True)
         )
         contextMenu.addToMenu.addSongsToPlaylistSig.connect(
-            lambda name: self.addSongsToCustomPlaylistSig.emit(name, self.songInfo_list)
+            lambda name: self.addSongsToCustomPlaylistSig.emit(
+                name, self.songInfo_list)
         )
         contextMenu.addToMenu.newPlayList.triggered.connect(
             lambda: self.addSongsToNewCustomPlaylistSig.emit(
@@ -125,4 +116,5 @@ class SongCardListWidget(BasicSongListWidget):
         songCard.doubleClicked.connect(self.__emitCurrentChangedSignal)
         songCard.playButtonClicked.connect(self.__playButtonSlot)
         songCard.clicked.connect(self.setCurrentIndex)
-        songCard.checkedStateChanged.connect(self.songCardCheckedStateChangedSlot)
+        songCard.checkedStateChanged.connect(
+            self.songCardCheckedStateChangedSlot)

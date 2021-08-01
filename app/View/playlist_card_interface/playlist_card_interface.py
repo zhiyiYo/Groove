@@ -5,20 +5,15 @@ from json import dump
 from os import remove
 
 import pinyin
-from app.components.dialog_box.delete_card_panel import DeleteCardPanel
-from app.View.playlist_panel_interface.rename_playlist_panel import RenamePlaylistPanel
 from app.components.buttons.three_state_button import ThreeStatePushButton
+from app.components.dialog_box.delete_card_dialog import DeleteCardDialog
+from app.components.dialog_box.rename_playlist_dialog import \
+    RenamePlaylistDialog
 from app.components.layout.grid_layout import GridLayout
 from app.components.menu import AeroMenu
 from app.components.scroll_area import ScrollArea
-from PyQt5.QtCore import (
-    QDateTime,
-    QParallelAnimationGroup,
-    QPoint,
-    QPropertyAnimation,
-    Qt,
-    pyqtSignal,
-)
+from PyQt5.QtCore import (QDateTime, QParallelAnimationGroup, QPoint,
+                          QPropertyAnimation, Qt, pyqtSignal)
 from PyQt5.QtWidgets import QAction, QLabel, QPushButton, QWidget
 
 from .blur_background import BlurBackground
@@ -76,7 +71,8 @@ class PlaylistCardInterface(QWidget):
         )
         # 创建导航标签
         self.guideLabel = QLabel("这里没有可显示的内容。请尝试其他筛选器。", self)
-        self.guideLabel.setStyleSheet("color: black; font: 25px 'Microsoft YaHei'")
+        self.guideLabel.setStyleSheet(
+            "color: black; font: 25px 'Microsoft YaHei'")
         self.guideLabel.resize(500, 26)
         self.guideLabel.move(44, 196)
         # 创建排序菜单
@@ -155,7 +151,8 @@ class PlaylistCardInterface(QWidget):
         self.sortModeLabel.move(190, 135)
         self.sortModeButton.move(264, 130)
         self.createPlaylistButton.move(30, 135)
-        self.selectionModeBar.move(0, self.height() - self.selectionModeBar.height())
+        self.selectionModeBar.move(
+            0, self.height() - self.selectionModeBar.height())
         # 设置布局的间距和外边距
         self.gridLayout.setVerticalSpacing(20)
         self.gridLayout.setHorizontalSpacing(10)
@@ -178,9 +175,8 @@ class PlaylistCardInterface(QWidget):
         super().resizeEvent(e)
         self.scrollArea.resize(self.size())
         self.whiteMask.resize(self.width() - 15, 175)
-        self.scrollArea.verticalScrollBar().resize(4, self.height() - 116)
-        self.scrollArea.verticalScrollBar().move(-1, 40)
-        self.selectionModeBar.resize(self.width(), self.selectionModeBar.height())
+        self.selectionModeBar.resize(
+            self.width(), self.selectionModeBar.height())
         if self.width() < 641 and self.columnNum != 1:
             self.__setColumnNum(1)
         elif 641 <= self.width() < 954 and self.columnNum != 2:
@@ -252,13 +248,15 @@ class PlaylistCardInterface(QWidget):
         # 如果专辑信息不在选中的专辑信息列表中且对应的专辑卡变为选中状态就将专辑信息添加到列表中
         if playlistCard not in self.checkedPlaylistCard_list and isChecked:
             self.checkedPlaylistCard_list.append(playlistCard)
-            self.__checkPlaylistCardNumChangedSlot(len(self.checkedPlaylistCard_list))
+            self.__checkPlaylistCardNumChangedSlot(
+                len(self.checkedPlaylistCard_list))
         # 如果专辑信息已经在列表中且该专辑卡变为非选中状态就弹出该专辑信息
         elif playlistCard in self.checkedPlaylistCard_list and not isChecked:
             self.checkedPlaylistCard_list.pop(
                 self.checkedPlaylistCard_list.index(playlistCard)
             )
-            self.__checkPlaylistCardNumChangedSlot(len(self.checkedPlaylistCard_list))
+            self.__checkPlaylistCardNumChangedSlot(
+                len(self.checkedPlaylistCard_list))
         # 如果先前不处于选择模式那么这次发生选中状态改变就进入选择模式
         if not self.isInSelectionMode:
             # 所有专辑卡进入选择模式
@@ -318,7 +316,8 @@ class PlaylistCardInterface(QWidget):
     def __checkPlaylistCardNumChangedSlot(self, num: int):
         """ 选中的歌曲卡数量改变对应的槽函数 """
         self.selectionModeBar.setPartButtonHidden(num > 1)
-        self.selectionModeBar.move(0, self.height() - self.selectionModeBar.height())
+        self.selectionModeBar.move(
+            0, self.height() - self.selectionModeBar.height())
 
     def __checkAllButtonSlot(self):
         """ 全选/取消全选按钮槽函数 """
@@ -352,7 +351,7 @@ class PlaylistCardInterface(QWidget):
         playlistCard = (
             self.sender() if not playlistCard else playlistCard
         )  # type:PlaylistCard
-        renamePlaylistPanel = RenamePlaylistPanel(oldPlaylist, self.window())
+        renamePlaylistPanel = RenamePlaylistDialog(oldPlaylist, self.window())
         renamePlaylistPanel.renamePlaylistSig.connect(
             lambda oldPlaylist, newPlaylist: self.__renamePlaylistSlot(
                 oldPlaylist, newPlaylist, playlistCard
@@ -379,7 +378,7 @@ class PlaylistCardInterface(QWidget):
         playlistCard = self.sender() if not playlistCard else playlistCard
         title = "是否确定要删除此项？"
         content = f"""如果删除"{playlist['playlistName']}"，它将不再位于此设备上。"""
-        deleteCardPanel = DeleteCardPanel(title, content, self.window())
+        deleteCardPanel = DeleteCardDialog(title, content, self.window())
         deleteCardPanel.deleteCardSig.connect(
             lambda: self.__deleteOnePlaylistCard(playlistCard, playlist)
         )
@@ -392,7 +391,8 @@ class PlaylistCardInterface(QWidget):
         # 从列表中弹出小部件
         self.playlists.remove(playlist)
         self.playlistCard_list.remove(playlistCard)
-        self.playlistCardDict_list.pop(self.getIndexByPlaylistCard(playlistCard))
+        self.playlistCardDict_list.pop(
+            self.getIndexByPlaylistCard(playlistCard))
         # 删除播放列表卡
         playlistCard.deleteLater()
         # 调整高度
@@ -440,13 +440,15 @@ class PlaylistCardInterface(QWidget):
             title = "确定要删除这些项？"
             content = f"若删除这些播放列表，它们将不再位于此设备上。"
             playlistCard_list = self.checkedPlaylistCard_list[:]
-            playlists = [playlistCard.playlist for playlistCard in playlistCard_list]
+            playlists = [
+                playlistCard.playlist for playlistCard in playlistCard_list]
             # 取消所有歌曲卡的选中
             self.__unCheckPlaylistCards()
             # 显示删除对话框
-            deleteCardPanel = DeleteCardPanel(title, content, self.window())
+            deleteCardPanel = DeleteCardDialog(title, content, self.window())
             deleteCardPanel.deleteCardSig.connect(
-                lambda: self.__deleteMultiPlaylistCards(playlistCard_list, playlists)
+                lambda: self.__deleteMultiPlaylistCards(
+                    playlistCard_list, playlists)
             )
             deleteCardPanel.exec()
 
@@ -457,7 +459,8 @@ class PlaylistCardInterface(QWidget):
         playlistCard_dict = self.playlistCardDict_list[index]
         playlist = playlistCard_dict["playlist"]
         # 更新播放列表
-        playlist["modifiedTime"] = QDateTime.currentDateTime().toString(Qt.ISODate)
+        playlist["modifiedTime"] = QDateTime.currentDateTime().toString(
+            Qt.ISODate)
         playlist["songInfo_list"] = songInfo_list + playlist["songInfo_list"]
         playlistCard_dict["playlistCard"].updateWindow(playlist)
         # 更新json文件
@@ -493,9 +496,12 @@ class PlaylistCardInterface(QWidget):
     def __connectSignalToSlot(self):
         """ 将信号连接到槽 """
         self.sortModeButton.clicked.connect(self.__showSortModeMenu)
-        self.selectionModeBar.cancelButton.clicked.connect(self.__unCheckPlaylistCards)
-        self.selectionModeBar.checkAllButton.clicked.connect(self.__checkAllButtonSlot)
-        self.selectionModeBar.playButton.clicked.connect(self.__emitCheckedPlaylists)
+        self.selectionModeBar.cancelButton.clicked.connect(
+            self.__unCheckPlaylistCards)
+        self.selectionModeBar.checkAllButton.clicked.connect(
+            self.__checkAllButtonSlot)
+        self.selectionModeBar.playButton.clicked.connect(
+            self.__emitCheckedPlaylists)
         self.selectionModeBar.nextToPlayButton.clicked.connect(
             self.__emitCheckedPlaylists
         )
@@ -505,4 +511,3 @@ class PlaylistCardInterface(QWidget):
         self.selectionModeBar.deleteButton.clicked.connect(
             self.__selectionModeBarDeleteButtonSlot
         )
-
