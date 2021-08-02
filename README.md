@@ -1,28 +1,39 @@
 # Groove
-一个可以联网的Groove音乐
+A music player based on pyqt5 and LAV Filters.
 
-# 界面
-![示例动图1](docs/screenshot/界面2.png)
-![示例动图1](docs/screenshot/界面1.png)
+## Interface
+![界面](docs/screenshot/Groove音乐.png)
 
-# 功能
+## Features
 
-* 播放音乐
+* Play music
 ![示例动图1](docs/screenshot/播放本地音乐.gif)
 
-* 创建播放列表
+* Create playlist
 ![示例动图2](docs/screenshot/创建播放列表.gif)
 
-* 查看和编辑歌曲信息
+* View and edit information
 ![示例动图3](docs/screenshot/编辑信息.gif)
 
-* 自动检索并更新缺失的专辑封面和元数据
+* Automatically retrieve and update missing metadata
 ![示例动图4](docs/screenshot/爬虫.gif)
 
-# 环境
+## Quick start
+1. Create virtual environment
+
+    ```shell
+    conda create -n Groove python=3.8
+    conda activate Groove
+    pip install -r requirements.txt
+    ```
+
+2. Download [LAV filter](https://github.com/Nevcairiel/LAVFilters/releases).
+3. Download Firefox and geckodriver.exe
+
+## Code environment
 * Python 3.8
-* LAV Filter
+* LAV Filters
 * Firefox
 
-# 注意
-* 为了驱动 Firefox，需要下载 **geckodriver.exe**，并将其所在目录添加到环境变量中
+## Notes
+* To drive Firefox, you need to download **geckodriver.exe** and add its directory to the environment variable.
