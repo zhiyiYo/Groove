@@ -4,15 +4,9 @@ from app.View.play_bar.more_actions_menu import MoreActionsMenu
 from PyQt5.QtCore import QPoint, Qt, pyqtSignal
 from PyQt5.QtWidgets import QWidget
 
-from .play_bar_buttons import (
-    BasicCircleButton,
-    FillScreenButton,
-    LoopModeButton,
-    PlayButton,
-    PullUpArrow,
-    RandomPlayButton,
-    VolumeButton,
-)
+from .play_bar_buttons import (BasicCircleButton, FullScreenButton,
+                               LoopModeButton, PlayButton, PullUpArrow,
+                               RandomPlayButton, VolumeButton)
 from .play_progress_bar import PlayProgressBar
 from .volume_slider import VolumeSlider
 
@@ -37,40 +31,33 @@ class PlayBar(QWidget):
         self.playButton = PlayButton(self)
         self.volumeButton = VolumeButton(self)
         self.volumeSlider = VolumeSlider(self.window())
-        self.fillScreenButton = FillScreenButton(self)
+        self.FullScreenButton = FullScreenButton(self)
         self.playProgressBar = PlayProgressBar("3:10", parent=self)
         self.pullUpArrowButton = PullUpArrow(
-            r"app\resource\images\playing_interface\上拉箭头_27_27.png", self
-        )
+            r"app\resource\images\playing_interface\ChevronUp.png", self)
         self.lastSongButton = BasicCircleButton(
-            r"app\resource\images\playing_interface\lastSong_47_47.png", self
-        )
+            r"app\resource\images\playing_interface\Previous.png", self)
         self.nextSongButton = BasicCircleButton(
-            r"app\resource\images\playing_interface\nextSong_47_47.png", self
-        )
+            r"app\resource\images\playing_interface\Next.png", self)
         self.randomPlayButton = RandomPlayButton(
-            [r"app\resource\images\playing_interface\randomPlay_47_47.png"], self
-        )
+            [r"app\resource\images\playing_interface\randomPlay_47_47.png"], self)
         self.loopModeButton = LoopModeButton(
             [
-                r"app\resource\images\playing_interface\列表循环_47_47.png",
-                r"app\resource\images\playing_interface\单曲循环_47_47.png",
+                r"app\resource\images\playing_interface\RepeatAll.png",
+                r"app\resource\images\playing_interface\RepeatOne.png",
             ],
             self,
         )
         self.moreActionsButton = BasicCircleButton(
-            r"app\resource\images\playing_interface\更多操作_47_47.png", self
-        )
+            r"app\resource\images\playing_interface\More.png", self)
         self.showPlaylistButton = BasicCircleButton(
-            r"app\resource\images\playing_interface\显示播放列表_47_47.png", self
-        )
+            r"app\resource\images\playing_interface\显示播放列表_47_47.png", self)
         self.smallPlayModeButton = BasicCircleButton(
-            r"app\resource\images\playing_interface\最小模式播放_47_47.png", self
-        )
+            r"app\resource\images\playing_interface\最小模式播放_47_47.png", self)
         # 创建小部件列表
         self.__widget_list = [
             self.playButton,
-            self.fillScreenButton,
+            self.FullScreenButton,
             self.playProgressBar.progressSlider,
             self.pullUpArrowButton,
             self.lastSongButton,
@@ -121,7 +108,7 @@ class PlayBar(QWidget):
         self.pullUpArrowButton.move(
             int(self.width() / 2 - self.pullUpArrowButton.width() / 2), 165
         )
-        self.fillScreenButton.move(self.width() - 64, 85)
+        self.FullScreenButton.move(self.width() - 64, 85)
         self.smallPlayModeButton.move(self.width() - 124, 85)
         self.showPlaylistButton.move(self.width() - 184, 85)
 

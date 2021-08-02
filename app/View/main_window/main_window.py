@@ -216,7 +216,7 @@ class MainWindow(QWidget):
         # 开启窗口动画
         self.windowEffect.addWindowAnimation(self.winId())
         # 开启亚克力效果和阴影效果
-        self.windowEffect.setAcrylicEffect(self.winId(), "F2F2F299", True)
+        self.windowEffect.setAcrylicEffect(self.winId(), "FFFFFFCC", True)
 
     def adjustWidgetGeometry(self):
         """ 调整小部件的geometry """
@@ -477,7 +477,7 @@ class MainWindow(QWidget):
         self.playingInterface.playBar.progressSlider.clicked.connect(
             self.progressSliderMoveSlot
         )
-        self.playingInterface.playBar.fillScreenButton.clicked.connect(
+        self.playingInterface.playBar.FullScreenButton.clicked.connect(
             self.setFullScreen
         )
         self.playingInterface.playBar.loopModeButton.loopModeChanged.connect(
@@ -911,7 +911,7 @@ class MainWindow(QWidget):
             # 切换到正在播放界面
             self.totalStackWidget.setCurrentIndex(1)
             self.showFullScreen()
-            self.playingInterface.playBar.fillScreenButton.setFillScreen(True)
+            self.playingInterface.playBar.FullScreenButton.setFillScreen(True)
             if self.playingInterface.isPlaylistVisible:
                 self.playingInterface.songInfoCardChute.move(
                     0, 258 - self.height())
@@ -927,7 +927,7 @@ class MainWindow(QWidget):
         self.titleBar.maxBt.setMaxState(False)
         self.titleBar.returnBt.show()
         self.titleBar.show()
-        self.playingInterface.playBar.fillScreenButton.setFillScreen(False)
+        self.playingInterface.playBar.FullScreenButton.setFillScreen(False)
         if self.playingInterface.isPlaylistVisible:
             self.playingInterface.songInfoCardChute.move(
                 0, 258 - self.height())

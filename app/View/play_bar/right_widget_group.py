@@ -16,10 +16,10 @@ class RightWidgetGroup(QWidget):
         self.volumeButton = VolumeButton(self)
         self.volumeSlider = Slider(Qt.Horizontal, self)
         self.smallPlayModeButton = BasicButton(
-            r"app\resource\images\playBar\最小播放模式_45_45.png", self
+            r"app\resource\images\play_bar\最小播放模式_45_45.png", self
         )
         self.moreActionsButton = BasicButton(
-            r"app\resource\images\playBar\更多操作_45_45.png", self
+            r"app\resource\images\play_bar\More.png", self
         )
         self.widget_list = [
             self.volumeButton,

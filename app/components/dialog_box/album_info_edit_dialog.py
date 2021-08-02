@@ -10,8 +10,9 @@ from app.components.perspective_widget import PerspectiveWidget
 from app.components.scroll_area import ScrollArea
 from PyQt5.QtCore import QRegExp, Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import (QBrush, QColor, QLinearGradient, QMovie, QPainter,
-                         QPen, QPixmap, QRegExpValidator)
-from PyQt5.QtWidgets import QApplication, QFileDialog, QLabel, QWidget
+                         QPixmap, QRegExpValidator)
+from PyQt5.QtWidgets import (QApplication, QCompleter, QFileDialog, QLabel,
+                             QWidget)
 
 from .mask_dialog_base import MaskDialogBase
 
@@ -73,6 +74,7 @@ class AlbumInfoEditDialog(MaskDialogBase):
         self.loadingLabel.setMovie(self.movie)
         self.scrollArea.setWidget(self.scrollWidget)
         self.songInfoWidgetNum = len(self.songInfoWidget_list)  # type:int
+        self.loadingLabel.hide()
         # 初始化定时器
         self.delayTimer.setInterval(300)
         self.delayTimer.timeout.connect(self.__showFileDialog)
@@ -87,6 +89,27 @@ class AlbumInfoEditDialog(MaskDialogBase):
         self.__connectSignalToSlot()
         # 设置层叠样式
         self.__setQss()
+        # 设置补全
+        # 流派补全
+        tcons = [
+            "POP流行",
+            "Blues",
+            "Japanese Pop & Rock",
+            "Soundtrack",
+            "J-Pop",
+            "RAP/HIP HOP",
+            "Soundtrack",
+            "古典",
+            "经典",
+            "Country",
+            "R&B",
+            "ROCK",
+            "anime",
+        ]
+        self.tconCompleter = QCompleter(tcons, self.widget)
+        self.tconCompleter.setCompletionMode(QCompleter.InlineCompletion)
+        self.tconCompleter.setCaseSensitivity(Qt.CaseInsensitive)
+        self.tconLineEdit.setCompleter(self.tconCompleter)
 
     def __initLayout(self):
         """ 初始化布局 """

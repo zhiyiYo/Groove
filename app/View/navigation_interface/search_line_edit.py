@@ -15,14 +15,14 @@ class SearchLineEdit(QLineEdit):
 
         # 按钮图标位置
         clear_iconPath_dict = {
-            "normal": r"app\resource\images\searchLineEdit\搜索框清空按钮_normal_45_45.png",
-            "hover": r"app\resource\images\searchLineEdit\搜索框清空按钮_hover_45_45.png",
-            "pressed": r"app\resource\images\searchLineEdit\搜索框清空按钮_pressed_45_45.png",
+            "normal": r"app\resource\images\navigation_interface\搜索框清空按钮_normal_45_45.png",
+            "hover": r"app\resource\images\navigation_interface\搜索框清空按钮_hover_45_45.png",
+            "pressed": r"app\resource\images\navigation_interface\搜索框清空按钮_pressed_45_45.png",
         }
         self.__search_iconPath_dict = {
-            "normal": r"app\resource\images\searchLineEdit\搜索框透明搜索按钮_normal_46_45.png",
-            "hover": r"app\resource\images\searchLineEdit\搜索框透明搜索按钮_hover_46_45.png",
-            "pressed": r"app\resource\images\searchLineEdit\搜索框搜索按钮_pressed_46_45.png",
+            "normal": r"app\resource\images\navigation_interface\搜索框透明搜索按钮_normal_46_45.png",
+            "hover": r"app\resource\images\navigation_interface\搜索框透明搜索按钮_hover_46_45.png",
+            "pressed": r"app\resource\images\navigation_interface\搜索框搜索按钮_pressed_46_45.png",
         }
         # 实例化按钮
         self.clearButton = ThreeStateButton(clear_iconPath_dict, self, (46, 45))

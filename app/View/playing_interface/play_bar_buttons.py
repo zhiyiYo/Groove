@@ -27,7 +27,8 @@ class BasicCircleButton(QToolButton):
         """ 初始化小部件 """
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setFixedSize(self.buttonSize_tuple[0], self.buttonSize_tuple[1])
-        self.setStyleSheet("QToolButton{border:none;margin:0;background:transparent}")
+        self.setStyleSheet(
+            "QToolButton{border:none;margin:0;background:transparent}")
         # 安装事件过滤器
         self.installEventFilter(self)
 
@@ -57,11 +58,11 @@ class BasicCircleButton(QToolButton):
         iconPixmap = self.iconPixmap
         px, py = self._pixPos_list[0]
         painter = QPainter(self)
-        painter.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
+        painter.setRenderHints(QPainter.Antialiasing |
+                               QPainter.SmoothPixmapTransform)
         painter.setPen(Qt.NoPen)
         # 鼠标按下时绘制圆形背景，pressed的优先级比hover的优先级高
         if self.isPressed:
-            # brush = QBrush(QColor(162, 162, 162, 120))
             brush = QBrush(QColor(255, 255, 255, 70))
             painter.setBrush(brush)
             painter.drawEllipse(0, 0, self.iconWidth, self.iconHeight)
@@ -76,7 +77,8 @@ class BasicCircleButton(QToolButton):
         elif self.isEnter:
             painter.setOpacity(0.5)
         # 绘制图标
-        painter.drawPixmap(px, py, iconPixmap.width(), iconPixmap.height(), iconPixmap)
+        painter.drawPixmap(px, py, iconPixmap.width(),
+                           iconPixmap.height(), iconPixmap)
 
 
 class SelectableButton(BasicCircleButton):
@@ -113,14 +115,15 @@ class SelectableButton(BasicCircleButton):
         iconPixmap = self.iconPixmap
         px, py = self._pixPos_list[0]
         painter = QPainter(self)
-        painter.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
+        painter.setRenderHints(QPainter.Antialiasing |
+                               QPainter.SmoothPixmapTransform)
         painter.setPen(Qt.NoPen)
         if self.isPressed:
             if not self.isSelected:
-                brush = QBrush(QColor(162, 162, 162, 120))
+                brush = QBrush(QColor(255, 255, 255, 70))
                 pen = Qt.NoPen
             else:
-                brush = QBrush(QColor(110, 110, 110, 100))
+                brush = QBrush(QColor(0, 0, 0, 83))
                 pen = QPen(QColor(255, 255, 255, 160))
                 pen.setWidthF(1.5)
             # 绘制圆环和背景色
@@ -142,7 +145,8 @@ class SelectableButton(BasicCircleButton):
             elif self.isEnter:
                 painter.setOpacity(0.5)
         # 绘制图标
-        painter.drawPixmap(px, py, iconPixmap.width(), iconPixmap.height(), iconPixmap)
+        painter.drawPixmap(px, py, iconPixmap.width(),
+                           iconPixmap.height(), iconPixmap)
 
     def __drawCircle(self, painter, pen, brush):
         """ 画圆 """
@@ -243,7 +247,8 @@ class PullUpArrow(BasicCircleButton):
     def paintEvent(self, e):
         """ 绘制图标 """
         painter = QPainter(self)
-        painter.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
+        painter.setRenderHints(QPainter.Antialiasing |
+                               QPainter.SmoothPixmapTransform)
         painter.setPen(Qt.NoPen)
         # 鼠标按下时绘制圆形背景，pressed的优先级比hover的优先级高
         if self.isPressed and self.rotateDirection == 1:
@@ -257,7 +262,8 @@ class PullUpArrow(BasicCircleButton):
         painter.translate(13, 13)
         painter.rotate(self.totalRotateAngle)  # 坐标系旋转
         painter.drawPixmap(
-            -int(self.iconWidth / 2), -int(self.iconHeight / 2), self.iconPixmap
+            -int(self.iconWidth / 2), -
+            int(self.iconHeight / 2), self.iconPixmap
         )
 
 
@@ -270,7 +276,8 @@ class TwoStateButton(BasicCircleButton):
         # 设置状态1标志位，状态1的图标为图标列表的第二个
         self._isState_1 = isState_1
         # 创建pixmap列表
-        self.pixmap_list = [QPixmap(iconPath) for iconPath in self.iconPath_list]
+        self.pixmap_list = [QPixmap(iconPath)
+                            for iconPath in self.iconPath_list]
         self._pixPos_list = [(0, 0), (2, 2)]
 
     def mouseReleaseEvent(self, e):
@@ -290,8 +297,8 @@ class PlayButton(TwoStateButton):
 
     def __init__(self, parent=None):
         self.iconPath_list = [
-            r"app\resource\images\playing_interface\play_47_47.png",
-            r"app\resource\images\playing_interface\pause_47_47.png",
+            r"app\resource\images\playing_interface\Pause_47_47.png",
+            r"app\resource\images\playing_interface\Play_47_47.png",
         ]
         super().__init__(self.iconPath_list, parent)
         # 设置暂停标志位
@@ -304,13 +311,13 @@ class PlayButton(TwoStateButton):
         self.update()
 
 
-class FillScreenButton(TwoStateButton):
+class FullScreenButton(TwoStateButton):
     """ 转到全屏按钮 """
 
     def __init__(self, parent=None):
         self.iconPath_list = [
-            r"app\resource\images\playing_interface\转到全屏_47_47.png",
-            r"app\resource\images\playing_interface\退出全屏_47_47.png",
+            r"app\resource\images\playing_interface\FullScreen.png",
+            r"app\resource\images\playing_interface\BackToWindow.png",
         ]
         super().__init__(self.iconPath_list, parent, False)
         # 设置暂停标志位
@@ -328,10 +335,10 @@ class VolumeButton(BasicCircleButton):
     def __init__(self, parent=None):
         # 按钮图标地址列表
         self.__iconPath_list = [
-            r"app\resource\images\playing_interface\volume_white_level_0_47_47.png",
-            r"app\resource\images\playing_interface\volume_white_level_1_47_47.png",
-            r"app\resource\images\playing_interface\volume_white_level_2_47_47.png",
-            r"app\resource\images\playing_interface\volume_white_level_3_47_47.png",
+            r"app\resource\images\playing_interface\Volume0.png",
+            r"app\resource\images\playing_interface\Volume1.png",
+            r"app\resource\images\playing_interface\Volume2.png",
+            r"app\resource\images\playing_interface\Volume3.png",
             r"app\resource\images\playing_interface\volume_white_level_mute_47_47.png",
         ]
         self.pixmap_list = [QPixmap(i) for i in self.__iconPath_list]
@@ -367,4 +374,3 @@ class VolumeButton(BasicCircleButton):
         if not self.isMute:
             self.iconPixmap = self.pixmap_list[iconIndex]
             self.update()
-

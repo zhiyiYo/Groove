@@ -37,26 +37,19 @@ class AlbumInfoBar(QWidget):
         self.songerNameLabel = QLabel(self.songerName, self)
         self.yearTconLabel = QLabel(self.year + " • " + self.tcon, self)
         self.playAllBt = BasicButton(
-            r"app\resource\images\album_interface\全部播放.png", "全部播放", self
-        )
+            r"app\resource\images\album_interface\Play.png", "全部播放", self)
         self.addToBt = BasicButton(
-            r"app\resource\images\album_interface\添加到.png", "添加到", self
-        )
+            r"app\resource\images\album_interface\Add.png", "添加到", self)
         self.showSongerBt = BasicButton(
-            r"app\resource\images\album_interface\显示歌手.png", "显示歌手", self
-        )
+            r"app\resource\images\album_interface\Contact.png", "显示歌手", self)
         self.pinToStartMenuBt = BasicButton(
-            r"app\resource\images\album_interface\固定到开始菜单.png", '固定到"开始"菜单', self
-        )
+            r"app\resource\images\album_interface\Pin.png", '固定到"开始"菜单', self)
         self.editInfoBt = BasicButton(
-            r"app\resource\images\album_interface\编辑信息.png", "编辑信息", self
-        )
+            r"app\resource\images\album_interface\Edit.png", "编辑信息", self)
         self.moreActionsBt = BasicButton(
-            r"app\resource\images\album_interface\更多操作.png", "", self
-        )
+            r"app\resource\images\album_interface\More.png", "", self)
         self.deleteButton = BasicButton(
-            r"app\resource\images\album_interface\删除.png", "删除", self
-        )
+            r"app\resource\images\album_interface\Delete.png", "删除", self)
         self.albumCover.resize(295, 295)
         self.albumCover.setPixmap(
             QPixmap(self.albumCoverPath).scaled(

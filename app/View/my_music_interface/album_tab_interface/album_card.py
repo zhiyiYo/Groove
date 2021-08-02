@@ -54,13 +54,13 @@ class AlbumCard(PerspectiveWidget):
         self.playButton = BlurButton(
             self,
             (30, 65),
-            r"app\resource\images\album_tab_interface\播放按钮_70_70.png",
+            r"app\resource\images\album_tab_interface\Play.png",
             self.picPath,
         )
         self.addToButton = BlurButton(
             self,
             (100, 65),
-            r"app\resource\images\album_tab_interface\添加到按钮_70_70.png",
+            r"app\resource\images\album_tab_interface\Add.png",
             self.picPath,
         )
         # 创建复选框

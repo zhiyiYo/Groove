@@ -181,9 +181,8 @@ QMenu#moreActionsMenu::item {
 
 
 /*正在播放界面菜单样式*/
-
 QMenu#playingInterfaceMenu::right-arrow {
-    border-image: url(app/resource/images/playing_interface/子菜单右箭头_15_15.png);
+    border-image: url(app/resource/images/playing_interface/ChevronRight.png);
 }
 
 QMenu#playingInterfaceMenu,

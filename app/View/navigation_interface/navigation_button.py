@@ -10,8 +10,7 @@ from app.common.get_pressed_pos import getPressedPos
 class NavigationButton(QPushButton):
     """ 侧边导航栏按钮 """
 
-    def __init__(self, iconPath: str, text="", parent=None, buttonSize: tuple = (60, 60),
-                 iconSize: tuple = (60, 60)):
+    def __init__(self, iconPath: str, text="", buttonSize: tuple = (60, 60), parent=None):
         """
         Parameters
         ----------
@@ -21,19 +20,15 @@ class NavigationButton(QPushButton):
         text: str
             按钮文本
 
-        parent:
-            父级窗口
-
         buttonSize: tuple
             按钮大小
 
-        iconSize: tuple
-            图标大小
+        parent:
+            父级窗口
         """
         super().__init__(text, parent)
         # 保存数据
         self.image = QPixmap(iconPath)
-        self.iconSizeTuple = iconSize
         self.buttonSizeTuple = buttonSize
         self.initWidget()
 
@@ -86,9 +81,9 @@ class NavigationButton(QPushButton):
 
 
 class ToolButton(NavigationButton):
-    """ 只显示图标的按钮 """
+    """ 工具按钮 """
 
-    def __init__(self, iconPath, parent=None, buttonSize=(60, 60)):
+    def __init__(self, iconPath, buttonSize=(60, 60), parent=None):
         """
         Parameters
         ----------
@@ -101,8 +96,7 @@ class ToolButton(NavigationButton):
         buttonSize: tuple
             按钮大小
         """
-        super().__init__(iconPath, text="", parent=parent,
-                         buttonSize=buttonSize, iconSize=buttonSize)
+        super().__init__(iconPath, "", buttonSize, parent)
 
     def paintEvent(self, e):
         """ 绘制背景 """
@@ -292,7 +286,7 @@ class CreatePlaylistButton(NavigationButton):
     """ 导航栏创建播放列表按钮 """
 
     def __init__(self, parent):
-        self.iconPath = r"app\resource\images\navigationBar\黑色新建播放列表.png"
+        self.iconPath = r"app\resource\images\navigation_interface\黑色新建播放列表.png"
         super().__init__(self.iconPath, parent=parent)
 
     def paintEvent(self, e):
@@ -318,9 +312,7 @@ class CreatePlaylistButton(NavigationButton):
             )
             self.drawIcon(painter, image, -0.01, 0, 4, 3)
 
-    def drawIcon(
-        self, painter, image: QPixmap, shearX: float = 0, shearY: float = 0, x=0, y=0
-    ):
+    def drawIcon(self, painter, image: QPixmap, shearX: float = 0, shearY: float = 0, x=0, y=0):
         """ 绘制图标 """
         painter.shear(shearX, shearY)
         painter.drawPixmap(x, y, image.width(), image.height(), image)

@@ -1,10 +1,8 @@
 # coding:utf-8
 
-from app.components.basic_selection_mode_bar import (
-    BasicButton,
-    BasicSelectionModeBar,
-    CheckAllButton,
-)
+from app.components.basic_selection_mode_bar import (BasicButton,
+                                                     BasicSelectionModeBar,
+                                                     CheckAllButton)
 
 
 class SelectionModeBar(BasicSelectionModeBar):
@@ -20,31 +18,31 @@ class SelectionModeBar(BasicSelectionModeBar):
     def __createButtons(self):
         """ 创建按钮 """
         self.cancelButton = BasicButton(
-            r"app\resource\images\selection_mode_bar\取消_20_20.png", "取消", self
+            r"app\resource\images\selection_mode_bar\Cancel.png", "取消", self
         )
         self.playButton = BasicButton(
-            r"app\resource\images\selection_mode_bar\播放_20_20.png", "播放", self
+            r"app\resource\images\selection_mode_bar\Play.png", "播放", self
         )
         self.nextToPlayButton = BasicButton(
             r"app\resource\images\selection_mode_bar\下一首播放_20_20.png", "下一首播放", self
         )
         self.addToButton = BasicButton(
-            r"app\resource\images\selection_mode_bar\添加到_20_20.png", "添加到", self
+            r"app\resource\images\selection_mode_bar\Add.png", "添加到", self
         )
         self.renameButton = BasicButton(
-            r"app\resource\images\selection_mode_bar\编辑信息_20_20.png", "重命名", self
+            r"app\resource\images\selection_mode_bar\Edit.png", "重命名", self
         )
         self.pinToStartMenuButton = BasicButton(
-            r"app\resource\images\selection_mode_bar\固定到开始菜单_20_20.png",
+            r"app\resource\images\selection_mode_bar\Pin.png",
             '固定到"开始"菜单',
             self,
         )
         self.deleteButton = BasicButton(
-            r"app\resource\images\selection_mode_bar\删除_20_20.png", "删除", self
+            r"app\resource\images\selection_mode_bar\Delete.png", "删除", self
         )
         self.checkAllButton = CheckAllButton(
             [
-                r"app\resource\images\selection_mode_bar\全选_20_20.png",
+                r"app\resource\images\selection_mode_bar\SelectAll.png",
                 r"app\resource\images\selection_mode_bar\取消全选_20_20.png",
             ],
             ["全选", "取消全选"],

@@ -1,19 +1,10 @@
 # coding:utf-8
-
 from copy import deepcopy
 
 from app.components.buttons.three_state_button import ThreeStatePushButton
-from PyQt5.QtCore import (
-    QAbstractAnimation,
-    QEasingCurve,
-    QParallelAnimationGroup,
-    QPropertyAnimation,
-    QRect,
-    QSize,
-    Qt,
-    QTimer,
-    pyqtSignal,
-)
+from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve,
+                          QParallelAnimationGroup, QPropertyAnimation, QRect,
+                          QSize, Qt, QTimer, pyqtSignal)
 from PyQt5.QtWidgets import QLabel, QWidget
 
 from .blur_cover_thread import BlurCoverThread

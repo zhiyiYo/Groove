@@ -24,9 +24,9 @@ class CentralButtonGroup(QWidget):
         """ 创建按钮 """
         self.randomPlayButton = RandomPlayButton(self)
         self.lastSongButton = BasicButton(
-            r'app\resource\images\playBar\上一首_45_45.png', self)
+            r'app\resource\images\play_bar\Previous.png', self)
         self.nextSongButton = BasicButton(
-            r'app\resource\images\playBar\下一首_45_45.png', self)
+            r'app\resource\images\play_bar\Next.png', self)
         self.playButton = PlayButton(self)
         self.loopModeButton = LoopModeButton(self)
         self.button_list = [self.randomPlayButton, self.lastSongButton,

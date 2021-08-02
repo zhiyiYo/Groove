@@ -38,17 +38,17 @@ class ButtonGroup(QWidget):
         # 创建按钮
         self.playButton = ToolButton(
             {
-                "notSelected-notPlay": r"app\resource\images\song_tab_interface\黑色播放_60_60.png",
-                "notSelected-play": r"app\resource\images\song_tab_interface\绿色播放_60_60.png",
-                "selected": r"app\resource\images\song_tab_interface\白色播放_60_60.png",
+                "notSelected-notPlay": r"app\resource\images\song_tab_interface\Play_black.png",
+                "notSelected-play": r"app\resource\images\song_tab_interface\Play_green.png",
+                "selected": r"app\resource\images\song_tab_interface\Play_white.png",
             },
             self,
         )
         self.addToButton = ToolButton(
             {
-                "notSelected-notPlay": r"app\resource\images\song_tab_interface\黑色添加到_60_60.png",
-                "notSelected-play": r"app\resource\images\song_tab_interface\绿色添加到_60_60.png",
-                "selected": r"app\resource\images\song_tab_interface\白色添加到_60_60.png",
+                "notSelected-notPlay": r"app\resource\images\song_tab_interface\Add_black.png",
+                "notSelected-play": r"app\resource\images\song_tab_interface\Add_green.png",
+                "selected": r"app\resource\images\song_tab_interface\Add_white.png",
             },
             self,
         )
@@ -182,12 +182,10 @@ class SongNameCard(QWidget):
         # 根据选中状态和歌曲状态选择图标
         if isSongExit:
             color = "白" if state == "selected" else "绿"
-            path = r"app\resource\images\song_tab_interface\{0}色正在播放_16_16.png".format(
-                color
-            )
+            path = f"app/resource/images/song_tab_interface/{color}色正在播放_16_16.png"
         else:
-            color = "白" if state == "selected" else "红"
-            path = r"app\resource\images\song_tab_interface\{0}色警告.png".format(color)
+            color = "white" if state == "selected" else "red"
+            path = f"app/resource/images/song_tab_interface/Info_{color}.png"
         self.playingLabel.setPixmap(QPixmap(path))
 
     def setButtonGroupState(self, state: str):

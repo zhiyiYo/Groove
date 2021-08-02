@@ -48,13 +48,13 @@ class PlaylistCard(PerspectiveWidget):
         self.playButton = BlurButton(
             self,
             (35, 70),
-            r"app\resource\images\album_tab_interface\播放按钮_70_70.png",
+            r"app\resource\images\album_tab_interface\Play.png",
             self.playlistCoverPath,
         )
         self.addToButton = BlurButton(
             self,
             (105, 70),
-            r"app\resource\images\album_tab_interface\添加到按钮_70_70.png",
+            r"app\resource\images\album_tab_interface\Add.png",
             self.playlistCoverPath,
         )
         self.playlistNameLabel = QLabel(self.playlistName, self)

@@ -22,28 +22,20 @@ class NavigationBar(BasicNavigationWidget):
     def __createButtons(self):
         """实例化按钮 """
         self.showMenuButton = ToolButton(
-            r'app\resource\images\navigationBar\黑色最大化导航栏.png', parent=self)
+            r'app\resource\images\navigation_interface\GlobalNavButton.png', parent=self)
         self.searchButton = ToolButton(
-            r'app\resource\images\navigationBar\黑色搜索.png',
-            parent=self,
-            buttonSize=(60, 62))
+            r'app\resource\images\navigation_interface\Search.png', (60, 62), self)
         self.musicGroupButton = ToolButton(
-            r'app\resource\images\navigationBar\黑色我的音乐.png',
-            parent=self,
-            buttonSize=(60, 62))
+            r'app\resource\images\navigation_interface\MusicInCollection.png', (60, 62), self)
         self.historyButton = ToolButton(
-            r'app\resource\images\navigationBar\黑色最近播放.png',
-            parent=self,
-            buttonSize=(60, 62))
+            r'app\resource\images\navigation_interface\Recent.png', (60, 62), self)
         self.playingButton = ToolButton(
-            r'app\resource\images\navigationBar\黑色导航栏正在播放.png',
-            parent=self,
-            buttonSize=(60, 62))
+            r'app\resource\images\navigation_interface\黑色导航栏正在播放.png', (60, 62), self)
         self.playlistButton = ToolButton(
-            r'app\resource\images\navigationBar\黑色播放列表.png', parent=self)
+            r'app\resource\images\navigation_interface\黑色播放列表.png', parent=self)
         self.createPlaylistButton = CreatePlaylistButton(self)
         self.settingButton = ToolButton(
-            r'app\resource\images\navigationBar\黑色设置按钮.png', parent=self)
+            r'app\resource\images\navigation_interface\Settings.png', parent=self)
         # 初始化当前选中的按钮
         self.currentButton = self.musicGroupButton
         # 创建一个按钮列表
@@ -56,7 +48,7 @@ class NavigationBar(BasicNavigationWidget):
         self._selectableButton_list = self.button_list[2:6] + [
             self.settingButton]
         # 创建按钮与下标对应的字典
-        self._selectableButtonName_list= [
+        self._selectableButtonName_list = [
             'musicGroupButton', 'historyButton', 'playingButton',
             'playlistButton', 'settingButton'
         ]
@@ -69,7 +61,6 @@ class NavigationBar(BasicNavigationWidget):
         self._connectButtonClickedSigToSlot()
         # 初始化布局
         self.__initLayout()
-
 
     def __initLayout(self):
         """ 初始化布局 """

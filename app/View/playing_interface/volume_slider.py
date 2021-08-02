@@ -80,10 +80,10 @@ class VolumeButton(BasicCircleButton):
     def __init__(self, parent=None):
         # 按钮图标地址列表
         self.__iconPath_list = [
-            r"app\resource\images\playing_interface\volume_black_level_0_47_47.png",
-            r"app\resource\images\playing_interface\volume_black_level_1_47_47.png",
-            r"app\resource\images\playing_interface\volume_black_level_2_47_47.png",
-            r"app\resource\images\playing_interface\volume_black_level_3_47_47.png",
+            r"app\resource\images\playing_interface\Volume0_black.png",
+            r"app\resource\images\playing_interface\Volume1_black.png",
+            r"app\resource\images\playing_interface\Volume2_black.png",
+            r"app\resource\images\playing_interface\Volume3_black.png",
             r"app\resource\images\playing_interface\volume_black_level_mute_47_47.png",
         ]
         self.pixmap_list = [QPixmap(i) for i in self.__iconPath_list]

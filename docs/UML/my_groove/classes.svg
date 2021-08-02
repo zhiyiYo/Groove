@@ -947,7 +947,7 @@
 <text text-anchor="middle" x="4839.5" y="-3642.3" font-family="Times New Roman,serif" font-size="14.00">PlayBar</text>
 <polyline fill="none" stroke="black" points="4769.5,-3634.5 4909.5,-3634.5 "/>
 <text text-anchor="start" x="4777.5" y="-3619.3" font-family="Times New Roman,serif" font-size="14.00">enterSignal</text>
-<text text-anchor="start" x="4777.5" y="-3604.3" font-family="Times New Roman,serif" font-size="14.00">fillScreenButton</text>
+<text text-anchor="start" x="4777.5" y="-3604.3" font-family="Times New Roman,serif" font-size="14.00">FullScreenButton</text>
 <text text-anchor="start" x="4777.5" y="-3589.3" font-family="Times New Roman,serif" font-size="14.00">lastSongButton</text>
 <text text-anchor="start" x="4777.5" y="-3574.3" font-family="Times New Roman,serif" font-size="14.00">leaveSignal</text>
 <text text-anchor="start" x="4777.5" y="-3559.3" font-family="Times New Roman,serif" font-size="14.00">loopModeButton</text>
@@ -1727,7 +1727,7 @@
 <g id="node53" class="node">
 <title>52</title>
 <polygon fill="none" stroke="black" points="4714,-278 4714,-347 4875,-347 4875,-278 4714,-278"/>
-<text text-anchor="middle" x="4794.5" y="-331.8" font-family="Times New Roman,serif" font-size="14.00">FillScreenButton</text>
+<text text-anchor="middle" x="4794.5" y="-331.8" font-family="Times New Roman,serif" font-size="14.00">FullScreenButton</text>
 <polyline fill="none" stroke="black" points="4714,-324 4875,-324 "/>
 <text text-anchor="start" x="4722" y="-308.8" font-family="Times New Roman,serif" font-size="14.00">iconPath_list : list</text>
 <polyline fill="none" stroke="black" points="4714,-301 4875,-301 "/>
@@ -1738,7 +1738,7 @@
 <title>52&#45;&gt;92</title>
 <path fill="none" stroke="black" d="M4772.35,-347.1C4713.74,-436.07 4558.91,-671.33 4557.5,-676 4493.64,-888.16 4522.69,-2453.23 4568.5,-2670 4614.79,-2889.06 4701.96,-3131.42 4764.96,-3291.76"/>
 <polygon fill="black" stroke="black" points="4765.05,-3292 4770.97,-3296.12 4769.45,-3303.16 4763.53,-3299.05 4765.05,-3292"/>
-<text text-anchor="middle" x="4571.5" y="-1907.8" font-family="Times New Roman,serif" font-size="14.00" fill="green">fillScreenButton</text>
+<text text-anchor="middle" x="4571.5" y="-1907.8" font-family="Times New Roman,serif" font-size="14.00" fill="green">FullScreenButton</text>
 </g>
 <!-- 183 -->
 <g id="node184" class="node">
@@ -4140,14 +4140,14 @@
 <polygon fill="none" stroke="black" points="7863.5,-1982.5 7863.5,-2591.5 8007.5,-2591.5 8007.5,-1982.5 7863.5,-1982.5"/>
 <text text-anchor="middle" x="7935.5" y="-2576.3" font-family="Times New Roman,serif" font-size="14.00">SubSongInfoEditPanel</text>
 <polyline fill="none" stroke="black" points="7863.5,-2568.5 8007.5,-2568.5 "/>
-<text text-anchor="start" x="7871.5" y="-2553.3" font-family="Times New Roman,serif" font-size="14.00">albumNameEditLine</text>
+<text text-anchor="start" x="7871.5" y="-2553.3" font-family="Times New Roman,serif" font-size="14.00">albumNameLineEdit</text>
 <text text-anchor="start" x="7871.5" y="-2538.3" font-family="Times New Roman,serif" font-size="14.00">albumNameLabel</text>
-<text text-anchor="start" x="7871.5" y="-2523.3" font-family="Times New Roman,serif" font-size="14.00">albumSongerEditLine</text>
+<text text-anchor="start" x="7871.5" y="-2523.3" font-family="Times New Roman,serif" font-size="14.00">albumSongerLineEdit</text>
 <text text-anchor="start" x="7871.5" y="-2508.3" font-family="Times New Roman,serif" font-size="14.00">albumSongerLabel</text>
 <text text-anchor="start" x="7871.5" y="-2493.3" font-family="Times New Roman,serif" font-size="14.00">bottomErrorIcon</text>
 <text text-anchor="start" x="7871.5" y="-2478.3" font-family="Times New Roman,serif" font-size="14.00">bottomErrorLabel</text>
 <text text-anchor="start" x="7871.5" y="-2463.3" font-family="Times New Roman,serif" font-size="14.00">cancelButton</text>
-<text text-anchor="start" x="7871.5" y="-2448.3" font-family="Times New Roman,serif" font-size="14.00">diskEditLine</text>
+<text text-anchor="start" x="7871.5" y="-2448.3" font-family="Times New Roman,serif" font-size="14.00">diskLineEdit</text>
 <text text-anchor="start" x="7871.5" y="-2433.3" font-family="Times New Roman,serif" font-size="14.00">diskLabel</text>
 <text text-anchor="start" x="7871.5" y="-2418.3" font-family="Times New Roman,serif" font-size="14.00">editInfoLabel</text>
 <text text-anchor="start" x="7871.5" y="-2403.3" font-family="Times New Roman,serif" font-size="14.00">editLine_list : list</text>
@@ -4162,17 +4162,17 @@
 <text text-anchor="start" x="7871.5" y="-2268.3" font-family="Times New Roman,serif" font-size="14.00">saveInfoSig</text>
 <text text-anchor="start" x="7871.5" y="-2253.3" font-family="Times New Roman,serif" font-size="14.00">shadowEffect</text>
 <text text-anchor="start" x="7871.5" y="-2238.3" font-family="Times New Roman,serif" font-size="14.00">songInfo</text>
-<text text-anchor="start" x="7871.5" y="-2223.3" font-family="Times New Roman,serif" font-size="14.00">songNameEditLine</text>
+<text text-anchor="start" x="7871.5" y="-2223.3" font-family="Times New Roman,serif" font-size="14.00">songNameLineEdit</text>
 <text text-anchor="start" x="7871.5" y="-2208.3" font-family="Times New Roman,serif" font-size="14.00">songNameLabel</text>
 <text text-anchor="start" x="7871.5" y="-2193.3" font-family="Times New Roman,serif" font-size="14.00">songPath</text>
 <text text-anchor="start" x="7871.5" y="-2178.3" font-family="Times New Roman,serif" font-size="14.00">songPathLabel</text>
-<text text-anchor="start" x="7871.5" y="-2163.3" font-family="Times New Roman,serif" font-size="14.00">songerNameEditLine</text>
+<text text-anchor="start" x="7871.5" y="-2163.3" font-family="Times New Roman,serif" font-size="14.00">songerNameLineEdit</text>
 <text text-anchor="start" x="7871.5" y="-2148.3" font-family="Times New Roman,serif" font-size="14.00">songerNameLabel</text>
-<text text-anchor="start" x="7871.5" y="-2133.3" font-family="Times New Roman,serif" font-size="14.00">tconEditLine</text>
+<text text-anchor="start" x="7871.5" y="-2133.3" font-family="Times New Roman,serif" font-size="14.00">tconLineEdit</text>
 <text text-anchor="start" x="7871.5" y="-2118.3" font-family="Times New Roman,serif" font-size="14.00">tconLabel</text>
-<text text-anchor="start" x="7871.5" y="-2103.3" font-family="Times New Roman,serif" font-size="14.00">trackNumEditLine</text>
+<text text-anchor="start" x="7871.5" y="-2103.3" font-family="Times New Roman,serif" font-size="14.00">trackNumLineEdit</text>
 <text text-anchor="start" x="7871.5" y="-2088.3" font-family="Times New Roman,serif" font-size="14.00">trackNumLabel</text>
-<text text-anchor="start" x="7871.5" y="-2073.3" font-family="Times New Roman,serif" font-size="14.00">yearEditLine</text>
+<text text-anchor="start" x="7871.5" y="-2073.3" font-family="Times New Roman,serif" font-size="14.00">yearLineEdit</text>
 <text text-anchor="start" x="7871.5" y="-2058.3" font-family="Times New Roman,serif" font-size="14.00">yearLabel</text>
 <polyline fill="none" stroke="black" points="7863.5,-2050.5 8007.5,-2050.5 "/>
 <text text-anchor="start" x="7871.5" y="-2035.3" font-family="Times New Roman,serif" font-size="14.00">checkTrackEditLine()</text>

@@ -111,7 +111,7 @@ QCheckBox::indicator[isPlay='True'] {
 }
 
 QCheckBox::indicator:checked {
-    border-image: url(app/resource/images/playing_interface/indicator_checked_25_25.png);
+    border-image: url(app/resource/images/playing_interface/CheckMark.png);
 }
 
 

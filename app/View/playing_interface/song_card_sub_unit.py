@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QApplication, QCheckBox, QLabel, QToolButton, QWidge
 
 
 class ToolButton(QToolButton):
-    """ 按钮 """
+    """ 工具按钮 """
 
     def __init__(self, iconPath_list, parent=None):
         super().__init__(parent)
@@ -32,15 +32,15 @@ class ButtonGroup(QWidget):
         # 创建按钮
         self.playButton = ToolButton(
             [
-                r"app\resource\images\playing_interface\播放按钮_white_60_60.png",
-                r"app\resource\images\playing_interface\播放按钮_green_60_60.png",
+                r"app\resource\images\playing_interface\Play_60_60.png",
+                r"app\resource\images\playing_interface\Play_green_60_60.png",
             ],
             self,
         )
         self.addToButton = ToolButton(
             [
-                r"app\resource\images\playing_interface\添加到按钮_white_60_60.png",
-                r"app\resource\images\playing_interface\添加到按钮_green_60_60.png",
+                r"app\resource\images\playing_interface\Add.png",
+                r"app\resource\images\playing_interface\Add_green.png",
             ],
             self,
         )

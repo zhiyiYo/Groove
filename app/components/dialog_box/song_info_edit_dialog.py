@@ -53,14 +53,18 @@ class SongInfoEditDialog(MaskDialogBase):
         self.bottomErrorIcon = ErrorIcon(self.widget)
         self.bottomErrorLabel = QLabel(self.widget)
         # 实例化单行输入框
-        self.diskEditLine = LineEdit("1", self.widget)
-        self.tconEditLine = LineEdit(self.songInfo["tcon"], self.widget)
-        self.yearEditLine = LineEdit(self.songInfo["year"], self.widget)
-        self.albumNameEditLine = LineEdit(self.songInfo["album"], self.widget)
-        self.songNameEditLine = LineEdit(self.songInfo["songName"], self.widget)
-        self.songerNameEditLine = LineEdit(self.songInfo["songer"], self.widget)
-        self.albumSongerEditLine = LineEdit(self.songInfo["songer"], self.widget)
-        self.trackNumEditLine = LineEdit(self.songInfo["tracknumber"], self.widget)
+        self.diskLineEdit = LineEdit("1", self.widget)
+        self.tconLineEdit = LineEdit(self.songInfo["tcon"], self.widget)
+        self.yearLineEdit = LineEdit(self.songInfo["year"], self.widget)
+        self.albumNameLineEdit = LineEdit(self.songInfo["album"], self.widget)
+        self.songNameLineEdit = LineEdit(
+            self.songInfo["songName"], self.widget)
+        self.songerNameLineEdit = LineEdit(
+            self.songInfo["songer"], self.widget)
+        self.albumSongerLineEdit = LineEdit(
+            self.songInfo["songer"], self.widget)
+        self.trackNumLineEdit = LineEdit(
+            self.songInfo["tracknumber"], self.widget)
         # 流派补全
         tcons = [
             "POP流行",
@@ -82,7 +86,7 @@ class SongInfoEditDialog(MaskDialogBase):
         self.tconCompleter = QCompleter(tcons, self.widget)
         self.tconCompleter.setCompletionMode(QCompleter.InlineCompletion)
         self.tconCompleter.setCaseSensitivity(Qt.CaseInsensitive)
-        self.tconEditLine.setCompleter(self.tconCompleter)
+        self.tconLineEdit.setCompleter(self.tconCompleter)
 
         # 创建集中管理小部件的列表
         self.leftLabel_list = [
@@ -100,36 +104,36 @@ class SongInfoEditDialog(MaskDialogBase):
         ]
 
         self.leftEditLine_list = [
-            self.songNameEditLine,
-            self.trackNumEditLine,
-            self.albumNameEditLine,
-            self.tconEditLine,
+            self.songNameLineEdit,
+            self.trackNumLineEdit,
+            self.albumNameLineEdit,
+            self.tconLineEdit,
         ]
 
         self.rightEditLine_list = [
-            self.songerNameEditLine,
-            self.diskEditLine,
-            self.albumSongerEditLine,
-            self.yearEditLine,
+            self.songerNameLineEdit,
+            self.diskLineEdit,
+            self.albumSongerLineEdit,
+            self.yearLineEdit,
         ]
 
         self.editLine_list = [
-            self.songNameEditLine,
-            self.songerNameEditLine,
-            self.trackNumEditLine,
-            self.diskEditLine,
-            self.albumNameEditLine,
-            self.albumSongerEditLine,
-            self.tconEditLine,
-            self.yearEditLine,
+            self.songNameLineEdit,
+            self.songerNameLineEdit,
+            self.trackNumLineEdit,
+            self.diskLineEdit,
+            self.albumNameLineEdit,
+            self.albumSongerLineEdit,
+            self.tconLineEdit,
+            self.yearLineEdit,
         ]
 
     def __initWidget(self):
         """ 初始化小部件的属性 """
         self.widget.setFixedSize(932, 652)
         # 默认选中歌名编辑框
-        self.songNameEditLine.setFocus()
-        self.songNameEditLine.clearButton.show()
+        self.songNameLineEdit.setFocus()
+        self.songNameLineEdit.clearButton.show()
         # 给每个单行输入框设置大小
         for editLine in self.editLine_list:
             editLine.setFixedSize(408, 40)
@@ -140,36 +144,35 @@ class SongInfoEditDialog(MaskDialogBase):
 
         # 设置报警标签位置
         self.bottomErrorLabel.setMinimumWidth(100)
-        self.emptyTrackErrorIcon.move(7, 224)
+        self.emptyTrackErrorIcon.move(7, 227)
         self.bottomErrorIcon.hide()
         self.bottomErrorLabel.hide()
         self.emptyTrackErrorIcon.hide()
 
         # 如果曲目为空就禁用保存按钮并更改属性
-        self.trackNumEditLine.setProperty("hasText", "true")
-        if not self.trackNumEditLine.text():
+        self.trackNumLineEdit.setProperty("hasText", "true")
+        if not self.trackNumLineEdit.text():
             self.saveButton.setEnabled(False)
             self.emptyTrackErrorIcon.show()
-            self.trackNumEditLine.setProperty("hasText", "false")
+            self.trackNumLineEdit.setProperty("hasText", "false")
 
         # 给输入框设置过滤器
         rex_trackNum = QRegExp(r"(\d)|([1-9]\d{1,2})")
         rex_year = QRegExp(r"\d{4}年{0,1}")
         validator_tracknum = QRegExpValidator(
-            rex_trackNum, self.trackNumEditLine)
-        validator_disk = QRegExpValidator(rex_trackNum, self.diskEditLine)
-        validator_year = QRegExpValidator(rex_year, self.yearEditLine)
-        self.trackNumEditLine.setValidator(validator_tracknum)
-        self.diskEditLine.setValidator(validator_disk)
-        self.yearEditLine.setValidator(validator_year)
+            rex_trackNum, self.trackNumLineEdit)
+        validator_disk = QRegExpValidator(rex_trackNum, self.diskLineEdit)
+        validator_year = QRegExpValidator(rex_year, self.yearLineEdit)
+        self.trackNumLineEdit.setValidator(validator_tracknum)
+        self.diskLineEdit.setValidator(validator_disk)
+        self.yearLineEdit.setValidator(validator_year)
 
         # 将曲目输入框数字改变的信号连接到槽函数
-        self.trackNumEditLine.textChanged.connect(self.checkTrackEditLine)
+        self.trackNumLineEdit.textChanged.connect(self.checkTrackEditLine)
 
         # 将按钮点击信号连接到槽函数
         self.saveButton.clicked.connect(self.saveInfo)
         self.cancelButton.clicked.connect(self.close)
-
 
     def __initLayout(self):
         """ 初始化小部件的排版 """
@@ -211,8 +214,8 @@ class SongInfoEditDialog(MaskDialogBase):
     def __setQss(self):
         """ 设置层叠样式表 """
         self.editInfoLabel.setObjectName("editSongInfo")
-        self.songerNameEditLine.setObjectName("songer")
-        self.albumSongerEditLine.setObjectName("songer")
+        self.songerNameLineEdit.setObjectName("songer")
+        self.albumSongerLineEdit.setObjectName("songer")
         self.songPath.setObjectName("songPath")
         self.bottomErrorLabel.setObjectName("bottomErrorLabel")
         with open("app/resource/css/songInfoEditDialog.qss", encoding="utf-8") as f:
@@ -220,16 +223,16 @@ class SongInfoEditDialog(MaskDialogBase):
 
     def saveInfo(self):
         """ 保存标签卡信息 """
-        album_list = adjustAlbumName(self.albumNameEditLine.text())
-        self.songInfo["songName"] = self.songNameEditLine.text()
-        self.songInfo["songer"] = self.songerNameEditLine.text()
+        album_list = adjustAlbumName(self.albumNameLineEdit.text())
+        self.songInfo["songName"] = self.songNameLineEdit.text()
+        self.songInfo["songer"] = self.songerNameLineEdit.text()
         self.songInfo["album"] = album_list[0]
         self.songInfo["modifiedAlbum"] = album_list[-1]
         # 根据后缀名选择曲目标签的写入方式
-        self.songInfo["tracknumber"] = self.trackNumEditLine.text()
-        self.songInfo["tcon"] = self.tconEditLine.text()
-        if self.yearEditLine.text()[:4] != "未知年份":
-            self.songInfo["year"] = self.yearEditLine.text()[:4] + "年"
+        self.songInfo["tracknumber"] = self.trackNumLineEdit.text()
+        self.songInfo["tcon"] = self.tconLineEdit.text()
+        if self.yearLineEdit.text()[:4] != "未知年份":
+            self.songInfo["year"] = self.yearLineEdit.text()[:4] + "年"
         else:
             self.songInfo["year"] = "未知年份"
         if not modifySongInfo(self.songInfo):
@@ -242,17 +245,17 @@ class SongInfoEditDialog(MaskDialogBase):
 
     def checkTrackEditLine(self):
         """ 检查曲目输入框的内容是否为空 """
-        if not self.trackNumEditLine.text():
+        if not self.trackNumLineEdit.text():
             self.bottomErrorLabel.setText("曲目必须是1000以下的数字")
             self.bottomErrorLabel.show()
             self.emptyTrackErrorIcon.show()
             self.bottomErrorIcon.show()
             self.saveButton.setEnabled(False)
-            self.trackNumEditLine.setProperty("hasText", "false")
+            self.trackNumLineEdit.setProperty("hasText", "false")
         else:
-            self.trackNumEditLine.setProperty("hasText", "true")
+            self.trackNumLineEdit.setProperty("hasText", "true")
             self.bottomErrorLabel.hide()
             self.bottomErrorIcon.hide()
             self.emptyTrackErrorIcon.hide()
             self.saveButton.setEnabled(True)
-        self.trackNumEditLine.setStyle(QApplication.style())
+        self.trackNumLineEdit.setStyle(QApplication.style())
