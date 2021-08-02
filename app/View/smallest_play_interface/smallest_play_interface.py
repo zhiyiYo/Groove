@@ -1,22 +1,16 @@
 # coding:utf-8
-
-from PyQt5.QtCore import (
-    QAbstractAnimation,
-    QEasingCurve,
-    QEvent,
-    QParallelAnimationGroup,
-    QPropertyAnimation,
-    QRect,
-    Qt,
-)
+from app.components.buttons.circle_button import CircleButton
+from app.components.frameless_window import FramelessWindow
+from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
+                          QParallelAnimationGroup, QPropertyAnimation, QRect,
+                          Qt)
 from PyQt5.QtGui import QFont, QFontMetrics
 from PyQt5.QtWidgets import QGraphicsOpacityEffect, QLabel, QSlider, QWidget
 
-from .play_bar_buttons import BasicCircleButton
-from .smallest_play_mode_buttons import PlayButton, SmallestPlayModeButton
+from .buttons import PlayButton, SmallestPlayModeButton
 
 
-class SmallestPlayModeInterface(QWidget):
+class SmallestPlayInterface(FramelessWindow):
     """ 最小播放模式界面 """
 
     CYCLE_LEFT_SHIFT = 0
@@ -30,6 +24,8 @@ class SmallestPlayModeInterface(QWidget):
         self.shiftRightTime = 0
         self.songInfoCard_list = []
         self.__unCompleteShift_list = []
+        # 创建磨砂封面
+        self.__blurLabel = QLabel(self)
         # 创建按钮
         self.playButton = PlayButton(
             [
@@ -39,14 +35,11 @@ class SmallestPlayModeInterface(QWidget):
             self,
         )
         self.lastSongButton = SmallestPlayModeButton(
-            r"app\resource\images\smallest_play_mode\上一首_45_45.png", self
-        )
+            r"app\resource\images\smallest_play_mode\上一首_45_45.png", self)
         self.nextSongButton = SmallestPlayModeButton(
-            r"app\resource\images\smallest_play_mode\下一首_45_45.png", self
-        )
-        self.exitSmallestModeButton = BasicCircleButton(
-            r"app\resource\images\playing_interface\最小模式播放_47_47.png", self
-        )
+            r"app\resource\images\smallest_play_mode\下一首_45_45.png", self)
+        self.exitSmallestModeButton = CircleButton(
+            r"app\resource\images\playing_interface\最小模式播放_47_47.png", self)
         self.progressBar = QSlider(Qt.Horizontal, self)
         self.aniGroup = QParallelAnimationGroup(self)
         # 创建歌曲信息卡
@@ -58,9 +51,7 @@ class SmallestPlayModeInterface(QWidget):
         """ 初始化界面 """
         self.resize(350, 350)
         self.setMinimumSize(206, 197)
-        self.setAttribute(Qt.WA_TranslucentBackground)
-        self.setObjectName("smallestModeInterface")
-        self.progressBar.setObjectName("smallestModeSlider")
+        self.__blurLabel.setScaledContents(True)
         self.progressBar.installEventFilter(self)
         self.aniGroup.finished.connect(self.__switchSongInfoCard)
         self.__setQss()
@@ -85,7 +76,8 @@ class SmallestPlayModeInterface(QWidget):
             self.aniGroup.addAnimation(ani)
         # 初始化歌曲卡
         for i in range(3):
-            self.songInfoCard_list[i].move((i - 1) * self.width(), self.height() - 106)
+            self.songInfoCard_list[i].move(
+                (i - 1) * self.width(), self.height() - 106)
         if self.playlist:
             self.curSongInfoCard.updateCard(self.playlist[0])
             if len(self.playlist) >= 2:
@@ -108,8 +100,7 @@ class SmallestPlayModeInterface(QWidget):
         # 所有歌曲信息卡设置位置
         for i in range(3):
             self.songInfoCard_list[i].resize(
-                self.width(), self.songInfoCard_list[i].height()
-            )
+                self.width(), self.songInfoCard_list[i].height())
         self.curSongInfoCard.move(0, self.height() - 106)
         self.lastSongInfoCard.move(-self.width(), self.height() - 106)
         self.nextSongInfoCard.move(self.width(), self.height() - 106)
@@ -129,7 +120,7 @@ class SmallestPlayModeInterface(QWidget):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open(r"app\resource\css\playInterface.qss", encoding="utf-8") as f:
+        with open(r"app\resource\css\smallest_play_interface.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
 
     def eventFilter(self, obj, e: QEvent):
@@ -143,8 +134,7 @@ class SmallestPlayModeInterface(QWidget):
         """ 循环左移 """
         self.loopMode = self.CYCLE_LEFT_SHIFT
         self.__setAnimation(
-            self.curSongInfoCardAni, self.curSongInfoCard, -self.width()
-        )
+            self.curSongInfoCardAni, self.curSongInfoCard, -self.width())
         self.__setAnimation(self.nextSongInfoCardAni, self.nextSongInfoCard, 0)
         self.aniGroup.removeAnimation(self.lastSongInfoCardAni)
         self.aniGroup.start()
@@ -152,7 +142,8 @@ class SmallestPlayModeInterface(QWidget):
     def __cycleRightShift(self):
         """ 循环右移 """
         self.loopMode = self.CYCLE_RIGHT_SHIFT
-        self.__setAnimation(self.curSongInfoCardAni, self.curSongInfoCard, self.width())
+        self.__setAnimation(self.curSongInfoCardAni,
+                            self.curSongInfoCard, self.width())
         self.__setAnimation(self.lastSongInfoCardAni, self.lastSongInfoCard, 0)
         self.aniGroup.removeAnimation(self.nextSongInfoCardAni)
         self.aniGroup.start()
@@ -173,8 +164,8 @@ class SmallestPlayModeInterface(QWidget):
         )
         # 设置结束值
         animation.setEndValue(
-            QRect(endX, songInfoCard.y(), songInfoCard.width(), songInfoCard.height())
-        )
+            QRect(endX, songInfoCard.y(),
+                  songInfoCard.width(), songInfoCard.height()))
 
     def __switchSongInfoCard(self):
         """ 交换对底层歌曲卡对象的引用 """
@@ -214,9 +205,11 @@ class SmallestPlayModeInterface(QWidget):
         """ 更新三个歌曲信息卡 """
         self.curSongInfoCard.updateCard(self.playlist[self.currentIndex])
         if self.currentIndex >= 1:
-            self.lastSongInfoCard.updateCard(self.playlist[self.currentIndex - 1])
+            self.lastSongInfoCard.updateCard(
+                self.playlist[self.currentIndex - 1])
         if self.currentIndex <= len(self.playlist) - 2:
-            self.nextSongInfoCard.updateCard(self.playlist[self.currentIndex + 1])
+            self.nextSongInfoCard.updateCard(
+                self.playlist[self.currentIndex + 1])
 
     def __resetRef(self, moveDirection=0):
         """ 设置变量对底层对象的引用，moveDirection = 0 代表左移，moveDirection = 1 代表右移 """
@@ -346,7 +339,8 @@ class SongInfoCard(QWidget):
         self.songerNameLabel.setFixedWidth(songerNameWidth)
         # 调整标签位置
         self.songNameLabel.move(int(self.width() / 2 - songNameWidth / 2), 0)
-        self.songerNameLabel.move(int(self.width() / 2 - songerNameWidth / 2), 30)
+        self.songerNameLabel.move(
+            int(self.width() / 2 - songerNameWidth / 2), 30)
 
     def resizeEvent(self, e):
         """ 改变窗口大小时调整标签 """

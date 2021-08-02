@@ -149,9 +149,8 @@ class NavigationWidget(BasicNavigationWidget):
             PushButton(
                 r"app\resource\images\navigation_interface\黑色我喜欢_60_62.png",
                 i,
-                self.scrollWidget,
                 (400, 62),
-                (60, 62),
+                self.scrollWidget
             )
             for i in playlistName_list
         ]

@@ -6,10 +6,10 @@ from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve,
                           QParallelAnimationGroup, QPropertyAnimation, QRect,
                           QSize, Qt, QTimer, pyqtSignal)
 from PyQt5.QtWidgets import QLabel, QWidget
+from PyQt5.QtMultimedia import QMediaPlaylist
 
 from .blur_cover_thread import BlurCoverThread
 from .play_bar import PlayBar
-from .smallest_play_mode_interface import SmallestPlayModeInterface
 from .song_info_card_chute import SongInfoCardChute
 from .song_list_widget import SongListWidget
 
@@ -19,16 +19,22 @@ class PlayingInterface(QWidget):
 
     nextSongSig = pyqtSignal()  # 点击下一首或者上一首按钮时由主界面的播放列表决定下一首的Index
     lastSongSig = pyqtSignal()
+    randomPlayAllSig = pyqtSignal()          # 创建新的无序播放列表
+    randomPlayChanged = pyqtSignal(bool)     # 随机播放当前播放列表
     switchPlayStateSig = pyqtSignal()
-    randomPlayAllSignal = pyqtSignal()
     removeMediaSignal = pyqtSignal(int)
+    muteStateChanged = pyqtSignal(bool)
+    volumeChanged = pyqtSignal(int)
+    progressSliderMoved = pyqtSignal(int)
+    fullScreenChanged = pyqtSignal(bool)
+    loopModeChanged = pyqtSignal(QMediaPlaylist.PlaybackMode)
+    clearPlaylistSig = pyqtSignal()
+    savePlaylistSig=pyqtSignal()
     # 点击歌曲卡或者滑动歌曲信息卡滑槽时直接设置新的index，index由自己决定
     currentIndexChanged = pyqtSignal(int)
     switchToAlbumInterfaceSig = pyqtSignal(str, str)
     # 发出进入最小模式的信号
-    smallestModeStateChanged = pyqtSignal(bool)
-    # 退出全屏信号
-    exitFullScreenSig = pyqtSignal()
+    showSmallestPlayInterfaceSig = pyqtSignal()
 
     def __init__(self, playlist: list = None, parent=None):
         super().__init__(parent)
@@ -42,13 +48,12 @@ class PlayingInterface(QWidget):
         self.songInfoCardChute = SongInfoCardChute(self, self.playlist)
         self.parallelAniGroup = QParallelAnimationGroup(self)
         self.songInfoCardChuteAni = QPropertyAnimation(
-            self.songInfoCardChute, b"geometry"
-        )
+            self.songInfoCardChute, b"geometry")
         self.playBar = PlayBar(self)
         self.songListWidget = SongListWidget(self.playlist, self)
-        self.smallestModeInterface = SmallestPlayModeInterface(playlist, self)
         self.playBarAni = QPropertyAnimation(self.playBar, b"geometry")
-        self.songListWidgetAni = QPropertyAnimation(self.songListWidget, b"geometry")
+        self.songListWidgetAni = QPropertyAnimation(
+            self.songListWidget, b"geometry")
         self.guideLabel = QLabel("在这里，你将看到正在播放的歌曲以及即将播放的歌曲。", self)
         self.randomPlayAllButton = ThreeStatePushButton(
             {
@@ -75,7 +80,6 @@ class PlayingInterface(QWidget):
         self.randomPlayAllButton.move(45, 117)
         self.playBar.move(0, self.height() - self.playBar.height())
         # 隐藏部件
-        self.smallestModeInterface.hide()
         self.randomPlayAllButton.hide()
         self.guideLabel.hide()
         self.playBar.hide()
@@ -86,7 +90,8 @@ class PlayingInterface(QWidget):
         self.__setQss()
         # 开启磨砂线程
         if self.playlist:
-            self.startBlurThread(self.songInfoCardChute.curSongInfoCard.albumCoverPath)
+            self.startBlurThread(
+                self.songInfoCardChute.curSongInfoCard.albumCoverPath)
         # 将信号连接到槽
         self.__connectSignalToSlot()
         # 初始化动画
@@ -128,8 +133,7 @@ class PlayingInterface(QWidget):
 
     def startBlurThread(self, albumCoverPath):
         """ 开启磨砂线程 """
-        blurRadius = [6, 40][self.smallestModeInterface.isVisible()]
-        self.blurCoverThread.setTargetCover(albumCoverPath, blurRadius=blurRadius)
+        self.blurCoverThread.setTargetCover(albumCoverPath, 6)
         self.blurCoverThread.start()
 
     def resizeEvent(self, e):
@@ -140,7 +144,6 @@ class PlayingInterface(QWidget):
         self.blurBackgroundPic.setFixedSize(self.size())
         self.playBar.resize(self.width(), self.playBar.height())
         self.songListWidget.resize(self.width(), self.height() - 382)
-        self.smallestModeInterface.resize(self.size())
         if self.isPlaylistVisible:
             self.playBar.move(0, 190)
             self.songListWidget.move(0, 382)
@@ -156,9 +159,11 @@ class PlayingInterface(QWidget):
             self.playBar.show()
             self.songInfoCardChuteAni.setDuration(450)
             self.songInfoCardChuteAni.setEasingCurve(QEasingCurve.OutCubic)
-            self.songInfoCardChuteAni.setStartValue(self.songInfoCardChute.rect())
+            self.songInfoCardChuteAni.setStartValue(
+                self.songInfoCardChute.rect())
             self.songInfoCardChuteAni.setEndValue(
-                QRect(0, -self.playBar.height() + 68, self.width(), self.height())
+                QRect(0, -self.playBar.height() + 68,
+                      self.width(), self.height())
             )
             self.songInfoCardChuteAni.start()
 
@@ -168,7 +173,8 @@ class PlayingInterface(QWidget):
             self.playBar.hide()
             self.songInfoCardChuteAni.setEasingCurve(QEasingCurve.OutCirc)
             self.songInfoCardChuteAni.setStartValue(
-                QRect(0, -self.playBar.height() + 68, self.width(), self.height())
+                QRect(0, -self.playBar.height() + 68,
+                      self.width(), self.height())
             )
             self.songInfoCardChuteAni.setEndValue(
                 QRect(0, 0, self.width(), self.height())
@@ -181,7 +187,8 @@ class PlayingInterface(QWidget):
             self.songInfoCardChuteAni.setDuration(350)
             self.songInfoCardChuteAni.setEasingCurve(QEasingCurve.InOutQuad)
             self.songInfoCardChuteAni.setStartValue(
-                QRect(0, self.songInfoCardChute.y(), self.width(), self.height())
+                QRect(0, self.songInfoCardChute.y(),
+                      self.width(), self.height())
             )
             self.songInfoCardChuteAni.setEndValue(
                 QRect(0, 258 - self.height(), self.width(), self.height())
@@ -232,10 +239,12 @@ class PlayingInterface(QWidget):
             self.songInfoCardChuteAni.setDuration(350)
             self.songInfoCardChuteAni.setEasingCurve(QEasingCurve.InOutQuad)
             self.songInfoCardChuteAni.setStartValue(
-                QRect(0, self.songInfoCardChute.y(), self.width(), self.height())
+                QRect(0, self.songInfoCardChute.y(),
+                      self.width(), self.height())
             )
             self.songInfoCardChuteAni.setEndValue(
-                QRect(0, -self.playBar.height() + 68, self.width(), self.height())
+                QRect(0, -self.playBar.height() + 68,
+                      self.width(), self.height())
             )
             self.playBarAni.setStartValue(
                 QRect(0, 190, self.width(), self.playBar.height())
@@ -286,8 +295,6 @@ class PlayingInterface(QWidget):
             # 在播放列表的最后一首歌被移除时不更新样式
             if index >= len(self.playlist):
                 return
-            if self.smallestModeInterface.isVisible():
-                self.smallestModeInterface.setCurrentIndex(index)
             self.currentIndex = index
             self.songListWidget.setCurrentIndex(index)
             self.songInfoCardChute.setCurrentIndex(index)
@@ -307,7 +314,6 @@ class PlayingInterface(QWidget):
         self.currentIndex = 0 if isResetIndex else self.currentIndex
         if playlist:
             self.songInfoCardChute.setPlaylist(self.playlist, isResetIndex)
-            self.smallestModeInterface.setPlaylist(self.playlist, isResetIndex)
             self.songListWidget.updateSongCards(self.playlist)
         # 如果小部件不可见就显示
         if playlist and not self.songListWidget.isVisible():
@@ -319,7 +325,7 @@ class PlayingInterface(QWidget):
 
     def __startSongInfoCardTimer(self):
         """ 重新打开歌曲信息卡的定时器 """
-        if not self.playBar.volumeSlider.isVisible():
+        if not self.playBar.volumeSliderWidget.isVisible():
             # 只有音量滑动条不可见才打开计时器
             self.songInfoCardChute.startSongInfoCardTimer()
 
@@ -388,96 +394,88 @@ class PlayingInterface(QWidget):
 
     def updateMultiSongCards(self, oldSongInfo_list: list, newSongInfo_list: list):
         """ 更新多个歌曲卡 """
-        self.songListWidget.updateMultiSongCards(oldSongInfo_list, newSongInfo_list)
+        self.songListWidget.updateMultiSongCards(
+            oldSongInfo_list, newSongInfo_list)
         self.playlist = self.songListWidget.playlist
         self.songInfoCardChute.playlist = self.playlist
 
-    def showSmallestModeInterface(self):
+    def __showSmallestPlayInterface(self):
         """ 显示最小播放模式界面 """
-        self.exitFullScreenSig.emit()
-        # 记录下正常尺寸
-        self.currentGeometry = self.window().geometry()  # type:QRect
-        # 更新磨砂半径
-        self.blurCoverThread.setTargetCover(
-            self.blurCoverThread.albumCoverPath, 40, (350, 350)
-        )
-        self.blurCoverThread.start()
-        self.playBar.hide()
-        self.songListWidget.hide()
-        self.songInfoCardChute.hide()
-        self.blurBackgroundPic.show()
-        # 先更新歌曲信息卡再显示界面
-        self.smallestModeInterface.setCurrentIndex(self.currentIndex)
-        self.smallestModeInterface.show()
-        # 发出隐藏标题栏按钮的信号
-        self.smallestModeStateChanged.emit(True)
-        self.window().setMinimumSize(206, 197)
-        self.window().setGeometry(
-            self.currentGeometry.x()
-            + self.currentGeometry.width()
-            - self.currentSmallestModeSize.width(),
-            self.currentGeometry.y(),
-            self.currentSmallestModeSize.width(),
-            self.currentSmallestModeSize.height(),
-        )
+        self.fullScreenChanged.emit(True)
+        self.showSmallestPlayInterfaceSig.emit()
 
-    def __hideSmallestModeInterface(self):
-        """ 隐藏最小播放模式界面 """
-        # 记录下最小播放模式的尺寸
-        self.currentSmallestModeSize = self.window().size()  # type:QSize
-        # 更新磨砂半径
-        self.blurCoverThread.setTargetCover(
-            self.blurCoverThread.albumCoverPath, 6, (450, 450)
-        )
-        self.blurCoverThread.start()
-        self.smallestModeInterface.hide()
-        self.window().setMinimumSize(1030, 850)
-        self.window().setGeometry(self.currentGeometry)
-        # 发出显示标题栏按钮的信号
-        self.smallestModeStateChanged.emit(False)
-        self.blurBackgroundPic.setHidden(self.isPlaylistVisible)
-        self.playBar.show()
-        self.songListWidget.show()
-        self.songInfoCardChute.show()
+    def setRandomPlay(self, isRandomPlay: bool):
+        """ 设置随机播放 """
+        self.playBar.randomPlayButton.setRandomPlay(isRandomPlay)
+
+    def setMute(self, isMute: bool):
+        """ 设置静音 """
+        self.playBar.volumeButton.setMute(isMute)
+        self.playBar.volumeSliderWidget.volumeButton.setMute(isMute)
+
+    def setVolume(self, volume: int):
+        """ 设置音量 """
+        self.playBar.volumeSliderWidget.setVolume(volume)
+
+    def setCurrentTime(self, currentTime: int):
+        """ 设置当前进度条时间 """
+        self.playBar.setCurrentTime(currentTime)
+
+    def setFullScreen(self, isFullScreen: int):
+        """ 更新全屏按钮图标 """
+        self.playBar.FullScreenButton.setFullScreen(isFullScreen)
+
+    def setLoopMode(self, loopMode: QMediaPlaylist.PlaybackMode):
+        """ 设置循环模式 """
+        self.playBar.loopModeButton.setLoopMode(loopMode)
 
     def __connectSignalToSlot(self):
         """ 将信号连接到槽 """
         self.blurCoverThread.blurDone.connect(self.setBlurPixmap)
         # 更新背景封面和下标
         self.songInfoCardChute.currentIndexChanged[int].connect(
-            self.__songInfoCardChuteCurrentChangedSlot
-        )
-        self.songInfoCardChute.currentIndexChanged[str].connect(self.startBlurThread)
+            self.__songInfoCardChuteCurrentChangedSlot)
+        self.songInfoCardChute.currentIndexChanged[str].connect(
+            self.startBlurThread)
         # 显示和隐藏播放栏
         self.songInfoCardChute.showPlayBarSignal.connect(self.showPlayBar)
         self.songInfoCardChute.hidePlayBarSignal.connect(self.hidePlayBar)
         # 将播放栏的信号连接到槽
+        self.playBar.randomPlayButton.randomPlayChanged.connect(
+            self.randomPlayChanged)
+        self.playBar.volumeSliderWidget.muteStateChanged.connect(
+            self.muteStateChanged)
+        self.playBar.volumeSliderWidget.volumeSlider.valueChanged.connect(
+            self.volumeChanged)
+        self.playBar.FullScreenButton.fullScreenChanged.connect(
+            self.fullScreenChanged)
+        self.playBar.progressSlider.sliderMoved.connect(
+            self.progressSliderMoved)
+        self.playBar.progressSlider.clicked.connect(self.progressSliderMoved)
         self.playBar.lastSongButton.clicked.connect(self.lastSongSig)
         self.playBar.nextSongButton.clicked.connect(self.nextSongSig)
         self.playBar.playButton.clicked.connect(self.switchPlayStateSig)
-        self.playBar.pullUpArrowButton.clicked.connect(self.showPlaylistButtonSlot)
-        self.playBar.showPlaylistButton.clicked.connect(self.showPlaylistButtonSlot)
-        self.playBar.smallPlayModeButton.clicked.connect(self.showSmallestModeInterface)
+        self.playBar.loopModeButton.loopModeChanged.connect(
+            self.loopModeChanged)
+        self.playBar.pullUpArrowButton.clicked.connect(
+            self.showPlaylistButtonSlot)
+        self.playBar.showPlaylistButton.clicked.connect(
+            self.showPlaylistButtonSlot)
+        self.playBar.smallPlayModeButton.clicked.connect(
+            self.__showSmallestPlayInterface)
         self.playBar.enterSignal.connect(self.__settleDownPlayBar)
         self.playBar.leaveSignal.connect(self.__startSongInfoCardTimer)
+        self.playBar.moreActionsMenu.clearPlayListAct.triggered.connect(
+            self.clearPlaylistSig)
+        self.playBar.moreActionsMenu.savePlayListAct.triggered.connect(self.savePlaylistSig)
         # 将歌曲列表的信号连接到槽函数
         self.songListWidget.currentIndexChanged.connect(
-            self.__songListWidgetCurrentChangedSlot
-        )
-        self.songListWidget.removeItemSignal.connect(self.__removeSongFromPlaylist)
-        self.randomPlayAllButton.clicked.connect(self.randomPlayAllSignal)
-        # 将最小化播放界面的信号连接到槽函数
-        self.smallestModeInterface.lastSongButton.clicked.connect(self.lastSongSig)
-        self.smallestModeInterface.nextSongButton.clicked.connect(self.nextSongSig)
-        self.smallestModeInterface.playButton.clicked.connect(self.switchPlayStateSig)
-        self.smallestModeInterface.exitSmallestModeButton.clicked.connect(
-            self.__hideSmallestModeInterface
-        )
+            self.__songListWidgetCurrentChangedSlot)
+        self.songListWidget.removeItemSignal.connect(
+            self.__removeSongFromPlaylist)
+        self.randomPlayAllButton.clicked.connect(self.randomPlayAllSig)
         # 切换到专辑界面
         self.songInfoCardChute.switchToAlbumInterfaceSig.connect(
-            self.switchToAlbumInterfaceSig
-        )
+            self.switchToAlbumInterfaceSig)
         self.songListWidget.switchToAlbumInterfaceSig.connect(
-            self.switchToAlbumInterfaceSig
-        )
-
+            self.switchToAlbumInterfaceSig)

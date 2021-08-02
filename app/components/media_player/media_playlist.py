@@ -123,12 +123,12 @@ class MediaPlaylist(QMediaPlaylist):
         if self.currentIndex() == 0:
             if self.playbackMode() == QMediaPlaylist.Loop:
                 self.setCurrentIndex(self.mediaCount() - 1)
-                if not os.path.exists(self.getCurrentSong()["songPath"]):
+                if self.getCurrentSong() and not os.path.exists(self.getCurrentSong()["songPath"]):
                     return
                 self.switchSongSignal.emit(self.getCurrentSong())
         else:
             super().previous()
-            if not os.path.exists(self.getCurrentSong()["songPath"]):
+            if self.getCurrentSong() and not os.path.exists(self.getCurrentSong()["songPath"]):
                 return
             self.switchSongSignal.emit(self.getCurrentSong())
 

@@ -37,12 +37,12 @@ class MoreActionsMenu(AeroMenu):
             self.showPlayListAct = QAction(
                 QIcon("app/resource/images/menu/显示正在播放列表.png"), "显示正在播放列表", self
             )
-            self.fillScreenAct = QAction(
+            self.fullScreenAct = QAction(
                 QIcon("app/resource/images/menu/转到全屏.png"), "转到全屏", self
             )
             self.action_list = [
                 self.showPlayListAct,
-                self.fillScreenAct,
+                self.fullScreenAct,
                 self.savePlayListAct,
                 self.clearPlayListAct,
             ]

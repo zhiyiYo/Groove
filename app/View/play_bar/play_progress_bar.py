@@ -34,7 +34,7 @@ class PlayProgressBar(QWidget):
         self.h_layout.setSpacing(10)
         self.setLayout(self.h_layout)
 
-    def setCurrentTime(self, currentTime):
+    def setCurrentTime(self, currentTime: int):
         """ 更新当前时间标签，currentTime的单位为ms """
         seconds, minutes = self.getSecondMinute(currentTime)
         self.currentTimeLabel.setText(f'{minutes}:{str(seconds).rjust(2,"0")}')

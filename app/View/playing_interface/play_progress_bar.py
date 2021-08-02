@@ -28,8 +28,13 @@ class PlayProgressBar(QWidget):
         self.currentTimeLabel.setObjectName("timeLabel")
         self.totalTimeLabel.setObjectName("timeLabel")
 
-    def setCurrentTime(self, currentTime):
-        """ 更新当前时间标签，currentTime的单位为ms """
+    def setCurrentTime(self, currentTime: int):
+        """ 更新当前时间标签
+
+        Parameters
+        ----------
+        currentTime: int
+            毫秒时间"""
         seconds, minutes = self.getSecondMinute(currentTime)
         self.currentTimeLabel.setText(f'{minutes}:{str(seconds).rjust(2,"0")}')
         self.currentTimeLabel.move(33 - 9 * (len(self.totalTimeLabel.text()) - 4), 9)

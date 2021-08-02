@@ -7,7 +7,8 @@ from PyQt5.QtWidgets import QSlider
 
 class Slider(QSlider):
     """ 可点击的滑动条 """
-    clicked = pyqtSignal()
+
+    clicked = pyqtSignal(int)
 
     def __init__(self, QtOrientation, parent=None):
         super().__init__(QtOrientation, parent=parent)
@@ -20,5 +21,4 @@ class Slider(QSlider):
         else:
             value = int((self.height()-e.pos().y()) / self.height() * self.maximum())
         self.setValue(value)
-        self.clicked.emit()
-
+        self.clicked.emit(self.value())

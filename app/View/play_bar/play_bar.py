@@ -2,8 +2,9 @@
 
 import os
 
-from PyQt5.QtCore import QPoint, Qt
+from PyQt5.QtCore import QPoint, Qt, pyqtSignal
 from PyQt5.QtWidgets import QWidget
+from PyQt5.QtMultimedia import QMediaPlaylist
 
 from app.common.window_effect import WindowEffect
 from app.common.get_dominant_color import DominantColor
@@ -17,6 +18,17 @@ from app.View.play_bar.song_info_card import SongInfoCard
 class PlayBar(QWidget):
     """ 底部播放栏 """
 
+    fullScreenSig = pyqtSignal()
+    savePlaylistSig = pyqtSignal()
+    showPlaylistSig = pyqtSignal()
+    clearPlaylistSig = pyqtSignal()
+    volumeChanged = pyqtSignal(int)
+    muteStateChanged = pyqtSignal(bool)
+    randomPlayChanged = pyqtSignal(bool)
+    progressSliderMoved = pyqtSignal(int)
+    showPlayingInterfaceSig = pyqtSignal()
+    loopModeChanged = pyqtSignal(QMediaPlaylist.PlaybackMode)
+
     def __init__(self, songInfo: dict, parent=None):
         super().__init__(parent)
         self.originWidth = 1280
@@ -28,7 +40,8 @@ class PlayBar(QWidget):
         self.moveTime = 0
         self.resizeTime = 0
         # 实例化小部件
-        self.playProgressBar = PlayProgressBar(songInfo.get("duration", "0:00"), self)
+        self.playProgressBar = PlayProgressBar(
+            songInfo.get("duration", "0:00"), self)
         self.songInfoCard = SongInfoCard(songInfo, self)
         self.centralButtonGroup = CentralButtonGroup(self)
         self.rightWidgetGroup = RightWidgetGroup(self)
@@ -47,8 +60,7 @@ class PlayBar(QWidget):
         # 引用小部件
         self.referenceWidgets()
         # 连接槽函数
-        self.songInfoCard.albumChanged.connect(self.updateDominantColor)
-        self.moreActionsButton.clicked.connect(self.showMoreActionsMenu)
+        self.__connectSignalToSlot()
         # 设置小部件位置
         self.__setWidgetPos()
 
@@ -59,9 +71,9 @@ class PlayBar(QWidget):
             self.centralButtonGroup.height(),
         )
         self.centralButtonGroup.move(
-            int(self.width() / 2 - self.centralButtonGroup.width() / 2), 0
-        )
-        self.rightWidgetGroup.move(self.width() - self.rightWidgetGroup.width(), 0)
+            int(self.width() / 2 - self.centralButtonGroup.width() / 2), 0)
+        self.rightWidgetGroup.move(
+            self.width() - self.rightWidgetGroup.width(), 0)
 
     def updateDominantColor(self, albumPath: str):
         """ 更新主色调 """
@@ -98,18 +110,11 @@ class PlayBar(QWidget):
                 self.__setWidgetPos()
                 if deltaWidth + self.songInfoCard.width() >= self.songInfoCard.MAXWIDTH:
                     self.songInfoCard.setFixedWidth(
-                        min(self.songInfoCard.MAXWIDTH, self.playProgressBar.x() - 20)
-                    )
+                        min(self.songInfoCard.MAXWIDTH, self.playProgressBar.x() - 20))
                 else:
                     self.songInfoCard.setFixedWidth(
-                        min(
-                            self.songInfoCard.width() + deltaWidth,
-                            self.playProgressBar.x() - 20,
-                        )
-                    )
-                self.songInfoCard.scrollTextWindow.maxWidth = (
-                    self.songInfoCard.width() - 155
-                )
+                        min(self.songInfoCard.width() + deltaWidth, self.playProgressBar.x() - 20))
+                self.songInfoCard.scrollTextWindow.maxWidth = self.songInfoCard.width() - 155
                 self.songInfoCard.scrollTextWindow.initFlagsWidth()
             else:
                 self.__setWidgetPos()
@@ -117,7 +122,8 @@ class PlayBar(QWidget):
 
     def showMoreActionsMenu(self):
         """ 显示更多操作菜单 """
-        globalPos = self.rightWidgetGroup.mapToGlobal(self.moreActionsButton.pos())
+        globalPos = self.rightWidgetGroup.mapToGlobal(
+            self.moreActionsButton.pos())
         x = globalPos.x() + self.moreActionsButton.width() + 30
         y = int(globalPos.y() + self.moreActionsButton.height() / 2 - 152 / 2)
         self.moreActionsMenu.exec(QPoint(x, y))
@@ -149,7 +155,38 @@ class PlayBar(QWidget):
         """ 调整歌曲信息卡宽度 """
         if self.songInfoCard.width() + 20 >= self.playProgressBar.x():
             self.songInfoCard.setFixedWidth(self.playProgressBar.x() - 20)
-            self.songInfoCard.scrollTextWindow.maxWidth = (
-                self.songInfoCard.width() - 155
-            )
+            self.songInfoCard.scrollTextWindow.maxWidth = self.songInfoCard.width() - 155
             self.songInfoCard.scrollTextWindow.initFlagsWidth()
+
+    def setRandomPlay(self, isRandomPlay: bool):
+        """ 设置随机播放 """
+        self.randomPlayButton.setRandomPlay(isRandomPlay)
+
+    def setMute(self, isMute: bool):
+        """ 设置静音 """
+        self.volumeButton.setMute(isMute)
+
+    def setVolume(self, volume: int):
+        """ 设置音量 """
+        self.volumeSlider.setValue(volume)
+        self.volumeButton.setVolumeLevel(volume)
+
+    def __connectSignalToSlot(self):
+        """ 信号连接到槽 """
+        self.songInfoCard.albumChanged.connect(self.updateDominantColor)
+        self.moreActionsButton.clicked.connect(self.showMoreActionsMenu)
+        self.volumeSlider.valueChanged.connect(self.volumeChanged)
+        self.songInfoCard.clicked.connect(self.showPlayingInterfaceSig)
+        self.progressSlider.clicked.connect(self.progressSliderMoved)
+        self.progressSlider.sliderMoved.connect(self.progressSliderMoved)
+        self.volumeButton.muteStateChanged.connect(self.muteStateChanged)
+        self.loopModeButton.loopModeChanged.connect(self.loopModeChanged)
+        self.randomPlayButton.randomPlayChanged.connect(self.randomPlayChanged)
+        self.moreActionsMenu.fullScreenAct.triggered.connect(
+            self.fullScreenSig)
+        self.moreActionsMenu.savePlayListAct.triggered.connect(
+            self.savePlaylistSig)
+        self.moreActionsMenu.showPlayListAct.triggered.connect(
+            self.showPlaylistSig)
+        self.moreActionsMenu.clearPlayListAct.triggered.connect(
+            self.clearPlaylistSig)

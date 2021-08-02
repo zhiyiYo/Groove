@@ -2,16 +2,15 @@
 
 from PyQt5.QtCore import Qt, QEvent, pyqtSignal
 from PyQt5.QtGui import QPixmap, QPainter, QBrush, QPen, QColor
-from PyQt5.QtWidgets import QWidget, QGraphicsDropShadowEffect
+from PyQt5.QtWidgets import QWidget
 
-from .play_bar_buttons import BasicCircleButton
+from app.components.buttons.circle_button import CircleButton
 from app.components.slider import Slider
 
 
-class VolumeSlider(QWidget):
+class VolumeSliderWidget(QWidget):
     """ 音量滑动条 """
 
-    # 静音状态改变信号
     muteStateChanged = pyqtSignal(bool)
     volumeLevelChanged = pyqtSignal(int)
 
@@ -30,47 +29,35 @@ class VolumeSlider(QWidget):
         self.volumeSlider.setSingleStep(1)
         self.volumeSlider.setRange(0, 100)
         self.setWindowFlags(
-            Qt.FramelessWindowHint | Qt.Popup | Qt.NoDropShadowWindowHint
-        )
+            Qt.FramelessWindowHint | Qt.Popup | Qt.NoDropShadowWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.__setQss()
-        # self.__setShadowEffect()
         # 信号连接到槽
-        self.volumeButton.muteStateChanged.connect(
-            lambda muteState: self.muteStateChanged.emit(muteState)
-        )
-        self.volumeButton.volumeLevelChanged.connect(
-            lambda volumeLevel: self.volumeLevelChanged.emit(volumeLevel)
-        )
+        self.volumeButton.muteStateChanged.connect(self.muteStateChanged)
+        self.volumeButton.volumeLevelChanged.connect(self.volumeLevelChanged)
         self.volumeSlider.valueChanged.connect(self.volumeButton.setVolumeLevel)
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open(r"app\resource\css\volume_slider.qss", encoding="utf-8") as f:
+        with open("app/resource/css/volume_slider_widget.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
-
-    def __setShadowEffect(self):
-        """ 添加阴影 """
-        self.shadowEffect = QGraphicsDropShadowEffect(self)
-        self.shadowEffect.setBlurRadius(40)
-        self.shadowEffect.setOffset(0, 2)
-        self.setGraphicsEffect(self.shadowEffect)
 
     def paintEvent(self, e):
         """ 绘制背景 """
         painter = QPainter(self)
-        painter.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
+        painter.setRenderHints(QPainter.Antialiasing |
+                               QPainter.SmoothPixmapTransform)
         painter.setPen(QPen(QColor(190, 190, 190, 150)))
         painter.setBrush(QBrush(QColor(227, 227, 227)))
         painter.drawRoundedRect(self.rect(), 8, 8)
 
-    def setValue(self, value):
+    def setVolume(self, volume: int):
         """ 设置音量 """
-        self.volumeSlider.setValue(value)
-        self.volumeButton.setVolumeLevel(value)
+        self.volumeSlider.setValue(volume)
+        self.volumeButton.setVolumeLevel(volume)
 
 
-class VolumeButton(BasicCircleButton):
+class VolumeButton(CircleButton):
     """ 音量按钮 """
 
     # 静音状态改变信号
@@ -121,17 +108,16 @@ class VolumeButton(BasicCircleButton):
             elif e.type() in [QEvent.MouseButtonPress, QEvent.MouseButtonRelease]:
                 self.isPressed = not self.isPressed
                 if e.type() == QEvent.MouseButtonRelease:
-                    self.isMute = not self.isMute
-                    self.setMute(self.isMute)
+                    self.setMute(not self.isMute)
                     self.muteStateChanged.emit(self.isMute)
                 self.update()
         return False
 
-    def setMute(self, isMute):
+    def setMute(self, isMute: bool):
         """ 设置静音 """
+        if self.isMute == isMute:
+            return
         self.isMute = isMute
-        if isMute:
-            self.iconPixmap = self.pixmap_list[-1]
-        else:
-            self.iconPixmap = self.pixmap_list[self.__volumeLevel]
+        index = -1 if isMute else self.__volumeLevel
+        self.iconPixmap = self.pixmap_list[index]
         self.update()

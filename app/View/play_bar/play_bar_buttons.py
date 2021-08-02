@@ -97,6 +97,8 @@ class PlayButton(QToolButton):
 class RandomPlayButton(QToolButton):
     """ 随机播放按钮 """
 
+    randomPlayChanged = pyqtSignal(bool)
+
     def __init__(self, parent=None):
         super().__init__(parent)
         # 设置标志位
@@ -110,6 +112,8 @@ class RandomPlayButton(QToolButton):
 
     def setRandomPlay(self, isRandomPlay: bool):
         """ 设置随机播放状态 """
+        if isRandomPlay == self.isSelected:
+            return
         self.isSelected = isRandomPlay
         self.update()
 
@@ -120,6 +124,7 @@ class RandomPlayButton(QToolButton):
                 self.isSelected = not self.isSelected
                 self.isPressed = False
                 self.update()
+                self.randomPlayChanged.emit(self.isSelected)
                 return False
             if e.type() == QEvent.MouseButtonPress and e.button() == Qt.LeftButton:
                 self.isPressed = True
@@ -230,7 +235,8 @@ class BasicButton(QToolButton):
 
 class LoopModeButton(QToolButton):
     """ 循环播放模式按钮 """
-    loopModeChanged = pyqtSignal(int)
+    
+    loopModeChanged = pyqtSignal(QMediaPlaylist.PlaybackMode)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -249,7 +255,7 @@ class LoopModeButton(QToolButton):
         self.setFixedSize(47, 47)
         self.installEventFilter(self)
 
-    def setLoopMode(self, loopMode):
+    def setLoopMode(self, loopMode: QMediaPlaylist.PlaybackMode):
         """ 设置循环模式 """
         self.loopMode = loopMode
         self.clickedTime = self.__loopMode_list.index(loopMode)
@@ -324,6 +330,7 @@ class LoopModeButton(QToolButton):
 
 class VolumeButton(QToolButton):
     """ 音量按钮 """
+
     muteStateChanged = pyqtSignal(bool)
 
     def __init__(self, parent=None):
@@ -353,8 +360,7 @@ class VolumeButton(QToolButton):
         """ 鼠标松开更新背景 """
         super().mouseReleaseEvent(e)
         self.isPressed = False
-        self.isMute = not self.isMute
-        self.setMute(self.isMute)
+        self.setMute(not self.isMute)
         self.update()
         self.muteStateChanged.emit(self.isMute)
 
@@ -397,15 +403,15 @@ class VolumeButton(QToolButton):
 
     def setMute(self, isMute: bool):
         """ 设置静音状态 """
+        if isMute == self.isMute:
+            return
         self.isMute = isMute
-        if isMute:
-            self.iconPixmap = self.pixmap_list[-1]
-        else:
-            self.iconPixmap = self.pixmap_list[self.currentVolumeLevel]
+        index = -1 if isMute else self.currentVolumeLevel
+        self.iconPixmap = self.pixmap_list[index]
         self.update()
 
     def setVolumeLevel(self, volume):
-        """ 根据音量来设置 """
+        """ 根据音量来设置图标 """
         if volume == 0:
             self.__updateIcon(0)
         elif volume <= 32 and self.currentVolumeLevel != 1:

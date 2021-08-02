@@ -1,87 +1,11 @@
 # coding:utf-8
-
-from PyQt5.QtCore import Qt, QEvent, QTimer, pyqtSignal
-from PyQt5.QtGui import QPainter, QPixmap, QBrush, QColor, QPen
-from PyQt5.QtWidgets import QToolButton
+from app.components.buttons.circle_button import CircleButton
+from PyQt5.QtCore import Qt, QTimer, pyqtSignal
+from PyQt5.QtGui import QBrush, QColor, QPainter, QPen, QPixmap
 from PyQt5.QtMultimedia import QMediaPlaylist
 
 
-class BasicCircleButton(QToolButton):
-    """ 圆形按钮 """
-
-    def __init__(self, iconPath, parent=None, iconSize: tuple = (47, 47), buttonSize: tuple = (47, 47)):
-        super().__init__(parent)
-        self.iconWidth, self.iconHeight = iconSize
-        self.buttonSize_tuple = buttonSize
-        self.iconPath = iconPath
-        self.iconPixmap = QPixmap(iconPath)
-        # 标志位
-        self.isEnter = False
-        self.isPressed = False
-        # 控制绘图位置
-        self._pixPos_list = [(1, 0), (2, 2)]
-        # 初始化
-        self.__initWidget()
-
-    def __initWidget(self):
-        """ 初始化小部件 """
-        self.setAttribute(Qt.WA_TranslucentBackground)
-        self.setFixedSize(self.buttonSize_tuple[0], self.buttonSize_tuple[1])
-        self.setStyleSheet(
-            "QToolButton{border:none;margin:0;background:transparent}")
-        # 安装事件过滤器
-        self.installEventFilter(self)
-
-    def eventFilter(self, obj, e: QEvent):
-        """ 根据鼠标动作更新标志位和图标 """
-        if obj == self:
-            if e.type() == QEvent.Enter:
-                self.isEnter = True
-                self.update()
-                return False
-            elif e.type() == QEvent.Leave:
-                self.isEnter = False
-                self.update()
-                return False
-            elif e.type() in [
-                QEvent.MouseButtonPress,
-                QEvent.MouseButtonDblClick,
-                QEvent.MouseButtonRelease,
-            ]:
-                self.isPressed = not self.isPressed
-                self.update()
-                return False
-        return super().eventFilter(obj, e)
-
-    def paintEvent(self, e):
-        """ 绘制图标 """
-        iconPixmap = self.iconPixmap
-        px, py = self._pixPos_list[0]
-        painter = QPainter(self)
-        painter.setRenderHints(QPainter.Antialiasing |
-                               QPainter.SmoothPixmapTransform)
-        painter.setPen(Qt.NoPen)
-        # 鼠标按下时绘制圆形背景，pressed的优先级比hover的优先级高
-        if self.isPressed:
-            brush = QBrush(QColor(255, 255, 255, 70))
-            painter.setBrush(brush)
-            painter.drawEllipse(0, 0, self.iconWidth, self.iconHeight)
-            iconPixmap = self.iconPixmap.scaled(
-                self.iconPixmap.width() - 4,
-                self.iconPixmap.height() - 4,
-                Qt.KeepAspectRatio,
-                Qt.SmoothTransformation,
-            )
-            px, py = self._pixPos_list[1]
-        # 鼠标进入时更换图标透明度
-        elif self.isEnter:
-            painter.setOpacity(0.5)
-        # 绘制图标
-        painter.drawPixmap(px, py, iconPixmap.width(),
-                           iconPixmap.height(), iconPixmap)
-
-
-class SelectableButton(BasicCircleButton):
+class SelectableButton(CircleButton):
     """ 可选中的按钮 """
 
     def __init__(
@@ -160,22 +84,28 @@ class SelectableButton(BasicCircleButton):
 class RandomPlayButton(SelectableButton):
     """ 随机播放按钮 """
 
-    def __init__(
-        self, iconPath_list: list, parent=None, iconSize=(47, 47), buttonSize=(47, 47)
-    ):
+    randomPlayChanged = pyqtSignal(bool)
+
+    def __init__(self, iconPath_list: list, parent=None, iconSize=(47, 47), buttonSize=(47, 47)):
         super().__init__(iconPath_list, parent, iconSize, buttonSize)
 
     def setRandomPlay(self, isRandomPlay: bool):
         """ 设置随机播放状态 """
+        if self.isSelected == isRandomPlay:
+            return
         self.isSelected = isRandomPlay
         self.clickedTime = int(isRandomPlay)
         self.update()
+
+    def mouseReleaseEvent(self, e):
+        super().mouseReleaseEvent(e)
+        self.randomPlayChanged.emit(self.isSelected)
 
 
 class LoopModeButton(SelectableButton):
     """ 循环模式按钮 """
 
-    loopModeChanged = pyqtSignal(int)
+    loopModeChanged = pyqtSignal(QMediaPlaylist.PlaybackMode)
 
     def __init__(
         self, iconPath_list: list, parent=None, iconSize=(47, 47), buttonSize=(47, 47)
@@ -194,13 +124,13 @@ class LoopModeButton(SelectableButton):
         self.loopMode = self.__loopMode_list[self.clickedTime]
         self.loopModeChanged.emit(self.loopMode)
 
-    def setLoopMode(self, loopMode):
+    def setLoopMode(self, loopMode: QMediaPlaylist.PlaybackMode):
         """ 设置循环模式 """
+        if self.loopMode == loopMode:
+            return
         self.loopMode = loopMode
-        if self.loopMode in [QMediaPlaylist.Loop, QMediaPlaylist.CurrentItemInLoop]:
-            self.isSelected = True
-        else:
-            self.isSelected = False
+        self.isSelected = self.loopMode in [
+            QMediaPlaylist.Loop, QMediaPlaylist.CurrentItemInLoop]
         self.clickedTime = self.__loopMode_list.index(loopMode)
         if self.clickedTime == 2:
             self.iconPixmap = QPixmap(self.iconPath_list[1])
@@ -209,7 +139,7 @@ class LoopModeButton(SelectableButton):
         self.update()
 
 
-class PullUpArrow(BasicCircleButton):
+class PullUpArrow(CircleButton):
     """ 上拉正在播放列表箭头 """
 
     def __init__(self, iconPath, parent=None, iconSize=(27, 27), buttonSize=(27, 27)):
@@ -267,7 +197,7 @@ class PullUpArrow(BasicCircleButton):
         )
 
 
-class TwoStateButton(BasicCircleButton):
+class TwoStateButton(CircleButton):
     """ 两种状态的按钮 """
 
     def __init__(self, iconPath_list, parent=None, isState_1=True):
@@ -287,6 +217,8 @@ class TwoStateButton(BasicCircleButton):
 
     def setState(self, isState_1: bool):
         """ 设置按钮状态 """
+        if self._isState_1 == isState_1:
+            return
         self._isState_1 = isState_1
         self.iconPixmap = self.pixmap_list[self._isState_1]
         self.update()
@@ -314,22 +246,31 @@ class PlayButton(TwoStateButton):
 class FullScreenButton(TwoStateButton):
     """ 转到全屏按钮 """
 
+    fullScreenChanged = pyqtSignal(bool)
+
     def __init__(self, parent=None):
         self.iconPath_list = [
             r"app\resource\images\playing_interface\FullScreen.png",
             r"app\resource\images\playing_interface\BackToWindow.png",
         ]
         super().__init__(self.iconPath_list, parent, False)
-        # 设置暂停标志位
-        self.__isFillScreen = False
+        # 设置全屏标志位
+        self.__isFullScreen = False
 
-    def setFillScreen(self, isFillScreen: bool):
-        """ 设置按钮状态 """
-        self.__isFillScreen = isFillScreen
-        self.setState(self.__isFillScreen)
+    def setFullScreen(self, isFullScreen: bool):
+        """ 设置全屏 """
+        if self.__isFullScreen == isFullScreen:
+            return
+        self.__isFullScreen = isFullScreen
+        self.setState(self.__isFullScreen)
+
+    def mouseReleaseEvent(self, e):
+        super().mouseReleaseEvent(e)
+        self.__isFullScreen = not self.__isFullScreen
+        self.fullScreenChanged.emit(self.__isFullScreen)
 
 
-class VolumeButton(BasicCircleButton):
+class VolumeButton(CircleButton):
     """ 音量按钮 """
 
     def __init__(self, parent=None):
@@ -347,17 +288,17 @@ class VolumeButton(BasicCircleButton):
         self.isMute = False
         self.__volumeLevel = 0
 
-    def setMute(self, isMute):
+    def setMute(self, isMute: bool):
         """ 设置静音 """
+        if self.isMute == isMute:
+            return
         self.isMute = isMute
-        if isMute:
-            self.iconPixmap = self.pixmap_list[-1]
-        else:
-            self.iconPixmap = self.pixmap_list[self.__volumeLevel]
+        index = -1 if isMute else self.__volumeLevel
+        self.iconPixmap = self.pixmap_list[index]
         self.update()
 
-    def setVolumeLevel(self, volume):
-        """ 根据音量来设置 """
+    def setVolumeLevel(self, volume: int):
+        """ 根据音量来设置音量等级 """
         if volume == 0:
             self.updateIcon(0)
         elif 0 < volume <= 32 and self.__volumeLevel != 1:
