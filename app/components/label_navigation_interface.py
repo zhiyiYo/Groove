@@ -53,7 +53,8 @@ class LabelNavigationInterface(QWidget):
             col = i - row * 8
             label.setFixedHeight(50)
             text = label.text()
-            label.clicked.connect(lambda text=text: self.labelClicked.emit(text))
+            label.clicked.connect(
+                lambda text=text: self.labelClicked.emit(text))
             self.gridLayout.addWidget(label, row, col, 1, 1, Qt.AlignCenter)
 
     def setLabels(self, label_list: List[str] = None, layout="letterGridLayout"):
@@ -118,7 +119,7 @@ class LabelNavigationInterface(QWidget):
     def __setQss(self):
         """ 设置层叠样式 """
         with open(
-            r"app\resource\css\labelNavigationInterface.qss", encoding="utf-8"
+            r"app\resource\css\label_navigation_interface.qss", encoding="utf-8"
         ) as f:
             self.setStyleSheet(f.read())
 
@@ -126,7 +127,8 @@ class LabelNavigationInterface(QWidget):
         """ 标签点击信号的槽函数 """
         for label in self.__clickableLabel_list:
             text = label.text()
-            label.clicked.connect(lambda text=text: self.labelClicked.emit(text))
+            label.clicked.connect(
+                lambda text=text: self.labelClicked.emit(text))
 
     @property
     def label_list(self):

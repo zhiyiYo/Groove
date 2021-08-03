@@ -50,7 +50,7 @@ class SongListWidget(ListWidget):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open("app/resource/css/playInterfaceSongCardListWidget.qss", encoding="utf-8") as f:
+        with open("app/resource/css/playing_interface_song_list_widget.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
 
     def resizeEvent(self, e):
@@ -202,7 +202,8 @@ class SongListWidget(ListWidget):
         self.item_list.append(item)
         # 信号连接到槽
         songCard.clicked.connect(self.__emitCurrentChangedSignal)
-        songCard.switchToAlbumInterfaceSig.connect(self.__switchToAlbumInterface)
+        songCard.switchToAlbumInterfaceSig.connect(
+            self.__switchToAlbumInterface)
 
     def __connectSignalToSlot(self):
         """ 将信号连接到槽函数 """
@@ -220,4 +221,3 @@ class SongListWidget(ListWidget):
                 self.songCard_list[self.currentRow()].songer,
             )
         )
-

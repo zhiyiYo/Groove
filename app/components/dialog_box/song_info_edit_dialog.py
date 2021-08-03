@@ -218,7 +218,7 @@ class SongInfoEditDialog(MaskDialogBase):
         self.albumSongerLineEdit.setObjectName("songer")
         self.songPath.setObjectName("songPath")
         self.bottomErrorLabel.setObjectName("bottomErrorLabel")
-        with open("app/resource/css/songInfoEditDialog.qss", encoding="utf-8") as f:
+        with open("app/resource/css/song_info_edit_dialog.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
 
     def saveInfo(self):

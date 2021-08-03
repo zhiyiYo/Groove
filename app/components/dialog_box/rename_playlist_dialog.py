@@ -46,7 +46,7 @@ class RenamePlaylistDialog(MaskDialogBase):
     def __setQss(self):
         """ 设置层叠样式 """
         self.cancelLabel.setObjectName("cancelLabel")
-        with open("app/resource/css/renamePlaylistDialog.qss", encoding="utf-8") as f:
+        with open("app/resource/css/rename_playlist_dialog.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
 
     def __initLayout(self):
@@ -227,5 +227,5 @@ class LineEdit(QLineEdit):
 
     def setQss(self):
         """ 设置层叠样式 """
-        with open("app/resource/css/lineEdit.qss", encoding="utf-8") as f:
+        with open("app/resource/css/line_edit.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())

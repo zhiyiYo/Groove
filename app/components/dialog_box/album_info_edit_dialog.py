@@ -140,7 +140,7 @@ class AlbumInfoEditDialog(MaskDialogBase):
         """ 设置层叠样式表 """
         self.scrollArea.setObjectName("infoEditScrollArea")
         self.editAlbumInfoLabel.setObjectName("editAlbumInfo")
-        with open("app/resource/css/albumInfoEditDialog.qss", encoding="utf-8") as f:
+        with open("app/resource/css/album_info_edit_dialog.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
 
     def __trackNumEmptySlot(self, isShowErrorMsg: bool):

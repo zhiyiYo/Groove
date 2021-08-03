@@ -51,6 +51,7 @@ class SongInfoCard(QWidget):
         self.songNameLabel.installEventFilter(self)
         self.songerAlbumLabel.installEventFilter(self)
         # 信号连接到槽
+
         def slot():
             return self.switchToAlbumInterfaceSig.emit(self.album, self.songerName)
 
@@ -88,7 +89,7 @@ class SongInfoCard(QWidget):
     def __setQss(self):
         """ 设置层叠样式 """
         with open(
-            r"app\resource\css\playInterfaceSongInfoCard.qss", encoding="utf-8"
+            r"app\resource\css\playing_interface_song_info_card.qss", encoding="utf-8"
         ) as f:
             self.setStyleSheet(f.read())
 

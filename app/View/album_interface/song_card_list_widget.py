@@ -64,7 +64,7 @@ class SongCardListWidget(BasicSongListWidget):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open("app/resource/css/albumInterfaceSongListWidget.qss", encoding="utf-8") as f:
+        with open("app/resource/css/album_interface_song_list_widget.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
 
     def updateAllSongCards(self, songInfo_list: list):

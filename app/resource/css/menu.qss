@@ -134,7 +134,6 @@ QMenu#sortModeMenu::item:default:selected {
 
 
 /*单行输入框右击菜单样式*/
-
 QMenu#lineEditMenu {
     /*width: 182px;*/
     width: 1px;

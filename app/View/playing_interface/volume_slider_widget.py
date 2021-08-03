@@ -31,6 +31,7 @@ class VolumeSliderWidget(QWidget):
         self.setWindowFlags(
             Qt.FramelessWindowHint | Qt.Popup | Qt.NoDropShadowWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
+        self.volumeSlider.setObjectName('volumeSlider')
         self.__setQss()
         # 信号连接到槽
         self.volumeButton.muteStateChanged.connect(self.muteStateChanged)

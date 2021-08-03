@@ -132,7 +132,7 @@ class SwitchButton(QWidget):
         self.setAttribute(Qt.WA_StyledBackground)
         self.hBox.setContentsMargins(0, 0, 0, 0)
         # 设置默认样式
-        with open('app/resource/css/switchButton.qss', encoding='utf-8') as f:
+        with open('app/resource/css/switch_button.qss', encoding='utf-8') as f:
             self.setStyleSheet(f.read())
         # 信号连接到槽
         self.indicator.checkedChanged.connect(self.checkedChanged)

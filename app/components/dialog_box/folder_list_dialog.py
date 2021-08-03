@@ -92,7 +92,7 @@ class FolderListDialog(MaskDialogBase):
         self.titleLabel.setObjectName('titleLabel')
         self.contentLabel.setObjectName('contentLabel')
         self.completeButton.setObjectName('completeButton')
-        with open('app/resource/css/folderListDialog.qss', encoding='utf-8') as f:
+        with open('app/resource/css/folder_list_dialog.qss', encoding='utf-8') as f:
             self.setStyleSheet(f.read())
 
     def __onButtonClicked(self):
@@ -170,7 +170,8 @@ class FolderCard(ClickableWindow):
         super().__init__(parent)
         self.folderPath = folderPath
         self.folderName = os.path.basename(folderPath)
-        self.__closeIcon = QPixmap("app/resource/images/setting_interface/黑色叉号.png")
+        self.__closeIcon = QPixmap(
+            "app/resource/images/setting_interface/黑色叉号.png")
 
     def paintEvent(self, e):
         """ 绘制背景 """
@@ -210,7 +211,8 @@ class AddFolderCard(ClickableWindow):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.__iconPix = QPixmap("app/resource/images/setting_interface/黑色加号.png")
+        self.__iconPix = QPixmap(
+            "app/resource/images/setting_interface/黑色加号.png")
 
     def paintEvent(self, e):
         """ 绘制背景 """

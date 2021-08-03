@@ -21,7 +21,7 @@ class PlayingInterface(QWidget):
     lastSongSig = pyqtSignal()
     randomPlayAllSig = pyqtSignal()          # 创建新的无序播放列表
     randomPlayChanged = pyqtSignal(bool)     # 随机播放当前播放列表
-    switchPlayStateSig = pyqtSignal()
+    togglePlayStateSig = pyqtSignal()
     removeMediaSignal = pyqtSignal(int)
     muteStateChanged = pyqtSignal(bool)
     volumeChanged = pyqtSignal(int)
@@ -29,7 +29,7 @@ class PlayingInterface(QWidget):
     fullScreenChanged = pyqtSignal(bool)
     loopModeChanged = pyqtSignal(QMediaPlaylist.PlaybackMode)
     clearPlaylistSig = pyqtSignal()
-    savePlaylistSig=pyqtSignal()
+    savePlaylistSig = pyqtSignal()
     # 点击歌曲卡或者滑动歌曲信息卡滑槽时直接设置新的index，index由自己决定
     currentIndexChanged = pyqtSignal(int)
     switchToAlbumInterfaceSig = pyqtSignal(str, str)
@@ -109,7 +109,7 @@ class PlayingInterface(QWidget):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open(r"app\resource\css\playInterface.qss", encoding="utf-8") as f:
+        with open(r"app\resource\css\playing_interface.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
 
     def setBlurPixmap(self, blurPixmap):
@@ -454,7 +454,7 @@ class PlayingInterface(QWidget):
         self.playBar.progressSlider.clicked.connect(self.progressSliderMoved)
         self.playBar.lastSongButton.clicked.connect(self.lastSongSig)
         self.playBar.nextSongButton.clicked.connect(self.nextSongSig)
-        self.playBar.playButton.clicked.connect(self.switchPlayStateSig)
+        self.playBar.playButton.clicked.connect(self.togglePlayStateSig)
         self.playBar.loopModeButton.loopModeChanged.connect(
             self.loopModeChanged)
         self.playBar.pullUpArrowButton.clicked.connect(
@@ -467,7 +467,8 @@ class PlayingInterface(QWidget):
         self.playBar.leaveSignal.connect(self.__startSongInfoCardTimer)
         self.playBar.moreActionsMenu.clearPlayListAct.triggered.connect(
             self.clearPlaylistSig)
-        self.playBar.moreActionsMenu.savePlayListAct.triggered.connect(self.savePlaylistSig)
+        self.playBar.moreActionsMenu.savePlayListAct.triggered.connect(
+            self.savePlaylistSig)
         # 将歌曲列表的信号连接到槽函数
         self.songListWidget.currentIndexChanged.connect(
             self.__songListWidgetCurrentChangedSlot)

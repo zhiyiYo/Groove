@@ -90,7 +90,8 @@ class AlbumCardViewer(QWidget):
     def __createGuideLabel(self):
         """ 创建导航标签 """
         self.guideLabel = QLabel("这里没有可显示的内容。请尝试其他筛选器。", self)
-        self.guideLabel.setStyleSheet("color: black; font: 25px 'Microsoft YaHei'")
+        self.guideLabel.setStyleSheet(
+            "color: black; font: 25px 'Microsoft YaHei'")
         self.guideLabel.resize(500, 26)
         self.guideLabel.move(35, 286)
 
@@ -133,15 +134,21 @@ class AlbumCardViewer(QWidget):
         albumCard.saveAlbumInfoSig.connect(self.__saveAlbumInfoSlot)
         albumCard.deleteCardSig.connect(self.showDeleteOneCardPanel)
         albumCard.addToPlayingSignal.connect(self.addAlbumToPlayingSignal)
-        albumCard.switchToAlbumInterfaceSig.connect(self.switchToAlbumInterfaceSig)
-        albumCard.checkedStateChanged.connect(self.__albumCardCheckedStateChangedSlot)
-        albumCard.showBlurAlbumBackgroundSig.connect(self.__showBlurAlbumBackground)
-        albumCard.hideBlurAlbumBackgroundSig.connect(self.albumBlurBackground.hide)
-        albumCard.addAlbumToCustomPlaylistSig.connect(self.addAlbumToCustomPlaylistSig)
+        albumCard.switchToAlbumInterfaceSig.connect(
+            self.switchToAlbumInterfaceSig)
+        albumCard.checkedStateChanged.connect(
+            self.__albumCardCheckedStateChangedSlot)
+        albumCard.showBlurAlbumBackgroundSig.connect(
+            self.__showBlurAlbumBackground)
+        albumCard.hideBlurAlbumBackgroundSig.connect(
+            self.albumBlurBackground.hide)
+        albumCard.addAlbumToCustomPlaylistSig.connect(
+            self.addAlbumToCustomPlaylistSig)
         albumCard.addAlbumToNewCustomPlaylistSig.connect(
             self.addAlbumToNewCustomPlaylistSig
         )
-        albumCard.showAlbumInfoEditPanelSig.connect(self.__showAlbumInfoEditPanelSlot)
+        albumCard.showAlbumInfoEditPanelSig.connect(
+            self.__showAlbumInfoEditPanelSlot)
 
     def __connectSignalToSlot(self):
         """ 将信号连接到槽函数 """
@@ -208,7 +215,8 @@ class AlbumCardViewer(QWidget):
         for currentGroup_dict in self.currentGroupDict_list:
             # 将专辑卡从每个网格布局中移除
             currentGroup_dict["gridLayout"].removeAllWidgets()
-            self.scrollWidgetVBoxLayout.removeWidget(currentGroup_dict["container"])
+            self.scrollWidgetVBoxLayout.removeWidget(
+                currentGroup_dict["container"])
             currentGroup_dict["container"].deleteLater()
             currentGroup_dict["gridLayout"].deleteLater()
         self.currentGroupDict_list = []
@@ -226,7 +234,8 @@ class AlbumCardViewer(QWidget):
             for index, albumCard in enumerate(currentGroup_dict["albumCard_list"]):
                 row = index // self.columnNum
                 column = index - row * self.columnNum
-                currentGroup_dict["gridLayout"].addWidget(albumCard, row, column)
+                currentGroup_dict["gridLayout"].addWidget(
+                    albumCard, row, column)
             currentGroup_dict["gridLayout"].setAlignment(Qt.AlignLeft)
 
     def sortByAddTime(self):
@@ -270,7 +279,8 @@ class AlbumCardViewer(QWidget):
         for albumCard_dict in self.albumCardDict_list:
             # 获取专辑卡的专辑名首字母(有可能不是字母)
             firstLetter = albumCard_dict["firstLetter"]
-            firstLetter = firstLetter if 65 <= ord(firstLetter) <= 90 else "..."
+            firstLetter = firstLetter if 65 <= ord(
+                firstLetter) <= 90 else "..."
             # 如果首字母属于不在列表中就将创建分组(仅限于A-Z和...)
             if firstLetter not in firstLetter_list:
                 # firstLetter_list的首字母顺序和firsetLetterGroupDict_list保持一致
@@ -295,7 +305,8 @@ class AlbumCardViewer(QWidget):
                 albumCard_dict["albumCard"]
             )
         # 排序列表
-        self.firsetLetterGroupDict_list.sort(key=lambda item: item["firstLetter"])
+        self.firsetLetterGroupDict_list.sort(
+            key=lambda item: item["firstLetter"])
         # 将...分组移到最后
         if "..." in firstLetter_list:
             unique_group = self.firsetLetterGroupDict_list.pop(0)
@@ -349,7 +360,8 @@ class AlbumCardViewer(QWidget):
             )
         # 按照年份从进到远排序
         self.groupTitle_list.sort(reverse=True)
-        self.yearGroupDict_list.sort(key=lambda item: item["year"], reverse=True)
+        self.yearGroupDict_list.sort(
+            key=lambda item: item["year"], reverse=True)
         # 检测是否含有未知分组,有的话将其移到最后一个
         if "未知" in year_list:
             unique_group = self.yearGroupDict_list.pop(0)
@@ -409,7 +421,7 @@ class AlbumCardViewer(QWidget):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open("app/resource/css/albumCardViewer.qss", encoding="utf-8") as f:
+        with open("app/resource/css/album_card_viewer.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
 
     def findAlbumCardByAlbumInfo(self, albumInfo: dict) -> AlbumCard:
@@ -428,11 +440,14 @@ class AlbumCardViewer(QWidget):
         # 如果专辑信息不在选中的专辑信息列表中且对应的专辑卡变为选中状态就将专辑信息添加到列表中
         if albumCard not in self.checkedAlbumCard_list and isChecked:
             self.checkedAlbumCard_list.append(albumCard)
-            self.checkedAlbumCardNumChanged.emit(len(self.checkedAlbumCard_list))
+            self.checkedAlbumCardNumChanged.emit(
+                len(self.checkedAlbumCard_list))
         # 如果专辑信息已经在列表中且该专辑卡变为非选中状态就弹出该专辑信息
         elif albumCard in self.checkedAlbumCard_list and not isChecked:
-            self.checkedAlbumCard_list.pop(self.checkedAlbumCard_list.index(albumCard))
-            self.checkedAlbumCardNumChanged.emit(len(self.checkedAlbumCard_list))
+            self.checkedAlbumCard_list.pop(
+                self.checkedAlbumCard_list.index(albumCard))
+            self.checkedAlbumCardNumChanged.emit(
+                len(self.checkedAlbumCard_list))
         # 如果先前不处于选择模式那么这次发生选中状态改变就进入选择模式
         if not self.isInSelectionMode:
             # 所有专辑卡进入选择模式
@@ -506,7 +521,8 @@ class AlbumCardViewer(QWidget):
 
     def updateAllAlbumCards(self, albumInfo_list: list):
         """ 更新所有专辑卡 """
-        oldAlbumInfo_list = [albumCard.albumInfo for albumCard in self.albumCard_list]
+        oldAlbumInfo_list = [
+            albumCard.albumInfo for albumCard in self.albumCard_list]
         if albumInfo_list == oldAlbumInfo_list:
             return
         # 将专辑卡从布局中移除
@@ -573,21 +589,21 @@ class AlbumCardViewer(QWidget):
         """ 显示删除一个专辑卡的对话框 """
         title = "是否确定要删除此项？"
         content = f"""如果删除"{albumInfo['album']}"，它将不再位于此设备上。"""
-        deleteCardPanel = DeleteCardDialog(title, content, self.window())
-        deleteCardPanel.deleteCardSig.connect(
+        w = DeleteCardDialog(title, content, self.window())
+        w.deleteCardSig.connect(
             lambda: self.__deleteAlbumCards([albumInfo])
         )
-        deleteCardPanel.exec_()
+        w.exec_()
 
     def showDeleteMultiAlbumCardPanel(self, albumInfo_list: list):
         """ 显示删除多个专辑卡的对话框 """
         title = "确定要删除这些项？"
         content = "如果你删除这些专辑，它们将不再位于此设备上。"
-        deleteCardPanel = DeleteCardDialog(title, content, self.window())
-        deleteCardPanel.deleteCardSig.connect(
+        w = DeleteCardDialog(title, content, self.window())
+        w.deleteCardSig.connect(
             lambda: self.__deleteAlbumCards(albumInfo_list)
         )
-        deleteCardPanel.exec()
+        w.exec()
 
     def __deleteAlbumCards(self, albumInfo_list: list):
         """ 删除一个专辑卡 """
@@ -624,7 +640,8 @@ class AlbumCardViewer(QWidget):
 
     def __showAlbumInfoEditPanelSlot(self, albumInfoEditPanel):
         """ 显示专辑信息编辑界面信号 """
-        self.saveAlbumInfoObject.saveErrorSig.connect(albumInfoEditPanel.saveErrorSlot)
+        self.saveAlbumInfoObject.saveErrorSig.connect(
+            albumInfoEditPanel.saveErrorSlot)
         self.saveAlbumInfoObject.saveCompleteSig.connect(
             albumInfoEditPanel.saveCompleteSlot
         )
@@ -638,6 +655,7 @@ class AlbumCardViewer(QWidget):
         self.albumSonger2AlbumCard_dict[
             newAlbumInfo["album"] + "." + newAlbumInfo["songer"]
         ] = self.sender()
-        self.saveAlbumInfoObject.saveAlbumInfoSlot(newAlbumInfo["songInfo_list"])
+        self.saveAlbumInfoObject.saveAlbumInfoSlot(
+            newAlbumInfo["songInfo_list"])
         self.saveAlbumInfoSig.emit(oldAlbumInfo, newAlbumInfo)
         # self.saveAlbumInfoObject.disconnect()

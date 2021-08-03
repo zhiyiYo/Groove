@@ -25,6 +25,7 @@ class PlaylistCardInterface(QWidget):
     """ 播放列表卡界面 """
 
     playSig = pyqtSignal(list)
+    createPlaylistSig = pyqtSignal()
     nextToPlaySig = pyqtSignal(list)
     deletePlaylistSig = pyqtSignal(dict)
     renamePlaylistSig = pyqtSignal(dict, dict)
@@ -102,12 +103,10 @@ class PlaylistCardInterface(QWidget):
         playlistCard = PlaylistCard(playlist, self)
         self.playlistCard_list.append(playlistCard)
         self.playlistCardDict_list.append(
-            {"playlistCard": playlistCard, "playlist": playlist}
-        )
+            {"playlistCard": playlistCard, "playlist": playlist})
         # 创建动画
         hideCheckBoxAni = QPropertyAnimation(
-            playlistCard.checkBoxOpacityEffect, b"opacity"
-        )
+            playlistCard.checkBoxOpacityEffect, b"opacity")
         self.hideCheckBoxAniGroup.addAnimation(hideCheckBoxAni)
         self.hideCheckBoxAni_list.append(hideCheckBoxAni)
         # 信号连接到槽
@@ -117,8 +116,7 @@ class PlaylistCardInterface(QWidget):
         playlistCard.deleteCardSig.connect(self.__showDeleteCardPanel)
         playlistCard.playSig.connect(self.playSig)
         playlistCard.checkedStateChanged.connect(
-            self.__playlistCardCheckedStateChangedSlot
-        )
+            self.__playlistCardCheckedStateChangedSlot)
         playlistCard.nextToPlaySig.connect(self.nextToPlaySig)
 
     def __initWidget(self):
@@ -150,7 +148,7 @@ class PlaylistCardInterface(QWidget):
         self.playlistLabel.move(30, 54)
         self.sortModeLabel.move(190, 135)
         self.sortModeButton.move(264, 130)
-        self.createPlaylistButton.move(30, 135)
+        self.createPlaylistButton.move(30, 130)
         self.selectionModeBar.move(
             0, self.height() - self.selectionModeBar.height())
         # 设置布局的间距和外边距
@@ -167,7 +165,7 @@ class PlaylistCardInterface(QWidget):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open(r"app\resource\css\playlistCardInterface.qss", encoding="utf-8") as f:
+        with open(r"app\resource\css\playlist_card_interface.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
 
     def resizeEvent(self, e):
@@ -378,11 +376,11 @@ class PlaylistCardInterface(QWidget):
         playlistCard = self.sender() if not playlistCard else playlistCard
         title = "是否确定要删除此项？"
         content = f"""如果删除"{playlist['playlistName']}"，它将不再位于此设备上。"""
-        deleteCardPanel = DeleteCardDialog(title, content, self.window())
-        deleteCardPanel.deleteCardSig.connect(
+        w = DeleteCardDialog(title, content, self.window())
+        w.deleteCardSig.connect(
             lambda: self.__deleteOnePlaylistCard(playlistCard, playlist)
         )
-        deleteCardPanel.exec()
+        w.exec()
 
     def __deleteOnePlaylistCard(self, playlistCard: PlaylistCard, playlist: dict):
         """ 删除一个播放列表卡 """
@@ -445,12 +443,10 @@ class PlaylistCardInterface(QWidget):
             # 取消所有歌曲卡的选中
             self.__unCheckPlaylistCards()
             # 显示删除对话框
-            deleteCardPanel = DeleteCardDialog(title, content, self.window())
-            deleteCardPanel.deleteCardSig.connect(
-                lambda: self.__deleteMultiPlaylistCards(
-                    playlistCard_list, playlists)
-            )
-            deleteCardPanel.exec()
+            w = DeleteCardDialog(title, content, self.window())
+            w.deleteCardSig.connect(
+                lambda: self.__deleteMultiPlaylistCards(playlistCard_list, playlists))
+            w.exec()
 
     def addSongsToPlaylist(self, playlistName: str, songInfo_list: list) -> dict:
         """ 将歌曲添加到播放列表中，返回修改后的播放列表 """
@@ -503,11 +499,9 @@ class PlaylistCardInterface(QWidget):
         self.selectionModeBar.playButton.clicked.connect(
             self.__emitCheckedPlaylists)
         self.selectionModeBar.nextToPlayButton.clicked.connect(
-            self.__emitCheckedPlaylists
-        )
+            self.__emitCheckedPlaylists)
         self.selectionModeBar.renameButton.clicked.connect(
-            self.__selectionBarRenameButtonSlot
-        )
+            self.__selectionBarRenameButtonSlot)
         self.selectionModeBar.deleteButton.clicked.connect(
-            self.__selectionModeBarDeleteButtonSlot
-        )
+            self.__selectionModeBarDeleteButtonSlot)
+        self.createPlaylistButton.clicked.connect(self.createPlaylistSig)

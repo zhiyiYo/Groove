@@ -18,7 +18,10 @@ from app.View.play_bar.song_info_card import SongInfoCard
 class PlayBar(QWidget):
     """ 底部播放栏 """
 
+    nextSongSig = pyqtSignal()
+    lastSongSig = pyqtSignal()
     fullScreenSig = pyqtSignal()
+    togglePlayState = pyqtSignal()
     savePlaylistSig = pyqtSignal()
     showPlaylistSig = pyqtSignal()
     clearPlaylistSig = pyqtSignal()
@@ -27,6 +30,7 @@ class PlayBar(QWidget):
     randomPlayChanged = pyqtSignal(bool)
     progressSliderMoved = pyqtSignal(int)
     showPlayingInterfaceSig = pyqtSignal()
+    showSmallestPlayInterfaceSig = pyqtSignal()
     loopModeChanged = pyqtSignal(QMediaPlaylist.PlaybackMode)
 
     def __init__(self, songInfo: dict, parent=None):
@@ -87,7 +91,7 @@ class PlayBar(QWidget):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open(r"app\resource\css\playBar.qss", encoding="utf-8") as f:
+        with open(r"app\resource\css\play_bar.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
 
     def resizeEvent(self, e):
@@ -173,15 +177,20 @@ class PlayBar(QWidget):
 
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
+        self.playButton.clicked.connect(self.togglePlayState)
+        self.nextSongButton.clicked.connect(self.nextSongSig)
+        self.lastSongButton.clicked.connect(self.lastSongSig)
+        self.volumeSlider.valueChanged.connect(self.volumeChanged)
+        self.progressSlider.clicked.connect(self.progressSliderMoved)
+        self.songInfoCard.clicked.connect(self.showPlayingInterfaceSig)
         self.songInfoCard.albumChanged.connect(self.updateDominantColor)
         self.moreActionsButton.clicked.connect(self.showMoreActionsMenu)
-        self.volumeSlider.valueChanged.connect(self.volumeChanged)
-        self.songInfoCard.clicked.connect(self.showPlayingInterfaceSig)
-        self.progressSlider.clicked.connect(self.progressSliderMoved)
         self.progressSlider.sliderMoved.connect(self.progressSliderMoved)
         self.volumeButton.muteStateChanged.connect(self.muteStateChanged)
         self.loopModeButton.loopModeChanged.connect(self.loopModeChanged)
         self.randomPlayButton.randomPlayChanged.connect(self.randomPlayChanged)
+        self.smallPlayModeButton.clicked.connect(
+            self.showSmallestPlayInterfaceSig)
         self.moreActionsMenu.fullScreenAct.triggered.connect(
             self.fullScreenSig)
         self.moreActionsMenu.savePlayListAct.triggered.connect(

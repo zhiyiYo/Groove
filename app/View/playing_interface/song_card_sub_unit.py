@@ -96,8 +96,7 @@ class SongNameCard(QWidget):
         self.resize(390, 60)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.playingLabel.setPixmap(
-            QPixmap(r"app\resource\images\playing_interface\正在播放_16_16.png")
-        )
+            QPixmap(r"app\resource\images\playing_interface\正在播放_16_16.png"))
         # 隐藏小部件
         self.checkBox.hide()
         self.playingLabel.hide()
@@ -109,7 +108,6 @@ class SongNameCard(QWidget):
         # 计算歌名的长度
         self.__getSongNameWidth()
         self.__initLayout()
-        # self.__setQss()
 
     def __initLayout(self):
         """ 初始化布局 """
@@ -122,11 +120,6 @@ class SongNameCard(QWidget):
         """ 计算歌名的长度 """
         fontMetrics = QFontMetrics(QFont("Microsoft YaHei", 9))
         self.songNameWidth = sum([fontMetrics.width(i) for i in self.songName])
-
-    def __setQss(self):
-        """ 初始化样式 """
-        with open(r"app\resource\css\playInterfaceSongCard.qss", encoding="utf-8") as f:
-            self.setStyleSheet(f.read())
 
     def setPlay(self, isPlay: bool):
         """ 设置播放状态并移动小部件 """

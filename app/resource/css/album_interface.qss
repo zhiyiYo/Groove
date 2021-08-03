@@ -10,4 +10,3 @@ QLabel#yearTconLabel {
     font: 9pt 'Microsoft YaHei';
     /*font: 15px 'Microsoft YaHei';*/
 }
-

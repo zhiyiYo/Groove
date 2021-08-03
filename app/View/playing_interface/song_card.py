@@ -70,7 +70,6 @@ class SongCard(QWidget):
         self.albumLabel.setObjectName("clickableLabel")
         self.songerLabel.setObjectName("clickableLabel")
         self.setDynamicProperty(self.__currentState)
-        # self.__setQss()
         # 安装事件过滤器
         self.installEventFilter(self)
         # 信号连接到槽
@@ -80,11 +79,6 @@ class SongCard(QWidget):
                 self.albumLabel.text(), self.songerLabel.text()
             )
         )
-
-    def __setQss(self):
-        """ 设置层叠样式 """
-        with open(r"app\resource\css\playInterfaceSongCard.qss", encoding="utf-8") as f:
-            self.setStyleSheet(f.read())
 
     def __getLabelWidth(self):
         """ 计算标签的长度 """

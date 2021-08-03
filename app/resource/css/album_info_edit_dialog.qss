@@ -3,6 +3,10 @@ QWidget#centerWidget {
     border: 1px solid rgb(0, 153, 188);
 }
 
+QWidget{
+    background-color: white;
+}
+
 /*标签*/
 QLabel {
     font: 18px 'Microsoft YaHei';
@@ -18,7 +22,7 @@ QLabel#editAlbumInfo {
     font: 21px 'Microsoft YaHei';
 }
 
-QLabel#bottomErrorLabel{
+QLabel#bottomErrorLabel {
     color: rgb(197, 5, 0);
 }
 
@@ -28,9 +32,10 @@ QLineEdit {
     padding: 8px 13px 7px 13px;
     font: 17px 'Microsoft YaHei';
     selection-background-color: rgb(0, 153, 188);
+    border: 1px solid rgb(102, 102, 102);
 }
 
-QLineEdit[hasClearBt='false']{
+QLineEdit[hasClearBt='false'] {
     padding: 8px 13px 8px 12px;
 }
 
@@ -42,7 +47,7 @@ QLineEdit[hasText='false'] {
     border: 1px solid rgb(197, 5, 0);
 }
 
-QLineEdit:disabled{
+QLineEdit:disabled {
     color: rgb(122, 122, 122);
     border: none;
     background-color: rgb(204, 204, 204);
@@ -60,8 +65,8 @@ QPushButton {
     height: 40px;
 }
 
-QPushButton:pressed:hover{
-    background-color: rgb(153,153,153);
+QPushButton:pressed:hover {
+    background-color: rgb(153, 153, 153);
 }
 
 QPushButton:hover {
@@ -69,11 +74,15 @@ QPushButton:hover {
 }
 
 QToolButton {
-    border:none;
+    border: none;
     background: transparent;
-    margin:0px;
+    margin: 0px;
 }
 
+
+QScrollArea{
+    background-color: white;
+}
 
 
 /*滚动条*/
@@ -98,7 +107,7 @@ QScrollBar::handle {
     border-radius: 1px;
 }
 
-QScrollArea{
+QScrollArea {
     background: transparent;
-    border:none;
+    border: none;
 }

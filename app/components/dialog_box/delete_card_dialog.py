@@ -60,5 +60,5 @@ class DeleteCardDialog(MaskDialogBase):
         self.windowMask.setObjectName('windowMask')
         self.titleLabel.setObjectName('titleLabel')
         self.contentLabel.setObjectName('contentLabel')
-        with open('app/resource/css/deleteCardDialog.qss', encoding='utf-8') as f:
+        with open('app/resource/css/delete_card_dialog.qss', encoding='utf-8') as f:
             self.setStyleSheet(f.read())

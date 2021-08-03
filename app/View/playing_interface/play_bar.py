@@ -1,12 +1,12 @@
 # coding:utf-8
+from app.components.slider import Slider
 from app.components.buttons.circle_button import CircleButton
 from app.View.play_bar.more_actions_menu import MoreActionsMenu
 from PyQt5.QtCore import QPoint, Qt, pyqtSignal
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget, QLabel
 
 from .play_bar_buttons import (FullScreenButton, LoopModeButton, PlayButton,
                                PullUpArrow, RandomPlayButton, VolumeButton)
-from .play_progress_bar import PlayProgressBar
 from .volume_slider_widget import VolumeSliderWidget
 
 
@@ -145,3 +145,55 @@ class PlayBar(QWidget):
         self.volumeSliderWidget.volumeLevelChanged.connect(self.volumeButton.updateIcon)
         for widget in self.__widget_list:
             widget.clicked.connect(self.volumeSliderWidget.hide)
+
+
+class PlayProgressBar(QWidget):
+    """ 歌曲播放进度条 """
+
+    def __init__(self, duration: str = "0:00", parent=None):
+        super().__init__(parent)
+        # 创建两个标签和一个进度条
+        self.progressSlider = Slider(Qt.Horizontal, self)
+        self.currentTimeLabel = QLabel("0:00", self)
+        self.totalTimeLabel = QLabel(duration, self)
+        # 初始化界面
+        self.__initWidget()
+
+    def __initWidget(self):
+        """ 初始化小部件 """
+        self.setFixedHeight(38)
+        self.progressSlider.move(73, 0)
+        self.currentTimeLabel.move(33, 9)
+        self.progressSlider.setObjectName("progressSlider")
+        self.currentTimeLabel.setObjectName("timeLabel")
+        self.totalTimeLabel.setObjectName("timeLabel")
+
+    def setCurrentTime(self, currentTime: int):
+        """ 更新当前时间标签
+
+        Parameters
+        ----------
+        currentTime: int
+            毫秒时间"""
+        seconds, minutes = self.getSecondMinute(currentTime)
+        self.currentTimeLabel.setText(f'{minutes}:{str(seconds).rjust(2,"0")}')
+        self.currentTimeLabel.move(
+            33 - 9 * (len(self.totalTimeLabel.text()) - 4), 9)
+
+    def setTotalTime(self, totalTime):
+        """ 更新总时长标签，totalTime的单位为ms """
+        seconds, minutes = self.getSecondMinute(totalTime)
+        self.totalTimeLabel.setText(f'{minutes}:{str(seconds).rjust(2,"0")}')
+
+    def getSecondMinute(self, time):
+        """ 将毫秒转换为分和秒 """
+        seconds = int(time / 1000)
+        minutes = seconds // 60
+        seconds -= minutes * 60
+        return seconds, minutes
+
+    def resizeEvent(self, e):
+        """ 改变尺寸时拉伸进度条 """
+        self.progressSlider.resize(self.width() - 146, 38)
+        self.totalTimeLabel.move(self.width() - 57, 10)
+        super().resizeEvent(e)

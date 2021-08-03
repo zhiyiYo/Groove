@@ -105,5 +105,5 @@ class ToolBar(QWidget):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open(r"app\resource\css\myMusicInterfaceToolBar.qss", encoding="utf-8") as f:
+        with open(r"app\resource\css\my_music_interface_toolBar.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())

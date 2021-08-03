@@ -145,17 +145,20 @@ class SongPropertyDialog(MaskDialogBase):
             # 后面的所有标签向下平移25px
             for label in self.label_list_2:
                 label.move(label.geometry().x(), label.geometry().y() + 25)
-            self.widget.setFixedSize(self.widget.width(), self.widget.height() + 25)
+            self.widget.setFixedSize(
+                self.widget.width(), self.widget.height() + 25)
         if isAlbumNameWrap or isAlbumSongerWrap:
             self.albumName.setText(newAlbumName)
             self.albumSonger.setText(newAlbumSonger)
             # 后面的所有标签向下平移25px
             for label in self.label_list_2[8:]:
                 label.move(label.geometry().x(), label.geometry().y() + 25)
-            self.widget.setFixedSize(self.widget.width(), self.widget.height() + 25)
+            self.widget.setFixedSize(
+                self.widget.width(), self.widget.height() + 25)
         if isSongPathWrap:
             self.songPath.setText(newSongPath)
-            self.widget.setFixedSize(self.widget.width(), self.widget.height() + 25)
+            self.widget.setFixedSize(
+                self.widget.width(), self.widget.height() + 25)
 
     def setQss(self):
         """ 设置层叠样式表 """
@@ -165,5 +168,5 @@ class SongPropertyDialog(MaskDialogBase):
         self.songPath.setObjectName("songPath")
         self.albumSonger.setObjectName("songer")
         self.propertyLabel.setObjectName("propertyLabel")
-        with open("app/resource/css/songPropertyDialog.qss",  encoding="utf-8") as f:
+        with open("app/resource/css/song_property_dialog.qss",  encoding="utf-8") as f:
             self.setStyleSheet(f.read())

@@ -73,7 +73,7 @@ class StateTooltip(QWidget):
         """ 设置层叠样式 """
         self.titleLabel.setObjectName("titleLabel")
         self.contentLabel.setObjectName("contentLabel")
-        with open("app/resource/css/stateTooltip.qss", encoding="utf-8") as f:
+        with open("app/resource/css/state_tooltip.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
 
     def setTitle(self, title: str):
@@ -99,7 +99,7 @@ class StateTooltip(QWidget):
     def __onCloseButtonClicked(self):
         """ 关闭按钮点击槽函数 """
         self.closedSignal.emit()
-        self.hide() # 只隐藏，不删除
+        self.hide()  # 只隐藏，不删除
 
     def __slowlyClose(self):
         """ 缓慢关闭窗口 """

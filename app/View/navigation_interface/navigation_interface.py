@@ -17,7 +17,7 @@ class NavigationInterface(QWidget):
     displayModeChanged = pyqtSignal(int)
     switchInterfaceSig = pyqtSignal(int)
     showPlayingInterfaceSig = pyqtSignal()
-    showCreatePlaylistPanelSig = pyqtSignal()
+    showCreatePlaylistDialogSig = pyqtSignal()
     switchToSettingInterfaceSig = pyqtSignal()
     switchToMyMusicInterfaceSig = pyqtSignal()
     switchToPlaylistCardInterfaceSig = pyqtSignal()
@@ -83,7 +83,7 @@ class NavigationInterface(QWidget):
             widget.playlistButton.clicked.connect(
                 self.switchToPlaylistCardInterfaceSig)
             widget.createPlaylistButton.clicked.connect(
-                self.showCreatePlaylistPanelSig)
+                self.showCreatePlaylistDialogSig)
 
     def resizeEvent(self, e):
         """ 调整小部件尺寸 """

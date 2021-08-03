@@ -28,41 +28,6 @@ QLabel#clickableLabel:hover {
     color: rgb(154, 154, 154);
 }
 
-QCheckBox {
-    spacing: 15px;
-    color: black;
-    font: 18px 'Microsoft YaHei';
-}
-
-QCheckBox::indicator {
-    width: 50px;
-    height: 25px;
-}
-
-QCheckBox::indicator:unchecked {
-    border-image: url(app/resource/images/setting_interface/checkBox_unchecked.png);
-}
-
-QCheckBox::indicator:checked {
-    border-image: url(app/resource/images/setting_interface/checkBox_checked.png);
-}
-
-QCheckBox::indicator:unchecked:hover {
-    border-image: url(app/resource/images/setting_interface/checkBox_unchecked_hover.png);
-}
-
-QCheckBox::indicator:checked:hover {
-    border-image: url(app/resource/images/setting_interface/checkBox_checked_hover.png);
-}
-
-QCheckBox::indicator:unchecked:pressed {
-    border-image: url(app/resource/images/setting_interface/checkBox_unchecked_pressed.png);
-}
-
-QCheckBox::indicator:checked:pressed {
-    border-image: url(app/resource/images/setting_interface/checkBox_checked_pressed.png);
-}
-
 
 QRadioButton {
     spacing: 10px;

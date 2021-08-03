@@ -196,7 +196,7 @@ class AlbumInfoBar(QWidget):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open(r"app\resource\css\albumInterface.qss", encoding="utf-8") as f:
+        with open(r"app\resource\css\album_interface.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
 
     def __setBackgroundColor(self):

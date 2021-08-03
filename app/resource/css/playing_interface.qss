@@ -1,29 +1,57 @@
-QSlider:horizontal {
+QWidget#playingInterface {
+    background-color: black;
+}
+
+QLabel {
+    background-color: transparent;
+}
+
+QLabel#guideLabel{
+    color:white;
+    font: 25px 'Microsoft YaHei';
+}
+
+QPushButton#randomPlayAllButton{
+    color: rgb(72, 210, 242);
+    font: 23px "Microsoft YaHei";
+    background-color: transparent;
+}
+
+QPushButton#randomPlayAllButton:hover {
+    color: rgb(57, 168, 193);
+}
+
+QPushButton#randomPlayAllButton:pressed {
+    color: rgb(28, 84, 96);
+}
+
+/* 歌曲进度条 */
+QSlider#progressSlider:horizontal {
     height: 38px;
     background-color: transparent;
     /*padding:10px 0px 10px 0px;*/
 }
 
-QSlider::groove:horizontal {
+QSlider#progressSlider::groove:horizontal {
     height: 38px;
     border: none;
     background-color: transparent;
 }
 
-QSlider::handle:horizontal {
+QSlider#progressSlider::handle:horizontal {
     width: 38px;
     height: 38px;
     border-radius: 19px;
     background: qradialgradient(cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5, stop:0.6 white, stop:0.66 rgba(255, 255, 255, 0));
 }
 
-QSlider::handle:horizontal:pressed {
+QSlider#progressSlider::handle:horizontal:pressed {
     width: 38px;
     height: 38px;
     background-color: white;
 }
 
-QSlider::sub-page:horizontal {
+QSlider#progressSlider::sub-page:horizontal {
     height: 38px;
     /*需要隐藏掉上下的一部分颜色*/
     margin-top: 17px;
@@ -31,7 +59,7 @@ QSlider::sub-page:horizontal {
     background: white;
 }
 
-QSlider::add-page:horizontal {
+QSlider#progressSlider::add-page:horizontal {
     height: 38px;
     margin-top: 17px;
     margin-bottom: 18px;

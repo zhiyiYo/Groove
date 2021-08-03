@@ -39,12 +39,13 @@ class CreatePlaylistDialog(MaskDialogBase):
         # 信号连接到槽
         self.cancelLabel.clicked.connect(self.close)
         self.lineEdit.textChanged.connect(self.__isPlaylistExist)
-        self.createPlaylistButton.clicked.connect(self.__onCreatePlaylistButtonClicked)
+        self.createPlaylistButton.clicked.connect(
+            self.__onCreatePlaylistButtonClicked)
 
     def __setQss(self):
         """ 设置层叠样式 """
         self.cancelLabel.setObjectName("cancelLabel")
-        with open("app/resource/css/createPlaylistDialog.qss", encoding="utf-8") as f:
+        with open("app/resource/css/create_playlist_dialog.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
 
     def __initLayout(self):
@@ -161,7 +162,8 @@ class LineEdit(QLineEdit):
             self.setText("       命名此播放列表")
         self.clearButton.hide()
         self.pencilPic.setPixmap(
-            QPixmap(r"app\resource\images\createPlaylistPanel\pencil_noFocus_50_50.png")
+            QPixmap(
+                r"app\resource\images\createPlaylistPanel\pencil_noFocus_50_50.png")
         )
 
     def focusInEvent(self, e):
@@ -209,6 +211,5 @@ class LineEdit(QLineEdit):
 
     def setQss(self):
         """ 设置层叠样式 """
-        with open("app/resource/css/lineEdit.qss", encoding="utf-8") as f:
+        with open("app/resource/css/line_edit.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
-

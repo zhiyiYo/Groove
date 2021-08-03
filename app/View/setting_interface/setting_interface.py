@@ -172,7 +172,7 @@ class SettingInterface(QWidget):
         self.musicInThisPCLabel.setObjectName("titleLabel")
         self.equalizerLabel.setObjectName("clickableLabel")
         self.selectFolderLabel.setObjectName("clickableLabel")
-        with open("app/resource/css/settingInterface.qss", encoding="utf-8") as f:
+        with open("app/resource/css/setting_interface.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
 
     def resizeEvent(self, e):
