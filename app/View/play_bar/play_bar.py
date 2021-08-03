@@ -21,11 +21,11 @@ class PlayBar(QWidget):
     nextSongSig = pyqtSignal()
     lastSongSig = pyqtSignal()
     fullScreenSig = pyqtSignal()
-    togglePlayState = pyqtSignal()
     savePlaylistSig = pyqtSignal()
     showPlaylistSig = pyqtSignal()
     clearPlaylistSig = pyqtSignal()
     volumeChanged = pyqtSignal(int)
+    togglePlayStateSig = pyqtSignal()
     muteStateChanged = pyqtSignal(bool)
     randomPlayChanged = pyqtSignal(bool)
     progressSliderMoved = pyqtSignal(int)
@@ -175,11 +175,15 @@ class PlayBar(QWidget):
         self.volumeSlider.setValue(volume)
         self.volumeButton.setVolumeLevel(volume)
 
+    def setPlay(self, isPlay: bool):
+        """ 设置播放状态 """
+        self.playButton.setPlay(isPlay)
+
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
-        self.playButton.clicked.connect(self.togglePlayState)
         self.nextSongButton.clicked.connect(self.nextSongSig)
         self.lastSongButton.clicked.connect(self.lastSongSig)
+        self.playButton.clicked.connect(self.togglePlayStateSig)
         self.volumeSlider.valueChanged.connect(self.volumeChanged)
         self.progressSlider.clicked.connect(self.progressSliderMoved)
         self.songInfoCard.clicked.connect(self.showPlayingInterfaceSig)

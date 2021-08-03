@@ -1,14 +1,14 @@
 # coding:utf-8
 from copy import deepcopy
 
+from app.common.blur_cover_thread import BlurCoverThread
 from app.components.buttons.three_state_button import ThreeStatePushButton
 from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve,
                           QParallelAnimationGroup, QPropertyAnimation, QRect,
                           QSize, Qt, QTimer, pyqtSignal)
-from PyQt5.QtWidgets import QLabel, QWidget
 from PyQt5.QtMultimedia import QMediaPlaylist
+from PyQt5.QtWidgets import QLabel, QWidget
 
-from .blur_cover_thread import BlurCoverThread
 from .play_bar import PlayBar
 from .song_info_card_chute import SongInfoCardChute
 from .song_list_widget import SongListWidget
@@ -105,7 +105,7 @@ class PlayingInterface(QWidget):
         self.showPlaylistTimer.setInterval(120)
         self.hidePlaylistTimer.setInterval(120)
         self.showPlaylistTimer.timeout.connect(self.showPlayListTimerSlot)
-        self.hidePlaylistTimer.timeout.connect(self.hidePlayListTimerSlot)
+        self.hidePlaylistTimer.timeout.connect(self.hidePlaylistTimerSlot)
 
     def __setQss(self):
         """ 设置层叠样式 """
@@ -131,7 +131,7 @@ class PlayingInterface(QWidget):
                 )
             )
 
-    def startBlurThread(self, albumCoverPath):
+    def startBlurThread(self, albumCoverPath: str):
         """ 开启磨砂线程 """
         self.blurCoverThread.setTargetCover(albumCoverPath, 6)
         self.blurCoverThread.start()
@@ -162,9 +162,7 @@ class PlayingInterface(QWidget):
             self.songInfoCardChuteAni.setStartValue(
                 self.songInfoCardChute.rect())
             self.songInfoCardChuteAni.setEndValue(
-                QRect(0, -self.playBar.height() + 68,
-                      self.width(), self.height())
-            )
+                QRect(0, -self.playBar.height() + 68, self.width(), self.height()))
             self.songInfoCardChuteAni.start()
 
     def hidePlayBar(self):
@@ -228,7 +226,7 @@ class PlayingInterface(QWidget):
         self.songListWidgetAni.start()
         self.isPlaylistVisible = True
 
-    def hidePlayListTimerSlot(self):
+    def hidePlaylistTimerSlot(self):
         """ 显示播放列表定时器溢出槽函数 """
         self.hidePlaylistTimer.stop()
         self.parallelAniGroup.start()
@@ -318,6 +316,10 @@ class PlayingInterface(QWidget):
         # 如果小部件不可见就显示
         if playlist and not self.songListWidget.isVisible():
             self.__setGuideLabelHidden(True)
+
+    def setPlay(self, isPlay: bool):
+        """ 设置播放状态 """
+        self.playBar.playButton.setPlay(isPlay)
 
     def __settleDownPlayBar(self):
         """ 定住播放栏 """

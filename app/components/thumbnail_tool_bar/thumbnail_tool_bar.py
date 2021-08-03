@@ -29,7 +29,7 @@ class ThumbnailToolBar(QWinThumbnailToolBar):
 
     nextSongSig = pyqtSignal()
     lastSongSig = pyqtSignal()
-    togglePlayState = pyqtSignal()
+    togglePlayStateSig = pyqtSignal()
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -55,9 +55,13 @@ class ThumbnailToolBar(QWinThumbnailToolBar):
         # 信号连接到槽
         self.lastSongButton.clicked.connect(self.lastSongSig)
         self.nextSongButton.clicked.connect(self.nextSongSig)
-        self.playButton.clicked.connect(self.togglePlayState)
+        self.playButton.clicked.connect(self.togglePlayStateSig)
 
     def setButtonsEnabled(self, isEnable: bool):
         """ 设置按钮的启用与否 """
         for button in self.buttons():
             button.setEnabled(isEnable)
+
+    def setPlay(self, isPlay: bool):
+        """ 设置播放状态 """
+        self.playButton.setPlay(isPlay)

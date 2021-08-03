@@ -2,7 +2,16 @@ import os
 
 
 def getCoverPath(albumName: str, isGetAlbumCover=True) -> str:
-    """ 获取封面路径 """
+    """ 获取封面路径
+
+    Parameters
+    ----------
+    albumName: str
+        专辑名字，对应 `songInfo["modifiedAlbum"]`
+
+    isGetAlbumCover: bool
+        当专辑图片不存在时返回的图片是否为默认专辑图片，如果为 `False` 返回默认播放列表图片
+    """
     coverFolder = f"app/resource/Album_Cover/{albumName}"
     # 默认的封面
     if isGetAlbumCover:

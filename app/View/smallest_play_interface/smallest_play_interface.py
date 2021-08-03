@@ -1,13 +1,16 @@
 # coding:utf-8
+from app.common.blur_cover_thread import BlurCoverThread
+from app.common.get_cover_path import getCoverPath
 from app.components.buttons.circle_button import CircleButton
 from app.components.frameless_window import FramelessWindow
 from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
                           QParallelAnimationGroup, QPropertyAnimation, QRect,
-                          Qt)
+                          Qt, pyqtSignal)
 from PyQt5.QtGui import QFont, QFontMetrics
 from PyQt5.QtWidgets import QGraphicsOpacityEffect, QLabel, QSlider, QWidget
 
 from .buttons import PlayButton, SmallestPlayModeButton
+from .title_bar import TitleBar
 
 
 class SmallestPlayInterface(FramelessWindow):
@@ -15,33 +18,39 @@ class SmallestPlayInterface(FramelessWindow):
 
     CYCLE_LEFT_SHIFT = 0
     CYCLE_RIGHT_SHIFT = 1
+    nextSongSig = pyqtSignal()
+    lastSongSig = pyqtSignal()
+    togglePlayStateSig = pyqtSignal()
+    exitSmallestPlayInterfaceSig = pyqtSignal()
 
-    def __init__(self, playlist: list, parent=None):
+    def __init__(self, playlist: list = None, parent=None):
         super().__init__(parent)
-        self.playlist = playlist
+        self.playlist = playlist if playlist else []
         self.currentIndex = 0
         self.shiftLeftTime = 0
         self.shiftRightTime = 0
         self.songInfoCard_list = []
         self.__unCompleteShift_list = []
-        # 创建磨砂封面
-        self.__blurLabel = QLabel(self)
+        self.albumCoverLabel = QLabel(self)
+        self.blurCoverThread = BlurCoverThread(self)
         # 创建按钮
         self.playButton = PlayButton(
             [
-                r"app\resource\images\smallest_play_mode\播放_45_45.png",
-                r"app\resource\images\smallest_play_mode\暂停_45_45.png",
+                r"app\resource\images\smallest_play_interface\Pause.png",
+                r"app\resource\images\smallest_play_interface\Play.png",
             ],
             self,
         )
         self.lastSongButton = SmallestPlayModeButton(
-            r"app\resource\images\smallest_play_mode\上一首_45_45.png", self)
+            r"app\resource\images\smallest_play_interface\Previous.png", self)
         self.nextSongButton = SmallestPlayModeButton(
-            r"app\resource\images\smallest_play_mode\下一首_45_45.png", self)
+            r"app\resource\images\smallest_play_interface\Next.png", self)
         self.exitSmallestModeButton = CircleButton(
             r"app\resource\images\playing_interface\最小模式播放_47_47.png", self)
         self.progressBar = QSlider(Qt.Horizontal, self)
         self.aniGroup = QParallelAnimationGroup(self)
+        # 创建标题栏
+        self.titleBar = TitleBar(self)
         # 创建歌曲信息卡
         self.__createSongInfoCards()
         # 初始化
@@ -51,15 +60,24 @@ class SmallestPlayInterface(FramelessWindow):
         """ 初始化界面 """
         self.resize(350, 350)
         self.setMinimumSize(206, 197)
-        self.__blurLabel.setScaledContents(True)
+        self.setWindowFlags(self.windowFlags() | Qt.Window)
+        self.windowEffect.addShadowEffect(int(self.winId()))
+        self.albumCoverLabel.setScaledContents(True)
         self.progressBar.installEventFilter(self)
-        self.aniGroup.finished.connect(self.__switchSongInfoCard)
         self.__setQss()
+        # 信号连接到槽
+        self.aniGroup.finished.connect(self.__switchSongInfoCard)
+        self.lastSongButton.clicked.connect(self.lastSongSig)
+        self.nextSongButton.clicked.connect(self.nextSongSig)
+        self.playButton.clicked.connect(self.togglePlayStateSig)
+        self.exitSmallestModeButton.clicked.connect(self.exitSmallestPlayInterfaceSig)
+        self.blurCoverThread.blurDone.connect(self.albumCoverLabel.setPixmap)
 
     def __createSongInfoCards(self):
         """ 创建歌曲信息卡 """
         # 创建三个歌曲信息卡，分别为last, current, next
-        self.songInfoCard_list = [SongInfoCard(parent=self) for i in range(3)]
+        self.songInfoCard_list = [SongInfoCard(
+            parent=self) for i in range(3)]
         # 引用当前歌曲卡
         self.lastSongInfoCard = self.songInfoCard_list[0]  # type:SongInfoCard
         self.curSongInfoCard = self.songInfoCard_list[1]  # type:SongInfoCard
@@ -83,10 +101,18 @@ class SmallestPlayInterface(FramelessWindow):
             if len(self.playlist) >= 2:
                 self.nextSongInfoCard.updateCard(self.playlist[1])
 
+    def startBlurThread(self, albumCoverPath: str):
+        """ 开启磨砂线程 """
+        self.blurCoverThread.setTargetCover(albumCoverPath, 40, (350, 350))
+        self.blurCoverThread.start()
+
     def resizeEvent(self, e):
         """ 改变窗口大小时调整按钮位置和标签宽度 """
+        self.resize(self.size())
+        self.albumCoverLabel.resize(self.size())
         self.progressBar.resize(self.width(), 5)
         self.progressBar.move(0, self.height() - 5)
+        self.titleBar.resize(self.width(), self.titleBar.height())
         self.exitSmallestModeButton.move(
             self.width() - 7 - self.exitSmallestModeButton.width(),
             self.height() - 7 - self.exitSmallestModeButton.height(),
@@ -242,19 +268,30 @@ class SmallestPlayInterface(FramelessWindow):
 
     def setCurrentIndex(self, index):
         """ 更新当前下标并移动和更新歌曲信息卡 """
-        if self.playlist:
-            # 新的下标大于当前下标时，歌曲卡左移
-            if index != self.currentIndex:
-                if self.aniGroup.state() != QAbstractAnimation.Running:
-                    self.__completeShift(index)
-                else:
-                    self.__unCompleteShift_list.append(index)
-            elif index == self.currentIndex:
-                self.updateCards()
-                self.needToEmitSignal = True
+        if not self.playlist:
+            return
+        # 新的下标大于当前下标时，歌曲卡左移
+        if self.aniGroup.state() != QAbstractAnimation.Running:
+            songInfo = self.playlist[index]
+            self.startBlurThread(getCoverPath(songInfo['modifiedAlbum']))
+            self.__completeShift(index)
+        else:
+            self.__unCompleteShift_list.append(index)
+        # elif index == self.currentIndex:
+        #     self.updateCards()
+        #     self.needToEmitSignal = True
 
-    def setPlaylist(self, playlist, isResetIndex: bool = True):
-        """ 更新播放列表 """
+    def setPlaylist(self, playlist: list, isResetIndex: bool = True):
+        """ 更新播放列表
+
+        Parameters
+        ----------
+        playlist: list
+            播放列表
+
+        isResetIndex: bool
+            是否从头播放歌曲
+        """
         self.playlist = playlist
         self.currentIndex = 0 if isResetIndex else self.currentIndex
         if playlist:
@@ -264,6 +301,14 @@ class SmallestPlayInterface(FramelessWindow):
                 self.nextSongInfoCard.updateCard(self.playlist[1])
         else:
             self.curSongInfoCard.hide()
+
+    def setPlay(self, isPlay: bool):
+        """ 设置播放状态 """
+        self.playButton.setPlay(isPlay)
+
+    def clearPlaylist(self):
+        """ 清空播放列表 """
+        self.playlist = []
 
     def __completeShift(self, index):
         """ 完成移位，只在调用setCurrentIndex时调用 """
@@ -299,8 +344,8 @@ class SongInfoCard(QWidget):
         self.opacityEffect.setOpacity(1)
         self.setGraphicsEffect(self.opacityEffect)
         self.setAttribute(Qt.WA_TranslucentBackground)
-        self.songNameLabel.setProperty("name", "smallestModeSongNameLabel")
-        self.songerNameLabel.setProperty("name", "smallestModeSongerNameLabel")
+        self.songNameLabel.setObjectName("songNameLabel")
+        self.songerNameLabel.setObjectName("songerNameLabel")
 
     def __setSongInfo(self, songInfo: dict):
         """ 设置标签信息 """

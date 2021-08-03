@@ -19,7 +19,7 @@ A music player based on pyqt5 and LAV Filters.
 ![示例动图4](docs/screenshot/爬虫.gif)
 
 ## Quick start
-1. Create virtual environment
+1. Create virtual environment:
 
     ```shell
     conda create -n Groove python=3.8
@@ -27,13 +27,14 @@ A music player based on pyqt5 and LAV Filters.
     pip install -r requirements.txt
     ```
 
-2. Download [LAV filter](https://github.com/Nevcairiel/LAVFilters/releases).
-3. Download Firefox and geckodriver.exe
+2. Download [LAV Filter](https://github.com/Nevcairiel/LAVFilters/releases).
+3. (Optional) Download `Firefox` and `geckodriver.exe`.
+4. Open Groove music:
 
-## Code environment
-* Python 3.8
-* LAV Filters
-* Firefox
+    ```shell
+    conda activate Groove
+    python Groove.py
+    ```
 
 ## Notes
-* To drive Firefox, you need to download **geckodriver.exe** and add its directory to the environment variable.
+* If you want to use the function of automatically obtaining song metadata, you need to download `Firefox` and `geckodriver.exe`, then add the directory of geckodriver.exe to the environment variable.
