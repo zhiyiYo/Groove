@@ -27,7 +27,7 @@ A music player based on pyqt5 and LAV Filters.
     pip install -r requirements.txt
     ```
 
-2. Download [LAV Filter](https://github.com/Nevcairiel/LAVFilters/releases).
+2. Download [LAV Filters](https://github.com/Nevcairiel/LAVFilters/releases).
 3. (Optional) Download `Firefox` and `geckodriver.exe`.
 4. Open Groove music:
 
