@@ -63,12 +63,10 @@ class MyMusicInterface(QWidget):
             self.__songInfoGetter.songInfo_list)
         t1 = time()
         self.songCardListWidget = SongCardListWidget(
-            self.__songInfoGetter.songInfo_list, self
-        )
+            self.__songInfoGetter.songInfo_list, self)
         t2 = time()
         self.albumCardViewer = AlbumCardViewer(
-            self.__albumInfoGetter.albumInfo_list, self
-        )
+            self.__albumInfoGetter.albumInfo_list, self)
         t3 = time()
         print("创建歌曲标签界面耗时：".ljust(17), t2 - t1)
         print("创建专辑标签界面耗时：".ljust(17), t3 - t2)
@@ -107,12 +105,10 @@ class MyMusicInterface(QWidget):
         self.toolBar.albumSortModeButton.setVisible(index == 1)
         if index == 0:
             self.toolBar.randomPlayAllButton.setText(
-                f" 无序播放所有({len(self.songCardListWidget.songCard_list)})"
-            )
+                f" 无序播放所有({len(self.songCardListWidget.songCard_list)})")
         elif index == 1:
             self.toolBar.randomPlayAllButton.setText(
-                f" 无序播放所有({len(self.albumCardViewer.albumCard_list)})"
-            )
+                f" 无序播放所有({len(self.albumCardViewer.albumCard_list)})")
         self.toolBar.randomPlayAllButton.adjustSize()
 
     def __checkedCardNumChangedSlot(self, num):
@@ -123,16 +119,15 @@ class MyMusicInterface(QWidget):
             self.albumTabSelectionModeBar.setPartButtonHidden(num > 1)
             # 隐藏部分按钮时会发生高度的改变，需要调整位置
             self.albumTabSelectionModeBar.move(
-                0, self.height() - self.albumTabSelectionModeBar.height()
-            )
+                0, self.height() - self.albumTabSelectionModeBar.height())
 
     def __selectionModeStateChangedSlot(self, isOpenSelectionMode: bool):
         """ 选择模式状态变化槽函数 """
         self.isInSelectionMode = isOpenSelectionMode
-        if self.sender() == self.songCardListWidget:
-            self.songTabSelectionModeBar.setHidden(not isOpenSelectionMode)
-        elif self.sender() == self.albumCardViewer:
-            self.albumTabSelectionModeBar.setHidden(not isOpenSelectionMode)
+        if self.sender() is self.songCardListWidget:
+            self.songTabSelectionModeBar.setVisible(isOpenSelectionMode)
+        elif self.sender() is self.albumCardViewer:
+            self.albumTabSelectionModeBar.setVisible(isOpenSelectionMode)
         self.selectionModeStateChanged.emit(isOpenSelectionMode)
 
     def __referenceWidgets(self):
@@ -199,8 +194,7 @@ class MyMusicInterface(QWidget):
             # 取消选中的歌曲卡的选中状态，隐藏选择栏并显示播放栏
             self.__unCheckSongCards()
             self.songCardListWidget.switchToAlbumInterfaceSig.emit(
-                songCard.album, songCard.songer
-            )
+                songCard.album, songCard.songer)
 
     def __editCardInfo(self):
         """ 编辑卡片信息 """
@@ -245,17 +239,13 @@ class MyMusicInterface(QWidget):
         self.toolBar.resize(self.width() - 30, self.toolBar.height())
         # 调整选中模式栏的位置和宽度
         self.songTabSelectionModeBar.resize(
-            self.width(), self.songTabSelectionModeBar.height()
-        )
+            self.width(), self.songTabSelectionModeBar.height())
         self.songTabSelectionModeBar.move(
-            0, self.height() - self.songTabSelectionModeBar.height()
-        )
+            0, self.height() - self.songTabSelectionModeBar.height())
         self.albumTabSelectionModeBar.resize(
-            self.width(), self.albumTabSelectionModeBar.height()
-        )
+            self.width(), self.albumTabSelectionModeBar.height())
         self.albumTabSelectionModeBar.move(
-            0, self.height() - self.albumTabSelectionModeBar.height()
-        )
+            0, self.height() - self.albumTabSelectionModeBar.height())
 
     def scanTargetPathSongInfo(self, targetFolderPath_list: list):
         """ 重新扫描指定的歌曲文件夹列表中的歌曲信息并更新标签界面 """
@@ -400,23 +390,18 @@ class MyMusicInterface(QWidget):
                 songInfo_list.extend(albumCard.songInfo_list)
         # 计算菜单弹出位置
         addToGlobalPos = selectionModeBar.mapToGlobal(QPoint(0, 0)) + QPoint(
-            addToButton.x(), addToButton.y()
-        )
+            addToButton.x(), addToButton.y())
         x = addToGlobalPos.x() + addToButton.width() + 5
         y = addToGlobalPos.y() + int(
-            addToButton.height() / 2 - (13 + 38 * addToMenu.actionCount()) / 2
-        )
+            addToButton.height() / 2 - (13 + 38 * addToMenu.actionCount()) / 2)
         # 信号连接到槽
         addToMenu.playingAct.triggered.connect(
-            lambda: self.addSongsToPlayingPlaylistSig.emit(songInfo_list)
-        )
-        addToMenu.newPlayList.triggered.connect(
-            lambda: self.addSongsToNewCustomPlaylistSig.emit(songInfo_list)
-        )
+            lambda: self.addSongsToPlayingPlaylistSig.emit(songInfo_list))
+        addToMenu.newPlaylistAct.triggered.connect(
+            lambda: self.addSongsToNewCustomPlaylistSig.emit(songInfo_list))
         addToMenu.addSongsToPlaylistSig.connect(
             lambda name: self.addSongsToCustomPlaylistSig.emit(
-                name, songInfo_list)
-        )
+                name, songInfo_list))
         for act in addToMenu.action_list:
             act.triggered.connect(self.__addToMenuTriggeredSlot)
         addToMenu.exec(QPoint(x, y))
@@ -451,80 +436,57 @@ class MyMusicInterface(QWidget):
         self.stackedWidget.currentChanged.connect(self.__changeTabSlot)
         # 歌曲界面信号连接到槽函数
         self.songCardListWidget.selectionModeStateChanged.connect(
-            self.__selectionModeStateChangedSlot
-        )
+            self.__selectionModeStateChangedSlot)
         self.songCardListWidget.checkedSongCardNumChanged.connect(
-            self.__checkedCardNumChangedSlot
-        )
+            self.__checkedCardNumChangedSlot)
         self.songCardListWidget.addSongsToCustomPlaylistSig.connect(
-            self.addSongsToCustomPlaylistSig
-        )
+            self.addSongsToCustomPlaylistSig)
         self.songCardListWidget.addSongsToNewCustomPlaylistSig.connect(
-            self.addSongsToNewCustomPlaylistSig
-        )
+            self.addSongsToNewCustomPlaylistSig)
         self.songCardListWidget.songCardNumChanged.connect(
-            lambda: self.__changeTabSlot(self.stackedWidget.currentIndex())
-        )
+            lambda: self.__changeTabSlot(self.stackedWidget.currentIndex()))
         # 专辑卡界面信号连接到槽函数
         self.albumCardViewer.addAlbumToCustomPlaylistSig.connect(
-            self.addSongsToCustomPlaylistSig
-        )
+            self.addSongsToCustomPlaylistSig)
         self.albumCardViewer.addAlbumToNewCustomPlaylistSig.connect(
-            self.addSongsToNewCustomPlaylistSig
-        )
+            self.addSongsToNewCustomPlaylistSig)
         self.albumCardViewer.addAlbumToPlayingSignal.connect(
-            self.addSongsToPlayingPlaylistSig
-        )
+            self.addSongsToPlayingPlaylistSig)
         self.albumCardViewer.selectionModeStateChanged.connect(
-            self.__selectionModeStateChangedSlot
-        )
+            self.__selectionModeStateChangedSlot)
         self.albumCardViewer.checkedAlbumCardNumChanged.connect(
-            self.__checkedCardNumChangedSlot
-        )
+            self.__checkedCardNumChangedSlot)
         self.albumCardViewer.showLabelNavigationInterfaceSig.connect(
-            self.showLabelNavigationInterfaceSig
-        )
+            self.showLabelNavigationInterfaceSig)
         self.albumCardViewer.albumNumChanged.connect(
-            lambda: self.__changeTabSlot(self.stackedWidget.currentIndex())
-        )
+            lambda: self.__changeTabSlot(self.stackedWidget.currentIndex()))
         # 歌曲界面选择栏各按钮信号连接到槽函数
         self.songTabSelectionModeBar.cancelButton.clicked.connect(
-            self.__unCheckSongCards
-        )
+            self.__unCheckSongCards)
         self.songTabSelectionModeBar.checkAllButton.clicked.connect(
-            self.__songTabSelectAllButtonSlot
-        )
+            self.__songTabSelectAllButtonSlot)
         self.songTabSelectionModeBar.playButton.clicked.connect(
-            self.__emitSongTabPlaylist
-        )
+            self.__emitSongTabPlaylist)
         self.songTabSelectionModeBar.nextToPlayButton.clicked.connect(
-            self.__emitSongTabPlaylist
-        )
+            self.__emitSongTabPlaylist)
         self.songTabSelectionModeBar.showAlbumButton.clicked.connect(
-            self.__switchToAlbumInterface
-        )
+            self.__switchToAlbumInterface)
         self.songTabSelectionModeBar.editInfoButton.clicked.connect(
             self.__editCardInfo)
         self.songTabSelectionModeBar.propertyButton.clicked.connect(
-            self.__showCheckedSongCardProperty
-        )
+            self.__showCheckedSongCardProperty)
         self.songTabSelectionModeBar.addToButton.clicked.connect(
             self.__showAddToMenu)
         # 专辑界面选择栏信号连接到槽函数
         self.albumTabSelectionModeBar.cancelButton.clicked.connect(
-            self.__unCheckAlbumCards
-        )
+            self.__unCheckAlbumCards)
         self.albumTabSelectionModeBar.playButton.clicked.connect(
-            self.__emitAlbumTabPlaylist
-        )
+            self.__emitAlbumTabPlaylist)
         self.albumTabSelectionModeBar.nextToPlayButton.clicked.connect(
-            self.__emitAlbumTabPlaylist
-        )
+            self.__emitAlbumTabPlaylist)
         self.albumTabSelectionModeBar.editInfoButton.clicked.connect(
-            self.__editCardInfo
-        )
+            self.__editCardInfo)
         self.albumTabSelectionModeBar.checkAllButton.clicked.connect(
-            self.__albumTabSelectAllButtonSlot
-        )
+            self.__albumTabSelectAllButtonSlot)
         self.albumTabSelectionModeBar.addToButton.clicked.connect(
             self.__showAddToMenu)

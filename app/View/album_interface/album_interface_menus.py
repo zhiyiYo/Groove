@@ -61,7 +61,8 @@ class MoreActionsMenu(QMenu):
 
     def exec(self, pos):
         """ 显示菜单 """
-        self.animation.setStartValue(QRect(pos.x(), pos.y(), 1, self.currentHeight))
+        self.animation.setStartValue(
+            QRect(pos.x(), pos.y(), 1, self.currentHeight))
         self.animation.setEndValue(
             QRect(pos.x(), pos.y(), self.currentWidth, self.currentHeight)
         )
@@ -101,11 +102,9 @@ class AddToMenu(QMenu):
     def createActions(self):
         """ 创建三个动作 """
         self.playingAct = QAction(
-            QIcon("app/resource/images/menu/正在播放.png"), "正在播放", self
-        )
-        self.newPlayList = QAction(
-            QIcon("app/resource/images/menu/黑色加号.png"), "新的播放列表", self
-        )
+            QIcon("app/resource/images/menu/正在播放.png"), "正在播放", self)
+        self.newPlaylistAct = QAction(
+            QIcon("app/resource/images/menu/黑色加号.png"), "新的播放列表", self)
         # 根据播放列表创建动作
         playlistName_list = self.__getPlaylistNames()
         self.playlistNameAct_list = [
@@ -114,11 +113,11 @@ class AddToMenu(QMenu):
         ]
         self.action_list = [
             self.playingAct,
-            self.newPlayList,
+            self.newPlaylistAct,
         ] + self.playlistNameAct_list
         self.addAction(self.playingAct)
         self.addSeparator()
-        self.addActions([self.newPlayList] + self.playlistNameAct_list)
+        self.addActions([self.newPlaylistAct] + self.playlistNameAct_list)
 
     def __getPlaylistNames(self):
         """ 扫描播放列表文件夹下的播放列表名字 """
@@ -142,4 +141,3 @@ class AddToMenu(QMenu):
         # 开始动画
         self.animation.start()
         super().exec(pos)
-

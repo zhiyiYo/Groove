@@ -84,14 +84,12 @@ class PlayButton(QToolButton):
             painter.drawEllipse(1, 1, 62, 62)
         # 绘制图标
         if not self.isPressed:
-            x = 0 if self.isPlaying else 1
             iconPix = QPixmap(self.iconPath_list[self.isPlaying])
-            painter.drawPixmap(x, 1, 63, 63, iconPix)
+            painter.drawPixmap(1, 1, 63, 63, iconPix)
         else:
-            x = 2 if self.isPlaying else 3
             iconPix = QPixmap(self.iconPath_list[self.isPlaying]).scaled(
                 58, 58, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            painter.drawPixmap(x, 3, 59, 59, iconPix)
+            painter.drawPixmap(3, 3, 59, 59, iconPix)
 
 
 class RandomPlayButton(QToolButton):
@@ -235,7 +233,7 @@ class BasicButton(QToolButton):
 
 class LoopModeButton(QToolButton):
     """ 循环播放模式按钮 """
-    
+
     loopModeChanged = pyqtSignal(QMediaPlaylist.PlaybackMode)
 
     def __init__(self, parent=None):

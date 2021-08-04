@@ -110,7 +110,7 @@ class AlbumInfoBar(QWidget):
             # 再次根据换行后的长度决定是否使用省略号
             newAlbumName = "".join(newAlbumName_list)
             secondLineText = fontMetrics.elidedText(
-                newAlbumName[index + 1 :], Qt.ElideRight, maxWidth
+                newAlbumName[index + 1:], Qt.ElideRight, maxWidth
             )
             newAlbumName = newAlbumName[: index + 1] + secondLineText
             self.albumNameLabel.setText(newAlbumName)
@@ -222,7 +222,8 @@ class AlbumInfoBar(QWidget):
             fontMetrics.elidedText(self.songerName, Qt.ElideRight, maxWidth)
         )
         self.yearTconLabel.setText(
-            fontMetrics.elidedText(self.yearTconLabel.text(), Qt.ElideRight, maxWidth)
+            fontMetrics.elidedText(
+                self.yearTconLabel.text(), Qt.ElideRight, maxWidth)
         )
 
     def __showAddToMenu(self):
@@ -235,13 +236,15 @@ class AlbumInfoBar(QWidget):
         )
         addToMenu.playingAct.triggered.connect(self.addToPlayingPlaylistSig)
         addToMenu.addSongsToPlaylistSig.connect(self.addToCustomPlaylistSig)
-        addToMenu.newPlayList.triggered.connect(self.addToNewCustomPlaylistSig)
+        addToMenu.newPlaylistAct.triggered.connect(
+            self.addToNewCustomPlaylistSig)
         addToMenu.exec(QPoint(x, y))
 
     def __showMoreActionsMenu(self):
         """ 显示更多操作菜单 """
         if self.moreActionsMenu.actionNum >= 2:
-            self.moreActionsMenu.editInfoAct.triggered.connect(self.editInfoSig)
+            self.moreActionsMenu.editInfoAct.triggered.connect(
+                self.editInfoSig)
         globalPos = self.mapToGlobal(self.moreActionsBt.pos())
         x = globalPos.x() + self.moreActionsBt.width() + 5
         y = globalPos.y() + int(

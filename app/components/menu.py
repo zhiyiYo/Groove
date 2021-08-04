@@ -16,8 +16,7 @@ class AeroMenu(QMenu):
         # 创建窗口特效
         self.windowEffect = WindowEffect()
         self.setWindowFlags(
-            Qt.FramelessWindowHint | Qt.Popup | Qt.NoDropShadowWindowHint
-        )
+            Qt.FramelessWindowHint | Qt.Popup | Qt.NoDropShadowWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground | Qt.WA_StyledBackground)
         self.setObjectName("AeroMenu")
         self.setQss()
@@ -49,7 +48,8 @@ class AcrylicMenu(QMenu):
 
     def event(self, e: QEvent):
         if e.type() == QEvent.WinIdChange:
-            self.windowEffect.setAcrylicEffect(self.winId(), self.acrylicColor, True)
+            self.windowEffect.setAcrylicEffect(
+                self.winId(), self.acrylicColor, True)
         return QMenu.event(self, e)
 
     def __initWidget(self):
@@ -83,41 +83,32 @@ class AddToMenu(AcrylicMenu):
     def createActions(self):
         """ 创建三个动作 """
         self.playingAct = QAction(
-            QIcon("app/resource/images/menu/正在播放.png"), "正在播放", self
-        )
-        self.newPlayList = QAction(
-            QIcon("app/resource/images/menu/黑色加号.png"), "新的播放列表", self
-        )
+            QIcon("app/resource/images/menu/正在播放.png"), "正在播放", self)
+        self.newPlaylistAct = QAction(
+            QIcon("app/resource/images/menu/黑色加号.png"), "新的播放列表", self)
         # 根据播放列表创建动作
         playlistName_list = self.__getPlaylistNames()
         self.playlistNameAct_list = [
             QAction(QIcon(r"app\resource\images\menu\黑色我喜欢_20_20.png"), name, self)
             for name in playlistName_list
         ]
-        self.action_list = [
-            self.playingAct,
-            self.newPlayList,
-        ] + self.playlistNameAct_list
+        self.action_list = [self.playingAct,
+                            self.newPlaylistAct] + self.playlistNameAct_list
         self.addAction(self.playingAct)
         self.addSeparator()
-        self.addActions([self.newPlayList] + self.playlistNameAct_list)
+        self.addActions([self.newPlaylistAct] + self.playlistNameAct_list)
         # 将添加到播放列表的信号连接到槽函数
-        for name, playlistNameAct in zip(playlistName_list, self.playlistNameAct_list):
+        for name, act in zip(playlistName_list, self.playlistNameAct_list):
             # lambda表达式只有在执行的时候才回去寻找变量name，所以需要将name固定下来
-            playlistNameAct.triggered.connect(
-                lambda checked, playlistName=name: self.addSongsToPlaylistSig.emit(
-                    playlistName
-                )
-            )
+            act.triggered.connect(
+                lambda checked, playlistName=name: self.addSongsToPlaylistSig.emit(playlistName))
 
     def __getPlaylistNames(self):
         """ 扫描播放列表文件夹下的播放列表名字 """
         # 扫描播放列表文件夹下的播放列表名字
-        if not os.path.exists("app/Playlists"):
-            os.mkdir("app/Playlists")
+        os.makedirs('app/Playlists', exist_ok=True)
         playlistName_list = [
-            i[:-5] for i in os.listdir("app/Playlists") if i.endswith(".json")
-        ]
+            i[:-5] for i in os.listdir("app/Playlists") if i.endswith(".json")]
         return playlistName_list
 
     def actionCount(self):
@@ -213,7 +204,8 @@ class LineEditMenu(AeroMenu):
                 self.setProperty("hasCancelAct", "true")
                 width = 213
                 if self.parent().selectedText():
-                    self.addActions(self.action_list[:2] + self.action_list[3:])
+                    self.addActions(
+                        self.action_list[:2] + self.action_list[3:])
                     actionNum -= 1
                 else:
                     self.addActions(self.action_list[3:])

@@ -210,7 +210,7 @@ class AlbumInterface(QWidget):
             lambda name: self.addSongsToCustomPlaylistSig.emit(
                 name, songInfo_list)
         )
-        addToMenu.newPlayList.triggered.connect(
+        addToMenu.newPlaylistAct.triggered.connect(
             lambda: self.addSongsToNewCustomPlaylistSig.emit(songInfo_list)
         )
         for act in addToMenu.action_list:

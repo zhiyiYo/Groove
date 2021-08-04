@@ -229,8 +229,7 @@ class BasicSongListWidget(ListWidget):
             self.checkedSongCardNumChanged.emit(len(self.checkedSongCard_list))
         # 如果歌曲卡已经在列表中且该歌曲卡变为非选中状态就弹出该歌曲卡
         elif songCard in self.checkedSongCard_list and not isChecked:
-            self.checkedSongCard_list.pop(
-                self.checkedSongCard_list.index(songCard))
+            self.checkedSongCard_list.remove(songCard)
             self.checkedSongCardNumChanged.emit(len(self.checkedSongCard_list))
         # 如果先前不处于选择模式那么这次发生选中状态改变就进入选择模式
         if not self.isInSelectionMode:
@@ -242,19 +241,18 @@ class BasicSongListWidget(ListWidget):
             self.selectionModeStateChanged.emit(True)
             # 更新标志位
             self.isInSelectionMode = True
-        else:
-            if not self.checkedSongCard_list:
-                # 所有歌曲卡退出选择模式
-                self.__setAllSongCardSelectionModeOpen(False)
-                # 发送信号要求主窗口显示播放栏
-                self.selectionModeStateChanged.emit(False)
-                # 更新标志位
-                self.isInSelectionMode = False
+        elif not self.checkedSongCard_list:
+            # 所有歌曲卡退出选择模式
+            self.__setAllSongCardSelectionModeOpen(False)
+            # 发送信号要求主窗口显示播放栏
+            self.selectionModeStateChanged.emit(False)
+            # 更新标志位
+            self.isInSelectionMode = False
 
     def __setAllSongCardSelectionModeOpen(self, isOpenSelectionMode: bool):
         """ 设置所有歌曲卡是否进入选择模式 """
         # 更新光标样式
-        cursor = [Qt.PointingHandCursor, Qt.ArrowCursor][isOpenSelectionMode]
+        cursor = Qt.ArrowCursor if isOpenSelectionMode else Qt.PointingHandCursor
         for songCard in self.songCard_list:
             songCard.setSelectionModeOpen(isOpenSelectionMode)
             songCard.setClickableLabelCursor(cursor)
@@ -269,8 +267,7 @@ class BasicSongListWidget(ListWidget):
 
     def unCheckSongCards(self):
         """ 取消所有已处于选中状态的歌曲卡的选中状态 """
-        checkedSongCard_list_copy = self.checkedSongCard_list.copy()
-        for songCard in checkedSongCard_list_copy:
+        for songCard in self.songCard_list:
             songCard.setChecked(False)
 
     def updateAllSongCards(self, songInfo_list: list, connectSongCardSigToSlotFunc=None):

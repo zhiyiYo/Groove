@@ -199,8 +199,7 @@ class SongNameCard(QWidget):
         self.setWidgetHidden(not isPlay)
         # 歌曲不存在时仍需显示图标
         self.songNameLabel.move(
-            [57, 83][isPlay or (not isSongExist)], self.songNameLabel.y()
-        )
+            [57, 83][isPlay or (not isSongExist)], self.songNameLabel.y())
         # 更新按钮位置
         self.__moveButtonGroup()
 

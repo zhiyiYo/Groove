@@ -138,7 +138,7 @@ class SongCardListWidget(BasicSongListWidget):
             )
         )
         # 将歌曲添加到新建的播放列表
-        contextMenu.addToMenu.newPlayList.triggered.connect(
+        contextMenu.addToMenu.newPlaylistAct.triggered.connect(
             lambda: self.addSongsToNewCustomPlaylistSig.emit(
                 [self.songCard_list[self.currentRow()].songInfo]
             )
@@ -156,3 +156,5 @@ class SongCardListWidget(BasicSongListWidget):
             self.songCardCheckedStateChangedSlot)
         songCard.addSongsToCustomPlaylistSig.connect(
             self.addSongsToCustomPlaylistSig)
+        songCard.addSongToNewCustomPlaylistSig.connect(
+            lambda songInfo: self.addSongsToNewCustomPlaylistSig.emit([songInfo]))

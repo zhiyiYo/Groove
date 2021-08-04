@@ -13,68 +13,76 @@ QListWidget::item {
 }
 
 /*歌曲卡样式*/
-QWidget#songNameCard {
-    background: transparent;
-}
-
 QLabel {
     font-family: 'Microsoft YaHei';
     font-size: 9pt;
     background-color: transparent;
 }
 
-QLabel#songNameLabel {
-    font-size: 9pt;
+QLabel#songNameLabel[state='notChecked-notPlay-leave'] {
+    color: white;
 }
 
-QLabel[state='leave-notPlay'] {
+QLabel[state='notChecked-notPlay-leave'] {
     color: rgb(161, 159, 159);
 }
 
-QLabel[state='leave-play'] {
-    /*color: rgb(72,210,242);*/
+QLabel[state='notChecked-play-leave'] {
     color: rgb(121, 230, 255);
 }
 
-QLabel[state='enter-notPlay'] {
+QLabel[state='notChecked-notPlay-enter'] {
     color: white;
 }
 
-QLabel[state='enter-play'] {
-    /*color: rgb(67, 178, 204);*/
+QLabel[state='notChecked-play-enter'] {
     color: rgb(72, 210, 242);
 }
 
-QLabel#clickableLabel[state='enter-play']:hover {
-    color: rgb(67, 178, 204);
-}
-
-QLabel#clickableLabel[state='enter-notPlay']:hover {
-    color: rgb(212, 214, 215)
-}
-
-QLabel#songNameLabel[isPlay='False'] {
+QLabel[state="checked"] {
     color: white;
 }
 
-QLabel#songNameLabel[isPlay='True'] {
-    /*color: rgb(72, 210, 242);*/
-    color: rgb(121, 230, 255)
+QLabel#clickableLabel[state='notChecked-play-enter']:hover {
+    color: rgb(67, 178, 204);
 }
 
+QLabel#clickableLabel[state='notChecked-notPlay-enter']:hover {
+    color: rgb(212, 214, 215)
+}
 
-QWidget[state='leave'] {
+QLabel#playingLabel[state="notChecked"] {
+    qproperty-pixmap: url(app/resource/images/playing_interface/正在播放_green_16_16.png)
+}
+
+QLabel#playingLabel[state="checked"] {
+    qproperty-pixmap: url(app/resource/images/playing_interface/正在播放_white_16_16.png)
+}
+
+/* 歌曲卡背景 */
+QWidget[state='notChecked-leave'] {
     background-color: transparent;
 }
 
-QWidget[state='hover'] {
+QWidget[state='notChecked-enter'] {
     background-color: rgb(41, 50, 54);
 }
 
-QWidget[state='pressed'] {
+QWidget[state='notChecked-pressed'] {
     background-color: rgb(86, 77, 77);
 }
 
+QWidget[state='checked-leave'] {
+    background-color: rgb(0, 107, 131);
+}
+
+QWidget[state='checked-enter'] {
+    background-color: rgb(41, 50, 54);
+}
+
+QWidget[state='checked-pressed'] {
+    background-color: rgb(0, 153, 188);
+}
 
 QToolButton {
     background-color: transparent;
@@ -102,18 +110,21 @@ QCheckBox::indicator {
     background-color: transparent;
 }
 
-QCheckBox::indicator[isPlay='False'] {
+QCheckBox::indicator[state='notChecked-notPlay'] {
     border: 1px solid white;
 }
 
-QCheckBox::indicator[isPlay='True'] {
+QCheckBox::indicator[state='notChecked-play'] {
+    border: 1px solid rgb(72, 210, 242);
+}
+
+QCheckBox::indicator[state='checked'] {
     border: 1px solid rgb(72, 210, 242);
 }
 
 QCheckBox::indicator:checked {
     border-image: url(app/resource/images/playing_interface/CheckMark.png);
 }
-
 
 
 /*滚动条*/

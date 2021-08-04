@@ -132,7 +132,8 @@ class AlbumCard(PerspectiveWidget):
         """ 显示右击菜单 """
         # 创建菜单
         menu = AlbumCardContextMenu(parent=self)
-        menu.playAct.triggered.connect(lambda: self.playSignal.emit(self.songInfo_list))
+        menu.playAct.triggered.connect(
+            lambda: self.playSignal.emit(self.songInfo_list))
         menu.nextToPlayAct.triggered.connect(
             lambda: self.nextPlaySignal.emit(self.songInfo_list)
         )
@@ -142,10 +143,12 @@ class AlbumCard(PerspectiveWidget):
         menu.editInfoAct.triggered.connect(self.showAlbumInfoEditPanel)
         menu.selectAct.triggered.connect(self.__selectActSlot)
         menu.addToMenu.addSongsToPlaylistSig.connect(
-            lambda name: self.addAlbumToCustomPlaylistSig.emit(name, self.songInfo_list)
+            lambda name: self.addAlbumToCustomPlaylistSig.emit(
+                name, self.songInfo_list)
         )
-        menu.addToMenu.newPlayList.triggered.connect(
-            lambda: self.addAlbumToNewCustomPlaylistSig.emit(self.songInfo_list)
+        menu.addToMenu.newPlaylistAct.triggered.connect(
+            lambda: self.addAlbumToNewCustomPlaylistSig.emit(
+                self.songInfo_list)
         )
         menu.deleteAct.triggered.connect(
             lambda: self.deleteCardSig.emit(self.albumInfo)
@@ -160,7 +163,7 @@ class AlbumCard(PerspectiveWidget):
             index = newText.index("\n")
             fontMetrics = QFontMetrics(QFont("Microsoft YaHei", 10, 75))
             secondLineText = fontMetrics.elidedText(
-                newText[index + 1 :], Qt.ElideRight, 200
+                newText[index + 1:], Qt.ElideRight, 200
             )
             newText = newText[: index + 1] + secondLineText
             self.albumNameLabel.setText(newText)
@@ -209,7 +212,8 @@ class AlbumCard(PerspectiveWidget):
         oldAlbumInfo = deepcopy(self.albumInfo)
         infoEditPanel = AlbumInfoEditDialog(self.albumInfo, self.window())
         infoEditPanel.saveInfoSig.connect(
-            lambda newAlbumInfo: self.__saveAlbumInfoSlot(oldAlbumInfo, newAlbumInfo)
+            lambda newAlbumInfo: self.__saveAlbumInfoSlot(
+                oldAlbumInfo, newAlbumInfo)
         )
         self.showAlbumInfoEditPanelSig.emit(infoEditPanel)
         infoEditPanel.setStyle(QApplication.style())
@@ -271,19 +275,14 @@ class AlbumCard(PerspectiveWidget):
         """ 显示添加到菜单 """
         addToMenu = AddToMenu(parent=self)
         addToGlobalPos = self.mapToGlobal(QPoint(0, 0)) + QPoint(
-            self.addToButton.x(), self.addToButton.y()
-        )
+            self.addToButton.x(), self.addToButton.y())
         x = addToGlobalPos.x() + self.addToButton.width() + 5
         y = addToGlobalPos.y() + int(
-            self.addToButton.height() / 2 - (13 + 38 * addToMenu.actionCount()) / 2
-        )
+            self.addToButton.height() / 2 - (13 + 38 * addToMenu.actionCount()) / 2)
         addToMenu.playingAct.triggered.connect(
-            lambda: self.addToPlayingSignal.emit(self.songInfo_list)
-        )
-        addToMenu.newPlayList.triggered.connect(
-            lambda: self.addAlbumToNewCustomPlaylistSig.emit(self.songInfo_list)
-        )
+            lambda: self.addToPlayingSignal.emit(self.songInfo_list))
+        addToMenu.newPlaylistAct.triggered.connect(
+            lambda: self.addAlbumToNewCustomPlaylistSig.emit(self.songInfo_list))
         addToMenu.addSongsToPlaylistSig.connect(
-            lambda name: self.addAlbumToCustomPlaylistSig.emit(name, self.songInfo_list)
-        )
+            lambda name: self.addAlbumToCustomPlaylistSig.emit(name, self.songInfo_list))
         addToMenu.exec(QPoint(x, y))

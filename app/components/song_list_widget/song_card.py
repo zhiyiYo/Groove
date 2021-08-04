@@ -9,7 +9,7 @@ from .song_card_type import SongCardType
 
 
 class SongTabSongCard(BasicSongCard):
-    """ 歌曲卡 """
+    """ 我的音乐歌曲界面的歌曲卡 """
 
     switchToAlbumInterfaceSig = pyqtSignal(str, str)  # 发送专辑名和歌手名
 
@@ -55,8 +55,7 @@ class SongTabSongCard(BasicSongCard):
         self.setCheckBoxBtLabelState("notSelected-notPlay")
         # 信号连接到槽
         self.albumLabel.clicked.connect(
-            lambda: self.switchToAlbumInterfaceSig.emit(self.album, self.songer)
-        )
+            lambda: self.switchToAlbumInterfaceSig.emit(self.album, self.songer))
 
     def updateSongCard(self, songInfo: dict):
         """ 更新歌曲卡信息 """
@@ -79,7 +78,7 @@ class SongTabSongCard(BasicSongCard):
 
 
 class AlbumInterfaceSongCard(BasicSongCard):
-    """ 专辑界面歌曲卡 """
+    """ 专辑界面的歌曲卡 """
 
     def __init__(self, songInfo: dict, parent=None):
         super().__init__(songInfo, SongCardType.ALBUM_INTERFACE_SONG_CARD, parent)

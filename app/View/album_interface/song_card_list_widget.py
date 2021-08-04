@@ -105,7 +105,7 @@ class SongCardListWidget(BasicSongListWidget):
             lambda name: self.addSongsToCustomPlaylistSig.emit(
                 name, self.songInfo_list)
         )
-        contextMenu.addToMenu.newPlayList.triggered.connect(
+        contextMenu.addToMenu.newPlaylistAct.triggered.connect(
             lambda: self.addSongsToNewCustomPlaylistSig.emit(
                 [self.songCard_list[self.currentRow()].songInfo]
             )

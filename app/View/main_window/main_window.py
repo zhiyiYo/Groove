@@ -342,6 +342,10 @@ class MainWindow(FramelessWindow):
             lambda: self.showCreatePlaylistDialog(self.mediaPlaylist.playlist))
         self.playingInterface.showSmallestPlayInterfaceSig.connect(
             self.showSmallestPlayInterface)
+        self.playingInterface.addSongsToNewCustomPlaylistSig.connect(
+            self.showCreatePlaylistDialog)
+        self.playingInterface.addSongsToCustomPlaylistSig.connect(
+            self.addSongsToCustomPlaylist)
         self.playingInterface.clearPlaylistSig.connect(self.clearPlaylist)
         # todo:歌曲界面歌曲卡列表视图的信号连接到槽函数
         self.songTabSongListWidget.playSignal.connect(self.songCardPlaySlot)

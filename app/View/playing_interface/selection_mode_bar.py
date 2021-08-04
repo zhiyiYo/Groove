@@ -20,18 +20,18 @@ class SelectionModeBar(BasicSelectionModeBar):
             r"app\resource\images\selection_mode_bar\Cancel.png", "取消", self)
         self.playButton = BasicButton(
             r"app\resource\images\selection_mode_bar\Play.png", "播放", self)
-        self.nextToPlayButton = BasicButton(
-            r"app\resource\images\selection_mode_bar\下一首播放_20_20.png", "下一首播放", self)
-        self.showAlbumButton = BasicButton(
-            r"app\resource\images\selection_mode_bar\显示专辑_20_20.png", "显示专辑", self)
         self.addToButton = BasicButton(
             r"app\resource\images\selection_mode_bar\Add.png", "添加到", self)
-        self.editInfoButton = BasicButton(
-            r"app\resource\images\selection_mode_bar\Edit.png", "编辑信息", self)
+        self.deleteButton = BasicButton(
+            r"app\resource\images\selection_mode_bar\Delete.png", "移除", self)
+        self.moveUpButton = BasicButton(
+            r"app\resource\images\selection_mode_bar\Up.png", "向上移动", self)
+        self.moveDownButton = BasicButton(
+            r"app\resource\images\selection_mode_bar\Delete.png", "向下移动", self)
+        self.showAlbumButton = BasicButton(
+            r"app\resource\images\selection_mode_bar\显示专辑_20_20.png", "显示专辑", self)
         self.propertyButton = BasicButton(
             r"app\resource\images\selection_mode_bar\属性_20_20.png", "属性", self)
-        self.deleteButton = BasicButton(
-            r"app\resource\images\selection_mode_bar\Delete.png", "删除", self)
         self.checkAllButton = CheckAllButton(
             [
                 r"app\resource\images\selection_mode_bar\SelectAll.png",
@@ -44,9 +44,9 @@ class SelectionModeBar(BasicSelectionModeBar):
     def __initWidget(self):
         """ 初始化界面 """
         self.addButtons([
-            self.cancelButton, self.playButton, self.nextToPlayButton,
-            self.addToButton, self.showAlbumButton, self.editInfoButton,
-            self.propertyButton, self.deleteButton, self.checkAllButton
+            self.cancelButton, self.playButton, self.addToButton,
+            self.deleteButton, self.moveUpButton, self.moveDownButton,
+            self.showAlbumButton, self.propertyButton, self.checkAllButton
         ])
-        self.setToHideButtons(self.button_list[4:-2])
+        self.setToHideButtons([self.playButton]+self.button_list[4:-1])
         self.insertSeparator(1)

@@ -22,6 +22,7 @@ class BasicSongCard(QWidget):
     playButtonClicked = pyqtSignal(int)
     addSongToPlayingSig = pyqtSignal(dict)
     checkedStateChanged = pyqtSignal(int, bool)
+    addSongToNewCustomPlaylistSig = pyqtSignal(dict)
     addSongsToCustomPlaylistSig = pyqtSignal(str, list)
 
     def __init__(self, songInfo: dict, songCardType, parent=None):
@@ -103,12 +104,18 @@ class BasicSongCard(QWidget):
 
         Parameters
         ----------
-        scaleableWidget_list : 随着歌曲卡的伸缩而伸缩的小部件列表，要求第一个元素为歌名卡，后面的元素都是label
-        scaleableWidgetWidth_list : 与可伸缩小部件相对应的小部件初始长度列表
-        fixedWidth : 为其他不可拉伸的小部件保留的宽度 """
+        scaleableWidget_list: list
+            随着歌曲卡的伸缩而伸缩的小部件列表，要求第一个元素为歌名卡，后面的元素都是label
+
+        scaleableWidgetWidth_list: list
+            与可伸缩小部件相对应的小部件初始长度列表
+
+        fixedWidth: int
+            为其他不可拉伸的小部件保留的宽度 """
         if self.__scaleableWidgetMaxWidth_list:
             return
-        self.__checkIsLengthEqual(scaleableWidget_list, scalebaleWidgetWidth_list)
+        self.__checkIsLengthEqual(
+            scaleableWidget_list, scalebaleWidgetWidth_list)
         # 必须先将所有标签添加到列表中后才能调用这个函数
         if not self.__label_list:
             raise Exception("必须先调用addLabels函数将标签添加到窗口中")
@@ -129,8 +136,12 @@ class BasicSongCard(QWidget):
 
         Paramerter
         ----------
-        label_list : 歌名卡后的标签列表
-        labelSpacing_list : 每个标签的前置空白 """
+        label_list: list
+            歌名卡后的标签列表
+
+        labelSpacing_list: list
+            每个标签的前置空白
+        """
         if self.__label_list:
             return
         self.__checkIsLengthEqual(label_list, labelSpacing_list)
@@ -154,6 +165,8 @@ class BasicSongCard(QWidget):
 
     def setSelected(self, isSelected: bool):
         """ 设置选中状态 """
+        if self.isSelected == isSelected:
+            return
         self.isSelected = isSelected
         if isSelected:
             self.setWidgetState("selected-leave")
@@ -218,8 +231,11 @@ class BasicSongCard(QWidget):
 
         Parameters
         ----------
-        aniWidget_list : 需要设置动画的小部件列表
-        deltaX_list : 和aniWidget_list相对应的动画位置偏移量列表 """
+        aniWidget_list: list
+            需要设置动画的小部件列表
+
+        deltaX_list: list
+            和 `aniWidget_list` 相对应的动画位置偏移量列表 """
         self.__checkIsLengthEqual(aniWidget_list, deltaX_list)
         self.__aniWidget_list = aniWidget_list
         self.__deltaX_list = deltaX_list
@@ -255,7 +271,8 @@ class BasicSongCard(QWidget):
                 # 不处于选择模式下时，如果歌曲卡没被选中而鼠标离开窗口就隐藏复选框和按钮组窗口
                 if not self.isSelected:
                     self.songNameCard.buttonGroup.hide()
-                    self.songNameCard.checkBox.setHidden(not self.isInSelectionMode)
+                    self.songNameCard.checkBox.setHidden(
+                        not self.isInSelectionMode)
                 state = "selected-leave" if self.isSelected else "notSelected-leave"
                 self.setWidgetState(state)
                 self.setStyle(QApplication.style())
@@ -288,14 +305,11 @@ class BasicSongCard(QWidget):
     def mouseReleaseEvent(self, e: QMouseEvent):
         """ 鼠标松开时开始动画 """
         for ani, widget, deltaX in zip(
-            self.__ani_list, self.__aniWidget_list, self.__deltaX_list
-        ):
+                self.__ani_list, self.__aniWidget_list, self.__deltaX_list):
             ani.setStartValue(
-                QRect(widget.x(), widget.y(), widget.width(), widget.height())
-            )
+                QRect(widget.x(), widget.y(), widget.width(), widget.height()))
             ani.setEndValue(
-                QRect(widget.x() - deltaX, widget.y(), widget.width(), widget.height())
-            )
+                QRect(widget.x() - deltaX, widget.y(), widget.width(), widget.height()))
         self.aniGroup.start()
         if e.button() == Qt.LeftButton:
             self.clicked.emit(self.itemIndex)
@@ -349,6 +363,8 @@ class BasicSongCard(QWidget):
 
     def setChecked(self, isChecked: bool):
         """ 设置歌曲卡选中状态 """
+        if self.isChecked == isChecked:
+            return
         self.checkBox.setChecked(isChecked)
 
     def updateSongCard(self):
@@ -411,21 +427,19 @@ class BasicSongCard(QWidget):
 
     def __showAddToMenu(self):
         """ 显示添加到菜单 """
-        addToMenu = AddToMenu(parent=self)
-        addToGlobalPos = self.mapToGlobal(QPoint(0, 0)) + QPoint(
-            self.addToButton.x() + self.buttonGroup.x(), 0
-        )
-        x = addToGlobalPos.x() + self.addToButton.width() + 5
-        y = addToGlobalPos.y() + int(
-            self.addToButton.height() / 2 - (13 + 38 * addToMenu.actionCount()) / 2
-        )
-        addToMenu.playingAct.triggered.connect(
-            lambda: self.addSongToPlayingSig.emit(self.songInfo)
-        )
-        addToMenu.addSongsToPlaylistSig.connect(
-            lambda name: self.addSongsToCustomPlaylistSig.emit(name, [self.songInfo])
-        )
-        addToMenu.exec(QPoint(x, y))
+        menu = AddToMenu(parent=self)
+        pos = self.mapToGlobal(
+            QPoint(self.addToButton.x()+self.buttonGroup.x(), 0))
+        x = pos.x() + self.addToButton.width() + 5
+        y = pos.y() + int(
+            self.addToButton.height() / 2 - (13 + 38 * menu.actionCount()) / 2)
+        menu.playingAct.triggered.connect(
+            lambda: self.addSongToPlayingSig.emit(self.songInfo))
+        menu.newPlaylistAct.triggered.connect(
+            lambda: self.addSongToNewCustomPlaylistSig.emit(self.songInfo))
+        menu.addSongsToPlaylistSig.connect(
+            lambda name: self.addSongsToCustomPlaylistSig.emit(name, [self.songInfo]))
+        menu.exec(QPoint(x, y))
 
     @property
     def widget_list(self) -> list:
