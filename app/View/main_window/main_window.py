@@ -346,6 +346,8 @@ class MainWindow(FramelessWindow):
             self.showCreatePlaylistDialog)
         self.playingInterface.addSongsToCustomPlaylistSig.connect(
             self.addSongsToCustomPlaylist)
+        self.playingInterface.selectionModeStateChanged.connect(
+            self.selectionModeStateChangedSlot)
         self.playingInterface.clearPlaylistSig.connect(self.clearPlaylist)
         # todo:歌曲界面歌曲卡列表视图的信号连接到槽函数
         self.songTabSongListWidget.playSignal.connect(self.songCardPlaySlot)
@@ -925,7 +927,8 @@ class MainWindow(FramelessWindow):
     def selectionModeStateChangedSlot(self, isOpenSelectionMode: bool):
         """ 进入/退出选择模式信号的槽函数 """
         self.isInSelectionMode = isOpenSelectionMode
-        self.playBar.setHidden(isOpenSelectionMode)
+        if self.sender() !=self.playingInterface:
+            self.playBar.setHidden(isOpenSelectionMode)
 
     def playCheckedCards(self, songInfo_list: list):
         """ 重置播放列表为所有选中的歌曲卡中的歌曲 """

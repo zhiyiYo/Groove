@@ -118,7 +118,7 @@ class SongListWidget(ListWidget):
 
     def setCurrentIndex(self, index: int):
         """ 设置当前播放歌曲下标，同时更新样式 """
-        if not self.songCard_list:
+        if not self.songCard_list or index==self.currentIndex:
             return
         # 将之前播放的歌曲卡的播放状态设置为False
         self.songCard_list[self.currentIndex].setPlay(False)

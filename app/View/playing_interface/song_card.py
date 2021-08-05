@@ -180,8 +180,8 @@ class SongCard(QWidget):
 
         self.checkBox.setVisible(self.isInSelectionMode)
         if e.button() == Qt.LeftButton:
-            self.aniGroup.finished.connect(self.__onAniFinished)
             if not self.isInSelectionMode:
+                self.aniGroup.finished.connect(self.__onAniFinished)
                 self.aniStartSig.emit()  # 发信号给songListWidget要求取消当前歌曲卡的播放状态
                 self.setPlay(True)
             else:

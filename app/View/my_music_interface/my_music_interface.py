@@ -372,46 +372,32 @@ class MyMusicInterface(QWidget):
 
     def __showAddToMenu(self):
         """ 显示添加到菜单 """
-        # 动作触发标志位
-        self.__actionTriggeredFlag = False
-        addToMenu = AddToMenu(parent=self)
+        menu = AddToMenu(parent=self)
         addToButton = self.sender()
         # 获取选中的播放列表
         songInfo_list = []
         if self.sender() is self.songTabSelectionModeBar.addToButton:
             selectionModeBar = self.songTabSelectionModeBar
-            songInfo_list = [
-                songCard.songInfo
-                for songCard in self.songCardListWidget.checkedSongCard_list
-            ]
+            songInfo_list = [i.songInfo for i in self.songCardListWidget.checkedSongCard_list]
         else:
             selectionModeBar = self.albumTabSelectionModeBar
             for albumCard in self.albumCardViewer.checkedAlbumCard_list:
                 songInfo_list.extend(albumCard.songInfo_list)
         # 计算菜单弹出位置
-        addToGlobalPos = selectionModeBar.mapToGlobal(QPoint(0, 0)) + QPoint(
-            addToButton.x(), addToButton.y())
-        x = addToGlobalPos.x() + addToButton.width() + 5
-        y = addToGlobalPos.y() + int(
-            addToButton.height() / 2 - (13 + 38 * addToMenu.actionCount()) / 2)
+        pos = selectionModeBar.mapToGlobal(addToButton.pos())
+        x = pos.x() + addToButton.width() + 5
+        y = pos.y() + int(
+            addToButton.height() / 2 - (13 + 38 * menu.actionCount()) / 2)
         # 信号连接到槽
-        addToMenu.playingAct.triggered.connect(
+        for act in menu.action_list:
+            act.triggered.connect(self.exitSelectionMode)
+        menu.playingAct.triggered.connect(
             lambda: self.addSongsToPlayingPlaylistSig.emit(songInfo_list))
-        addToMenu.newPlaylistAct.triggered.connect(
+        menu.newPlaylistAct.triggered.connect(
             lambda: self.addSongsToNewCustomPlaylistSig.emit(songInfo_list))
-        addToMenu.addSongsToPlaylistSig.connect(
-            lambda name: self.addSongsToCustomPlaylistSig.emit(
-                name, songInfo_list))
-        for act in addToMenu.action_list:
-            act.triggered.connect(self.__addToMenuTriggeredSlot)
-        addToMenu.exec(QPoint(x, y))
-        # 退出选择状态
-        if self.__actionTriggeredFlag:
-            self.exitSelectionMode()
-
-    def __addToMenuTriggeredSlot(self):
-        """ 添加到菜单上的动作被触发时标志位置位 """
-        self.__actionTriggeredFlag = True
+        menu.addSongsToPlaylistSig.connect(
+            lambda name: self.addSongsToCustomPlaylistSig.emit(name, songInfo_list))
+        menu.exec(QPoint(x, y))
 
     def scrollToLabel(self, label: str):
         """ 滚动到label指定的位置 """

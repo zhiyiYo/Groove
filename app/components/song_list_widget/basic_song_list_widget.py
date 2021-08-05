@@ -1,6 +1,6 @@
 # coding:utf-8
-
 from json import dump
+from typing import List, Union
 
 from app.components.dialog_box.song_info_edit_dialog import SongInfoEditDialog
 from app.components.dialog_box.song_property_dialog import SongPropertyDialog
@@ -62,7 +62,7 @@ class BasicSongListWidget(ListWidget):
         # 初始化列表
         self.item_list = []
         self.songCard_list = []
-        self.checkedSongCard_list = []
+        self.checkedSongCard_list = [] #type:List[Union[SongTabSongCard, AlbumInterfaceSongCard]]
         # 创建导航标签标签
         self.__createGuideLabel()
         # 交错颜色
