@@ -1,5 +1,31 @@
-# Groove
-A music player based on pyqt5 and LAV Filters.
+<p align="center">
+  <img width="12%" align="center" src="app/resource/images/logo.png" alt="logo">
+</p>
+  <h1 align="center">
+  Groove Music
+</h1>
+<p align="center">
+  A music player based on PyQt5 and LAV Filters.
+</p>
+
+<p align="center">
+
+  <a style="text-decoration:none">
+    <img src="https://img.shields.io/badge/Python-3.8.6-blue.svg?color=00B16A" alt="Python 3.8.6"/>
+  </a>
+
+  <a style="text-decoration:none">
+    <img src="https://img.shields.io/badge/PyQt-5.13.2-blue?color=00B16A" alt="PyQt 5.13.2"/>
+  </a>
+
+  <a style="text-decoration:none">
+    <img src="https://img.shields.io/badge/LAV%20Filters-0.74.1-blue?color=00B16A" alt="OS Win10 | Windows11"/>
+  </a>
+
+  <a style="text-decoration:none">
+    <img src="https://img.shields.io/badge/OS-Win%2010%20|%20Win%2011-blue?color=00B16A" alt="OS Win10 | Windows11"/>
+  </a>
+</p>
 
 ## Interface
 ![界面](docs/screenshot/Groove音乐.png)
