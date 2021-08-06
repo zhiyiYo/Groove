@@ -461,8 +461,7 @@ class PlayingInterface(QWidget):
 
     def __onSelectionModeBarDeleteButtonClicked(self):
         """ 选择栏播放按钮点击槽函数 """
-        # 反向迭代避免更新下标引发的迭代错误
-        for songCard in reversed(self.songListWidget.checkedSongCard_list):
+        for songCard in self.songListWidget.checkedSongCard_list.copy():
             songCard.setChecked(False)
             index = self.songListWidget.songCard_list.index(songCard)
             self.songListWidget.removeSongCard(index)

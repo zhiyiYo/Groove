@@ -4,7 +4,7 @@ from PyQt5.QtGui import QPen, QBrush, QPainter, QColor, QPixmap, QFont, QFontMet
 from PyQt5.QtWidgets import QWidget, QPushButton
 
 
-class BasicSelectionModeBar(QWidget):
+class SelectionModeBarBase(QWidget):
     """ 基本选择模式栏 """
 
     def __init__(self, parent=None):
@@ -224,7 +224,7 @@ class TwoStateButton(BasicButton):
 class CheckAllButton(TwoStateButton):
     """ 全选按钮 """
 
-    def __init__(self, iconPath_list, text_list, parent=None, buttonSize=(84,70), isState_1=0):
+    def __init__(self, iconPath_list, text_list, parent=None, buttonSize=(84, 70), isState_1=0):
         super().__init__(iconPath_list, text_list, parent, buttonSize, isState_1)
 
     def setCheckedState(self, checkedState: bool):

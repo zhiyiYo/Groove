@@ -71,7 +71,7 @@ class BasicSongListWidget(ListWidget):
         self.setViewportMargins(viewportMargins)
 
     def createSongCards(self, connectSongCardToSlotFunc):
-        """ 清空列表并创建新歌曲卡，该函数必须被子类重写
+        """ 清空列表并创建新歌曲卡
 
         Parameter
         ----------
@@ -267,7 +267,7 @@ class BasicSongListWidget(ListWidget):
 
     def unCheckSongCards(self):
         """ 取消所有已处于选中状态的歌曲卡的选中状态 """
-        for songCard in self.songCard_list:
+        for songCard in self.checkedSongCard_list.copy():
             songCard.setChecked(False)
 
     def updateAllSongCards(self, songInfo_list: list, connectSongCardSigToSlotFunc=None):

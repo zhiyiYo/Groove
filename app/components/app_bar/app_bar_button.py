@@ -1,11 +1,10 @@
 # coding:utf-8
-
 from PyQt5.QtCore import QEvent, Qt
 from PyQt5.QtGui import QBrush, QColor, QFont, QFontMetrics, QPainter, QPixmap
 from PyQt5.QtWidgets import QPushButton
 
 
-class BasicButton(QPushButton):
+class AppBarButton(QPushButton):
     """ 专辑界面信息栏按钮 """
 
     def __init__(self, iconPath: str, text: str, parent=None):
@@ -85,5 +84,3 @@ class BasicButton(QPushButton):
         painter.setPen(Qt.white)
         painter.setFont(QFont('Microsoft YaHei', 10))
         painter.drawText(50, 29, self.text)
-
-

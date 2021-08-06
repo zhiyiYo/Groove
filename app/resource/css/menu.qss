@@ -287,7 +287,7 @@ QMenu#playlistCardContextMenu::separator {
 
 
 /*专辑界面更多操作菜单*/
-QMenu#albumInterfaceMoreActionMenu,
+QMenu#appBarMoreActionsMenu,
 QMenu#albumInterfaceAddToMenu {
     width: 1px;
     background-color: rgb(214, 215, 219);
@@ -295,11 +295,11 @@ QMenu#albumInterfaceAddToMenu {
     border-radius: 0px;
 }
 
-QMenu#albumInterfaceMoreActionMenu::item {
+QMenu#appBarMoreActionsMenu::item {
     min-width: 120px;
 }
 
-QMenu#albumInterfaceMoreActionMenu::item:selected,
+QMenu#appBarMoreActionsMenu::item:selected,
 QMenu#albumInterfaceAddToMenu::item:selected {
     background: rgba(0,0,0,25);
     color: black;

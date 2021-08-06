@@ -1,11 +1,11 @@
 # coding:utf-8
 
-from app.components.basic_selection_mode_bar import (BasicButton,
-                                                     BasicSelectionModeBar,
-                                                     CheckAllButton)
+from app.components.selection_mode_bar_base import (BasicButton,
+                                                    SelectionModeBarBase,
+                                                    CheckAllButton)
 
 
-class SelectionModeBar(BasicSelectionModeBar):
+class SelectionModeBar(SelectionModeBarBase):
     """ 选择模式栏 """
 
     def __init__(self, parent=None):
@@ -62,4 +62,3 @@ class SelectionModeBar(BasicSelectionModeBar):
         )
         self.setToHideButtons(self.button_list[4:-2])
         self.insertSeparator(1)
-

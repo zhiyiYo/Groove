@@ -408,8 +408,7 @@ class AlbumCoverWindow(PerspectiveWidget):
         # 必须将标签的背景设置为透明
         self.editAlbumCoverLabel.setAttribute(Qt.WA_TranslucentBackground)
         self.editAlbumCoverLabel.setPixmap(
-            QPixmap("app/resource/images/album_interface/编辑信息.png")
-        )
+            QPixmap("app/resource/images/album_interface/Edit.png"))
         self.editAlbumCoverLabel.move(14, 137)
 
     def setAlbumCover(self, picPath: str):

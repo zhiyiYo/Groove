@@ -1,21 +1,21 @@
 # coding:utf-8
-
 from copy import deepcopy
 
 from PyQt5.QtCore import Qt, pyqtSignal, QPoint, QThread
-from PyQt5.QtWidgets import QApplication, QWidget
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout
 from PyQt5.QtGui import QPalette
 
 from app.components.menu import AddToMenu
+from app.components.scroll_area import ScrollArea
 from app.common.object.save_info_object import SaveInfoObject
 from app.components.dialog_box.album_info_edit_dialog import AlbumInfoEditDialog
 
 from .album_info_bar import AlbumInfoBar
 from .selection_mode_bar import SelectionModeBar
-from .song_card_list_widget import SongCardListWidget
+from .song_list_widget import SongListWidget
 
 
-class AlbumInterface(QWidget):
+class AlbumInterface(ScrollArea):
     """ 专辑界面 """
 
     songCardPlaySig = pyqtSignal(int)  # 在当前播放列表中播放这首歌
@@ -43,9 +43,11 @@ class AlbumInterface(QWidget):
         """
         super().__init__(parent)
         self.albumInfo = deepcopy(albumInfo)
-        self.songInfo_list = albumInfo.get("songInfo_list")  # type:list
+        self.songInfo_list = albumInfo.get("songInfo_list", [])  # type:list
         # 创建小部件
-        self.songListWidget = SongCardListWidget(self.songInfo_list, self)
+        self.scrollWidget = QWidget(self)
+        self.vBox = QVBoxLayout(self.scrollWidget)
+        self.songListWidget = SongListWidget(self.songInfo_list, self)
         self.albumInfoBar = AlbumInfoBar(albumInfo, self)
         self.selectionModeBar = SelectionModeBar(self)
         # 创建线程
@@ -59,14 +61,23 @@ class AlbumInterface(QWidget):
         """ 初始化小部件 """
         self.resize(1230, 900)
         self.setAutoFillBackground(True)
+        self.setWidget(self.scrollWidget)
         self.selectionModeBar.hide()
         self.songListWidget.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        # 设置背景色
-        palette = QPalette()
-        palette.setColor(self.backgroundRole(), Qt.white)
-        self.setPalette(palette)
+        # 设置布局
+        self.vBox.setContentsMargins(0, 430, 0, 0)
+        self.vBox.addWidget(self.songListWidget)
+        # 设置层叠样式
+        self.__setQss()
         # 信号连接到槽
         self.__connectSignalToSlot()
+
+    def __setQss(self):
+        """ 设置层叠样式 """
+        self.setObjectName("albumInterface")
+        self.scrollWidget.setObjectName("scrollWidget")
+        with open('app/resource/css/album_interface.qss', encoding="utf-8") as f:
+            self.setStyleSheet(f.read())
 
     def updateWindow(self, albumInfo: dict):
         """ 更新窗口 """
@@ -74,15 +85,18 @@ class AlbumInterface(QWidget):
             return
         self.albumInfoBar.updateWindow(albumInfo)
         self.albumInfo = albumInfo if albumInfo else {}
-        self.songInfo_list = albumInfo.get("songInfo_list")
+        self.songInfo_list = albumInfo.get("songInfo_list", [])
         self.songListWidget.updateAllSongCards(self.songInfo_list)
-        self.songListWidget.resize(self.size())
+        self.scrollWidget.resize(
+            self.width(), self.songListWidget.height()+385)
 
     def resizeEvent(self, e):
         """ 改变尺寸时改变小部件大小 """
         super().resizeEvent(e)
         self.albumInfoBar.resize(self.width(), self.albumInfoBar.height())
-        self.songListWidget.resize(self.size())
+        self.songListWidget.resize(self.width(), self.songListWidget.height())
+        self.scrollWidget.resize(
+            self.width(), self.songListWidget.height()+385)
         self.selectionModeBar.resize(
             self.width(), self.selectionModeBar.height())
         self.selectionModeBar.move(
@@ -103,7 +117,7 @@ class AlbumInterface(QWidget):
         self.songListWidget.updateOneSongCard(oldSongInfo, newSongInfo, False)
         self.albumInfo["songInfo_list"] = self.songListWidget.songInfo_list
 
-    def __showAlbumInfoEditPanel(self):
+    def __showAlbumInfoEditDialog(self):
         """ 显示专辑信息编辑面板 """
         oldAlbumInfo = deepcopy(self.albumInfo)
         infoEditPanel = AlbumInfoEditDialog(
@@ -188,62 +202,45 @@ class AlbumInterface(QWidget):
     def __showAddToMenu(self):
         """ 显示添加到菜单 """
         # 初始化菜单动作触发标志
-        self.__actionTriggeredFlag = False
-        addToMenu = AddToMenu(parent=self)
+        menu = AddToMenu(parent=self)
         # 计算菜单弹出位置
-        addToGlobalPos = self.selectionModeBar.mapToGlobal(QPoint(0, 0)) + QPoint(
-            self.selectionModeBar.addToButton.x(), 0
-        )
-        x = addToGlobalPos.x() + self.selectionModeBar.addToButton.width() + 5
-        y = addToGlobalPos.y() + int(
-            self.selectionModeBar.addToButton.height() / 2
-            - (13 + 38 * addToMenu.actionCount()) / 2
-        )
+        pos = self.selectionModeBar.mapToGlobal(
+            QPoint(self.selectionModeBar.addToButton.x(), 0))
+        x = pos.x() + self.selectionModeBar.addToButton.width() + 5
+        y = pos.y() + self.selectionModeBar.addToButton.height() // 2 - \
+            (13 + 38 * menu.actionCount()) // 2
         # 获取选中的歌曲信息列表
+        for act in menu.action_list:
+            act.triggered.connect(self.exitSelectionMode)
         songInfo_list = [
-            songCard.songInfo for songCard in self.songListWidget.checkedSongCard_list
-        ]
-        addToMenu.playingAct.triggered.connect(
-            lambda: self.addSongsToPlayingPlaylistSig.emit(songInfo_list)
-        )
-        addToMenu.addSongsToPlaylistSig.connect(
-            lambda name: self.addSongsToCustomPlaylistSig.emit(
-                name, songInfo_list)
-        )
-        addToMenu.newPlaylistAct.triggered.connect(
-            lambda: self.addSongsToNewCustomPlaylistSig.emit(songInfo_list)
-        )
-        for act in addToMenu.action_list:
-            act.triggered.connect(self.__addToMenuTriggeredSlot)
-        addToMenu.exec(QPoint(x, y))
-        # 如果动作有被触发就退出选择模式
-        if self.__actionTriggeredFlag:
-            self.__unCheckSongCards()
+            i.songInfo for i in self.songListWidget.checkedSongCard_list]
+        menu.playingAct.triggered.connect(
+            lambda: self.addSongsToPlayingPlaylistSig.emit(songInfo_list))
+        menu.addSongsToPlaylistSig.connect(
+            lambda name: self.addSongsToCustomPlaylistSig.emit(name, songInfo_list))
+        menu.newPlaylistAct.triggered.connect(
+            lambda: self.addSongsToNewCustomPlaylistSig.emit(songInfo_list))
+        menu.exec(QPoint(x, y))
 
-    def __addToMenuTriggeredSlot(self):
-        """ 添加到菜单上的动作被触发时标志位置位 """
-        self.__actionTriggeredFlag = True
+    def __onScrollBarValueChanged(self, value):
+        """ 滚动时改变专辑信息栏高度 """
+        h = 385 - value
+        if h > 155:
+            self.albumInfoBar.resize(self.albumInfoBar.width(), h)
 
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
         # 专辑信息栏信号
-        self.albumInfoBar.playAllBt.clicked.connect(
-            lambda: self.playAlbumSignal.emit(self.songInfo_list)
-        )
+        self.albumInfoBar.playAllButton.clicked.connect(
+            lambda: self.playAlbumSignal.emit(self.songInfo_list))
+        self.albumInfoBar.editInfoButton.clicked.connect(
+            self.__showAlbumInfoEditDialog)
         self.albumInfoBar.addToPlayingPlaylistSig.connect(
-            lambda: self.addSongsToPlayingPlaylistSig.emit(self.songInfo_list)
-        )
-        self.albumInfoBar.editInfoBt.clicked.connect(
-            self.__showAlbumInfoEditPanel)
+            lambda: self.addSongsToPlayingPlaylistSig.emit(self.songInfo_list))
         self.albumInfoBar.addToNewCustomPlaylistSig.connect(
-            lambda: self.addSongsToNewCustomPlaylistSig.emit(
-                self.songInfo_list)
-        )
+            lambda: self.addSongsToNewCustomPlaylistSig.emit(self.songInfo_list))
         self.albumInfoBar.addToCustomPlaylistSig.connect(
-            lambda name: self.addSongsToCustomPlaylistSig.emit(
-                name, self.songInfo_list)
-        )
-        self.albumInfoBar.editInfoSig.connect(self.__showAlbumInfoEditPanel)
+            lambda name: self.addSongsToCustomPlaylistSig.emit(name, self.songInfo_list))
         # 歌曲列表信号
         self.songListWidget.playSignal.connect(self.songCardPlaySig)
         self.songListWidget.playOneSongSig.connect(self.playOneSongCardSig)
@@ -252,17 +249,13 @@ class AlbumInterface(QWidget):
         self.songListWidget.addSongToPlayingSignal.connect(
             self.addOneSongToPlayingSig)
         self.songListWidget.selectionModeStateChanged.connect(
-            self.__selectionModeStateChangedSlot
-        )
+            self.__selectionModeStateChangedSlot)
         self.songListWidget.checkedSongCardNumChanged.connect(
-            self.__checkedCardNumChangedSlot
-        )
+            self.__checkedCardNumChangedSlot)
         self.songListWidget.addSongsToCustomPlaylistSig.connect(
-            self.addSongsToCustomPlaylistSig
-        )
+            self.addSongsToCustomPlaylistSig)
         self.songListWidget.addSongsToNewCustomPlaylistSig.connect(
-            self.addSongsToNewCustomPlaylistSig
-        )
+            self.addSongsToNewCustomPlaylistSig)
         # 选择栏信号连接到槽函数
         self.selectionModeBar.cancelButton.clicked.connect(
             self.__unCheckSongCards)
@@ -272,8 +265,9 @@ class AlbumInterface(QWidget):
         self.selectionModeBar.editInfoButton.clicked.connect(
             self.__editSongCardInfo)
         self.selectionModeBar.propertyButton.clicked.connect(
-            self.__showCheckedSongCardProperty
-        )
+            self.__showCheckedSongCardProperty)
         self.selectionModeBar.checkAllButton.clicked.connect(
             self.__selectAllButtonSlot)
         self.selectionModeBar.addToButton.clicked.connect(self.__showAddToMenu)
+        # 将滚动信号连接到槽函数
+        self.verticalScrollBar().valueChanged.connect(self.__onScrollBarValueChanged)
