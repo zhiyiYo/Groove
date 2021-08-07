@@ -30,7 +30,7 @@ class AlbumInfoBar(CollapsingAppBarBase):
                    self.pinToStartMenuButton, self.editInfoButton, self.deleteButton]
         super().__init__(self.albumName,
                          f'{self.songerName}\n{self.year} • {self.tcon}',
-                         self.albumCoverPath, buttons, parent)
+                         self.albumCoverPath, buttons, False, parent)
         self.actionNames = ["全部播放", "添加到", "显示歌手", '固定到"开始"菜单', "编辑信息", "删除"]
         self.action_list = [QAction(i, self) for i in self.actionNames]
         self.setAttribute(Qt.WA_StyledBackground)

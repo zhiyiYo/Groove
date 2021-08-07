@@ -1,14 +1,12 @@
 # coding:utf-8
-
+from app.components.menu import AcrylicMenu, AddToMenu
 from app.components.song_list_widget.basic_song_list_widget import BasicSongListWidget
 from app.components.song_list_widget.song_card_type import SongCardType
-from PyQt5.QtCore import QMargins, Qt, pyqtSignal
+from PyQt5.QtCore import QMargins, Qt, pyqtSignal, QEvent
 from PyQt5.QtGui import QContextMenuEvent
+from PyQt5.QtWidgets import QAction, QApplication
 
-from .song_card_list_context_menu import SongCardListContextMenu
-
-
-class SongCardListWidget(BasicSongListWidget):
+class SongListWidget(BasicSongListWidget):
     """ 定义一个歌曲卡列表视图 """
 
     playSignal = pyqtSignal(dict)  # 将播放列表的当前歌曲切换为指定的歌曲卡
@@ -45,7 +43,6 @@ class SongCardListWidget(BasicSongListWidget):
         """ 歌曲卡播放按钮槽函数 """
         self.playSignal.emit(self.songCard_list[index].songInfo)
         self.setCurrentIndex(index)
-        # self.setPlay(index)
 
     def contextMenuEvent(self, e: QContextMenuEvent):
         """ 重写鼠标右击时间的响应函数 """
@@ -61,7 +58,6 @@ class SongCardListWidget(BasicSongListWidget):
         # 处于选择模式时不发送信号
         if self.isInSelectionMode:
             return
-        # self.setPlay(index)
         # 发送歌曲信息更新信号
         self.playSignal.emit(self.songCard_list[index].songInfo)
 
@@ -93,7 +89,7 @@ class SongCardListWidget(BasicSongListWidget):
         """ 更新所有歌曲卡，根据给定的信息决定创建或者删除歌曲卡 """
         super().updateAllSongCards(songInfo_list, self.__connectSongCardSignalToSlot)
 
-    def __connectMenuSignalToSlot(self, contextMenu: SongCardListContextMenu):
+    def __connectMenuSignalToSlot(self, contextMenu):
         """ 信号连接到槽 """
         contextMenu.playAct.triggered.connect(
             lambda: self.playOneSongSig.emit(
@@ -158,3 +154,35 @@ class SongCardListWidget(BasicSongListWidget):
             self.addSongsToCustomPlaylistSig)
         songCard.addSongToNewCustomPlaylistSig.connect(
             lambda songInfo: self.addSongsToNewCustomPlaylistSig.emit([songInfo]))
+
+
+class SongCardListContextMenu(AcrylicMenu):
+    """ 歌曲卡列表右击菜单 """
+
+    def __init__(self, parent):
+        super().__init__("", parent)
+        self.setFixedWidth(128)
+        # 创建动作
+        self.createActions()
+
+    def createActions(self):
+        """ 创建动作 """
+        # 创建主菜单动作
+        self.playAct = QAction("播放", self)
+        self.nextSongAct = QAction("下一首播放", self)
+        self.showAlbumAct = QAction("显示专辑", self)
+        self.editInfoAct = QAction("编辑信息", self)
+        self.showPropertyAct = QAction("属性", self)
+        self.deleteAct = QAction("删除", self)
+        self.selectAct = QAction("选择", self)
+        # 创建菜单和子菜单
+        self.addToMenu = AddToMenu("添加到", self)
+        # 将动作添加到菜单中
+        self.addActions([self.playAct, self.nextSongAct])
+        # 将子菜单添加到主菜单
+        self.addMenu(self.addToMenu)
+        # 将其余动作添加到主菜单
+        self.addActions(
+            [self.showAlbumAct, self.editInfoAct, self.showPropertyAct, self.deleteAct])
+        self.addSeparator()
+        self.addAction(self.selectAct)

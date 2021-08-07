@@ -1,1 +1,1 @@
-from .song_card_list_widget import SongCardListWidget
+from .song_list_widget import SongListWidget

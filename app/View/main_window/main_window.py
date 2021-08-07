@@ -122,7 +122,7 @@ class MainWindow(FramelessWindow):
 
     def __initWidget(self):
         """ 初始化小部件 """
-        self.resize(1300, 1000)
+        self.resize(1300, 970)
         self.setMinimumSize(1030, 800)
         self.setWindowTitle("Groove 音乐")
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowSystemMenuHint |
@@ -257,6 +257,10 @@ class MainWindow(FramelessWindow):
         super().showEvent(e)
         if not self.playingInterface.isVisible():
             self.playBar.show()
+
+    def hideEvent(self, e):
+        super().hideEvent(e)
+        self.playBar.hide()
 
     def closeEvent(self, e: QCloseEvent):
         """ 关闭窗口前更新json文件 """

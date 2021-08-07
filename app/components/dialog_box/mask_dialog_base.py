@@ -13,9 +13,9 @@ class MaskDialogBase(QDialog):
         self.windowMask = QWidget(self)
         # 蒙版中间的对话框，所有小部件以他为父级窗口
         self.widget = QWidget(self, objectName='centerWidget')
-        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setWindowFlags(Qt.FramelessWindowHint|Qt.Window)
         self.setAttribute(Qt.WA_TranslucentBackground)
-        self.setGeometry(0, 0, self.parent().width(), self.parent().height())
+        self.setGeometry(self.parent().geometry())
         self.windowMask.resize(self.size())
         self.windowMask.setStyleSheet('background:rgba(255, 255, 255, 0.6)')
         self.hBoxLayout.addWidget(self.widget)

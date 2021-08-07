@@ -1,16 +1,14 @@
 # coding:utf-8
 from time import time
 
-from app.View.my_music_interface.album_tab_interface import AlbumCardViewer
-from app.View.my_music_interface.album_tab_interface.selection_mode_bar import (
-    SelectionModeBar as AlbumTabSelectionBar,
-)
-from app.View.my_music_interface.song_tab_interface import SongCardListWidget
-from app.View.my_music_interface.song_tab_interface.selection_mode_bar import (
-    SelectionModeBar as SongTabSelectionModeBar,
-)
 from app.components.menu import AddToMenu
 from app.components.pop_up_ani_stacked_widget import PopUpAniStackedWidget
+from app.View.my_music_interface.album_tab_interface import AlbumCardViewer
+from app.View.my_music_interface.album_tab_interface.selection_mode_bar import \
+    SelectionModeBar as AlbumTabSelectionBar
+from app.View.my_music_interface.song_tab_interface import SongListWidget
+from app.View.my_music_interface.song_tab_interface.selection_mode_bar import \
+    SelectionModeBar as SongTabSelectionModeBar
 from PyQt5.QtCore import QPoint, Qt, pyqtSignal
 from PyQt5.QtGui import QPalette
 from PyQt5.QtWidgets import QWidget
@@ -62,7 +60,7 @@ class MyMusicInterface(QWidget):
         self.__albumInfoGetter = GetAlbumInfo(
             self.__songInfoGetter.songInfo_list)
         t1 = time()
-        self.songCardListWidget = SongCardListWidget(
+        self.songCardListWidget = SongListWidget(
             self.__songInfoGetter.songInfo_list, self)
         t2 = time()
         self.albumCardViewer = AlbumCardViewer(

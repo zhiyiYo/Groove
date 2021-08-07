@@ -11,7 +11,8 @@ from .app_bar_button import AppBarButton
 
 class CollapsingAppBarBase(QWidget):
 
-    def __init__(self, title: str, content: str, coverPath: str, buttons: List[AppBarButton], parent=None):
+    def __init__(self, title: str, content: str, coverPath: str, buttons: List[AppBarButton],
+                 needWhiteBar=False, parent=None):
         """
         Parameters
         ----------
@@ -27,6 +28,9 @@ class CollapsingAppBarBase(QWidget):
         buttons: List[AppBarButtons]
             工具栏按钮列表，不包括"更多操作"按钮
 
+        needWhiteBar: bool
+            是否需要在封面上绘制白条
+
         parent:
             父级窗口
         """
@@ -34,6 +38,7 @@ class CollapsingAppBarBase(QWidget):
         self.title = title
         self.content = content
         self.coverPath = coverPath
+        self.needWhiteBar = needWhiteBar
         self.coverLabel = QLabel(self)
         self.contentLabel = QLabel(content, self)
         self.titleLabel = QLabel(title, self)
@@ -70,10 +75,12 @@ class CollapsingAppBarBase(QWidget):
     def resizeEvent(self, e: QResizeEvent):
         """ 改变部件位置和大小 """
         h = self.height()
+        needWhiteBar = self.needWhiteBar
         # 调整封面大小和位置
-        coverWidth = 275 - int((385-h)/230*192)
+        coverWidth = 275-int((385-h)/230*192) if needWhiteBar else 295-int((385-h)/230*206)
         self.coverLabel.resize(coverWidth, coverWidth)
-        self.coverLabel.move(45, 65-int((385-h)/230*17))
+        y = 65-int((385-h)/230*17) if needWhiteBar else 45-int((385-h)/230*4)
+        self.coverLabel.move(45, y)
         # 调整标签大小和位置
         self.titleFontSize = int(40/43*(43-(385-h)/230*12))
         self.contentFontSize = int(16-(385-h)/147*3)
@@ -85,12 +92,15 @@ class CollapsingAppBarBase(QWidget):
         self.titleLabel.adjustSize()
         self.contentLabel.adjustSize()
         x = 45 + coverWidth + 44
-        self.titleLabel.move(x, int(71/81*(71-(385-h)/230*25)))
-        self.contentLabel.move(x, int(132-(385-h)/147*15))
+        y1 = int(71/81*(71-(385-h)/230*25)) if needWhiteBar else y
+        y2 = int(132-(385-h)/147*15) if needWhiteBar else y+56
+        self.titleLabel.move(x, y1)
+        self.contentLabel.move(x, y2)
         self.contentLabel.setVisible(h >= 238)
         # 调整按钮位置
         x = 45+coverWidth+22
-        y = 288-int((385-h)/230*206)
+        y = 288-int((385-h)/230*206) if needWhiteBar else 308 - \
+            int((385-h)/230*220)
         for button in self.__buttons:
             button.move(x, y)
             x += button.width()+10
@@ -116,6 +126,8 @@ class CollapsingAppBarBase(QWidget):
     def paintEvent(self, e):
         """ 封面白条 """
         super().paintEvent(e)
+        if not self.needWhiteBar:
+            return
         painter = QPainter(self)
         painter.setPen(Qt.NoPen)
         painter.setRenderHint(QPainter.Antialiasing)
