@@ -29,7 +29,7 @@ class AlbumInfoEditDialog(MaskDialogBase):
         self.tcon = self.albumInfo["tcon"]  # type:str
         self.songer = self.albumInfo["songer"]  # type:str
         self.albumName = self.albumInfo["album"]  # type:str
-        self.cover_path = self.albumInfo["cover_path"]  # type:str
+        self.cover_path = self.albumInfo["coverPath"]  # type:str
         self.songInfo_list = self.albumInfo["songInfo_list"]  # type:list
         self.newAlbumCoverPath = None
         # 创建小部件
@@ -130,7 +130,8 @@ class AlbumInfoEditDialog(MaskDialogBase):
         self.tconLineEdit.resize(327, 40)
         self.saveButton.resize(168, 40)
         self.cancelButton.resize(168, 40)
-        self.widget.setFixedSize(936, self.scrollArea.y() + self.scrollArea.height() + 98)
+        self.widget.setFixedSize(
+            936, self.scrollArea.y() + self.scrollArea.height() + 98)
         self.saveButton.move(563, self.widget.height() - 16 -
                              self.saveButton.height())
         self.cancelButton.move(735, self.widget.height() -
@@ -184,8 +185,10 @@ class AlbumInfoEditDialog(MaskDialogBase):
         elif self.widget.height() <= self.MAXHEIGHT - abs(deltaHeight):
             self.__adjustHeight(deltaHeight)
         self.scrollWidget.resize(931, self.scrollWidget.height() + deltaHeight)
-        self.saveButton.move(563, self.widget.height()-16-self.saveButton.height())
-        self.cancelButton.move(735, self.widget.height()-16-self.saveButton.height())
+        self.saveButton.move(563, self.widget.height() -
+                             16-self.saveButton.height())
+        self.cancelButton.move(735, self.widget.height() -
+                               16-self.saveButton.height())
         # 调整后面的小部件的位置
         for songInfoWidget in self.songInfoWidget_list[senderIndex + 1:]:
             songInfoWidget.move(0, songInfoWidget.y() + deltaHeight)
@@ -255,17 +258,16 @@ class AlbumInfoEditDialog(MaskDialogBase):
             # 判断文件格式后修改后缀名
             newSuffix = getPicSuffix(picData)
             # 如果封面路径是默认专辑封面，就修改封面路径
-            if self.cover_path == "app/resource/images/未知专辑封面_200_200.png":
+            if self.cover_path == "app/resource/images/default_covers/默认专辑封面_200_200.png":
                 self.cover_path = "app/resource/Album_Cover/{0}/{0}{1}".format(
-                    self.albumInfo["modifiedAlbum"], newSuffix
-                )
+                    self.albumInfo["modifiedAlbum"], newSuffix)
             with open(self.cover_path, "wb") as f:
                 f.write(picData)
             oldName, oldSuffix = os.path.splitext(self.cover_path)
             if newSuffix != oldSuffix:
                 os.rename(self.cover_path, oldName + newSuffix)
                 self.cover_path = oldName + newSuffix
-                self.albumInfo["cover_path"] = self.cover_path
+                self.albumInfo["coverPath"] = self.cover_path
 
     def __setWidgetEnable(self, isEnable: bool):
         """ 设置编辑框是否启用 """
@@ -277,7 +279,7 @@ class AlbumInfoEditDialog(MaskDialogBase):
         """ 显示正在加载动画 """
         self.loadingLabel.resize(77, 77)
         self.loadingLabel.move(
-            int(self.widget.width()/ 2 - self.loadingLabel.width() / 2),
+            int(self.widget.width() / 2 - self.loadingLabel.width() / 2),
             int(self.widget.height() / 2 - self.loadingLabel.height() / 2),
         )
         self.loadingLabel.raise_()

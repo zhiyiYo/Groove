@@ -21,7 +21,7 @@ class PopUpAniStackedWidget(QStackedWidget):
         self.__previousWidget = None
         self.__previousIndex = 0
 
-    def addWidget(self, widget, deltaX: int = 0, deltaY: int = 22, isNeedOpacityAni=True):
+    def addWidget(self, widget, deltaX: int = 0, deltaY: int = 22, isNeedOpacityAni=False):
         """ 添加堆叠窗口
 
         Parameters

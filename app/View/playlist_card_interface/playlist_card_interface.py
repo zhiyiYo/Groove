@@ -30,6 +30,7 @@ class PlaylistCardInterface(QWidget):
     deletePlaylistSig = pyqtSignal(dict)
     renamePlaylistSig = pyqtSignal(dict, dict)
     selectionModeStateChanged = pyqtSignal(bool)
+    switchToPlaylistInterfaceSig = pyqtSignal(str)
 
     def __init__(self, playlists: list, parent=None):
         super().__init__(parent)
@@ -110,14 +111,16 @@ class PlaylistCardInterface(QWidget):
         self.hideCheckBoxAniGroup.addAnimation(hideCheckBoxAni)
         self.hideCheckBoxAni_list.append(hideCheckBoxAni)
         # 信号连接到槽
+        playlistCard.playSig.connect(self.playSig)
+        playlistCard.nextToPlaySig.connect(self.nextToPlaySig)
         playlistCard.showBlurBackgroundSig.connect(self.__showBlurBackground)
         playlistCard.hideBlurBackgroundSig.connect(self.blurBackground.hide)
         playlistCard.renamePlaylistSig.connect(self.__showRenamePlaylistPanel)
         playlistCard.deleteCardSig.connect(self.__showDeleteCardPanel)
-        playlistCard.playSig.connect(self.playSig)
         playlistCard.checkedStateChanged.connect(
             self.__playlistCardCheckedStateChangedSlot)
-        playlistCard.nextToPlaySig.connect(self.nextToPlaySig)
+        playlistCard.switchToPlaylistInterfaceSig.connect(
+            self.switchToPlaylistInterfaceSig)
 
     def __initWidget(self):
         """ 初始化小部件 """
@@ -337,8 +340,7 @@ class PlaylistCardInterface(QWidget):
         # 向布局添加小部件
         self.gridLayout.appendWidget(self.playlistCard_list[-1])
         self.scrollWidget.resize(
-            self.width(), 175 + self.gridLayout.rowCount() * 298 + 120
-        )
+            self.width(), 175 + self.gridLayout.rowCount() * 298 + 120)
         # 按照当前排序方式重新排序播放列表卡
         self.__sortPlaylist(self.sortMode)
 
@@ -398,7 +400,7 @@ class PlaylistCardInterface(QWidget):
             self.width(), 175 + self.gridLayout.rowCount() * 298 + 120
         )
         # 删除json文件并发送删除播放列表的信号
-        remove(f'app\\Playlists\\{playlist["playlistName"]}.json')
+        remove(f'app/Playlists/{playlist["playlistName"]}.json')
         self.deletePlaylistSig.emit(playlist)
         # 如果没有专辑卡就显示导航标签
         self.guideLabel.setHidden(bool(self.playlistCard_list))
@@ -460,7 +462,7 @@ class PlaylistCardInterface(QWidget):
         playlist["songInfo_list"] = songInfo_list + playlist["songInfo_list"]
         playlistCard_dict["playlistCard"].updateWindow(playlist)
         # 更新json文件
-        with open(f"app\\Playlists\\{playlistName}.json", "w", encoding="utf-8") as f:
+        with open(f"app/Playlists/{playlistName}.json", "w", encoding="utf-8") as f:
             dump(playlist, f)
         return playlist
 

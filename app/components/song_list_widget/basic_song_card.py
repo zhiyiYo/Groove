@@ -40,6 +40,7 @@ class BasicSongCard(QWidget):
             父级
         """
         super().__init__(parent)
+        self.setFixedHeight(60)
         self._getInfo(songInfo)
         self.__resizeTime = 0
         self.__songCardType = songCardType
@@ -123,13 +124,9 @@ class BasicSongCard(QWidget):
         self.__scaleableWidget_list = scaleableWidget_list
         self.__scaleableWidgetMaxWidth_list = scalebaleWidgetWidth_list
         # 计算初始宽度
-        initWidth = (
-            sum(self.__scaleableWidgetMaxWidth_list)
-            + sum(self.__labelSpacing_list)
-            + fixedWidth
-        )
+        initWidth = sum(self.__scaleableWidgetMaxWidth_list) + \
+            sum(self.__labelSpacing_list) + fixedWidth
         self.resize(initWidth, 60)
-        self.setFixedHeight(60)
 
     def addLabels(self, label_list: list, labelSpacing_list: list):
         """ 往歌曲卡中添加除了歌曲名卡之外的标签，只能初始化一次标签列表

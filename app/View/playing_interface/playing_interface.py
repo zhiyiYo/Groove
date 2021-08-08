@@ -544,7 +544,7 @@ class PlayingInterface(QWidget):
         # 将歌曲列表的信号连接到槽函数
         self.songListWidget.currentIndexChanged.connect(
             self.currentIndexChanged)
-        self.songListWidget.removeItemSignal.connect(
+        self.songListWidget.removeSongSignal.connect(
             self.__removeSongFromPlaylist)
         self.songListWidget.addSongsToCustomPlaylistSig.connect(
             self.addSongsToCustomPlaylistSig)
@@ -575,4 +575,3 @@ class PlayingInterface(QWidget):
             self.__onSelectionModeBarAlbumButtonClicked)
         self.selectionModeBar.addToButton.clicked.connect(
             self.__onSelectionModeBarAddToButtonClicked)
-

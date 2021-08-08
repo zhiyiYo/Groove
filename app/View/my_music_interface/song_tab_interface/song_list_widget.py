@@ -1,13 +1,15 @@
 # coding:utf-8
+from app.components.dialog_box.delete_card_dialog import DeleteCardDialog
 from app.components.menu import AcrylicMenu, AddToMenu
 from app.components.song_list_widget.basic_song_list_widget import BasicSongListWidget
 from app.components.song_list_widget.song_card_type import SongCardType
-from PyQt5.QtCore import QMargins, Qt, pyqtSignal, QEvent
+from PyQt5.QtCore import QMargins, Qt, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent
-from PyQt5.QtWidgets import QAction, QApplication
+from PyQt5.QtWidgets import QAction
+
 
 class SongListWidget(BasicSongListWidget):
-    """ 定义一个歌曲卡列表视图 """
+    """ 歌曲卡列表视图 """
 
     playSignal = pyqtSignal(dict)  # 将播放列表的当前歌曲切换为指定的歌曲卡
     playOneSongSig = pyqtSignal(dict)  # 重置播放列表为指定的一首歌
@@ -24,7 +26,7 @@ class SongListWidget(BasicSongListWidget):
         self.resize(1150, 758)
         self.sortMode = "添加时间"
         # 创建歌曲卡
-        self.__createSongCards()
+        self.createSongCards(self.__connectSongCardSignalToSlot)
         # 初始化
         self.__initWidget()
 
@@ -34,10 +36,6 @@ class SongListWidget(BasicSongListWidget):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         # 设置层叠样式
         self.__setQss()
-
-    def __createSongCards(self):
-        """ 清空列表并创建新歌曲卡 """
-        super().createSongCards(self.__connectSongCardSignalToSlot)
 
     def __playButtonSlot(self, index):
         """ 歌曲卡播放按钮槽函数 """
@@ -53,7 +51,7 @@ class SongListWidget(BasicSongListWidget):
             self.__connectMenuSignalToSlot(contextMenu)
             contextMenu.exec(self.cursor().pos())
 
-    def __emitCurrentChangedSignal(self, index):
+    def __onSongCardDoubleClicked(self, index):
         """ 发送当前播放的歌曲卡变化信号，同时更新样式和歌曲信息卡 """
         # 处于选择模式时不发送信号
         if self.isInSelectionMode:
@@ -89,18 +87,22 @@ class SongListWidget(BasicSongListWidget):
         """ 更新所有歌曲卡，根据给定的信息决定创建或者删除歌曲卡 """
         super().updateAllSongCards(songInfo_list, self.__connectSongCardSignalToSlot)
 
+    def __showDeleteCardDialog(self):
+        index = self.currentRow()
+        title = "是否确定要删除此项？"
+        content = f"""如果删除"{self.songInfo_list[index]['songName']}"，它将不再位于此设备上。"""
+        w = DeleteCardDialog(title, content, self.window())
+        w.deleteCardSig.connect(lambda: self.removeSongCard(index))
+        w.exec_()
+
     def __connectMenuSignalToSlot(self, contextMenu):
         """ 信号连接到槽 """
         contextMenu.playAct.triggered.connect(
             lambda: self.playOneSongSig.emit(
-                self.songCard_list[self.currentRow()].songInfo
-            )
-        )
+                self.songCard_list[self.currentRow()].songInfo))
         contextMenu.nextSongAct.triggered.connect(
             lambda: self.nextToPlayOneSongSig.emit(
-                self.songCard_list[self.currentRow()].songInfo
-            )
-        )
+                self.songCard_list[self.currentRow()].songInfo))
         # 显示歌曲信息编辑面板
         contextMenu.editInfoAct.triggered.connect(self.showSongInfoEditDialog)
         # 显示属性面板
@@ -114,42 +116,33 @@ class SongListWidget(BasicSongListWidget):
             )
         )
         # 删除歌曲卡
-        contextMenu.deleteAct.triggered.connect(
-            lambda: self.removeSongCard(self.currentRow())
-        )
+        contextMenu.deleteAct.triggered.connect(self.__showDeleteCardDialog)
         # 将歌曲添加到正在播放列表
         contextMenu.addToMenu.playingAct.triggered.connect(
             lambda: self.addSongToPlayingSignal.emit(
-                self.songCard_list[self.currentRow()].songInfo
-            )
-        )
+                self.songCard_list[self.currentRow()].songInfo))
         # 进入选择模式
         contextMenu.selectAct.triggered.connect(
-            lambda: self.songCard_list[self.currentRow()].setChecked(True)
-        )
+            lambda: self.songCard_list[self.currentRow()].setChecked(True))
         # 将歌曲添加到已存在的自定义播放列表中
         contextMenu.addToMenu.addSongsToPlaylistSig.connect(
             lambda name: self.addSongsToCustomPlaylistSig.emit(
-                name, [self.songCard_list[self.currentRow()].songInfo]
-            )
-        )
+                name, [self.songCard_list[self.currentRow()].songInfo]))
         # 将歌曲添加到新建的播放列表
         contextMenu.addToMenu.newPlaylistAct.triggered.connect(
             lambda: self.addSongsToNewCustomPlaylistSig.emit(
-                [self.songCard_list[self.currentRow()].songInfo]
-            )
-        )
+                [self.songCard_list[self.currentRow()].songInfo]))
 
     def __connectSongCardSignalToSlot(self, songCard):
         """ 将歌曲卡信号连接到槽 """
         songCard.addSongToPlayingSig.connect(self.addSongToPlayingSignal)
-        songCard.doubleClicked.connect(self.__emitCurrentChangedSignal)
+        songCard.doubleClicked.connect(self.__onSongCardDoubleClicked)
         songCard.playButtonClicked.connect(self.__playButtonSlot)
         songCard.clicked.connect(self.setCurrentIndex)
         songCard.switchToAlbumInterfaceSig.connect(
             self.switchToAlbumInterfaceSig)
         songCard.checkedStateChanged.connect(
-            self.songCardCheckedStateChangedSlot)
+            self.onSongCardCheckedStateChanged)
         songCard.addSongsToCustomPlaylistSig.connect(
             self.addSongsToCustomPlaylistSig)
         songCard.addSongToNewCustomPlaylistSig.connect(

@@ -59,6 +59,8 @@ class SongTabSongCard(BasicSongCard):
 
     def updateSongCard(self, songInfo: dict):
         """ 更新歌曲卡信息 """
+        if self.songInfo == songInfo:
+            return
         self._getInfo(songInfo)
         self.songNameCard.updateSongNameCard(self.songName)
         self.songerLabel.setText(self.songer)
@@ -95,7 +97,8 @@ class AlbumInterfaceSongCard(BasicSongCard):
         """ 初始化小部件 """
         self.addLabels([self.songerLabel, self.durationLabel], [16, 70])
         # 设置可伸缩的小部件及其初始化长度
-        self.setScalableWidgets([self.songNameCard, self.songerLabel], [554, 401], 45)
+        self.setScalableWidgets(
+            [self.songNameCard, self.songerLabel], [554, 401], 45)
         self.setDynamicStyleLabels(self.label_list)
         # 设置动画
         self.setAnimation(self.widget_list, [13, -3, -13])
@@ -109,10 +112,11 @@ class AlbumInterfaceSongCard(BasicSongCard):
 
     def updateSongCard(self, songInfo: dict):
         """ 更新歌曲卡信息 """
+        if self.songInfo == songInfo:
+            return
         self._getInfo(songInfo)
         self.songNameCard.updateSongNameCard(
-            songInfo["songName"], songInfo["tracknumber"]
-        )
+            songInfo["songName"], songInfo["tracknumber"])
         self.songerLabel.setText(songInfo["songer"])
         self.durationLabel.setText(songInfo["duration"])
         # 调整宽度

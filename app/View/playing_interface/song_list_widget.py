@@ -15,10 +15,10 @@ class SongListWidget(ListWidget):
     """ 正在播放列表 """
 
     currentIndexChanged = pyqtSignal(int)
-    removeItemSignal = pyqtSignal(int)
+    removeSongSignal = pyqtSignal(int)
     selectionModeStateChanged = pyqtSignal(bool)      # 进入或退出选择模式
     checkedSongCardNumChanged = pyqtSignal(int)     # 选中的歌曲卡数量改变
-    switchToAlbumInterfaceSig = pyqtSignal(str, str) # albumName, songerName
+    switchToAlbumInterfaceSig = pyqtSignal(str, str)  # albumName, songerName
     addSongsToNewCustomPlaylistSig = pyqtSignal(list)  # 将歌曲添加到新的自定义播放列表
     addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 将歌曲添加到已存在的自定义播放列表
 
@@ -114,11 +114,11 @@ class SongListWidget(ListWidget):
             else:
                 self.setCurrentIndex(index)
         # 发送信号
-        self.removeItemSignal.emit(index)
+        self.removeSongSignal.emit(index)
 
     def setCurrentIndex(self, index: int):
         """ 设置当前播放歌曲下标，同时更新样式 """
-        if not self.songCard_list or index==self.currentIndex:
+        if not self.songCard_list or index == self.currentIndex:
             return
         # 将之前播放的歌曲卡的播放状态设置为False
         self.songCard_list[self.currentIndex].setPlay(False)

@@ -28,15 +28,7 @@ class GetAlbumCover:
     def getAlbum(self):
         """ 获取封面 """
         # 检查当前目录下是否存在用于储存所有封面的目录,没有就创建
-        if not os.path.exists(self.album_cover_folder):
-            os.mkdir(self.album_cover_folder)
-        # 创建一个包含未知专辑封面的未知专辑文件夹
-        if not os.path.exists("app/resource/Album_Cover/未知专辑"):
-            os.mkdir("app/resource/Album_Cover/未知专辑")
-            copyfile(
-                "app/resource/images/未知专辑封面_200_200.png",
-                "app/resource/Album_Cover/未知专辑/未知专辑.png",
-            )
+        os.makedirs(self.album_cover_folder, exist_ok=True)
         # 开始获取封面
         for songInfo in self.songInfo.songInfo_list:
             suffix = songInfo["suffix"]

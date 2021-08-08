@@ -16,11 +16,11 @@ class BasicSongListWidget(ListWidget):
     """ 基本歌曲列表控件 """
 
     emptyChangedSig = pyqtSignal(bool)  # 歌曲卡是否为空信号
-    removeItemSignal = pyqtSignal(int)
+    removeSongSignal = pyqtSignal(int)
     songCardNumChanged = pyqtSignal(int)
     addSongToPlayingSignal = pyqtSignal(dict)  # 将一首歌添加到正在播放
     checkedSongCardNumChanged = pyqtSignal(int)
-    editSongCardSignal = pyqtSignal(dict, dict)  # 编辑歌曲卡完成信号
+    editSongInfoSignal = pyqtSignal(dict, dict)  # 编辑歌曲卡完成信号
     selectionModeStateChanged = pyqtSignal(bool)
     addSongsToNewCustomPlaylistSig = pyqtSignal(list)  # 将歌曲添加到新的自定义播放列表
     addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 将歌曲添加到已存在的自定义播放列表
@@ -44,7 +44,7 @@ class BasicSongListWidget(ListWidget):
             视口的外边距
 
         paddingBottomHeight: int
-            列表视图底部留白
+            列表视图底部留白，如果为 `0` 或者 `None` 则不添加留白
         """
         super().__init__(parent)
         self.__songCardType = songCardType
@@ -52,7 +52,7 @@ class BasicSongListWidget(ListWidget):
         # 使用指定的歌曲卡类创建歌曲卡对象
         self.__SongCard = [SongTabSongCard,
                            AlbumInterfaceSongCard][songCardType.value]
-        self.songInfo_list = songInfo_list if songInfo_list else []
+        self.songInfo_list = songInfo_list if songInfo_list else []  # type:List[dict]
         self.currentIndex = None
         self.playingIndex = None  # 正在播放的歌曲卡下标
         self.playingSongInfo = self.songInfo_list[0] if songInfo_list else None
@@ -61,8 +61,8 @@ class BasicSongListWidget(ListWidget):
         self.isAllSongCardsChecked = False
         # 初始化列表
         self.item_list = []
-        self.songCard_list = []
-        self.checkedSongCard_list = [] #type:List[Union[SongTabSongCard, AlbumInterfaceSongCard]]
+        self.songCard_list = []  # type:List[Union[SongTabSongCard, AlbumInterfaceSongCard]]
+        self.checkedSongCard_list = []
         # 创建导航标签标签
         self.__createGuideLabel()
         # 交错颜色
@@ -76,10 +76,10 @@ class BasicSongListWidget(ListWidget):
         Parameter
         ----------
         connectSongCardSigToSlotFunc:
-             将歌曲卡信号连接到槽函数的函数对象 """
+             将歌曲卡信号连接到槽函数的函数对象
+        """
         self.clearSongCards()
         for songInfo in self.songInfo_list:
-            # 添加空项目
             self.appendOneSongCard(songInfo, connectSongCardToSlotFunc)
         # 设置导航标签是否隐藏
         self.guideLabel.setHidden(bool(self.songCard_list))
@@ -91,7 +91,7 @@ class BasicSongListWidget(ListWidget):
         self.guideLabel = QLabel("这里没有可显示的内容。请尝试其他筛选器。", self)
         self.guideLabel.setStyleSheet(
             "color: black; font: 25px 'Microsoft YaHei'")
-        self.guideLabel.resize(500, 26)
+        self.guideLabel.adjustSize()
         self.guideLabel.move(35, 286)
 
     def appendOneSongCard(self, songInfo: dict, connectSongCardSigToSlotFunc=None):
@@ -147,12 +147,13 @@ class BasicSongListWidget(ListWidget):
         if self.currentIndex > index:
             self.currentIndex -= 1
         # 发送信号
-        self.removeItemSignal.emit(index)
+        self.removeSongSignal.emit(index)
+        self.songCardNumChanged.emit(len(self.songCard_list))
         self.update()
 
     def setPlay(self, index):
         """ 设置歌曲卡播放状态 """
-        if not self.songCard_list or index == self.playingIndex:
+        if not self.songCard_list:
             return
         self.songCard_list[self.currentIndex].setSelected(False)
         self.currentIndex = index
@@ -184,7 +185,7 @@ class BasicSongListWidget(ListWidget):
         # 更新歌曲卡和歌曲信息列表
         self.updateOneSongCard(oldSongInfo, newSongInfo)
         # 发出歌曲卡被更改信息
-        self.editSongCardSignal.emit(oldSongInfo, newSongInfo)
+        self.editSongInfoSignal.emit(oldSongInfo, newSongInfo)
 
     def updateOneSongCard(self, oldSongInfo: dict, newSongInfo, isNeedWriteToFile=True):
         """ 更新一个歌曲卡 """
@@ -213,14 +214,11 @@ class BasicSongListWidget(ListWidget):
         for item in self.item_list:
             item.setSizeHint(
                 QSize(self.width() - margins.left() - margins.right(), 60))
-        self.paddingBottomItem.setSizeHint(
-            QSize(
-                self.width() - margins.left() - margins.right(),
-                self.paddingBottomHeight,
-            )
-        )
+        if self.paddingBottomHeight:
+            self.paddingBottomItem.setSizeHint(
+                QSize(self.width()-margins.left()-margins.right(), self.paddingBottomHeight))
 
-    def songCardCheckedStateChangedSlot(self, itemIndex: int, isChecked: bool):
+    def onSongCardCheckedStateChanged(self, itemIndex: int, isChecked: bool):
         """ 歌曲卡选中状态改变对应的槽函数 """
         songCard = self.songCard_list[itemIndex]
         # 如果歌曲卡不在选中的歌曲列表中且该歌曲卡变为选中状态就将其添加到列表中
@@ -279,52 +277,55 @@ class BasicSongListWidget(ListWidget):
             歌曲信息列表
 
         connectSongCardSigToSlotFunc:
-            将歌曲卡信号连接到槽函数的函数对象 """
-        # 删除旧占位行
-        self.removeItemWidget(self.paddingBottomItem)
-        self.takeItem(len(self.songCard_list))
-        # 长度相等就更新信息，不相等就根据情况创建或者删除item
+            将歌曲卡信号连接到槽函数的函数对象
+        """
+        # 删除旧占位行并取消当前歌曲卡播放状态
+        if self.paddingBottomHeight:
+            self.removeItemWidget(self.paddingBottomItem)
+            self.takeItem(len(self.songCard_list))
         if self.songCard_list:
             self.songCard_list[self.currentIndex].setPlay(False)
-        deltaLen = len(songInfo_list) - len(self.songInfo_list)
-        oldSongInfoLen = len(self.songInfo_list)
-        if deltaLen > 0:
+
+        # 长度相等就更新信息，不相等创建或者删除 item
+        newSongNum = len(songInfo_list)
+        oldSongNum = len(self.songInfo_list)
+        if newSongNum > oldSongNum:
             # 添加item
-            for songInfo in songInfo_list[oldSongInfoLen:]:
+            for songInfo in songInfo_list[oldSongNum:]:
                 self.appendOneSongCard(songInfo, connectSongCardSigToSlotFunc)
                 # QApplication.processEvents()
-        elif deltaLen < 0:
+        elif newSongNum < oldSongNum:
             # 删除多余的item
-            for i in range(oldSongInfoLen - 1, len(songInfo_list) - 1, -1):
+            for i in range(oldSongNum - 1, newSongNum - 1, -1):
                 self.item_list.pop()
                 songCard = self.songCard_list.pop()
                 songCard.deleteLater()
                 self.takeItem(i)
-        # 更新部分歌曲卡
+
+        # 当两个列表是否为空的的布尔值不同时发送歌曲卡列表是否为空信号
         if not (bool(self.songInfo_list) and bool(songInfo_list)):
-            # 当两个列表是否为空的的布尔值不同时发送歌曲卡列表是否为空信号
             self.emptyChangedSig.emit(not bool(songInfo_list))
+
+        # 更新部分歌曲卡
         self.songInfo_list = songInfo_list if songInfo_list else []
-        iterRange = (
-            range(len(self.songInfo_list) - deltaLen)
-            if deltaLen > 0
-            else range(len(self.songInfo_list))
-        )
-        for i in iterRange:
-            songInfo_dict = self.songInfo_list[i]
-            self.songCard_list[i].updateSongCard(songInfo_dict)
+        n = oldSongNum if newSongNum > oldSongNum else newSongNum
+        for songInfo, songCard in zip(songInfo_list[:n], self.songCard_list[:n]):
+            songCard.updateSongCard(songInfo)
+
         # 更新样式和当前下标
         self.currentIndex = 0
         self.playingIndex = 0
         self.playingSongInfo = None
         for songCard in self.songCard_list:
             songCard.setPlay(False)
+
         # 如果歌曲卡为空就显示导航标签
         self.guideLabel.setHidden(bool(self.songCard_list))
         # 创建新占位行
         self.__createPaddingBottomItem()
+
         # 发出歌曲卡数量改变信号
-        if deltaLen != 0:
+        if oldSongNum != newSongNum:
             self.songCardNumChanged.emit(len(self.songInfo_list))
 
     def clearSongCards(self):
@@ -358,6 +359,8 @@ class BasicSongListWidget(ListWidget):
 
     def __createPaddingBottomItem(self):
         """ 创建底部占位行 """
+        if not self.paddingBottomHeight:
+            return
         self.paddingBottomItem = QListWidgetItem(self)
         # 创建占位窗口
         self.paddingBottomWidget = QWidget(self)

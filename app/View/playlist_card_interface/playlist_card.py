@@ -2,25 +2,19 @@
 
 from copy import deepcopy
 
-from app.components.check_box import CheckBox
 from app.common.auto_wrap import autoWrap
 from app.common.get_cover_path import getCoverPath
 from app.common.get_dominant_color import DominantColor
 from app.components.buttons.blur_button import BlurButton
+from app.components.check_box import CheckBox
 from app.components.perspective_widget import PerspectiveWidget
 from PIL import Image
 from PIL.ImageFilter import GaussianBlur
 from PyQt5.QtCore import QPoint, Qt, pyqtSignal
-from PyQt5.QtGui import (
-    QBrush,
-    QColor,
-    QFont,
-    QFontMetrics,
-    QLinearGradient,
-    QPainter,
-    QPixmap,
-)
-from PyQt5.QtWidgets import QApplication, QGraphicsOpacityEffect, QLabel, QWidget
+from PyQt5.QtGui import (QBrush, QColor, QFont, QFontMetrics, QLinearGradient,
+                         QPainter, QPixmap)
+from PyQt5.QtWidgets import (QApplication, QGraphicsOpacityEffect, QLabel,
+                             QWidget)
 
 from .playlist_card_context_menu import PlaylistCardContextMenu
 
@@ -105,17 +99,12 @@ class PlaylistCard(PerspectiveWidget):
 
     def __getPlaylistInfo(self, playlist: dict):
         """ 获取播放列表信息 """
-        self.playlist = deepcopy(playlist)
-        self.playlistName = self.playlist.get("playlistName")  # type:str
-        self.songInfo_list = self.playlist.get("songInfo_list", [])  # type:list
-        if self.songInfo_list:
-            self.playlistCoverPath = getCoverPath(
-                self.songInfo_list[0].get("modifiedAlbum"), False
-            )
-        else:
-            self.playlistCoverPath = (
-                r"app\resource\images\playlist_card_interface\空播放列表封面.jpg"
-            )
+        self.playlist = playlist
+        self.playlistName = playlist.get("playlistName")  # type:str
+        self.songInfo_list = playlist.get("songInfo_list", [])  # type:list
+        songInfo = self.songInfo_list[0] if self.songInfo_list else {}
+        self.playlistCoverPath = getCoverPath(
+            songInfo.get("modifiedAlbum"), 'playlist_small')
 
     def __adjustLabel(self):
         """ 调整标签的文本长度和位置 """
@@ -125,7 +114,7 @@ class PlaylistCard(PerspectiveWidget):
             index = newText.index("\n")
             fontMetrics = QFontMetrics(QFont("Microsoft YaHei", 10, 75))
             secondLineText = fontMetrics.elidedText(
-                newText[index + 1 :], Qt.ElideRight, 288
+                newText[index + 1:], Qt.ElideRight, 288
             )
             newText = newText[: index + 1] + secondLineText
             self.playlistNameLabel.setText(newText)
@@ -139,7 +128,8 @@ class PlaylistCard(PerspectiveWidget):
         """ 鼠标进入窗口时显示磨砂背景和按钮 """
         # 显示磨砂背景
         playlistCardPos = self.mapToGlobal(QPoint(0, 0))  # type:QPoint
-        self.showBlurBackgroundSig.emit(playlistCardPos, self.playlistCoverPath)
+        self.showBlurBackgroundSig.emit(
+            playlistCardPos, self.playlistCoverPath)
         # 处于选择模式下按钮不可见
         self.playButton.setHidden(self.isInSelectionMode)
         self.addToButton.setHidden(self.isInSelectionMode)
@@ -199,16 +189,19 @@ class PlaylistCard(PerspectiveWidget):
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
         self.checkBox.stateChanged.connect(self.__checkedStateChangedSlot)
-        self.playButton.clicked.connect(lambda: self.playSig.emit(self.songInfo_list))
+        self.playButton.clicked.connect(
+            lambda: self.playSig.emit(self.songInfo_list))
 
     def contextMenuEvent(self, e):
         """ 显示右击菜单 """
         menu = PlaylistCardContextMenu(parent=self)
-        menu.playAct.triggered.connect(lambda: self.playSig.emit(self.songInfo_list))
+        menu.playAct.triggered.connect(
+            lambda: self.playSig.emit(self.songInfo_list))
         menu.nextToPlayAct.triggered.connect(
             lambda: self.nextToPlaySig.emit(self.songInfo_list)
         )
-        menu.deleteAct.triggered.connect(lambda: self.deleteCardSig.emit(self.playlist))
+        menu.deleteAct.triggered.connect(
+            lambda: self.deleteCardSig.emit(self.playlist))
         menu.renameAct.triggered.connect(
             lambda: self.renamePlaylistSig.emit(self.playlist)
         )
@@ -247,7 +240,8 @@ class PlaylistCover(QWidget):
             135, 135, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation
         )  # type:QPixmap
         # 获取主色调
-        self.dominantRgb = self.__dominantColor.getDominantColor(picPath, tuple)
+        self.dominantRgb = self.__dominantColor.getDominantColor(
+            picPath, tuple)
         self.update()
 
     def paintEvent(self, e):

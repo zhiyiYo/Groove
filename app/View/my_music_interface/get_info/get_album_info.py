@@ -1,5 +1,6 @@
 # coding:utf-8
 import os
+from app.common.get_cover_path import getCoverPath
 
 
 class GetAlbumInfo:
@@ -21,13 +22,7 @@ class GetAlbumInfo:
             # 如果(专辑名,歌手名)不在列表中，就往列表中插入新的专辑信息字典
             if (album, songer) not in albumSonger_list:
                 albumSonger_list.append((album, songer))
-                folderPath = "app/resource/Album_Cover/" + modifiedAlbum
-                if os.path.exists(folderPath) and (pic_list := os.listdir(folderPath)):
-                    # pic_list = os.listdir(folderPath)
-                    # 目录下有封面就用这个封面作为albumCard的背景
-                    cover_path = os.path.join(folderPath, pic_list[0])
-                else:
-                    cover_path = "app/resource/Album_Cover/未知专辑/未知专辑.png"
+                coverPath = getCoverPath(modifiedAlbum, 'album_big')
                 albumInfo_list.append(
                     {
                         "modifiedTime": songInfo["createTime"],
@@ -35,7 +30,7 @@ class GetAlbumInfo:
                         "songer": songer,
                         "tcon": songInfo["tcon"],
                         "year": songInfo["year"],
-                        "cover_path": cover_path,
+                        "coverPath": coverPath,
                         "songInfo_list": [songInfo],
                         "modifiedAlbum": modifiedAlbum,
                     }
@@ -67,8 +62,7 @@ class GetAlbumInfo:
     def sortByModifiedTime(self):
         """ 依据修改日期排序专辑信息列表 """
         self.albumInfo_list.sort(
-            key=lambda albumInfo: albumInfo["modifiedTime"], reverse=True
-        )
+            key=lambda albumInfo: albumInfo["modifiedTime"], reverse=True)
 
     def sortByDictOrder(self):
         """ 以字典序排序专辑信息列表 """

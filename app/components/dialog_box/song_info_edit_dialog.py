@@ -240,6 +240,8 @@ class SongInfoEditDialog(MaskDialogBase):
             self.bottomErrorLabel.show()
             self.bottomErrorIcon.show()
         else:
+            self.setEnabled(False)
+            QApplication.processEvents()
             self.saveInfoSig.emit(self.oldSongInfo, self.songInfo)
             self.close()
 

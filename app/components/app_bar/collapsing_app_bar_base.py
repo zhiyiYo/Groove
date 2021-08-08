@@ -59,15 +59,15 @@ class CollapsingAppBarBase(QWidget):
         self.moreActionsButton.hide()
         self.setMinimumHeight(155)
         self.setMaximumHeight(385)
-        self.__setBackgroundColor()
+        self.setBackgroundColor()
         self.coverLabel.setPixmap(QPixmap(self.coverPath).scaled(
-            275, 275, transformMode=Qt.SmoothTransformation))
+            275, 275, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
         self.coverLabel.setScaledContents(True)
         self.resize(1200, 385)
         self.setObjectName("CollapsingAppBar")
         self.moreActionsButton.clicked.connect(self.onMoreActionsButtonClicked)
 
-    def __setBackgroundColor(self):
+    def setBackgroundColor(self):
         """ 设置背景颜色 """
         bgColor = self.dominantColorGetter.getDominantColor(self.coverPath)
         self.setStyleSheet("#CollapsingAppBar{background:#"+bgColor+"}")
@@ -77,7 +77,8 @@ class CollapsingAppBarBase(QWidget):
         h = self.height()
         needWhiteBar = self.needWhiteBar
         # 调整封面大小和位置
-        coverWidth = 275-int((385-h)/230*192) if needWhiteBar else 295-int((385-h)/230*206)
+        coverWidth = 275 - \
+            int((385-h)/230*192) if needWhiteBar else 295-int((385-h)/230*206)
         self.coverLabel.resize(coverWidth, coverWidth)
         y = 65-int((385-h)/230*17) if needWhiteBar else 45-int((385-h)/230*4)
         self.coverLabel.move(45, y)
@@ -202,7 +203,7 @@ class CollapsingAppBarBase(QWidget):
         self.content = content
         self.coverPath = coverPath
         self.coverLabel.setPixmap(QPixmap(self.coverPath))
-        self.__setBackgroundColor()
+        self.setBackgroundColor()
         self.__adjustText()
         self.update()
 

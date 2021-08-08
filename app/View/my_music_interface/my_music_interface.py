@@ -209,7 +209,7 @@ class MyMusicInterface(QWidget):
         """ 显示选中的歌曲卡的属性 """
         songInfo = self.songCardListWidget.checkedSongCard_list[0].songInfo
         self.__unCheckSongCards()
-        self.songCardListWidget.showPropertyPanel(songInfo)
+        self.songCardListWidget.showSongPropertyDialog(songInfo)
 
     def exitSelectionMode(self):
         """ 退出选择模式 """
@@ -376,7 +376,8 @@ class MyMusicInterface(QWidget):
         songInfo_list = []
         if self.sender() is self.songTabSelectionModeBar.addToButton:
             selectionModeBar = self.songTabSelectionModeBar
-            songInfo_list = [i.songInfo for i in self.songCardListWidget.checkedSongCard_list]
+            songInfo_list = [
+                i.songInfo for i in self.songCardListWidget.checkedSongCard_list]
         else:
             selectionModeBar = self.albumTabSelectionModeBar
             for albumCard in self.albumCardViewer.checkedAlbumCard_list:

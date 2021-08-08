@@ -17,7 +17,7 @@ if __name__ == '__main__':
         "tcon": "POP流行",
         "year": "2016年",
         "album": "Hush a by little girl",
-        "cover_path": "app/resource/Album_Cover/Hush a by little girl/Hush a by little girl.jpg",
+        "coverPath": "app/resource/Album_Cover/Hush a by little girl/Hush a by little girl.jpg",
         "songInfo_list": songInfo_list
     }
     w = AlbumInterface(albumInfo)
