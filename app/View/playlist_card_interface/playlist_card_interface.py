@@ -1,12 +1,12 @@
 # coding:utf-8
-
 from copy import deepcopy
 from json import dump
 from os import remove
+from typing import Dict, List
 
 import pinyin
 from app.components.buttons.three_state_button import ThreeStatePushButton
-from app.components.dialog_box.delete_card_dialog import DeleteCardDialog
+from app.components.dialog_box.message_dialog import MessageDialog
 from app.components.dialog_box.rename_playlist_dialog import \
     RenamePlaylistDialog
 from app.components.layout.grid_layout import GridLayout
@@ -38,7 +38,9 @@ class PlaylistCardInterface(ScrollArea):
         self.sortMode = "modifiedTime"
         self.playlists = deepcopy(playlists)
         self.playlistCard_list = []
-        self.playlistCardInfo_list = []  # type:list[dict]
+        self.playlistCardInfo_list = []  # type:List[dict]
+        self.playlistName2Card_dict = {}   # type:Dict[str, PlaylistCard]
+        self.playlistName2Playlist_dict = {}  # type:Dict[str, dict]
         self.checkedPlaylistCard_list = []
         self.isInSelectionMode = False
         self.isAllPlaylistCardChecked = False
@@ -99,23 +101,29 @@ class PlaylistCardInterface(ScrollArea):
     def __createOnePlaylistCard(self, playlist: dict):
         """ 创建一个播放列表卡 """
         playlistCard = PlaylistCard(playlist, self)
+        playlistName = playlist.get("playlistName", "未知播放列表")
+
         self.playlistCard_list.append(playlistCard)
         self.playlistCardInfo_list.append(
             {"playlistCard": playlistCard, "playlist": playlist})
+        self.playlistName2Card_dict[playlistName] = playlistCard
+        self.playlistName2Playlist_dict[playlistName] = playlist
+
         # 创建动画
         hideCheckBoxAni = QPropertyAnimation(
             playlistCard.checkBoxOpacityEffect, b"opacity")
         self.hideCheckBoxAniGroup.addAnimation(hideCheckBoxAni)
         self.hideCheckBoxAni_list.append(hideCheckBoxAni)
+
         # 信号连接到槽
         playlistCard.playSig.connect(self.playSig)
         playlistCard.nextToPlaySig.connect(self.nextToPlaySig)
         playlistCard.showBlurBackgroundSig.connect(self.__showBlurBackground)
         playlistCard.hideBlurBackgroundSig.connect(self.blurBackground.hide)
-        playlistCard.renamePlaylistSig.connect(self.__showRenamePlaylistPanel)
+        playlistCard.renamePlaylistSig.connect(self.__showRenamePlaylistDialog)
         playlistCard.deleteCardSig.connect(self.__showDeleteCardPanel)
         playlistCard.checkedStateChanged.connect(
-            self.__playlistCardCheckedStateChangedSlot)
+            self.__onPlaylistCardCheckedStateChanged)
         playlistCard.switchToPlaylistInterfaceSig.connect(
             self.switchToPlaylistInterfaceSig)
 
@@ -201,14 +209,12 @@ class PlaylistCardInterface(ScrollArea):
             self.sortModeButton.setText("修改时间")
             self.currentSortAct = self.sortByModifiedTimeAct
             self.playlistCardInfo_list.sort(
-                key=self.__sortPlaylistByModifiedTime, reverse=True
-            )
+                key=self.__sortPlaylistByModifiedTime, reverse=True)
         else:
             self.sortModeButton.setText("A到Z")
             self.currentSortAct = self.sortByAToZAct
             self.playlistCardInfo_list.sort(
-                key=self.__sortPlaylistByAToZ, reverse=False
-            )
+                key=self.__sortPlaylistByAToZ, reverse=False)
         # 先将小部件布局中移除
         self.gridLayout.removeAllWidgets()
         # 将小部件添加到布局中
@@ -237,46 +243,37 @@ class PlaylistCardInterface(ScrollArea):
             )
         )
 
-    def __playlistCardCheckedStateChangedSlot(
-        self, playlistCard: PlaylistCard, isChecked: bool
-    ):
+    def __onPlaylistCardCheckedStateChanged(self, playlistCard: PlaylistCard, isChecked: bool):
         """ 播放列表卡选中状态改变槽函数 """
-        # 如果专辑信息不在选中的专辑信息列表中且对应的专辑卡变为选中状态就将专辑信息添加到列表中
         if playlistCard not in self.checkedPlaylistCard_list and isChecked:
             self.checkedPlaylistCard_list.append(playlistCard)
-            self.__checkPlaylistCardNumChangedSlot(
+            self.__onCheckPlaylistCardNumChanged(
                 len(self.checkedPlaylistCard_list))
+
         # 如果专辑信息已经在列表中且该专辑卡变为非选中状态就弹出该专辑信息
         elif playlistCard in self.checkedPlaylistCard_list and not isChecked:
             self.checkedPlaylistCard_list.pop(
                 self.checkedPlaylistCard_list.index(playlistCard)
             )
-            self.__checkPlaylistCardNumChangedSlot(
+            self.__onCheckPlaylistCardNumChanged(
                 len(self.checkedPlaylistCard_list))
+
         # 如果先前不处于选择模式那么这次发生选中状态改变就进入选择模式
         if not self.isInSelectionMode:
-            # 所有专辑卡进入选择模式
             self.__setAllPlaylistCardSelectionModeOpen(True)
-            # 发送信号要求主窗口隐藏播放栏
             self.selectionModeStateChanged.emit(True)
             self.selectionModeBar.show()
-            # 更新标志位
             self.isInSelectionMode = True
-        else:
-            if not self.checkedPlaylistCard_list:
-                # 所有专辑卡退出选择模式
-                self.__setAllPlaylistCardSelectionModeOpen(False)
-                # 发送信号要求主窗口显示播放栏
-                self.selectionModeBar.hide()
-                self.selectionModeStateChanged.emit(False)
-                # 更新标志位
-                self.isInSelectionMode = False
+        elif not self.checkedPlaylistCard_list:
+            self.__setAllPlaylistCardSelectionModeOpen(False)
+            self.selectionModeBar.hide()
+            self.selectionModeStateChanged.emit(False)
+            self.isInSelectionMode = False
 
     def __setAllPlaylistCardSelectionModeOpen(self, isOpenSelectionMode: bool):
         """ 设置所有播放列表卡是否进入选择模式 """
         for playlistCard in self.playlistCard_list:
             playlistCard.setSelectionModeOpen(isOpenSelectionMode)
-        # 退出选择模式时开启隐藏所有复选框的动画
         if not isOpenSelectionMode:
             self.__startHideCheckBoxAni()
 
@@ -309,13 +306,13 @@ class PlaylistCardInterface(ScrollArea):
         for playlistCard in self.playlistCard_list:
             playlistCard.setChecked(isAllChecked)
 
-    def __checkPlaylistCardNumChangedSlot(self, num: int):
+    def __onCheckPlaylistCardNumChanged(self, num: int):
         """ 选中的歌曲卡数量改变对应的槽函数 """
         self.selectionModeBar.setPartButtonHidden(num > 1)
         self.selectionModeBar.move(
             0, self.height() - self.selectionModeBar.height())
 
-    def __checkAllButtonSlot(self):
+    def __onSelectionModeBarCheckAllButtonClicked(self):
         """ 全选/取消全选按钮槽函数 """
         self.setAllPlaylistCardCheckedState(not self.isAllPlaylistCardChecked)
 
@@ -339,34 +336,40 @@ class PlaylistCardInterface(ScrollArea):
         # 按照当前排序方式重新排序播放列表卡
         self.__sortPlaylist(self.sortMode)
 
-    def __showRenamePlaylistPanel(self, oldPlaylist: dict, playlistCard: PlaylistCard = None):
+    def __showRenamePlaylistDialog(self, oldPlaylist: dict):
         """ 显示重命名播放列表面板 """
-        playlistCard = self.sender() if not playlistCard else playlistCard  # type:PlaylistCard
         w = RenamePlaylistDialog(oldPlaylist, self.window())
-        w.renamePlaylistSig.connect(
-            lambda oldPlaylist, newPlaylist: self.__renamePlaylistSlot(
-                oldPlaylist, newPlaylist, playlistCard))
+        w.renamePlaylistSig.connect(self.renamePlaylistSig)
         w.exec()
 
-    def __renamePlaylistSlot(self, oldPlaylist: dict, newPlaylist: dict, playlistCard: PlaylistCard):
-        """ 重命名播放列表槽函数 """
+    def renamePlaylist(self, oldPlaylist: dict, newPlaylist: dict):
+        """ 重命名播放列表 """
+        oldName = oldPlaylist["playlistName"]
+        newName = newPlaylist["playlistName"]
+        print(oldName, newName)
+
+        # 更新播放列表卡
+        playlistCard = self.playlistName2Card_dict.pop(oldName)
         playlistCard.updateWindow(newPlaylist)
+
+        # 更新字典和列表
+        self.playlistName2Playlist_dict.pop(oldName)
+        self.playlistName2Card_dict[newName] = playlistCard
+        self.playlistName2Playlist_dict[newName] = newPlaylist
+        self.playlists[self.playlists.index(oldPlaylist)] = newPlaylist
+
         # 重新排序播放列表卡
-        index = self.playlists.index(oldPlaylist)
-        self.playlists[index] = newPlaylist
-        index = self.getIndexByPlaylist(oldPlaylist)
+        index = self.__getCardInfoIndexByPlaylist(oldPlaylist)
         self.playlistCardInfo_list[index]["playlist"] = newPlaylist
         self.__sortPlaylist(self.sortMode)
-        # 发送信号
-        self.renamePlaylistSig.emit(oldPlaylist, newPlaylist)
 
     def __showDeleteCardPanel(self, playlist: dict, playlistCard: PlaylistCard = None):
         """ 显示删除播放列表卡对话框 """
         playlistCard = self.sender() if not playlistCard else playlistCard
         title = "是否确定要删除此项？"
         content = f"""如果删除"{playlist['playlistName']}"，它将不再位于此设备上。"""
-        w = DeleteCardDialog(title, content, self.window())
-        w.deleteCardSig.connect(
+        w = MessageDialog(title, content, self.window())
+        w.yesSignal.connect(
             lambda: self.__deleteOnePlaylistCard(playlistCard, playlist))
         w.exec()
 
@@ -374,21 +377,31 @@ class PlaylistCardInterface(ScrollArea):
         """ 删除一个播放列表卡 """
         # 从布局中移除播放列表卡
         self.gridLayout.removeWidget(playlistCard)
+
         # 从列表中弹出小部件
         self.playlists.remove(playlist)
         self.playlistCard_list.remove(playlistCard)
         self.playlistCardInfo_list.pop(
-            self.getIndexByPlaylistCard(playlistCard))
-        # 删除播放列表卡
+            self.__getCardInfoIndexByPlaylistCard(playlistCard))
+
+        # 更新字典
+        playlistName = playlist["playlistName"]
+        self.playlistName2Card_dict.pop(playlistName)
+        self.playlistName2Playlist_dict.pop(playlistName)
+
+        # 删除播放列表卡和播放列表文件
         playlistCard.deleteLater()
+        remove(f'app/Playlists/{playlist["playlistName"]}.json')
+
         # 调整高度
         self.scrollWidget.resize(
             self.width(), 175 + self.gridLayout.rowCount() * 298 + 120)
-        # 删除json文件并发送删除播放列表的信号
-        remove(f'app/Playlists/{playlist["playlistName"]}.json')
-        self.deletePlaylistSig.emit(playlist)
+
         # 如果没有专辑卡就显示导航标签
         self.guideLabel.setHidden(bool(self.playlistCard_list))
+
+        # 发送删除播放列表的信号
+        self.deletePlaylistSig.emit(playlist)
 
     def __deleteMultiPlaylistCards(self, playlistCard_list: list, playlists: list):
         """ 删除多个播放列表卡 """
@@ -408,13 +421,13 @@ class PlaylistCardInterface(ScrollArea):
         elif self.sender() is self.selectionModeBar.nextToPlayButton:
             self.nextToPlaySig.emit(playlist)
 
-    def __selectionBarRenameButtonSlot(self):
+    def __onSelectionModeBarRenameButtonClicked(self):
         """ 选择栏重命名按钮的槽函数 """
         playlistCard = self.checkedPlaylistCard_list[0]
         self.__unCheckPlaylistCards()
-        self.__showRenamePlaylistPanel(playlistCard.playlist, playlistCard)
+        self.__showRenamePlaylistDialog(playlistCard.playlist)
 
-    def __selectionModeBarDeleteButtonSlot(self):
+    def __onSelectionModeBarDeleteButtonClicked(self):
         """ 选择栏删除按钮槽函数 """
         if len(self.checkedPlaylistCard_list) == 1:
             playlistCard = self.checkedPlaylistCard_list[0]
@@ -430,47 +443,57 @@ class PlaylistCardInterface(ScrollArea):
             # 取消所有歌曲卡的选中
             self.__unCheckPlaylistCards()
             # 显示删除对话框
-            w = DeleteCardDialog(title, content, self.window())
-            w.deleteCardSig.connect(
+            w = MessageDialog(title, content, self.window())
+            w.yesSignal.connect(
                 lambda: self.__deleteMultiPlaylistCards(playlistCard_list, playlists))
             w.exec()
 
     def addSongsToPlaylist(self, playlistName: str, songInfo_list: list) -> dict:
         """ 将歌曲添加到播放列表中，返回修改后的播放列表 """
-        # 直接修改播放列表卡字典中的播放列表
-        index = self.getIndexByPlaylistName(playlistName)
-        playlistCard_dict = self.playlistCardInfo_list[index]
-        playlist = playlistCard_dict["playlist"]
-        # 更新播放列表
-        playlist["modifiedTime"] = QDateTime.currentDateTime().toString(
-            Qt.ISODate)
-        playlist["songInfo_list"] = songInfo_list + playlist["songInfo_list"]
-        playlistCard_dict["playlistCard"].updateWindow(playlist)
+        oldPlaylist = self.playlistName2Playlist_dict[playlistName]
+        newPlaylist = {
+            "playlistName": playlistName,
+            "songInfo_list": oldPlaylist["songInfo_list"] + songInfo_list,
+            "modifiedTime": QDateTime.currentDateTime().toString(Qt.ISODate),
+        }
+
+        # 更新字典和列表
+        self.playlistName2Playlist_dict[playlistName] = newPlaylist
+        self.playlists[self.playlists.index(oldPlaylist)] = newPlaylist
+        index = self.__getCardInfoIndexByPlaylistName(playlistName)
+        self.playlistCardInfo_list[index]["playlist"] = newPlaylist
+        self.playlistCardInfo_list[index]["playlistCard"].updateWindow(
+            newPlaylist)
+
         # 更新json文件
         with open(f"app/Playlists/{playlistName}.json", "w", encoding="utf-8") as f:
-            dump(playlist, f)
-        return playlist
+            dump(newPlaylist, f)
+        return newPlaylist
 
-    def getIndexByPlaylistName(self, playlistName: str) -> int:
+    def findPlaylist(self, playlistName: str):
+        """ 获取播放列表 """
+        return self.playlistName2Playlist_dict.get(playlistName, {})
+
+    def __getCardInfoIndexByPlaylistName(self, playlistName: str) -> int:
         """ 通过播放列表名字获取播放列表在播放列表卡字典列表中的下标 """
-        for index, playlistCard_dict in enumerate(self.playlistCardInfo_list):
-            if playlistCard_dict["playlist"]["playlistName"] == playlistName:
+        for index, info in enumerate(self.playlistCardInfo_list):
+            if info["playlist"]["playlistName"] == playlistName:
                 return index
-        raise Exception(f'指定的播放列表"{playlistName}"不存在')
+        return None
 
-    def getIndexByPlaylistCard(self, playlistCard: PlaylistCard) -> int:
+    def __getCardInfoIndexByPlaylistCard(self, playlistCard: PlaylistCard) -> int:
         """ 通过播放列表卡获取播放列表在播放列表卡字典列表中的下标 """
-        for index, playlistCard_dict in enumerate(self.playlistCardInfo_list):
-            if playlistCard_dict["playlistCard"] is playlistCard:
+        for index, info in enumerate(self.playlistCardInfo_list):
+            if info["playlistCard"] is playlistCard:
                 return index
-        raise Exception(f'指定的播放列表卡"{playlistCard.playlistName}"不存在')
+        return None
 
-    def getIndexByPlaylist(self, playlist: dict) -> int:
-        """ 通过播放列表获取播放列表在播放列表卡字典列表中的下标 """
-        for index, playlistCard_dict in enumerate(self.playlistCardInfo_list):
-            if playlistCard_dict["playlist"] == playlist:
+    def __getCardInfoIndexByPlaylist(self, playlist: dict) -> int:
+        """ 通过播放列表获取播放列表在播放列表卡信息字典列表中的下标 """
+        for index, info in enumerate(self.playlistCardInfo_list):
+            if info["playlist"] == playlist:
                 return index
-        raise Exception(f"""指定的播放列表"{playlist['playlistName']}"不存在""")
+        return None
 
     def exitSelectionMode(self):
         """ 退出选择模式 """
@@ -482,13 +505,13 @@ class PlaylistCardInterface(ScrollArea):
         self.selectionModeBar.cancelButton.clicked.connect(
             self.__unCheckPlaylistCards)
         self.selectionModeBar.checkAllButton.clicked.connect(
-            self.__checkAllButtonSlot)
+            self.__onSelectionModeBarCheckAllButtonClicked)
         self.selectionModeBar.playButton.clicked.connect(
             self.__emitCheckedPlaylists)
         self.selectionModeBar.nextToPlayButton.clicked.connect(
             self.__emitCheckedPlaylists)
         self.selectionModeBar.renameButton.clicked.connect(
-            self.__selectionBarRenameButtonSlot)
+            self.__onSelectionModeBarRenameButtonClicked)
         self.selectionModeBar.deleteButton.clicked.connect(
-            self.__selectionModeBarDeleteButtonSlot)
+            self.__onSelectionModeBarDeleteButtonClicked)
         self.createPlaylistButton.clicked.connect(self.createPlaylistSig)

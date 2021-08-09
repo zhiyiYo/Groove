@@ -1,7 +1,4 @@
 # coding:utf-8
-
-from copy import deepcopy
-
 from app.common.auto_wrap import autoWrap
 from app.common.get_cover_path import getCoverPath
 from app.common.get_dominant_color import DominantColor
@@ -198,13 +195,11 @@ class PlaylistCard(PerspectiveWidget):
         menu.playAct.triggered.connect(
             lambda: self.playSig.emit(self.songInfo_list))
         menu.nextToPlayAct.triggered.connect(
-            lambda: self.nextToPlaySig.emit(self.songInfo_list)
-        )
+            lambda: self.nextToPlaySig.emit(self.songInfo_list))
         menu.deleteAct.triggered.connect(
             lambda: self.deleteCardSig.emit(self.playlist))
         menu.renameAct.triggered.connect(
-            lambda: self.renamePlaylistSig.emit(self.playlist)
-        )
+            lambda: self.renamePlaylistSig.emit(self.playlist))
         menu.selectAct.triggered.connect(self.__selectActSlot)
         menu.exec(e.globalPos())
 

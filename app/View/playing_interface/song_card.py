@@ -305,7 +305,7 @@ class SongCard(QWidget):
             QPoint(self.addToButton.x()+self.buttonGroup.x(), 0))
         x = pos.x()+self.addToButton.width()+5
         y = pos.y()+self.addToButton.height()//2-(13+38*menu.actionCount()//2)
-        menu.newPlaylist.triggered.connect(
+        menu.newPlaylistAct.triggered.connect(
             lambda: self.addSongToNewCustomPlaylistSig.emit(self.songInfo))
         menu.addSongsToPlaylistSig.connect(
             lambda name: self.addSongToCustomPlaylistSig.emit(name, self.songInfo))

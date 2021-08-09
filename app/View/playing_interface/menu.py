@@ -57,16 +57,16 @@ class AddToMenu(QMenu):
         # 创建动作
         self.playingAct = QAction(
             QIcon(r'app\resource\images\playing_interface\正在播放_white_16_16.png'), '正在播放', self)
-        self.newPlaylist = QAction(
+        self.newPlaylistAct = QAction(
             QIcon(r'app\resource\images\playing_interface\新的播放列表_20_20.png'), '新的播放列表', self)
         playlists = self.__getPlaylistNames()
         self.playlistAct_list = [QAction(QIcon(
             "app/resource/images/playing_interface/播放列表_white_20_20.png"), i, self) for i in playlists]
         self.addAction(self.playingAct)
         self.addSeparator()
-        self.addActions([self.newPlaylist]+self.playlistAct_list)
+        self.addActions([self.newPlaylistAct]+self.playlistAct_list)
         self.action_list = [self.playingAct,
-                            self.newPlaylist] + self.playlistAct_list
+                            self.newPlaylistAct] + self.playlistAct_list
         # 取消阴影
         self.setWindowFlags(
             Qt.FramelessWindowHint | Qt.Popup | Qt.NoDropShadowWindowHint)

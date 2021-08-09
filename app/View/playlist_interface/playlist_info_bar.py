@@ -77,9 +77,9 @@ class PlaylistInfoBar(CollapsingAppBarBase):
         menu.newPlaylistAct.triggered.connect(self.addToNewCustomPlaylistSig)
         menu.exec(QPoint(x, y))
 
-    def updateWindow(self, albumInfo: dict):
+    def updateWindow(self, playlist: dict):
         """ 更新窗口 """
-        self.__getPlaylistInfo(albumInfo)
+        self.__getPlaylistInfo(playlist)
         super().updateWindow(self.playlistName,
                              f'{len(self.songInfo_list)} 首歌曲 • {self.duration}',
                              self.playlistCoverPath)

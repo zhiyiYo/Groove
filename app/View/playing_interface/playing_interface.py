@@ -491,7 +491,7 @@ class PlayingInterface(QWidget):
         # 菜单信号连接到槽
         for act in menu.action_list:
             act.triggered.connect(self.exitSelectionMode)
-        menu.newPlaylist.triggered.connect(
+        menu.newPlaylistAct.triggered.connect(
             lambda: self.addSongsToNewCustomPlaylistSig.emit(songInfo_list))
         menu.addSongsToPlaylistSig.connect(
             lambda name: self.addSongsToCustomPlaylistSig.emit(name, songInfo_list))

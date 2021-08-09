@@ -31,8 +31,6 @@ class SongListWidget(ListWidget):
         self.checkedSongCard_list = []  # type:List[SongCard]
         self.isInSelectionMode = False
         self.isAllSongCardsChecked = False
-        # 创建右击菜单
-        self.menu = Menu(self)
         # 创建歌曲卡
         self.createSongCards()
         # 初始化
@@ -45,8 +43,6 @@ class SongListWidget(ListWidget):
         self.setViewportMargins(30, 0, 30, 0)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.__setQss()
-        # 将信号连接到槽函数
-        self.__connectSignalToSlot()
 
     def createSongCards(self):
         """ 创建歌曲卡 """
@@ -77,13 +73,13 @@ class SongListWidget(ListWidget):
         """ 显示右击菜单 """
         hitIndex = self.indexAt(e.pos()).column()
         if hitIndex > -1:
-            self.menu.moveUpAct.setEnabled(True)
-            self.menu.moveDownAct.setEnabled(True)
+            menu = Menu(self)
+            self.__connectContextMenuSignalToSlot(menu)
             if self.currentRow() == len(self.playlist) - 1:
-                self.menu.moveDownAct.setEnabled(False)
+                menu.moveDownAct.setEnabled(False)
             if self.currentRow() == 0:
-                self.menu.moveUpAct.setEnabled(False)
-            self.menu.exec_(e.globalPos())
+                menu.moveUpAct.setEnabled(False)
+            menu.exec_(e.globalPos())
 
     def showSongPropertyDialog(self, songCard: SongCard = None):
         """ 显示属性面板 """
@@ -268,17 +264,23 @@ class SongListWidget(ListWidget):
         for songCard in self.songCard_list:
             songCard.setChecked(False)
 
-    def __connectSignalToSlot(self):
+    def __connectContextMenuSignalToSlot(self, menu: Menu):
         """ 将信号连接到槽函数 """
         # 右击菜单信号连接到槽函数
-        self.menu.playAct.triggered.connect(
+        menu.playAct.triggered.connect(
             lambda: self.__emitCurrentChangedSignal(self.currentRow()))
-        self.menu.propertyAct.triggered.connect(self.showSongPropertyDialog)
-        self.menu.removeAct.triggered.connect(
+        menu.propertyAct.triggered.connect(self.showSongPropertyDialog)
+        menu.removeAct.triggered.connect(
             lambda: self.removeSongCard(self.currentRow()))
-        self.menu.showAlbumAct.triggered.connect(
+        menu.showAlbumAct.triggered.connect(
             lambda: self.__switchToAlbumInterface(
                 self.songCard_list[self.currentRow()].album,
                 self.songCard_list[self.currentRow()].songer,
             )
         )
+        menu.addToMenu.addSongsToPlaylistSig.connect(
+            lambda name: self.addSongsToCustomPlaylistSig.emit(
+                name, [self.playlist[self.currentRow()]]))
+        menu.addToMenu.newPlaylistAct.triggered.connect(
+            lambda: self.addSongsToNewCustomPlaylistSig.emit(
+                [self.playlist[self.currentRow()]]))

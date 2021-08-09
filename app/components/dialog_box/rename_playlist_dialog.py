@@ -77,17 +77,19 @@ class RenamePlaylistDialog(MaskDialogBase):
         playlistName = self.lineEdit.text()
         if self.__isPlaylistExist(playlistName):
             return
+
         # 创建新播放列表并写入json文件
         newPlaylist = {
             "playlistName": playlistName,
             "songInfo_list": self.oldPlaylist["songInfo_list"],
             "modifiedTime": QDateTime.currentDateTime().toString(Qt.ISODate),
         }
+        
         with open(f"app/Playlists/{self.oldPlaylistName}.json", "w", encoding="utf-8") as f:
             json.dump(newPlaylist, f)
-        # 重命名文件
         os.rename(f"app/Playlists/{self.oldPlaylistName}.json",
                   f"app/Playlists/{playlistName}.json")
+
         # 发送信号
         self.renamePlaylistSig.emit(self.oldPlaylist, newPlaylist)
         self.close()

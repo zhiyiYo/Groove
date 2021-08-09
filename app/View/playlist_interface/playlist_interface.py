@@ -1,6 +1,8 @@
 # coding:utf-8
 from copy import deepcopy
 
+from app.components.dialog_box.rename_playlist_dialog import \
+    RenamePlaylistDialog
 from app.components.menu import AddToMenu
 from app.components.scroll_area import ScrollArea
 from PyQt5.QtCore import QPoint, Qt, pyqtSignal
@@ -27,7 +29,7 @@ class PlaylistInterface(ScrollArea):
     addSongsToNewCustomPlaylistSig = pyqtSignal(list)  # 添加歌曲到新建播放列表
     addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 添加歌曲到自定义的播放列表中
     switchToAlbumInterfaceSig = pyqtSignal(str, str)    # 切换到专辑界面
-    renamePlaylistSig = pyqtSignal(str, str)            # 重命名播放列表
+    renamePlaylistSig = pyqtSignal(dict, dict)            # 重命名播放列表
 
     def __init__(self, playlist: dict, parent=None):
         """
@@ -199,6 +201,18 @@ class PlaylistInterface(ScrollArea):
         if h > 155:
             self.playlistInfoBar.resize(self.playlistInfoBar.width(), h)
 
+    def __showRenamePlaylistDialog(self, oldPlaylist: dict):
+        """ 显示重命名播放列表面板 """
+        w = RenamePlaylistDialog(oldPlaylist, self.window())
+        w.renamePlaylistSig.connect(self.__renamePlaylist)
+        w.exec()
+
+    def __renamePlaylist(self, oldPlaylist: dict, newPlaylist):
+        """ 重命名播放列表 """
+        self.__getPlaylistInfo(newPlaylist)
+        self.playlistInfoBar.updateWindow(newPlaylist)
+        self.renamePlaylistSig.emit(oldPlaylist, newPlaylist)
+
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
         # 专辑信息栏信号
@@ -211,6 +225,8 @@ class PlaylistInterface(ScrollArea):
             lambda: self.addSongsToNewCustomPlaylistSig.emit(self.songInfo_list))
         self.playlistInfoBar.addToCustomPlaylistSig.connect(
             lambda name: self.addSongsToCustomPlaylistSig.emit(name, self.songInfo_list))
+        self.playlistInfoBar.renameButton.clicked.connect(
+            lambda: self.__showRenamePlaylistDialog(self.playlist))
         # 歌曲列表信号
         self.songListWidget.playSignal.connect(self.songCardPlaySig)
         self.songListWidget.playOneSongSig.connect(self.playOneSongCardSig)

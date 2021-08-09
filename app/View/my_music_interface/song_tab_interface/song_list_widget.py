@@ -1,5 +1,5 @@
 # coding:utf-8
-from app.components.dialog_box.delete_card_dialog import DeleteCardDialog
+from app.components.dialog_box.message_dialog import MessageDialog
 from app.components.menu import AcrylicMenu, AddToMenu
 from app.components.song_list_widget.basic_song_list_widget import BasicSongListWidget
 from app.components.song_list_widget.song_card_type import SongCardType
@@ -87,12 +87,12 @@ class SongListWidget(BasicSongListWidget):
         """ 更新所有歌曲卡，根据给定的信息决定创建或者删除歌曲卡 """
         super().updateAllSongCards(songInfo_list, self.__connectSongCardSignalToSlot)
 
-    def __showDeleteCardDialog(self):
+    def __showMaskDialog(self):
         index = self.currentRow()
         title = "是否确定要删除此项？"
         content = f"""如果删除"{self.songInfo_list[index]['songName']}"，它将不再位于此设备上。"""
-        w = DeleteCardDialog(title, content, self.window())
-        w.deleteCardSig.connect(lambda: self.removeSongCard(index))
+        w = MessageDialog(title, content, self.window())
+        w.yesSignal.connect(lambda: self.removeSongCard(index))
         w.exec_()
 
     def __connectMenuSignalToSlot(self, contextMenu):
@@ -116,7 +116,7 @@ class SongListWidget(BasicSongListWidget):
             )
         )
         # 删除歌曲卡
-        contextMenu.deleteAct.triggered.connect(self.__showDeleteCardDialog)
+        contextMenu.deleteAct.triggered.connect(self.__showMaskDialog)
         # 将歌曲添加到正在播放列表
         contextMenu.addToMenu.playingAct.triggered.connect(
             lambda: self.addSongToPlayingSignal.emit(

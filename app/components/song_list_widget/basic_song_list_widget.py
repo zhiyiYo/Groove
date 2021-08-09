@@ -163,6 +163,13 @@ class BasicSongListWidget(ListWidget):
             self.songCard_list[index].setPlay(True)
             self.playingSongInfo = self.songInfo_list[index]
 
+    def cancelPlayState(self):
+        """ 取消正在播放的歌曲卡的播放状态 """
+        self.songCard_list[self.playingIndex].setPlay(False)
+        self.currentIndex = None
+        self.playingIndex = None
+        self.playingSongInfo = None
+
     def showSongPropertyDialog(self, songInfo: dict = None):
         """ 显示selected的歌曲卡的属性 """
         songInfo = self.songCard_list[self.currentRow(

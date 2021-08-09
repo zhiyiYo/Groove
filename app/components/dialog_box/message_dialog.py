@@ -7,11 +7,11 @@ from PyQt5.QtWidgets import QLabel
 from .mask_dialog_base import MaskDialogBase
 
 
-class DeleteCardDialog(MaskDialogBase):
-    """ 删除卡片部件对话框 """
+class MessageDialog(MaskDialogBase):
+    """ 带遮罩的消息对话框 """
 
+    yesSignal = pyqtSignal()
     cancelSignal = pyqtSignal()
-    deleteCardSig = pyqtSignal()
 
     def __init__(self, title: str, content: str, parent):
         super().__init__(parent=parent)
@@ -52,7 +52,7 @@ class DeleteCardDialog(MaskDialogBase):
         self.close()
 
     def __onYesButtonClicked(self):
-        self.deleteCardSig.emit()
+        self.yesSignal.emit()
         self.close()
 
     def __setQss(self):
@@ -60,5 +60,5 @@ class DeleteCardDialog(MaskDialogBase):
         self.windowMask.setObjectName('windowMask')
         self.titleLabel.setObjectName('titleLabel')
         self.contentLabel.setObjectName('contentLabel')
-        with open('app/resource/css/delete_card_dialog.qss', encoding='utf-8') as f:
+        with open('app/resource/css/message_dialog.qss', encoding='utf-8') as f:
             self.setStyleSheet(f.read())

@@ -5,6 +5,7 @@ from copy import deepcopy
 from random import shuffle
 from time import time
 
+from app.components.dialog_box.message_dialog import MessageDialog
 from app.components.dialog_box.create_playlist_dialog import CreatePlaylistDialog
 from app.components.frameless_window import FramelessWindow
 from app.components.label_navigation_interface import LabelNavigationInterface
@@ -433,6 +434,8 @@ class MainWindow(FramelessWindow):
         if songInfo in self.playlistInterface.songInfo_list:
             i = self.playlistInterface.songListWidget.index(songInfo)
             self.playlistInterface.songListWidget.setPlay(i)
+        # elif self.playlistInterface.songListWidget.playingIndex is not None:
+        #     self.songTabSongListWidget.cancelPlayState()
 
         index = self.songTabSongListWidget.index(songInfo)
         if index:
@@ -844,6 +847,7 @@ class MainWindow(FramelessWindow):
 
     def onRenamePlaylist(self, oldPlaylist: dict, newPlaylist: dict):
         """ 重命名播放列表槽函数 """
+        self.playlistCardInterface.renamePlaylist(oldPlaylist, newPlaylist)
         index = self.customPlaylists.index(oldPlaylist)
         self.customPlaylists[index] = newPlaylist
         self.navigationInterface.updateWindow()
@@ -859,17 +863,43 @@ class MainWindow(FramelessWindow):
 
     def addSongsToCustomPlaylist(self, playlistName: str, songInfo_list: list):
         """ 将歌曲添加到自定义播放列表中 """
+
+        def resetSongInfo(songInfo_list: list, differentSongInfo_list):
+            songInfo_list.clear()
+            songInfo_list.extend(differentSongInfo_list)
+
+        # 找出新的歌曲
+        oldPlaylist = self.playlistCardInterface.findPlaylist(playlistName)
+        oldSongInfo_list = oldPlaylist.get("songInfo_list", [])
+        differentSongInfo_list = [
+            i for i in songInfo_list if i not in oldSongInfo_list]
+
+        planToAddNum = len(songInfo_list)
+        repeatNum = planToAddNum-len(differentSongInfo_list)
+
+        if repeatNum > 0:
+            if planToAddNum == 1:
+                content = "此歌已在你的播放列表中。是否要添加？"
+            elif repeatNum < planToAddNum:
+                content = "部分歌曲已在你的播放列表中。是否要添加？"
+            else:
+                content = "所有这些歌曲都已在你的播放列表中。是否要添加？"
+            w = MessageDialog("歌曲重复", content, self.window())
+            w.cancelSignal.connect(lambda: resetSongInfo(
+                songInfo_list, differentSongInfo_list))
+            w.exec_()
+
         playlist = self.playlistCardInterface.addSongsToPlaylist(
             playlistName, songInfo_list)
         index = self.getCustomPlaylistIndexByName(playlistName)
-        self.customPlaylists[index] = deepcopy(playlist)
+        self.customPlaylists[index] = playlist
 
     def getCustomPlaylistIndexByName(self, playlistName: str) -> int:
         """ 通过播放列表名字得到播放列表的下标 """
         for index, playlist in enumerate(self.customPlaylists):
             if playlist["playlistName"] == playlistName:
                 return index
-        raise Exception(f'指定的播放列表"{playlistName}"不存在')
+        return None
 
     def getCustomPlaylistByName(self, playlistName: str):
         """ 根据播放列表名字获取播放列表 """
@@ -1079,6 +1109,8 @@ class MainWindow(FramelessWindow):
             self.onSelectionModeStateChanged)
         self.playlistInterface.switchToAlbumInterfaceSig.connect(
             self.switchToAlbumInterface)
+        self.playlistInterface.renamePlaylistSig.connect(
+            self.onRenamePlaylist)
 
         # todo:将播放列表卡界面信号连接到槽函数
         self.playlistCardInterface.selectionModeStateChanged.connect(

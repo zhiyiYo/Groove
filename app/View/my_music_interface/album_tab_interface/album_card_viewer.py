@@ -5,7 +5,7 @@ from copy import deepcopy
 import pinyin
 from app.common.get_cover_path import getCoverPath
 from app.common.object.save_info_object import SaveInfoObject
-from app.components.dialog_box.delete_card_dialog import DeleteCardDialog
+from app.components.dialog_box.message_dialog import MessageDialog
 from app.components.group_box import GroupBox
 from app.components.layout.grid_layout import GridLayout
 from app.components.scroll_area import ScrollArea
@@ -615,8 +615,8 @@ class AlbumCardViewer(ScrollArea):
         """ 显示删除一个专辑卡的对话框 """
         title = "是否确定要删除此项？"
         content = f"""如果删除"{albumInfo['album']}"，它将不再位于此设备上。"""
-        w = DeleteCardDialog(title, content, self.window())
-        w.deleteCardSig.connect(
+        w = MessageDialog(title, content, self.window())
+        w.yesSignal.connect(
             lambda: self.__deleteAlbumCards([albumInfo]))
         w.exec_()
 
@@ -624,8 +624,8 @@ class AlbumCardViewer(ScrollArea):
         """ 显示删除多个专辑卡的对话框 """
         title = "确定要删除这些项？"
         content = "如果你删除这些专辑，它们将不再位于此设备上。"
-        w = DeleteCardDialog(title, content, self.window())
-        w.deleteCardSig.connect(
+        w = MessageDialog(title, content, self.window())
+        w.yesSignal.connect(
             lambda: self.__deleteAlbumCards(albumInfo_list))
         w.exec()
 

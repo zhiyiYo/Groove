@@ -139,7 +139,7 @@ class NavigationInterface(QWidget):
     def __selectedButtonChangedSlot(self, name):
         """ 选中的按钮变化对应的槽函数 """
         for widget in self.__navigation_list:
-            if not (widget is self.sender()):
+            if widget is not self.sender():
                 widget.setSelectedButton(name)
 
     def setCurrentIndex(self, index: int):
