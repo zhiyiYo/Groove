@@ -16,8 +16,8 @@ class SongListWidget(BasicSongListWidget):
     switchToAlbumInterfaceSig = pyqtSignal(str, str)
 
     def __init__(self, songInfo_list: list, parent):
-        super().__init__(songInfo_list, SongCardType.SONG_TAB_SONG_CARD,
-                         parent, QMargins(30, 0, 30, 0), 116*2)
+        super().__init__(songInfo_list, SongCardType.PLAYLIST_INTERFACE_SONG_CARD,
+                         parent, QMargins(30, 0, 30, 0), 0)
         self.resize(1150, 758)
         self.createSongCards(self.__connectSongCardSignalToSlot)
         self.setAlternatingRowColors(True)
@@ -56,7 +56,7 @@ class SongListWidget(BasicSongListWidget):
         with open("app/resource/css/playlist_interface_song_list_widget.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
 
-    def __playButtonSlot(self, index):
+    def __onPlayButtonClicked(self, index):
         """ 歌曲卡播放按钮槽函数 """
         self.playSignal.emit(index)
         self.setCurrentIndex(index)
@@ -64,11 +64,9 @@ class SongListWidget(BasicSongListWidget):
 
     def __onSongCardDoubleClicked(self, index):
         """ 发送当前播放的歌曲卡变化信号，同时更新样式和歌曲信息卡 """
-        # 处于选择模式时不发送信号
         if self.isInSelectionMode:
             return
-        # 发送歌曲信息更新信号
-        self.playSignal.emit(self.songCard_list[index].songInfo)
+        self.playSignal.emit(index)
 
     def __adjustHeight(self):
         """ 调整高度 """
@@ -82,7 +80,8 @@ class SongListWidget(BasicSongListWidget):
     def __connectSongCardSignalToSlot(self, songCard):
         """ 将歌曲卡信号连接到槽 """
         songCard.doubleClicked.connect(self.__onSongCardDoubleClicked)
-        songCard.playButtonClicked.connect(self.__playButtonSlot)
+        songCard.removeSongSignal.connect(self.removeSongSignal)
+        songCard.playButtonClicked.connect(self.__onPlayButtonClicked)
         songCard.clicked.connect(self.setCurrentIndex)
         songCard.checkedStateChanged.connect(
             self.onSongCardCheckedStateChanged)

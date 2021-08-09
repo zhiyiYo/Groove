@@ -232,6 +232,10 @@ class AlbumInterface(ScrollArea):
         if h > 155:
             self.albumInfoBar.resize(self.albumInfoBar.width(), h)
 
+    def setCurrentIndex(self, index: int):
+        """ 设置当前播放歌曲 """
+        self.songListWidget.setPlay(index)
+
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
         # 专辑信息栏信号

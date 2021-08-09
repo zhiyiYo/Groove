@@ -1,7 +1,4 @@
 # coding:utf-8
-
-""" 歌曲卡组件库 """
-
 from PyQt5.QtCore import QSize, Qt, QEvent
 from PyQt5.QtGui import QFont, QFontMetrics, QIcon, QPixmap
 from PyQt5.QtWidgets import QCheckBox, QLabel, QToolButton, QWidget, QApplication
@@ -20,10 +17,15 @@ class ToolButton(QToolButton):
         self.setStyleSheet("QToolButton{border:none;margin:0}")
 
     def setState(self, state: str):
-        """ 设置按钮状态，更新按钮图标，状态有notSelected-notPlay、notSelected-play、selected这三种 """
+        """ 设置按钮状态，更新按钮图标，状态有 notSelected-notPlay、notSelected-play、selected 这三种 """
         self.state = state
         self.setIcon(QIcon(self.iconPath_dict[state]))
         self.setProperty("state", state)
+
+    def setIconPathDict(self, iconPath_dict: dict):
+        """ 设置图标路径字典 """
+        self.iconPath_dict = iconPath_dict
+        self.setIcon(QIcon(iconPath_dict[self.state]))
 
 
 class ButtonGroup(QWidget):
@@ -280,3 +282,15 @@ class TrackNumSongNameCard(SongNameCard):
                 self.trackNumLabel.show()
                 return False
         return super().eventFilter(obj, e)
+
+
+class PlaylistSongNameCard(SongNameCard):
+    """ 播放列表界面歌曲名字卡 """
+
+    def __init__(self, songName, parent):
+        super().__init__(songName, parent=parent)
+        self.addToButton.setIconPathDict({
+            "notSelected-notPlay": r"app\resource\images\song_tab_interface\Delete_black.png",
+            "notSelected-play": r"app\resource\images\song_tab_interface\Delete_green.png",
+            "selected": r"app\resource\images\song_tab_interface\Delete_white.png",
+        })

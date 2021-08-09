@@ -14,8 +14,8 @@ from .song_list_widget import SongListWidget
 class PlaylistInterface(ScrollArea):
     """ 播放列表界面 """
 
+    playAllSig = pyqtSignal(list)  # 播放整张播放列表
     songCardPlaySig = pyqtSignal(int)  # 在当前播放列表中播放这首歌
-    playPlaylistSig = pyqtSignal(list)  # 播放整张播放列表
     playOneSongCardSig = pyqtSignal(dict)  # 将播放列表重置为一首歌
     playCheckedCardsSig = pyqtSignal(list)  # 播放选中的歌曲卡
     nextToPlayOneSongSig = pyqtSignal(dict)  # 下一首播放一首歌
@@ -27,6 +27,7 @@ class PlaylistInterface(ScrollArea):
     addSongsToNewCustomPlaylistSig = pyqtSignal(list)  # 添加歌曲到新建播放列表
     addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 添加歌曲到自定义的播放列表中
     switchToAlbumInterfaceSig = pyqtSignal(str, str)    # 切换到专辑界面
+    renamePlaylistSig = pyqtSignal(str, str)            # 重命名播放列表
 
     def __init__(self, playlist: dict, parent=None):
         """
@@ -202,7 +203,8 @@ class PlaylistInterface(ScrollArea):
         """ 信号连接到槽 """
         # 专辑信息栏信号
         self.playlistInfoBar.playAllButton.clicked.connect(
-            lambda: self.playPlaylistSig.emit(self.songInfo_list))
+            lambda: self.playAllSig.emit(self.songInfo_list))
+        self.playlistInfoBar
         self.playlistInfoBar.addToPlayingPlaylistSig.connect(
             lambda: self.addSongsToPlayingPlaylistSig.emit(self.songInfo_list))
         self.playlistInfoBar.addToNewCustomPlaylistSig.connect(

@@ -10,7 +10,7 @@ from PyQt5.QtGui import QFont, QFontMetrics, QMouseEvent
 from PyQt5.QtWidgets import QApplication, QWidget
 
 from .song_card_sub_unit import SongNameCard as SongTabSongNameCard
-from .song_card_sub_unit import TrackNumSongNameCard
+from .song_card_sub_unit import TrackNumSongNameCard, PlaylistSongNameCard
 from .song_card_type import SongCardType
 
 
@@ -19,6 +19,7 @@ class BasicSongCard(QWidget):
 
     clicked = pyqtSignal(int)
     doubleClicked = pyqtSignal(int)
+    removeSongSignal = pyqtSignal(int)
     playButtonClicked = pyqtSignal(int)
     addSongToPlayingSig = pyqtSignal(dict)
     checkedStateChanged = pyqtSignal(int, bool)
@@ -45,9 +46,8 @@ class BasicSongCard(QWidget):
         self.__resizeTime = 0
         self.__songCardType = songCardType
         # 歌曲卡类型
-        self.__SongNameCard = [SongTabSongNameCard, TrackNumSongNameCard][
-            songCardType.value
-        ]
+        self.__SongNameCard = [
+            SongTabSongNameCard, TrackNumSongNameCard, PlaylistSongNameCard][songCardType.value]
         # 初始化各标志位
         self.isSongExist = True
         self.isPlaying = False
@@ -57,14 +57,17 @@ class BasicSongCard(QWidget):
         self.isDoubleClicked = False
         # 记录songCard对应的item的下标
         self.itemIndex = None
-        # 创建小部件
-        if self.__songCardType == SongCardType.SONG_TAB_SONG_CARD:
+
+        # 创建歌曲名字卡
+        if self.__songCardType in [SongCardType.SONG_TAB_SONG_CARD, SongCardType.PLAYLIST_INTERFACE_SONG_CARD]:
             self.songNameCard = self.__SongNameCard(self.songName, self)
         elif self.__songCardType == SongCardType.ALBUM_INTERFACE_SONG_CARD:
             self.songNameCard = self.__SongNameCard(
-                self.songName, self.tracknumber, self
-            )
+                self.songName, self.tracknumber, self)
+        else:
+            raise ValueError("歌曲卡类型非法")
         self.__referenceWidgets()
+
         # 初始化小部件列表
         self.__scaleableLabelTextWidth_list = []  # 可拉伸的标签的文本的宽度列表
         self.__scaleableWidgetMaxWidth_list = []  # 可拉伸部件的最大宽度列表
@@ -82,9 +85,13 @@ class BasicSongCard(QWidget):
         # 安装事件过滤器
         self.installEventFilter(self)
         # 信号连接到槽
-        self.playButton.clicked.connect(self.playButtonSlot)
-        self.addToButton.clicked.connect(self.__showAddToMenu)
+        self.playButton.clicked.connect(self.onPlayButtonClicked)
         self.checkBox.stateChanged.connect(self.checkedStateChangedSlot)
+        if songCardType != SongCardType.PLAYLIST_INTERFACE_SONG_CARD:
+            self.addToButton.clicked.connect(self.__showAddToMenu)
+        else:
+            self.addToButton.clicked.connect(
+                lambda: self.removeSongSignal.emit(self.itemIndex))
 
     def _getInfo(self, songInfo: dict):
         """ 从歌曲信息字典中获取信息 """
@@ -98,9 +105,7 @@ class BasicSongCard(QWidget):
         self.duration = songInfo.get("duration", "0:00")  # type:str
         self.tracknumber = songInfo.get("tracknumber", "0")  # type:str
 
-    def setScalableWidgets(
-        self, scaleableWidget_list: list, scalebaleWidgetWidth_list: list, fixedWidth=0
-    ):
+    def setScalableWidgets(self, scaleableWidget_list: list, scalebaleWidgetWidth_list: list, fixedWidth=0):
         """ 设置可随着歌曲卡的伸缩而伸缩的标签
 
         Parameters
@@ -334,7 +339,7 @@ class BasicSongCard(QWidget):
         self.addToButton = self.songNameCard.addToButton
         self.checkBox = self.songNameCard.checkBox
 
-    def playButtonSlot(self):
+    def onPlayButtonClicked(self):
         """ 播放按钮按下时更新样式 """
         self.playButtonClicked.emit(self.itemIndex)
 

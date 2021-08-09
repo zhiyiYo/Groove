@@ -23,7 +23,7 @@ class SongInfoCard(PerspectiveWidget):
     def __init__(self, songInfo: dict, parent=None):
         super().__init__(parent, True)
         # 保存信息
-        self.setSongInfo(songInfo)
+        self.__setSongInfo(songInfo)
         self.coverPath = ""
         # 实例化小部件
         self.albumPic = QLabel(self)
@@ -44,7 +44,7 @@ class SongInfoCard(PerspectiveWidget):
         if not self.songInfo:
             self.hide()
 
-    def setSongInfo(self, songInfo: dict):
+    def __setSongInfo(self, songInfo: dict):
         """ 设置歌曲信息 """
         self.songInfo = songInfo
         self.songName = self.songInfo.get("songName", "")
@@ -54,7 +54,7 @@ class SongInfoCard(PerspectiveWidget):
         """ 更新歌曲信息卡 """
         if songInfo:
             self.show()
-            self.setSongInfo(songInfo)
+            self.__setSongInfo(songInfo)
             self.scrollTextWindow.initUI(songInfo)
             self.setFixedWidth(115 + 15 + self.scrollTextWindow.width() + 25)
             self.setAlbumCover()
@@ -122,7 +122,7 @@ class ScrollTextWindow(QWidget):
         # 初始化界面
         self.initUI(songInfo)
 
-    def setSongInfo(self, songInfo: dict):
+    def __setSongInfo(self, songInfo: dict):
         """ 更新歌曲信息 """
         self.songInfo = songInfo
         self.songName = self.songInfo.get("songName", "")
@@ -151,7 +151,7 @@ class ScrollTextWindow(QWidget):
         """ 重置所有属性 """
         self.__initFlags()
         # 初始化界面
-        self.setSongInfo(songInfo)
+        self.__setSongInfo(songInfo)
         self.initWidget()
         self.update()
 

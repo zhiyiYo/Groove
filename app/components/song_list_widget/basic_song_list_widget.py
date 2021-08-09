@@ -8,7 +8,7 @@ from app.components.list_widget import ListWidget
 from PyQt5.QtCore import QMargins, QSize, Qt, pyqtSignal
 from PyQt5.QtWidgets import QLabel, QListWidgetItem, QWidget
 
-from .song_card import AlbumInterfaceSongCard, SongTabSongCard
+from .song_card import AlbumInterfaceSongCard, SongTabSongCard, PlaylistInterfaceSongCard
 from .song_card_type import SongCardType
 
 
@@ -50,8 +50,8 @@ class BasicSongListWidget(ListWidget):
         self.__songCardType = songCardType
         self.paddingBottomHeight = paddingBottomHeight
         # 使用指定的歌曲卡类创建歌曲卡对象
-        self.__SongCard = [SongTabSongCard,
-                           AlbumInterfaceSongCard][songCardType.value]
+        self.__SongCard = [SongTabSongCard, AlbumInterfaceSongCard,
+                           PlaylistInterfaceSongCard][songCardType.value]
         self.songInfo_list = songInfo_list if songInfo_list else []  # type:List[dict]
         self.currentIndex = None
         self.playingIndex = None  # 正在播放的歌曲卡下标
@@ -151,7 +151,7 @@ class BasicSongListWidget(ListWidget):
         self.songCardNumChanged.emit(len(self.songCard_list))
         self.update()
 
-    def setPlay(self, index):
+    def setPlay(self, index: int):
         """ 设置歌曲卡播放状态 """
         if not self.songCard_list:
             return

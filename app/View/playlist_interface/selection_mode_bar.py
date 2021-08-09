@@ -25,7 +25,7 @@ class SelectionModeBar(SelectionModeBarBase):
         self.addToButton = BasicButton(
             r"app\resource\images\selection_mode_bar\Add.png", "添加到", self)
         self.deleteButton = BasicButton(
-            r"app\resource\images\selection_mode_bar\Delete.png", "删除", self)
+            r"app\resource\images\selection_mode_bar\Delete.png", "从播放列表中删除", self)
         self.showAlbumButton = BasicButton(
             r"app\resource\images\selection_mode_bar\显示专辑_20_20.png", "显示专辑", self)
         self.moveUpButton = BasicButton(

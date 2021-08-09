@@ -408,7 +408,7 @@ class PlayingInterface(QWidget):
     @handleSelectionMode
     def __onShowSmallestPlayInterfaceButtonClicked(self):
         """ 显示最小播放模式界面 """
-        self.fullScreenChanged.emit(True)
+        self.fullScreenChanged.emit(False)
         self.showSmallestPlayInterfaceSig.emit()
 
     def setRandomPlay(self, isRandomPlay: bool):

@@ -42,8 +42,9 @@ class SongPropertyDialog(MaskDialogBase):
         self.duration = QLabel(self.songInfo["duration"], self.widget)
         self.songName = QLabel(self.songInfo["songName"], self.widget)
         self.albumSonger = QLabel(self.songInfo["songer"], self.widget)
-        self.songPath = QLabel(self.songInfo["songPath"], self.widget)
         self.trackNumber = QLabel(self.songInfo["tracknumber"], self.widget)
+        self.songPath = QLabel(
+            self.songInfo["songPath"].replace("\\", "/"), self.widget)
         # 实例化关闭按钮
         self.closeButton = PerspectivePushButton("关闭", self.widget)
         # 创建小部件列表

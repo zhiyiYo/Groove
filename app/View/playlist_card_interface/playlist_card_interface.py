@@ -21,7 +21,7 @@ from .playlist_card import PlaylistCard
 from .selection_mode_bar import SelectionModeBar
 
 
-class PlaylistCardInterface(QWidget):
+class PlaylistCardInterface(ScrollArea):
     """ 播放列表卡界面 """
 
     playSig = pyqtSignal(list)
@@ -38,7 +38,7 @@ class PlaylistCardInterface(QWidget):
         self.sortMode = "modifiedTime"
         self.playlists = deepcopy(playlists)
         self.playlistCard_list = []
-        self.playlistCardDict_list = []  # type:list[dict]
+        self.playlistCardInfo_list = []  # type:list[dict]
         self.checkedPlaylistCard_list = []
         self.isInSelectionMode = False
         self.isAllPlaylistCardChecked = False
@@ -50,7 +50,6 @@ class PlaylistCardInterface(QWidget):
     def __createWidgets(self):
         """ 创建小部件 """
         # 创建磨砂背景
-        self.scrollArea = ScrollArea(self)
         self.scrollWidget = QWidget(self)
         self.gridLayout = GridLayout()
         self.blurBackground = BlurBackground(self.scrollWidget)
@@ -80,11 +79,9 @@ class PlaylistCardInterface(QWidget):
         # 创建排序菜单
         self.sortModeMenu = AeroMenu(parent=self)
         self.sortByModifiedTimeAct = QAction(
-            "修改时间", self, triggered=lambda: self.__sortPlaylist("modifiedTime")
-        )
+            "修改时间", self, triggered=lambda: self.__sortPlaylist("modifiedTime"))
         self.sortByAToZAct = QAction(
-            "A到Z", self, triggered=lambda: self.__sortPlaylist("AToZ")
-        )
+            "A到Z", self, triggered=lambda: self.__sortPlaylist("AToZ"))
         self.sortAct_list = [self.sortByModifiedTimeAct, self.sortByAToZAct]
         # 创建选择状态栏
         self.selectionModeBar = SelectionModeBar(self)
@@ -103,7 +100,7 @@ class PlaylistCardInterface(QWidget):
         """ 创建一个播放列表卡 """
         playlistCard = PlaylistCard(playlist, self)
         self.playlistCard_list.append(playlistCard)
-        self.playlistCardDict_list.append(
+        self.playlistCardInfo_list.append(
             {"playlistCard": playlistCard, "playlist": playlist})
         # 创建动画
         hideCheckBoxAni = QPropertyAnimation(
@@ -129,7 +126,7 @@ class PlaylistCardInterface(QWidget):
         self.selectionModeBar.hide()
         self.guideLabel.setHidden(bool(self.playlistCard_list))
         # 初始化滚动条
-        self.scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         # 将动作添加到菜单中
         self.sortModeMenu.addActions(self.sortAct_list)
         # 分配ID和属性
@@ -147,7 +144,6 @@ class PlaylistCardInterface(QWidget):
 
     def __initLayout(self):
         """ 初始化布局 """
-        self.scrollArea.move(0, 0)
         self.playlistLabel.move(30, 54)
         self.sortModeLabel.move(190, 135)
         self.sortModeButton.move(264, 130)
@@ -158,7 +154,7 @@ class PlaylistCardInterface(QWidget):
         self.gridLayout.setVerticalSpacing(20)
         self.gridLayout.setHorizontalSpacing(10)
         self.gridLayout.setContentsMargins(15, 175, 15, 120)
-        self.scrollArea.setWidget(self.scrollWidget)
+        self.setWidget(self.scrollWidget)
         self.scrollWidget.setLayout(self.gridLayout)
         # 如果没有播放列表就直接返回
         if not self.playlistCard_list:
@@ -174,7 +170,6 @@ class PlaylistCardInterface(QWidget):
     def resizeEvent(self, e):
         """ 调整小部件尺寸和位置 """
         super().resizeEvent(e)
-        self.scrollArea.resize(self.size())
         self.whiteMask.resize(self.width() - 15, 175)
         self.selectionModeBar.resize(
             self.width(), self.selectionModeBar.height())
@@ -205,19 +200,19 @@ class PlaylistCardInterface(QWidget):
         if key == "modifiedTime":
             self.sortModeButton.setText("修改时间")
             self.currentSortAct = self.sortByModifiedTimeAct
-            self.playlistCardDict_list.sort(
+            self.playlistCardInfo_list.sort(
                 key=self.__sortPlaylistByModifiedTime, reverse=True
             )
         else:
             self.sortModeButton.setText("A到Z")
             self.currentSortAct = self.sortByAToZAct
-            self.playlistCardDict_list.sort(
+            self.playlistCardInfo_list.sort(
                 key=self.__sortPlaylistByAToZ, reverse=False
             )
         # 先将小部件布局中移除
         self.gridLayout.removeAllWidgets()
         # 将小部件添加到布局中
-        for index, playlistCard_dict in enumerate(self.playlistCardDict_list):
+        for index, playlistCard_dict in enumerate(self.playlistCardInfo_list):
             row = index // self.columnNum
             column = index - self.columnNum * row
             playlistCard = playlistCard_dict["playlistCard"]
@@ -344,31 +339,23 @@ class PlaylistCardInterface(QWidget):
         # 按照当前排序方式重新排序播放列表卡
         self.__sortPlaylist(self.sortMode)
 
-    def __showRenamePlaylistPanel(
-        self, oldPlaylist: dict, playlistCard: PlaylistCard = None
-    ):
+    def __showRenamePlaylistPanel(self, oldPlaylist: dict, playlistCard: PlaylistCard = None):
         """ 显示重命名播放列表面板 """
-        playlistCard = (
-            self.sender() if not playlistCard else playlistCard
-        )  # type:PlaylistCard
-        renamePlaylistPanel = RenamePlaylistDialog(oldPlaylist, self.window())
-        renamePlaylistPanel.renamePlaylistSig.connect(
+        playlistCard = self.sender() if not playlistCard else playlistCard  # type:PlaylistCard
+        w = RenamePlaylistDialog(oldPlaylist, self.window())
+        w.renamePlaylistSig.connect(
             lambda oldPlaylist, newPlaylist: self.__renamePlaylistSlot(
-                oldPlaylist, newPlaylist, playlistCard
-            )
-        )
-        renamePlaylistPanel.exec()
+                oldPlaylist, newPlaylist, playlistCard))
+        w.exec()
 
-    def __renamePlaylistSlot(
-        self, oldPlaylist: dict, newPlaylist: dict, playlistCard: PlaylistCard
-    ):
+    def __renamePlaylistSlot(self, oldPlaylist: dict, newPlaylist: dict, playlistCard: PlaylistCard):
         """ 重命名播放列表槽函数 """
         playlistCard.updateWindow(newPlaylist)
         # 重新排序播放列表卡
         index = self.playlists.index(oldPlaylist)
         self.playlists[index] = newPlaylist
         index = self.getIndexByPlaylist(oldPlaylist)
-        self.playlistCardDict_list[index]["playlist"] = newPlaylist
+        self.playlistCardInfo_list[index]["playlist"] = newPlaylist
         self.__sortPlaylist(self.sortMode)
         # 发送信号
         self.renamePlaylistSig.emit(oldPlaylist, newPlaylist)
@@ -380,8 +367,7 @@ class PlaylistCardInterface(QWidget):
         content = f"""如果删除"{playlist['playlistName']}"，它将不再位于此设备上。"""
         w = DeleteCardDialog(title, content, self.window())
         w.deleteCardSig.connect(
-            lambda: self.__deleteOnePlaylistCard(playlistCard, playlist)
-        )
+            lambda: self.__deleteOnePlaylistCard(playlistCard, playlist))
         w.exec()
 
     def __deleteOnePlaylistCard(self, playlistCard: PlaylistCard, playlist: dict):
@@ -391,14 +377,13 @@ class PlaylistCardInterface(QWidget):
         # 从列表中弹出小部件
         self.playlists.remove(playlist)
         self.playlistCard_list.remove(playlistCard)
-        self.playlistCardDict_list.pop(
+        self.playlistCardInfo_list.pop(
             self.getIndexByPlaylistCard(playlistCard))
         # 删除播放列表卡
         playlistCard.deleteLater()
         # 调整高度
         self.scrollWidget.resize(
-            self.width(), 175 + self.gridLayout.rowCount() * 298 + 120
-        )
+            self.width(), 175 + self.gridLayout.rowCount() * 298 + 120)
         # 删除json文件并发送删除播放列表的信号
         remove(f'app/Playlists/{playlist["playlistName"]}.json')
         self.deletePlaylistSig.emit(playlist)
@@ -454,7 +439,7 @@ class PlaylistCardInterface(QWidget):
         """ 将歌曲添加到播放列表中，返回修改后的播放列表 """
         # 直接修改播放列表卡字典中的播放列表
         index = self.getIndexByPlaylistName(playlistName)
-        playlistCard_dict = self.playlistCardDict_list[index]
+        playlistCard_dict = self.playlistCardInfo_list[index]
         playlist = playlistCard_dict["playlist"]
         # 更新播放列表
         playlist["modifiedTime"] = QDateTime.currentDateTime().toString(
@@ -468,21 +453,21 @@ class PlaylistCardInterface(QWidget):
 
     def getIndexByPlaylistName(self, playlistName: str) -> int:
         """ 通过播放列表名字获取播放列表在播放列表卡字典列表中的下标 """
-        for index, playlistCard_dict in enumerate(self.playlistCardDict_list):
+        for index, playlistCard_dict in enumerate(self.playlistCardInfo_list):
             if playlistCard_dict["playlist"]["playlistName"] == playlistName:
                 return index
         raise Exception(f'指定的播放列表"{playlistName}"不存在')
 
     def getIndexByPlaylistCard(self, playlistCard: PlaylistCard) -> int:
         """ 通过播放列表卡获取播放列表在播放列表卡字典列表中的下标 """
-        for index, playlistCard_dict in enumerate(self.playlistCardDict_list):
+        for index, playlistCard_dict in enumerate(self.playlistCardInfo_list):
             if playlistCard_dict["playlistCard"] is playlistCard:
                 return index
         raise Exception(f'指定的播放列表卡"{playlistCard.playlistName}"不存在')
 
     def getIndexByPlaylist(self, playlist: dict) -> int:
         """ 通过播放列表获取播放列表在播放列表卡字典列表中的下标 """
-        for index, playlistCard_dict in enumerate(self.playlistCardDict_list):
+        for index, playlistCard_dict in enumerate(self.playlistCardInfo_list):
             if playlistCard_dict["playlist"] == playlist:
                 return index
         raise Exception(f"""指定的播放列表"{playlist['playlistName']}"不存在""")

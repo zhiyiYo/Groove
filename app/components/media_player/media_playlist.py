@@ -24,9 +24,6 @@ class PlaylistType(Enum):
 class MediaPlaylist(QMediaPlaylist):
     """ 播放列表类 """
 
-    # 当播放列表的当前下标变化时发送信号，用于更新主界面
-    switchSongSignal = pyqtSignal(dict)
-
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         # 创建一个用于存储顺序播放列表的列表
@@ -50,13 +47,8 @@ class MediaPlaylist(QMediaPlaylist):
         self.__readLastPlaylist()
         if self.playlist:
             for songInfo_dict in self.playlist:
-                super().addMedia(
-                    QMediaContent(QUrl.fromLocalFile(
-                        songInfo_dict["songPath"]))
-                )
-        self.currentIndexChanged.connect(
-            lambda index: self.switchSongSignal.emit(self.playlist[index])
-        )
+                super().addMedia(QMediaContent(
+                    QUrl.fromLocalFile(songInfo_dict["songPath"])))
 
     def addMedia(self, songInfo_dict: dict):
         """ 重载addMedia,一次向尾部添加一首歌 """
@@ -108,14 +100,10 @@ class MediaPlaylist(QMediaPlaylist):
             # 列表循环时切换到第一首
             if self.playbackMode() == QMediaPlaylist.Loop:
                 self.setCurrentIndex(0)
-                # 切换歌曲时发出信号
-                self.switchSongSignal.emit(self.getCurrentSong())
             elif self.playbackMode() == QMediaPlaylist.Random:
                 super().next()
         else:
             super().next()
-            # 切换歌曲时发出信号
-            self.switchSongSignal.emit(self.getCurrentSong())
 
     def previous(self):
         """ 播放上一首 """
@@ -123,14 +111,8 @@ class MediaPlaylist(QMediaPlaylist):
         if self.currentIndex() == 0:
             if self.playbackMode() == QMediaPlaylist.Loop:
                 self.setCurrentIndex(self.mediaCount() - 1)
-                if self.getCurrentSong() and not os.path.exists(self.getCurrentSong()["songPath"]):
-                    return
-                self.switchSongSignal.emit(self.getCurrentSong())
         else:
             super().previous()
-            if self.getCurrentSong() and not os.path.exists(self.getCurrentSong()["songPath"]):
-                return
-            self.switchSongSignal.emit(self.getCurrentSong())
 
     def getCurrentSong(self) -> dict:
         """ 获取当前播放的歌曲信息 """

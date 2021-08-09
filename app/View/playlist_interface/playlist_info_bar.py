@@ -22,7 +22,7 @@ class PlaylistInfoBar(CollapsingAppBarBase):
         self.addToButton = AppBarButton(
             r"app\resource\images\album_interface\Add.png", "添加到")
         self.renameButton = AppBarButton(
-            r"app\resource\images\album_interface\Edit.png", "显示歌手")
+            r"app\resource\images\album_interface\Edit.png", "重命名")
         self.pinToStartMenuButton = AppBarButton(
             r"app\resource\images\album_interface\Pin.png", '固定到"开始"菜单')
         self.deleteButton = AppBarButton(
