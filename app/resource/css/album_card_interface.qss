@@ -29,7 +29,6 @@ QGroupBox::title {
     subcontrol-origin: margin;
     subcontrol-position: top left;
     padding-left: 10px;
-
 }
 
 QGridLayout{

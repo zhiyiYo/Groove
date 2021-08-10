@@ -115,15 +115,16 @@ class AlbumInterface(ScrollArea):
         """
         if oldSongInfo not in self.songInfo_list:
             return
+            
         # 如果新的歌曲信息的"专辑名.歌手"不变，则更新歌曲卡信息，否则将其移除
         newKey = newSongInfo.get("album", "")+"."+newSongInfo.get("songer", "")
         oldKey = oldSongInfo.get("album", "")+"."+oldSongInfo.get("songer", "")
         if newKey == oldKey:
-            self.songListWidget.updateOneSongCard(
-                oldSongInfo, newSongInfo, False)
+            self.songListWidget.updateOneSongCard(newSongInfo, False)
         else:
             index = self.songListWidget.index(oldSongInfo)
             self.songListWidget.removeSongCard(index)
+
         self.albumInfo["songInfo_list"] = self.songListWidget.songInfo_list
 
     def __showAlbumInfoEditDialog(self):
@@ -138,7 +139,7 @@ class AlbumInterface(ScrollArea):
         w.exec_()
         self.saveAlbumInfoObject.disconnect()
 
-    def __selectionModeStateChangedSlot(self, isOpenSelectionMode: bool):
+    def __onSelectionModeStateChanged(self, isOpenSelectionMode: bool):
         """ 选择状态改变对应的槽函数 """
         self.selectionModeBar.setHidden(not isOpenSelectionMode)
         self.selectionModeStateChanged.emit(isOpenSelectionMode)
@@ -195,7 +196,7 @@ class AlbumInterface(ScrollArea):
         self.__unCheckSongCards()
         self.songListWidget.showSongPropertyDialog(songInfo)
 
-    def __checkedCardNumChangedSlot(self, num):
+    def __onCheckedCardNumChanged(self, num):
         """ 选中的卡数量发生改变时刷新选择栏 """
         self.selectionModeBar.setPartButtonHidden(num > 1)
 
@@ -249,6 +250,7 @@ class AlbumInterface(ScrollArea):
             lambda: self.addSongsToNewCustomPlaylistSig.emit(self.songInfo_list))
         self.albumInfoBar.addToCustomPlaylistSig.connect(
             lambda name: self.addSongsToCustomPlaylistSig.emit(name, self.songInfo_list))
+
         # 歌曲列表信号
         self.songListWidget.playSignal.connect(self.songCardPlaySig)
         self.songListWidget.playOneSongSig.connect(self.playOneSongCardSig)
@@ -258,13 +260,16 @@ class AlbumInterface(ScrollArea):
         self.songListWidget.addSongToPlayingSignal.connect(
             self.addOneSongToPlayingSig)
         self.songListWidget.selectionModeStateChanged.connect(
-            self.__selectionModeStateChangedSlot)
+            self.__onSelectionModeStateChanged)
         self.songListWidget.checkedSongCardNumChanged.connect(
-            self.__checkedCardNumChangedSlot)
+            self.__onCheckedCardNumChanged)
         self.songListWidget.addSongsToCustomPlaylistSig.connect(
             self.addSongsToCustomPlaylistSig)
         self.songListWidget.addSongsToNewCustomPlaylistSig.connect(
             self.addSongsToNewCustomPlaylistSig)
+        self.songListWidget.isAllCheckedChanged.connect(
+            lambda x: self.selectionModeBar.checkAllButton.setCheckedState(not x))
+
         # 选择栏信号连接到槽函数
         self.selectionModeBar.cancelButton.clicked.connect(
             self.__unCheckSongCards)
@@ -278,5 +283,6 @@ class AlbumInterface(ScrollArea):
         self.selectionModeBar.checkAllButton.clicked.connect(
             self.__selectAllButtonSlot)
         self.selectionModeBar.addToButton.clicked.connect(self.__showAddToMenu)
+
         # 将滚动信号连接到槽函数
         self.verticalScrollBar().valueChanged.connect(self.__onScrollBarValueChanged)

@@ -1,1 +1,1 @@
-from .album_card_viewer import AlbumCardViewer
+from .album_card_interface import AlbumCardInterface

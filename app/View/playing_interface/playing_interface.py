@@ -1,6 +1,7 @@
 # coding:utf-8
 from copy import deepcopy
 
+from app.components.menu import AddToMenu
 from app.common.blur_cover_thread import BlurCoverThread
 from app.components.buttons.three_state_button import ThreeStatePushButton
 from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve,
@@ -9,7 +10,6 @@ from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve,
 from PyQt5.QtMultimedia import QMediaPlaylist
 from PyQt5.QtWidgets import QLabel, QWidget
 
-from .menu import AddToMenu
 from .play_bar import PlayBar
 from .selection_mode_bar import SelectionModeBar
 from .song_info_card_chute import SongInfoCardChute
@@ -392,17 +392,16 @@ class PlayingInterface(QWidget):
         # 最后再显示歌曲信息卡
         self.songInfoCardChute.setHidden(not isHidden)
 
-    def updateOneSongCard(self, oldSongInfo: dict, newSongInfo):
+    def updateOneSongCard(self, newSongInfo: dict):
         """ 更新一个歌曲卡 """
-        self.songListWidget.updateOneSongCard(oldSongInfo, newSongInfo)
-        self.playlist = self.songListWidget.playlist
+        self.songListWidget.updateOneSongCard(newSongInfo)
+        self.playlist = self.songListWidget.songInfo_list
         self.songInfoCardChute.playlist = self.playlist
 
-    def updateMultiSongCards(self, oldSongInfo_list: list, newSongInfo_list: list):
+    def updateMultiSongCards(self, newSongInfo_list: list):
         """ 更新多个歌曲卡 """
-        self.songListWidget.updateMultiSongCards(
-            oldSongInfo_list, newSongInfo_list)
-        self.playlist = self.songListWidget.playlist
+        self.songListWidget.updateMultiSongCards(newSongInfo_list)
+        self.playlist = self.songListWidget.songInfo_list
         self.songInfoCardChute.playlist = self.playlist
 
     @handleSelectionMode
@@ -444,6 +443,8 @@ class PlayingInterface(QWidget):
 
     def __onCancelButtonClicked(self):
         """ 选择栏取消按钮点击槽函数 """
+        self.selectionModeBar.checkAllButton.setCheckedState(
+            not self.songListWidget.isAllSongCardsChecked)
         self.songListWidget.unCheckAllSongCards()
         self.selectionModeBar.checkAllButton.setCheckedState(True)
 
@@ -504,14 +505,18 @@ class PlayingInterface(QWidget):
     def __connectSignalToSlot(self):
         """ 将信号连接到槽 """
         self.blurCoverThread.blurDone.connect(self.setBlurPixmap)
+        self.randomPlayAllButton.clicked.connect(self.randomPlayAllSig)
+
         # 更新背景封面和下标
         self.songInfoCardChute.currentIndexChanged[int].connect(
             self.currentIndexChanged)
         self.songInfoCardChute.currentIndexChanged[str].connect(
             self.startBlurThread)
+
         # 显示和隐藏播放栏
         self.songInfoCardChute.showPlayBarSignal.connect(self.showPlayBar)
         self.songInfoCardChute.hidePlayBarSignal.connect(self.hidePlayBar)
+
         # 将播放栏的信号连接到槽
         self.playBar.randomPlayButton.randomPlayChanged.connect(
             self.randomPlayChanged)
@@ -541,6 +546,7 @@ class PlayingInterface(QWidget):
             self.clearPlaylistSig)
         self.playBar.moreActionsMenu.savePlayListAct.triggered.connect(
             self.savePlaylistSig)
+
         # 将歌曲列表的信号连接到槽函数
         self.songListWidget.currentIndexChanged.connect(
             self.currentIndexChanged)
@@ -554,12 +560,15 @@ class PlayingInterface(QWidget):
             self.__onSelectionModeChanged)
         self.songListWidget.checkedSongCardNumChanged.connect(
             lambda n: self.selectionModeBar.setPartButtonHidden(n > 1))
-        self.randomPlayAllButton.clicked.connect(self.randomPlayAllSig)
+        self.songListWidget.isAllCheckedChanged.connect(
+            lambda x: self.selectionModeBar.checkAllButton.setCheckedState(not x))
+
         # 切换到专辑界面
         self.songInfoCardChute.switchToAlbumInterfaceSig.connect(
             self.switchToAlbumInterfaceSig)
         self.songListWidget.switchToAlbumInterfaceSig.connect(
             self.switchToAlbumInterfaceSig)
+
         # 选择栏信号连接到槽函数
         self.selectionModeBar.cancelButton.clicked.connect(
             self.__onCancelButtonClicked)

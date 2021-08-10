@@ -4,6 +4,7 @@ from app.common.get_cover_path import getCoverPath
 from app.common.get_dominant_color import DominantColor
 from app.components.buttons.blur_button import BlurButton
 from app.components.check_box import CheckBox
+from app.components.menu import AddToMenu, DWMMenu
 from app.components.perspective_widget import PerspectiveWidget
 from PIL import Image
 from PIL.ImageFilter import GaussianBlur
@@ -11,9 +12,7 @@ from PyQt5.QtCore import QPoint, Qt, pyqtSignal
 from PyQt5.QtGui import (QBrush, QColor, QFont, QFontMetrics, QLinearGradient,
                          QPainter, QPixmap)
 from PyQt5.QtWidgets import (QApplication, QGraphicsOpacityEffect, QLabel,
-                             QWidget)
-
-from .playlist_card_context_menu import PlaylistCardContextMenu
+                             QWidget, QAction)
 
 
 class PlaylistCard(PerspectiveWidget):
@@ -21,12 +20,15 @@ class PlaylistCard(PerspectiveWidget):
 
     playSig = pyqtSignal(list)
     nextToPlaySig = pyqtSignal(list)
-    deleteCardSig = pyqtSignal(dict)
+    deleteCardSig = pyqtSignal(str)
     hideBlurBackgroundSig = pyqtSignal()
     renamePlaylistSig = pyqtSignal(dict)
     checkedStateChanged = pyqtSignal(QWidget, bool)
     switchToPlaylistInterfaceSig = pyqtSignal(str)
     showBlurBackgroundSig = pyqtSignal(QPoint, str)
+    addSongsToPlayingPlaylistSig = pyqtSignal(list)      # 添加歌曲到正在播放
+    addSongsToNewCustomPlaylistSig = pyqtSignal(list)    # 添加歌曲到新的自定义的播放列表中
+    addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 添加歌曲到自定义的播放列表中
 
     def __init__(self, playlist: dict, parent=None):
         super().__init__(parent, True)
@@ -154,11 +156,11 @@ class PlaylistCard(PerspectiveWidget):
         self.playlistCover.setPlaylistCover(self.playlistCoverPath)
         self.playlistNameLabel.setText(self.playlistName)
         self.playlistLenLabel.setText(f"{len(self.songInfo_list)} 首歌曲")
-        self.playButton.setBlurPic(self.playlistCoverPath, 26)
-        self.addToButton.setBlurPic(self.playlistCoverPath, 26)
+        self.playButton.setBlurPic(self.playlistCoverPath, 40)
+        self.addToButton.setBlurPic(self.playlistCoverPath, 40)
         self.__adjustLabel()
 
-    def __checkedStateChangedSlot(self):
+    def __onCheckedStateChanged(self):
         """ 复选框选中状态改变对应的槽函数 """
         self.isChecked = self.checkBox.isChecked()
         # 发送信号
@@ -185,9 +187,10 @@ class PlaylistCard(PerspectiveWidget):
 
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
-        self.checkBox.stateChanged.connect(self.__checkedStateChangedSlot)
+        self.checkBox.stateChanged.connect(self.__onCheckedStateChanged)
         self.playButton.clicked.connect(
             lambda: self.playSig.emit(self.songInfo_list))
+        self.addToButton.clicked.connect(self.__showAddToMenu)
 
     def contextMenuEvent(self, e):
         """ 显示右击菜单 """
@@ -197,13 +200,35 @@ class PlaylistCard(PerspectiveWidget):
         menu.nextToPlayAct.triggered.connect(
             lambda: self.nextToPlaySig.emit(self.songInfo_list))
         menu.deleteAct.triggered.connect(
-            lambda: self.deleteCardSig.emit(self.playlist))
+            lambda: self.deleteCardSig.emit(self.playlistName))
         menu.renameAct.triggered.connect(
             lambda: self.renamePlaylistSig.emit(self.playlist))
-        menu.selectAct.triggered.connect(self.__selectActSlot)
+        menu.selectAct.triggered.connect(self.__onSelectActTriggered)
+        menu.addToMenu.playingAct.triggered.connect(
+            lambda: self.addSongsToPlayingPlaylistSig.emit(self.songInfo_list))
+        menu.addToMenu.newPlaylistAct.triggered.connect(
+            lambda: self.addSongsToNewCustomPlaylistSig.emit(self.songInfo_list))
+        menu.addToMenu.addSongsToPlaylistSig.connect(
+            lambda name: self.addSongsToCustomPlaylistSig.emit(name, self.songInfo_list))
         menu.exec(e.globalPos())
 
-    def __selectActSlot(self):
+    def __showAddToMenu(self):
+        """ 显示添加到菜单 """
+        menu = AddToMenu(parent=self)
+        pos = self.mapToGlobal(QPoint(
+            self.addToButton.x(), self.addToButton.y()))
+        x = pos.x() + self.addToButton.width() + 5
+        y = pos.y() + int(
+            self.addToButton.height() / 2 - (13 + 38 * menu.actionCount()) / 2)
+        menu.playingAct.triggered.connect(
+            lambda: self.addSongsToPlayingPlaylistSig.emit(self.songInfo_list))
+        menu.newPlaylistAct.triggered.connect(
+            lambda: self.addSongsToNewCustomPlaylistSig.emit(self.songInfo_list))
+        menu.addSongsToPlaylistSig.connect(
+            lambda name: self.addSongsToCustomPlaylistSig.emit(name, self.songInfo_list))
+        menu.exec(QPoint(x, y))
+
+    def __onSelectActTriggered(self):
         """ 右击菜单选择动作对应的槽函数 """
         self.setSelectionModeOpen(True)
         self.setChecked(True)
@@ -217,23 +242,21 @@ class PlaylistCover(QWidget):
         self.resize(288, 196)
         self.__blurPix = None
         self.__playlistCoverPix = None
+        self.playlistCoverPath = ''
         self.__dominantColor = DominantColor()
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setPlaylistCover(picPath)
 
     def setPlaylistCover(self, picPath: str):
         """ 设置封面 """
-        self.playlistCoverPath = picPath
-        if not picPath:
+        if picPath == self.playlistCoverPath:
             return
         # 封面磨砂
-        img = (
-            Image.open(picPath).resize((288, 288)).crop((0, 46, 288, 242))
-        )  # type:Image.Image
+        self.playlistCoverPath = picPath
+        img = Image.open(picPath).resize((288, 288)).crop((0, 46, 288, 242))
         self.__blurPix = img.filter(GaussianBlur(50)).toqpixmap()
-        self.playlistCoverPix = QPixmap(picPath).scaled(
-            135, 135, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation
-        )  # type:QPixmap
+        self.__playlistCoverPix = QPixmap(picPath).scaled(
+            135, 135, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)  # type:QPixmap
         # 获取主色调
         self.dominantRgb = self.__dominantColor.getDominantColor(
             picPath, tuple)
@@ -256,9 +279,40 @@ class PlaylistCover(QWidget):
         painter.setBrush(QBrush(gradientColor))
         painter.drawRect(self.rect())
         # 绘制封面
-        painter.drawPixmap(76, 31, self.playlistCoverPix)
+        painter.drawPixmap(76, 31, self.__playlistCoverPix)
         # 绘制封面集
         painter.setBrush(QBrush(QColor(*self.dominantRgb, 100)))
         painter.drawRect(96, 21, self.width() - 192, 5)
         painter.setBrush(QBrush(QColor(*self.dominantRgb, 210)))
         painter.drawRect(86, 26, self.width() - 172, 5)
+
+
+class PlaylistCardContextMenu(DWMMenu):
+    """ 播放列表卡右击菜单 """
+
+    def __init__(self, string="", parent=None):
+        super().__init__(string, parent)
+        # 创建动作
+        self.__createActions()
+        self.setObjectName("playlistCardContextMenu")
+        self.setQss()
+
+    def __createActions(self):
+        """ 创建动作 """
+        # 创建动作
+        self.playAct = QAction("播放", self)
+        self.nextToPlayAct = QAction("下一首播放", self)
+        self.addToMenu = AddToMenu("添加到", self)
+        self.renameAct = QAction("重命名", self)
+        self.pinToStartMenuAct = QAction('固定到"开始"菜单', self)
+        self.deleteAct = QAction("删除", self)
+        self.selectAct = QAction("选择", self)
+
+        # 添加动作到菜单
+        self.addActions([self.playAct, self.nextToPlayAct])
+        # 将子菜单添加到主菜单
+        self.addMenu(self.addToMenu)
+        self.addActions(
+            [self.renameAct, self.pinToStartMenuAct, self.deleteAct])
+        self.addSeparator()
+        self.addAction(self.selectAct)

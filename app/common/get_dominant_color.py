@@ -13,8 +13,7 @@ from PyQt5.QtWidgets import QWidget, QLabel, QPushButton, QApplication
 class DominantColor:
     """ 获取图像的主色调 """
 
-    def __init__(self, imagePath=""):
-        self.imagePath = imagePath
+    def __init__(self):
         self.rgb = tuple()
 
     def getDominantColor(self, imagePath: str, resType=str):
@@ -30,6 +29,11 @@ class DominantColor:
         """
         self.imagePath = imagePath
         colorThief = ColorThief(imagePath)
+
+        # 调整图像大小，加快运算速度
+        if max(colorThief.image.size) > 400:
+            colorThief.image = colorThief.image.resize((400, 400))
+
         palette = colorThief.get_palette(quality=9)
         # 调整调色板明度
         palette = self.__adjustPaletteValue(palette)
@@ -65,7 +69,8 @@ class DominantColor:
             newPalette.append(self.hsv2rgb(h, s, v))
         return newPalette
 
-    def rgb2hsv(self, rgb: tuple) -> tuple:
+    @staticmethod
+    def rgb2hsv(rgb: tuple) -> tuple:
         """ rgb空间变换到hsv空间 """
         r, g, b = [i / 255 for i in rgb]
         mx = max(r, g, b)
@@ -83,7 +88,8 @@ class DominantColor:
         v = mx
         return (h, s, v)
 
-    def hsv2rgb(self, h, s, v) -> tuple:
+    @staticmethod
+    def hsv2rgb(h, s, v) -> tuple:
         """ hsv空间变换到rgb空间 """
         h60 = h / 60.0
         h60f = floor(h60)

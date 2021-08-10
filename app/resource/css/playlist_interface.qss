@@ -6,6 +6,25 @@
     background-color: white;
 }
 
+QLabel{
+    color: black;
+    font: 25px "Microsoft YaHei";
+}
+
+ThreeStatePushButton{
+    color: black;
+    font: 18px "Microsoft YaHei";
+    border: none;
+}
+
+ThreeStatePushButton:hover{
+    color: rgba(0, 0, 0, 0.8);
+}
+
+ThreeStatePushButton:pressed{
+    color: rgba(0, 0, 0, 0.4);
+}
+
 /*滚动条*/
 QScrollBar {
     background: transparent;

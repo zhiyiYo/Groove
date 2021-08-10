@@ -20,6 +20,7 @@ class NavigationInterface(QWidget):
     showCreatePlaylistDialogSig = pyqtSignal()
     switchToSettingInterfaceSig = pyqtSignal()
     switchToMyMusicInterfaceSig = pyqtSignal()
+    switchToPlaylistInterfaceSig = pyqtSignal(str)
     switchToPlaylistCardInterfaceSig = pyqtSignal()
 
     def __init__(self, parent=None):
@@ -54,11 +55,11 @@ class NavigationInterface(QWidget):
         self.navigationMenu.switchInterfaceSig.connect(self.switchInterfaceSig)
         # 同步按钮选中状态
         self.navigationBar.selectedButtonChanged.connect(
-            self.__selectedButtonChangedSlot)
+            self.__onSelectedButtonChanged)
         self.navigationWidget.selectedButtonChanged.connect(
-            self.__selectedButtonChangedSlot)
+            self.__onSelectedButtonChanged)
         self.navigationMenu.selectedButtonChanged.connect(
-            self.__selectedButtonChangedSlot)
+            self.__onSelectedButtonChanged)
         # 发送切换窗口信号
         self.navigationWidget.switchInterfaceSig.connect(
             self.switchInterfaceSig)
@@ -84,6 +85,10 @@ class NavigationInterface(QWidget):
                 self.switchToPlaylistCardInterfaceSig)
             widget.createPlaylistButton.clicked.connect(
                 self.showCreatePlaylistDialogSig)
+            for button in widget.playlistNameButton_list:
+                name = button.property("name")
+                button.clicked.connect(
+                    lambda checked, name=name: self.switchToPlaylistInterfaceSig.emit(name))
 
     def resizeEvent(self, e):
         """ 调整小部件尺寸 """
@@ -136,7 +141,7 @@ class NavigationInterface(QWidget):
         """ 设置展开导航界面时是否为overlay显示模式 """
         self.__isOverlay = isOverlay
 
-    def __selectedButtonChangedSlot(self, name):
+    def __onSelectedButtonChanged(self, name):
         """ 选中的按钮变化对应的槽函数 """
         for widget in self.__navigation_list:
             if widget is not self.sender():

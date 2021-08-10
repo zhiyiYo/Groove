@@ -1,12 +1,13 @@
 # coding:utf-8
 from copy import deepcopy
 
+from app.components.buttons.three_state_button import ThreeStatePushButton
 from app.components.dialog_box.rename_playlist_dialog import \
     RenamePlaylistDialog
 from app.components.menu import AddToMenu
 from app.components.scroll_area import ScrollArea
 from PyQt5.QtCore import QPoint, Qt, pyqtSignal
-from PyQt5.QtWidgets import QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QVBoxLayout, QWidget, QLabel
 
 from .playlist_info_bar import PlaylistInfoBar
 from .selection_mode_bar import SelectionModeBar
@@ -18,10 +19,12 @@ class PlaylistInterface(ScrollArea):
 
     playAllSig = pyqtSignal(list)  # 播放整张播放列表
     songCardPlaySig = pyqtSignal(int)  # 在当前播放列表中播放这首歌
+    removeSongSig = pyqtSignal(str, list)  # 从播放列表中移除歌曲
     playOneSongCardSig = pyqtSignal(dict)  # 将播放列表重置为一首歌
     playCheckedCardsSig = pyqtSignal(list)  # 播放选中的歌曲卡
     nextToPlayOneSongSig = pyqtSignal(dict)  # 下一首播放一首歌
     addOneSongToPlayingSig = pyqtSignal(dict)  # 添加一首歌到正在播放
+    renamePlaylistSig = pyqtSignal(dict, dict)   # 重命名播放列表
     editSongInfoSignal = pyqtSignal(dict, dict)  # 编辑歌曲信息信号
     selectionModeStateChanged = pyqtSignal(bool)  # 进入/退出 选择模式
     nextToPlayCheckedCardsSig = pyqtSignal(list)  # 将选中的多首歌添加到下一首播放
@@ -29,7 +32,7 @@ class PlaylistInterface(ScrollArea):
     addSongsToNewCustomPlaylistSig = pyqtSignal(list)  # 添加歌曲到新建播放列表
     addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 添加歌曲到自定义的播放列表中
     switchToAlbumInterfaceSig = pyqtSignal(str, str)    # 切换到专辑界面
-    renamePlaylistSig = pyqtSignal(dict, dict)            # 重命名播放列表
+    switchToAlbumCardInterfaceSig = pyqtSignal()           # 切换到专辑卡界面
 
     def __init__(self, playlist: dict, parent=None):
         """
@@ -49,6 +52,17 @@ class PlaylistInterface(ScrollArea):
         self.songListWidget = SongListWidget(self.songInfo_list, self)
         self.playlistInfoBar = PlaylistInfoBar(self.playlist, self)
         self.selectionModeBar = SelectionModeBar(self)
+        self.noMusicLabel = QLabel("播放列表中没有音乐？", self)
+        self.addMusicButton = ThreeStatePushButton(
+            {
+                "normal": "app/resource/images/playlist_interface/album_normal.png",
+                "hover": "app/resource/images/playlist_interface/album_hover.png",
+                "pressed": "app/resource/images/playlist_interface/album_pressed.png",
+            },
+            " 从我的集锦中添加歌曲",
+            (29, 29),
+            self
+        )
         # 初始化
         self.__initWidget()
 
@@ -61,6 +75,8 @@ class PlaylistInterface(ScrollArea):
         # 设置布局
         self.vBox.setContentsMargins(0, 430, 0, 0)
         self.vBox.addWidget(self.songListWidget)
+        self.noMusicLabel.move(42, 455)
+        self.addMusicButton.move(42, 515)
         # 设置层叠样式
         self.__setQss()
         # 信号连接到槽
@@ -103,7 +119,7 @@ class PlaylistInterface(ScrollArea):
         """
         if oldSongInfo not in self.songInfo_list:
             return
-        self.songListWidget.updateOneSongCard(oldSongInfo, newSongInfo, False)
+        self.songListWidget.updateOneSongCard(newSongInfo, False)
         self.playlist["songInfo_list"] = self.songListWidget.songInfo_list
 
     def __setQss(self):
@@ -119,7 +135,7 @@ class PlaylistInterface(ScrollArea):
         self.songInfo_list = playlist.get("songInfo_list", [])
         self.playlistName = playlist.get("playlistName", "未知播放列表")
 
-    def __selectionModeStateChangedSlot(self, isOpenSelectionMode: bool):
+    def __onSelectionModeStateChanged(self, isOpenSelectionMode: bool):
         """ 选择状态改变对应的槽函数 """
         self.selectionModeBar.setHidden(not isOpenSelectionMode)
         self.selectionModeStateChanged.emit(isOpenSelectionMode)
@@ -168,13 +184,24 @@ class PlaylistInterface(ScrollArea):
         songCard.setChecked(False)
         self.switchToAlbumInterfaceSig.emit(songCard.album, songCard.songer)
 
+    def __onSelectionModeBarDeleteButtonClicked(self):
+        """ 选择模式栏删除按钮槽函数 """
+        for songCard in self.songListWidget.checkedSongCard_list.copy():
+            songCard.setChecked(False)
+            index = self.songListWidget.songCard_list.index(songCard)
+            self.songListWidget.removeSongCard(index)
+
+        self.playlist["songInfo_list"] = self.songListWidget.songInfo_list
+        self.playlistInfoBar.updateWindow(self.playlist)
+        self.removeSongSig.emit(
+            self.playlistName, self.playlist["songInfo_list"])
+
     def exitSelectionMode(self):
         """ 退出选择模式 """
         self.__unCheckSongCards()
 
     def __showAddToMenu(self):
         """ 显示添加到菜单 """
-        # 初始化菜单动作触发标志
         menu = AddToMenu(parent=self)
         # 计算菜单弹出位置
         pos = self.selectionModeBar.mapToGlobal(
@@ -182,7 +209,7 @@ class PlaylistInterface(ScrollArea):
         x = pos.x() + self.selectionModeBar.addToButton.width() + 5
         y = pos.y() + self.selectionModeBar.addToButton.height() // 2 - \
             (13 + 38 * menu.actionCount()) // 2
-        # 获取选中的歌曲信息列表
+        # 信号连接到槽
         for act in menu.action_list:
             act.triggered.connect(self.exitSelectionMode)
         songInfo_list = [
@@ -213,8 +240,22 @@ class PlaylistInterface(ScrollArea):
         self.playlistInfoBar.updateWindow(newPlaylist)
         self.renamePlaylistSig.emit(oldPlaylist, newPlaylist)
 
+    def __onSongListWidgetRemoveSongs(self, index: int):
+        """ 从播放列表中移除歌曲 """
+        self.playlist["songInfo_list"] = self.songListWidget.songInfo_list
+        self.playlistInfoBar.updateWindow(self.playlist)
+        self.removeSongSig.emit(
+            self.playlistName, self.playlist["songInfo_list"])
+
+    def __onSongListWidgetEmptyChanged(self, isEmpty):
+        """ 歌曲卡数量改变槽函数 """
+        self.addMusicButton.setVisible(isEmpty)
+        self.noMusicLabel.setVisible(isEmpty)
+
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
+        self.addMusicButton.clicked.connect(self.switchToAlbumCardInterfaceSig)
+
         # 专辑信息栏信号
         self.playlistInfoBar.playAllButton.clicked.connect(
             lambda: self.playAllSig.emit(self.songInfo_list))
@@ -227,6 +268,7 @@ class PlaylistInterface(ScrollArea):
             lambda name: self.addSongsToCustomPlaylistSig.emit(name, self.songInfo_list))
         self.playlistInfoBar.renameButton.clicked.connect(
             lambda: self.__showRenamePlaylistDialog(self.playlist))
+
         # 歌曲列表信号
         self.songListWidget.playSignal.connect(self.songCardPlaySig)
         self.songListWidget.playOneSongSig.connect(self.playOneSongCardSig)
@@ -236,7 +278,7 @@ class PlaylistInterface(ScrollArea):
         self.songListWidget.addSongToPlayingSignal.connect(
             self.addOneSongToPlayingSig)
         self.songListWidget.selectionModeStateChanged.connect(
-            self.__selectionModeStateChangedSlot)
+            self.__onSelectionModeStateChanged)
         self.songListWidget.checkedSongCardNumChanged.connect(
             self.__checkedCardNumChangedSlot)
         self.songListWidget.addSongsToCustomPlaylistSig.connect(
@@ -245,6 +287,13 @@ class PlaylistInterface(ScrollArea):
             self.addSongsToNewCustomPlaylistSig)
         self.songListWidget.switchToAlbumInterfaceSig.connect(
             self.switchToAlbumInterfaceSig)
+        self.songListWidget.removeSongSignal.connect(
+            self.__onSongListWidgetRemoveSongs)
+        self.songListWidget.emptyChangedSig.connect(
+            self.__onSongListWidgetEmptyChanged)
+        self.songListWidget.isAllCheckedChanged.connect(
+            lambda x: self.selectionModeBar.checkAllButton.setCheckedState(not x))
+
         # 选择栏信号连接到槽函数
         self.selectionModeBar.cancelButton.clicked.connect(
             self.__unCheckSongCards)
@@ -260,5 +309,8 @@ class PlaylistInterface(ScrollArea):
         self.selectionModeBar.addToButton.clicked.connect(self.__showAddToMenu)
         self.selectionModeBar.showAlbumButton.clicked.connect(
             self.__onSelectionModeBarAlbumButtonClicked)
+        self.selectionModeBar.deleteButton.clicked.connect(
+            self.__onSelectionModeBarDeleteButtonClicked)
+
         # 将滚动信号连接到槽函数
         self.verticalScrollBar().valueChanged.connect(self.__onScrollBarValueChanged)

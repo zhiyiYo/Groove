@@ -1,5 +1,5 @@
 # coding:utf-8
-from app.components.menu import AcrylicMenu, AddToMenu
+from app.components.menu import AddToMenu, DWMMenu
 from app.components.song_list_widget.basic_song_list_widget import BasicSongListWidget
 from app.components.song_list_widget.song_card_type import SongCardType
 from PyQt5.QtCore import QMargins, Qt, pyqtSignal
@@ -68,6 +68,11 @@ class SongListWidget(BasicSongListWidget):
             return
         self.playSignal.emit(index)
 
+    def __onRemoveButtonClicked(self, index):
+        """ 移除歌曲卡按钮点击槽函数 """
+        self.removeSongCard(index)
+        self.removeSongSignal.emit(index)
+
     def __adjustHeight(self):
         """ 调整高度 """
         margin = self.viewportMargins()
@@ -80,7 +85,7 @@ class SongListWidget(BasicSongListWidget):
     def __connectSongCardSignalToSlot(self, songCard):
         """ 将歌曲卡信号连接到槽 """
         songCard.doubleClicked.connect(self.__onSongCardDoubleClicked)
-        songCard.removeSongSignal.connect(self.removeSongSignal)
+        songCard.removeSongSignal.connect(self.__onRemoveButtonClicked)
         songCard.playButtonClicked.connect(self.__onPlayButtonClicked)
         songCard.clicked.connect(self.setCurrentIndex)
         songCard.checkedStateChanged.connect(
@@ -100,12 +105,13 @@ class SongListWidget(BasicSongListWidget):
         contextMenu.showPropertyAct.triggered.connect(
             self.showSongPropertyDialog)
         contextMenu.deleteAct.triggered.connect(
-            lambda: self.removeSongCard(self.currentRow()))
+            lambda: self.__onRemoveButtonClicked(self.currentRow()))
         contextMenu.selectAct.triggered.connect(
             lambda: self.songCard_list[self.currentRow()].setChecked(True))
         contextMenu.showAlbumAct.triggered.connect(lambda: self.switchToAlbumInterfaceSig.emit(
             self.songCard_list[self.currentRow()].album,
             self.songCard_list[self.currentRow()].songer))
+
         contextMenu.addToMenu.playingAct.triggered.connect(
             lambda: self.addSongToPlayingSignal.emit(
                 self.songCard_list[self.currentRow()].songInfo))
@@ -117,12 +123,11 @@ class SongListWidget(BasicSongListWidget):
                 [self.songCard_list[self.currentRow()].songInfo]))
 
 
-class SongCardListContextMenu(AcrylicMenu):
+class SongCardListContextMenu(DWMMenu):
     """ 歌曲卡列表右击菜单 """
 
     def __init__(self, parent):
         super().__init__("", parent)
-        self.setFixedWidth(128)
         # 创建主菜单动作
         self.playAct = QAction("播放", self)
         self.nextSongAct = QAction("下一首播放", self)

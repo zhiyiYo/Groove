@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import QApplication, QLabel, QLineEdit, QPushButton
 class CreatePlaylistDialog(MaskDialogBase):
     """ 创建播放列表对话框 """
 
-    createPlaylistSig = pyqtSignal(dict)
+    createPlaylistSig = pyqtSignal(str, dict)
 
     def __init__(self, songInfo_list: list = None, parent=None):
         super().__init__(parent=parent)
@@ -88,7 +88,7 @@ class CreatePlaylistDialog(MaskDialogBase):
         }
         with open(f"app/Playlists/{playlistName}.json", "w", encoding="utf-8") as f:
             json.dump(playlist, f)
-        self.createPlaylistSig.emit(playlist)
+        self.createPlaylistSig.emit(playlistName, playlist)
         self.close()
 
 

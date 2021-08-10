@@ -15,6 +15,7 @@ class BasicNavigationWidget(QWidget):
         # 初始化按钮及其名字列表
         self._selectableButton_list = []
         self._selectableButtonName_list = []
+        self.playlistNameButton_list = []
         self.__switchInterfaceButtonIndex_dict = {
             'musicGroupButton': 0,
             'playlistButton': 1,
@@ -32,7 +33,7 @@ class BasicNavigationWidget(QWidget):
         for button, name in zip(self._selectableButton_list, self._selectableButtonName_list):
             button.setProperty('name', name)
             button.clicked.connect(
-                lambda checked, name=name: self.__buttonClickedSlot(name))
+                lambda checked, name=name: self.__onButtonClicked(name))
 
     def setCurrentIndex(self, index: int):
         """ 设置下标对应的按钮的选中状态 """
@@ -52,7 +53,7 @@ class BasicNavigationWidget(QWidget):
         """
         self.__updateButtonSelectedState(buttonName)
 
-    def __buttonClickedSlot(self, selectedButtonName: str):
+    def __onButtonClicked(self, selectedButtonName: str):
         """ 按钮点击槽函数 """
         if selectedButtonName == 'playingButton':
             return

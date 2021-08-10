@@ -45,6 +45,7 @@ class PlaylistInfoBar(CollapsingAppBarBase):
         songInfo = self.songInfo_list[0] if self.songInfo_list else {}
         self.playlistCoverPath = getCoverPath(
             songInfo.get("modifiedAlbum"), "playlist_big")
+
         # 统计时间
         seconds = 0
         for songInfo in self.songInfo_list:

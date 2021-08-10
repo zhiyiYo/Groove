@@ -136,15 +136,16 @@ class NavigationWidget(BasicNavigationWidget):
     def updateWindow(self):
         """ 更新界面 """
         # 扫描播放列表
-        playlistName_list = self.getPlaylistNames()
-        if playlistName_list == self.playlistName_list:
+        playlistNames = self.getPlaylistNames()
+        if playlistNames == self.playlistName_list:
             return
         # 删除旧按钮
         for i in range(len(self.playlistNameButton_list)):
             button = self.playlistNameButton_list.pop()
             button.deleteLater()
+
         # 创建新按钮
-        self.playlistName_list = playlistName_list
+        self.playlistName_list = playlistNames
         self.playlistNameButton_list = [
             PushButton(
                 r"app\resource\images\navigation_interface\黑色我喜欢_60_62.png",
@@ -152,8 +153,11 @@ class NavigationWidget(BasicNavigationWidget):
                 (400, 62),
                 self.scrollWidget
             )
-            for i in playlistName_list
+            for i in playlistNames
         ]
+        for button, name in zip(self.playlistNameButton_list, playlistNames):
+            button.setProperty('name', name)
+            
         # 移动按钮
         self.__addPlaylistNameButtonsToScrollWidget()
         self.__adjustScrollWidgetHeight()

@@ -65,23 +65,19 @@ class MediaPlaylist(QMediaPlaylist):
         self.playlist.extend(songInfoDict_list)
         for songInfo_dict in songInfoDict_list:
             super().addMedia(
-                QMediaContent(QUrl.fromLocalFile(songInfo_dict["songPath"]))
-            )
+                QMediaContent(QUrl.fromLocalFile(songInfo_dict["songPath"])))
 
     def insertMedia(self, index, songInfo_dict: dict):
         """ 在指定位置插入要播放的歌曲 """
         super().insertMedia(
-            index, QMediaContent(QUrl.fromLocalFile(songInfo_dict["songPath"]))
-        )
+            index, QMediaContent(QUrl.fromLocalFile(songInfo_dict["songPath"])))
         self.playlist.insert(index, songInfo_dict)
 
     def insertMedias(self, index: int, songInfoDict_list: list):
         """ 插入播放列表 """
         if not songInfoDict_list:
             return
-        self.playlist = (
-            self.playlist[:index] + songInfoDict_list + self.playlist[index:]
-        )
+        self.playlist = self.playlist[:index] + songInfoDict_list + self.playlist[index:]
         mediaContent_list = [
             QMediaContent(QUrl.fromLocalFile(songInfo_dict["songPath"]))
             for songInfo_dict in songInfoDict_list
@@ -118,8 +114,7 @@ class MediaPlaylist(QMediaPlaylist):
         """ 获取当前播放的歌曲信息 """
         if self.currentIndex() >= 0:
             return self.playlist[self.currentIndex()]
-        else:
-            return {}
+        return {}
 
     def setCurrentSong(self, songInfo_dict: dict):
         """ 按下歌曲卡的播放按钮或者双击歌曲卡时立即在当前的播放列表中播放这首歌 """
@@ -197,16 +192,16 @@ class MediaPlaylist(QMediaPlaylist):
         super().removeMedia(index)
         self.setCurrentIndex(currentIndex)
 
-    def updateOneSongInfo(self, oldSongInfo: dict, newSongInfo: dict):
+    def updateOneSongInfo(self, newSongInfo: dict):
         """ 更新播放列表中一首歌曲的信息 """
-        if oldSongInfo in self.playlist:
-            index = self.playlist.index(oldSongInfo)
-            self.playlist[index] = newSongInfo
+        for i, songInfo in enumerate(self.playlist):
+            if songInfo["songPath"] == newSongInfo["songPath"]:
+                self.playlist[i] = newSongInfo
 
-    def updateMultiSongInfo(self, oldSongInfo_list: list, newSongInfo_list: list):
+    def updateMultiSongInfo(self, newSongInfo_list: list):
         """ 更新播放列表中多首歌曲的信息 """
-        for oldSongInfo, newSongInfo in zip(oldSongInfo_list, newSongInfo_list):
-            self.updateOneSongInfo(oldSongInfo, newSongInfo)
+        for newSongInfo in newSongInfo_list:
+            self.updateOneSongInfo(newSongInfo)
 
     def __checkDataDir(self):
         """ 检查数据文件夹是否存在，不存在则创建 """

@@ -227,6 +227,12 @@ class CheckAllButton(TwoStateButton):
     def __init__(self, iconPath_list, text_list, parent=None, buttonSize=(84, 70), isState_1=0):
         super().__init__(iconPath_list, text_list, parent, buttonSize, isState_1)
 
-    def setCheckedState(self, checkedState: bool):
-        """ 设置全选/取消全选状态 """
-        self.setState(not checkedState)
+    def setCheckedState(self, isChecked: bool):
+        """ 设置全选/取消全选状态
+
+        Parameters
+        ----------
+        isChecked: bool
+            按钮图标是否为 `全选` 字样，若为 `False`，为 `取消全选` 字样
+        """
+        self.setState(not isChecked)

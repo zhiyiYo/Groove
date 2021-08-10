@@ -290,7 +290,7 @@ class PlaylistSongNameCard(SongNameCard):
     def __init__(self, songName, parent):
         super().__init__(songName, parent=parent)
         self.addToButton.setIconPathDict({
-            "notSelected-notPlay": r"app\resource\images\song_tab_interface\Delete_black.png",
-            "notSelected-play": r"app\resource\images\song_tab_interface\Delete_green.png",
-            "selected": r"app\resource\images\song_tab_interface\Delete_white.png",
+            "notSelected-notPlay": r"app\resource\images\playlist_interface\Delete_black.png",
+            "notSelected-play": r"app\resource\images\playlist_interface\Delete_green.png",
+            "selected": r"app\resource\images\playlist_interface\Delete_white.png",
         })

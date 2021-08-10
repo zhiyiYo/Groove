@@ -68,13 +68,36 @@ class AcrylicMenu(QMenu):
             self.setStyleSheet(f.read())
 
 
-class AddToMenu(AcrylicMenu):
+class DWMMenu(QMenu):
+    """ 使用 DWM 窗口阴影的菜单 """
+
+    def __init__(self, title="", parent=None):
+        super().__init__(title, parent)
+        # 创建窗口特效
+        self.windowEffect = WindowEffect()
+        self.setWindowFlags(
+            Qt.FramelessWindowHint | Qt.Popup | Qt.NoDropShadowWindowHint)
+        self.setAttribute(Qt.WA_StyledBackground)
+        self.setQss()
+
+    def event(self, e: QEvent):
+        if e.type() == QEvent.WinIdChange:
+            self.windowEffect.addShadowEffect(self.winId())
+        return QMenu.event(self, e)
+
+    def setQss(self):
+        """ 设置层叠样式表 """
+        with open("app/resource/css/menu.qss", encoding="utf-8") as f:
+            self.setStyleSheet(f.read())
+
+
+class AddToMenu(DWMMenu):
     """ 添加到菜单 """
 
     addSongsToPlaylistSig = pyqtSignal(str)  # 将歌曲添加到已存在的自定义播放列表
 
-    def __init__(self, string="添加到", parent=None, acrylicColor="e5e5e5C0"):
-        super().__init__(string, parent, acrylicColor)
+    def __init__(self, title="添加到", parent=None):
+        super().__init__(title, parent)
         self.setObjectName("addToMenu")
         # 创建动作
         self.createActions()
@@ -116,18 +139,13 @@ class AddToMenu(AcrylicMenu):
         return len(self.action_list)
 
 
-class LineEditMenu(AeroMenu):
+class LineEditMenu(DWMMenu):
     """ 单行输入框右击菜单 """
 
     def __init__(self, parent):
         super().__init__("", parent)
-        # 不能直接改width
-        self.animation = QPropertyAnimation(self, b"geometry")
-        self.initWidget()
-
-    def initWidget(self):
-        """ 初始化小部件 """
         self.setObjectName("lineEditMenu")
+        self.animation = QPropertyAnimation(self, b"geometry")
         self.animation.setDuration(300)
         self.animation.setEasingCurve(QEasingCurve.OutQuad)
         self.setQss()

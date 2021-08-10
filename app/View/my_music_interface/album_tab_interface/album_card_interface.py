@@ -17,12 +17,13 @@ from .album_blur_background import AlbumBlurBackground
 from .album_card import AlbumCard
 
 
-class AlbumCardViewer(ScrollArea):
+class AlbumCardInterface(ScrollArea):
     """ 定义一个专辑卡视图 """
 
     playSignal = pyqtSignal(list)
     nextPlaySignal = pyqtSignal(list)
     albumNumChanged = pyqtSignal(int)           # 当专辑个数改变时发出这个信号给父级窗口
+    isAllCheckedChanged = pyqtSignal(bool)      # 专辑卡全部选中改变
     addAlbumToPlayingSignal = pyqtSignal(list)  # 将专辑添加到正在播放
     editAlbumInfoSignal = pyqtSignal(dict, dict)
     switchToAlbumInterfaceSig = pyqtSignal(str, str)  # albumName, songerName
@@ -131,7 +132,7 @@ class AlbumCardViewer(ScrollArea):
         albumCard.switchToAlbumInterfaceSig.connect(
             self.switchToAlbumInterfaceSig)
         albumCard.checkedStateChanged.connect(
-            self.__albumCardCheckedStateChangedSlot)
+            self.__onAlbumCardCheckedStateChanged)
         albumCard.showBlurAlbumBackgroundSig.connect(
             self.__showBlurAlbumBackground)
         albumCard.hideBlurAlbumBackgroundSig.connect(
@@ -410,7 +411,7 @@ class AlbumCardViewer(ScrollArea):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open("app/resource/css/album_card_viewer.qss", encoding="utf-8") as f:
+        with open("app/resource/css/album_card_interface.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
 
     def findAlbumCardByAlbumInfo(self, albumInfo: dict) -> AlbumCard:
@@ -431,7 +432,7 @@ class AlbumCardViewer(ScrollArea):
         albumInfo = self.albumSonger2AlbumInfo_dict.get(key, {})
         return albumInfo
 
-    def __albumCardCheckedStateChangedSlot(self, albumCard: AlbumCard, isChecked: bool):
+    def __onAlbumCardCheckedStateChanged(self, albumCard: AlbumCard, isChecked: bool):
         """ 专辑卡选中状态改变对应的槽函数 """
         # 如果专辑信息不在选中的专辑信息列表中且对应的专辑卡变为选中状态就将专辑信息添加到列表中
         if albumCard not in self.checkedAlbumCard_list and isChecked:
@@ -444,22 +445,23 @@ class AlbumCardViewer(ScrollArea):
                 self.checkedAlbumCard_list.index(albumCard))
             self.checkedAlbumCardNumChanged.emit(
                 len(self.checkedAlbumCard_list))
+
+        # 检查是否全部专辑卡选中改变
+        isAllChecked = (len(self.checkedAlbumCard_list)
+                        == len(self.albumCard_list))
+        if isAllChecked != self.isAllAlbumCardsChecked:
+            self.isAllAlbumCardsChecked = isAllChecked
+            self.isAllAlbumCardsChecked.emit(isAllChecked)
+
         # 如果先前不处于选择模式那么这次发生选中状态改变就进入选择模式
         if not self.isInSelectionMode:
-            # 所有专辑卡进入选择模式
             self.__setAllAlbumCardSelectionModeOpen(True)
-            # 发送信号要求主窗口隐藏播放栏
             self.selectionModeStateChanged.emit(True)
-            # 更新标志位
             self.isInSelectionMode = True
-        else:
-            if not self.checkedAlbumCard_list:
-                # 所有专辑卡退出选择模式
-                self.__setAllAlbumCardSelectionModeOpen(False)
-                # 发送信号要求主窗口显示播放栏
-                self.selectionModeStateChanged.emit(False)
-                # 更新标志位
-                self.isInSelectionMode = False
+        elif not self.checkedAlbumCard_list:
+            self.__setAllAlbumCardSelectionModeOpen(False)
+            self.selectionModeStateChanged.emit(False)
+            self.isInSelectionMode = False
 
     def __setAllAlbumCardSelectionModeOpen(self, isOpenSelectionMode: bool):
         """ 设置所有专辑卡是否进入选择模式 """

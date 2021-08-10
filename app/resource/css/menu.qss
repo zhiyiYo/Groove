@@ -1,16 +1,12 @@
 /*设置菜单样式*/
 QMenu {
-    background-color: rgb(242, 242, 242);
+    background-color: rgb(232, 232, 232);
     /*background-color: white;*/
     font-size: 18px;
     font: 18px "Microsoft YaHei";
     padding: 5px 0px 16px 0px;
-    border: 1px solid rgb(196, 199, 200);
+    border: 1px solid rgb(200, 200, 200);
     border-radius: 5px;
-}
-
-QMenu#songCardContextMenu {
-    width: 128px;
 }
 
 QMenu::right-arrow {
@@ -24,7 +20,6 @@ QMenu::right-arrow {
 
 QMenu::separator {
     height: 1px;
-    width: 140px;
     background: rgba(0,0,0,104);
     margin-right: 13px;
     margin-top: 5px;
@@ -34,7 +29,6 @@ QMenu::separator {
 
 QMenu::item {
     padding: 7px 20px 7px 13px;
-    /*background-color: transparent;*/
 }
 
 QMenu::item:selected {
@@ -43,20 +37,6 @@ QMenu::item:selected {
     background: rgba(0,0,0,25);
     color: black;
 }
-
-QMenu#roundBorderMenu::icon {
-    position: absolute;
-    left: 14px;
-}
-
-QMenu#roundBorderMenu::item {
-    /*设置文字边距*/
-    padding-left: 20px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-
-}
-
 
 /*添加到菜单样式*/
 QMenu#addToMenu {
@@ -138,7 +118,7 @@ QMenu#lineEditMenu {
     /*width: 182px;*/
     width: 1px;
     height: 1px;
-    border: 1px solid rgb(196, 199, 200);
+    border: 1px solid rgb(200, 200, 200);
     border-radius: 0px;
     padding: 5px 0px 5px 0px;
 }

@@ -16,15 +16,16 @@ class SongListWidget(ListWidget):
 
     currentIndexChanged = pyqtSignal(int)
     removeSongSignal = pyqtSignal(int)
-    selectionModeStateChanged = pyqtSignal(bool)      # 进入或退出选择模式
-    checkedSongCardNumChanged = pyqtSignal(int)     # 选中的歌曲卡数量改变
-    switchToAlbumInterfaceSig = pyqtSignal(str, str)  # albumName, songerName
-    addSongsToNewCustomPlaylistSig = pyqtSignal(list)  # 将歌曲添加到新的自定义播放列表
+    isAllCheckedChanged = pyqtSignal(bool)              # 歌曲卡卡全部选中改变
+    selectionModeStateChanged = pyqtSignal(bool)        # 进入或退出选择模式
+    checkedSongCardNumChanged = pyqtSignal(int)         # 选中的歌曲卡数量改变
+    switchToAlbumInterfaceSig = pyqtSignal(str, str)    # albumName, songerName
+    addSongsToNewCustomPlaylistSig = pyqtSignal(list)   # 将歌曲添加到新的自定义播放列表
     addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 将歌曲添加到已存在的自定义播放列表
 
-    def __init__(self, playlist: list, parent=None):
+    def __init__(self, songInfo_list: list, parent=None):
         super().__init__(parent)
-        self.playlist = playlist
+        self.songInfo_list = songInfo_list
         self.currentIndex = 0
         self.item_list = []
         self.songCard_list = []  # type:List[SongCard]
@@ -46,9 +47,9 @@ class SongListWidget(ListWidget):
 
     def createSongCards(self):
         """ 创建歌曲卡 """
-        for songInfo in self.playlist:
+        for songInfo in self.songInfo_list:
             self.appendOneSongCard(songInfo)
-        if self.playlist:
+        if self.songInfo_list:
             self.songCard_list[self.currentIndex].setPlay(True)
         self.resize(1200, 800)
 
@@ -75,7 +76,7 @@ class SongListWidget(ListWidget):
         if hitIndex > -1:
             menu = Menu(self)
             self.__connectContextMenuSignalToSlot(menu)
-            if self.currentRow() == len(self.playlist) - 1:
+            if self.currentRow() == len(self.songInfo_list) - 1:
                 menu.moveDownAct.setEnabled(False)
             if self.currentRow() == 0:
                 menu.moveUpAct.setEnabled(False)
@@ -91,8 +92,8 @@ class SongListWidget(ListWidget):
     def removeSongCard(self, index):
         """ 移除选中的一个歌曲卡 """
         # 记录下当前播放列表长度
-        playlistLen = len(self.playlist)
-        self.playlist.pop(index)
+        playlistLen = len(self.songInfo_list)
+        self.songInfo_list.pop(index)
         songCard = self.songCard_list.pop(index)
         songCard.deleteLater()
         self.item_list.pop(index)
@@ -125,7 +126,7 @@ class SongListWidget(ListWidget):
 
     def setPlaylist(self, playlist: list, isResetIndex: bool = True):
         """ 直接清空并更新播放列表 """
-        self.playlist = playlist
+        self.songInfo_list = playlist
         self.clearSongCards(isResetIndex)
         self.createSongCards()
 
@@ -144,32 +145,30 @@ class SongListWidget(ListWidget):
         # 长度相等就更新信息，不相等就根据情况创建或者删除item
         if self.songCard_list:
             self.songCard_list[self.currentIndex].setPlay(False)
-        deltaLen = len(songInfo_list) - len(self.playlist)
-        oldSongInfoLen = len(self.playlist)
-        if deltaLen > 0:
-            # 添加item
-            for songInfo in songInfo_list[oldSongInfoLen:]:
+
+        oldSongNum = len(self.songInfo_list)
+        newSongNum = len(songInfo_list)
+
+        # 添加item
+        if newSongNum > oldSongNum:
+            for songInfo in songInfo_list[oldSongNum:]:
                 self.appendOneSongCard(songInfo)
                 QApplication.processEvents()
-        elif deltaLen < 0:
-            # 删除多余的item
-            for i in range(
-                len(self.playlist) - 1, len(self.playlist) + deltaLen - 1, -1
-            ):
+        # 删除多余的item
+        elif newSongNum < oldSongNum:
+            for i in range(oldSongNum - 1, newSongNum - 1, -1):
                 self.item_list.pop()
                 songCard = self.songCard_list.pop()
                 songCard.deleteLater()
                 self.takeItem(i)
+
         # 更新部分歌曲卡
-        self.playlist = songInfo_list
-        iterRange = (
-            range(len(self.playlist) - deltaLen)
-            if deltaLen > 0
-            else range(len(self.playlist))
-        )
-        for i in iterRange:
-            songInfo_dict = self.playlist[i]
+        self.songInfo_list = songInfo_list
+        n = oldSongNum if newSongNum > oldSongNum else newSongNum
+        for i in range(n):
+            songInfo_dict = self.songInfo_list[i]
             self.songCard_list[i].updateSongCard(songInfo_dict)
+
         # 更新样式和当前下标
         self.currentIndex = 0 if isResetIndex else self.currentIndex
         self.songCard_list[self.currentIndex].setPlay(True)
@@ -178,17 +177,17 @@ class SongListWidget(ListWidget):
         """ 切换到专辑界面 """
         self.switchToAlbumInterfaceSig.emit(albumName, songerName)
 
-    def updateOneSongCard(self, oldSongInfo: dict, newSongInfo: dict):
+    def updateOneSongCard(self, newSongInfo: dict):
         """ 更新一个歌曲卡 """
-        if oldSongInfo in self.playlist:
-            index = self.playlist.index(oldSongInfo)
-            self.playlist[index] = newSongInfo.copy()
-            self.songCard_list[index].updateSongCard(newSongInfo)
+        for i, songInfo in enumerate(self.songInfo_list):
+            if songInfo["songPath"] == newSongInfo["songPath"]:
+                self.songInfo_list[i] = newSongInfo
+                self.songCard_list[i].updateSongCard(newSongInfo)
 
-    def updateMultiSongCards(self, oldSongInfo_list: list, newSongInfo_list: list):
+    def updateMultiSongCards(self, newSongInfo_list: list):
         """ 更新多个的歌曲卡 """
-        for oldSongInfo, newSongInfo in zip(oldSongInfo_list, newSongInfo_list):
-            self.updateOneSongCard(oldSongInfo, newSongInfo)
+        for newSongInfo in newSongInfo_list:
+            self.updateOneSongCard(newSongInfo)
 
     def appendOneSongCard(self, songInfo: dict):
         """ 在歌曲列表视图尾部添加一个歌曲卡 """
@@ -220,6 +219,7 @@ class SongListWidget(ListWidget):
     def onCheckedStateChanged(self, index: int, isChecked: bool):
         """ 歌曲卡选中状态改变对应槽函数 """
         songCard = self.songCard_list[index]
+
         # 如果歌曲卡不在选中的歌曲列表中且该歌曲卡变为选中状态就将其添加到列表中
         if songCard not in self.checkedSongCard_list and isChecked:
             self.checkedSongCard_list.append(songCard)
@@ -228,11 +228,17 @@ class SongListWidget(ListWidget):
         elif songCard in self.checkedSongCard_list and not isChecked:
             self.checkedSongCard_list.remove(songCard)
             self.checkedSongCardNumChanged.emit(len(self.checkedSongCard_list))
+
+        isAllChecked = (len(self.checkedSongCard_list)
+                        == len(self.songCard_list))
+        if isAllChecked != self.isAllSongCardsChecked:
+            self.isAllSongCardsChecked = isAllChecked
+            self.isAllCheckedChanged.emit(isAllChecked)
+
         # 如果先前不处于选择模式那么这次发生选中状态改变就进入选择模式
         if not self.isInSelectionMode:
             # 所有歌曲卡进入选择模式
             self.__setAllSongCardSelectionModeOpen(True)
-            # 发送信号要求显示状态状态栏
             self.selectionModeStateChanged.emit(True)
             self.isInSelectionMode = True
         elif not self.checkedSongCard_list:
@@ -280,7 +286,7 @@ class SongListWidget(ListWidget):
         )
         menu.addToMenu.addSongsToPlaylistSig.connect(
             lambda name: self.addSongsToCustomPlaylistSig.emit(
-                name, [self.playlist[self.currentRow()]]))
+                name, [self.songInfo_list[self.currentRow()]]))
         menu.addToMenu.newPlaylistAct.triggered.connect(
             lambda: self.addSongsToNewCustomPlaylistSig.emit(
-                [self.playlist[self.currentRow()]]))
+                [self.songInfo_list[self.currentRow()]]))

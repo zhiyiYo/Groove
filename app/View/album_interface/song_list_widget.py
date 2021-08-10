@@ -1,6 +1,6 @@
 # coding:utf-8
 from app.components.dialog_box.message_dialog import MessageDialog
-from app.components.menu import AcrylicMenu, AddToMenu
+from app.components.menu import AddToMenu, DWMMenu
 from app.components.song_list_widget.basic_song_list_widget import \
     BasicSongListWidget
 from app.components.song_list_widget.song_card_type import SongCardType
@@ -132,12 +132,11 @@ class SongListWidget(BasicSongListWidget):
         return
 
 
-class SongCardListContextMenu(AcrylicMenu):
+class SongCardListContextMenu(DWMMenu):
     """ 歌曲卡列表右击菜单 """
 
     def __init__(self, parent):
         super().__init__("", parent)
-        self.setFixedWidth(128)
         # 创建主菜单动作
         self.playAct = QAction("播放", self)
         self.nextSongAct = QAction("下一首播放", self)

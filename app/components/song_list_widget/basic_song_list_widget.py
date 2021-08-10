@@ -18,6 +18,7 @@ class BasicSongListWidget(ListWidget):
     emptyChangedSig = pyqtSignal(bool)  # 歌曲卡是否为空信号
     removeSongSignal = pyqtSignal(int)
     songCardNumChanged = pyqtSignal(int)
+    isAllCheckedChanged = pyqtSignal(bool)     # 歌曲卡卡全部选中改变
     addSongToPlayingSignal = pyqtSignal(dict)  # 将一首歌添加到正在播放
     checkedSongCardNumChanged = pyqtSignal(int)
     editSongInfoSignal = pyqtSignal(dict, dict)  # 编辑歌曲卡完成信号
@@ -53,15 +54,15 @@ class BasicSongListWidget(ListWidget):
         self.__SongCard = [SongTabSongCard, AlbumInterfaceSongCard,
                            PlaylistInterfaceSongCard][songCardType.value]
         self.songInfo_list = songInfo_list if songInfo_list else []  # type:List[dict]
-        self.currentIndex = None
-        self.playingIndex = None  # 正在播放的歌曲卡下标
+        self.currentIndex = 0
+        self.playingIndex = 0  # 正在播放的歌曲卡下标
         self.playingSongInfo = self.songInfo_list[0] if songInfo_list else None
         # 初始化标志位
         self.isInSelectionMode = False
         self.isAllSongCardsChecked = False
         # 初始化列表
         self.item_list = []
-        self.songCard_list = []  # type:List[Union[SongTabSongCard, AlbumInterfaceSongCard]]
+        self.songCard_list = []
         self.checkedSongCard_list = []
         # 创建导航标签标签
         self.__createGuideLabel()
@@ -140,14 +141,17 @@ class BasicSongListWidget(ListWidget):
         songCard = self.songCard_list.pop(index)
         songCard.deleteLater()
         self.item_list.pop(index)
+        self.songInfo_list.pop(index)
         self.takeItem(index)
+
         # 更新下标
         for i in range(index, len(self.songCard_list)):
             self.songCard_list[i].itemIndex = i
+
         if self.currentIndex > index:
             self.currentIndex -= 1
+
         # 发送信号
-        self.removeSongSignal.emit(index)
         self.songCardNumChanged.emit(len(self.songCard_list))
         self.update()
 
@@ -165,9 +169,11 @@ class BasicSongListWidget(ListWidget):
 
     def cancelPlayState(self):
         """ 取消正在播放的歌曲卡的播放状态 """
+        if not self.songCard_list:
+            return
         self.songCard_list[self.playingIndex].setPlay(False)
-        self.currentIndex = None
-        self.playingIndex = None
+        self.currentIndex = 0
+        self.playingIndex = 0
         self.playingSongInfo = None
 
     def showSongPropertyDialog(self, songInfo: dict = None):
@@ -194,22 +200,23 @@ class BasicSongListWidget(ListWidget):
         # 发出歌曲卡被更改信息
         self.editSongInfoSignal.emit(oldSongInfo, newSongInfo)
 
-    def updateOneSongCard(self, oldSongInfo: dict, newSongInfo, isNeedWriteToFile=True):
+    def updateOneSongCard(self, newSongInfo, isNeedWriteToFile=True):
         """ 更新一个歌曲卡 """
-        if oldSongInfo not in self.songInfo_list:
-            return
-        index = self.songInfo_list.index(oldSongInfo)
-        self.songInfo_list[index] = newSongInfo
-        self.songCard_list[index].updateSongCard(newSongInfo)
+        for i, songInfo in enumerate(self.songInfo_list):
+            if songInfo["songPath"] == newSongInfo["songPath"]:
+                self.songInfo_list[i] = newSongInfo
+                self.songCard_list[i].updateSongCard(newSongInfo)
+
         if isNeedWriteToFile:
             # 将修改的信息存入json文件
             with open("app/data/songInfo.json", "w", encoding="utf-8") as f:
                 dump(self.songInfo_list, f)
 
-    def updateMultiSongCards(self, oldSongInfo_list: list, newSongInfo_list: list):
+    def updateMultiSongCards(self, newSongInfo_list: list):
         """ 更新多个歌曲卡 """
-        for oldSongInfo, newSongInfo in zip(oldSongInfo_list, newSongInfo_list):
-            self.updateOneSongCard(oldSongInfo, newSongInfo, False)
+        for newSongInfo in newSongInfo_list:
+            self.updateOneSongCard(newSongInfo, False)
+
         # 将修改的信息存入json文件
         with open("app/data/songInfo.json", "w", encoding="utf-8") as f:
             dump(self.songInfo_list, f)
@@ -228,6 +235,7 @@ class BasicSongListWidget(ListWidget):
     def onSongCardCheckedStateChanged(self, itemIndex: int, isChecked: bool):
         """ 歌曲卡选中状态改变对应的槽函数 """
         songCard = self.songCard_list[itemIndex]
+
         # 如果歌曲卡不在选中的歌曲列表中且该歌曲卡变为选中状态就将其添加到列表中
         if songCard not in self.checkedSongCard_list and isChecked:
             self.checkedSongCard_list.append(songCard)
@@ -236,6 +244,13 @@ class BasicSongListWidget(ListWidget):
         elif songCard in self.checkedSongCard_list and not isChecked:
             self.checkedSongCard_list.remove(songCard)
             self.checkedSongCardNumChanged.emit(len(self.checkedSongCard_list))
+
+        isAllChecked = (len(self.checkedSongCard_list)
+                        == len(self.songCard_list))
+        if isAllChecked != self.isAllSongCardsChecked:
+            self.isAllSongCardsChecked = isAllChecked
+            self.isAllCheckedChanged.emit(isAllChecked)
+
         # 如果先前不处于选择模式那么这次发生选中状态改变就进入选择模式
         if not self.isInSelectionMode:
             # 更新当前下标
@@ -396,8 +411,7 @@ class BasicSongListWidget(ListWidget):
         return len(self.songCard_list)
 
     def index(self, songInfo: dict):
-        """ 获取歌曲信息的索引，如果歌曲信息不存在于列表中，则返回None """
+        """ 获取歌曲信息的索引，如果歌曲信息不存在于列表中，则返回 None """
         if songInfo in self.songInfo_list:
             return self.songInfo_list.index(songInfo)
-        else:
-            return None
+        return None

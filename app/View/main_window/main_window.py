@@ -4,6 +4,8 @@ import os
 from copy import deepcopy
 from random import shuffle
 from time import time
+from pprint import pprint
+from typing import Dict, List
 
 from app.components.dialog_box.message_dialog import MessageDialog
 from app.components.dialog_box.create_playlist_dialog import CreatePlaylistDialog
@@ -83,7 +85,7 @@ class MainWindow(FramelessWindow):
         self.readCustomPlaylists()  # 读入所有播放列表
         self.playlistInterface = PlaylistInterface({}, self.subMainWindow)
         self.playlistCardInterface = PlaylistCardInterface(
-            self.customPlaylists, self)
+            self.readCustomPlaylists(), self)
         # 创建导航界面
         self.navigationInterface = NavigationInterface(self.subMainWindow)
         # 创建标签导航界面
@@ -268,8 +270,8 @@ class MainWindow(FramelessWindow):
 
     def referenceWidgets(self):
         """ 引用小部件 """
-        self.songTabSongListWidget = self.myMusicInterface.songCardListWidget
-        self.albumCardViewer = self.myMusicInterface.albumCardViewer
+        self.songTabSongListWidget = self.myMusicInterface.songListWidget
+        self.albumCardInterface = self.myMusicInterface.albumCardInterface
 
     def onNavigationDisplayModeChanged(self, disPlayMode: int):
         """ 导航界面显示模式改变对应的槽函数 """
@@ -434,14 +436,14 @@ class MainWindow(FramelessWindow):
         if songInfo in self.playlistInterface.songInfo_list:
             i = self.playlistInterface.songListWidget.index(songInfo)
             self.playlistInterface.songListWidget.setPlay(i)
-        # elif self.playlistInterface.songListWidget.playingIndex is not None:
-        #     self.songTabSongListWidget.cancelPlayState()
+        elif self.playlistInterface.songListWidget.playingIndex is not None:
+            self.playlistInterface.songListWidget.cancelPlayState()
 
         index = self.songTabSongListWidget.index(songInfo)
-        if index:
+        if index is not None:
             self.songTabSongListWidget.setPlay(index)
         else:
-            print(f"歌曲不在{songInfo['songName']} '我的音乐界面' 的歌曲列表中，请检查歌曲信息同步代码")
+            print(f"`{songInfo['songer']}-{songInfo['songName']}`不在歌曲列表中")
 
     def playAlbum(self, playlist: list):
         """ 播放专辑中的歌曲 """
@@ -619,7 +621,7 @@ class MainWindow(FramelessWindow):
         if self.isInSelectionMode:
             return
 
-        playlist = self.getCustomPlaylistByName(playlistName)
+        playlist = self.playlistCardInterface.playlists[playlistName]
 
         # 显示返回按钮
         self.titleBar.returnBt.show()
@@ -649,7 +651,7 @@ class MainWindow(FramelessWindow):
         if self.isFullScreen():
             self.exitFullScreen()
 
-        albumInfo = self.albumCardViewer.findAlbumInfoByName(
+        albumInfo = self.albumCardInterface.findAlbumInfoByName(
             albumName, songerName)
 
         # 显示返回按钮
@@ -741,22 +743,20 @@ class MainWindow(FramelessWindow):
 
     def onEditSongInfo(self, oldSongInfo: dict, newSongInfo: dict):
         """ 编辑歌曲卡完成信号的槽函数 """
-        self.mediaPlaylist.updateOneSongInfo(oldSongInfo, newSongInfo)
-        self.playingInterface.updateOneSongCard(oldSongInfo, newSongInfo)
-        self.songTabSongListWidget.updateOneSongCard(oldSongInfo, newSongInfo)
+        self.mediaPlaylist.updateOneSongInfo(newSongInfo)
+        self.playingInterface.updateOneSongCard(newSongInfo)
+        self.songTabSongListWidget.updateOneSongCard(newSongInfo)
+        self.playlistCardInterface.updateOneSongInfo(newSongInfo)
         self.albumInterface.updateOneSongCard(oldSongInfo, newSongInfo)
-        self.albumCardViewer.updateOneSongInfo(oldSongInfo, newSongInfo)
+        self.albumCardInterface.updateOneSongInfo(oldSongInfo, newSongInfo)
+        self.playlistInterface.updateOneSongCard(oldSongInfo, newSongInfo)
 
     def onEditAlbumInfo(self, oldAlbumInfo: dict, newAlbumInfo: dict):
         """ 更新专辑卡及其对应的歌曲卡信息 """
-        oldSongInfo_list = oldAlbumInfo["songInfo_list"]
         newSongInfo_list = newAlbumInfo["songInfo_list"]
-        self.songTabSongListWidget.updateMultiSongCards(
-            deepcopy(oldSongInfo_list), deepcopy(newSongInfo_list))
-        self.mediaPlaylist.updateMultiSongInfo(
-            deepcopy(oldSongInfo_list), deepcopy(newSongInfo_list))
-        self.playingInterface.updateMultiSongCards(
-            deepcopy(oldSongInfo_list), deepcopy(newSongInfo_list))
+        self.mediaPlaylist.updateMultiSongInfo(newSongInfo_list)
+        self.playingInterface.updateMultiSongCards(newSongInfo_list)
+        self.songTabSongListWidget.updateMultiSongCards(newSongInfo_list)
         # 更新专辑标签界面
         with open("app/data/songInfo.json", encoding="utf-8") as f:
             songInfo_list = json.load(f)
@@ -821,17 +821,21 @@ class MainWindow(FramelessWindow):
         self.albumInterface.exitSelectionMode()
         self.playlistCardInterface.exitSelectionMode()
 
-    def readCustomPlaylists(self):
+    @staticmethod
+    def readCustomPlaylists():
         """ 读取自定义播放列表 """
-        # 如果没有播放列表文件夹就创建一个
         path = "app/Playlists"
         os.makedirs(path, exist_ok=True)
-        # 获取播放列表
-        self.customPlaylists = []
-        playlistFile_list = os.listdir(path)
-        for playlistFile in playlistFile_list:
+
+        customPlaylists = {}  # type:Dict[str, dict]
+        playlistFiles = os.listdir(path)
+        for playlistFile in playlistFiles:
             with open(os.path.join(path, playlistFile), encoding="utf-8") as f:
-                self.customPlaylists.append(json.load(f))
+                playlist = json.load(f)  # type:dict
+                name = playlist.get("playlistName", playlistFile[:-5])
+                playlist["playlistName"] = name
+                customPlaylists[name] = playlist
+        return customPlaylists
 
     def showCreatePlaylistDialog(self, songInfo_list: list = None):
         """ 显示创建播放列表面板 """
@@ -839,22 +843,18 @@ class MainWindow(FramelessWindow):
         createPlaylistPanel.createPlaylistSig.connect(self.onCreatePlaylist)
         createPlaylistPanel.exec_()
 
-    def onCreatePlaylist(self, playlist: dict):
+    def onCreatePlaylist(self, playlistName: str, playlist: dict):
         """ 创建播放列表 """
-        self.customPlaylists.append(playlist)
-        self.playlistCardInterface.addOnePlaylistCard(playlist)
+        self.playlistCardInterface.addOnePlaylistCard(playlistName, playlist)
         self.navigationInterface.updateWindow()
 
     def onRenamePlaylist(self, oldPlaylist: dict, newPlaylist: dict):
         """ 重命名播放列表槽函数 """
         self.playlistCardInterface.renamePlaylist(oldPlaylist, newPlaylist)
-        index = self.customPlaylists.index(oldPlaylist)
-        self.customPlaylists[index] = newPlaylist
         self.navigationInterface.updateWindow()
 
-    def onRemovePlaylist(self, playlist: dict):
+    def onRemovePlaylist(self, playlistName: str):
         """ 删除播放列表槽函数 """
-        self.customPlaylists.remove(playlist)
         self.navigationInterface.updateWindow()
 
     def playCustomPlaylist(self, songInfo_list: list):
@@ -869,7 +869,7 @@ class MainWindow(FramelessWindow):
             songInfo_list.extend(differentSongInfo_list)
 
         # 找出新的歌曲
-        oldPlaylist = self.playlistCardInterface.findPlaylist(playlistName)
+        oldPlaylist = self.playlistCardInterface.playlists[playlistName]
         oldSongInfo_list = oldPlaylist.get("songInfo_list", [])
         differentSongInfo_list = [
             i for i in songInfo_list if i not in oldSongInfo_list]
@@ -877,6 +877,7 @@ class MainWindow(FramelessWindow):
         planToAddNum = len(songInfo_list)
         repeatNum = planToAddNum-len(differentSongInfo_list)
 
+        # 如果有重复的歌曲就显示对话框
         if repeatNum > 0:
             if planToAddNum == 1:
                 content = "此歌已在你的播放列表中。是否要添加？"
@@ -889,24 +890,15 @@ class MainWindow(FramelessWindow):
                 songInfo_list, differentSongInfo_list))
             w.exec_()
 
-        playlist = self.playlistCardInterface.addSongsToPlaylist(
+        self.playlistCardInterface.addSongsToPlaylist(
             playlistName, songInfo_list)
-        index = self.getCustomPlaylistIndexByName(playlistName)
-        self.customPlaylists[index] = playlist
 
-    def getCustomPlaylistIndexByName(self, playlistName: str) -> int:
-        """ 通过播放列表名字得到播放列表的下标 """
-        for index, playlist in enumerate(self.customPlaylists):
-            if playlist["playlistName"] == playlistName:
-                return index
-        return None
-
-    def getCustomPlaylistByName(self, playlistName: str):
-        """ 根据播放列表名字获取播放列表 """
-        for playlist in self.customPlaylists:
-            if playlist["playlistName"] == playlistName:
-                return playlist
-        return {}
+    def switchToAlbumCardInterface(self):
+        """ 切换到专辑卡界面 """
+        self.subStackWidget.setCurrentWidget(self.myMusicInterface)
+        self.titleBar.setWhiteIcon(False)
+        self.myMusicInterface.setCurrentTab(1)
+        self.navigationInterface.setCurrentIndex(0)
 
     def showLabelNavigationInterface(self, label_list: list, layout: str):
         """ 显示标签导航界面 """
@@ -1033,11 +1025,11 @@ class MainWindow(FramelessWindow):
             self.onEditSongInfo)
 
         # todo:将专辑卡的信号连接到槽函数
-        self.albumCardViewer.playSignal.connect(self.playAlbum)
-        # self.albumCardViewer.editAlbumInfoSignal.connect(self.onEditAlbumInfo)
-        self.albumCardViewer.nextPlaySignal.connect(
+        self.albumCardInterface.playSignal.connect(self.playAlbum)
+        # self.albumCardInterface.editAlbumInfoSignal.connect(self.onEditAlbumInfo)
+        self.albumCardInterface.nextPlaySignal.connect(
             self.onMultiSongsNextPlay)
-        self.albumCardViewer.switchToAlbumInterfaceSig.connect(
+        self.albumCardInterface.switchToAlbumInterfaceSig.connect(
             self.switchToAlbumInterface)
 
         # todo:将我的音乐界面连接到槽函数
@@ -1111,6 +1103,10 @@ class MainWindow(FramelessWindow):
             self.switchToAlbumInterface)
         self.playlistInterface.renamePlaylistSig.connect(
             self.onRenamePlaylist)
+        self.playlistInterface.removeSongSig.connect(
+            self.playlistCardInterface.updateOnePlaylist)
+        self.playlistInterface.switchToAlbumCardInterfaceSig.connect(
+            self.switchToAlbumCardInterface)
 
         # todo:将播放列表卡界面信号连接到槽函数
         self.playlistCardInterface.selectionModeStateChanged.connect(
@@ -1126,6 +1122,12 @@ class MainWindow(FramelessWindow):
             self.onMultiSongsNextPlay)
         self.playlistCardInterface.switchToPlaylistInterfaceSig.connect(
             self.switchToPlaylistInterface)
+        self.playlistCardInterface.addSongsToCustomPlaylistSig.connect(
+            self.addSongsToCustomPlaylist)
+        self.playlistCardInterface.addSongsToNewCustomPlaylistSig.connect(
+            self.showCreatePlaylistDialog)
+        self.playlistCardInterface.addSongsToPlayingPlaylistSig.connect(
+            self.addSongsToPlayingPlaylist)
 
         # todo:将最小播放界面连接到槽函数
         self.smallestPlayInterface.nextSongSig.connect(self.mediaPlaylist.next)
