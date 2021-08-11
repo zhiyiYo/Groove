@@ -21,6 +21,7 @@ class AlbumCardInterface(ScrollArea):
     """ 定义一个专辑卡视图 """
 
     playSignal = pyqtSignal(list)
+    removeAlbumSig = pyqtSignal(list)
     nextPlaySignal = pyqtSignal(list)
     albumNumChanged = pyqtSignal(int)           # 当专辑个数改变时发出这个信号给父级窗口
     isAllCheckedChanged = pyqtSignal(bool)      # 专辑卡全部选中改变
@@ -40,7 +41,7 @@ class AlbumCardInterface(ScrollArea):
         self.columnNum = 1
         self.albumCard_list = []  # type:List[AlbumCard]
         self.albumCardInfo_list = []
-        self.checkedAlbumCard_list = []
+        self.checkedAlbumCard_list = []  # type:List[AlbumCard]
         self.currentGroupInfo_list = []
         self.groupTitle_dict = {}  # 记录首字母或年份及其对应的第一个分组
         # 由键值对 "albumName.songer":albumCard组成的字典，albumInfo 是引用
@@ -50,7 +51,13 @@ class AlbumCardInterface(ScrollArea):
         self.isInSelectionMode = False
         self.isAllAlbumCardsChecked = False
         # 设置当前排序方式
-        self.sortMode = "添加时间"
+        self.sortMode = "添加日期"    # type:str
+        self.__sortFunctions = {
+            "添加日期": self.sortByAddTime,
+            "A到Z": self.sortByFirstLetter,
+            "发行年份": self.sortByYear,
+            "歌手": self.sortBySonger
+        }
         # 分组标签列表
         self.groupTitle_list = []
         # 实例化滚动部件的竖直布局
@@ -127,7 +134,7 @@ class AlbumCardInterface(ScrollArea):
         albumCard.playSignal.connect(self.playSignal)
         albumCard.nextPlaySignal.connect(self.nextPlaySignal)
         albumCard.editAlbumInfoSignal.connect(self.__saveAlbumInfoSlot)
-        albumCard.deleteCardSig.connect(self.showDeleteOneCardDialog)
+        albumCard.deleteCardSig.connect(self.__showDeleteOneCardDialog)
         albumCard.addToPlayingSignal.connect(self.addAlbumToPlayingSignal)
         albumCard.switchToAlbumInterfaceSig.connect(
             self.switchToAlbumInterfaceSig)
@@ -232,7 +239,7 @@ class AlbumCardInterface(ScrollArea):
 
     def sortByAddTime(self):
         """ 按照添加时间分组 """
-        self.sortMode = "添加时间"
+        self.sortMode = "添加日期"
         # 创建一个包含所有歌曲卡的网格布局
         container = QWidget()
         gridLayout = GridLayout()
@@ -547,13 +554,13 @@ class AlbumCardInterface(ScrollArea):
         """ 更新所有专辑卡 """
         if albumInfo_list == self.albumInfo_list:
             return
+
         # 将专辑卡从布局中移除
         self.__removeContainerFromVBoxLayout()
 
         # 根据具体情况增减专辑卡
         newCardNum = len(albumInfo_list)
         oldCardNum = len(self.albumCard_list)
-        deltaNum = newCardNum - oldCardNum
         if newCardNum < oldCardNum:
             # 删除部分专辑卡
             for i in range(oldCardNum - 1, newCardNum - 1, -1):
@@ -585,7 +592,7 @@ class AlbumCardInterface(ScrollArea):
             }
 
         # 重新排序专辑卡
-        self.setSortMode(self.sortMode)
+        self.__sortFunctions[self.sortMode]()
         # 根据当前专辑卡数决定是否显示导航标签
         self.guideLabel.setHidden(bool(albumInfo_list))
         # 更新 "专辑名.歌手名"：专辑卡 字典
@@ -600,42 +607,26 @@ class AlbumCardInterface(ScrollArea):
             self.albumNumChanged.emit(newCardNum)
 
     def setSortMode(self, sortMode: str):
-        """ 排序专辑卡 """
-        self.sortMode = sortMode
-        if sortMode == "添加时间":
-            self.sortByAddTime()
-        elif sortMode == "A到Z":
-            self.sortByFirstLetter()
-        elif sortMode == "发行年份":
-            self.sortByYear()
-        elif sortMode == "歌手":
-            self.sortBySonger()
-        else:
-            raise Exception(f'排序依据"{sortMode}"不存在')
+        """ 排序专辑卡
 
-    def showDeleteOneCardDialog(self, albumInfo: dict):
+        Parameters
+        ----------
+        sortMode: str
+            排序方式，有`添加日期`、`A到Z`、`发行年份` 和 `歌手` 四种
+        """
+        if self.sortMode == sortMode:
+            return
+        self.__sortFunctions[sortMode]()
+
+    def __showDeleteOneCardDialog(self, albumName: str):
         """ 显示删除一个专辑卡的对话框 """
+        songPaths = [i["songPath"] for i in self.sender().songInfo_list]
         title = "是否确定要删除此项？"
-        content = f"""如果删除"{albumInfo['album']}"，它将不再位于此设备上。"""
+        content = f"""如果删除"{albumName}"，它将不再位于此设备上。"""
         w = MessageDialog(title, content, self.window())
-        w.yesSignal.connect(
-            lambda: self.__deleteAlbumCards([albumInfo]))
+        w.yesSignal.connect(lambda: self.deleteAlbums([albumName]))
+        w.yesSignal.connect(lambda: self.removeAlbumSig.emit(songPaths))
         w.exec_()
-
-    def showDeleteMultiAlbumCardPanel(self, albumInfo_list: list):
-        """ 显示删除多个专辑卡的对话框 """
-        title = "确定要删除这些项？"
-        content = "如果你删除这些专辑，它们将不再位于此设备上。"
-        w = MessageDialog(title, content, self.window())
-        w.yesSignal.connect(
-            lambda: self.__deleteAlbumCards(albumInfo_list))
-        w.exec()
-
-    def __deleteAlbumCards(self, albumInfo_list: list):
-        """ 删除一个专辑卡 """
-        for albumInfo in albumInfo_list:
-            self.albumInfo_list.remove(albumInfo)
-        self.updateAllAlbumCards(self.albumInfo_list)
 
     def __connectGroupBoxSigToSlot(self, layout):
         """ 分组框信号连接到槽函数 """
@@ -706,3 +697,30 @@ class AlbumCardInterface(ScrollArea):
         if not trackNum[0].isnumeric():
             return eval(trackNum)[0]
         return int(trackNum)
+
+    def deleteSongs(self, songPaths: list):
+        """ 删除歌曲 """
+        albumInfo_list = deepcopy(self.albumInfo_list)
+        for albumInfo in albumInfo_list.copy():
+            songInfo_list = albumInfo["songInfo_list"]
+
+            for songInfo in songInfo_list.copy():
+                if songInfo["songPath"] in songPaths:
+                    songInfo_list.remove(songInfo)
+
+            # 如果专辑变成空专辑，就将其从专辑列表中移除
+            if not songInfo_list:
+                albumInfo_list.remove(albumInfo)
+
+        # 更新窗口
+        self.updateAllAlbumCards(albumInfo_list)
+
+    def deleteAlbums(self, albumNames: list):
+        """ 删除专辑 """
+        albumInfo_list = deepcopy(self.albumInfo_list)
+
+        for albumInfo in albumInfo_list.copy():
+            if albumInfo["album"] in albumNames:
+                albumInfo_list.remove(albumInfo)
+
+        self.updateAllAlbumCards(albumInfo_list)

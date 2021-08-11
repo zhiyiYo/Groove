@@ -70,16 +70,16 @@ class SongListWidget(BasicSongListWidget):
         Parameters
         ----------
         sortMode: str
-            排序方式，有 `添加时间`、`A到Z` 和 `歌手` 三种
+            排序方式，有 `添加日期`、`A到Z` 和 `歌手` 三种
         """
+        if self.sortMode == sortMode:
+            return
         self.sortMode = sortMode
-        if self.sortMode == "添加时间":
-            self.sortSongInfo("createTime")
-        elif self.sortMode == "A到Z":
-            self.sortSongInfo("songName")
-        elif self.sortMode == "歌手":
-            self.sortSongInfo("songer")
-        self.updateAllSongCards(self.songInfo_list)
+        key = {"添加日期": "createTime", "A到Z": "songName",
+               "歌手": "songer"}[sortMode]
+        songInfo_list = self.sortSongInfo(key)
+
+        self.updateAllSongCards(songInfo_list)
         if self.playingSongInfo in self.songInfo_list:
             self.setPlay(self.songInfo_list.index(self.playingSongInfo))
 
@@ -87,12 +87,15 @@ class SongListWidget(BasicSongListWidget):
         """ 更新所有歌曲卡，根据给定的信息决定创建或者删除歌曲卡 """
         super().updateAllSongCards(songInfo_list, self.__connectSongCardSignalToSlot)
 
-    def __showMaskDialog(self):
+    def __showDeleteCardDialog(self):
         index = self.currentRow()
+        songInfo = self.songInfo_list[index]
         title = "是否确定要删除此项？"
-        content = f"""如果删除"{self.songInfo_list[index]['songName']}"，它将不再位于此设备上。"""
+        content = f"""如果删除"{songInfo['songName']}"，它将不再位于此设备上。"""
         w = MessageDialog(title, content, self.window())
         w.yesSignal.connect(lambda: self.removeSongCard(index))
+        w.yesSignal.connect(
+            lambda: self.removeSongSignal.emit(songInfo["songPath"]))
         w.exec_()
 
     def __connectMenuSignalToSlot(self, contextMenu):
@@ -116,7 +119,7 @@ class SongListWidget(BasicSongListWidget):
             )
         )
         # 删除歌曲卡
-        contextMenu.deleteAct.triggered.connect(self.__showMaskDialog)
+        contextMenu.deleteAct.triggered.connect(self.__showDeleteCardDialog)
         # 将歌曲添加到正在播放列表
         contextMenu.addToMenu.playingAct.triggered.connect(
             lambda: self.addSongToPlayingSignal.emit(

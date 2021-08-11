@@ -19,7 +19,7 @@ class AlbumCard(PerspectiveWidget):
     """ 定义包含专辑歌手名的窗口 """
 
     playSignal = pyqtSignal(list)
-    deleteCardSig = pyqtSignal(dict)
+    deleteCardSig = pyqtSignal(str)
     nextPlaySignal = pyqtSignal(list)
     addToPlayingSignal = pyqtSignal(list)  # 将专辑添加到正在播放
     hideBlurAlbumBackgroundSig = pyqtSignal()
@@ -140,7 +140,7 @@ class AlbumCard(PerspectiveWidget):
         menu.addToMenu.newPlaylistAct.triggered.connect(
             lambda: self.addAlbumToNewCustomPlaylistSig.emit(self.songInfo_list))
         menu.deleteAct.triggered.connect(
-            lambda: self.deleteCardSig.emit(self.albumInfo))
+            lambda: self.deleteCardSig.emit(self.albumName))
         menu.exec(event.globalPos())
 
     def __adjustLabel(self):
@@ -195,8 +195,8 @@ class AlbumCard(PerspectiveWidget):
         """ 获取专辑信息 """
         self.albumInfo = albumInfo
         self.songInfo_list = self.albumInfo.get("songInfo_list", [])
-        self.albumName = albumInfo.get("album", "未知专辑")
-        self.songerName = albumInfo.get("songer", "未知歌手")
+        self.albumName = albumInfo.get("album", "未知专辑")     # type:str
+        self.songerName = albumInfo.get("songer", "未知歌手")   # type:str
         self.coverPath = albumInfo.get(
             "coverPath", "app/resource/images/default_covers/默认专辑封面_200_200.png")
 
@@ -286,7 +286,7 @@ class AlbumCardContextMenu(DWMMenu):
 
     def __init__(self, parent):
         super().__init__("", parent)
-        #self.setFixedWidth(173)
+        # self.setFixedWidth(173)
         # 创建动作
         self.__createActions()
         self.setObjectName("albumCardContextMenu")

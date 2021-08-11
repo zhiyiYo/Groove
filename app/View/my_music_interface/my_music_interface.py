@@ -2,6 +2,7 @@
 from time import time
 
 from app.components.menu import AddToMenu
+from app.components.dialog_box.message_dialog import MessageDialog
 from app.components.pop_up_ani_stacked_widget import PopUpAniStackedWidget
 from app.View.my_music_interface.album_tab_interface import AlbumCardInterface
 from app.View.my_music_interface.album_tab_interface.selection_mode_bar import \
@@ -22,14 +23,15 @@ from .tool_bar import ToolBar
 class MyMusicInterface(QWidget):
     """ 创建一个本地音乐分组界面 """
 
-    randomPlayAllSig = pyqtSignal()
-    currentIndexChanged = pyqtSignal(int)
-    playCheckedCardsSig = pyqtSignal(list)
-    selectionModeStateChanged = pyqtSignal(bool)
-    nextToPlayCheckedCardsSig = pyqtSignal(list)
-    addSongsToPlayingPlaylistSig = pyqtSignal(list)  # 将歌曲添加到正在播放列表
-    addSongsToNewCustomPlaylistSig = pyqtSignal(list)  # 将歌曲添加到新建播放列表中
-    addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 将歌曲添加到已存在的自定义播放列表中
+    randomPlayAllSig = pyqtSignal()                         # 无序播放所有
+    removeSongSig = pyqtSignal(list)                        # 删除部分歌曲 (移动到回收站)
+    currentIndexChanged = pyqtSignal(int)                   # 当前播放的歌曲索引变化
+    playCheckedCardsSig = pyqtSignal(list)                  # 播放所有选中的歌曲
+    selectionModeStateChanged = pyqtSignal(bool)            # 进入/退出 选择模式
+    nextToPlayCheckedCardsSig = pyqtSignal(list)            # 接下来播放选中的所有歌曲
+    addSongsToPlayingPlaylistSig = pyqtSignal(list)         # 将歌曲添加到正在播放列表
+    addSongsToNewCustomPlaylistSig = pyqtSignal(list)       # 将歌曲添加到新建播放列表
+    addSongsToCustomPlaylistSig = pyqtSignal(str, list)     # 将歌曲添加到自定义播放列表
     showLabelNavigationInterfaceSig = pyqtSignal(list, str)  # 显示标签导航界面
 
     def __init__(self, targetFolderPath_list: list, parent=None):
@@ -85,8 +87,7 @@ class MyMusicInterface(QWidget):
         self.songTabButton.setSelected(True)
         # 初始化按钮
         self.toolBar.randomPlayAllButton.setText(
-            f" 无序播放所有({len(self.songListWidget.songCard_list)})"
-        )
+            f" 无序播放所有({self.songListWidget.songCardNum()})")
         # 隐藏底部选择栏和磨砂背景
         self.songTabSelectionModeBar.hide()
         self.albumTabSelectionModeBar.hide()
@@ -103,7 +104,7 @@ class MyMusicInterface(QWidget):
         self.toolBar.albumSortModeButton.setVisible(index == 1)
         if index == 0:
             self.toolBar.randomPlayAllButton.setText(
-                f" 无序播放所有({len(self.songListWidget.songCard_list)})")
+                f" 无序播放所有({self.songListWidget.songCardNum()})")
         elif index == 1:
             self.toolBar.randomPlayAllButton.setText(
                 f" 无序播放所有({len(self.albumCardInterface.albumCard_list)})")
@@ -111,9 +112,9 @@ class MyMusicInterface(QWidget):
 
     def __onCheckedCardNumChanged(self, num):
         """ 选中的卡数量发生改变时刷新选择栏 """
-        if self.sender() == self.songListWidget:
+        if self.sender() is self.songListWidget:
             self.songTabSelectionModeBar.setPartButtonHidden(num > 1)
-        elif self.sender() == self.albumCardInterface:
+        elif self.sender() is self.albumCardInterface:
             self.albumTabSelectionModeBar.setPartButtonHidden(num > 1)
             # 隐藏部分按钮时会发生高度的改变，需要调整位置
             self.albumTabSelectionModeBar.move(
@@ -168,9 +169,9 @@ class MyMusicInterface(QWidget):
             for songCard in self.songListWidget.checkedSongCard_list
         ]
         self.__unCheckSongCards()
-        if self.sender() == self.songTabSelectionModeBar.playButton:
+        if self.sender() is self.songTabSelectionModeBar.playButton:
             self.playCheckedCardsSig.emit(playlist)
-        elif self.sender() == self.songTabSelectionModeBar.nextToPlayButton:
+        elif self.sender() is self.songTabSelectionModeBar.nextToPlayButton:
             self.nextToPlayCheckedCardsSig.emit(playlist)
 
     def __emitAlbumTabPlaylist(self):
@@ -180,14 +181,14 @@ class MyMusicInterface(QWidget):
         for albumCard in self.albumCardInterface.checkedAlbumCard_list:
             playlist.extend(albumCard.albumInfo["songInfo_list"])
         self.__unCheckAlbumCards()
-        if self.sender() == self.albumTabSelectionModeBar.playButton:
+        if self.sender() is self.albumTabSelectionModeBar.playButton:
             self.playCheckedCardsSig.emit(playlist)
-        elif self.sender() == self.albumTabSelectionModeBar.nextToPlayButton:
+        elif self.sender() is self.albumTabSelectionModeBar.nextToPlayButton:
             self.nextToPlayCheckedCardsSig.emit(playlist)
 
     def __switchToAlbumInterface(self):
         """ 切换到专辑界面 """
-        if self.sender() == self.songTabSelectionModeBar.showAlbumButton:
+        if self.sender() is self.songTabSelectionModeBar.showAlbumButton:
             songCard = self.songListWidget.checkedSongCard_list[0]
             # 取消选中的歌曲卡的选中状态，隐藏选择栏并显示播放栏
             self.__unCheckSongCards()
@@ -196,11 +197,11 @@ class MyMusicInterface(QWidget):
 
     def __editCardInfo(self):
         """ 编辑卡片信息 """
-        if self.sender() == self.songTabSelectionModeBar.editInfoButton:
+        if self.sender() is self.songTabSelectionModeBar.editInfoButton:
             songCard = self.songListWidget.checkedSongCard_list[0]
             self.__unCheckSongCards()
             self.songListWidget.showSongInfoEditDialog(songCard)
-        elif self.sender() == self.albumTabSelectionModeBar.editInfoButton:
+        elif self.sender() is self.albumTabSelectionModeBar.editInfoButton:
             albumCard = self.albumCardInterface.checkedAlbumCard_list[0]
             self.__unCheckAlbumCards()
             albumCard.showAlbumInfoEditPanel()
@@ -210,6 +211,67 @@ class MyMusicInterface(QWidget):
         songInfo = self.songListWidget.checkedSongCard_list[0].songInfo
         self.__unCheckSongCards()
         self.songListWidget.showSongPropertyDialog(songInfo)
+
+    def __showDeleteSongsDialog(self):
+        """ 显示删除歌曲对话框 """
+        if len(self.songListWidget.checkedSongCard_list) > 1:
+            title = "是否确定要删除这些项？"
+            content = "如果你删除这些歌曲，它们将不再位于此设备上。"
+        else:
+            title = "是否确定要删除此项？"
+            songCard = self.songListWidget.checkedSongCard_list[0]
+            content = f'如果删除"{songCard.songName}"，它将不再位于此设备上。'
+
+        w = MessageDialog(title, content, self.window())
+        w.yesSignal.connect(self.__onDeleteSongsYesButtonClicked)
+        w.exec()
+
+    def __onDeleteSongsYesButtonClicked(self):
+        """ 歌曲界面选择模式栏删除按钮点击槽函数 """
+        songPaths = [
+            i.songPath for i in self.songListWidget.checkedSongCard_list]
+
+        for songCard in self.songListWidget.checkedSongCard_list.copy():
+            songCard.setChecked(False)
+            self.songListWidget.removeSongCard(songCard.itemIndex)
+
+        self.__deleteSongs(songPaths)
+
+    def __deleteSongs(self, songPaths):
+        """ 删除指定的歌曲并发送删除信号 """
+        self.albumCardInterface.deleteSongs(songPaths)
+        self.removeSongSig.emit(songPaths)
+
+    def __showDeleteAlbumsDialog(self):
+        """ 显示删除专辑对话框 """
+        if len(self.albumCardInterface.checkedAlbumCard_list) > 1:
+            title = "是否确定要删除这些项？"
+            content = "如果你删除这些专辑，它们将不再位于此设备上。"
+        else:
+            title = "是否确定要删除此项？"
+            albumCard = self.albumCardInterface.checkedAlbumCard_list[0]
+            content = f'如果删除"{albumCard.albumName}"，它将不再位于此设备上。'
+
+        w = MessageDialog(title, content, self.window())
+        w.yesSignal.connect(self.__onDeleteAlbumsYesButtonClicked)
+        w.exec()
+
+    def __onDeleteAlbumsYesButtonClicked(self):
+        """ 专辑界面选择模式栏删除按钮点击槽函数 """
+        albumNames = []
+        songPaths = []
+        for albumCard in self.albumCardInterface.checkedAlbumCard_list.copy():
+            albumNames.append(albumCard.albumName)
+            songPaths.extend([i["songPath"] for i in albumCard.songInfo_list])
+            albumCard.setChecked(False)
+
+        self.albumCardInterface.deleteAlbums(albumNames)
+        self.__deleteAlbums(songPaths)
+
+    def __deleteAlbums(self, songPaths: list):
+        """ 删除指定的专辑并发送删除信号 """
+        self.songListWidget.removeSongCards(songPaths)
+        self.removeSongSig.emit(songPaths)
 
     def exitSelectionMode(self):
         """ 退出选择模式 """
@@ -321,56 +383,16 @@ class MyMusicInterface(QWidget):
         """ 根据所选的排序方式对歌曲卡进行重新排序 """
         sender = self.sender()
         self.currentSongSortAct = sender
-        # 更新列表
-        if (
-            sender is self.toolBar.songSortByCratedTimeAct
-            and self.songListWidget.sortMode != "添加时间"
-        ):
-            self.toolBar.songSortModeButton.setText("添加时间")
-            self.songListWidget.setSortMode("添加时间")
-        elif (
-            sender is self.toolBar.songSortByDictOrderAct
-            and self.songListWidget.sortMode != "A到Z"
-        ):
-            self.toolBar.songSortModeButton.setText("A到Z")
-            self.songListWidget.setSortMode("A到Z")
-        elif (
-            sender is self.toolBar.songSortBySongerAct
-            and self.songListWidget.sortMode != "歌手"
-        ):
-            self.toolBar.songSortModeButton.setText("歌手")
-            self.songListWidget.setSortMode("歌手")
+        self.toolBar.songSortModeButton.setText(sender.text())
+        self.songListWidget.setSortMode(sender.text())
 
     def __sortAlbumCard(self):
         """ 根据所选的排序方式对歌曲卡进行重新排序 """
         sender = self.sender()
         self.currentAlbumSortAct = sender
         self.albumCardInterface.albumBlurBackground.hide()
-        # 更新分组
-        if (
-            sender is self.toolBar.albumSortByCratedTimeAct
-            and self.albumCardInterface.sortMode != "添加时间"
-        ):
-            self.toolBar.albumSortModeButton.setText("添加时间")
-            self.albumCardInterface.sortByAddTime()
-        elif (
-            sender is self.toolBar.albumSortByDictOrderAct
-            and self.albumCardInterface.sortMode != "A到Z"
-        ):
-            self.toolBar.albumSortModeButton.setText("A到Z")
-            self.albumCardInterface.sortByFirstLetter()
-        elif (
-            sender is self.toolBar.albumSortByYearAct
-            and self.albumCardInterface.sortMode != "发行年份"
-        ):
-            self.toolBar.albumSortModeButton.setText("发行年份")
-            self.albumCardInterface.sortByYear()
-        elif (
-            sender is self.toolBar.albumSortBySongerAct
-            and self.albumCardInterface.sortMode != "歌手"
-        ):
-            self.toolBar.albumSortModeButton.setText("歌手")
-            self.albumCardInterface.sortBySonger()
+        self.toolBar.albumSortModeButton.setText(sender.text())
+        self.albumCardInterface.setSortMode(sender.text())
 
     def __showAddToMenu(self):
         """ 显示添加到菜单 """
@@ -439,6 +461,8 @@ class MyMusicInterface(QWidget):
             lambda: self.__onCurrentTabChanged(self.stackedWidget.currentIndex()))
         self.songListWidget.isAllCheckedChanged.connect(
             lambda x: self.songTabSelectionModeBar.checkAllButton.setCheckedState(not x))
+        self.songListWidget.removeSongSignal.connect(
+            lambda songPath: self.__deleteSongs([songPath]))
 
         # 专辑卡界面信号连接到槽函数
         self.albumCardInterface.addAlbumToCustomPlaylistSig.connect(
@@ -457,6 +481,7 @@ class MyMusicInterface(QWidget):
             lambda: self.__onCurrentTabChanged(self.stackedWidget.currentIndex()))
         self.albumCardInterface.isAllCheckedChanged.connect(
             lambda x: self.albumTabSelectionModeBar.checkAllButton.setCheckedState(not x))
+        self.albumCardInterface.removeAlbumSig.connect(self.__deleteAlbums)
 
         # 歌曲界面选择栏各按钮信号连接到槽函数
         self.songTabSelectionModeBar.cancelButton.clicked.connect(
@@ -475,6 +500,8 @@ class MyMusicInterface(QWidget):
             self.__showCheckedSongCardProperty)
         self.songTabSelectionModeBar.addToButton.clicked.connect(
             self.__showAddToMenu)
+        self.songTabSelectionModeBar.deleteButton.clicked.connect(
+            self.__showDeleteSongsDialog)
 
         # 专辑界面选择栏信号连接到槽函数
         self.albumTabSelectionModeBar.cancelButton.clicked.connect(
@@ -489,3 +516,5 @@ class MyMusicInterface(QWidget):
             self.__onAlbumTabSelectAllButtonClicked)
         self.albumTabSelectionModeBar.addToButton.clicked.connect(
             self.__showAddToMenu)
+        self.albumTabSelectionModeBar.deleteButton.clicked.connect(
+            self.__showDeleteAlbumsDialog)

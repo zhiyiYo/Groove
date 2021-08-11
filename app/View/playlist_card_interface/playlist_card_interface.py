@@ -1,10 +1,10 @@
 # coding:utf-8
 from copy import deepcopy
 from json import dump
-from os import remove
 from typing import Dict, List
 
 import pinyin
+from app.common.move_to_trash import moveToTrash
 from app.components.buttons.three_state_button import ThreeStatePushButton
 from app.components.dialog_box.message_dialog import MessageDialog
 from app.components.dialog_box.rename_playlist_dialog import \
@@ -416,7 +416,7 @@ class PlaylistCardInterface(ScrollArea):
 
         # 删除播放列表卡和播放列表文件
         playlistCard.deleteLater()
-        remove(f'app/Playlists/{playlistName}.json')
+        moveToTrash(f'app/Playlists/{playlistName}.json')
 
         # 调整高度
         self.scrollWidget.resize(
@@ -424,6 +424,19 @@ class PlaylistCardInterface(ScrollArea):
 
         # 如果没有专辑卡就显示导航标签
         self.guideLabel.setHidden(bool(self.playlistCard_list))
+
+    def deleteSongs(self, songPaths: list):
+        """ 从各个播放列表中删除歌曲 """
+        for name, playlist in self.playlists.items():
+            songInfo_list = playlist["songInfo_list"]
+            playlistCard = self.playlistName2Card_dict[name]
+
+            for songInfo in songInfo_list.copy():
+                if songInfo['songPath'] in songPaths:
+                    songInfo_list.remove(songInfo)
+
+            playlistCard.updateWindow(playlist)
+            self.savePlaylist(playlist)
 
     def __deleteMultiPlaylistCards(self, playlistNames: list):
         """ 删除多个播放列表卡 """
@@ -456,7 +469,7 @@ class PlaylistCardInterface(ScrollArea):
             playlistCard = self.checkedPlaylistCard_list[0]
             # 取消所有歌曲卡的选中
             self.__unCheckPlaylistCards()
-            self.__showDeleteCardDialog(playlistCard.playlist)
+            self.__showDeleteCardDialog(playlistCard.playlistName)
         else:
             title = "确定要删除这些项？"
             content = f"若删除这些播放列表，它们将不再位于此设备上。"

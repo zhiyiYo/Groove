@@ -134,8 +134,8 @@ class PlaylistInterface(ScrollArea):
     def __getPlaylistInfo(self, playlist: dict):
         """ 获取播放列表信息 """
         self.playlist = deepcopy(playlist)
-        self.songInfo_list = playlist.get("songInfo_list", [])
-        self.playlistName = playlist.get("playlistName", "未知播放列表")
+        self.songInfo_list = self.playlist.get("songInfo_list", [])
+        self.playlistName = self.playlist.get("playlistName", "未知播放列表")
 
     def __onSelectionModeStateChanged(self, isOpenSelectionMode: bool):
         """ 选择状态改变对应的槽函数 """
@@ -153,9 +153,9 @@ class PlaylistInterface(ScrollArea):
         playlist = [
             songCard.songInfo for songCard in self.songListWidget.checkedSongCard_list]
         self.__unCheckSongCards()
-        if self.sender() == self.selectionModeBar.playButton:
+        if self.sender() is self.selectionModeBar.playButton:
             self.playCheckedCardsSig.emit(playlist)
-        elif self.sender() == self.selectionModeBar.nextToPlayButton:
+        elif self.sender() is self.selectionModeBar.nextToPlayButton:
             self.nextToPlayCheckedCardsSig.emit(playlist)
 
     def __onSelectAllButtonClicked(self):
@@ -190,8 +190,7 @@ class PlaylistInterface(ScrollArea):
         """ 选择模式栏删除按钮槽函数 """
         for songCard in self.songListWidget.checkedSongCard_list.copy():
             songCard.setChecked(False)
-            index = self.songListWidget.songCard_list.index(songCard)
-            self.songListWidget.removeSongCard(index)
+            self.songListWidget.removeSongCard(songCard.itemIndex)
 
         self.playlist["songInfo_list"] = self.songListWidget.songInfo_list
         self.playlistInfoBar.updateWindow(self.playlist)
@@ -251,7 +250,7 @@ class PlaylistInterface(ScrollArea):
         self.playlistInfoBar.updateWindow(newPlaylist)
         self.renamePlaylistSig.emit(oldPlaylist, newPlaylist)
 
-    def __onSongListWidgetRemoveSongs(self, index: int):
+    def __onSongListWidgetRemoveSongs(self, songPath: str):
         """ 从播放列表中移除歌曲 """
         self.playlist["songInfo_list"] = self.songListWidget.songInfo_list
         self.playlistInfoBar.updateWindow(self.playlist)

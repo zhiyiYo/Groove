@@ -70,8 +70,9 @@ class SongListWidget(BasicSongListWidget):
 
     def __onRemoveButtonClicked(self, index):
         """ 移除歌曲卡按钮点击槽函数 """
+        path = self.sender().songPath
         self.removeSongCard(index)
-        self.removeSongSignal.emit(index)
+        self.removeSongSignal.emit(path)
 
     def __adjustHeight(self):
         """ 调整高度 """

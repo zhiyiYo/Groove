@@ -14,8 +14,9 @@ from .song_card import SongCard
 class SongListWidget(ListWidget):
     """ 正在播放列表 """
 
-    currentIndexChanged = pyqtSignal(int)
-    removeSongSignal = pyqtSignal(int)
+    emptyChanged = pyqtSignal(bool)                     # 歌曲列表 空/非空 变化
+    removeSongSig = pyqtSignal(int)                     # 移除歌曲
+    currentIndexChanged = pyqtSignal(int)               # 当前播放的变化
     isAllCheckedChanged = pyqtSignal(bool)              # 歌曲卡卡全部选中改变
     selectionModeStateChanged = pyqtSignal(bool)        # 进入或退出选择模式
     checkedSongCardNumChanged = pyqtSignal(int)         # 选中的歌曲卡数量改变
@@ -90,28 +91,26 @@ class SongListWidget(ListWidget):
         w.exec_()
 
     def removeSongCard(self, index):
-        """ 移除选中的一个歌曲卡 """
-        # 记录下当前播放列表长度
-        playlistLen = len(self.songInfo_list)
+        """ 移除选一个歌曲卡 """
+        # 更新下标
+        for songCard in self.songCard_list[index+1:]:
+            songCard.itemIndex -= 1
+
+        # 更新歌曲卡选中状态
+        if self.currentIndex > index:
+            self.currentIndex -= 1
+        elif self.currentIndex == index:
+            self.setCurrentIndex(index-1)
+
+        # 删除歌曲卡
         self.songInfo_list.pop(index)
         songCard = self.songCard_list.pop(index)
         songCard.deleteLater()
         self.item_list.pop(index)
         self.takeItem(index)
-        # 更新下标
-        for i in range(index, len(self.songCard_list)):
-            self.songCard_list[i].itemIndex = i
-        if self.currentIndex > index:
-            self.currentIndex -= 1
-        elif self.currentIndex == index:
-            # 如果被移除的是最后一首歌就将更新的下标减一
-            if index == playlistLen - 1:
-                self.currentIndex -= 1
-                self.setCurrentIndex(index - 1)
-            else:
-                self.setCurrentIndex(index)
+
         # 发送信号
-        self.removeSongSignal.emit(index)
+        self.removeSongSig.emit(index)
 
     def setCurrentIndex(self, index: int):
         """ 设置当前播放歌曲下标，同时更新样式 """
@@ -191,19 +190,18 @@ class SongListWidget(ListWidget):
 
     def appendOneSongCard(self, songInfo: dict):
         """ 在歌曲列表视图尾部添加一个歌曲卡 """
-        # 创建item和歌曲卡
-        item = QListWidgetItem()
         songCard = SongCard(songInfo)
-        # 记录下标
         songCard.itemIndex = len(self.songCard_list)
         songCard.resize(1150, 60)
+
+        item = QListWidgetItem()
         item.setSizeHint(QSize(songCard.width(), 60))
         self.addItem(item)
-        # 将项目的内容重置为自定义类
         self.setItemWidget(item, songCard)
-        # 将item和songCard添加到列表中
+
         self.songCard_list.append(songCard)
         self.item_list.append(item)
+
         # 信号连接到槽
         songCard.aniStartSig.connect(
             lambda: self.songCard_list[self.currentIndex].setPlay(False))

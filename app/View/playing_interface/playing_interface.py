@@ -348,25 +348,20 @@ class PlayingInterface(QWidget):
 
     def __removeSongFromPlaylist(self, index):
         """ 从播放列表中移除选中的歌曲 """
-        lastSongRemoved = False
+
         if self.currentIndex > index:
             self.currentIndex -= 1
             self.songInfoCardChute.currentIndex -= 1
         elif self.currentIndex == index:
-            # 如果被移除的是最后一首需要将当前下标-1
-            if index == self.songListWidget.currentIndex + 1:
-                self.currentIndex -= 1
-                self.songInfoCardChute.currentIndex -= 1
-                lastSongRemoved = True
-            else:
-                self.songInfoCardChute.setCurrentIndex(self.currentIndex)
+            self.currentIndex -= 1
+            self.songInfoCardChute.currentIndex -= 1
+            self.songInfoCardChute.setCurrentIndex(self.currentIndex)
+
         self.removeMediaSignal.emit(index)
+
         # 如果播放列表为空，隐藏小部件
         if len(self.playlist) == 0:
             self.__setGuideLabelHidden(False)
-        # 如果被移除的是最后一首就将当前播放歌曲置为被移除后的播放列表最后一首
-        """ if lastSongRemoved:
-            self.currentIndexChanged.emit(self.currentIndex) """
 
     @handleSelectionMode
     def clearPlaylist(self):
@@ -464,15 +459,13 @@ class PlayingInterface(QWidget):
         """ 选择栏播放按钮点击槽函数 """
         for songCard in self.songListWidget.checkedSongCard_list.copy():
             songCard.setChecked(False)
-            index = self.songListWidget.songCard_list.index(songCard)
-            self.songListWidget.removeSongCard(index)
+            self.songListWidget.removeSongCard(songCard.itemIndex)
 
     def __onSelectionModeBarPlayButtonClicked(self):
         """ 选择栏播放按钮点击槽函数 """
         songCard = self.songListWidget.checkedSongCard_list[0]
-        index = self.songListWidget.songCard_list.index(songCard)
         songCard.setChecked(False)
-        self.currentIndexChanged.emit(index)
+        self.currentIndexChanged.emit(songCard.itemIndex)
 
     def __onSelectionModeBarPropertyButtonClicked(self):
         """ 选择栏播放按钮点击槽函数 """
@@ -550,7 +543,7 @@ class PlayingInterface(QWidget):
         # 将歌曲列表的信号连接到槽函数
         self.songListWidget.currentIndexChanged.connect(
             self.currentIndexChanged)
-        self.songListWidget.removeSongSignal.connect(
+        self.songListWidget.removeSongSig.connect(
             self.__removeSongFromPlaylist)
         self.songListWidget.addSongsToCustomPlaylistSig.connect(
             self.addSongsToCustomPlaylistSig)

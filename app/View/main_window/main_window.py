@@ -4,11 +4,12 @@ import os
 from copy import deepcopy
 from random import shuffle
 from time import time
-from pprint import pprint
 from typing import Dict, List
 
+from app.common.move_to_trash import moveToTrash
+from app.components.dialog_box.create_playlist_dialog import \
+    CreatePlaylistDialog
 from app.components.dialog_box.message_dialog import MessageDialog
-from app.components.dialog_box.create_playlist_dialog import CreatePlaylistDialog
 from app.components.frameless_window import FramelessWindow
 from app.components.label_navigation_interface import LabelNavigationInterface
 from app.components.media_player import MediaPlaylist, PlaylistType
@@ -22,10 +23,10 @@ from app.View.my_music_interface import MyMusicInterface
 from app.View.navigation_interface import NavigationInterface
 from app.View.play_bar import PlayBar
 from app.View.playing_interface import PlayingInterface
-from app.View.playlist_interface import PlaylistInterface
-from app.View.smallest_play_interface import SmallestPlayInterface
 from app.View.playlist_card_interface import PlaylistCardInterface
+from app.View.playlist_interface import PlaylistInterface
 from app.View.setting_interface import SettingInterface
+from app.View.smallest_play_interface import SmallestPlayInterface
 from PyQt5.QtCore import QEasingCurve, QEvent, Qt, QTimer
 from PyQt5.QtGui import QCloseEvent, QIcon
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist
@@ -428,9 +429,13 @@ class MainWindow(FramelessWindow):
 
         if self.smallestPlayInterface.isVisible():
             self.smallestPlayInterface.setCurrentIndex(index)
+
         if songInfo in self.albumInterface.songInfo_list:
             i = self.albumInterface.songListWidget.index(songInfo)
             self.albumInterface.songListWidget.setPlay(i)
+        elif self.albumInterface.songListWidget.playingIndex is not None:
+            self.albumInterface.songListWidget.cancelPlayState()
+
         if songInfo in self.playlistInterface.songInfo_list:
             i = self.playlistInterface.songListWidget.index(songInfo)
             self.playlistInterface.songListWidget.setPlay(i)
@@ -441,6 +446,7 @@ class MainWindow(FramelessWindow):
         if index is not None:
             self.songTabSongListWidget.setPlay(index)
         else:
+            self.songTabSongListWidget.cancelPlayState()
             print(f"`{songInfo['songer']}-{songInfo['songName']}`不在歌曲列表中")
 
     def playAlbum(self, playlist: list):
@@ -866,6 +872,8 @@ class MainWindow(FramelessWindow):
             songInfo_list.clear()
             songInfo_list.extend(differentSongInfo_list)
 
+        songInfo_list = deepcopy(songInfo_list)
+
         # 找出新的歌曲
         oldPlaylist = self.playlistCardInterface.playlists[playlistName]
         oldSongInfo_list = oldPlaylist.get("songInfo_list", [])
@@ -911,6 +919,8 @@ class MainWindow(FramelessWindow):
         self.myMusicInterface.scrollToLabel(label)
         self.subStackWidget.setCurrentWidget(
             self.subStackWidget.previousWidget)
+        # 弹出导航历史
+        self.navigationHistories.pop()
 
     def rescanSongInfoTimerSlot(self):
         """ 重新扫描歌曲信息 """
@@ -921,6 +931,12 @@ class MainWindow(FramelessWindow):
         w.show()
         self.myMusicInterface.rescanSongInfo()
         w.setState(True)
+
+    def deleteSongs(self, songPaths: list):
+        """ 删除歌曲 """
+        self.playlistCardInterface.deleteSongs(songPaths)
+        for songPath in songPaths:
+            moveToTrash(songPath)
 
     def connectSignalToSlot(self):
         """ 将信号连接到槽 """
@@ -1033,6 +1049,7 @@ class MainWindow(FramelessWindow):
             self.switchToAlbumInterface)
 
         # todo:将我的音乐界面连接到槽函数
+        self.myMusicInterface.removeSongSig.connect(self.deleteSongs)
         self.myMusicInterface.randomPlayAllSig.connect(self.disorderPlayAll)
         self.myMusicInterface.playCheckedCardsSig.connect(
             self.playCheckedCards)

@@ -1,4 +1,5 @@
 # coding:utf-8
+from copy import deepcopy
 from app.common.blur_cover_thread import BlurCoverThread
 from app.common.get_cover_path import getCoverPath
 from app.components.buttons.circle_button import CircleButton
@@ -292,7 +293,7 @@ class SmallestPlayInterface(FramelessWindow):
         isResetIndex: bool
             是否从头播放歌曲
         """
-        self.playlist = playlist
+        self.playlist = deepcopy(playlist)
         self.currentIndex = 0 if isResetIndex else self.currentIndex
         if playlist:
             self.curSongInfoCard.updateCard(self.playlist[0])

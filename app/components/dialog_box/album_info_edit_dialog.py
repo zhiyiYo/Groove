@@ -235,8 +235,7 @@ class AlbumInfoEditDialog(MaskDialogBase):
         """ 显示专辑图片选取对话框 """
         self.delayTimer.stop()
         path, _ = QFileDialog.getOpenFileName(
-            self, "打开", "./", "所有文件(*.png;*.jpg;*.jpeg;*jpe;*jiff)"
-        )
+            self, "打开", "./", "所有文件(*.png;*.jpg;*.jpeg;*jpe;*jiff)")
         if path:
             # 复制图片到封面文件夹下
             if os.path.abspath(self.cover_path) == path:

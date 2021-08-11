@@ -15,21 +15,20 @@ from .song_card_type import SongCardType
 class BasicSongListWidget(ListWidget):
     """ 基本歌曲列表控件 """
 
-    emptyChangedSig = pyqtSignal(bool)  # 歌曲卡是否为空信号
-    removeSongSignal = pyqtSignal(int)
-    songCardNumChanged = pyqtSignal(int)
-    isAllCheckedChanged = pyqtSignal(bool)     # 歌曲卡卡全部选中改变
-    addSongToPlayingSignal = pyqtSignal(dict)  # 将一首歌添加到正在播放
-    checkedSongCardNumChanged = pyqtSignal(int)
-    editSongInfoSignal = pyqtSignal(dict, dict)  # 编辑歌曲卡完成信号
-    selectionModeStateChanged = pyqtSignal(bool)
-    addSongsToNewCustomPlaylistSig = pyqtSignal(list)  # 将歌曲添加到新的自定义播放列表
+    emptyChangedSig = pyqtSignal(bool)                   # 歌曲卡是否为空信号
+    removeSongSignal = pyqtSignal(str)                   # 刪除歌曲列表中的一首歌
+    songCardNumChanged = pyqtSignal(int)                 # 歌曲数量发生改变
+    isAllCheckedChanged = pyqtSignal(bool)               # 歌曲卡卡全部选中改变
+    addSongToPlayingSignal = pyqtSignal(dict)            # 将一首歌添加到正在播放
+    checkedSongCardNumChanged = pyqtSignal(int)          # 选中的歌曲卡数量发生改变
+    editSongInfoSignal = pyqtSignal(dict, dict)          # 编辑歌曲卡完成信号
+    selectionModeStateChanged = pyqtSignal(bool)         # 进入/退出 选择模式
+    addSongsToNewCustomPlaylistSig = pyqtSignal(list)    # 将歌曲添加到新的自定义播放列表
     addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 将歌曲添加到已存在的自定义播放列表
 
     def __init__(self, songInfo_list: list, songCardType: SongCardType, parent=None,
                  viewportMargins=QMargins(30, 0, 30, 0), paddingBottomHeight: int = 116):
-        """ 创建歌曲卡列表控件对象
-
+        """
         Parameters
         ----------
         songInfo_list: list
@@ -148,12 +147,19 @@ class BasicSongListWidget(ListWidget):
         for i in range(index, len(self.songCard_list)):
             self.songCard_list[i].itemIndex = i
 
-        if self.currentIndex > index:
+        if self.currentIndex >= index:
             self.currentIndex -= 1
+            self.playingIndex -= 1
 
         # 发送信号
         self.songCardNumChanged.emit(len(self.songCard_list))
         self.update()
+
+    def removeSongCards(self, songPaths: list):
+        """ 移除多个歌曲卡 """
+        for songCard in self.songCard_list.copy():
+            if songCard.songPath in songPaths:
+                self.removeSongCard(songCard.itemIndex)
 
     def setPlay(self, index: int):
         """ 设置歌曲卡播放状态 """
@@ -373,11 +379,12 @@ class BasicSongListWidget(ListWidget):
             是否降序，只对前三种排序方式有效
         """
         if key != "tracknumber":
-            self.songInfo_list.sort(
-                key=lambda songInfo: songInfo[key], reverse=isReverse)
+            songInfo = sorted(self.songInfo_list,
+                              key=lambda songInfo: songInfo[key], reverse=isReverse)
         else:
-            self.songInfo_list.sort(
-                key=lambda songInfo: int(songInfo["tracknumber"]))
+            songInfo = sorted(self.songInfo_list, key=lambda songInfo: int(
+                songInfo["tracknumber"]))
+        return songInfo
 
     def __createPaddingBottomItem(self):
         """ 创建底部占位行 """

@@ -68,8 +68,8 @@ class SongListWidget(BasicSongListWidget):
 
     def sortSongCardByTrackNum(self):
         """ 以曲序为基准排序歌曲卡 """
-        self.sortSongInfo(key="tracknumber")
-        self.updateAllSongCards(self.songInfo_list)
+        songInfo_list = self.sortSongInfo("tracknumber")
+        self.updateAllSongCards(songInfo_list)
 
     def __playButtonSlot(self, index):
         """ 歌曲卡播放按钮槽函数 """

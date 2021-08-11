@@ -8,10 +8,6 @@ class PixmapPerspectiveTransform():
     """ 透视变换基类 """
 
     def __init__(self, pixmap=None):
-        """ 实例化透视变换对象\n
-        Parameter
-        ---------
-        src : numpy数组 """
         self.pixmap = pixmap
 
     def setPixmap(self, pixmap: QPixmap):
