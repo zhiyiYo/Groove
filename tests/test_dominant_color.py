@@ -2,12 +2,34 @@
 import sys
 import os
 from math import floor
+from colorthief import ColorThief
 
 from app.common.get_dominant_color import DominantColor
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPalette, QPixmap, QColor
 from PyQt5.QtWidgets import QWidget, QLabel, QPushButton, QApplication
+
+
+class DominantColor_:
+
+    @classmethod
+    def getDominantColor(cls, imagePath, resType=str):
+        """ 获取主题色 """
+        imagePath = imagePath
+        colorThief = ColorThief(imagePath)
+
+        # 调整图像大小，加快运算速度
+        if max(colorThief.image.size) > 400:
+            colorThief.image = colorThief.image.resize((400, 400))
+
+        palette = colorThief.get_palette(quality=9)
+        rgb = palette[0]
+        if resType is str:
+            rgb = "".join([hex(i)[2:].rjust(2, "0") for i in rgb])
+
+        return rgb
+
 
 class Demo(QWidget):
     """ 测试用例 """
@@ -28,7 +50,6 @@ class Demo(QWidget):
 
     def __initWidgets(self):
         """ 初始化小部件 """
-        self.setStyleSheet("background:cyan")
         self.albumCoverLabel.move(80, 80)
         self.lastPicBt.move(100, 330)
         self.nextPicBt.move(self.width() - 100 - self.nextPicBt.width(), 330)

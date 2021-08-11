@@ -2,7 +2,7 @@
 import os
 
 from app.components.scroll_area import ScrollArea
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QColor, QPainter, QPen
 from PyQt5.QtWidgets import QWidget
 
@@ -13,6 +13,8 @@ from .search_line_edit import SearchLineEdit
 
 class NavigationWidget(BasicNavigationWidget):
     """ 侧边导航窗口 """
+
+    switchToPlaylistInterfaceSig = pyqtSignal(str)
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -29,51 +31,47 @@ class NavigationWidget(BasicNavigationWidget):
     def __createButtons(self):
         """实例化按钮 """
         self.showBarButton = ToolButton(
-            r"app\resource\images\navigation_interface\GlobalNavButton.png", parent=self)
+            "app/resource/images/navigation_interface/GlobalNavButton.png", parent=self)
         self.musicGroupButton = PushButton(
-            r"app\resource\images\navigation_interface\MusicInCollection.png", "我的音乐", (400, 60), self.scrollWidget)
+            "app/resource/images/navigation_interface/MusicInCollection.png", "我的音乐", (400, 60), self.scrollWidget)
         self.historyButton = PushButton(
-            r"app\resource\images\navigation_interface\Recent.png", "最近播放的内容", (400, 62), self.scrollWidget)
+            "app/resource/images/navigation_interface/Recent.png", "最近播放的内容", (400, 62), self.scrollWidget)
         self.playingButton = PushButton(
-            r"app\resource\images\navigation_interface\黑色导航栏正在播放.png", "正在播放", (400, 62), self.scrollWidget)
+            "app/resource/images/navigation_interface/黑色导航栏正在播放.png", "正在播放", (400, 62), self.scrollWidget)
         self.playlistButton = PushButton(
-            r"app\resource\images\navigation_interface\黑色播放列表.png", "播放列表", (340, 60), self.scrollWidget)
+            "app/resource/images/navigation_interface/黑色播放列表.png", "播放列表", (340, 60), self.scrollWidget)
         self.createPlaylistButton = CreatePlaylistButton(self.scrollWidget)
         self.settingButton = PushButton(
-            r"app\resource\images\navigation_interface\Settings.png", "设置", (400, 62), self)
+            "app/resource/images/navigation_interface/Settings.png", "设置", (400, 62), self)
         # 创建播放列表名字按钮
-        self.playlistName_list = self.getPlaylistNames()
-        self.playlistNameButton_list = [
-            PushButton(
-                r"app\resource\images\navigation_interface\黑色我喜欢_60_62.png", i, (400, 62), self.scrollWidget)
-            for i in self.playlistName_list
-        ]
+        self.__createPlaylistNameButtons(self.getPlaylistNames())
         # 设置当前按钮
         self.currentButton = self.musicGroupButton
         # todo:设置可选中的按钮列表
-        self._selectableButton_list = [
+        self._selectableButtons = [
             self.musicGroupButton,
             self.historyButton,
             self.playingButton,
             self.playlistButton,
             self.settingButton,
-        ] + self.playlistNameButton_list
+        ] + self.playlistNameButtons
         # todo:设置可选中的按钮名字列表
-        self._selectableButtonName_list = [
+        self._selectableButtonNames = [
             "musicGroupButton",
             "historyButton",
             "playingButton",
             "playlistButton",
             "settingButton",
-        ] + self.playlistName_list
+        ] + self.playlistNames
 
     def __initWidget(self):
         """ 初始化小部件 """
         self.resize(400, 800)
         self.setAttribute(Qt.WA_StyledBackground)
-        self.setSelectedButton(self.musicGroupButton)
+        self.setSelectedButton(self.musicGroupButton.property('name'))
         # 将按钮的点击信号连接到槽函数
         self._connectButtonClickedSigToSlot()
+        self.__connectPlaylistNameClickedSigToSlot()
         # 初始化布局
         self.__initLayout()
 
@@ -102,16 +100,12 @@ class NavigationWidget(BasicNavigationWidget):
     def paintEvent(self, e):
         """ 绘制分隔符 """
         painter = QPainter(self)
-        pen = QPen(QColor(0, 0, 0, 30))
-        painter.setPen(pen)
-        painter.drawLine(
-            15,
-            self.settingButton.y() - 1,
-            self.width() - 15,
-            self.settingButton.y() - 1,
-        )
+        painter.setPen(QColor(0, 0, 0, 30))
+        painter.drawLine(15, self.settingButton.y()-1,
+                         self.width()-15, self.settingButton.y()-1)
 
-    def getPlaylistNames(self):
+    @staticmethod
+    def getPlaylistNames():
         """ 扫描播放列表名字 """
         os.makedirs('app/Playlists', exist_ok=True)
         playlists = [
@@ -121,47 +115,57 @@ class NavigationWidget(BasicNavigationWidget):
 
     def __addPlaylistNameButtonsToScrollWidget(self):
         """ 将播放列表名字按钮添加到滚动部件上 """
-        for index, button in enumerate(self.playlistNameButton_list):
+        for index, button in enumerate(self.playlistNameButtons):
             button.move(0, 246 + index * 62)
             button.show()
 
     def __adjustScrollWidgetHeight(self):
         """ 调整滚动部件的高度 """
-        buttonHeight = 246 + 62 * len(self.playlistName_list)
-        height = (
-            self.height() - 346 if self.height() - 346 > buttonHeight else buttonHeight
-        )
+        buttonHeight = 246 + 62 * len(self.playlistNames)
+        height = self.height()-346 if self.height()-346 > buttonHeight else buttonHeight
         self.scrollWidget.resize(400, height)
 
     def updateWindow(self):
         """ 更新界面 """
         # 扫描播放列表
         playlistNames = self.getPlaylistNames()
-        if playlistNames == self.playlistName_list:
+        if playlistNames == self.playlistNames:
             return
-        # 删除旧按钮
-        for i in range(len(self.playlistNameButton_list)):
-            button = self.playlistNameButton_list.pop()
+
+        # 删除旧播放列表名字按钮
+        while self.playlistNameButtons:
+            self._selectableButtons.pop()
+            self._selectableButtonNames.pop()
+            button = self.playlistNameButtons.pop()
             button.deleteLater()
 
         # 创建新按钮
-        self.playlistName_list = playlistNames
-        self.playlistNameButton_list = [
-            PushButton(
-                r"app\resource\images\navigation_interface\黑色我喜欢_60_62.png",
-                i,
-                (400, 62),
-                self.scrollWidget
-            )
-            for i in playlistNames
-        ]
-        for button, name in zip(self.playlistNameButton_list, playlistNames):
-            button.setProperty('name', name)
-            
+        self.__createPlaylistNameButtons(playlistNames)
+        self._selectableButtonNames += playlistNames
+        self._selectableButtons += self.playlistNameButtons
+        self._connectButtonClickedSigToSlot()
+        self.__connectPlaylistNameClickedSigToSlot()
+
         # 移动按钮
         self.__addPlaylistNameButtonsToScrollWidget()
         self.__adjustScrollWidgetHeight()
         self.update()
+
+    def __createPlaylistNameButtons(self, playlistNames: list):
+        """ 创建播放列表名字按钮 """
+        self.playlistNames = playlistNames
+        self.playlistNameButtons = [
+            PushButton("app/resource/images/navigation_interface/黑色我喜欢_60_62.png",
+                       i, (400, 62), self.scrollWidget)
+            for i in playlistNames
+        ]
+
+    def __connectPlaylistNameClickedSigToSlot(self):
+        """ 将播放列表名字按钮点击信号连接到槽函数 """
+        for button in self.playlistNameButtons:
+            name = button.property('name')
+            button.clicked.connect(
+                lambda checked, name=name: self.switchToPlaylistInterfaceSig.emit(name))
 
 
 class ScrollWidget(QWidget):

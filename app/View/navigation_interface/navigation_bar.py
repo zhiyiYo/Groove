@@ -45,10 +45,10 @@ class NavigationBar(BasicNavigationWidget):
             self.createPlaylistButton, self.settingButton
         ]
         # 可变样式的按钮列表
-        self._selectableButton_list = self.button_list[2:6] + [
+        self._selectableButtons = self.button_list[2:6] + [
             self.settingButton]
         # 创建按钮与下标对应的字典
-        self._selectableButtonName_list = [
+        self._selectableButtonNames = [
             'musicGroupButton', 'historyButton', 'playingButton',
             'playlistButton', 'settingButton'
         ]
@@ -56,7 +56,7 @@ class NavigationBar(BasicNavigationWidget):
     def __initWidget(self):
         """ 初始化小部件 """
         self.setFixedWidth(60)
-        self.setSelectedButton(self.musicGroupButton)
+        self.setSelectedButton(self.musicGroupButton.property('name'))
         # 将部分按钮的点击信号连接到槽函数并设置属性
         self._connectButtonClickedSigToSlot()
         # 初始化布局

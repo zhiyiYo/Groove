@@ -13,9 +13,9 @@ class BasicNavigationWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         # 初始化按钮及其名字列表
-        self._selectableButton_list = []
-        self._selectableButtonName_list = []
-        self.playlistNameButton_list = []
+        self._selectableButtons = []
+        self._selectableButtonNames = []
+        self.playlistNameButtons = []
         self.__switchInterfaceButtonIndex_dict = {
             'musicGroupButton': 0,
             'playlistButton': 1,
@@ -28,9 +28,12 @@ class BasicNavigationWidget(QWidget):
 
     def _connectButtonClickedSigToSlot(self):
         """ 将按钮点击信号连接到槽函数 """
-        if len(self._selectableButtonName_list) != len(self._selectableButton_list):
+        if len(self._selectableButtonNames) != len(self._selectableButtons):
             raise Exception('按钮与其对应的名字列表长度不一致')
-        for button, name in zip(self._selectableButton_list, self._selectableButtonName_list):
+
+        for button, name in zip(self._selectableButtons, self._selectableButtonNames):
+            if button.property('name'):
+                continue
             button.setProperty('name', name)
             button.clicked.connect(
                 lambda checked, name=name: self.__onButtonClicked(name))
@@ -39,8 +42,8 @@ class BasicNavigationWidget(QWidget):
         """ 设置下标对应的按钮的选中状态 """
         selectedButtonName_list = [
             key for key, value in self.__switchInterfaceButtonIndex_dict.items() if value == index]
+        # 更新按钮的选中状态
         if selectedButtonName_list:
-            # 更新按钮的选中状态
             self.__updateButtonSelectedState(selectedButtonName_list[0])
 
     def setSelectedButton(self, buttonName: str):
@@ -49,7 +52,7 @@ class BasicNavigationWidget(QWidget):
         Parameters
         ----------
         buttonName: str
-            由 `btn.objectName()` 返回的按钮名字
+            由 `btn.property('name')` 返回的按钮名字
         """
         self.__updateButtonSelectedState(buttonName)
 
@@ -58,8 +61,10 @@ class BasicNavigationWidget(QWidget):
         if selectedButtonName == 'playingButton':
             return
         self.__updateButtonSelectedState(selectedButtonName)
-        # 发送当前按钮的名字
+
+        # 发送当前按钮的名字，要求导航界面同步按钮选中状态
         self.selectedButtonChanged.emit(selectedButtonName)
+
         # 如果按下的按钮在切换界面的按钮列表中，就发送切换界面的信号
         if selectedButtonName in self.__switchInterfaceButtonIndex_dict.keys():
             self.switchInterfaceSig.emit(
@@ -68,9 +73,9 @@ class BasicNavigationWidget(QWidget):
     def __updateButtonSelectedState(self, selectedButtonName: str):
         """ 更新选中的按钮样式 """
         self.currentButton.setSelected(False)
-        if selectedButtonName in self._selectableButtonName_list:
-            self.currentButton = self._selectableButton_list[self._selectableButtonName_list.index(
-                selectedButtonName)]
+        if selectedButtonName in self._selectableButtonNames:
+            index = self._selectableButtonNames.index(selectedButtonName)
+            self.currentButton = self._selectableButtons[index]
             self.currentButton.setSelected(True)
 
     def __setQss(self):

@@ -122,11 +122,9 @@ class MainWindow(FramelessWindow):
 
     def __initWidget(self):
         """ 初始化小部件 """
-        self.resize(1300, 970)
+        self.resize(1200, 970)
         self.setMinimumSize(1030, 800)
         self.setWindowTitle("Groove 音乐")
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowSystemMenuHint |
-                            Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint)
         self.setWindowIcon(QIcon("app/resource/images/logo.png"))
         self.setAttribute(Qt.WA_TranslucentBackground | Qt.WA_StyledBackground)
         # 在去除任务栏的显示区域居中显示
@@ -636,7 +634,8 @@ class MainWindow(FramelessWindow):
 
         # 增加导航历史
         index = self.subStackWidget.indexOf(self.playlistInterface)
-        self.navigationHistories.append(("subStackWidget", index))
+        if self.navigationHistories[-1] != ("subStackWidget", index):
+            self.navigationHistories.append(("subStackWidget", index))
 
         # 根据当前播放的歌曲设置歌曲卡播放状态
         songInfo = self.mediaPlaylist.getCurrentSong()
@@ -708,12 +707,8 @@ class MainWindow(FramelessWindow):
         stackWidgetName, index = self.navigationHistories[-1]
         if stackWidgetName == "myMusicInterfaceStackWidget":
             self.myMusicInterface.stackedWidget.setCurrentIndex(index)
-            if self.subStackWidget.currentWidget() != self.albumInterface:
-                self.subStackWidget.setCurrentIndex(
-                    0, True, False, duration=200, easingCurve=QEasingCurve.InCubic)
-            else:
-                self.subStackWidget.setCurrentIndex(
-                    0, True, False, 200, QEasingCurve.InCubic)
+            self.subStackWidget.setCurrentIndex(
+                0, True, False, 200, QEasingCurve.InCubic)
             self.navigationInterface.setCurrentIndex(0)
             self.myMusicInterface.setSelectedButton(index)
             self.titleBar.setWhiteIcon(False)
@@ -853,9 +848,12 @@ class MainWindow(FramelessWindow):
         self.playlistCardInterface.renamePlaylist(oldPlaylist, newPlaylist)
         self.navigationInterface.updateWindow()
 
-    def onRemovePlaylist(self, playlistName: str):
-        """ 删除播放列表槽函数 """
+    def onDeleteCustomPlaylist(self, playlistName: str):
+        """ 删除自定义播放列表槽函数 """
         self.navigationInterface.updateWindow()
+        if self.sender() is self.playlistInterface:
+            self.playlistCardInterface.deleteOnePlaylistCard(playlistName)
+            self.titleBar.returnBt.click()
 
     def playCustomPlaylist(self, songInfo_list: list):
         """ 播放自定义播放列表中的所有歌曲 """
@@ -958,6 +956,8 @@ class MainWindow(FramelessWindow):
             self.switchToMyMusicInterface)
         self.navigationInterface.switchToPlaylistCardInterfaceSig.connect(
             self.switchToPlaylistCardInterface)
+        self.navigationInterface.switchToPlaylistInterfaceSig.connect(
+            self.switchToPlaylistInterface)
 
         # todo:缩略图任务栏各按钮的功能
         self.thumbnailToolBar.togglePlayStateSig.connect(self.togglePlayState)
@@ -1081,6 +1081,8 @@ class MainWindow(FramelessWindow):
         self.playlistInterface.playAllSig.connect(self.playCustomPlaylist)
         self.playlistInterface.editSongInfoSignal.connect(self.onEditSongInfo)
         self.playlistInterface.playOneSongCardSig.connect(self.playOneSongCard)
+        self.playlistInterface.deletePlaylistSig.connect(
+            self.onDeleteCustomPlaylist)
         self.playlistInterface.playCheckedCardsSig.connect(
             self.playCustomPlaylist)
         self.playlistInterface.songCardPlaySig.connect(
@@ -1116,7 +1118,7 @@ class MainWindow(FramelessWindow):
         self.playlistCardInterface.renamePlaylistSig.connect(
             self.onRenamePlaylist)
         self.playlistCardInterface.deletePlaylistSig.connect(
-            self.onRemovePlaylist)
+            self.onDeleteCustomPlaylist)
         self.playlistCardInterface.playSig.connect(self.playCustomPlaylist)
         self.playlistCardInterface.nextToPlaySig.connect(
             self.onMultiSongsNextPlay)

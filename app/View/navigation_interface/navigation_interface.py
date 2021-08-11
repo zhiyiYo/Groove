@@ -53,6 +53,13 @@ class NavigationInterface(QWidget):
         # 发送切换窗口信号
         self.navigationBar.switchInterfaceSig.connect(self.switchInterfaceSig)
         self.navigationMenu.switchInterfaceSig.connect(self.switchInterfaceSig)
+        self.navigationWidget.switchInterfaceSig.connect(
+            self.switchInterfaceSig)
+        self.navigationWidget.switchToPlaylistInterfaceSig.connect(
+            self.switchToPlaylistInterfaceSig)
+        self.navigationMenu.switchToPlaylistInterfaceSig.connect(
+            self.switchToPlaylistInterfaceSig)
+
         # 同步按钮选中状态
         self.navigationBar.selectedButtonChanged.connect(
             self.__onSelectedButtonChanged)
@@ -60,9 +67,7 @@ class NavigationInterface(QWidget):
             self.__onSelectedButtonChanged)
         self.navigationMenu.selectedButtonChanged.connect(
             self.__onSelectedButtonChanged)
-        # 发送切换窗口信号
-        self.navigationWidget.switchInterfaceSig.connect(
-            self.switchInterfaceSig)
+
         # 按钮点击信号连接到槽
         self.navigationBar.showMenuButton.clicked.connect(
             self.__expandNavigationWindow)
@@ -85,10 +90,6 @@ class NavigationInterface(QWidget):
                 self.switchToPlaylistCardInterfaceSig)
             widget.createPlaylistButton.clicked.connect(
                 self.showCreatePlaylistDialogSig)
-            for button in widget.playlistNameButton_list:
-                name = button.property("name")
-                button.clicked.connect(
-                    lambda checked, name=name: self.switchToPlaylistInterfaceSig.emit(name))
 
     def resizeEvent(self, e):
         """ 调整小部件尺寸 """

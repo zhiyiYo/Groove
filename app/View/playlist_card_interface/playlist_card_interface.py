@@ -395,10 +395,11 @@ class PlaylistCardInterface(ScrollArea):
         title = "是否确定要删除此项？"
         content = f"""如果删除"{playlistName}"，它将不再位于此设备上。"""
         w = MessageDialog(title, content, self.window())
-        w.yesSignal.connect(lambda: self.__deleteOnePlaylistCard(playlistName))
+        w.yesSignal.connect(lambda: self.deleteOnePlaylistCard(playlistName))
+        w.yesSignal.connect(lambda: self.deletePlaylistSig.emit(playlistName))
         w.exec()
 
-    def __deleteOnePlaylistCard(self, playlistName: str):
+    def deleteOnePlaylistCard(self, playlistName: str):
         """ 删除一个播放列表卡 """
         playlistCard = self.playlistName2Card_dict[playlistName]
 
@@ -424,13 +425,11 @@ class PlaylistCardInterface(ScrollArea):
         # 如果没有专辑卡就显示导航标签
         self.guideLabel.setHidden(bool(self.playlistCard_list))
 
-        # 发送删除播放列表的信号
-        self.deletePlaylistSig.emit(playlistName)
-
     def __deleteMultiPlaylistCards(self, playlistNames: list):
         """ 删除多个播放列表卡 """
         for name in playlistNames:
-            self.__deleteOnePlaylistCard(name)
+            self.deleteOnePlaylistCard(name)
+            self.deletePlaylistSig.emit(name)
 
     def __emitCheckedPlaylists(self):
         """ 发送选中的播放列表中的歌曲 """

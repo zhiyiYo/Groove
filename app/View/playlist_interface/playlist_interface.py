@@ -1,6 +1,7 @@
 # coding:utf-8
 from copy import deepcopy
 
+from app.components.dialog_box.message_dialog import MessageDialog
 from app.components.buttons.three_state_button import ThreeStatePushButton
 from app.components.dialog_box.rename_playlist_dialog import \
     RenamePlaylistDialog
@@ -17,22 +18,23 @@ from .song_list_widget import SongListWidget
 class PlaylistInterface(ScrollArea):
     """ 播放列表界面 """
 
-    playAllSig = pyqtSignal(list)  # 播放整张播放列表
-    songCardPlaySig = pyqtSignal(int)  # 在当前播放列表中播放这首歌
-    removeSongSig = pyqtSignal(str, list)  # 从播放列表中移除歌曲
-    playOneSongCardSig = pyqtSignal(dict)  # 将播放列表重置为一首歌
-    playCheckedCardsSig = pyqtSignal(list)  # 播放选中的歌曲卡
-    nextToPlayOneSongSig = pyqtSignal(dict)  # 下一首播放一首歌
-    addOneSongToPlayingSig = pyqtSignal(dict)  # 添加一首歌到正在播放
-    renamePlaylistSig = pyqtSignal(dict, dict)   # 重命名播放列表
-    editSongInfoSignal = pyqtSignal(dict, dict)  # 编辑歌曲信息信号
-    selectionModeStateChanged = pyqtSignal(bool)  # 进入/退出 选择模式
-    nextToPlayCheckedCardsSig = pyqtSignal(list)  # 将选中的多首歌添加到下一首播放
-    addSongsToPlayingPlaylistSig = pyqtSignal(list)  # 添加歌曲到正在播放
-    addSongsToNewCustomPlaylistSig = pyqtSignal(list)  # 添加歌曲到新建播放列表
-    addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 添加歌曲到自定义的播放列表中
-    switchToAlbumInterfaceSig = pyqtSignal(str, str)    # 切换到专辑界面
-    switchToAlbumCardInterfaceSig = pyqtSignal()           # 切换到专辑卡界面
+    playAllSig = pyqtSignal(list)                           # 播放整张播放列表
+    songCardPlaySig = pyqtSignal(int)                       # 在当前播放列表中播放这首歌
+    deletePlaylistSig = pyqtSignal(str)                     # 删除整张播放列表
+    removeSongSig = pyqtSignal(str, list)                   # 从播放列表中移除歌曲
+    playOneSongCardSig = pyqtSignal(dict)                   # 将播放列表重置为一首歌
+    playCheckedCardsSig = pyqtSignal(list)                  # 播放选中的歌曲卡
+    nextToPlayOneSongSig = pyqtSignal(dict)                 # 下一首播放一首歌
+    addOneSongToPlayingSig = pyqtSignal(dict)               # 添加一首歌到正在播放
+    renamePlaylistSig = pyqtSignal(dict, dict)              # 重命名播放列表
+    editSongInfoSignal = pyqtSignal(dict, dict)             # 编辑歌曲信息信号
+    switchToAlbumCardInterfaceSig = pyqtSignal()            # 切换到专辑卡界面
+    selectionModeStateChanged = pyqtSignal(bool)            # 进入/退出 选择模式
+    nextToPlayCheckedCardsSig = pyqtSignal(list)            # 将选中的多首歌添加到下一首播放
+    addSongsToPlayingPlaylistSig = pyqtSignal(list)         # 添加歌曲到正在播放
+    addSongsToNewCustomPlaylistSig = pyqtSignal(list)       # 添加歌曲到新建播放列表
+    addSongsToCustomPlaylistSig = pyqtSignal(str, list)     # 添加歌曲到自定义的播放列表中
+    switchToAlbumInterfaceSig = pyqtSignal(str, str)        # 切换到专辑界面
 
     def __init__(self, playlist: dict, parent=None):
         """
@@ -228,6 +230,15 @@ class PlaylistInterface(ScrollArea):
         if h > 155:
             self.playlistInfoBar.resize(self.playlistInfoBar.width(), h)
 
+    def __showDeletePlaylistDialog(self):
+        """ 显示删除播放列表对话框 """
+        name = self.playlistName
+        title = "是否确定要删除此项？"
+        content = f"""如果删除"{name}"，它将不再位于此设备上。"""
+        w = MessageDialog(title, content, self.window())
+        w.yesSignal.connect(lambda: self.deletePlaylistSig.emit(name))
+        w.exec()
+
     def __showRenamePlaylistDialog(self, oldPlaylist: dict):
         """ 显示重命名播放列表面板 """
         w = RenamePlaylistDialog(oldPlaylist, self.window())
@@ -268,6 +279,8 @@ class PlaylistInterface(ScrollArea):
             lambda name: self.addSongsToCustomPlaylistSig.emit(name, self.songInfo_list))
         self.playlistInfoBar.renameButton.clicked.connect(
             lambda: self.__showRenamePlaylistDialog(self.playlist))
+        self.playlistInfoBar.deleteButton.clicked.connect(
+            self.__showDeletePlaylistDialog)
 
         # 歌曲列表信号
         self.songListWidget.playSignal.connect(self.songCardPlaySig)

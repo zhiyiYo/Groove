@@ -43,7 +43,7 @@ class DominantColor:
                 palette.remove(rgb)
                 if len(palette) <= 2:
                     break
-        palette = palette[:3]
+        palette = palette[:4]
         palette.sort(key=lambda rgb: self.rgb2hsv(rgb)[1], reverse=True)
         self.rgb = palette[0]
         # 根据指定的返回类型决定返回十六进制颜色代码还是元组
