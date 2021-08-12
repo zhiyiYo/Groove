@@ -32,11 +32,11 @@ QScrollBar {
     width: 4px;
     margin-top: 40px;
     margin-bottom: 115px;
-    margin-right: 1px;
+    padding-right: 1px;
 }
 
 /*隐藏上箭头*/
-QScrollBarr::sub-line {
+QScrollBar::sub-line {
     background: transparent;
 }
 
@@ -121,14 +121,14 @@ QPushButton#sortModeButton:hover {
 }
 
 QPushButton#sortModeButton:pressed {
-    color: rgb(153,195,205);
+    color: rgb(153, 195, 205);
 }
 
-QPushButton#createPlaylistButton:hover{
+QPushButton#createPlaylistButton:hover {
     color: rgb(110, 110, 110);
 }
 
-QPushButton#createPlaylistButton:pressed{
+QPushButton#createPlaylistButton:pressed {
     color: rgb(153, 153, 153);
 }
 

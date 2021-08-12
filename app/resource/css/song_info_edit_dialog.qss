@@ -18,7 +18,7 @@ QLabel#editAlbumInfo {
     font: 21px 'Microsoft YaHei';
 }
 
-QLabel#bottomErrorLabel{
+QLabel#bottomErrorLabel {
     color: rgb(197, 5, 0);
 }
 
@@ -31,7 +31,7 @@ QLineEdit {
     border: 1px solid rgb(102, 102, 102);
 }
 
-QLineEdit[hasClearBt='false']{
+QLineEdit[hasClearBt='false'] {
     padding: 8px 13px 8px 12px;
 }
 
@@ -43,7 +43,7 @@ QLineEdit[hasText='false'] {
     border: 1px solid rgb(197, 5, 0);
 }
 
-QLineEdit:disabled{
+QLineEdit:disabled {
     color: rgb(122, 122, 122);
     border: none;
     background-color: rgb(204, 204, 204);
@@ -61,8 +61,8 @@ QPushButton {
     height: 40px;
 }
 
-QPushButton:pressed:hover{
-    background-color: rgb(153,153,153);
+QPushButton:pressed:hover {
+    background-color: rgb(153, 153, 153);
 }
 
 QPushButton:hover {
@@ -70,9 +70,9 @@ QPushButton:hover {
 }
 
 QToolButton {
-    border:none;
+    border: none;
     background: transparent;
-    margin:0px;
+    margin: 0px;
 }
 
 
@@ -84,7 +84,7 @@ QScrollBar {
 }
 
 /*隐藏上箭头*/
-QScrollBarr::sub-line {
+QScrollBar::sub-line {
     background: transparent;
 }
 
@@ -99,7 +99,7 @@ QScrollBar::handle {
     border-radius: 1px;
 }
 
-QScrollArea{
+QScrollArea {
     background: transparent;
-    border:none;
+    border: none;
 }

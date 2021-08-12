@@ -2,7 +2,7 @@ QListWidget {
     /*selection-color:white;*/
     border: transparent;
     outline: none;
-    background:transparent;
+    background: transparent;
     padding: 0px;
 }
 
@@ -130,13 +130,13 @@ QCheckBox::indicator:checked {
 /*滚动条*/
 QScrollBar:vertical {
     background: transparent;
-    width: 6px;
+    width: 4px;
     border: none;
-    margin-right: 3px;
+    padding-right: 1px;
 }
 
 
-QScrollBarr::sub-line:vertical {
+QScrollBar::sub-line:vertical {
     background: transparent;
 }
 
@@ -146,7 +146,7 @@ QScrollBar::add-line:vertical {
 
 QScrollBar::handle:vertical {
     background: rgb(122, 122, 122);
-    border: 2px solid rgb(122,122,122);
+    border: 2px solid rgb(122, 122, 122);
     border-radius: 1px;
 }
 

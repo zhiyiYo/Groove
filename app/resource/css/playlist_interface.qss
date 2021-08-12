@@ -6,22 +6,22 @@
     background-color: white;
 }
 
-QLabel{
+QLabel {
     color: black;
     font: 25px "Microsoft YaHei";
 }
 
-ThreeStatePushButton{
+ThreeStatePushButton {
     color: black;
     font: 18px "Microsoft YaHei";
     border: none;
 }
 
-ThreeStatePushButton:hover{
+ThreeStatePushButton:hover {
     color: rgba(0, 0, 0, 0.8);
 }
 
-ThreeStatePushButton:pressed{
+ThreeStatePushButton:pressed {
     color: rgba(0, 0, 0, 0.4);
 }
 
@@ -31,11 +31,11 @@ QScrollBar {
     width: 4px;
     margin-top: 60px;
     margin-bottom: 133px;
-    margin-right: 1px;
+    padding-right: 1px;
 }
 
 /*隐藏上箭头*/
-QScrollBarr::sub-line {
+QScrollBar::sub-line {
     background: transparent;
 }
 

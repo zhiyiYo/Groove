@@ -3,7 +3,7 @@ QWidget#centerWidget {
     border: 1px solid rgb(0, 153, 188);
 }
 
-QWidget{
+QWidget {
     background-color: white;
 }
 
@@ -80,7 +80,7 @@ QToolButton {
 }
 
 
-QScrollArea{
+QScrollArea {
     background-color: white;
 }
 
@@ -92,7 +92,7 @@ QScrollBar {
 }
 
 /*隐藏上箭头*/
-QScrollBarr::sub-line {
+QScrollBar::sub-line {
     background: transparent;
 }
 

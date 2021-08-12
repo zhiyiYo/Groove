@@ -6,15 +6,14 @@ QScrollArea {
     background-color: white
 }
 
-QLabel:!disabled {
+QLabel: !disabled {
     color: rgb(0, 107, 131);
     font: 39px 'Microsoft YaHei';
     font-weight: 300;
 }
 
-QLabel:disabled
-{
-    color: rgb(102,102,102);
+QLabel:disabled {
+    color: rgb(102, 102, 102);
     font: 39px 'Microsoft YaHei';
     font-weight: 300;
 }
@@ -23,12 +22,12 @@ QLabel:disabled
 QScrollBar {
     background: transparent;
     width: 4px;
-    padding-left: 1px;
     margin-top: 40px;
+    padding-right: 1px;
 }
 
 /*隐藏上箭头*/
-QScrollBarr::sub-line {
+QScrollBar::sub-line {
     background: transparent;
 }
 

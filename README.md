@@ -33,16 +33,16 @@
 ## Features
 
 * Play music
-![示例动图1](docs/screenshot/播放本地音乐.gif)
+![播放本地音乐](docs/screenshot/播放本地音乐.gif)
 
 * Create playlist
-![示例动图2](docs/screenshot/创建播放列表.gif)
+![创建播放列表](docs/screenshot/创建播放列表.gif)
 
 * View and edit information
-![示例动图3](docs/screenshot/编辑信息.gif)
+![编辑信息](docs/screenshot/编辑信息.gif)
 
 * Automatically retrieve and update missing metadata
-![示例动图4](docs/screenshot/爬虫.gif)
+![爬虫](docs/screenshot/爬虫.gif)
 
 ## Quick start
 1. Create virtual environment:

@@ -1,8 +1,8 @@
-#albumInterface{
+#albumInterface {
     background-color: white;
 }
 
-#scrollWidget{
+#scrollWidget {
     background-color: white;
 }
 
@@ -16,7 +16,7 @@ QScrollBar {
 }
 
 /*隐藏上箭头*/
-QScrollBarr::sub-line {
+QScrollBar::sub-line {
     background: transparent;
 }
 

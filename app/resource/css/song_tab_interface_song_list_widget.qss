@@ -5,7 +5,7 @@ QListWidget {
     padding: 0px;
 }
 
-QListWidget::item:!alternate{
+QListWidget::item:!alternate {
     background-color: rgb(242, 242, 242);
 }
 
@@ -100,7 +100,7 @@ QCheckBox::indicator[state='notSelected-notPlay'] {
 }
 
 QCheckBox::indicator[state='notSelected-notPlay']:pressed {
-    border: 1px solid rgb(130,130,130);
+    border: 1px solid rgb(130, 130, 130);
 }
 
 QCheckBox::indicator[state='notSelected-play'] {
@@ -153,16 +153,16 @@ QScrollBar {
     width: 4px;
     margin-top: 40px;
     margin-bottom: 133px;
-    margin-right: 1px;
+    padding-right: 1px;
 }
 
 /*隐藏上箭头*/
-QScrollBarr::sub-line {
+QScrollBar::sub-line:vertical {
     background: transparent;
 }
 
 /*隐藏下箭头*/
-QScrollBar::add-line {
+QScrollBar::add-line:vertical {
     background: transparent;
 }
 

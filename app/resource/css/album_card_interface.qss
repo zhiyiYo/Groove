@@ -6,12 +6,12 @@ QWidget#albumCard[isChecked='False'] {
     background: transparent;
 }
 
-QWidget{
+QWidget {
     background-color: transparent;
 }
 
 
-QScrollArea{
+QScrollArea {
     background-color: white;
     border: none;
 }
@@ -31,7 +31,7 @@ QGroupBox::title {
     padding-left: 10px;
 }
 
-QGridLayout{
+QGridLayout {
     background-color: transparent;
 }
 
@@ -42,11 +42,11 @@ QScrollBar {
     width: 4px;
     margin-top: 40px;
     margin-bottom: 133px;
-    margin-right: 1px;
+    padding-right: 1px;
 }
 
 /*隐藏上箭头*/
-QScrollBarr::sub-line {
+QScrollBar::sub-line {
     background: transparent;
 }
 

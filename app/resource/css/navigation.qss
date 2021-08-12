@@ -10,20 +10,20 @@ QLineEdit:focus {
     background: white;
 }
 
-QLineEdit:!focus {
+QLineEdit: !focus {
     /*background:rgb(222,228,239);*/
-    background:rgb(247,247,247);
+    background: rgb(247, 247, 247);
 }
 
-QLineEdit:hover:!focus {
-    background: rgb(250,250,250);
+QLineEdit:hover: !focus {
+    background: rgb(250, 250, 250);
 }
 
-QLabel{
-    font:16px "Microsoft YaHei Light";
+QLabel {
+    font: 16px "Microsoft YaHei Light";
 }
 
-QWidget{
+QWidget {
     background-color: transparent;
 }
 
@@ -32,11 +32,11 @@ QWidget{
 QScrollBar {
     background: transparent;
     width: 4px;
-    margin-right: 1px;
+    padding-right: 1px;
 }
 
 /*隐藏上箭头*/
-QScrollBarr::sub-line {
+QScrollBar::sub-line {
     background: transparent;
 }
 

@@ -26,6 +26,7 @@ class ListWidget(QListWidget):
             self.item_list.append(item)
 
         self.setFixedHeight(len(self.item_list)*60+116)
+        print(self.verticalScrollBar())
 
     def wheelEvent(self, e):
         return
