@@ -196,6 +196,7 @@ class SettingInterface(QWidget):
         if self.config["selected-folders"] == selectedFolders:
             return
         self.config["selected-folders"] = selectedFolders
+        self.__updateSwitchButtonEnabled()
         # 更新配置文件
         self.updateConfig({"selected-folders": selectedFolders})
         # 发送更新歌曲文件夹列表的信号
@@ -241,10 +242,10 @@ class SettingInterface(QWidget):
         """
         self.__checkConfigDir()
         self.config.update(config)
-        with open("app\\config\\config.json", "w", encoding="utf-8") as f:
+        with open("app/config/config.json", "w", encoding="utf-8") as f:
             dump(self.config, f)
 
-    def __checkConfigDir(self):
+    @staticmethod
+    def __checkConfigDir():
         """ 检查配置文件夹是否存在，不存在则创建 """
-        if not os.path.exists("app\\config"):
-            os.mkdir("app\\config")
+        os.makedirs('app/config', exist_ok=True)

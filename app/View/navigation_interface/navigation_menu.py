@@ -23,7 +23,6 @@ class NavigationMenu(NavigationWidget):
     def __initWidget(self):
         """ 初始化小部件 """
         self.resize(60, 800)
-        self.setAttribute(Qt.WA_TranslucentBackground)
         self.setWindowFlags(Qt.NoDropShadowWindowHint | Qt.Popup)
         self.windowEffect.setAcrylicEffect(self.winId(), "F2F2F299", False)
 

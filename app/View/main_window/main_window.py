@@ -123,7 +123,7 @@ class MainWindow(FramelessWindow):
 
     def __initWidget(self):
         """ 初始化小部件 """
-        self.resize(1200, 970)
+        self.resize(1250, 970)
         self.setMinimumSize(1030, 800)
         self.setWindowTitle("Groove 音乐")
         self.setWindowIcon(QIcon("app/resource/images/logo.png"))
