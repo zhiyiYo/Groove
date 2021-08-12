@@ -1,17 +1,16 @@
 # coding:utf-8
-
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QVBoxLayout
+from PyQt5.QtWidgets import QHBoxLayout
 
 
-class VBoxLayout(QVBoxLayout):
-    """ 垂直布局 """
+class HBoxLayout(QHBoxLayout):
+    """ 水平布局 """
 
     def __init__(self, parent):
         super().__init__(parent)
         self.__widget_list = []
 
-    def addWidget(self, widget, stretch=0, alignment=Qt.AlignTop):
+    def addWidget(self, widget, stretch=0, alignment=Qt.AlignLeft):
         """ 向布局中添加小部件 """
         super().addWidget(widget, stretch, alignment)
         self.__widget_list.append(widget)

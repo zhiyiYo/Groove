@@ -1,10 +1,11 @@
 # coding:utf-8
-from typing import Dict, List
 from copy import deepcopy
+from typing import Dict, List
 
 import pinyin
 from app.common.get_cover_path import getCoverPath
 from app.common.object.save_info_object import SaveInfoObject
+from app.components.album_card import AlbumBlurBackground, AlbumCard
 from app.components.dialog_box.message_dialog import MessageDialog
 from app.components.group_box import GroupBox
 from app.components.layout.grid_layout import GridLayout
@@ -12,9 +13,6 @@ from app.components.scroll_area import ScrollArea
 from PyQt5.QtCore import (QParallelAnimationGroup, QPoint, QPropertyAnimation,
                           Qt, QThread, pyqtSignal)
 from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget
-
-from .album_blur_background import AlbumBlurBackground
-from .album_card import AlbumCard
 
 
 class AlbumCardInterface(ScrollArea):

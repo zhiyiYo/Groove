@@ -1,7 +1,6 @@
 # coding:utf-8
 from app.components.menu import AddToMenu, DWMMenu
-from app.components.song_list_widget.basic_song_list_widget import BasicSongListWidget
-from app.components.song_list_widget.song_card_type import SongCardType
+from app.components.song_list_widget import BasicSongListWidget, SongCardType
 from PyQt5.QtCore import QMargins, Qt, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent
 from PyQt5.QtWidgets import QAction
@@ -16,6 +15,15 @@ class SongListWidget(BasicSongListWidget):
     switchToAlbumInterfaceSig = pyqtSignal(str, str)
 
     def __init__(self, songInfo_list: list, parent):
+        """
+        Parameters
+        ----------
+        songInfo_list:list
+            歌曲信息列表
+
+        parent:
+            父级窗口
+        """
         super().__init__(songInfo_list, SongCardType.PLAYLIST_INTERFACE_SONG_CARD,
                          parent, QMargins(30, 0, 30, 0), 0)
         self.resize(1150, 758)
@@ -53,7 +61,7 @@ class SongListWidget(BasicSongListWidget):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open("app/resource/css/playlist_interface_song_list_widget.qss", encoding="utf-8") as f:
+        with open("app/resource/css/song_tab_interface_song_list_widget.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
 
     def __onPlayButtonClicked(self, index):
@@ -76,9 +84,7 @@ class SongListWidget(BasicSongListWidget):
 
     def __adjustHeight(self):
         """ 调整高度 """
-        margin = self.viewportMargins()
-        self.resize(self.width(), 60*len(self.songCard_list) +
-                    margin.bottom()+margin.top()+116)
+        self.resize(self.width(), 60*len(self.songCard_list)+116)
 
     def wheelEvent(self, e):
         return

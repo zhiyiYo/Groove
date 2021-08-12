@@ -74,31 +74,31 @@ QLabel {
     background-color: transparent;
 }
 
-QLabel#albumName[isChecked='False'] {
+QLabel#albumNameLabel[isChecked='False'] {
     color: black;
     font-family: 'Microsoft YaHei';
     font-weight: bold;
 }
 
-QLabel#albumName[isChecked='True'] {
+QLabel#albumNameLabel[isChecked='True'] {
     color: white;
     font-family: 'Microsoft YaHei';
     font-weight: bold;
 }
 
-QLabel#songerName {
+QLabel#songerNameLabel {
     font-size: 16px;
 }
 
-QLabel#songerName[isChecked='True'] {
+QLabel#songerNameLabel[isChecked='True'] {
     color: rgb(153, 196, 205);
 }
 
-QLabel#songerName[isChecked='False']:hover {
+QLabel#songerNameLabel[isChecked='False']:hover {
     color: rgb(150, 150, 150);
 }
 
-QLabel#songerName[isChecked='True']:hover {
+QLabel#songerNameLabel[isChecked='True']:hover {
     color: rgb(122, 178, 190);
 }
 

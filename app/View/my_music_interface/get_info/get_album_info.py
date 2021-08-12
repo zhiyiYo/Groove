@@ -1,9 +1,8 @@
 # coding:utf-8
-import os
 from app.common.get_cover_path import getCoverPath
 
 
-class GetAlbumInfo:
+class AlbumInfoGetter:
     """ 从歌曲信息列表中整理出专辑信息的类 """
 
     def __init__(self, songInfo_list: list):

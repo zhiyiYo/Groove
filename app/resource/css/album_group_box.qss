@@ -1,0 +1,87 @@
+QWidget {
+    background-color: transparent;
+}
+QWidget#leftMask,
+QWidget#rightMask {
+    background-color: white;
+}
+
+QScrollArea {
+    background-color: white;
+    border: none;
+}
+
+/*标签*/
+QLabel {
+    font: 17px 'Microsoft YaHei Light';
+    background-color: transparent;
+}
+
+#titleButton{
+    font: 24px 'Microsoft YaHei';
+    padding: 0;
+    background-color: transparent;
+}
+
+#titleButton:hover {
+    color: rgba(0, 0, 0, 0.8);
+}
+
+#titleButton:pressed {
+    color: rgba(0, 0, 0, 0.4);
+}
+
+QLabel#albumNameLabel[isChecked='False'] {
+    color: black;
+    font-family: 'Microsoft YaHei';
+    font-weight: bold;
+}
+
+QLabel#albumNameLabel[isChecked='True'] {
+    color: white;
+    font-family: 'Microsoft YaHei';
+    font-weight: bold;
+}
+
+QLabel#songerNameLabel {
+    font-size: 16px;
+}
+
+QLabel#songerNameLabel[isChecked='True'] {
+    color: rgb(153, 196, 205);
+}
+
+QLabel#songerNameLabel[isChecked='False']:hover {
+    color: rgb(150, 150, 150);
+}
+
+QLabel#songerNameLabel[isChecked='True']:hover {
+    color: rgb(122, 178, 190);
+}
+
+QPushButton#showAllButton{
+    color: rgb(0, 107, 131);
+    font: 15px 'Microsoft YaHei';
+    padding-bottom: 6px;
+}
+
+QPushButton#showAllButton:hover{
+    color: rgba(0, 107, 131, 0.8);
+}
+
+QPushButton#showAllButton:pressed{
+    color: rgba(0, 107, 131, 0.4);
+}
+
+QToolButton{
+    margin: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+QToolButton:hover{
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+QToolButton:pressed{
+    background-color: rgba(0, 0, 0, 0.8);
+}

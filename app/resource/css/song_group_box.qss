@@ -1,0 +1,46 @@
+QWidget {
+    background-color: white;
+}
+
+#titleButton {
+    font: 24px 'Microsoft YaHei';
+    padding: 0;
+    background-color: transparent;
+}
+
+#titleButton:hover {
+    color: rgba(0, 0, 0, 0.8);
+}
+
+#titleButton:pressed {
+    color: rgba(0, 0, 0, 0.4);
+}
+
+QPushButton#showAllButton {
+    color: rgb(0, 107, 131);
+    font: 15px 'Microsoft YaHei';
+    padding-bottom: 6px;
+    margin: 0;
+    background-color: transparent;
+}
+
+QPushButton#showAllButton:hover {
+    color: rgba(0, 107, 131, 0.8);
+}
+
+QPushButton#showAllButton:pressed {
+    color: rgba(0, 107, 131, 0.4);
+}
+
+QToolButton {
+    margin: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+QToolButton:hover {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+QToolButton:pressed {
+    background-color: rgba(0, 0, 0, 0.8);
+}

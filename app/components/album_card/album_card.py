@@ -71,6 +71,8 @@ class AlbumCard(PerspectiveWidget):
         self.setFixedSize(210, 290)
         self.setAttribute(Qt.WA_StyledBackground)
         self.albumPic.setFixedSize(200, 200)
+        self.songerNameLabel.setFixedWidth(210)
+        self.albumNameLabel.setFixedWidth(210)
         self.playButton.move(35, 70)
         self.addToButton.move(105, 70)
         self.albumPic.setPixmap(QPixmap(self.coverPath).scaled(
@@ -86,8 +88,8 @@ class AlbumCard(PerspectiveWidget):
         self.__initLayout()
         # 分配ID和属性
         self.setObjectName("albumCard")
-        self.albumNameLabel.setObjectName("albumName")
-        self.songerNameLabel.setObjectName("songerName")
+        self.albumNameLabel.setObjectName("albumNameLabel")
+        self.songerNameLabel.setObjectName("songerNameLabel")
         self.setProperty("isChecked", "False")
         self.albumNameLabel.setProperty("isChecked", "False")
         self.songerNameLabel.setProperty("isChecked", "False")
@@ -125,7 +127,6 @@ class AlbumCard(PerspectiveWidget):
 
     def contextMenuEvent(self, event: QContextMenuEvent):
         """ 显示右击菜单 """
-        # 创建菜单
         menu = AlbumCardContextMenu(parent=self)
         menu.playAct.triggered.connect(
             lambda: self.playSignal.emit(self.songInfo_list))
@@ -151,21 +152,18 @@ class AlbumCard(PerspectiveWidget):
             index = newText.index("\n")
             fontMetrics = QFontMetrics(QFont("Microsoft YaHei", 10, 75))
             secondLineText = fontMetrics.elidedText(
-                newText[index + 1:], Qt.ElideRight, 200
-            )
+                newText[index + 1:], Qt.ElideRight, 200)
             newText = newText[: index + 1] + secondLineText
             self.albumNameLabel.setText(newText)
         # 给歌手名添加省略号
         fontMetrics = QFontMetrics(QFont("Microsoft YaHei", 10, 25))
         newSongerName = fontMetrics.elidedText(
-            self.songerNameLabel.text(), Qt.ElideRight, 200
-        )
+            self.songerNameLabel.text(), Qt.ElideRight, 200)
         self.songerNameLabel.setText(newSongerName)
         self.songerNameLabel.adjustSize()
         self.albumNameLabel.adjustSize()
         self.songerNameLabel.move(
-            5, self.albumNameLabel.y() + self.albumNameLabel.height() - 4
-        )
+            5, self.albumNameLabel.y() + self.albumNameLabel.height() - 4)
 
     def mouseReleaseEvent(self, e):
         """ 鼠标松开发送切换到专辑界面信号或者取反选中状态 """
@@ -228,9 +226,7 @@ class AlbumCard(PerspectiveWidget):
         self.coverPath = coverPath
         self.albumPic.setPixmap(
             QPixmap(self.coverPath).scaled(
-                200, 200, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation
-            )
-        )
+                200, 200, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
         self.playButton.setBlurPic(coverPath, 40)
         self.addToButton.setBlurPic(coverPath, 40)
 

@@ -1,0 +1,1 @@
+from .search_result_interface import SearchResultInterface

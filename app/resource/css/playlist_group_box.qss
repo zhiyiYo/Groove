@@ -1,0 +1,89 @@
+QWidget {
+    background-color: transparent;
+}
+
+QWidget#leftMask,
+QWidget#rightMask {
+    background-color: white;
+}
+
+QScrollArea{
+    background-color: white;
+    border: none;
+}
+
+QLabel {
+    font: 17px 'Microsoft YaHei Light';
+    background-color: transparent;
+}
+
+#titleButton {
+    font: 24px 'Microsoft YaHei';
+    padding: 0;
+    background-color: transparent;
+}
+
+#titleButton:hover {
+    color: rgba(0, 0, 0, 0.8);
+}
+
+#titleButton:pressed {
+    color: rgba(0, 0, 0, 0.4);
+}
+
+QLabel#titleLabel {
+    color: black;
+}
+
+QLabel#playlistLabel {
+    font-family: 'Microsoft YaHei Light';
+    font-size: 43px;
+    padding: 0px;
+}
+
+QLabel#playlistNameLabel[isChecked='False'] {
+    color: black;
+    font-family: 'Microsoft YaHei';
+    font-weight: bold;
+}
+
+QLabel#playlistNameLabel[isChecked='True'] {
+    color: white;
+    font-family: 'Microsoft YaHei';
+    font-weight: bold;
+}
+
+QLabel#playlistLenLabel {
+    font-size: 16px;
+}
+
+QLabel#playlistLenLabel[isChecked='True'] {
+    color: rgb(153, 196, 205);
+}
+
+QToolButton {
+    margin: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+QToolButton:hover {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+QToolButton:pressed {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+QPushButton#showAllButton {
+    color: rgb(0, 107, 131);
+    font: 15px 'Microsoft YaHei';
+    padding-bottom: 6px;
+}
+
+QPushButton#showAllButton:hover {
+    color: rgba(0, 107, 131, 0.8);
+}
+
+QPushButton#showAllButton:pressed {
+    color: rgba(0, 107, 131, 0.4);
+}

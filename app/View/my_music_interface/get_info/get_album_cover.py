@@ -6,7 +6,7 @@ from shutil import copyfile, rmtree
 
 from mutagen import File
 
-from .get_song_info import GetSongInfo
+from .get_song_info import SongInfoGetter
 
 
 class GetAlbumCover:
@@ -21,7 +21,7 @@ class GetAlbumCover:
         """
         self.album_cover_folder = r"app\resource\Album_Cover"
         self.target_path_list = target_path_list
-        self.songInfo = GetSongInfo(target_path_list)
+        self.songInfo = SongInfoGetter(target_path_list)
         # 获取封面
         self.getAlbum()
 

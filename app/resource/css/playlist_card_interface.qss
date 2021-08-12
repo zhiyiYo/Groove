@@ -124,12 +124,16 @@ QPushButton#sortModeButton:pressed {
     color: rgb(153, 195, 205);
 }
 
+QPushButton#createPlaylistButton {
+    padding-bottom: 2px;
+}
+
 QPushButton#createPlaylistButton:hover {
-    color: rgb(110, 110, 110);
+    color: rgba(0, 0, 0, 0.8);
 }
 
 QPushButton#createPlaylistButton:pressed {
-    color: rgb(153, 153, 153);
+    color: rgba(0, 0, 0, 0.4);
 }
 
 /*复选框样式*/

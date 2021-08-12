@@ -52,14 +52,15 @@ QPushButton#sortModeButton {
 QPushButton#randomPlayButton {
     font: 15px 'Microsoft YaHei';
     /*padding-bottom: 2px;*/
+    color: black;
 }
 
 QPushButton#randomPlayButton:hover {
-    color: rgb(110, 110, 110);
+    color: rgba(0, 0, 0, 0.8);
 }
 
 QPushButton#randomPlayButton:pressed {
-    color: rgb(153, 153, 153);
+    color: rgba(0, 0, 0, 0.4);
 }
 
 

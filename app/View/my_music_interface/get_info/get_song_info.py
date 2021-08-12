@@ -11,32 +11,32 @@ from app.common.list_file import listFile
 from PyQt5.QtCore import QFileInfo, Qt
 
 
-class GetSongInfo:
+class SongInfoGetter:
     """ 创建一个获取和保存歌曲信息的类 """
 
-    def __init__(self, targetFolderPath_list: list):
+    def __init__(self, folderPaths: list):
         # 获取音频文件夹列表
-        self.targetFolderPath_list = targetFolderPath_list
-        if not targetFolderPath_list:
-            self.targetFolderPath_list = []
+        self.folderPaths = folderPaths
+        if not folderPaths:
+            self.folderPaths = []
         self.songInfo_list = []
-        self.getInfo(targetFolderPath_list)
+        self.getInfo(folderPaths)
 
-    def scanTargetFolderSongInfo(self, targetFolderPath_list: list):
+    def scanTargetFolderSongInfo(self, folderPaths: list):
         """ 扫描指定文件夹的歌曲信息并更新歌曲信息 """
-        self.targetFolderPath_list = targetFolderPath_list
+        self.folderPaths = folderPaths
         self.__checkDataDir()
         with open("app/data/songInfo.json", "w", encoding="utf-8") as f:
             json.dump([{}], f)
         self.songInfo_list = []
-        self.getInfo(targetFolderPath_list)
+        self.getInfo(folderPaths)
 
     def rescanSongInfo(self):
         """ 重新扫描歌曲信息，检查是否有歌曲信息的更新 """
         hasSongModified = False
         # 如果歌曲信息被删除了，就重新扫描一遍
         if not os.path.exists("app/data/songInfo.json"):
-            self.scanTargetFolderSongInfo(self.targetFolderPath_list)
+            self.scanTargetFolderSongInfo(self.folderPaths)
             return True
         # 利用当前的歌曲信息进行更新
         self.songInfo_list = self.__readSongInfoFromJson()
@@ -65,9 +65,9 @@ class GetSongInfo:
         self.save()
         return hasSongModified
 
-    def getInfo(self, targetFolderPath_list: list):
+    def getInfo(self, folderPaths: list):
         """ 从指定的目录读取符合匹配规则的歌曲的标签卡信息 """
-        self.targetFolderPath_list = targetFolderPath_list
+        self.folderPaths = folderPaths
         self.songPath_list = self.__getSongFiles()
 
         # 从json文件读取旧信息
@@ -187,7 +187,7 @@ class GetSongInfo:
 
     def __getSongFiles(self):
         """ 获取指定歌曲文件夹下的歌曲文件 """
-        files = list(chain.from_iterable(listFile(self.targetFolderPath_list).values()))
+        files = list(chain.from_iterable(listFile(self.folderPaths).values()))
         return [f for f in files if f.endswith(("mp3", "flac", "m4a"))]
 
     def hasSongModified(self):

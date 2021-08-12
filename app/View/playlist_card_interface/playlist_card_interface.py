@@ -11,13 +11,12 @@ from app.components.dialog_box.rename_playlist_dialog import \
     RenamePlaylistDialog
 from app.components.layout.grid_layout import GridLayout
 from app.components.menu import AddToMenu, AeroMenu
+from app.components.playlist_card import BlurBackground, PlaylistCard
 from app.components.scroll_area import ScrollArea
 from PyQt5.QtCore import (QDateTime, QParallelAnimationGroup, QPoint,
                           QPropertyAnimation, Qt, pyqtSignal)
 from PyQt5.QtWidgets import QAction, QLabel, QPushButton, QWidget
 
-from .blur_background import BlurBackground
-from .playlist_card import PlaylistCard
 from .selection_mode_bar import SelectionModeBar
 
 
@@ -40,21 +39,7 @@ class PlaylistCardInterface(ScrollArea):
         Parameters
         ----------
         playlists: dict
-            播放列表字典，键值对结构如下::
-
-                playlists = {
-                    "播放列表 1": {
-                        "playlistName": "播放列表 1",
-                        "modifiedTime": "2021-06-09T13:41:42",
-                        "songInfo_list": []
-                    },
-                    "播放列表 2": {
-                        "playlistName": "播放列表 2",
-                        "modifiedTime": "2021-06-09T13:41:42",
-                        "songInfo_list": []
-                    },
-                }
-
+            播放列表字典
         """
         super().__init__(parent)
         self.columnNum = 1
@@ -179,8 +164,8 @@ class PlaylistCardInterface(ScrollArea):
     def __initLayout(self):
         """ 初始化布局 """
         self.playlistLabel.move(30, 54)
-        self.sortModeLabel.move(190, 135)
-        self.sortModeButton.move(264, 130)
+        self.sortModeLabel.move(190, 131)
+        self.sortModeButton.move(264, 127)
         self.createPlaylistButton.move(30, 130)
         self.selectionModeBar.move(
             0, self.height() - self.selectionModeBar.height())

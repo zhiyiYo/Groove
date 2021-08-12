@@ -290,8 +290,8 @@ class PlaylistCover(QWidget):
 class PlaylistCardContextMenu(DWMMenu):
     """ 播放列表卡右击菜单 """
 
-    def __init__(self, string="", parent=None):
-        super().__init__(string, parent)
+    def __init__(self, parent=None):
+        super().__init__("", parent)
         # 创建动作
         self.__createActions()
         self.setObjectName("playlistCardContextMenu")

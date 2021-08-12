@@ -10,7 +10,7 @@ from PyQt5.QtGui import QFont, QFontMetrics, QMouseEvent
 from PyQt5.QtWidgets import QApplication, QWidget
 
 from .song_card_sub_unit import SongNameCard as SongTabSongNameCard
-from .song_card_sub_unit import TrackNumSongNameCard, PlaylistSongNameCard
+from .song_card_sub_unit import TrackNumSongNameCard, PlaylistSongNameCard, NoCheckBoxSongNameCard
 from .song_card_type import SongCardType
 
 
@@ -46,8 +46,8 @@ class BasicSongCard(QWidget):
         self.__resizeTime = 0
         self.__songCardType = songCardType
         # 歌曲卡类型
-        self.__SongNameCard = [
-            SongTabSongNameCard, TrackNumSongNameCard, PlaylistSongNameCard][songCardType.value]
+        self.__SongNameCard = [SongTabSongNameCard, TrackNumSongNameCard,
+                               PlaylistSongNameCard, NoCheckBoxSongNameCard][songCardType.value]
         # 初始化各标志位
         self.isSongExist = True
         self.isPlaying = False
@@ -59,13 +59,12 @@ class BasicSongCard(QWidget):
         self.itemIndex = None
 
         # 创建歌曲名字卡
-        if self.__songCardType in [SongCardType.SONG_TAB_SONG_CARD, SongCardType.PLAYLIST_INTERFACE_SONG_CARD]:
-            self.songNameCard = self.__SongNameCard(self.songName, self)
-        elif self.__songCardType == SongCardType.ALBUM_INTERFACE_SONG_CARD:
+        if self.__songCardType == SongCardType.ALBUM_INTERFACE_SONG_CARD:
             self.songNameCard = self.__SongNameCard(
                 self.songName, self.tracknumber, self)
         else:
-            raise ValueError("歌曲卡类型非法")
+            self.songNameCard = self.__SongNameCard(self.songName, self)
+            
         self.__referenceWidgets()
 
         # 初始化小部件列表

@@ -9,7 +9,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from get_info.get_song_info import GetSongInfo
+from get_info.get_song_info import SongInfoGetter
 
 
 class SongerInfo:
@@ -19,8 +19,9 @@ class SongerInfo:
         """ 初始化属性 """
         self.cwd = os.getcwd()
 
-        self.songInfo = GetSongInfo(target_path_list)
-        self.songer_pic_folder = os.path.join(self.cwd, "app\\resource\\Songer Photos")
+        self.songInfo = SongInfoGetter(target_path_list)
+        self.songer_pic_folder = os.path.join(
+            self.cwd, "app\\resource\\Songer Photos")
         self.url = (
             "https://www.kugou.com/yy/html/search.html#searchType=song&searchKeyWord="
         )
@@ -59,7 +60,8 @@ class SongerInfo:
                     self.crawlInfo(info_dict, url)
             else:
                 # 分离合唱歌手
-                songer_list = [songer.strip() for songer in Match.group().split("、")]
+                songer_list = [songer.strip()
+                               for songer in Match.group().split("、")]
                 for songer in songer_list:
                     self.songer = songer
                     self.sub_songer_pic_folder = os.path.join(
@@ -98,12 +100,14 @@ class SongerInfo:
             # 切换当前窗口
             self.browser.switch_to.window(all_handles[1])
             img_element = WebDriverWait(self.browser, 3).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, "div.top img.loadPic"))
+                EC.presence_of_element_located(
+                    (By.CSS_SELECTOR, "div.top img.loadPic"))
             )
             # 获取歌手图片的url
             songer_pic_url = img_element.get_attribute("src")
             # 获取歌手信息
-            songer_info = self.browser.find_element_by_css_selector(".intro p").text
+            songer_info = self.browser.find_element_by_css_selector(
+                ".intro p").text
             # 将歌手的信息插入列表中
             self.songerInfo_list.append(
                 {"songer": self.songer, "introduction": songer_info}
@@ -118,7 +122,8 @@ class SongerInfo:
             except:
                 suffix = ".jpg"
             os.mkdir(self.sub_songer_pic_folder)
-            pic_path = os.path.join(self.sub_songer_pic_folder, self.songer + suffix)
+            pic_path = os.path.join(
+                self.sub_songer_pic_folder, self.songer + suffix)
             with open(pic_path, "wb") as f:
                 f.write(pic_data)
 

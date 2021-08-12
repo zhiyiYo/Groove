@@ -15,8 +15,8 @@ from PyQt5.QtGui import QPalette
 from PyQt5.QtWidgets import QWidget
 
 from .get_info.get_album_cover import GetAlbumCover
-from .get_info.get_album_info import GetAlbumInfo
-from .get_info.get_song_info import GetSongInfo
+from .get_info.get_album_info import AlbumInfoGetter
+from .get_info.get_song_info import SongInfoGetter
 from .tool_bar import ToolBar
 
 
@@ -34,17 +34,17 @@ class MyMusicInterface(QWidget):
     addSongsToCustomPlaylistSig = pyqtSignal(str, list)     # 将歌曲添加到自定义播放列表
     showLabelNavigationInterfaceSig = pyqtSignal(list, str)  # 显示标签导航界面
 
-    def __init__(self, targetFolderPath_list: list, parent=None):
+    def __init__(self, folderPaths: list, parent=None):
         """
         Parameters
         ----------
-        targetFolderPath_list: list
+        folderPaths: list
             歌曲文件夹列表
 
         parent:
             父级窗口 """
         super().__init__(parent)
-        self.__targetFolderPath_list = targetFolderPath_list
+        self.folderPaths = folderPaths
         # 初始化标志位
         self.isInSelectionMode = False
         # 创建小部件
@@ -57,9 +57,9 @@ class MyMusicInterface(QWidget):
         # 实例化标签界面
         self.stackedWidget = PopUpAniStackedWidget(self)
         # 扫描文件夹列表下的音频文件信息，顺序不能改动
-        self.__songInfoGetter = GetSongInfo(self.__targetFolderPath_list)
-        self.__albumCoverGetter = GetAlbumCover(self.__targetFolderPath_list)
-        self.__albumInfoGetter = GetAlbumInfo(
+        self.__songInfoGetter = SongInfoGetter(self.folderPaths)
+        self.__albumCoverGetter = GetAlbumCover(self.folderPaths)
+        self.__albumInfoGetter = AlbumInfoGetter(
             self.__songInfoGetter.songInfo_list)
         t1 = time()
         self.songListWidget = SongListWidget(
@@ -311,12 +311,12 @@ class MyMusicInterface(QWidget):
         self.albumTabSelectionModeBar.move(
             0, self.height() - self.albumTabSelectionModeBar.height())
 
-    def scanTargetPathSongInfo(self, targetFolderPath_list: list):
+    def scanTargetPathSongInfo(self, folderPaths: list):
         """ 重新扫描指定的歌曲文件夹列表中的歌曲信息并更新标签界面 """
-        self.__targetFolderPath_list = targetFolderPath_list
+        self.folderPaths = folderPaths
         # 重新扫描歌曲信息和专辑信息
-        self.__songInfoGetter.scanTargetFolderSongInfo(targetFolderPath_list)
-        self.__albumCoverGetter.updateAlbumCover(self.__targetFolderPath_list)
+        self.__songInfoGetter.scanTargetFolderSongInfo(folderPaths)
+        self.__albumCoverGetter.updateAlbumCover(self.folderPaths)
         self.__albumInfoGetter.updateAlbumInfo(
             self.__songInfoGetter.songInfo_list)
         # 更新界面
@@ -329,7 +329,7 @@ class MyMusicInterface(QWidget):
         """ 重新当前的歌曲文件夹的歌曲信息 """
         if not self.__songInfoGetter.rescanSongInfo():
             return
-        self.__albumCoverGetter.updateAlbumCover(self.__targetFolderPath_list)
+        self.__albumCoverGetter.updateAlbumCover(self.folderPaths)
         self.__albumInfoGetter.updateAlbumInfo(
             self.__songInfoGetter.songInfo_list)
         # 更新界面
@@ -349,7 +349,7 @@ class MyMusicInterface(QWidget):
 
     def updateAlbumCardViewer(self, songInfo_list: list):
         """ 更新专辑卡界面 """
-        self.__albumCoverGetter.updateAlbumCover(self.__targetFolderPath_list)
+        self.__albumCoverGetter.updateAlbumCover(self.folderPaths)
         self.__albumInfoGetter.updateAlbumInfo(songInfo_list)
         self.albumCardInterface.updateAllAlbumCards(
             self.__albumInfoGetter.albumInfo_list)

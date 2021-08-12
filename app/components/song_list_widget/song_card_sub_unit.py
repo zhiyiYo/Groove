@@ -133,14 +133,14 @@ class SongNameCard(QWidget):
         self.checkBox.move(15, 18)
         self.playingLabel.move(57, 22)
         self.songNameLabel.move(57, 18)
-        self.__moveButtonGroup()
+        self._moveButtonGroup()
 
     def __getSongNameWidth(self):
         """ 计算歌名的长度 """
         fontMetrics = QFontMetrics(QFont("Microsoft YaHei", 10))
         self.songNameWidth = sum([fontMetrics.width(i) for i in self.songName])
 
-    def __moveButtonGroup(self):
+    def _moveButtonGroup(self):
         """ 移动按钮组 """
         if self.songNameWidth + self.songNameLabel.x() >= self.width() - 140:
             x = self.width() - 140
@@ -154,7 +154,7 @@ class SongNameCard(QWidget):
         self.songNameLabel.setText(songName)
         # 重新计算歌名宽度并移动按钮
         self.__getSongNameWidth()
-        self.__moveButtonGroup()
+        self._moveButtonGroup()
         self.songNameLabel.setFixedWidth(self.songNameWidth)
 
     def setWidgetHidden(self, isHidden: bool):
@@ -165,7 +165,7 @@ class SongNameCard(QWidget):
     def resizeEvent(self, e):
         """ 改变尺寸时移动按钮 """
         super().resizeEvent(e)
-        self.__moveButtonGroup()
+        self._moveButtonGroup()
 
     def setCheckBoxBtLabelState(self, state: str, isSongExit=True):
         """ 设置复选框、按钮和标签的状态并更新样式
@@ -200,10 +200,10 @@ class SongNameCard(QWidget):
         self.playingLabel.setVisible(isPlay or (not isSongExist))
         self.setWidgetHidden(not isPlay)
         # 歌曲不存在时仍需显示图标
-        self.songNameLabel.move(
-            [57, 83][isPlay or (not isSongExist)], self.songNameLabel.y())
+        x = 83 if isPlay or (not isSongExist) else 57
+        self.songNameLabel.move(x, self.songNameLabel.y())
         # 更新按钮位置
-        self.__moveButtonGroup()
+        self._moveButtonGroup()
 
     def setSongName(self, songName: str):
         """ 更新歌手名标签的文本并调整宽度 """
@@ -211,7 +211,7 @@ class SongNameCard(QWidget):
         self.songNameLabel.setText(songName)
         # 重新计算歌名宽度并移动按钮
         self.__getSongNameWidth()
-        self.__moveButtonGroup()
+        self._moveButtonGroup()
         self.songNameLabel.setFixedWidth(self.songNameWidth)
 
 
@@ -294,3 +294,25 @@ class PlaylistSongNameCard(SongNameCard):
             "notSelected-play": r"app\resource\images\playlist_interface\Delete_green.png",
             "selected": r"app\resource\images\playlist_interface\Delete_white.png",
         })
+
+
+class NoCheckBoxSongNameCard(SongNameCard):
+    """ 没有复选框的歌曲卡 """
+
+    def __init__(self, songName, parent):
+        super().__init__(songName, parent=parent)
+        self.songNameLabel.move(15, 18)
+        self.playingLabel.move(15, 22)
+        self.checkBox.setFixedWidth(0)
+        self.checkBox.lower()
+
+    def setPlay(self, isPlay: bool, isSongExist: bool = True):
+        """ 设置播放状态并决定是否显示正在播放图标 """
+        self.isPlay = isPlay
+        self.playingLabel.setVisible(isPlay or (not isSongExist))
+        self.setWidgetHidden(not isPlay)
+        # 歌曲不存在时仍需显示图标
+        x = 41 if isPlay or (not isSongExist) else 15
+        self.songNameLabel.move(x, self.songNameLabel.y())
+        # 更新按钮位置
+        self._moveButtonGroup()

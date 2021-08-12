@@ -45,7 +45,7 @@ class BlurButton(QToolButton):
         # 不马上磨砂，只在出现时磨砂
         # self.setBlurPic(blurPicPath, blurRadius)
 
-    def showEvent(self, e) -> None:
+    def showEvent(self, e):
         if not self.blurPix:
             self.__blur()
         super().showEvent(e)
