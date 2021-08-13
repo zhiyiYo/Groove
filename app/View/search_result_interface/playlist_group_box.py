@@ -21,12 +21,11 @@ from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsOpacityEffect,
 class PlaylistGroupBox(QScrollArea):
     """ 播放列表分组框 """
 
-    playSig = pyqtSignal(list)
-    createPlaylistSig = pyqtSignal()
-    nextToPlaySig = pyqtSignal(list)
-    deletePlaylistSig = pyqtSignal(str)
-    renamePlaylistSig = pyqtSignal(dict, dict)
-    switchToPlaylistInterfaceSig = pyqtSignal(str)
+    playSig = pyqtSignal(list)                           # 播放自定义播放列表
+    nextToPlaySig = pyqtSignal(list)                     # 下一首播放自定义播放列表
+    deletePlaylistSig = pyqtSignal(str)                  # 删除播放列表
+    renamePlaylistSig = pyqtSignal(dict, dict)           # 重命名播放列表
+    switchToPlaylistInterfaceSig = pyqtSignal(str)       # 切换到播放列表界面
     addSongsToPlayingPlaylistSig = pyqtSignal(list)      # 添加歌曲到正在播放
     addSongsToNewCustomPlaylistSig = pyqtSignal(list)    # 添加歌曲到新的自定义的播放列表中
     addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 添加歌曲到自定义的播放列表中
@@ -116,7 +115,7 @@ class PlaylistGroupBox(QScrollArea):
     def resizeEvent(self, e):
         self.rightMask.move(self.width()-65, 47)
         self.scrollRightButton.move(self.width()-90, 42)
-        self.showAllButton.move(self.width()-self.showAllButton.width()-65, 0)
+        self.showAllButton.move(self.width()-self.showAllButton.width()-65, 2)
         self.scrollWidget.resize(self.scrollWidget.width(), self.height())
 
     def __onScrollHorizon(self, value):
@@ -214,7 +213,6 @@ class PlaylistGroupBox(QScrollArea):
             playlistCard.updateWindow(playlist)
             self.savePlaylist(playlist)
 
-
     def enterEvent(self, e):
         """ 进入窗口时显示滚动按钮 """
         if self.horizontalScrollBar().maximum() == 0:
@@ -296,6 +294,11 @@ class PlaylistGroupBox(QScrollArea):
         if playlists == self.playlists:
             return
 
+        # 显示遮罩
+        self.horizontalScrollBar().setValue(0)
+        self.leftMask.hide()
+        self.rightMask.show()
+
         # 根据具体情况增减专辑卡
         newCardNum = len(playlists.keys())
         oldCardNum = len(self.playlistCard_list)
@@ -316,7 +319,7 @@ class PlaylistGroupBox(QScrollArea):
         # 更新部分播放列表卡
         self.playlists = deepcopy(playlists)
         n = oldCardNum if oldCardNum < newCardNum else newCardNum
-        for i, playlist in enumerate(list(playlists.keys())[:n]):
+        for i, playlist in enumerate(list(playlists.values())[:n]):
             self.playlistCard_list[i].updateWindow(playlist)
             QApplication.processEvents()
 

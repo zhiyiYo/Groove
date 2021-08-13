@@ -42,7 +42,6 @@ class LabelNavigationInterface(QWidget):
         self.gridLayout.setContentsMargins(0, 0, 0, 140)
         self.gridLayout.setAlignment(Qt.AlignCenter)
         self.scrollArea.setWidget(self.scrollWidget)
-        self.scrollWidget.setObjectName("scrollWidget")
         self.stackWidget.addWidget(self.scrollWidget)
         self.stackWidget.addWidget(self.letterNavigationWidget)
         # 设置层叠样式
@@ -118,9 +117,8 @@ class LabelNavigationInterface(QWidget):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open(
-            r"app\resource\css\label_navigation_interface.qss", encoding="utf-8"
-        ) as f:
+        self.scrollWidget.setObjectName("scrollWidget")
+        with open("app/resource/css/label_navigation_interface.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
 
     def __connectLabelSigToSlot(self):

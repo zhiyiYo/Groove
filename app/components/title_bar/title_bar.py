@@ -82,10 +82,11 @@ class TitleBar(QWidget):
     def __initWidget(self):
         """ 初始化小部件 """
         self.setFixedHeight(40)
-        self.setStyleSheet(
-            "QWidget{background-color:transparent}\
-                            QLabel{font:14px 'Microsoft YaHei Light'; padding:10px 15px 10px 15px;}"
-        )
+        self.title.setObjectName('titleLabel')
+        self.setStyleSheet("""
+            QWidget{background-color:transparent}
+            QLabel{font:14px 'Microsoft YaHei Light'; padding:10px 15px 10px 15px;}
+        """)
         # 隐藏抬头
         self.title.hide()
         # 将按钮的点击信号连接到槽函数

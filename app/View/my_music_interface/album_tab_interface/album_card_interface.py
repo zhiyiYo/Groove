@@ -18,19 +18,19 @@ from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget
 class AlbumCardInterface(ScrollArea):
     """ 定义一个专辑卡视图 """
 
-    playSignal = pyqtSignal(list)
-    removeAlbumSig = pyqtSignal(list)
-    nextPlaySignal = pyqtSignal(list)
-    albumNumChanged = pyqtSignal(int)           # 当专辑个数改变时发出这个信号给父级窗口
-    isAllCheckedChanged = pyqtSignal(bool)      # 专辑卡全部选中改变
-    addAlbumToPlayingSignal = pyqtSignal(list)  # 将专辑添加到正在播放
-    editAlbumInfoSignal = pyqtSignal(dict, dict)
-    switchToAlbumInterfaceSig = pyqtSignal(str, str)  # albumName, songerName
-    selectionModeStateChanged = pyqtSignal(bool)
-    checkedAlbumCardNumChanged = pyqtSignal(int)
-    addAlbumToNewCustomPlaylistSig = pyqtSignal(list)  # 将专辑添加到新建的播放列表
-    addAlbumToCustomPlaylistSig = pyqtSignal(str, list)  # 将专辑添加到已存在的自定义播放列表
-    showLabelNavigationInterfaceSig = pyqtSignal(list, str)  # 显示标签导航界面
+    playSignal = pyqtSignal(list)                               # 播放专辑
+    deleteAlbumSig = pyqtSignal(list)                           # 删除(多张)专辑，发送歌曲地址列表
+    nextPlaySignal = pyqtSignal(list)                           # 下一首播放专辑
+    albumNumChanged = pyqtSignal(int)                           # 当专辑个数改变时发出这个信号给父级窗口
+    isAllCheckedChanged = pyqtSignal(bool)                      # 专辑卡全部选中改变
+    addAlbumToPlayingSignal = pyqtSignal(list)                  # 将专辑添加到正在播放
+    editAlbumInfoSignal = pyqtSignal(dict, dict)                # 完成专辑信息编辑
+    switchToAlbumInterfaceSig = pyqtSignal(str, str)            # 切换到专辑界面
+    selectionModeStateChanged = pyqtSignal(bool)                # 进入/退出 选择模式
+    checkedAlbumCardNumChanged = pyqtSignal(int)                # 选中的专辑卡数量改变
+    addAlbumToNewCustomPlaylistSig = pyqtSignal(list)           # 将专辑添加到新建的播放列表
+    addAlbumToCustomPlaylistSig = pyqtSignal(str, list)         # 将专辑添加到已存在的自定义播放列表
+    showLabelNavigationInterfaceSig = pyqtSignal(list, str)     # 显示标签导航界面
 
     def __init__(self, albumInfo_list: list, parent=None):
         super().__init__(parent)
@@ -623,7 +623,7 @@ class AlbumCardInterface(ScrollArea):
         content = f"""如果删除"{albumName}"，它将不再位于此设备上。"""
         w = MessageDialog(title, content, self.window())
         w.yesSignal.connect(lambda: self.deleteAlbums([albumName]))
-        w.yesSignal.connect(lambda: self.removeAlbumSig.emit(songPaths))
+        w.yesSignal.connect(lambda: self.deleteAlbumSig.emit(songPaths))
         w.exec_()
 
     def __connectGroupBoxSigToSlot(self, layout):

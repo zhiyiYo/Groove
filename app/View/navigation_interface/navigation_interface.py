@@ -14,14 +14,15 @@ class NavigationInterface(QWidget):
     COMPACT = 0     # 折叠窗口
     OVERLAY = 1     # 显示导航菜单，窗口不展开
     IN_LINE = 2     # 导航窗口展开
-    displayModeChanged = pyqtSignal(int)
-    switchInterfaceSig = pyqtSignal(int)
-    showPlayingInterfaceSig = pyqtSignal()
-    showCreatePlaylistDialogSig = pyqtSignal()
-    switchToSettingInterfaceSig = pyqtSignal()
-    switchToMyMusicInterfaceSig = pyqtSignal()
-    switchToPlaylistInterfaceSig = pyqtSignal(str)
-    switchToPlaylistCardInterfaceSig = pyqtSignal()
+    searchSig = pyqtSignal(str)                     # 搜索信号
+    displayModeChanged = pyqtSignal(int)            # 显示模式改变
+    switchInterfaceSig = pyqtSignal(int)            # 切换界面信号
+    showPlayingInterfaceSig = pyqtSignal()          # 显示正在播放界面信号
+    showCreatePlaylistDialogSig = pyqtSignal()      # 显示创建播放列表对话框信号
+    switchToSettingInterfaceSig = pyqtSignal()      # 切换到设置界面信号
+    switchToMyMusicInterfaceSig = pyqtSignal()      # 切换到我的音乐界面
+    switchToPlaylistInterfaceSig = pyqtSignal(str)  # 切换到播放列表界面信号
+    switchToPlaylistCardInterfaceSig = pyqtSignal() # 切换到播放列表卡界面
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -67,6 +68,10 @@ class NavigationInterface(QWidget):
             self.__onSelectedButtonChanged)
         self.navigationMenu.selectedButtonChanged.connect(
             self.__onSelectedButtonChanged)
+
+        # 发送搜索信号
+        self.navigationMenu.searchSig.connect(self.searchSig)
+        self.navigationWidget.searchSig.connect(self.searchSig)
 
         # 按钮点击信号连接到槽
         self.navigationBar.showMenuButton.clicked.connect(

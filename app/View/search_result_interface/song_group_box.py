@@ -32,8 +32,8 @@ class SongGroupBox(QWidget):
         """ 初始化小部件 """
         self.resize(1200, 500)
         self.setMinimumHeight(47)
-        self.songListWidget.move(0, 47)
-        self.titleButton.move(37, 0)
+        self.songListWidget.move(0, 57)
+        self.titleButton.move(35, 0)
         self.__setQss()
 
     def __setQss(self):
@@ -47,7 +47,7 @@ class SongGroupBox(QWidget):
 
     def resizeEvent(self, e):
         self.songListWidget.resize(self.width(), self.songListWidget.height())
-        self.showAllButton.move(self.width()-self.showAllButton.width()-30, 0)
+        self.showAllButton.move(self.width()-self.showAllButton.width()-30, 7)
 
     def updateWindow(self, songInfo_list):
         """ 更新窗口 """
@@ -56,13 +56,13 @@ class SongGroupBox(QWidget):
         # 只保留前五首
         self.songInfo_list = songInfo_list[:5]
         self.songListWidget.updateAllSongCards(self.songInfo_list)
-        self.setFixedHeight(47+self.songListWidget.height())
+        self.setFixedHeight(57+self.songListWidget.height())
 
 
 class SongListWidget(BasicSongListWidget):
     """ 歌曲卡列表 """
 
-    playSignal = pyqtSignal(dict)  # 将播放列表的当前歌曲切换为指定的歌曲卡
+    playSignal = pyqtSignal(int)  # 将播放列表的当前歌曲切换为指定的歌曲卡
     playOneSongSig = pyqtSignal(dict)  # 重置播放列表为指定的一首歌
     nextToPlayOneSongSig = pyqtSignal(dict)
     switchToAlbumInterfaceSig = pyqtSignal(str, str)
@@ -82,7 +82,7 @@ class SongListWidget(BasicSongListWidget):
 
     def __playButtonSlot(self, index):
         """ 歌曲卡播放按钮槽函数 """
-        self.playSignal.emit(self.songCard_list[index].songInfo)
+        self.playSignal.emit(index)
         self.setCurrentIndex(index)
 
     def contextMenuEvent(self, e):
@@ -165,10 +165,9 @@ class SongListWidget(BasicSongListWidget):
 
     def __connectSongCardSignalToSlot(self, songCard):
         """ 将歌曲卡信号连接到槽 """
-        songCard.addSongToPlayingSig.connect(self.addSongToPlayingSignal)
-        songCard.doubleClicked.connect(
-            lambda index: self.playSignal.emit(self.songCard_list[index].songInfo))
+        songCard.doubleClicked.connect(self.playSignal)
         songCard.playButtonClicked.connect(self.__playButtonSlot)
+        songCard.addSongToPlayingSig.connect(self.addSongToPlayingSignal)
         songCard.clicked.connect(self.setCurrentIndex)
         songCard.switchToAlbumInterfaceSig.connect(
             self.switchToAlbumInterfaceSig)

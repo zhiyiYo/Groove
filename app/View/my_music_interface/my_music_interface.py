@@ -242,6 +242,11 @@ class MyMusicInterface(QWidget):
         self.albumCardInterface.deleteSongs(songPaths)
         self.removeSongSig.emit(songPaths)
 
+    def deleteSongs(self, songPaths: list):
+        """ 删除歌曲 """
+        self.songListWidget.removeSongCards(songPaths)
+        self.albumCardInterface.deleteSongs(songPaths)
+
     def __showDeleteAlbumsDialog(self):
         """ 显示删除专辑对话框 """
         if len(self.albumCardInterface.checkedAlbumCard_list) > 1:
@@ -481,7 +486,7 @@ class MyMusicInterface(QWidget):
             lambda: self.__onCurrentTabChanged(self.stackedWidget.currentIndex()))
         self.albumCardInterface.isAllCheckedChanged.connect(
             lambda x: self.albumTabSelectionModeBar.checkAllButton.setCheckedState(not x))
-        self.albumCardInterface.removeAlbumSig.connect(self.__deleteAlbums)
+        self.albumCardInterface.deleteAlbumSig.connect(self.__deleteAlbums)
 
         # 歌曲界面选择栏各按钮信号连接到槽函数
         self.songTabSelectionModeBar.cancelButton.clicked.connect(

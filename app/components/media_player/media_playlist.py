@@ -142,13 +142,13 @@ class MediaPlaylist(QMediaPlaylist):
             # 恢复之前的循环模式
             self.setPlaybackMode(self.prePlayMode)
 
-    def setPlaylist(self, songInfo_list: list):
+    def setPlaylist(self, songInfo_list: list, index=0):
         """ 重置播放列表 """
         if songInfo_list == self.playlist:
             return
         self.clear()
         self.addMedias(songInfo_list)
-        self.setCurrentIndex(0)
+        self.setCurrentIndex(index)
 
     def save(self):
         """ 保存播放列表到json文件中 """

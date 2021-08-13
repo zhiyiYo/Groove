@@ -6,7 +6,7 @@ QScrollArea {
     background-color: white
 }
 
-QLabel: !disabled {
+QLabel {
     color: rgb(0, 107, 131);
     font: 39px 'Microsoft YaHei';
     font-weight: 300;

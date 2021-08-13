@@ -19,8 +19,8 @@ class AlbumGroupBox(QScrollArea):
     """ 专辑分组框 """
 
     playSig = pyqtSignal(list)
-    nextPlaySig = pyqtSignal(list)
-    removeAlbumSig = pyqtSignal(list)
+    nextToPlaySig = pyqtSignal(list)
+    deleteAlbumSig = pyqtSignal(list)
     addAlbumToPlayingSig = pyqtSignal(list)
     switchToAlbumInterfaceSig = pyqtSignal(str, str)
     addAlbumToNewCustomPlaylistSig = pyqtSignal(list)
@@ -110,7 +110,7 @@ class AlbumGroupBox(QScrollArea):
     def resizeEvent(self, e):
         self.rightMask.move(self.width()-65, 47)
         self.scrollRightButton.move(self.width()-90, 42)
-        self.showAllButton.move(self.width()-self.showAllButton.width()-65, 0)
+        self.showAllButton.move(self.width()-self.showAllButton.width()-65, 2)
         self.scrollWidget.resize(self.scrollWidget.width(), self.height())
 
     def __onScrollHorizon(self, value):
@@ -147,7 +147,7 @@ class AlbumGroupBox(QScrollArea):
         self.hBox.addWidget(albumCard)
         # 专辑卡信号连接到槽函数
         albumCard.playSignal.connect(self.playSig)
-        albumCard.nextPlaySignal.connect(self.nextPlaySig)
+        albumCard.nextPlaySignal.connect(self.nextToPlaySig)
         albumCard.deleteCardSig.connect(self.__showDeleteOneCardDialog)
         albumCard.addToPlayingSignal.connect(self.addAlbumToPlayingSig)
         albumCard.switchToAlbumInterfaceSig.connect(
@@ -176,7 +176,7 @@ class AlbumGroupBox(QScrollArea):
         content = f"""如果删除"{albumName}"，它将不再位于此设备上。"""
         w = MessageDialog(title, content, self.window())
         w.yesSignal.connect(lambda: self.deleteAlbums([albumName]))
-        w.yesSignal.connect(lambda: self.removeAlbumSig.emit(songPaths))
+        w.yesSignal.connect(lambda: self.deleteAlbumSig.emit(songPaths))
         w.exec_()
 
     def enterEvent(self, e):
@@ -240,12 +240,35 @@ class AlbumGroupBox(QScrollArea):
             if albumInfo["album"] in albumNames:
                 albumInfo_list.remove(albumInfo)
 
-        self.updateAllAlbumCards(albumInfo_list)
+        self.updateWindow(albumInfo_list)
+
+
+    def deleteSongs(self, songPaths: list):
+        """ 删除歌曲 """
+        albumInfo_list = deepcopy(self.albumInfo_list)
+        for albumInfo in albumInfo_list.copy():
+            songInfo_list = albumInfo["songInfo_list"]
+
+            for songInfo in songInfo_list.copy():
+                if songInfo["songPath"] in songPaths:
+                    songInfo_list.remove(songInfo)
+
+            # 如果专辑变成空专辑，就将其从专辑列表中移除
+            if not songInfo_list:
+                albumInfo_list.remove(albumInfo)
+
+        # 更新窗口
+        self.updateWindow(albumInfo_list)
 
     def updateWindow(self, albumInfo_list: list):
         """ 更新窗口 """
         if albumInfo_list == self.albumInfo_list:
             return
+
+        # 显示遮罩
+        self.horizontalScrollBar().setValue(0)
+        self.leftMask.hide()
+        self.rightMask.show()
 
         # 根据具体情况增减专辑卡
         newCardNum = len(albumInfo_list)

@@ -99,7 +99,7 @@ class PlaylistCard(PerspectiveWidget):
     def __getPlaylistInfo(self, playlist: dict):
         """ 获取播放列表信息 """
         self.playlist = playlist
-        self.playlistName = playlist.get("playlistName")  # type:str
+        self.playlistName = playlist.get("playlistName", "未知播放列表")  # type:str
         self.songInfo_list = playlist.get("songInfo_list", [])  # type:list
         songInfo = self.songInfo_list[0] if self.songInfo_list else {}
         self.playlistCoverPath = getCoverPath(

@@ -14,6 +14,7 @@ from .search_line_edit import SearchLineEdit
 class NavigationWidget(BasicNavigationWidget):
     """ 侧边导航窗口 """
 
+    searchSig = pyqtSignal(str)
     switchToPlaylistInterfaceSig = pyqtSignal(str)
 
     def __init__(self, parent):
@@ -72,6 +73,8 @@ class NavigationWidget(BasicNavigationWidget):
         # 将按钮的点击信号连接到槽函数
         self._connectButtonClickedSigToSlot()
         self.__connectPlaylistNameClickedSigToSlot()
+        self.searchLineEdit.searchButton.clicked.connect(
+            self.onSearchButtonClicked)
         # 初始化布局
         self.__initLayout()
 
@@ -166,6 +169,12 @@ class NavigationWidget(BasicNavigationWidget):
             name = button.property('name')
             button.clicked.connect(
                 lambda checked, name=name: self.switchToPlaylistInterfaceSig.emit(name))
+
+    def onSearchButtonClicked(self):
+        """ 搜索按钮点击槽函数 """
+        text = self.searchLineEdit.text()
+        if text:
+            self.searchSig.emit(text)
 
 
 class ScrollWidget(QWidget):
