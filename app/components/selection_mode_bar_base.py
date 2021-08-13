@@ -98,7 +98,7 @@ class BasicButton(QPushButton):
 
     def __init__(self, iconPath: str, text: str, parent=None, buttonSize: tuple = (84, 70)):
         super().__init__(parent)
-        self.resize(buttonSize[0], buttonSize[1])
+        self.resize(*buttonSize)
         self.__iconPath = iconPath
         self.__iconPixmap = QPixmap(iconPath)
         self.buttonText = text

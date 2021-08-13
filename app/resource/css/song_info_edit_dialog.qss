@@ -54,11 +54,11 @@ QLineEdit:disabled {
 /*按钮*/
 QPushButton {
     background-color: rgb(204, 204, 204);
-    padding: 10px 64px 10px 64px;
-    font: 19px 'Microsoft YaHei';
-    border: transparent;
+    font: 18px 'Microsoft YaHei';
+    border: none;
     border-radius: 4px;
-    height: 40px;
+    padding: 8px 67px 8px 67px;
+
 }
 
 QPushButton:pressed:hover {

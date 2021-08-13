@@ -9,7 +9,7 @@ from app.components.label import ErrorIcon
 from app.components.line_edit import LineEdit
 from PyQt5.QtCore import QRegExp, Qt, pyqtSignal
 from PyQt5.QtGui import QRegExpValidator
-from PyQt5.QtWidgets import QApplication, QCompleter, QLabel
+from PyQt5.QtWidgets import QApplication, QCompleter, QLabel, QGridLayout, QVBoxLayout
 
 from .mask_dialog_base import MaskDialogBase
 
@@ -30,7 +30,6 @@ class SongInfoEditDialog(MaskDialogBase):
         self.__initWidget()
         self.__initLayout()
         # 设置层叠样式
-        self.__setQss()
 
     def __createWidgets(self):
         """ 实例化小部件 """
@@ -48,7 +47,8 @@ class SongInfoEditDialog(MaskDialogBase):
         self.songerNameLabel = QLabel("歌曲歌手", self.widget)
         self.albumSongerLabel = QLabel("专辑歌手", self.widget)
         self.editInfoLabel = QLabel("编辑歌曲信息", self.widget)
-        self.songPath = QLabel(self.songInfo["songPath"], self.widget)
+        self.songPath = QLabel(
+            self.songInfo["songPath"].replace('\\', '/'), self.widget)
         self.emptyTrackErrorIcon = ErrorIcon(self.widget)
         self.bottomErrorIcon = ErrorIcon(self.widget)
         self.bottomErrorLabel = QLabel(self.widget)
@@ -87,60 +87,17 @@ class SongInfoEditDialog(MaskDialogBase):
         self.tconCompleter.setCompletionMode(QCompleter.InlineCompletion)
         self.tconCompleter.setCaseSensitivity(Qt.CaseInsensitive)
         self.tconLineEdit.setCompleter(self.tconCompleter)
-
-        # 创建集中管理小部件的列表
-        self.leftLabel_list = [
-            self.songNameLabel,
-            self.trackNumLabel,
-            self.albumNameLabel,
-            self.tconLabel,
-        ]
-
-        self.rightLabel_list = [
-            self.songerNameLabel,
-            self.diskLabel,
-            self.albumSongerLabel,
-            self.yearLabel,
-        ]
-
-        self.leftEditLine_list = [
-            self.songNameLineEdit,
-            self.trackNumLineEdit,
-            self.albumNameLineEdit,
-            self.tconLineEdit,
-        ]
-
-        self.rightEditLine_list = [
-            self.songerNameLineEdit,
-            self.diskLineEdit,
-            self.albumSongerLineEdit,
-            self.yearLineEdit,
-        ]
-
-        self.editLine_list = [
-            self.songNameLineEdit,
-            self.songerNameLineEdit,
-            self.trackNumLineEdit,
-            self.diskLineEdit,
-            self.albumNameLineEdit,
-            self.albumSongerLineEdit,
-            self.tconLineEdit,
-            self.yearLineEdit,
-        ]
+        self.__setQss()
 
     def __initWidget(self):
         """ 初始化小部件的属性 """
         self.widget.setFixedSize(932, 652)
+        for child in self.widget.findChildren(LineEdit):
+            child.setFixedSize(408, 40)
+
         # 默认选中歌名编辑框
         self.songNameLineEdit.setFocus()
         self.songNameLineEdit.clearButton.show()
-        # 给每个单行输入框设置大小
-        for editLine in self.editLine_list:
-            editLine.setFixedSize(408, 40)
-
-        # 设置按钮的大小
-        self.saveButton.setFixedSize(165, 41)
-        self.cancelButton.setFixedSize(165, 41)
 
         # 设置报警标签位置
         self.bottomErrorLabel.setMinimumWidth(100)
@@ -149,14 +106,82 @@ class SongInfoEditDialog(MaskDialogBase):
         self.bottomErrorLabel.hide()
         self.emptyTrackErrorIcon.hide()
 
-        # 如果曲目为空就禁用保存按钮并更改属性
-        self.trackNumLineEdit.setProperty("hasText", "true")
-        if not self.trackNumLineEdit.text():
-            self.saveButton.setEnabled(False)
-            self.emptyTrackErrorIcon.show()
-            self.trackNumLineEdit.setProperty("hasText", "false")
-
         # 给输入框设置过滤器
+        self.__installValidator()
+
+        # 将曲目输入框数字改变的信号连接到槽函数
+        self.trackNumLineEdit.textChanged.connect(
+            self.__onTrackNumLineEditTextChanged)
+
+        # 将按钮点击信号连接到槽函数
+        self.saveButton.clicked.connect(self.__saveInfo)
+        self.cancelButton.clicked.connect(self.close)
+
+    def __initLayout(self):
+        """ 初始化布局 """
+        self.editInfoLabel.move(30, 30)
+        self.songPathLabel.move(30, 470)
+        self.songPath.move(30, 502)
+
+        # 设置对话框和标签位置
+        self.gridLayout_1 = QGridLayout()
+        self.gridLayout_2 = QGridLayout()
+        self.gridLayout_3 = QGridLayout()
+        self.gridLayout_4 = QGridLayout()
+        self.vBoxLayout = QVBoxLayout(self.widget)
+        self.vBoxLayout.setSpacing(10)
+
+        self.gridLayouts = [
+            self.gridLayout_1, self.gridLayout_2, self.gridLayout_3, self.gridLayout_4]
+        for gridLayout in self.gridLayouts:
+            gridLayout.setContentsMargins(0, 0, 0, 0)
+            gridLayout.setVerticalSpacing(4)
+            gridLayout.setHorizontalSpacing(55)
+            self.vBoxLayout.addLayout(gridLayout)
+
+        self.gridLayout_1.addWidget(self.songNameLabel, 0, 0)
+        self.gridLayout_1.addWidget(self.songerNameLabel, 0, 1)
+        self.gridLayout_1.addWidget(self.songNameLineEdit, 1, 0)
+        self.gridLayout_1.addWidget(self.songerNameLineEdit, 1, 1)
+
+        self.gridLayout_2.addWidget(self.trackNumLabel, 0, 0)
+        self.gridLayout_2.addWidget(self.diskLabel, 0, 1)
+        self.gridLayout_2.addWidget(self.trackNumLineEdit, 1, 0)
+        self.gridLayout_2.addWidget(self.diskLineEdit, 1, 1)
+
+        self.gridLayout_3.addWidget(self.albumNameLabel, 0, 0)
+        self.gridLayout_3.addWidget(self.albumSongerLabel, 0, 1)
+        self.gridLayout_3.addWidget(self.albumNameLineEdit, 1, 0)
+        self.gridLayout_3.addWidget(self.albumSongerLineEdit, 1, 1)
+
+        self.gridLayout_4.addWidget(self.tconLabel, 0, 0)
+        self.gridLayout_4.addWidget(self.yearLabel, 0, 1)
+        self.gridLayout_4.addWidget(self.tconLineEdit, 1, 0)
+        self.gridLayout_4.addWidget(self.yearLineEdit, 1, 1)
+
+        # 调整对话框高度
+        newSongPath, isWordWrap = autoWrap(self.songPath.text(), 110)
+        if isWordWrap:
+            self.songPath.setText(newSongPath)
+            self.songPath.adjustSize()
+            self.widget.setFixedHeight(self.widget.height() + 25)
+
+        # 设置按钮位置
+        self.cancelButton.move(
+            self.widget.width()-self.cancelButton.width()-30,
+            self.widget.height()-self.cancelButton.height()-15)
+        self.saveButton.move(
+            self.cancelButton.x()-self.saveButton.width()-5,
+            self.cancelButton.y())
+
+        # 设置提示标签的位置
+        self.bottomErrorIcon.move(30, self.widget.height() - 110)
+        self.bottomErrorLabel.move(55, self.widget.height() - 112)
+        self.vBoxLayout.setContentsMargins(
+            30, 87, 30, self.widget.height()-87-335)
+
+    def __installValidator(self):
+        """ 给输入框设置过滤器 """
         rex_trackNum = QRegExp(r"(\d)|([1-9]\d{1,2})")
         rex_year = QRegExp(r"\d{4}年{0,1}")
         validator_tracknum = QRegExpValidator(
@@ -167,50 +192,6 @@ class SongInfoEditDialog(MaskDialogBase):
         self.diskLineEdit.setValidator(validator_disk)
         self.yearLineEdit.setValidator(validator_year)
 
-        # 将曲目输入框数字改变的信号连接到槽函数
-        self.trackNumLineEdit.textChanged.connect(self.checkTrackEditLine)
-
-        # 将按钮点击信号连接到槽函数
-        self.saveButton.clicked.connect(self.saveInfo)
-        self.cancelButton.clicked.connect(self.close)
-
-    def __initLayout(self):
-        """ 初始化小部件的排版 """
-        self.editInfoLabel.move(30, 30)
-        self.songPathLabel.move(30, 470)
-        self.songPath.move(30, 502)
-        self.saveButton.move(566, 595)
-        self.cancelButton.move(736, 595)
-        label_top_y = 95
-
-        for i, (label_left, label_right) in enumerate(
-            zip(self.leftLabel_list, self.rightLabel_list)
-        ):
-            label_left.setObjectName("infoTypeLabel")
-            label_right.setObjectName("infoTypeLabel")
-            label_left.move(30, label_top_y + i * 87)
-            label_right.move(494, label_top_y + i * 87)
-
-        editLine_top_y = 127
-
-        for i, (editLine_left, editLine_right) in enumerate(
-            zip(self.leftEditLine_list, self.rightEditLine_list)
-        ):
-            editLine_left.move(30, editLine_top_y + i * 87)
-            editLine_right.move(494, editLine_top_y + i * 87)
-
-        # 调整高度
-        newSongPath, isWordWrap = autoWrap(self.songPath.text(), 100)
-        if isWordWrap:
-            self.songPath.setText(newSongPath)
-            self.setFixedSize(self.widget.width(), self.widget.height() + 25)
-            self.cancelButton.move(self.cancelButton.x(),
-                                   self.cancelButton.y() + 25)
-            self.saveButton.move(self.saveButton.x(), self.saveButton.y() + 25)
-        # 调整报错标签的位置
-        self.bottomErrorIcon.move(30, self.widget.height() - 110)
-        self.bottomErrorLabel.move(55, self.widget.height() - 112)
-
     def __setQss(self):
         """ 设置层叠样式表 """
         self.editInfoLabel.setObjectName("editSongInfo")
@@ -220,8 +201,12 @@ class SongInfoEditDialog(MaskDialogBase):
         self.bottomErrorLabel.setObjectName("bottomErrorLabel")
         with open("app/resource/css/song_info_edit_dialog.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
+        self.saveButton.adjustSize()
+        self.cancelButton.adjustSize()
+        self.songPath.adjustSize()
+        self.editInfoLabel.adjustSize()
 
-    def saveInfo(self):
+    def __saveInfo(self):
         """ 保存标签卡信息 """
         album_list = adjustAlbumName(self.albumNameLineEdit.text())
         self.songInfo["songName"] = self.songNameLineEdit.text()
@@ -235,8 +220,10 @@ class SongInfoEditDialog(MaskDialogBase):
             self.songInfo["year"] = self.yearLineEdit.text()[:4] + "年"
         else:
             self.songInfo["year"] = "未知年份"
+
         if not modifySongInfo(self.songInfo):
             self.bottomErrorLabel.setText("遇到未知错误，请稍后再试")
+            self.bottomErrorLabel.adjustSize()
             self.bottomErrorLabel.show()
             self.bottomErrorIcon.show()
         else:
@@ -245,19 +232,21 @@ class SongInfoEditDialog(MaskDialogBase):
             self.saveInfoSig.emit(self.oldSongInfo, self.songInfo)
             self.close()
 
-    def checkTrackEditLine(self):
+    def __onTrackNumLineEditTextChanged(self):
         """ 检查曲目输入框的内容是否为空 """
-        if not self.trackNumLineEdit.text():
+        isEmpty = bool(self.tconLineEdit.text())
+
+        if isEmpty:
             self.bottomErrorLabel.setText("曲目必须是1000以下的数字")
-            self.bottomErrorLabel.show()
-            self.emptyTrackErrorIcon.show()
-            self.bottomErrorIcon.show()
-            self.saveButton.setEnabled(False)
-            self.trackNumLineEdit.setProperty("hasText", "false")
-        else:
-            self.trackNumLineEdit.setProperty("hasText", "true")
-            self.bottomErrorLabel.hide()
-            self.bottomErrorIcon.hide()
-            self.emptyTrackErrorIcon.hide()
-            self.saveButton.setEnabled(True)
+            self.bottomErrorLabel.adjustSize()
+
+        # 设置提示标签可见性和按钮是否启用
+        self.saveButton.setDisabled(isEmpty)
+        self.bottomErrorLabel.setVisible(isEmpty)
+        self.bottomErrorIcon.setVisible(isEmpty)
+        self.emptyTrackErrorIcon.setVisible(isEmpty)
+
+        # 更新样式
+        self.trackNumLineEdit.setProperty(
+            'hasText', 'false' if isEmpty else 'true')
         self.trackNumLineEdit.setStyle(QApplication.style())

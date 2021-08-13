@@ -1,8 +1,8 @@
 # coding:utf-8
 from json import dump
-from typing import List, Union
+from typing import List
 
-from app.components.dialog_box.song_info_edit_dialog import SongInfoEditDialog
+from app.components.dialog_box.song_info_edit_dialog_ import SongInfoEditDialog
 from app.components.dialog_box.song_property_dialog import SongPropertyDialog
 from app.components.list_widget import ListWidget
 from PyQt5.QtCore import QMargins, QSize, Qt, pyqtSignal
