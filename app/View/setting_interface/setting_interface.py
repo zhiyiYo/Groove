@@ -56,7 +56,7 @@ class SettingInterface(QWidget):
         self.scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         # 将信号连接到槽函数
         self.getMetaDataSwitchButton.checkedChanged.connect(
-            self.checkBoxStatedChangedSlot)
+            self.onCheckBoxStatedChanged)
         self.selectFolderLabel.clicked.connect(
             self.__showSongFolderListDialog)
         self.lightColorButton.clicked.connect(self.__colorModeChangeSlot)
@@ -102,55 +102,42 @@ class SettingInterface(QWidget):
         else:
             self.getMetaDataSwitchButton.setEnabled(False)
 
-    def checkBoxStatedChangedSlot(self):
+    def onCheckBoxStatedChanged(self):
         """ 复选框状态改变对应的槽函数 """
         if self.getMetaDataSwitchButton.isChecked():
             self.getMetaDataSwitchButton.setText("开")
             self.getMetaDataSwitchButton.setEnabled(False)
-            # 创建一个爬虫线程
-            self.__createCrawlThread()
+            # 开始爬取信息
+            self.__crawlMetaData()
         else:
             self.getMetaDataSwitchButton.setEnabled(True)
             self.getMetaDataSwitchButton.setText("关")
 
-    def __createCrawlThread(self):
-        """ 创建一个爬虫线程 """
-        self.getMetaDataThread = GetMetaDataThread(
-            self.config["selected-folders"])
-        self.stateToolTip = StateTooltip(
-            "正在爬取专辑信息", "正在启动浏览器...", self.window())
+    def __crawlMetaData(self):
+        """ 爬取歌曲元数据 """
+        # 创建爬虫线程
+        crawler = GetMetaDataThread(self.config["selected-folders"], self)
+
+        # 创建状态提示条
+        stateToolTip = StateTooltip("正在爬取歌曲元数据", f"当前进度：{0:>3.0%}", self.window())
+        stateToolTip.move(self.window().width()-stateToolTip.width() - 30, 63)
+        stateToolTip.show()
+
         # 信号连接到槽
-        self.getMetaDataThread.crawlSignal.connect(self.__updateStateToolTip)
-        # 启用线程
-        self.stateToolTip.move(self.window().width() -
-                               self.stateToolTip.width() - 30, 63)
-        self.stateToolTip.show()
-        self.getMetaDataThread.start()
+        crawler.finished.connect(lambda: stateToolTip.setState(True))
+        crawler.finished.connect(self.__onCrawlFinished)
+        crawler.crawlSignal.connect(stateToolTip.setContent)
 
-    def __updateStateToolTip(self, crawlState: str):
-        """ 根据爬取进度更新进度提示框 """
-        if crawlState == "酷狗爬取完成":
-            self.stateToolTip.setTitle("正在爬取流派信息")
-        elif crawlState == "全部完成":
-            self.stateToolTip.setState(True)
-            # 摧毁线程
-            self.__stopCrawlThread()
-        else:
-            self.stateToolTip.setContent(crawlState)
+        crawler.start()
 
-    def __stopCrawlThread(self):
+    def __onCrawlFinished(self):
         """ 退出爬虫线程 """
-        self.getMetaDataThread.stop()
-        self.getMetaDataThread.quit()
-        self.getMetaDataThread.wait()
-        self.getMetaDataThread.deleteLater()
+        self.sender().quit()
+        self.sender().wait()
+        self.sender().deleteLater()
         self.getMetaDataSwitchButton.setEnabled(True)
-        self.__updateSongInfo()
-
-    def __updateSongInfo(self):
-        """ 更新歌曲信息 """
         self.getMetaDataSwitchButton.setChecked(False)
-        # 发送爬取完成的信号
+        self.getMetaDataSwitchButton.setText("关")
         self.crawlComplete.emit()
 
     def __colorModeChangeSlot(self):
@@ -159,7 +146,6 @@ class SettingInterface(QWidget):
             self.config["color-mode"] = "light-color"
         else:
             self.config["color-mode"] = "dark-color"
-        # self.updateConfig(self.config)
 
     def __setQss(self):
         """ 设置层叠样式 """

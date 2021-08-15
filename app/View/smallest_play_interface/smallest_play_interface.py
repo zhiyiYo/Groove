@@ -71,7 +71,8 @@ class SmallestPlayInterface(FramelessWindow):
         self.lastSongButton.clicked.connect(self.lastSongSig)
         self.nextSongButton.clicked.connect(self.nextSongSig)
         self.playButton.clicked.connect(self.togglePlayStateSig)
-        self.exitSmallestModeButton.clicked.connect(self.exitSmallestPlayInterfaceSig)
+        self.exitSmallestModeButton.clicked.connect(
+            self.exitSmallestPlayInterfaceSig)
         self.blurCoverThread.blurDone.connect(self.albumCoverLabel.setPixmap)
 
     def __createSongInfoCards(self):
@@ -274,7 +275,8 @@ class SmallestPlayInterface(FramelessWindow):
         # 新的下标大于当前下标时，歌曲卡左移
         if self.aniGroup.state() != QAbstractAnimation.Running:
             songInfo = self.playlist[index]
-            self.startBlurThread(getCoverPath(songInfo['modifiedAlbum'], "album_big"))
+            self.startBlurThread(getCoverPath(
+                songInfo['modifiedAlbum'], "album_big"))
             self.__completeShift(index)
         else:
             self.__unCompleteShift_list.append(index)
@@ -331,7 +333,7 @@ class SongInfoCard(QWidget):
         self.resize(320, 55)
         # 创建小部件
         self.songNameLabel = QLabel(self)
-        self.songerNameLabel = QLabel(self)
+        self.singerNameLabel = QLabel(self)
         self.opacityEffect = QGraphicsOpacityEffect(self)
         self.ani = QPropertyAnimation(self.opacityEffect, b"opacity")
         # 初始化
@@ -346,16 +348,16 @@ class SongInfoCard(QWidget):
         self.setGraphicsEffect(self.opacityEffect)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.songNameLabel.setObjectName("songNameLabel")
-        self.songerNameLabel.setObjectName("songerNameLabel")
+        self.singerNameLabel.setObjectName("singerNameLabel")
 
     def __setSongInfo(self, songInfo: dict):
         """ 设置标签信息 """
         if not songInfo:
             songInfo = {}
         self.songName = songInfo.get("songName", "未知歌曲")  # type:str
-        self.songerName = songInfo.get("songer", "未知歌手")  # type:str
+        self.singerName = songInfo.get("singer", "未知歌手")  # type:str
         self.songNameLabel.setText(self.songName)
-        self.songerNameLabel.setText(self.songerName)
+        self.singerNameLabel.setText(self.singerName)
 
     def updateCard(self, songInfo: dict):
         """ 更新窗口 """
@@ -367,7 +369,7 @@ class SongInfoCard(QWidget):
         fontMetrics = QFontMetrics(QFont("Microsoft YaHei", 12, 75))
         # 字符串的最大宽度
         maxWidth = self.width() - 30
-        songNameWidth, songerNameWidth = 0, 0
+        songNameWidth, singerNameWidth = 0, 0
         # 调整歌名
         for index, char in enumerate(self.songName):
             if songNameWidth + fontMetrics.width(char) > maxWidth:
@@ -377,16 +379,16 @@ class SongInfoCard(QWidget):
         self.songNameLabel.setFixedWidth(songNameWidth)
         # 调整歌手名
         fontMetrics = QFontMetrics(QFont("Microsoft YaHei", 11))
-        for index, char in enumerate(self.songerName):
-            if songerNameWidth + fontMetrics.width(char) > maxWidth:
-                self.songerNameLabel.setText(self.songerName[:index])
+        for index, char in enumerate(self.singerName):
+            if singerNameWidth + fontMetrics.width(char) > maxWidth:
+                self.singerNameLabel.setText(self.singerName[:index])
                 break
-            songerNameWidth += fontMetrics.width(char)
-        self.songerNameLabel.setFixedWidth(songerNameWidth)
+            singerNameWidth += fontMetrics.width(char)
+        self.singerNameLabel.setFixedWidth(singerNameWidth)
         # 调整标签位置
         self.songNameLabel.move(int(self.width() / 2 - songNameWidth / 2), 0)
-        self.songerNameLabel.move(
-            int(self.width() / 2 - songerNameWidth / 2), 30)
+        self.singerNameLabel.move(
+            int(self.width() / 2 - singerNameWidth / 2), 30)
 
     def resizeEvent(self, e):
         """ 改变窗口大小时调整标签 """

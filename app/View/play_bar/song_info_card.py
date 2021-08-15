@@ -48,7 +48,7 @@ class SongInfoCard(PerspectiveWidget):
         """ 设置歌曲信息 """
         self.songInfo = songInfo
         self.songName = self.songInfo.get("songName", "")
-        self.songerName = self.songInfo.get("songer", "")
+        self.singerName = self.songInfo.get("singer", "")
 
     def updateSongInfoCard(self, songInfo: dict):
         """ 更新歌曲信息卡 """
@@ -70,9 +70,9 @@ class SongInfoCard(PerspectiveWidget):
             self.scrollTextWindow.songNameTimer.start()
         if (
             self.scrollTextWindow.isSongerNameTooLong
-            and not self.scrollTextWindow.songerNameTimer.isActive()
+            and not self.scrollTextWindow.singerNameTimer.isActive()
         ):
-            self.scrollTextWindow.songerNameTimer.start()
+            self.scrollTextWindow.singerNameTimer.start()
         self.windowMask.show()
 
     def leaveEvent(self, e):
@@ -84,7 +84,8 @@ class SongInfoCard(PerspectiveWidget):
         if not self.songInfo.get("album"):
             self.hide()
             return
-        newCoverPath = getCoverPath(self.songInfo.get("modifiedAlbum"), "album_big")
+        newCoverPath = getCoverPath(
+            self.songInfo.get("modifiedAlbum"), "album_big")
         # 封面路径变化时发送信号并更新封面
         if newCoverPath != self.coverPath:
             self.albumChanged.emit(newCoverPath)
@@ -117,8 +118,8 @@ class ScrollTextWindow(QWidget):
         # 实例化定时器
         self.songPauseTimer = QTimer(self)
         self.songNameTimer = QTimer(self)
-        self.songerNameTimer = QTimer(self)
-        self.songerPauseTimer = QTimer(self)
+        self.singerNameTimer = QTimer(self)
+        self.singerPauseTimer = QTimer(self)
         # 初始化界面
         self.initUI(songInfo)
 
@@ -126,7 +127,7 @@ class ScrollTextWindow(QWidget):
         """ 更新歌曲信息 """
         self.songInfo = songInfo
         self.songName = self.songInfo.get("songName", "")
-        self.songerName = self.songInfo.get("songer", "")
+        self.singerName = self.songInfo.get("singer", "")
 
     def initFlagsWidth(self):
         """ 初始化各标志位并调整窗口宽度 """
@@ -136,13 +137,13 @@ class ScrollTextWindow(QWidget):
         if self.isSongNameTooLong:
             self.songNameTimer.start()
         if self.isSongerNameTooLong:
-            self.songerNameTimer.start()
+            self.singerNameTimer.start()
 
     def __initFlags(self):
         """ 初始化标志位 """
         # 初始化下标
         self.songCurrentIndex = 0
-        self.songerCurrentIndex = 0
+        self.singerCurrentIndex = 0
         # 设置字符串溢出标志位
         self.isSongNameAllOut = False
         self.isSongerNameAllOut = False
@@ -163,44 +164,45 @@ class ScrollTextWindow(QWidget):
             self.setAttribute(Qt.WA_StyledBackground)
             # 初始化定时器
             self.songPauseTimer.setInterval(400)
-            self.songerPauseTimer.setInterval(400)
+            self.singerPauseTimer.setInterval(400)
             self.songNameTimer.setInterval(self.timeStep)
-            self.songerNameTimer.setInterval(self.timeStep)
+            self.singerNameTimer.setInterval(self.timeStep)
             self.songNameTimer.timeout.connect(self.updateSongIndex)
-            self.songerNameTimer.timeout.connect(self.updateSongerIndex)
+            self.singerNameTimer.timeout.connect(self.updateSongerIndex)
             self.songPauseTimer.timeout.connect(self.restartTextTimer)
-            self.songerPauseTimer.timeout.connect(self.restartTextTimer)
+            self.singerPauseTimer.timeout.connect(self.restartTextTimer)
             # 根据字符串宽度是否大于窗口宽度开启滚动：
             self.songNameTimer.stop()
-            self.songerNameTimer.stop()
+            self.singerNameTimer.stop()
         if self.isSongNameTooLong:
             self.songNameTimer.start()
         if self.isSongerNameTooLong:
-            self.songerNameTimer.start()
+            self.singerNameTimer.start()
         self.hasInitWidget = True
 
     def getTextWidth(self):
         """ 计算文本的总宽度 """
         songFontMetrics = QFontMetrics(QFont("Microsoft YaHei", 14))
-        self.songNameWidth = sum([songFontMetrics.width(i) for i in self.songName])
+        self.songNameWidth = sum([songFontMetrics.width(i)
+                                 for i in self.songName])
         # 检测歌手名是否全是英文
-        self.isMatch = re.match(r"^[a-zA-Z]+$", self.songerName)
+        self.isMatch = re.match(r"^[a-zA-Z]+$", self.singerName)
         if not self.isMatch:
-            songerFontMetrics = QFontMetrics(QFont("Microsoft YaHei", 12, 75))
+            singerFontMetrics = QFontMetrics(QFont("Microsoft YaHei", 12, 75))
         else:
-            songerFontMetrics = QFontMetrics(QFont("Microsoft YaHei", 11, 75))
+            singerFontMetrics = QFontMetrics(QFont("Microsoft YaHei", 11, 75))
         # 总是会少一个字符的长度
-        self.songerNameWidth = sum(
-            [songerFontMetrics.width(i) for i in self.songerName]
+        self.singerNameWidth = sum(
+            [singerFontMetrics.width(i) for i in self.singerName]
         )
 
     def adjustWindowWidth(self):
         """ 根据字符串长度调整窗口宽度 """
         self.getTextWidth()
-        maxWidth = max(self.songNameWidth, self.songerNameWidth)
+        maxWidth = max(self.songNameWidth, self.singerNameWidth)
         # 判断是否有字符串宽度超过窗口的最大宽度
         self.isSongNameTooLong = self.songNameWidth > self.maxWidth
-        self.isSongerNameTooLong = self.songerNameWidth > self.maxWidth
+        self.isSongerNameTooLong = self.singerNameWidth > self.maxWidth
         # 设置窗口的宽度
         self.setFixedWidth(min(maxWidth, self.maxWidth))
 
@@ -221,13 +223,13 @@ class ScrollTextWindow(QWidget):
     def updateSongerIndex(self):
         """ 更新歌手名下标 """
         self.update()
-        self.songerCurrentIndex += 1
+        self.singerCurrentIndex += 1
         resetSongerIndexCond = (
-            self.songerCurrentIndex * self.moveStep
-            >= self.songerNameWidth + self.spacing * self.isSongerNameAllOut
+            self.singerCurrentIndex * self.moveStep
+            >= self.singerNameWidth + self.spacing * self.isSongerNameAllOut
         )
         if resetSongerIndexCond:
-            self.songerCurrentIndex = 0
+            self.singerCurrentIndex = 0
             self.isSongerNameAllOut = True
 
     def paintEvent(self, e):
@@ -271,31 +273,31 @@ class ScrollTextWindow(QWidget):
         if self.isSongerNameTooLong:
             x3 = (
                 self.spacing * self.isSongerNameAllOut
-                - self.moveStep * self.songerCurrentIndex
+                - self.moveStep * self.singerCurrentIndex
             )
             x4 = (
-                self.songerNameWidth
-                - self.moveStep * self.songerCurrentIndex
+                self.singerNameWidth
+                - self.moveStep * self.singerCurrentIndex
                 + self.spacing * (1 + self.isSongerNameAllOut)
             )
-            painter.drawText(x3, 82, self.songerName)
-            painter.drawText(x4, 82, self.songerName)
+            painter.drawText(x3, 82, self.singerName)
+            painter.drawText(x4, 82, self.singerName)
             if self.isSongerNameAllOut and not (x3 and x4):
                 notLeave = isNotLeave(self)
                 if not notLeave:
-                    self.songerNameTimer.stop()
+                    self.singerNameTimer.stop()
                 else:
-                    self.songerNameTimer.stop()
-                    self.songerPauseTimer.start()
+                    self.singerNameTimer.stop()
+                    self.singerPauseTimer.start()
         else:
-            painter.drawText(0, 82, self.songerName)
+            painter.drawText(0, 82, self.singerName)
 
     def enterEvent(self, e):
         """ 鼠标进入时打开滚动效果 """
         if self.isSongNameTooLong and not self.songNameTimer.isActive():
             self.songNameTimer.start()
-        if self.isSongerNameTooLong and not self.songerNameTimer.isActive():
-            self.songerNameTimer.start()
+        if self.isSongerNameTooLong and not self.singerNameTimer.isActive():
+            self.singerNameTimer.start()
 
     def restartTextTimer(self):
         """ 重新打开指定的定时器 """
@@ -303,4 +305,4 @@ class ScrollTextWindow(QWidget):
         if self.sender() == self.songPauseTimer:
             self.songNameTimer.start()
         else:
-            self.songerNameTimer.start()
+            self.singerNameTimer.start()

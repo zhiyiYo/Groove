@@ -38,13 +38,13 @@ class SongInfoEditDialog(MaskDialogBase):
         self.cancelButton = PerspectivePushButton("取消", self.widget)
         # 实例化标签
         self.yearLabel = QLabel("年", self.widget)
-        self.tconLabel = QLabel("类型", self.widget)
+        self.genreLabel = QLabel("类型", self.widget)
         self.diskLabel = QLabel("光盘", self.widget)
         self.trackNumLabel = QLabel("曲目", self.widget)
         self.songNameLabel = QLabel("歌曲名", self.widget)
         self.songPathLabel = QLabel("文件位置", self.widget)
         self.albumNameLabel = QLabel("专辑标题", self.widget)
-        self.songerNameLabel = QLabel("歌曲歌手", self.widget)
+        self.singerNameLabel = QLabel("歌曲歌手", self.widget)
         self.albumSongerLabel = QLabel("专辑歌手", self.widget)
         self.editInfoLabel = QLabel("编辑歌曲信息", self.widget)
         self.songPath = QLabel(
@@ -54,19 +54,19 @@ class SongInfoEditDialog(MaskDialogBase):
         self.bottomErrorLabel = QLabel(self.widget)
         # 实例化单行输入框
         self.diskLineEdit = LineEdit("1", self.widget)
-        self.tconLineEdit = LineEdit(self.songInfo["tcon"], self.widget)
+        self.genreLineEdit = LineEdit(self.songInfo["genre"], self.widget)
         self.yearLineEdit = LineEdit(self.songInfo["year"], self.widget)
         self.albumNameLineEdit = LineEdit(self.songInfo["album"], self.widget)
         self.songNameLineEdit = LineEdit(
             self.songInfo["songName"], self.widget)
-        self.songerNameLineEdit = LineEdit(
-            self.songInfo["songer"], self.widget)
+        self.singerNameLineEdit = LineEdit(
+            self.songInfo["singer"], self.widget)
         self.albumSongerLineEdit = LineEdit(
-            self.songInfo["songer"], self.widget)
+            self.songInfo["singer"], self.widget)
         self.trackNumLineEdit = LineEdit(
             self.songInfo["tracknumber"], self.widget)
         # 流派补全
-        tcons = [
+        genres = [
             "POP流行",
             "Blues",
             "SOUNDTRACK原声",
@@ -83,10 +83,10 @@ class SongInfoEditDialog(MaskDialogBase):
             "ROCK摇滚",
             "anime",
         ]
-        self.tconCompleter = QCompleter(tcons, self.widget)
-        self.tconCompleter.setCompletionMode(QCompleter.InlineCompletion)
-        self.tconCompleter.setCaseSensitivity(Qt.CaseInsensitive)
-        self.tconLineEdit.setCompleter(self.tconCompleter)
+        self.genreCompleter = QCompleter(genres, self.widget)
+        self.genreCompleter.setCompletionMode(QCompleter.InlineCompletion)
+        self.genreCompleter.setCaseSensitivity(Qt.CaseInsensitive)
+        self.genreLineEdit.setCompleter(self.genreCompleter)
         self.__setQss()
 
     def __initWidget(self):
@@ -140,9 +140,9 @@ class SongInfoEditDialog(MaskDialogBase):
             self.vBoxLayout.addLayout(gridLayout)
 
         self.gridLayout_1.addWidget(self.songNameLabel, 0, 0)
-        self.gridLayout_1.addWidget(self.songerNameLabel, 0, 1)
+        self.gridLayout_1.addWidget(self.singerNameLabel, 0, 1)
         self.gridLayout_1.addWidget(self.songNameLineEdit, 1, 0)
-        self.gridLayout_1.addWidget(self.songerNameLineEdit, 1, 1)
+        self.gridLayout_1.addWidget(self.singerNameLineEdit, 1, 1)
 
         self.gridLayout_2.addWidget(self.trackNumLabel, 0, 0)
         self.gridLayout_2.addWidget(self.diskLabel, 0, 1)
@@ -154,9 +154,9 @@ class SongInfoEditDialog(MaskDialogBase):
         self.gridLayout_3.addWidget(self.albumNameLineEdit, 1, 0)
         self.gridLayout_3.addWidget(self.albumSongerLineEdit, 1, 1)
 
-        self.gridLayout_4.addWidget(self.tconLabel, 0, 0)
+        self.gridLayout_4.addWidget(self.genreLabel, 0, 0)
         self.gridLayout_4.addWidget(self.yearLabel, 0, 1)
-        self.gridLayout_4.addWidget(self.tconLineEdit, 1, 0)
+        self.gridLayout_4.addWidget(self.genreLineEdit, 1, 0)
         self.gridLayout_4.addWidget(self.yearLineEdit, 1, 1)
 
         # 调整对话框高度
@@ -195,8 +195,8 @@ class SongInfoEditDialog(MaskDialogBase):
     def __setQss(self):
         """ 设置层叠样式表 """
         self.editInfoLabel.setObjectName("editSongInfo")
-        self.songerNameLineEdit.setObjectName("songer")
-        self.albumSongerLineEdit.setObjectName("songer")
+        self.singerNameLineEdit.setObjectName("singer")
+        self.albumSongerLineEdit.setObjectName("singer")
         self.songPath.setObjectName("songPath")
         self.bottomErrorLabel.setObjectName("bottomErrorLabel")
         with open("app/resource/css/song_info_edit_dialog.qss", encoding="utf-8") as f:
@@ -210,12 +210,12 @@ class SongInfoEditDialog(MaskDialogBase):
         """ 保存标签卡信息 """
         album_list = adjustAlbumName(self.albumNameLineEdit.text())
         self.songInfo["songName"] = self.songNameLineEdit.text()
-        self.songInfo["songer"] = self.songerNameLineEdit.text()
+        self.songInfo["singer"] = self.singerNameLineEdit.text()
         self.songInfo["album"] = album_list[0]
         self.songInfo["modifiedAlbum"] = album_list[-1]
         # 根据后缀名选择曲目标签的写入方式
         self.songInfo["tracknumber"] = self.trackNumLineEdit.text()
-        self.songInfo["tcon"] = self.tconLineEdit.text()
+        self.songInfo["genre"] = self.genreLineEdit.text()
         if self.yearLineEdit.text()[:4] != "未知年份":
             self.songInfo["year"] = self.yearLineEdit.text()[:4] + "年"
         else:
@@ -234,7 +234,7 @@ class SongInfoEditDialog(MaskDialogBase):
 
     def __onTrackNumLineEditTextChanged(self):
         """ 检查曲目输入框的内容是否为空 """
-        isEmpty = bool(self.tconLineEdit.text())
+        isEmpty = bool(self.genreLineEdit.text())
 
         if isEmpty:
             self.bottomErrorLabel.setText("曲目必须是1000以下的数字")

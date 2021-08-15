@@ -145,7 +145,7 @@ class SongListWidget(BasicSongListWidget):
         contextMenu.showAlbumAct.triggered.connect(
             lambda: self.switchToAlbumInterfaceSig.emit(
                 self.songCard_list[self.currentRow()].album,
-                self.songCard_list[self.currentRow()].songer,
+                self.songCard_list[self.currentRow()].singer,
             )
         )
         # 删除歌曲卡

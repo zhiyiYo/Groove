@@ -113,7 +113,8 @@ class SearchResultInterface(ScrollArea):
     def __onDeleteOneSong(self, songPath: str):
         """ 删除一首歌槽函数 """
         self.albumGroupBox.deleteSongs([songPath])
-        self.matchedAlbumInfo_list=deepcopy(self.albumGroupBox.albumInfo_list)
+        self.matchedAlbumInfo_list = deepcopy(
+            self.albumGroupBox.albumInfo_list)
         self.matchedSongInfo_list = deepcopy(self.songListWidget.songInfo_list)
         self.__updateWidgetsVisible()
         self.deleteSongSig.emit(songPath)
@@ -127,16 +128,16 @@ class SearchResultInterface(ScrollArea):
         self.matchedAlbumInfo_list = []
         for albumInfo in albumInfo_list:
             album = albumInfo['album'].lower()
-            songer = albumInfo["songer"].lower()
-            if album.find(keyWord) >= 0 or songer.find(keyWord) >= 0:
+            singer = albumInfo["singer"].lower()
+            if album.find(keyWord) >= 0 or singer.find(keyWord) >= 0:
                 self.matchedAlbumInfo_list.append(albumInfo)
 
         # 对歌曲进行匹配
         self.matchedSongInfo_list = []
         for songInfo in songInfo_list:
             songName = songInfo["songName"].lower()
-            songer = songInfo["songer"].lower()
-            if songName.find(keyWord) >= 0 or songer.find(keyWord) >= 0:
+            singer = songInfo["singer"].lower()
+            if songName.find(keyWord) >= 0 or singer.find(keyWord) >= 0:
                 self.matchedSongInfo_list.append(songInfo)
 
         # 对播放列表进行匹配

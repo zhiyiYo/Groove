@@ -133,7 +133,7 @@ class MyMusicInterface(QWidget):
         """ 引用小部件 """
         # 引用按钮
         self.songTabButton = self.toolBar.songTabButton
-        self.songerTabButton = self.toolBar.songerTabButton
+        self.singerTabButton = self.toolBar.singerTabButton
         self.albumTabButton = self.toolBar.albumTabButton
         # 引用当前排序动作
         self.currentSongSortAct = self.toolBar.songSortByCratedTimeAct
@@ -193,7 +193,7 @@ class MyMusicInterface(QWidget):
             # 取消选中的歌曲卡的选中状态，隐藏选择栏并显示播放栏
             self.__unCheckSongCards()
             self.songListWidget.switchToAlbumInterfaceSig.emit(
-                songCard.album, songCard.songer)
+                songCard.album, songCard.singer)
 
     def __editCardInfo(self):
         """ 编辑卡片信息 """

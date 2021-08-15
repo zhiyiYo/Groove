@@ -13,8 +13,8 @@ if __name__ == '__main__':
     with open("app/data/songInfo.json", encoding="utf-8") as f:
         songInfo_list = json.load(f)[:20]
     albumInfo = {
-        "songer": "鎖那",
-        "tcon": "POP流行",
+        "singer": "鎖那",
+        "genre": "POP流行",
         "year": "2016年",
         "album": "Hush a by little girl",
         "coverPath": "app/resource/Album_Cover/Hush a by little girl/Hush a by little girl.jpg",

@@ -20,7 +20,7 @@ class SongListWidget(ListWidget):
     isAllCheckedChanged = pyqtSignal(bool)              # 歌曲卡卡全部选中改变
     selectionModeStateChanged = pyqtSignal(bool)        # 进入或退出选择模式
     checkedSongCardNumChanged = pyqtSignal(int)         # 选中的歌曲卡数量改变
-    switchToAlbumInterfaceSig = pyqtSignal(str, str)    # albumName, songerName
+    switchToAlbumInterfaceSig = pyqtSignal(str, str)    # albumName, singerName
     addSongsToNewCustomPlaylistSig = pyqtSignal(list)   # 将歌曲添加到新的自定义播放列表
     addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 将歌曲添加到已存在的自定义播放列表
 
@@ -172,9 +172,9 @@ class SongListWidget(ListWidget):
         self.currentIndex = 0 if isResetIndex else self.currentIndex
         self.songCard_list[self.currentIndex].setPlay(True)
 
-    def __switchToAlbumInterface(self, albumName: str, songerName: str):
+    def __switchToAlbumInterface(self, albumName: str, singerName: str):
         """ 切换到专辑界面 """
-        self.switchToAlbumInterfaceSig.emit(albumName, songerName)
+        self.switchToAlbumInterfaceSig.emit(albumName, singerName)
 
     def updateOneSongCard(self, newSongInfo: dict):
         """ 更新一个歌曲卡 """
@@ -253,7 +253,7 @@ class SongListWidget(ListWidget):
         for songCard in self.songCard_list:
             songCard.setSelectionModeOpen(isOpenSelectionMode)
             songCard.albumLabel.setCursor(cursor)
-            songCard.songerLabel.setCursor(cursor)
+            songCard.singerLabel.setCursor(cursor)
 
     def setAllSongCardCheckedState(self, isAllChecked: bool):
         """ 设置所有的歌曲卡checked状态 """
@@ -279,7 +279,7 @@ class SongListWidget(ListWidget):
         menu.showAlbumAct.triggered.connect(
             lambda: self.__switchToAlbumInterface(
                 self.songCard_list[self.currentRow()].album,
-                self.songCard_list[self.currentRow()].songer,
+                self.songCard_list[self.currentRow()].singer,
             )
         )
         menu.addToMenu.addSongsToPlaylistSig.connect(

@@ -102,10 +102,10 @@ class SongInfoGetter:
         # 获取标签信息
         suffix = "." + fileInfo.suffix()
         songName = tag.title if tag.title and tag.title.strip() else fileInfo.baseName()
-        songer = tag.artist if tag.artist and tag.artist.strip() else "未知艺术家"
+        singer = tag.artist if tag.artist and tag.artist.strip() else "未知艺术家"
         album = tag.album if tag.album and tag.album.strip() else "未知专辑"
         tracknumber = str(tag.track) if tag.track else "0"
-        tcon = tag.genre if tag.genre else "未知流派"
+        genre = tag.genre if tag.genre else "未知流派"
         duration = f"{int(tag.duration//60)}:{int(tag.duration%60):02}"
         album_list = adjustAlbumName(album)
         # 调整曲目序号
@@ -126,11 +126,11 @@ class SongInfoGetter:
         modifiedTime = fileInfo.lastModified().toString(Qt.ISODate)
         songInfo = {
             "songPath": songPath,
-            "songer": songer,
+            "singer": singer,
             "songName": songName,
             "album": album_list[0],  # album为原专辑名
             "modifiedAlbum": album_list[-1],  # modifiedAlbum为修改后的专辑名
-            "tcon": tcon,
+            "genre": genre,
             "year": year,
             "tracknumber": tracknumber,
             "duration": duration,
@@ -152,7 +152,7 @@ class SongInfoGetter:
 
     def sortBySonger(self):
         """ 以歌手名排序文件信息列表 """
-        self.songInfo_list.sort(key=lambda songInfo: songInfo["songer"])
+        self.songInfo_list.sort(key=lambda songInfo: songInfo["singer"])
 
     def __adjustTrackNumber(self, trackNum: str):
         """ 调整曲目编号 """

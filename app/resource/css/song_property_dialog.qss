@@ -13,8 +13,9 @@ QLabel#propertyLabel {
     font: 21px 'Microsoft YaHei';
 }
 
-QLabel#songPath,QLabel#songer{
-    font-size:17px;
+QLabel#songPath,
+QLabel#singer {
+    font-size: 17px;
 }
 
 QPushButton {
@@ -30,7 +31,7 @@ QPushButton:pressed:hover {
 }
 
 QPushButton:hover {
-    background-color: rgb(230,230,230);
+    background-color: rgb(230, 230, 230);
     border-radius: 4px;
     padding: 7px 64px 7px 64px;
 }

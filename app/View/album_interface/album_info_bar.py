@@ -29,7 +29,7 @@ class AlbumInfoBar(CollapsingAppBarBase):
         buttons = [self.playAllButton, self.addToButton, self.showSongerButton,
                    self.pinToStartMenuButton, self.editInfoButton, self.deleteButton]
         super().__init__(self.albumName,
-                         f'{self.songerName}\n{self.year} • {self.tcon}',
+                         f'{self.singerName}\n{self.year} • {self.genre}',
                          self.albumCoverPath, buttons, False, parent)
         self.actionNames = ["全部播放", "添加到", "显示歌手", '固定到"开始"菜单', "编辑信息", "删除"]
         self.action_list = [QAction(i, self) for i in self.actionNames]
@@ -40,9 +40,9 @@ class AlbumInfoBar(CollapsingAppBarBase):
         """ 设置专辑信息 """
         self.albumInfo = albumInfo if albumInfo else {}
         self.year = albumInfo.get("year", "未知年份")  # type:str
-        self.tcon = albumInfo.get("tcon", "未知流派")  # type:str
+        self.genre = albumInfo.get("genre", "未知流派")  # type:str
         self.albumName = albumInfo.get("album", "未知专辑")  # type:str
-        self.songerName = albumInfo.get("songer", "未知歌手")  # type:str
+        self.singerName = albumInfo.get("singer", "未知歌手")  # type:str
         self.albumCoverPath = albumInfo.get(
             "coverPath", "app/resource/images/default_covers/默认专辑封面_200_200.png")  # type:str
 
@@ -73,5 +73,5 @@ class AlbumInfoBar(CollapsingAppBarBase):
         """ 更新窗口 """
         self.setAlbumInfo(albumInfo)
         super().updateWindow(self.albumName,
-                             f'{self.songerName}\n{self.year} • {self.tcon}',
+                             f'{self.singerName}\n{self.year} • {self.genre}',
                              self.albumCoverPath)

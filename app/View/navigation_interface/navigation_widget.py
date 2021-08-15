@@ -6,12 +6,12 @@ from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QColor, QPainter, QPen
 from PyQt5.QtWidgets import QWidget
 
-from .basic_navigation_widget import BasicNavigationWidget
+from .navigation_widget_base import NavigationWidgetBase
 from .navigation_button import CreatePlaylistButton, PushButton, ToolButton
 from .search_line_edit import SearchLineEdit
 
 
-class NavigationWidget(BasicNavigationWidget):
+class NavigationWidget(NavigationWidgetBase):
     """ 侧边导航窗口 """
 
     searchSig = pyqtSignal(str)
@@ -33,7 +33,7 @@ class NavigationWidget(BasicNavigationWidget):
         """实例化按钮 """
         self.showBarButton = ToolButton(
             "app/resource/images/navigation_interface/GlobalNavButton.png", parent=self)
-        self.musicGroupButton = PushButton(
+        self.myMusicButton = PushButton(
             "app/resource/images/navigation_interface/MusicInCollection.png", "我的音乐", (400, 60), self.scrollWidget)
         self.historyButton = PushButton(
             "app/resource/images/navigation_interface/Recent.png", "最近播放的内容", (400, 62), self.scrollWidget)
@@ -47,10 +47,10 @@ class NavigationWidget(BasicNavigationWidget):
         # 创建播放列表名字按钮
         self.__createPlaylistNameButtons(self.getPlaylistNames())
         # 设置当前按钮
-        self.currentButton = self.musicGroupButton
+        self.currentButton = self.myMusicButton
         # todo:设置可选中的按钮列表
         self._selectableButtons = [
-            self.musicGroupButton,
+            self.myMusicButton,
             self.historyButton,
             self.playingButton,
             self.playlistButton,
@@ -58,7 +58,7 @@ class NavigationWidget(BasicNavigationWidget):
         ] + self.playlistNameButtons
         # todo:设置可选中的按钮名字列表
         self._selectableButtonNames = [
-            "musicGroupButton",
+            "myMusicButton",
             "historyButton",
             "playingButton",
             "playlistButton",
@@ -69,12 +69,12 @@ class NavigationWidget(BasicNavigationWidget):
         """ 初始化小部件 """
         self.resize(400, 800)
         self.setAttribute(Qt.WA_StyledBackground)
-        self.setSelectedButton(self.musicGroupButton.property('name'))
+        self.setSelectedButton(self.myMusicButton.property('name'))
         # 将按钮的点击信号连接到槽函数
         self._connectButtonClickedSigToSlot()
         self.__connectPlaylistNameClickedSigToSlot()
         self.searchLineEdit.searchButton.clicked.connect(
-            self.onSearchButtonClicked)
+            self._onSearchButtonClicked)
         # 初始化布局
         self.__initLayout()
 
@@ -170,7 +170,7 @@ class NavigationWidget(BasicNavigationWidget):
             button.clicked.connect(
                 lambda checked, name=name: self.switchToPlaylistInterfaceSig.emit(name))
 
-    def onSearchButtonClicked(self):
+    def _onSearchButtonClicked(self):
         """ 搜索按钮点击槽函数 """
         text = self.searchLineEdit.text()
         if text:

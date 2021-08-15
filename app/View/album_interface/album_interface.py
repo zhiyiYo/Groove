@@ -115,10 +115,10 @@ class AlbumInterface(ScrollArea):
         """
         if oldSongInfo not in self.songInfo_list:
             return
-            
+
         # 如果新的歌曲信息的"专辑名.歌手"不变，则更新歌曲卡信息，否则将其移除
-        newKey = newSongInfo.get("album", "")+"."+newSongInfo.get("songer", "")
-        oldKey = oldSongInfo.get("album", "")+"."+oldSongInfo.get("songer", "")
+        newKey = newSongInfo.get("album", "")+"."+newSongInfo.get("singer", "")
+        oldKey = oldSongInfo.get("album", "")+"."+oldSongInfo.get("singer", "")
         if newKey == oldKey:
             self.songListWidget.updateOneSongCard(newSongInfo, False)
         else:

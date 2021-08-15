@@ -66,7 +66,7 @@ class NavigationMenu(NavigationWidget):
         """ 是否削减设置按钮底部空白 """
         self.__isShowBottomSpacing = isBottomSpacingVisible
 
-    def onSearchButtonClicked(self):
+    def _onSearchButtonClicked(self):
         """ 搜索按钮点击槽函数 """
         text = self.searchLineEdit.text()
         if text:

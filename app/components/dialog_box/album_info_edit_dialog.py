@@ -26,8 +26,8 @@ class AlbumInfoEditDialog(MaskDialogBase):
     def __init__(self, albumInfo: dict, parent):
         super().__init__(parent)
         self.albumInfo = albumInfo
-        self.tcon = self.albumInfo["tcon"]  # type:str
-        self.songer = self.albumInfo["songer"]  # type:str
+        self.genre = self.albumInfo["genre"]  # type:str
+        self.singer = self.albumInfo["singer"]  # type:str
         self.albumName = self.albumInfo["album"]  # type:str
         self.cover_path = self.albumInfo["coverPath"]  # type:str
         self.songInfo_list = self.albumInfo["songInfo_list"]  # type:list
@@ -49,11 +49,11 @@ class AlbumInfoEditDialog(MaskDialogBase):
             self.cover_path, (170, 170), self.scrollWidget
         )
         self.albumNameLineEdit = LineEdit(self.albumName, self.scrollWidget)
-        self.albumSongerLineEdit = LineEdit(self.songer, self.scrollWidget)
-        self.tconLineEdit = LineEdit(self.tcon, self.scrollWidget)
+        self.albumSongerLineEdit = LineEdit(self.singer, self.scrollWidget)
+        self.genreLineEdit = LineEdit(self.genre, self.scrollWidget)
         self.albumNameLabel = QLabel("专辑标题", self.scrollWidget)
         self.albumSongerLabel = QLabel("专辑歌手", self.scrollWidget)
-        self.tconLabel = QLabel("类型", self.scrollWidget)
+        self.genreLabel = QLabel("类型", self.scrollWidget)
         # 下半部分
         self.songInfoWidget_list = []
         for songInfo in self.songInfo_list:
@@ -91,7 +91,7 @@ class AlbumInfoEditDialog(MaskDialogBase):
         self.__setQss()
         # 设置补全
         # 流派补全
-        tcons = [
+        genres = [
             "POP流行",
             "Blues",
             "Japanese Pop & Rock",
@@ -106,10 +106,10 @@ class AlbumInfoEditDialog(MaskDialogBase):
             "ROCK",
             "anime",
         ]
-        self.tconCompleter = QCompleter(tcons, self.widget)
-        self.tconCompleter.setCompletionMode(QCompleter.InlineCompletion)
-        self.tconCompleter.setCaseSensitivity(Qt.CaseInsensitive)
-        self.tconLineEdit.setCompleter(self.tconCompleter)
+        self.genreCompleter = QCompleter(genres, self.widget)
+        self.genreCompleter.setCompletionMode(QCompleter.InlineCompletion)
+        self.genreCompleter.setCaseSensitivity(Qt.CaseInsensitive)
+        self.genreLineEdit.setCompleter(self.genreCompleter)
 
     def __initLayout(self):
         """ 初始化布局 """
@@ -118,16 +118,16 @@ class AlbumInfoEditDialog(MaskDialogBase):
         self.albumCover.move(30, 13)
         self.albumNameLabel.move(225, 7)
         self.albumSongerLabel.move(578, 7)
-        self.tconLabel.move(225, 77)
+        self.genreLabel.move(225, 77)
         self.albumNameLineEdit.move(225, 36)
         self.albumSongerLineEdit.move(578, 36)
-        self.tconLineEdit.move(225, 106)
+        self.genreLineEdit.move(225, 106)
         for i, songInfoWidget in enumerate(self.songInfoWidget_list):
             songInfoWidget.move(0, songInfoWidget.height() * i + 216)
         self.scrollWidget.resize(931, self.songInfoWidgetNum * 83 + 216)
         self.albumNameLineEdit.resize(327, 40)
         self.albumSongerLineEdit.resize(326, 40)
-        self.tconLineEdit.resize(327, 40)
+        self.genreLineEdit.resize(327, 40)
         self.saveButton.resize(168, 40)
         self.cancelButton.resize(168, 40)
         self.widget.setFixedSize(
@@ -206,8 +206,8 @@ class AlbumInfoEditDialog(MaskDialogBase):
         # 显示动图
         # 更新标签信息
         self.albumInfo["album"] = self.albumNameLineEdit.text()
-        self.albumInfo["songer"] = self.albumSongerLineEdit.text()
-        self.albumInfo["tcon"] = self.tconLineEdit.text()
+        self.albumInfo["singer"] = self.albumSongerLineEdit.text()
+        self.albumInfo["genre"] = self.genreLineEdit.text()
         album_list = adjustAlbumName(self.albumNameLineEdit.text())
         for songInfo, songInfoWidget in zip(
             self.songInfo_list, self.songInfoWidget_list
@@ -215,8 +215,8 @@ class AlbumInfoEditDialog(MaskDialogBase):
             songInfo["album"] = album_list[0]
             songInfo["modifiedAlbum"] = album_list[-1]
             songInfo["songName"] = songInfoWidget.songNameLineEdit.text()
-            songInfo["songer"] = songInfoWidget.songerLineEdit.text()
-            songInfo["tcon"] = self.tconLineEdit.text()
+            songInfo["singer"] = songInfoWidget.singerLineEdit.text()
+            songInfo["genre"] = self.genreLineEdit.text()
             # 根据后缀名选择曲目标签的写入方式
             songInfo["tracknumber"] = songInfoWidget.trackNumLineEdit.text()
         self.saveInfoSig.emit(self.albumInfo)
@@ -297,10 +297,10 @@ class SongInfoWidget(QWidget):
         # 创建小部件
         self.trackNumLabel = QLabel("曲目", self)
         self.songNameLabel = QLabel("歌名", self)
-        self.songerLabel = QLabel("歌手", self)
+        self.singerLabel = QLabel("歌手", self)
         self.trackNumLineEdit = LineEdit(songInfo["tracknumber"], self, False)
         self.songNameLineEdit = LineEdit(songInfo["songName"], self)
-        self.songerLineEdit = LineEdit(songInfo["songer"], self)
+        self.singerLineEdit = LineEdit(songInfo["singer"], self)
         self.errorIcon = ErrorIcon(self)
         self.bottomErrorIcon = ErrorIcon(self)
         self.bottomErrorLabel = QLabel("曲目必须是1000以下的数字", self)
@@ -329,15 +329,15 @@ class SongInfoWidget(QWidget):
         """ 初始化布局 """
         self.trackNumLabel.move(30, 0)
         self.songNameLabel.move(135, 0)
-        self.songerLabel.move(532, 0)
+        self.singerLabel.move(532, 0)
         self.trackNumLineEdit.move(30, 26)
         self.songNameLineEdit.move(135, 26)
-        self.songerLineEdit.move(532, 26)
+        self.singerLineEdit.move(532, 26)
         self.errorIcon.move(7, 36)
         self.bottomErrorIcon.move(30, 95)
         self.bottomErrorLabel.move(59, 94)
         self.trackNumLineEdit.resize(80, 41)
-        self.songerLineEdit.resize(371, 41)
+        self.singerLineEdit.resize(371, 41)
         self.songNameLineEdit.resize(371, 41)
 
     def __checkTrackNum(self):
@@ -381,7 +381,7 @@ class SongInfoWidget(QWidget):
     def setLineEditEnable(self, isEnable: bool):
         """ 设置编辑框是否启用 """
         self.songNameLineEdit.setEnabled(isEnable)
-        self.songerLineEdit.setEnabled(isEnable)
+        self.singerLineEdit.setEnabled(isEnable)
         self.trackNumLineEdit.setEnabled(isEnable)
 
 

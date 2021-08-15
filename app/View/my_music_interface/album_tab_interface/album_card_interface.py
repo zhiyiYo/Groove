@@ -19,9 +19,11 @@ class AlbumCardInterface(ScrollArea):
     """ 定义一个专辑卡视图 """
 
     playSignal = pyqtSignal(list)                               # 播放专辑
-    deleteAlbumSig = pyqtSignal(list)                           # 删除(多张)专辑，发送歌曲地址列表
+    # 删除(多张)专辑，发送歌曲地址列表
+    deleteAlbumSig = pyqtSignal(list)
     nextPlaySignal = pyqtSignal(list)                           # 下一首播放专辑
-    albumNumChanged = pyqtSignal(int)                           # 当专辑个数改变时发出这个信号给父级窗口
+    # 当专辑个数改变时发出这个信号给父级窗口
+    albumNumChanged = pyqtSignal(int)
     isAllCheckedChanged = pyqtSignal(bool)                      # 专辑卡全部选中改变
     addAlbumToPlayingSignal = pyqtSignal(list)                  # 将专辑添加到正在播放
     editAlbumInfoSignal = pyqtSignal(dict, dict)                # 完成专辑信息编辑
@@ -29,7 +31,8 @@ class AlbumCardInterface(ScrollArea):
     selectionModeStateChanged = pyqtSignal(bool)                # 进入/退出 选择模式
     checkedAlbumCardNumChanged = pyqtSignal(int)                # 选中的专辑卡数量改变
     addAlbumToNewCustomPlaylistSig = pyqtSignal(list)           # 将专辑添加到新建的播放列表
-    addAlbumToCustomPlaylistSig = pyqtSignal(str, list)         # 将专辑添加到已存在的自定义播放列表
+    addAlbumToCustomPlaylistSig = pyqtSignal(
+        str, list)         # 将专辑添加到已存在的自定义播放列表
     showLabelNavigationInterfaceSig = pyqtSignal(list, str)     # 显示标签导航界面
 
     def __init__(self, albumInfo_list: list, parent=None):
@@ -42,7 +45,7 @@ class AlbumCardInterface(ScrollArea):
         self.checkedAlbumCard_list = []  # type:List[AlbumCard]
         self.currentGroupInfo_list = []
         self.groupTitle_dict = {}  # 记录首字母或年份及其对应的第一个分组
-        # 由键值对 "albumName.songer":albumCard组成的字典，albumInfo 是引用
+        # 由键值对 "albumName.singer":albumCard组成的字典，albumInfo 是引用
         self.albumSonger2AlbumCard_dict = {}  # type:Dict[str, AlbumCard]
         self.albumSonger2AlbumInfo_dict = {}  # type:Dict[str, dict]
         # 初始化标志位
@@ -121,11 +124,11 @@ class AlbumCardInterface(ScrollArea):
                 "albumCard": albumCard,
                 "albumName": album,
                 "year": albumInfo["year"][:4],
-                "songer": albumInfo["songer"],
+                "singer": albumInfo["singer"],
                 "firstLetter": pinyin.get_initial(album[0])[0].upper(),
             }
         )
-        key = albumInfo["album"] + "." + albumInfo["songer"]
+        key = albumInfo["album"] + "." + albumInfo["singer"]
         self.albumSonger2AlbumCard_dict[key] = albumCard
         self.albumSonger2AlbumInfo_dict[key] = albumInfo
         # 专辑卡信号连接到槽函数
@@ -377,21 +380,21 @@ class AlbumCardInterface(ScrollArea):
         self.groupTitle_list.clear()
         self.__removeContainerFromVBoxLayout()
         # 创建列表
-        songer_list = []
-        self.songerGroupInfo_list = []
+        singer_list = []
+        self.singerGroupInfo_list = []
         # 将专辑加到分组中
         for albumCard_dict in self.albumCardInfo_list:
-            songer = albumCard_dict["songer"]
-            if songer not in songer_list:
-                songer_list.append(songer)
-                group = GroupBox(songer)
+            singer = albumCard_dict["singer"]
+            if singer not in singer_list:
+                singer_list.append(singer)
+                group = GroupBox(singer)
                 gridLayout = GridLayout()
                 group.setLayout(gridLayout)
                 gridLayout.setVerticalSpacing(20)
                 gridLayout.setHorizontalSpacing(10)
-                self.songerGroupInfo_list.append(
+                self.singerGroupInfo_list.append(
                     {
-                        "songer": songer,
+                        "singer": singer,
                         "container": group,
                         "albumCard_list": [],
                         "gridLayout": gridLayout,
@@ -400,14 +403,14 @@ class AlbumCardInterface(ScrollArea):
                 # 点击分组的标题时显示导航界面
                 self.groupTitle_list.append(group.title())
             # 将专辑卡添加到分组中
-            index = songer_list.index(songer)
-            self.songerGroupInfo_list[index]["albumCard_list"].append(
+            index = singer_list.index(singer)
+            self.singerGroupInfo_list[index]["albumCard_list"].append(
                 albumCard_dict["albumCard"])
         # 排序列表
-        self.songerGroupInfo_list.sort(
-            key=lambda item: pinyin.get_initial(item["songer"])[0].lower())
+        self.singerGroupInfo_list.sort(
+            key=lambda item: pinyin.get_initial(item["singer"])[0].lower())
         # 将专辑加到分组的网格布局中
-        self.currentGroupInfo_list = self.songerGroupInfo_list
+        self.currentGroupInfo_list = self.singerGroupInfo_list
         self.__addAlbumCardToGridLayout()
         self.__addContainterToVBoxLayout()
         self.__adjustScrollWidgetSize()
@@ -422,18 +425,18 @@ class AlbumCardInterface(ScrollArea):
     def findAlbumCardByAlbumInfo(self, albumInfo: dict) -> AlbumCard:
         """ 通过专辑信息查找专辑卡，没找到则返回 None """
         album = albumInfo.get("album", "")
-        songer = albumInfo.get("songer")
-        return self.findAlbumCardByName(album, songer)
+        singer = albumInfo.get("singer")
+        return self.findAlbumCardByName(album, singer)
 
-    def findAlbumCardByName(self, albumName: str, songerName: str) -> AlbumCard:
+    def findAlbumCardByName(self, albumName: str, singerName: str) -> AlbumCard:
         """ 通过专辑和歌手名字查找专辑卡，没找到则返回 None """
-        key = f'{albumName}.{songerName}'
+        key = f'{albumName}.{singerName}'
         albumCard = self.albumSonger2AlbumCard_dict.get(key, None)
         return albumCard
 
-    def findAlbumInfoByName(self, albumName: str, songerName: str) -> dict:
+    def findAlbumInfoByName(self, albumName: str, singerName: str) -> dict:
         """ 通过专辑和歌手名字查找专辑信息，没找到则返回 None """
-        key = f'{albumName}.{songerName}'
+        key = f'{albumName}.{singerName}'
         albumInfo = self.albumSonger2AlbumInfo_dict.get(key, {})
         return albumInfo
 
@@ -513,8 +516,8 @@ class AlbumCardInterface(ScrollArea):
 
     def updateOneSongInfo(self, oldSongInfo: dict, newSongInfo: dict):
         """ 更新一首歌的信息 """
-        newKey = newSongInfo["album"] + "." + newSongInfo["songer"]
-        oldKey = oldSongInfo["album"] + "." + oldSongInfo["songer"]
+        newKey = newSongInfo["album"] + "." + newSongInfo["singer"]
+        oldKey = oldSongInfo["album"] + "." + oldSongInfo["singer"]
         oldAlbumInfo = self.albumSonger2AlbumInfo_dict[oldKey]
         oldIndex = self.albumInfo_list.index(oldAlbumInfo)
 
@@ -526,6 +529,7 @@ class AlbumCardInterface(ScrollArea):
                 for i, songInfo in enumerate(albumInfo["songInfo_list"]):
                     if songInfo["songPath"] == newSongInfo["songPath"]:
                         albumInfo["songInfo_list"][i] = newSongInfo.copy()
+                        albumInfo["genre"] = albumInfo["songInfo_list"][0]["genre"]
                         self.__sortOneAlbum(albumInfo)
                         break
             # 删除旧专辑中的一首歌，并在某张专辑中添加一首歌
@@ -585,7 +589,7 @@ class AlbumCardInterface(ScrollArea):
                 "albumCard": self.albumCard_list[i],
                 "albumName": album,
                 "year": albumInfo["year"][:4],
-                "songer": albumInfo["songer"],
+                "singer": albumInfo["singer"],
                 "firstLetter": pinyin.get_initial(album)[0].upper(),
             }
 
@@ -597,7 +601,7 @@ class AlbumCardInterface(ScrollArea):
         self.albumSonger2AlbumCard_dict.clear()
         self.albumSonger2AlbumInfo_dict.clear()
         for albumCard, albumInfo in zip(self.albumCard_list, albumInfo_list):
-            key = albumInfo["album"] + "." + albumInfo["songer"]
+            key = albumInfo["album"] + "." + albumInfo["singer"]
             self.albumSonger2AlbumCard_dict[key] = albumCard
             self.albumSonger2AlbumInfo_dict[key] = albumInfo
 
@@ -660,7 +664,7 @@ class AlbumCardInterface(ScrollArea):
     # todo: 函数写的有问题，需要修复，key 有点问题
     def __saveAlbumInfoSlot(self, oldAlbumInfo: dict, newAlbumInfo: dict):
         """ 保存专辑信息槽函数 """
-        key = oldAlbumInfo["album"] + "." + oldAlbumInfo["songer"]
+        key = oldAlbumInfo["album"] + "." + oldAlbumInfo["singer"]
         self.albumSonger2AlbumCard_dict[key] = self.sender()
         self.saveAlbumInfoObject.saveAlbumInfoSlot(
             newAlbumInfo["songInfo_list"])
@@ -669,14 +673,14 @@ class AlbumCardInterface(ScrollArea):
     def __getAlbumInfoByOneSong(self, songInfo: dict):
         """ 从一首歌创建一个专辑信息 """
         album = songInfo["album"]  # type:str
-        songer = songInfo["songer"]  # type:str
+        singer = songInfo["singer"]  # type:str
         modifiedAlbum = songInfo["modifiedAlbum"]  # type:str
         coverPath = getCoverPath(modifiedAlbum, 'album_big')
         albumInfo = {
             "modifiedTime": songInfo["createTime"],
             "album": album,
-            "songer": songer,
-            "tcon": songInfo["tcon"],
+            "singer": singer,
+            "genre": songInfo["genre"],
             "year": songInfo["year"],
             "coverPath": coverPath,
             "songInfo_list": [songInfo.copy()],

@@ -1,4 +1,4 @@
-QWidget#songerTabInterface {
+QWidget#singerTabInterface {
     background-color: white;
 }
 
@@ -7,7 +7,7 @@ QPushButton#randomPlayButton {
     border: none;
     margin-top: 2px;
     margin-left: 12px;
-    font:15px 'Microsoft YaHei';
+    font: 15px 'Microsoft YaHei';
 }
 
 QPushButton#randomPlayButton:hover {
@@ -22,6 +22,6 @@ QLabel {
 
 QLabel#AToZ {
     padding-top: 1px;
-    color:rgb(102, 102, 102);
-    font:16px 'Microsoft YaHei';
+    color: rgb(102, 102, 102);
+    font: 16px 'Microsoft YaHei';
 }

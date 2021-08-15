@@ -45,7 +45,7 @@ class PlayingInterface(QWidget):
     loopModeChanged = pyqtSignal(QMediaPlaylist.PlaybackMode)
     # 点击歌曲卡或者滑动歌曲信息卡滑槽时直接设置新的index，index由自己决定
     currentIndexChanged = pyqtSignal(int)
-    switchToAlbumInterfaceSig = pyqtSignal(str, str)     # albumName,songerName
+    switchToAlbumInterfaceSig = pyqtSignal(str, str)     # albumName,singerName
     showSmallestPlayInterfaceSig = pyqtSignal()          # 进入最小播放模式
     addSongsToNewCustomPlaylistSig = pyqtSignal(list)    # 将歌曲添加到新的自定义播放列表
     addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 将歌曲添加到已存在的自定义播放列表
@@ -453,7 +453,7 @@ class PlayingInterface(QWidget):
         """ 选择栏显示专辑按钮点击槽函数 """
         songCard = self.songListWidget.checkedSongCard_list[0]
         songCard.setChecked(False)
-        self.switchToAlbumInterfaceSig.emit(songCard.album, songCard.songer)
+        self.switchToAlbumInterfaceSig.emit(songCard.album, songCard.singer)
 
     def __onSelectionModeBarDeleteButtonClicked(self):
         """ 选择栏播放按钮点击槽函数 """

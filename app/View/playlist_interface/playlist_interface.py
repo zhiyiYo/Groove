@@ -184,7 +184,7 @@ class PlaylistInterface(ScrollArea):
         """ 选择栏显示专辑按钮点击槽函数 """
         songCard = self.songListWidget.checkedSongCard_list[0]
         songCard.setChecked(False)
-        self.switchToAlbumInterfaceSig.emit(songCard.album, songCard.songer)
+        self.switchToAlbumInterfaceSig.emit(songCard.album, songCard.singer)
 
     def __onSelectionModeBarDeleteButtonClicked(self):
         """ 选择模式栏删除按钮槽函数 """

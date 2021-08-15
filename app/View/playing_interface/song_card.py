@@ -17,7 +17,7 @@ class SongCard(QWidget):
     checkedStateChanged = pyqtSignal(int, bool)
     switchToAlbumInterfaceSig = pyqtSignal(str, str)
     addSongToNewCustomPlaylistSig = pyqtSignal(dict)  # 添加歌曲到新建的播放列表
-    addSongToCustomPlaylistSig = pyqtSignal(str, dict)# 添加歌曲到已存在的播放列表
+    addSongToCustomPlaylistSig = pyqtSignal(str, dict)  # 添加歌曲到已存在的播放列表
 
     def __init__(self, songInfo: dict, parent=None):
         super().__init__(parent=parent)
@@ -35,7 +35,7 @@ class SongCard(QWidget):
         self.itemIndex = None
         # 创建小部件
         self.songNameCard = SongNameCard(self.songName, self)
-        self.songerLabel = ClickableLabel(self.songer, self, False)
+        self.singerLabel = ClickableLabel(self.singer, self, False)
         self.albumLabel = ClickableLabel(self.album, self, False)
         self.yearLabel = QLabel(self.year, self)
         self.durationLabel = QLabel(self.duration, self)
@@ -46,7 +46,7 @@ class SongCard(QWidget):
         self.checkBox = self.songNameCard.checkBox
         self.label_list = [
             self.songNameLabel,
-            self.songerLabel,
+            self.singerLabel,
             self.albumLabel,
             self.yearLabel,
             self.durationLabel
@@ -63,13 +63,13 @@ class SongCard(QWidget):
         self.resize(1234, 60)
         self.setFixedHeight(60)
         self.albumLabel.setCursor(Qt.PointingHandCursor)
-        self.songerLabel.setCursor(Qt.PointingHandCursor)
+        self.singerLabel.setCursor(Qt.PointingHandCursor)
         self.setAttribute(Qt.WA_StyledBackground)
         # 分配ID和属性
         self.setObjectName("songCard")
         self.songNameLabel.setObjectName('songNameLabel')
         self.albumLabel.setObjectName("clickableLabel")
-        self.songerLabel.setObjectName("clickableLabel")
+        self.singerLabel.setObjectName("clickableLabel")
         self.setState(False, False, False, False)
         # 安装事件过滤器
         self.installEventFilter(self)
@@ -110,7 +110,7 @@ class SongCard(QWidget):
         """ 从歌曲信息中分离信息 """
         self.songInfo = songInfo
         self.year = songInfo["year"]  # type:str
-        self.songer = songInfo["songer"]  # type:str
+        self.singer = songInfo["singer"]  # type:str
         self.album = songInfo["album"]  # type:str
         self.duration = songInfo["duration"]  # type:str
         self.songName = songInfo["songName"]  # type:str
@@ -121,7 +121,7 @@ class SongCard(QWidget):
         self.__deltaX_list = [13, 5, -3, -11, -13]
         self.__aniWidget_list = [
             self.songNameCard,
-            self.songerLabel,
+            self.singerLabel,
             self.albumLabel,
             self.yearLabel,
             self.durationLabel,
@@ -221,8 +221,8 @@ class SongCard(QWidget):
         # 移动标签
         self.durationLabel.move(self.width() - 45, 20)
         self.yearLabel.move(self.width() - 190, 20)
-        self.songerLabel.move(self.__maxSongNameCardWidth + 26, 20)
-        self.albumLabel.move(self.songerLabel.x() +
+        self.singerLabel.move(self.__maxSongNameCardWidth + 26, 20)
+        self.albumLabel.move(self.singerLabel.x() +
                              self.__maxSongerLabelWidth + 15, 20)
         # 更新动画目标移动位置
         self.__getAniTargetX_list()
@@ -230,10 +230,10 @@ class SongCard(QWidget):
     def __adjustWidgetWidth(self):
         """ 调整小部件宽度 """
         self.songNameCard.resize(self.__maxSongNameCardWidth, 60)
-        if self.songerWidth > self.__maxSongerLabelWidth:
-            self.songerLabel.setFixedWidth(self.__maxSongerLabelWidth)
+        if self.singerWidth > self.__maxSongerLabelWidth:
+            self.singerLabel.setFixedWidth(self.__maxSongerLabelWidth)
         else:
-            self.songerLabel.setFixedWidth(self.songerWidth)
+            self.singerLabel.setFixedWidth(self.singerWidth)
         if self.albumWidth > self.__maxAlbumLabelWidth:
             self.albumLabel.setFixedWidth(self.__maxAlbumLabelWidth)
         else:
@@ -242,7 +242,7 @@ class SongCard(QWidget):
     def __getLabelWidth(self):
         """ 计算标签的长度 """
         fontMetrics = QFontMetrics(QFont("Microsoft YaHei", 9))
-        self.songerWidth = fontMetrics.width(self.songInfo["songer"])
+        self.singerWidth = fontMetrics.width(self.songInfo["singer"])
         self.albumWidth = fontMetrics.width(self.songInfo["album"])
 
     def updateSongCard(self, songInfo: dict):
@@ -250,15 +250,15 @@ class SongCard(QWidget):
         self.resize(self.size())
         self.__getInfo(songInfo)
         self.songNameCard.setSongName(songInfo["songName"])
-        self.songerLabel.setText(songInfo["songer"])
+        self.singerLabel.setText(songInfo["singer"])
         self.albumLabel.setText(songInfo["album"])
         self.yearLabel.setText(songInfo["year"])
         self.durationLabel.setText(songInfo["duration"])
         # 调整宽度
         self.__getLabelWidth()
-        songerWidth = (
-            self.songerWidth
-            if self.songerWidth <= self.__maxSongerLabelWidth
+        singerWidth = (
+            self.singerWidth
+            if self.singerWidth <= self.__maxSongerLabelWidth
             else self.__maxSongerLabelWidth
         )
         albumWidth = (
@@ -266,7 +266,7 @@ class SongCard(QWidget):
             if self.albumWidth <= self.__maxAlbumLabelWidth
             else self.__maxAlbumLabelWidth
         )
-        self.songerLabel.setFixedWidth(songerWidth)
+        self.singerLabel.setFixedWidth(singerWidth)
         self.albumLabel.setFixedWidth(albumWidth)
 
     def setPlay(self, isPlay: bool):
@@ -317,7 +317,7 @@ class SongCard(QWidget):
             lambda: self.clicked.emit(self.itemIndex))
         self.albumLabel.clicked.connect(
             lambda: self.switchToAlbumInterfaceSig.emit(
-                self.albumLabel.text(), self.songerLabel.text()))
+                self.albumLabel.text(), self.singerLabel.text()))
         self.checkBox.stateChanged.connect(self.onCheckedStateChanged)
         self.addToButton.clicked.connect(self.__showAddToMenu)
 

@@ -117,7 +117,7 @@ class SongListWidget(BasicSongListWidget):
             lambda: self.songCard_list[self.currentRow()].setChecked(True))
         contextMenu.showAlbumAct.triggered.connect(lambda: self.switchToAlbumInterfaceSig.emit(
             self.songCard_list[self.currentRow()].album,
-            self.songCard_list[self.currentRow()].songer))
+            self.songCard_list[self.currentRow()].singer))
 
         contextMenu.addToMenu.playingAct.triggered.connect(
             lambda: self.addSongToPlayingSignal.emit(

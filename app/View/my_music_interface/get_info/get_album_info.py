@@ -16,18 +16,18 @@ class AlbumInfoGetter:
 
         for songInfo in songInfo_list:
             album = songInfo["album"]  # type:str
-            songer = songInfo["songer"]  # type:str
+            singer = songInfo["singer"]  # type:str
             modifiedAlbum = songInfo["modifiedAlbum"]  # type:str
             # 如果(专辑名,歌手名)不在列表中，就往列表中插入新的专辑信息字典
-            if (album, songer) not in albumSonger_list:
-                albumSonger_list.append((album, songer))
+            if (album, singer) not in albumSonger_list:
+                albumSonger_list.append((album, singer))
                 coverPath = getCoverPath(modifiedAlbum, 'album_big')
                 albumInfo_list.append(
                     {
                         "modifiedTime": songInfo["createTime"],
                         "album": album,
-                        "songer": songer,
-                        "tcon": songInfo["tcon"],
+                        "singer": singer,
+                        "genre": songInfo["genre"],
                         "year": songInfo["year"],
                         "coverPath": coverPath,
                         "songInfo_list": [songInfo],
@@ -35,7 +35,7 @@ class AlbumInfoGetter:
                     }
                 )
             else:
-                index = albumSonger_list.index((album, songer))
+                index = albumSonger_list.index((album, singer))
                 albumInfo = albumInfo_list[index]
                 albumInfo["songInfo_list"].append(songInfo)
                 # 更新专辑的更新时间
@@ -69,4 +69,4 @@ class AlbumInfoGetter:
 
     def sortBySonger(self):
         """ 以歌手名排序专辑信息列表 """
-        self.albumInfo_list.sort(key=lambda albumInfo: albumInfo["songer"])
+        self.albumInfo_list.sort(key=lambda albumInfo: albumInfo["singer"])

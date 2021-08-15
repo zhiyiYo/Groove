@@ -42,7 +42,7 @@
 ![编辑信息](docs/screenshot/编辑信息.gif)
 
 * Automatically retrieve and update missing metadata
-![爬虫](docs/screenshot/爬虫.gif)
+![爬虫](docs/screenshot/爬取歌曲信息.gif)
 
 ## Quick start
 1. Create virtual environment:
@@ -54,13 +54,9 @@
     ```
 
 2. Download [LAV Filters](https://github.com/Nevcairiel/LAVFilters/releases).
-3. (Optional) Download `Firefox` and `geckodriver.exe`.
-4. Open Groove music:
+3. Open Groove music:
 
     ```shell
     conda activate Groove
     python Groove.py
     ```
-
-## Notes
-* If you want to use the function of automatically obtaining song metadata, you need to download `Firefox` and `geckodriver.exe`, then add the directory of geckodriver.exe to the environment variable.

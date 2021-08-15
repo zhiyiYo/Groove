@@ -16,13 +16,12 @@ class NavigationInterface(QWidget):
     IN_LINE = 2     # 导航窗口展开
     searchSig = pyqtSignal(str)                     # 搜索信号
     displayModeChanged = pyqtSignal(int)            # 显示模式改变
-    switchInterfaceSig = pyqtSignal(int)            # 切换界面信号
     showPlayingInterfaceSig = pyqtSignal()          # 显示正在播放界面信号
     showCreatePlaylistDialogSig = pyqtSignal()      # 显示创建播放列表对话框信号
     switchToSettingInterfaceSig = pyqtSignal()      # 切换到设置界面信号
     switchToMyMusicInterfaceSig = pyqtSignal()      # 切换到我的音乐界面
     switchToPlaylistInterfaceSig = pyqtSignal(str)  # 切换到播放列表界面信号
-    switchToPlaylistCardInterfaceSig = pyqtSignal() # 切换到播放列表卡界面
+    switchToPlaylistCardInterfaceSig = pyqtSignal()  # 切换到播放列表卡界面
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -52,10 +51,6 @@ class NavigationInterface(QWidget):
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
         # 发送切换窗口信号
-        self.navigationBar.switchInterfaceSig.connect(self.switchInterfaceSig)
-        self.navigationMenu.switchInterfaceSig.connect(self.switchInterfaceSig)
-        self.navigationWidget.switchInterfaceSig.connect(
-            self.switchInterfaceSig)
         self.navigationWidget.switchToPlaylistInterfaceSig.connect(
             self.switchToPlaylistInterfaceSig)
         self.navigationMenu.switchToPlaylistInterfaceSig.connect(
@@ -89,7 +84,7 @@ class NavigationInterface(QWidget):
                 self.showPlayingInterfaceSig)
             widget.settingButton.clicked.connect(
                 self.switchToSettingInterfaceSig)
-            widget.musicGroupButton.clicked.connect(
+            widget.myMusicButton.clicked.connect(
                 self.switchToMyMusicInterfaceSig)
             widget.playlistButton.clicked.connect(
                 self.switchToPlaylistCardInterfaceSig)

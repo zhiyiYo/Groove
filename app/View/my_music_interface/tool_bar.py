@@ -24,7 +24,7 @@ class ToolBar(QWidget):
         self.myMusicLabel = QLabel("我的音乐", self)
         # 创建导航按钮
         self.songTabButton = TabButton("歌曲", self, 0)
-        self.songerTabButton = TabButton("歌手", self, 1)
+        self.singerTabButton = TabButton("歌手", self, 1)
         self.albumTabButton = TabButton("专辑", self, 1)
         # 创建底部按钮
         self.randomPlayAllButton = ThreeStatePushButton(
@@ -90,7 +90,7 @@ class ToolBar(QWidget):
         self.myMusicLabel.move(30, 54)
         self.songTabButton.move(33, 136)
         self.albumTabButton.move(239, 136)
-        self.songerTabButton.move(136, 136)
+        self.singerTabButton.move(136, 136)
         self.randomPlayAllButton.move(31, 199)
         self.sortModeLabel.move(231, 204)
         self.songSortModeButton.move(306, 199)

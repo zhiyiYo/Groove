@@ -374,7 +374,7 @@ class BasicSongListWidget(ListWidget):
         Parameters
         ----------
         key: str
-            排序依据，有'createTime'、'songName'、'songer'和'tracknumber'四种
+            排序依据，有'createTime'、'songName'、'singer'和'tracknumber'四种
 
         isReverse: bool
             是否降序，只对前三种排序方式有效

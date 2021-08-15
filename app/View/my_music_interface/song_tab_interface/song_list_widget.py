@@ -84,7 +84,7 @@ class SongListWidget(BasicSongListWidget):
             return
         self.sortMode = sortMode
         key = {"添加日期": "createTime", "A到Z": "songName",
-               "歌手": "songer"}[sortMode]
+               "歌手": "singer"}[sortMode]
         songInfo_list = self.sortSongInfo(key)
 
         self.updateAllSongCards(songInfo_list)
@@ -123,7 +123,7 @@ class SongListWidget(BasicSongListWidget):
         contextMenu.showAlbumAct.triggered.connect(
             lambda: self.switchToAlbumInterfaceSig.emit(
                 self.songCard_list[self.currentRow()].album,
-                self.songCard_list[self.currentRow()].songer,
+                self.songCard_list[self.currentRow()].singer,
             )
         )
         # 删除歌曲卡

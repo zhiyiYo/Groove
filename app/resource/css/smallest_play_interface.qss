@@ -8,7 +8,7 @@ QLabel#songNameLabel {
     font-weight: bold;
 }
 
-QLabel#songerNameLabel {
+QLabel#singerNameLabel {
     color: white;
     font: 11pt 'Microsoft YaHei';
 }

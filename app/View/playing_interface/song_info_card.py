@@ -21,7 +21,7 @@ class SongInfoCard(QWidget):
         self.timer = QTimer(self)
         self.albumCoverLabel = QLabel(self)
         self.songNameLabel = ClickableLabel(parent=self)
-        self.songerAlbumLabel = ClickableLabel(parent=self)
+        self.singerAlbumLabel = ClickableLabel(parent=self)
         # 初始化标志位
         self.isPlayBarVisible = False
         # 初始化
@@ -41,27 +41,27 @@ class SongInfoCard(QWidget):
         self.timer.timeout.connect(self.timerSlot)
         # 分配ID
         self.songNameLabel.setObjectName("songNameLabel")
-        self.songerAlbumLabel.setObjectName("songerAlbumLabel")
+        self.singerAlbumLabel.setObjectName("singerAlbumLabel")
         # 设置属性
         self.songNameLabel.setProperty("state", "normal")
-        self.songerAlbumLabel.setProperty("state", "normal")
+        self.singerAlbumLabel.setProperty("state", "normal")
         # self.__initLayout()
         self.__setQss()
         # 安装事件过滤器
         self.songNameLabel.installEventFilter(self)
-        self.songerAlbumLabel.installEventFilter(self)
+        self.singerAlbumLabel.installEventFilter(self)
         # 信号连接到槽
 
         def slot():
-            return self.switchToAlbumInterfaceSig.emit(self.album, self.songerName)
+            return self.switchToAlbumInterfaceSig.emit(self.album, self.singerName)
 
         self.songNameLabel.clicked.connect(slot)
-        self.songerAlbumLabel.clicked.connect(slot)
+        self.singerAlbumLabel.clicked.connect(slot)
 
     def __initLayout(self):
         """ 初始化布局 """
         self.songNameLabel.move(186, 30)
-        self.songerAlbumLabel.move(186, 82)
+        self.singerAlbumLabel.move(186, 82)
 
     def setSongInfo(self, songInfo: dict):
         """ 设置歌曲信息 """
@@ -70,14 +70,15 @@ class SongInfoCard(QWidget):
             self.songInfo = {}
         self.album = self.songInfo.get("album", "未知专辑")
         self.songName = self.songInfo.get("songName", "未知歌名")
-        self.songerName = self.songInfo.get("songer", "未知歌手")
-        self.albumCoverPath = getCoverPath(self.songInfo.get("modifiedAlbum"), "album_big")
+        self.singerName = self.songInfo.get("singer", "未知歌手")
+        self.albumCoverPath = getCoverPath(
+            self.songInfo.get("modifiedAlbum"), "album_big")
 
     def updateCard(self, songInfo: dict):
         """ 更新歌曲信息卡 """
         self.setSongInfo(songInfo)
         self.songNameLabel.setText(self.songName)
-        self.songerAlbumLabel.setText(self.songerName + " • " + self.album)
+        self.singerAlbumLabel.setText(self.singerName + " • " + self.album)
         self.albumCoverLabel.setPixmap(
             QPixmap(self.albumCoverPath).scaled(
                 136, 136, Qt.KeepAspectRatio, Qt.SmoothTransformation
@@ -95,18 +96,18 @@ class SongInfoCard(QWidget):
 
     def eventFilter(self, obj, e: QEvent):
         """ 重写事件过滤器 """
-        if obj in [self.songNameLabel, self.songerAlbumLabel]:
+        if obj in [self.songNameLabel, self.singerAlbumLabel]:
             if e.type() == QEvent.MouseButtonPress:
                 self.songNameLabel.setProperty("state", "pressed")
-                self.songerAlbumLabel.setProperty("state", "pressed")
+                self.singerAlbumLabel.setProperty("state", "pressed")
                 self.setStyle(QApplication.style())
             elif e.type() == QEvent.Enter:
                 self.songNameLabel.setProperty("state", "hover")
-                self.songerAlbumLabel.setProperty("state", "hover")
+                self.singerAlbumLabel.setProperty("state", "hover")
                 self.setStyle(QApplication.style())
             elif e.type() in [QEvent.MouseButtonRelease, QEvent.Leave]:
                 self.songNameLabel.setProperty("state", "normal")
-                self.songerAlbumLabel.setProperty("state", "normal")
+                self.singerAlbumLabel.setProperty("state", "normal")
                 self.setStyle(QApplication.style())
         return super().eventFilter(obj, e)
 
@@ -132,10 +133,10 @@ class SongInfoCard(QWidget):
         maxWidth = self.width() - 232
         # 设置专辑名歌手名标签的长度
         fontMetrics = QFontMetrics(QFont("Microsoft YaHei", 13))
-        songerAlbumWidth = sum(
-            [fontMetrics.width(i) for i in self.songerAlbumLabel.text()]
+        singerAlbumWidth = sum(
+            [fontMetrics.width(i) for i in self.singerAlbumLabel.text()]
         )
-        self.songerAlbumLabel.setFixedWidth(min(maxWidth, songerAlbumWidth))
+        self.singerAlbumLabel.setFixedWidth(min(maxWidth, singerAlbumWidth))
         # 调整专辑名标签
         fontMetrics = QFontMetrics(QFont("Microsoft YaHei", 21, 75))
         newSongName_list = list(self.songName)  # type:list
@@ -150,10 +151,10 @@ class SongInfoCard(QWidget):
         if isWrap:
             self.songNameLabel.setText("".join(newSongName_list))
             self.songNameLabel.move(186, 6)
-            self.songerAlbumLabel.move(186, 101)
+            self.singerAlbumLabel.move(186, 101)
             self.songNameLabel.setFixedSize(maxWidth, 83)
         else:
             self.songNameLabel.move(186, 26)
-            self.songerAlbumLabel.move(186, 82)
+            self.singerAlbumLabel.move(186, 82)
             self.songNameLabel.setFixedSize(totalWidth, 46)
             self.songNameLabel.setText(self.songName)

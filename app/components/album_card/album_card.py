@@ -24,7 +24,7 @@ class AlbumCard(PerspectiveWidget):
     addToPlayingSignal = pyqtSignal(list)  # 将专辑添加到正在播放
     hideBlurAlbumBackgroundSig = pyqtSignal()
     editAlbumInfoSignal = pyqtSignal(dict, dict)
-    switchToAlbumInterfaceSig = pyqtSignal(str, str)  # albumName, songerName
+    switchToAlbumInterfaceSig = pyqtSignal(str, str)  # albumName, singerName
     checkedStateChanged = pyqtSignal(QWidget, bool)
     addAlbumToNewCustomPlaylistSig = pyqtSignal(list)  # 将专辑添加到新建的播放列表
     addAlbumToCustomPlaylistSig = pyqtSignal(str, list)  # 将专辑添加到已存在的自定义播放列表
@@ -46,7 +46,7 @@ class AlbumCard(PerspectiveWidget):
         """ 创建小部件 """
         # 实例化专辑名和歌手名
         self.albumNameLabel = ClickableLabel(self.albumInfo["album"], self)
-        self.songerNameLabel = ClickableLabel(self.albumInfo["songer"], self)
+        self.singerNameLabel = ClickableLabel(self.albumInfo["singer"], self)
         # 实例化封面和按钮
         self.albumPic = QLabel(self)
         self.playButton = BlurButton(
@@ -71,7 +71,7 @@ class AlbumCard(PerspectiveWidget):
         self.setFixedSize(210, 290)
         self.setAttribute(Qt.WA_StyledBackground)
         self.albumPic.setFixedSize(200, 200)
-        self.songerNameLabel.setFixedWidth(210)
+        self.singerNameLabel.setFixedWidth(210)
         self.albumNameLabel.setFixedWidth(210)
         self.playButton.move(35, 70)
         self.addToButton.move(105, 70)
@@ -83,16 +83,16 @@ class AlbumCard(PerspectiveWidget):
         self.playButton.hide()
         self.addToButton.hide()
         # 设置鼠标光标
-        self.songerNameLabel.setCursor(Qt.PointingHandCursor)
+        self.singerNameLabel.setCursor(Qt.PointingHandCursor)
         # 设置部件位置
         self.__initLayout()
         # 分配ID和属性
         self.setObjectName("albumCard")
         self.albumNameLabel.setObjectName("albumNameLabel")
-        self.songerNameLabel.setObjectName("songerNameLabel")
+        self.singerNameLabel.setObjectName("singerNameLabel")
         self.setProperty("isChecked", "False")
         self.albumNameLabel.setProperty("isChecked", "False")
-        self.songerNameLabel.setProperty("isChecked", "False")
+        self.singerNameLabel.setProperty("isChecked", "False")
         # 将信号连接到槽函数
         self.playButton.clicked.connect(
             lambda: self.playSignal.emit(self.songInfo_list)
@@ -104,7 +104,7 @@ class AlbumCard(PerspectiveWidget):
         """ 初始化布局 """
         self.albumPic.move(5, 5)
         self.albumNameLabel.move(5, 213)
-        self.songerNameLabel.move(5, 239)
+        self.singerNameLabel.move(5, 239)
         self.checkBox.move(178, 8)
         self.checkBox.hide()
         self.__adjustLabel()
@@ -158,11 +158,11 @@ class AlbumCard(PerspectiveWidget):
         # 给歌手名添加省略号
         fontMetrics = QFontMetrics(QFont("Microsoft YaHei", 10, 25))
         newSongerName = fontMetrics.elidedText(
-            self.songerNameLabel.text(), Qt.ElideRight, 200)
-        self.songerNameLabel.setText(newSongerName)
-        self.songerNameLabel.adjustSize()
+            self.singerNameLabel.text(), Qt.ElideRight, 200)
+        self.singerNameLabel.setText(newSongerName)
+        self.singerNameLabel.adjustSize()
         self.albumNameLabel.adjustSize()
-        self.songerNameLabel.move(
+        self.singerNameLabel.move(
             5, self.albumNameLabel.y() + self.albumNameLabel.height() - 4)
 
     def mouseReleaseEvent(self, e):
@@ -174,7 +174,7 @@ class AlbumCard(PerspectiveWidget):
             else:
                 # 不处于选择模式时且鼠标松开事件不是复选框发来的才发送切换到专辑界面的信号
                 self.switchToAlbumInterfaceSig.emit(
-                    self.albumName, self.songerName)
+                    self.albumName, self.singerName)
 
     def updateWindow(self, newAlbumInfo: dict):
         """ 更新专辑卡窗口信息 """
@@ -184,7 +184,7 @@ class AlbumCard(PerspectiveWidget):
         self.albumPic.setPixmap(QPixmap(self.coverPath).scaled(
             200, 200, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
         self.albumNameLabel.setText(self.albumName)
-        self.songerNameLabel.setText(self.songerName)
+        self.singerNameLabel.setText(self.singerName)
         self.playButton.setBlurPic(self.coverPath, 40)
         self.addToButton.setBlurPic(self.coverPath, 40)
         self.__adjustLabel()
@@ -194,7 +194,7 @@ class AlbumCard(PerspectiveWidget):
         self.albumInfo = albumInfo
         self.songInfo_list = self.albumInfo.get("songInfo_list", [])
         self.albumName = albumInfo.get("album", "未知专辑")     # type:str
-        self.songerName = albumInfo.get("songer", "未知歌手")   # type:str
+        self.singerName = albumInfo.get("singer", "未知歌手")   # type:str
         self.coverPath = albumInfo.get(
             "coverPath", "app/resource/images/default_covers/默认专辑封面_200_200.png")
 
@@ -238,7 +238,7 @@ class AlbumCard(PerspectiveWidget):
         # 更新属性和背景色
         self.setProperty("isChecked", str(self.isChecked))
         self.albumNameLabel.setProperty("isChecked", str(self.isChecked))
-        self.songerNameLabel.setProperty("isChecked", str(self.isChecked))
+        self.singerNameLabel.setProperty("isChecked", str(self.isChecked))
         self.setStyle(QApplication.style())
 
     def setChecked(self, isChecked: bool):

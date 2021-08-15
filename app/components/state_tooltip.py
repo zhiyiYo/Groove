@@ -64,7 +64,7 @@ class StateTooltip(QWidget):
         self.titleLabel.adjustSize()
         self.contentLabel.adjustSize()
         self.setFixedSize(max(self.titleLabel.width(),
-                          self.contentLabel.width()) + 40, 64)
+                          self.contentLabel.width()) + 70, 64)
         self.titleLabel.move(40, 11)
         self.contentLabel.move(15, 34)
         self.closeButton.move(self.width() - 30, 23)
@@ -75,6 +75,8 @@ class StateTooltip(QWidget):
         self.contentLabel.setObjectName("contentLabel")
         with open("app/resource/css/state_tooltip.qss", encoding="utf-8") as f:
             self.setStyleSheet(f.read())
+        self.titleLabel.adjustSize()
+        self.contentLabel.adjustSize()
 
     def setTitle(self, title: str):
         """ 设置提示框的标题 """

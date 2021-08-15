@@ -19,7 +19,7 @@ class GetAlbumCover:
         target_path_list: list
             目标文件夹路径列表
         """
-        self.album_cover_folder = r"app\resource\Album_Cover"
+        self.album_cover_folder = "app/resource/Album_Cover"
         self.target_path_list = target_path_list
         self.songInfo = SongInfoGetter(target_path_list)
         # 获取封面
@@ -108,8 +108,7 @@ class GetAlbumCover:
     def __isPicExist(self, songInfo: dict):
         """ 检测封面是否存在 """
         sub_album_cover_folder = os.path.join(
-            self.album_cover_folder, songInfo["modifiedAlbum"]
-        )
+            self.album_cover_folder, songInfo["modifiedAlbum"])
         # 默认封面存在
         isPicExist = True
         if os.path.exists(sub_album_cover_folder):
@@ -144,8 +143,7 @@ class GetAlbumCover:
         suffix = self.__getPicSuffix(pic_data)
         # 封面路径
         pic_path = os.path.join(
-            sub_album_cover_folder, songInfo["modifiedAlbum"] + suffix
-        )
+            sub_album_cover_folder, songInfo["modifiedAlbum"] + suffix)
         # 写入封面
         with open(pic_path, "wb") as f:
             f.write(pic_data)

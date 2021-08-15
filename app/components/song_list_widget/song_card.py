@@ -16,10 +16,10 @@ class SongTabSongCard(BasicSongCard):
     def __init__(self, songInfo: dict, parent=None):
         super().__init__(songInfo, SongCardType.SONG_TAB_SONG_CARD, parent)
         # 创建小部件
-        self.songerLabel = ClickableLabel(self.songer, self, False)
+        self.singerLabel = ClickableLabel(self.singer, self, False)
         self.albumLabel = ClickableLabel(self.album, self, False)
         self.yearLabel = QLabel(self.year, self)
-        self.tconLabel = QLabel(self.tcon, self)
+        self.genreLabel = QLabel(self.genre, self)
         self.durationLabel = QLabel(self.duration, self)
         # 初始化
         self.__initWidget()
@@ -29,17 +29,18 @@ class SongTabSongCard(BasicSongCard):
         self.yearLabel.setFixedWidth(60)
         self.addLabels(
             [
-                self.songerLabel,
+                self.singerLabel,
                 self.albumLabel,
                 self.yearLabel,
-                self.tconLabel,
+                self.genreLabel,
                 self.durationLabel,
             ],
             [30, 15, 27, 19, 70],
         )
         # 年份的宽度固定为60，时长固定距离窗口右边界45px
         self.setScalableWidgets(
-            [self.songNameCard, self.songerLabel, self.albumLabel, self.tconLabel],
+            [self.songNameCard, self.singerLabel,
+                self.albumLabel, self.genreLabel],
             [326, 191, 191, 178],
             105,
         )
@@ -48,14 +49,14 @@ class SongTabSongCard(BasicSongCard):
         self.setAnimation(self.widget_list, [13, 6, -3, -6, -8, -13])
         self.setAttribute(Qt.WA_StyledBackground)
         # 设置鼠标样式
-        self.setClickableLabels([self.songerLabel, self.albumLabel])
+        self.setClickableLabels([self.singerLabel, self.albumLabel])
         self.setClickableLabelCursor(Qt.PointingHandCursor)
         # 分配ID和属性
         self.setWidgetState("notSelected-leave")
         self.setCheckBoxBtLabelState("notSelected-notPlay")
         # 信号连接到槽
         self.albumLabel.clicked.connect(
-            lambda: self.switchToAlbumInterfaceSig.emit(self.album, self.songer))
+            lambda: self.switchToAlbumInterfaceSig.emit(self.album, self.singer))
 
     def updateSongCard(self, songInfo: dict):
         """ 更新歌曲卡信息 """
@@ -63,10 +64,10 @@ class SongTabSongCard(BasicSongCard):
             return
         self._getInfo(songInfo)
         self.songNameCard.updateSongNameCard(self.songName)
-        self.songerLabel.setText(self.songer)
+        self.singerLabel.setText(self.singer)
         self.albumLabel.setText(self.album)
         self.yearLabel.setText(self.year)
-        self.tconLabel.setText(self.tcon)
+        self.genreLabel.setText(self.genre)
         self.durationLabel.setText(self.duration)
         # 调整小部件宽度
         self.adjustWidgetWidth()
@@ -85,23 +86,23 @@ class AlbumInterfaceSongCard(BasicSongCard):
     def __init__(self, songInfo: dict, parent=None):
         super().__init__(songInfo, SongCardType.ALBUM_INTERFACE_SONG_CARD, parent)
         # 创建小部件
-        self.songerLabel = ClickableLabel(songInfo["songer"], self, False)
+        self.singerLabel = ClickableLabel(songInfo["singer"], self, False)
         self.durationLabel = QLabel(songInfo["duration"], self)
         # 初始化
         self.__initWidget()
 
     def __initWidget(self):
         """ 初始化小部件 """
-        self.addLabels([self.songerLabel, self.durationLabel], [16, 70])
+        self.addLabels([self.singerLabel, self.durationLabel], [16, 70])
         # 设置可伸缩的小部件及其初始化长度
         self.setScalableWidgets(
-            [self.songNameCard, self.songerLabel], [554, 401], 45)
+            [self.songNameCard, self.singerLabel], [554, 401], 45)
         self.setDynamicStyleLabels(self.label_list)
         # 设置动画
         self.setAnimation(self.widget_list, [13, -3, -13])
         self.setAttribute(Qt.WA_StyledBackground)
         # 设置可点击标签列表
-        self.setClickableLabels([self.songerLabel])
+        self.setClickableLabels([self.singerLabel])
         self.setClickableLabelCursor(Qt.PointingHandCursor)
         # 分配ID和属性
         self.setWidgetState("notSelected-leave")
@@ -114,7 +115,7 @@ class AlbumInterfaceSongCard(BasicSongCard):
         self._getInfo(songInfo)
         self.songNameCard.updateSongNameCard(
             songInfo["songName"], songInfo["tracknumber"])
-        self.songerLabel.setText(songInfo["songer"])
+        self.singerLabel.setText(songInfo["singer"])
         self.durationLabel.setText(songInfo["duration"])
         # 调整宽度
         self.adjustWidgetWidth()
@@ -134,10 +135,10 @@ class PlaylistInterfaceSongCard(BasicSongCard):
     def __init__(self, songInfo: dict, parent=None):
         super().__init__(songInfo, SongCardType.PLAYLIST_INTERFACE_SONG_CARD, parent)
         # 创建小部件
-        self.songerLabel = ClickableLabel(self.songer, self, False)
+        self.singerLabel = ClickableLabel(self.singer, self, False)
         self.albumLabel = ClickableLabel(self.album, self, False)
         self.yearLabel = QLabel(self.year, self)
-        self.tconLabel = QLabel(self.tcon, self)
+        self.genreLabel = QLabel(self.genre, self)
         self.durationLabel = QLabel(self.duration, self)
         # 初始化
         self.__initWidget()
@@ -147,17 +148,18 @@ class PlaylistInterfaceSongCard(BasicSongCard):
         self.yearLabel.setFixedWidth(60)
         self.addLabels(
             [
-                self.songerLabel,
+                self.singerLabel,
                 self.albumLabel,
                 self.yearLabel,
-                self.tconLabel,
+                self.genreLabel,
                 self.durationLabel,
             ],
             [30, 15, 27, 19, 70],
         )
         # 年份的宽度固定为60，时长固定距离窗口右边界45px
         self.setScalableWidgets(
-            [self.songNameCard, self.songerLabel, self.albumLabel, self.tconLabel],
+            [self.songNameCard, self.singerLabel,
+                self.albumLabel, self.genreLabel],
             [326, 191, 191, 178],
             105,
         )
@@ -166,14 +168,14 @@ class PlaylistInterfaceSongCard(BasicSongCard):
         self.setAnimation(self.widget_list, [13, 6, -3, -6, -8, -13])
         self.setAttribute(Qt.WA_StyledBackground)
         # 设置鼠标样式
-        self.setClickableLabels([self.songerLabel, self.albumLabel])
+        self.setClickableLabels([self.singerLabel, self.albumLabel])
         self.setClickableLabelCursor(Qt.PointingHandCursor)
         # 分配ID和属性
         self.setWidgetState("notSelected-leave")
         self.setCheckBoxBtLabelState("notSelected-notPlay")
         # 信号连接到槽
         self.albumLabel.clicked.connect(
-            lambda: self.switchToAlbumInterfaceSig.emit(self.album, self.songer))
+            lambda: self.switchToAlbumInterfaceSig.emit(self.album, self.singer))
 
     def updateSongCard(self, songInfo: dict):
         """ 更新歌曲卡信息 """
@@ -181,10 +183,10 @@ class PlaylistInterfaceSongCard(BasicSongCard):
             return
         self._getInfo(songInfo)
         self.songNameCard.updateSongNameCard(self.songName)
-        self.songerLabel.setText(self.songer)
+        self.singerLabel.setText(self.singer)
         self.albumLabel.setText(self.album)
         self.yearLabel.setText(self.year)
-        self.tconLabel.setText(self.tcon)
+        self.genreLabel.setText(self.genre)
         self.durationLabel.setText(self.duration)
         # 调整小部件宽度
         self.adjustWidgetWidth()
@@ -205,10 +207,10 @@ class NoCheckBoxSongCard(BasicSongCard):
     def __init__(self, songInfo: dict, parent=None):
         super().__init__(songInfo, SongCardType.NO_CHECKBOX_SONG_CARD, parent=parent)
         # 创建小部件
-        self.songerLabel = ClickableLabel(self.songer, self, False)
+        self.singerLabel = ClickableLabel(self.singer, self, False)
         self.albumLabel = ClickableLabel(self.album, self, False)
         self.yearLabel = QLabel(self.year, self)
-        self.tconLabel = QLabel(self.tcon, self)
+        self.genreLabel = QLabel(self.genre, self)
         self.durationLabel = QLabel(self.duration, self)
         # 初始化
         self.__initWidget()
@@ -218,17 +220,18 @@ class NoCheckBoxSongCard(BasicSongCard):
         self.yearLabel.setFixedWidth(60)
         self.addLabels(
             [
-                self.songerLabel,
+                self.singerLabel,
                 self.albumLabel,
                 self.yearLabel,
-                self.tconLabel,
+                self.genreLabel,
                 self.durationLabel,
             ],
             [30, 15, 27, 19, 70],
         )
         # 年份的宽度固定为60，时长固定距离窗口右边界45px
         self.setScalableWidgets(
-            [self.songNameCard, self.songerLabel, self.albumLabel, self.tconLabel],
+            [self.songNameCard, self.singerLabel,
+                self.albumLabel, self.genreLabel],
             [326, 191, 191, 178],
             105,
         )
@@ -237,14 +240,14 @@ class NoCheckBoxSongCard(BasicSongCard):
         self.setAnimation(self.widget_list, [13, 6, -3, -6, -8, -13])
         self.setAttribute(Qt.WA_StyledBackground)
         # 设置鼠标样式
-        self.setClickableLabels([self.songerLabel, self.albumLabel])
+        self.setClickableLabels([self.singerLabel, self.albumLabel])
         self.setClickableLabelCursor(Qt.PointingHandCursor)
         # 分配ID和属性
         self.setWidgetState("notSelected-leave")
         self.setCheckBoxBtLabelState("notSelected-notPlay")
         # 信号连接到槽
         self.albumLabel.clicked.connect(
-            lambda: self.switchToAlbumInterfaceSig.emit(self.album, self.songer))
+            lambda: self.switchToAlbumInterfaceSig.emit(self.album, self.singer))
 
     def updateSongCard(self, songInfo: dict):
         """ 更新歌曲卡信息 """
@@ -252,10 +255,10 @@ class NoCheckBoxSongCard(BasicSongCard):
             return
         self._getInfo(songInfo)
         self.songNameCard.updateSongNameCard(self.songName)
-        self.songerLabel.setText(self.songer)
+        self.singerLabel.setText(self.singer)
         self.albumLabel.setText(self.album)
         self.yearLabel.setText(self.year)
-        self.tconLabel.setText(self.tcon)
+        self.genreLabel.setText(self.genre)
         self.durationLabel.setText(self.duration)
         # 调整小部件宽度
         self.adjustWidgetWidth()

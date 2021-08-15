@@ -64,7 +64,7 @@ class BasicSongCard(QWidget):
                 self.songName, self.tracknumber, self)
         else:
             self.songNameCard = self.__SongNameCard(self.songName, self)
-            
+
         self.__referenceWidgets()
 
         # 初始化小部件列表
@@ -97,10 +97,10 @@ class BasicSongCard(QWidget):
         self.songInfo = songInfo
         self.songPath = songInfo.get("songPath", "")  # type:str
         self.songName = songInfo.get("songName", "未知歌曲")  # type:str
-        self.songer = songInfo.get("songer", "未知歌手")  # type:str
+        self.singer = songInfo.get("singer", "未知歌手")  # type:str
         self.album = songInfo.get("album", "未知专辑")  # type:str
         self.year = songInfo.get("year", "未知年份")  # type:str
-        self.tcon = songInfo.get("tcon", "未知流派")  # type:str
+        self.genre = songInfo.get("genre", "未知流派")  # type:str
         self.duration = songInfo.get("duration", "0:00")  # type:str
         self.tracknumber = songInfo.get("tracknumber", "0")  # type:str
 
