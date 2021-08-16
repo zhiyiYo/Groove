@@ -275,14 +275,12 @@ class SmallestPlayInterface(FramelessWindow):
         # 新的下标大于当前下标时，歌曲卡左移
         if self.aniGroup.state() != QAbstractAnimation.Running:
             songInfo = self.playlist[index]
-            self.startBlurThread(getCoverPath(
-                songInfo['modifiedAlbum'], "album_big"))
+            name = songInfo.get('singer', '未知歌手') + '_' + \
+                songInfo.get('modifiedAlbum', '未知专辑')
+            self.startBlurThread(getCoverPath(name, "album_big"))
             self.__completeShift(index)
         else:
             self.__unCompleteShift_list.append(index)
-        # elif index == self.currentIndex:
-        #     self.updateCards()
-        #     self.needToEmitSignal = True
 
     def setPlaylist(self, playlist: list, isResetIndex: bool = True):
         """ 更新播放列表

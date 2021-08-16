@@ -84,8 +84,9 @@ class SongInfoCard(PerspectiveWidget):
         if not self.songInfo.get("album"):
             self.hide()
             return
-        newCoverPath = getCoverPath(
-            self.songInfo.get("modifiedAlbum"), "album_big")
+        name = self.songInfo.get('singer', '未知歌手') + '_' + \
+            self.songInfo.get('modifiedAlbum', '未知专辑')
+        newCoverPath = getCoverPath(name, "album_big")
         # 封面路径变化时发送信号并更新封面
         if newCoverPath != self.coverPath:
             self.albumChanged.emit(newCoverPath)

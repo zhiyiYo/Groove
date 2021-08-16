@@ -53,7 +53,7 @@ class PlayingInterface(QWidget):
 
     def __init__(self, playlist: list = None, parent=None):
         super().__init__(parent)
-        self.playlist = playlist.copy()
+        self.playlist = deepcopy(playlist) if playlist else []
         self.currentIndex = 0
         self.isPlaylistVisible = False
         self.isInSelectionMode = True
@@ -312,7 +312,7 @@ class PlayingInterface(QWidget):
         self.songListWidget.setCurrentIndex(index)
         self.songInfoCardChute.setCurrentIndex(index)
 
-    def setPlaylist(self, playlist: list, isResetIndex: bool = True):
+    def setPlaylist(self, playlist: list, isResetIndex: bool = True, index=0):
         """ 更新播放列表
 
         Parameters
@@ -321,13 +321,17 @@ class PlayingInterface(QWidget):
             播放列表，每一个元素都是songInfo字典
 
         isResetIndex: bool
-            是否将下标重置为0
+            是否重置当前歌曲索引
+
+        index: int
+            重置后的当前歌曲索引
         """
-        self.playlist = deepcopy(playlist)
-        self.currentIndex = 0 if isResetIndex else self.currentIndex
+        self.playlist = deepcopy(playlist) if playlist else []
+        self.currentIndex = index if isResetIndex else self.currentIndex
         if playlist:
-            self.songInfoCardChute.setPlaylist(self.playlist, isResetIndex)
-            self.songListWidget.updateSongCards(self.playlist)
+            self.songInfoCardChute.setPlaylist(self.playlist, isResetIndex, index)
+            self.songListWidget.updateSongCards(self.playlist, isResetIndex, index)
+
         # 如果小部件不可见就显示
         if playlist and not self.songListWidget.isVisible():
             self.__setGuideLabelHidden(True)

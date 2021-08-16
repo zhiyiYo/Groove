@@ -4,7 +4,7 @@ from json import dump
 from typing import Dict, List
 
 import pinyin
-from app.common.move_to_trash import moveToTrash
+from app.common.os_utils import moveToTrash
 from app.components.buttons.three_state_button import ThreeStatePushButton
 from app.components.dialog_box.message_dialog import MessageDialog
 from app.components.dialog_box.rename_playlist_dialog import \

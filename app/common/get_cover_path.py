@@ -2,13 +2,13 @@
 import os
 
 
-def getCoverPath(albumName: str, coverType: str) -> str:
+def getCoverPath(name: str, coverType: str) -> str:
     """ 获取封面路径
 
     Parameters
     ----------
-    albumName: str
-        专辑名字，对应 `songInfo["modifiedAlbum"]`
+    name: str
+        封面名字，格式为 `singer_modifiedAlbum`
 
     coverType: str
         封面类型，有以下几种：
@@ -27,9 +27,10 @@ def getCoverPath(albumName: str, coverType: str) -> str:
         raise ValueError("不存在此 coverType")
 
     coverPath = cover_path_dict[coverType]
-    coverFolder = f"app/resource/Album_Cover/{albumName}"
+    coverFolder = f"app/resource/Album_Cover/{name}"
     pic_list = os.listdir(coverFolder) if os.path.exists(coverFolder) else []
     # 如果目录下有封面就用这个封面作为albumCard的背景
     if pic_list and os.path.isfile(os.path.join(coverFolder, pic_list[0])):
         coverPath = os.path.join(coverFolder, pic_list[0])
+
     return coverPath

@@ -13,13 +13,13 @@ class SongPropertyDialog(MaskDialogBase):
         super().__init__(parent)
         self.songInfo = songInfo
         # 实例化小部件
-        self.createWidgets()
+        self.createWidgets(songInfo)
         # 初始化小部件的位置
         self.initWidget()
         # 设置层叠样式
         self.setQss()
 
-    def createWidgets(self):
+    def createWidgets(self, songInfo: dict):
         """ 实例化标签 """
         # 标题
         self.yearLabel = QLabel("年", self.widget)
@@ -35,16 +35,17 @@ class SongPropertyDialog(MaskDialogBase):
         self.albumSongerLabel = QLabel("专辑歌手", self.widget)
         # 内容
         self.disk = QLabel("1", self.widget)
-        self.year = QLabel(self.songInfo["year"], self.widget)
-        self.genre = QLabel(self.songInfo["genre"], self.widget)
-        self.singer = QLabel(self.songInfo["singer"], self.widget)
-        self.albumName = QLabel(self.songInfo["album"], self.widget)
-        self.duration = QLabel(self.songInfo["duration"], self.widget)
-        self.songName = QLabel(self.songInfo["songName"], self.widget)
-        self.albumSonger = QLabel(self.songInfo["singer"], self.widget)
-        self.trackNumber = QLabel(self.songInfo["tracknumber"], self.widget)
+        self.year = QLabel(songInfo.get("year", '未知年份'), self.widget)
+        self.genre = QLabel(songInfo.get("genre", '未知流派'), self.widget)
+        self.singer = QLabel(songInfo.get("singer", "未知歌手"), self.widget)
+        self.albumName = QLabel(songInfo.get("album", '未知专辑'), self.widget)
+        self.duration = QLabel(songInfo.get("duration", "0:00"), self.widget)
+        self.songName = QLabel(songInfo.get("songName", "未知歌名"), self.widget)
+        self.albumSonger = QLabel(songInfo.get("singer", '未知歌手'), self.widget)
+        self.trackNumber = QLabel(songInfo.get(
+            "tracknumber", '0'), self.widget)
         self.songPath = QLabel(
-            self.songInfo["songPath"].replace("\\", "/"), self.widget)
+            songInfo.get("songPath", '').replace("\\", "/"), self.widget)
         # 实例化关闭按钮
         self.closeButton = PerspectivePushButton("关闭", self.widget)
         # 创建小部件列表

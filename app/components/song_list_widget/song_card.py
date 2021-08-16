@@ -1,7 +1,7 @@
 # coding:utf-8
-
+from app.components.menu import DownloadMenu
 from app.components.label import ClickableLabel
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal, QPoint
 from PyQt5.QtWidgets import QLabel
 
 from .basic_song_card import BasicSongCard
@@ -55,6 +55,8 @@ class SongTabSongCard(BasicSongCard):
         self.setWidgetState("notSelected-leave")
         self.setCheckBoxBtLabelState("notSelected-notPlay")
         # 信号连接到槽
+        self.addToButton.clicked.connect(self._showAddToMenu)
+        self.checkBox.stateChanged.connect(self._onCheckedStateChanged)
         self.albumLabel.clicked.connect(
             lambda: self.switchToAlbumInterfaceSig.emit(self.album, self.singer))
 
@@ -62,7 +64,7 @@ class SongTabSongCard(BasicSongCard):
         """ 更新歌曲卡信息 """
         if self.songInfo == songInfo:
             return
-        self._getInfo(songInfo)
+        self.setSongInfo(songInfo)
         self.songNameCard.updateSongNameCard(self.songName)
         self.singerLabel.setText(self.singer)
         self.albumLabel.setText(self.album)
@@ -107,12 +109,15 @@ class AlbumInterfaceSongCard(BasicSongCard):
         # 分配ID和属性
         self.setWidgetState("notSelected-leave")
         self.setCheckBoxBtLabelState("notSelected-notPlay")
+        # 信号连接到槽
+        self.addToButton.clicked.connect(self._showAddToMenu)
+        self.checkBox.stateChanged.connect(self._onCheckedStateChanged)
 
     def updateSongCard(self, songInfo: dict):
         """ 更新歌曲卡信息 """
         if self.songInfo == songInfo:
             return
-        self._getInfo(songInfo)
+        self.setSongInfo(songInfo)
         self.songNameCard.updateSongNameCard(
             songInfo["songName"], songInfo["tracknumber"])
         self.singerLabel.setText(songInfo["singer"])
@@ -130,6 +135,7 @@ class AlbumInterfaceSongCard(BasicSongCard):
 class PlaylistInterfaceSongCard(BasicSongCard):
     """ 我的音乐歌曲界面的歌曲卡 """
 
+    removeSongSignal = pyqtSignal(int)                # 移除歌曲
     switchToAlbumInterfaceSig = pyqtSignal(str, str)  # 发送专辑名和歌手名
 
     def __init__(self, songInfo: dict, parent=None):
@@ -176,12 +182,15 @@ class PlaylistInterfaceSongCard(BasicSongCard):
         # 信号连接到槽
         self.albumLabel.clicked.connect(
             lambda: self.switchToAlbumInterfaceSig.emit(self.album, self.singer))
+        self.addToButton.clicked.connect(
+            lambda: self.removeSongSignal.emit(self.itemIndex))
+        self.checkBox.stateChanged.connect(self._onCheckedStateChanged)
 
     def updateSongCard(self, songInfo: dict):
         """ 更新歌曲卡信息 """
         if self.songInfo == songInfo:
             return
-        self._getInfo(songInfo)
+        self.setSongInfo(songInfo)
         self.songNameCard.updateSongNameCard(self.songName)
         self.singerLabel.setText(self.singer)
         self.albumLabel.setText(self.album)
@@ -248,12 +257,13 @@ class NoCheckBoxSongCard(BasicSongCard):
         # 信号连接到槽
         self.albumLabel.clicked.connect(
             lambda: self.switchToAlbumInterfaceSig.emit(self.album, self.singer))
+        self.addToButton.clicked.connect(self._showAddToMenu)
 
     def updateSongCard(self, songInfo: dict):
         """ 更新歌曲卡信息 """
         if self.songInfo == songInfo:
             return
-        self._getInfo(songInfo)
+        self.setSongInfo(songInfo)
         self.songNameCard.updateSongNameCard(self.songName)
         self.singerLabel.setText(self.singer)
         self.albumLabel.setText(self.album)
@@ -269,3 +279,77 @@ class NoCheckBoxSongCard(BasicSongCard):
         # 再次调整时长标签的位置
         self.durationLabel.move(self.width() - 45, 20)
         self.getAniTargetX_list()
+
+
+class OnlineSongCard(BasicSongCard):
+    """ 在线音乐歌曲卡 """
+
+    downloadSig = pyqtSignal(dict, str)  # songInfo, quality
+
+    def __init__(self, songInfo: dict, parent=None):
+        super().__init__(songInfo, SongCardType.ONLINE_SONG_CARD, parent=parent)
+        # 创建小部件
+        self.singerLabel = QLabel(self.singer, self)
+        self.albumLabel = QLabel(self.album, self)
+        self.yearLabel = QLabel(self.year, self)
+        self.durationLabel = QLabel(self.duration, self)
+        # 初始化
+        self.__initWidget()
+
+    def __initWidget(self):
+        """ 初始化小部件 """
+        self.addLabels(
+            [self.singerLabel, self.albumLabel, self.yearLabel, self.durationLabel],
+            [30, 15, 27, 70],
+        )
+
+        # 年份的宽度固定为60，时长固定距离窗口右边界45px
+        self.setScalableWidgets(
+            [self.songNameCard, self.singerLabel, self.albumLabel],
+            [326, 191, 191],
+            105,
+        )
+        self.setDynamicStyleLabels(self.label_list)
+
+        # 设置歌曲卡点击动画
+        self.setAnimation(self.widget_list, [13, 6, -3, -6, -13])
+        self.setAttribute(Qt.WA_StyledBackground)
+
+        # 分配ID和属性
+        self.setWidgetState("notSelected-leave")
+        self.setCheckBoxBtLabelState("notSelected-notPlay")
+
+        # 信号连接到槽
+        self.addToButton.clicked.connect(self.__showDownloadMenu)
+
+    def updateSongCard(self, songInfo: dict):
+        """ 更新歌曲卡信息 """
+        if self.songInfo == songInfo:
+            return
+        self.setSongInfo(songInfo)
+        self.songNameCard.updateSongNameCard(self.songName)
+        self.singerLabel.setText(self.singer)
+        self.albumLabel.setText(self.album)
+        self.yearLabel.setText(self.year)
+        self.durationLabel.setText(self.duration)
+        # 调整小部件宽度
+        self.adjustWidgetWidth()
+
+    def resizeEvent(self, e):
+        """ 窗口改变大小时调整小部件位置 """
+        super().resizeEvent(e)
+        # 再次调整时长标签的位置
+        self.durationLabel.move(self.width() - 45, 20)
+        self.getAniTargetX_list()
+
+    def __showDownloadMenu(self):
+        """ 显示下载音乐菜单 """
+        menu = DownloadMenu(parent=self)
+        pos = self.mapToGlobal(
+            QPoint(self.addToButton.x()+self.buttonGroup.x(), 0))
+        x = pos.x() + self.addToButton.width() + 5
+        y = pos.y() + int(
+            self.addToButton.height() / 2 - (13 + 38 * 3) / 2)
+        menu.downloadSig.connect(
+            lambda quality: self.downloadSig.emit(self.songInfo, quality))
+        menu.exec(QPoint(x, y))

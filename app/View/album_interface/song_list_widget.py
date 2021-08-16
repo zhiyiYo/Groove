@@ -36,7 +36,6 @@ class SongListWidget(BasicSongListWidget):
         # 初始化
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setAttribute(Qt.WA_StyledBackground)
-        self.setAlternatingRowColors(True)
         self.__setQss()
 
     def appendOneSongCard(self, songInfo: dict, connectSongCardSigToSlotFunc):

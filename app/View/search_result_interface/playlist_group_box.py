@@ -2,7 +2,7 @@
 from copy import deepcopy
 from typing import List, Dict
 
-from app.common.move_to_trash import moveToTrash
+from app.common.os_utils import moveToTrash
 from app.components.buttons.three_state_button import ThreeStatePushButton
 from app.components.dialog_box.message_dialog import MessageDialog
 from app.components.dialog_box.rename_playlist_dialog import \
@@ -36,16 +36,6 @@ class PlaylistGroupBox(QScrollArea):
         self.playlistCard_list = []  # type:List[PlaylistCard]
         self.playlistName2Card_dict = {}  # type:Dict[str, PlaylistCard]
         self.titleButton = QPushButton('播放列表', self)
-        self.showAllButton = ThreeStatePushButton(
-            {
-                "normal": "app/resource/images/search_result_interface/ShowAll_normal.png",
-                "hover": "app/resource/images/search_result_interface/ShowAll_hover.png",
-                "pressed": "app/resource/images/search_result_interface/ShowAll_pressed.png",
-            },
-            '  显示全部',
-            (14, 14),
-            self,
-        )
         self.scrollRightButton = QToolButton(self)
         self.scrollLeftButton = QToolButton(self)
         self.opacityAniGroup = QParallelAnimationGroup(self)
@@ -106,16 +96,13 @@ class PlaylistGroupBox(QScrollArea):
         self.leftMask.setObjectName('leftMask')
         self.rightMask.setObjectName('rightMask')
         self.titleButton.setObjectName('titleButton')
-        self.showAllButton.setObjectName('showAllButton')
         with open('app/resource/css/playlist_group_box.qss', encoding='utf-8') as f:
             self.setStyleSheet(f.read())
         self.titleButton.adjustSize()
-        self.showAllButton.adjustSize()
 
     def resizeEvent(self, e):
         self.rightMask.move(self.width()-65, 47)
         self.scrollRightButton.move(self.width()-90, 42)
-        self.showAllButton.move(self.width()-self.showAllButton.width()-65, 2)
         self.scrollWidget.resize(self.scrollWidget.width(), self.height())
 
     def __onScrollHorizon(self, value):

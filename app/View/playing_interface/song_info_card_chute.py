@@ -50,6 +50,7 @@ class SongInfoCardChute(QWidget):
         self.__createWidgets()
         for songInfoCard in self.songInfoCard_list:
             songInfoCard.resize(self.width(), 136)
+
         # 将信号连接到槽函数
         self.parallelAniGroup.finished.connect(self.__switchSongInfoCard)
         for songInfoCard in self.songInfoCard_list:
@@ -101,8 +102,8 @@ class SongInfoCardChute(QWidget):
     def mouseMoveEvent(self, e: QMouseEvent):
         """ 鼠标按下可拖动歌曲信息卡 """
         for songInfoCard in self.songInfoCard_list:
-            songInfoCard.move(songInfoCard.x(
-            )-(self.lastMousePosX-e.pos().x()), songInfoCard.y())
+            songInfoCard.move(
+                songInfoCard.x()-(self.lastMousePosX-e.pos().x()), songInfoCard.y())
         # 更新鼠标位置
         self.lastMousePosX = e.pos().x()
 
@@ -115,23 +116,23 @@ class SongInfoCardChute(QWidget):
         self.mouseDeltaX = self.lastMousePosX - self.mousePressPosX
         # 设置默认循环移位方式
         self.loopMode = SongInfoCardLoopMode.NO_LOOP
-        if self.playlist:
-            if len(self.playlist) == 1:
-                # 只有1个歌曲卡时不管移动距离是多少都把该歌曲卡放回原位
+
+        # 只有1个歌曲卡时不管移动距离是多少都把该歌曲卡放回原位
+        songNum = len(self.playlist)
+        if songNum == 1:
+            self.__restoreCardPosition()
+        elif songNum >= 2:
+            # 下标为 0 时右移或者下标为 len-1 左移都恢复原状
+            if (self.currentIndex == 0 and self.mouseDeltaX > 0) or (self.currentIndex == songNum-1 and self.mouseDeltaX < 0):
                 self.__restoreCardPosition()
-            # 播放列表长度大于等于2
-            elif len(self.playlist) >= 2:
-                # 下标为0时右移或者下标为len-1左移都恢复原状
-                if (self.currentIndex == 0 and self.mouseDeltaX > 0) or (self.currentIndex == len(self.playlist)-1 and self.mouseDeltaX < 0):
-                    self.__restoreCardPosition()
+            else:
+                if mouseDeltaTime < 360 and abs(self.mouseDeltaX) >= 120:
+                    self.__cycleShift()
                 else:
-                    if mouseDeltaTime < 360 and abs(self.mouseDeltaX) >= 120:
-                        self.__cycleShift()
+                    if abs(self.mouseDeltaX) < int(self.width() / 2):
+                        self.__restoreCardPosition()
                     else:
-                        if abs(self.mouseDeltaX) < int(self.width() / 2):
-                            self.__restoreCardPosition()
-                        else:
-                            self.__cycleShift()
+                        self.__cycleShift()
 
     def __cycleLeftShift(self):
         """ 循环左移 """
@@ -182,6 +183,7 @@ class SongInfoCardChute(QWidget):
                 self.currentIndexChanged[int].emit(self.currentIndex)
             else:
                 self.needToEmitSignal = True
+
         # 循环右移
         elif self.loopMode == SongInfoCardLoopMode.CYCLE_RIGHT_SHIFT:
             self.__resetRef(moveDirection=1)
@@ -202,6 +204,7 @@ class SongInfoCardChute(QWidget):
                 self.currentIndexChanged[int].emit(self.currentIndex)
             else:
                 self.needToEmitSignal = True
+
         # 完成未完成的移位动作
         if self.__unCompleteShift_list:
             index = self.__unCompleteShift_list.pop(0)
@@ -241,13 +244,16 @@ class SongInfoCardChute(QWidget):
 
     def updateCards(self):
         """ 更新三个歌曲信息卡 """
+        songNum = len(self.playlist)
         if self.curSongInfoCard:
-            self.curSongInfoCard.updateCard(
-                self.playlist[self.currentIndex])
+            index = self.currentIndex if self.currentIndex < songNum else songNum-1
+            self.curSongInfoCard.updateCard(self.playlist[index])
+
         if self.lastSongInfoCard and self.currentIndex >= 1:
             self.lastSongInfoCard.updateCard(
                 self.playlist[self.currentIndex - 1])
-        if self.nextSongInfoCard and self.currentIndex <= len(self.playlist)-2:
+
+        if self.nextSongInfoCard and self.currentIndex <= songNum-2:
             self.nextSongInfoCard.updateCard(
                 self.playlist[self.currentIndex + 1])
 
@@ -266,25 +272,28 @@ class SongInfoCardChute(QWidget):
                 self.updateCards()
                 self.needToEmitSignal = True
 
-    def setPlaylist(self, playlist, isResetIndex: bool = True):
+    def setPlaylist(self, playlist: list, isResetIndex=True, index=0):
         """ 更新播放列表 """
         self.playlist = playlist
-        self.currentIndex = 0 if isResetIndex else self.currentIndex
+        self.currentIndex = index if isResetIndex else self.currentIndex
         self.lastSongInfoCard.hide()
+        self.nextSongInfoCard.hide()
+        self.curSongInfoCard.setHidden(len(self.playlist) == 0)
+
         if playlist:
             self.curSongInfoCard.updateCard(self.playlist[self.currentIndex])
             self.currentIndexChanged[str].emit(
                 self.curSongInfoCard.albumCoverPath)
-            self.curSongInfoCard.show()
-            if len(self.playlist) == 1:
-                self.nextSongInfoCard.hide()
-            else:
+
+            if self.currentIndex >= 1:
+                self.lastSongInfoCard.show()
+                self.lastSongInfoCard.updateCard(
+                    self.playlist[self.currentIndex-1])
+
+            if self.currentIndex < len(self.playlist)-1:
                 self.nextSongInfoCard.show()
                 self.nextSongInfoCard.updateCard(
                     self.playlist[self.currentIndex+1])
-        else:
-            self.curSongInfoCard.hide()
-            self.nextSongInfoCard.hide()
 
     def resizeEvent(self, e):
         """ 改变窗口大小时也改变歌曲卡的大小 """

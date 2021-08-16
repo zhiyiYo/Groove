@@ -2,8 +2,7 @@
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
-from app.common.modify_song_info import modifySongInfo
-from app.common.write_album_cover import writeAlbumCover
+from app.common.meta_data_writer import writeSongInfo, writeAlbumCover
 
 
 class SaveInfoObject(QObject):
@@ -18,7 +17,7 @@ class SaveInfoObject(QObject):
     def saveSongInfoSlot(self, songInfo_list: list):
         """ 保存歌曲信息 """
         for i, songInfo in enumerate(songInfo_list):
-            if not modifySongInfo(songInfo):
+            if not writeSongInfo(songInfo):
                 self.saveErrorSig.emit(i)
                 return
         self.saveCompleteSig.emit()

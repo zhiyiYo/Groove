@@ -109,11 +109,13 @@ class SongCard(QWidget):
     def __getInfo(self, songInfo: dict):
         """ 从歌曲信息中分离信息 """
         self.songInfo = songInfo
-        self.year = songInfo["year"]  # type:str
-        self.singer = songInfo["singer"]  # type:str
-        self.album = songInfo["album"]  # type:str
-        self.duration = songInfo["duration"]  # type:str
-        self.songName = songInfo["songName"]  # type:str
+        self.singer = songInfo.get("singer", "未知歌手")  # type:str
+        self.album = songInfo.get("album", "未知专辑")  # type:str
+        self.duration = songInfo.get("duration", "0:00")  # type:str
+        self.songName = songInfo.get("songName", "未知歌曲")  # type:str
+        self.year = songInfo.get("year", "")  # type:str
+        if self.year == '未知年份':
+            self.year = ''
 
     def __createAnimations(self):
         """ 创建动画 """
@@ -242,18 +244,18 @@ class SongCard(QWidget):
     def __getLabelWidth(self):
         """ 计算标签的长度 """
         fontMetrics = QFontMetrics(QFont("Microsoft YaHei", 9))
-        self.singerWidth = fontMetrics.width(self.songInfo["singer"])
-        self.albumWidth = fontMetrics.width(self.songInfo["album"])
+        self.singerWidth = fontMetrics.width(self.singer)
+        self.albumWidth = fontMetrics.width(self.album)
 
     def updateSongCard(self, songInfo: dict):
         """ 更新歌曲卡信息 """
         self.resize(self.size())
         self.__getInfo(songInfo)
-        self.songNameCard.setSongName(songInfo["songName"])
-        self.singerLabel.setText(songInfo["singer"])
-        self.albumLabel.setText(songInfo["album"])
-        self.yearLabel.setText(songInfo["year"])
-        self.durationLabel.setText(songInfo["duration"])
+        self.songNameCard.setSongName(self.songName)
+        self.singerLabel.setText(self.singer)
+        self.albumLabel.setText(self.album)
+        self.yearLabel.setText(self.year)
+        self.durationLabel.setText(self.duration)
         # 调整宽度
         self.__getLabelWidth()
         singerWidth = (

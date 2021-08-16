@@ -1,6 +1,7 @@
 # coding:utf-8
 from copy import deepcopy
 
+from app.common.crawler.kuwo_music_crawler import KuWoMusicCrawler
 from app.components.layout.v_box_layout import VBoxLayout
 from app.components.scroll_area import ScrollArea
 from PyQt5.QtCore import Qt, pyqtSignal
@@ -10,13 +11,16 @@ from PyQt5.QtWidgets import QLabel, QWidget
 from .album_group_box import AlbumGroupBox
 from .playlist_group_box import PlaylistGroupBox
 from .song_group_box import SongGroupBox
+from .get_online_song_url_thread import GetOnlineSongUrlThread
+from .download_song_thread import DownloadSongThread
 
 
 class SearchResultInterface(ScrollArea):
 
-    playSongSig = pyqtSignal(int)                        # 播放歌曲
     playAlbumSig = pyqtSignal(list)                      # 播放专辑
     playPlaylistSig = pyqtSignal(list)                   # 播放自定义播放列表
+    playLocalSongSig = pyqtSignal(int)                   # 播放本地歌曲
+    playOnlineSongSig = pyqtSignal(int)                  # 播放在线音乐
     nextToPlaySig = pyqtSignal(list)                     # 下一首播放
     deleteSongSig = pyqtSignal(str)                      # 删除一首歌
     deleteAlbumSig = pyqtSignal(list)                    # 删除整张专辑
@@ -31,19 +35,27 @@ class SearchResultInterface(ScrollArea):
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self.matchedPlaylists = {}
-        self.matchedAlbumInfo_list = []
-        self.matchedSongInfo_list = []
+        self.playlists = {}                 # 匹配到的本地播放列表
+        self.albumInfo_list = []            # 匹配到的本地专辑列表
+        self.localSongInfo_list = []        # 匹配到的本地歌曲列表
+        self.onlineSongInfo_list = []       # 匹配到的在线歌曲列表
         self.titleLabel = QLabel(self)
         self.searchLabel = QLabel(self)
         self.scrollWidget = QWidget(self)
         self.vBox = VBoxLayout(self.scrollWidget)
-        self.songGroupBox = SongGroupBox(self.scrollWidget)
         self.albumGroupBox = AlbumGroupBox(self.scrollWidget)
         self.playlistGroupBox = PlaylistGroupBox(self.scrollWidget)
+        self.localSongGroupBox = SongGroupBox('本地歌曲', self.scrollWidget)
+        self.onlineSongGroupBox = SongGroupBox('在线歌曲', self.scrollWidget)
         self.searchOthersLabel = QLabel("请尝试搜索其他内容。", self)
         self.checkSpellLabel = QLabel('请检查拼写情况，或搜索其他内容', self)
-        self.songListWidget = self.songGroupBox.songListWidget
+        self.localSongListWidget = self.localSongGroupBox.songListWidget
+        self.onlineSongListWidget = self.onlineSongGroupBox.songListWidget
+        self.crawler = KuWoMusicCrawler()
+        self.getOnlineSongUrlThread = GetOnlineSongUrlThread(self)
+        self.downloadSongThread = DownloadSongThread('app/download', self)
+        self.onlineMusicQuality = '流畅音质'  # 播放的在线音乐的音质
+        self.saveDir = 'app/download'        # 保存下载音乐的文件夹P@
         self.__initWidget()
 
     def __initWidget(self):
@@ -51,11 +63,11 @@ class SearchResultInterface(ScrollArea):
         self.vBox.setSpacing(20)
         self.vBox.setContentsMargins(0, 10, 0, 116)
         self.vBox.addWidget(self.albumGroupBox)
-        self.vBox.addWidget(self.songGroupBox)
         self.vBox.addWidget(self.playlistGroupBox)
-        self.songGroupBox.hide()
+        self.vBox.addWidget(self.localSongGroupBox)
+        self.vBox.addWidget(self.onlineSongGroupBox)
         self.setWidget(self.scrollWidget)
-        self.setViewportMargins(0, 110, 0, 0)
+        self.setViewportMargins(0, 115, 0, 0)
         self.__setQss()
         self.searchLabel.setPixmap(
             QPixmap("app/resource/images/search_result_interface/Search.png"))
@@ -68,7 +80,10 @@ class SearchResultInterface(ScrollArea):
     def resizeEvent(self, e):
         self.scrollWidget.resize(self.width(), self.scrollWidget.height())
         self.albumGroupBox.resize(self.width(), self.albumGroupBox.height())
-        self.songGroupBox.resize(self.width(), self.songGroupBox.height())
+        self.localSongGroupBox.resize(
+            self.width(), self.localSongGroupBox.height())
+        self.onlineSongGroupBox.resize(
+            self.width(), self.onlineSongGroupBox.height())
         self.searchLabel.move(self.width()//2-self.searchLabel.width()//2, 138)
         self.checkSpellLabel.move(
             self.width()//2-self.checkSpellLabel.width()//2, 225)
@@ -95,29 +110,45 @@ class SearchResultInterface(ScrollArea):
 
     def __onDeletePlaylist(self, playlistName: str):
         """ 删除一个播放列表槽函数 """
-        self.matchedPlaylists.pop(playlistName)
+        self.playlists.pop(playlistName)
         self.__updateWidgetsVisible()
         self.deletePlaylistSig.emit(playlistName)
 
     def __onDeleteAlbum(self, songPaths: list):
         """ 删除一张专辑槽函数 """
-        self.songListWidget.removeSongCards(songPaths)
+        self.localSongListWidget.removeSongCards(songPaths)
         self.playlistGroupBox.deleteSongs(songPaths)
-        self.matchedSongInfo_list = deepcopy(self.songListWidget.songInfo_list)
-        self.matchedAlbumInfo_list = deepcopy(
+        self.localSongInfo_list = deepcopy(
+            self.localSongListWidget.songInfo_list)
+        self.albumInfo_list = deepcopy(
             self.albumGroupBox.albumInfo_list)
-        self.matchedPlaylists = deepcopy(self.playlistGroupBox.playlists)
+        self.playlists = deepcopy(self.playlistGroupBox.playlists)
         self.__updateWidgetsVisible()
         self.deleteAlbumSig.emit(songPaths)
 
     def __onDeleteOneSong(self, songPath: str):
-        """ 删除一首歌槽函数 """
+        """ 删除一首本地歌曲槽函数 """
         self.albumGroupBox.deleteSongs([songPath])
-        self.matchedAlbumInfo_list = deepcopy(
+        self.albumInfo_list = deepcopy(
             self.albumGroupBox.albumInfo_list)
-        self.matchedSongInfo_list = deepcopy(self.songListWidget.songInfo_list)
+        self.localSongInfo_list = deepcopy(
+            self.localSongListWidget.songInfo_list)
         self.__updateWidgetsVisible()
         self.deleteSongSig.emit(songPath)
+
+    def __updateOnlineSongInfo(self, index: int, playUrl: str, coverPath: str):
+        """ 更新在线音乐的播放地址和封面路径 """
+        songInfo = self.onlineSongListWidget.songInfo_list[index]
+        songCard = self.onlineSongListWidget.songCard_list[index]
+        songInfo["songPath"] = playUrl
+        songInfo["coverPath"] = coverPath
+        songCard.setSongInfo(songInfo)
+
+    def __downloadSong(self, songInfo: dict, quality: str):
+        """ 下载歌曲 """
+        self.downloadSongThread.appendDownloadTask(songInfo,quality)
+        if not self.downloadSongThread.isRunning():
+            self.downloadSongThread.start()
 
     def search(self, keyWord: str, songInfo_list: list, albumInfo_list: list, playlists: dict):
         """ 搜索与关键词相匹配的专辑、歌曲和播放列表 """
@@ -125,61 +156,72 @@ class SearchResultInterface(ScrollArea):
         keyWord = keyWord.lower()
 
         # 对专辑进行匹配
-        self.matchedAlbumInfo_list = []
+        self.albumInfo_list = []
         for albumInfo in albumInfo_list:
             album = albumInfo['album'].lower()
             singer = albumInfo["singer"].lower()
             if album.find(keyWord) >= 0 or singer.find(keyWord) >= 0:
-                self.matchedAlbumInfo_list.append(albumInfo)
+                self.albumInfo_list.append(albumInfo)
 
-        # 对歌曲进行匹配
-        self.matchedSongInfo_list = []
+        # 对本地歌曲进行匹配
+        self.localSongInfo_list = []
         for songInfo in songInfo_list:
             songName = songInfo["songName"].lower()
             singer = songInfo["singer"].lower()
             if songName.find(keyWord) >= 0 or singer.find(keyWord) >= 0:
-                self.matchedSongInfo_list.append(songInfo)
+                self.localSongInfo_list.append(songInfo)
+
+        # 对在线歌曲进行匹配并获取播放地址和封面
+        self.onlineSongInfo_list = self.crawler.getSongInfoList(
+            keyWord, 10)
+        self.getOnlineSongUrlThread.setSongInfoList(
+            self.onlineSongInfo_list, self.onlineMusicQuality)
+        self.getOnlineSongUrlThread.start()
 
         # 对播放列表进行匹配
-        self.matchedPlaylists = {}
+        self.playlists = {}
         for name, playlist in playlists.items():
             if name.lower().find(keyWord) >= 0:
-                self.matchedPlaylists[name] = playlist
+                self.playlists[name] = playlist
 
         # 更新界面
         self.titleLabel.setText(f'"{keyWord_}"的搜索结果')
         self.titleLabel.adjustSize()
-        self.albumGroupBox.updateWindow(self.matchedAlbumInfo_list)
-        self.songGroupBox.updateWindow(self.matchedSongInfo_list)
-        self.playlistGroupBox.updateWindow(self.matchedPlaylists)
+        self.albumGroupBox.updateWindow(self.albumInfo_list)
+        self.playlistGroupBox.updateWindow(self.playlists)
+        self.localSongGroupBox.updateWindow(self.localSongInfo_list)
+        self.onlineSongGroupBox.updateWindow(self.onlineSongInfo_list)
 
         # 调整窗口大小
-        isAlbumVisible = len(self.matchedAlbumInfo_list) > 0
-        isSongVisible = len(self.matchedSongInfo_list) > 0
-        isPlaylistVisible = len(self.matchedPlaylists) > 0
-        self.albumGroupBox.setVisible(isAlbumVisible)
-        self.songGroupBox.setVisible(isSongVisible)
-        self.playlistGroupBox.setVisible(isPlaylistVisible)
+        isAlbumVisible = len(self.albumInfo_list) > 0
+        isPlaylistVisible = len(self.playlists) > 0
+        isLocalSongVisible = len(self.localSongInfo_list) > 0
+        isOnlineSongVisible = len(self.onlineSongInfo_list) > 0
 
-        visibleNum = isAlbumVisible+isSongVisible+isPlaylistVisible
+        visibleNum = isAlbumVisible+isLocalSongVisible + \
+            isPlaylistVisible+isOnlineSongVisible
         spacing = 0 if not visibleNum else (visibleNum-1)*20
         self.scrollWidget.resize(
             self.width(),
-            236 + isAlbumVisible*self.albumGroupBox.height() +
-            isSongVisible*self.songGroupBox.height() +
+            241 + isAlbumVisible*self.albumGroupBox.height() +
+            isLocalSongVisible*self.localSongGroupBox.height() +
+            isOnlineSongVisible*self.onlineSongGroupBox.height() +
             isPlaylistVisible*self.playlistGroupBox.height() + spacing
         )
 
         # 显示/隐藏 提示标签
+        self.__updateWidgetsVisible()
         self.__setHintsLabelVisible(visibleNum == 0)
         self.verticalScrollBar().setValue(0)
 
     def __updateWidgetsVisible(self):
         """ 更新小部件的可见性 """
-        self.songGroupBox.setVisible(bool(self.matchedSongInfo_list))
-        self.albumGroupBox.setVisible(bool(self.matchedAlbumInfo_list))
-        self.playlistGroupBox.setVisible(bool(self.matchedPlaylists))
-        if self.albumGroupBox.isHidden() and self.songGroupBox.isHidden() and self.playlistGroupBox.isHidden():
+        self.albumGroupBox.setVisible(bool(self.albumInfo_list))
+        self.playlistGroupBox.setVisible(bool(self.playlists))
+        self.localSongGroupBox.setVisible(bool(self.localSongInfo_list))
+        self.onlineSongGroupBox.setVisible(bool(self.onlineSongInfo_list))
+        if self.albumGroupBox.isHidden() and self.localSongGroupBox.isHidden() and \
+                self.playlistGroupBox.isHidden() and self.onlineSongGroupBox.isHidden():
             self.__setHintsLabelVisible(True)
 
     def __connectSignalToSlot(self):
@@ -197,20 +239,30 @@ class SearchResultInterface(ScrollArea):
         self.albumGroupBox.addAlbumToNewCustomPlaylistSig.connect(
             self.addSongsToNewCustomPlaylistSig)
 
-        # 歌曲分组框信号连接到槽
-        self.songListWidget.playSignal.connect(self.playSongSig)
-        self.songListWidget.playOneSongSig.connect(self.playOneSongCardSig)
-        self.songListWidget.nextToPlayOneSongSig.connect(
+        # 本地歌曲列表信号连接到槽
+        self.localSongListWidget.playSignal.connect(self.playLocalSongSig)
+        self.localSongListWidget.playOneSongSig.connect(
+            self.playOneSongCardSig)
+        self.localSongListWidget.nextToPlayOneSongSig.connect(
             lambda songInfo: self.nextToPlaySig.emit([songInfo]))
-        self.songListWidget.addSongsToCustomPlaylistSig.connect(
+        self.localSongListWidget.addSongsToCustomPlaylistSig.connect(
             self.addSongsToCustomPlaylistSig)
-        self.songListWidget.addSongsToNewCustomPlaylistSig.connect(
+        self.localSongListWidget.addSongsToNewCustomPlaylistSig.connect(
             self.addSongsToNewCustomPlaylistSig)
-        self.songListWidget.addSongToPlayingSignal.connect(
+        self.localSongListWidget.addSongToPlayingSignal.connect(
             lambda songInfo: self.addSongsToPlayingPlaylistSig.emit([songInfo]))
-        self.songListWidget.switchToAlbumInterfaceSig.connect(
+        self.localSongListWidget.switchToAlbumInterfaceSig.connect(
             self.switchToAlbumInterfaceSig)
-        self.songListWidget.removeSongSignal.connect(self.__onDeleteOneSong)
+        self.localSongListWidget.removeSongSignal.connect(
+            self.__onDeleteOneSong)
+
+        # 在线歌曲列表信号连接到槽函数
+        self.onlineSongListWidget.playSignal.connect(self.playOnlineSongSig)
+        self.onlineSongListWidget.downloadSig.connect(self.__downloadSong)
+        self.onlineSongListWidget.playOneSongSig.connect(
+            self.playOneSongCardSig)
+        self.onlineSongListWidget.nextToPlayOneSongSig.connect(
+            lambda songInfo: self.nextToPlaySig.emit([songInfo]))
 
         # 播放列表分组框信号连接到槽函数
         self.playlistGroupBox.playSig.connect(self.playPlaylistSig)
@@ -226,3 +278,7 @@ class SearchResultInterface(ScrollArea):
             self.addSongsToCustomPlaylistSig)
         self.playlistGroupBox.addSongsToNewCustomPlaylistSig.connect(
             self.addSongsToNewCustomPlaylistSig)
+
+        # 线程信号连接到槽函数
+        self.getOnlineSongUrlThread.getUrlSignal.connect(
+            self.__updateOnlineSongInfo)

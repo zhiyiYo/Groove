@@ -675,7 +675,7 @@ class AlbumCardInterface(ScrollArea):
         album = songInfo["album"]  # type:str
         singer = songInfo["singer"]  # type:str
         modifiedAlbum = songInfo["modifiedAlbum"]  # type:str
-        coverPath = getCoverPath(modifiedAlbum, 'album_big')
+        coverPath = getCoverPath(f'{singer}_{modifiedAlbum}', 'album_big')
         albumInfo = {
             "modifiedTime": songInfo["createTime"],
             "album": album,

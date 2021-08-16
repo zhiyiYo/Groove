@@ -150,8 +150,6 @@ class PlayBar(QWidget):
 
     def updateSongInfoCard(self, songInfo: dict):
         """ 更新歌曲信息卡 """
-        if not os.path.exists(songInfo.get("songPath")):
-            return
         self.songInfoCard.updateSongInfoCard(songInfo)
         self.__adjustSongInfoCardWidth()
 

@@ -7,6 +7,7 @@ from shutil import copyfile, rmtree
 from mutagen import File
 
 from .get_song_info import SongInfoGetter
+from app.common.get_pic_suffix import getPicSuffix
 
 
 class GetAlbumCover:
@@ -34,7 +35,7 @@ class GetAlbumCover:
             suffix = songInfo["suffix"]
             # 根据后缀名选择获取封面的方式
             if suffix == ".mp3":
-                self.__getID3AlbumCover(songInfo)
+                self.__getMp3AlbumCover(songInfo)
             elif suffix == ".flac":
                 self.__getFlacAlbumCover(songInfo)
             elif suffix == ".m4a":
@@ -46,7 +47,7 @@ class GetAlbumCover:
         self.songInfo.getInfo(target_path_list)
         self.getAlbum()
 
-    def __getID3AlbumCover(self, songInfo: dict):
+    def __getMp3AlbumCover(self, songInfo: dict):
         """ 获取mp3文件的封面并写入文件夹 """
         # 封面目录
         isPicExist, sub_album_cover_folder = self.__isPicExist(songInfo)
@@ -54,6 +55,7 @@ class GetAlbumCover:
             return
         # 如果文件夹中不存在图片就扫描歌曲元数据来提取
         id_card = File(songInfo["songPath"])
+
         # 如果文件后缀名与实际类型不匹配就调用另一个函数
         if id_card.mime[0].split("/")[-1] == "flac":
             self.__getFlacAlbumCover(songInfo)
@@ -76,6 +78,7 @@ class GetAlbumCover:
         isPicExist, sub_album_cover_folder = self.__isPicExist(songInfo)
         if isPicExist:
             return
+            
         id_card = File(songInfo["songPath"])
         # 如果文件后缀名与实际类型不匹配就调用另一个函数
         if id_card.mime[0].split("/")[-1] == "mp4":
@@ -94,6 +97,7 @@ class GetAlbumCover:
         isPicExist, sub_album_cover_folder = self.__isPicExist(songInfo)
         if isPicExist:
             return
+
         id_card = File(songInfo["songPath"])
         # 如果文件后缀名与实际类型不匹配就直接返回
         if id_card.mime[0].split("/")[-1] != "mp4":
@@ -108,7 +112,7 @@ class GetAlbumCover:
     def __isPicExist(self, songInfo: dict):
         """ 检测封面是否存在 """
         sub_album_cover_folder = os.path.join(
-            self.album_cover_folder, songInfo["modifiedAlbum"])
+            self.album_cover_folder, f'{songInfo["singer"]}_{songInfo["modifiedAlbum"]}')
         # 默认封面存在
         isPicExist = True
         if os.path.exists(sub_album_cover_folder):
@@ -127,23 +131,13 @@ class GetAlbumCover:
             isPicExist = False
         return isPicExist, sub_album_cover_folder
 
-    def __getPicSuffix(self, pic_data):
-        """ 获取二进制数据的后缀名 """
-        try:
-            suffix = "." + imghdr.what(None, pic_data)
-            if suffix == ".jpeg":
-                suffix = ".jpg"
-        except:
-            suffix = ".jpg"
-        return suffix
-
     def __savePic(self, sub_album_cover_folder: str, songInfo: dict, pic_data):
         """ 储存提取到的专辑封面 """
         # 获取后缀名
-        suffix = self.__getPicSuffix(pic_data)
+        suffix = getPicSuffix(pic_data)
         # 封面路径
         pic_path = os.path.join(
-            sub_album_cover_folder, songInfo["modifiedAlbum"] + suffix)
+            sub_album_cover_folder, f'{songInfo["singer"]}_{songInfo["modifiedAlbum"]}{suffix}')
         # 写入封面
         with open(pic_path, "wb") as f:
             f.write(pic_data)

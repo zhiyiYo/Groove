@@ -1,8 +1,7 @@
 # coding:utf-8
 import os
 
-from app.common.write_album_cover import writeAlbumCover
-from app.common.modify_song_info import modifySongInfo
+from app.common.meta_data_writer import writeAlbumCover, writeSongInfo
 from app.common.crawler.qq_music_crawler import QQMusicCrawler
 from PyQt5.QtCore import QObject, pyqtSignal, QThread
 
@@ -30,7 +29,7 @@ class GetMetaDataThread(QThread):
             if songInfo:
                 # 修改歌曲信息
                 songInfo["songPath"] = songPath
-                modifySongInfo(songInfo)
+                writeSongInfo(songInfo)
                 key = songInfo["singer"]+'_'+songInfo['album']
 
                 # 从网上或者本地缓存文件夹获取专辑封面
@@ -70,7 +69,8 @@ class GetMetaDataThread(QThread):
             files = os.listdir(folderPath)
             for file in files:
                 if file.endswith(('.mp3', '.flac', '.m4a')):
-                    songPaths.append(os.path.join(folderPath, file))
+                    songPaths.append(os.path.join(
+                        folderPath, file).replace('\\', '/'))
                     fileNames.append(os.path.splitext(file)[0])
 
         return songPaths, fileNames

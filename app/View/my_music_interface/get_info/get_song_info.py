@@ -1,13 +1,12 @@
 # coding:utf-8
 import os
 import json
-from itertools import chain
 
 from mutagen import File
 from tinytag import TinyTag
 
+from app.common.os_utils import checkDirExists
 from app.common.adjust_album_name import adjustAlbumName
-from app.common.list_file import listFile
 from PyQt5.QtCore import QFileInfo, Qt
 
 
@@ -22,10 +21,10 @@ class SongInfoGetter:
         self.songInfo_list = []
         self.getInfo(folderPaths)
 
+    @checkDirExists('app/data')
     def scanTargetFolderSongInfo(self, folderPaths: list):
         """ 扫描指定文件夹的歌曲信息并更新歌曲信息 """
         self.folderPaths = folderPaths
-        self.__checkDataDir()
         with open("app/data/songInfo.json", "w", encoding="utf-8") as f:
             json.dump([{}], f)
         self.songInfo_list = []
@@ -34,14 +33,17 @@ class SongInfoGetter:
     def rescanSongInfo(self):
         """ 重新扫描歌曲信息，检查是否有歌曲信息的更新 """
         hasSongModified = False
+
         # 如果歌曲信息被删除了，就重新扫描一遍
         if not os.path.exists("app/data/songInfo.json"):
             self.scanTargetFolderSongInfo(self.folderPaths)
             return True
+
         # 利用当前的歌曲信息进行更新
         self.songInfo_list = self.__readSongInfoFromJson()
-        self.songPath_list = self.__getSongFiles()
+        self.songPath_list = self.__getSongFilePaths()
         oldSongs = {info.get("songPath") for info in self.songInfo_list}
+
         # 处理旧的歌曲信息
         for songInfo in self.songInfo_list.copy():
             songPath = songInfo["songPath"]
@@ -56,22 +58,24 @@ class SongInfoGetter:
             else:
                 self.songInfo_list.remove(songInfo)  # 歌曲不存在则移除歌曲信息
                 hasSongModified = True
+
         # 添加新的歌曲信息
         for songPath in set(self.songPath_list) - oldSongs:
             hasSongModified = True
             self.songInfo_list.append(self.getOneSongInfo(songPath))
+
         # 保存歌曲信息
         self.sortByCreateTime()
         self.save()
         return hasSongModified
 
+    @checkDirExists('app/data')
     def getInfo(self, folderPaths: list):
         """ 从指定的目录读取符合匹配规则的歌曲的标签卡信息 """
         self.folderPaths = folderPaths
-        self.songPath_list = self.__getSongFiles()
+        self.songPath_list = self.__getSongFilePaths()
 
         # 从json文件读取旧信息
-        self.__checkDataDir()
         oldInfo = self.__readSongInfoFromJson()
         oldSongs = {info.get("songPath") for info in oldInfo}
         newSongs = set(self.songPath_list)
@@ -87,11 +91,14 @@ class SongInfoGetter:
             self.songInfo_list = [
                 info for info in oldInfo if info["songPath"] in commonSongs
             ]
+
         # 如果有差集的存在就需要更新json文件
         for songPath in newSongs - oldSongs:
             self.songInfo_list.append(self.getOneSongInfo(songPath))
+
         # 排序歌曲
         self.sortByCreateTime()
+
         # 更新json文件
         self.save()
 
@@ -102,14 +109,16 @@ class SongInfoGetter:
         # 获取标签信息
         suffix = "." + fileInfo.suffix()
         songName = tag.title if tag.title and tag.title.strip() else fileInfo.baseName()
-        singer = tag.artist if tag.artist and tag.artist.strip() else "未知艺术家"
+        singer = tag.artist if tag.artist and tag.artist.strip() else "未知歌手"
         album = tag.album if tag.album and tag.album.strip() else "未知专辑"
         tracknumber = str(tag.track) if tag.track else "0"
         genre = tag.genre if tag.genre else "未知流派"
         duration = f"{int(tag.duration//60)}:{int(tag.duration%60):02}"
         album_list = adjustAlbumName(album)
+
         # 调整曲目序号
         tracknumber = self.__adjustTrackNumber(tracknumber)
+
         # 获取年份
         if tag.year and tag.year[0] != "0":
             year = tag.year[:4] + "年"
@@ -121,9 +130,12 @@ class SongInfoGetter:
                 if tag.get(key_dict[suffix])
                 else "未知年份"
             )
+
         # 获取时间戳
         createTime = fileInfo.birthTime().toString(Qt.ISODate)
         modifiedTime = fileInfo.lastModified().toString(Qt.ISODate)
+
+        # 创建歌曲信息字典
         songInfo = {
             "songPath": songPath,
             "singer": singer,
@@ -165,11 +177,6 @@ class SongInfoGetter:
             trackNum = trackNum[1:]
         return trackNum
 
-    def __checkDataDir(self):
-        """ 检查数据文件夹是否存在，若不存在就创建一个 """
-        if not os.path.exists("app/data"):
-            os.mkdir("app/data")
-
     def __readSongInfoFromJson(self) -> list:
         """ 从 json 文件中读取歌曲信息 """
         try:
@@ -179,26 +186,35 @@ class SongInfoGetter:
             songInfo_list = [{}]
         return songInfo_list
 
+    @checkDirExists('app/data')
     def save(self):
         """ 保存歌曲信息 """
-        self.__checkDataDir()
         with open("app/data/songInfo.json", "w", encoding="utf-8") as f:
             json.dump(self.songInfo_list, f)
 
-    def __getSongFiles(self):
+    def __getSongFilePaths(self):
         """ 获取指定歌曲文件夹下的歌曲文件 """
-        files = list(chain.from_iterable(listFile(self.folderPaths).values()))
-        return [f for f in files if f.endswith(("mp3", "flac", "m4a"))]
+        songPaths = []
+        for folderPath in self.folderPaths:
+            files = os.listdir(folderPath)
+            for file in files:
+                if file.endswith(('.mp3', '.flac', '.m4a')):
+                    songPaths.append(os.path.join(
+                        folderPath, file).replace('\\', '/'))
+
+        return songPaths
 
     def hasSongModified(self):
         """ 检测是否有歌曲被修改 """
         # 如果歌曲信息被删除了，就重新扫描一遍
         if not os.path.exists("app/data/songInfo.json"):
             return True
+
         # 利用当前的歌曲信息进行更新
         songInfo_list = self.__readSongInfoFromJson()
-        songPath_list = self.__getSongFiles()
+        songPath_list = self.__getSongFilePaths()
         oldSongs = {info.get("songPath") for info in songInfo_list}
+
         # 处理旧的歌曲信息
         for songInfo in songInfo_list:
             songPath = songInfo["songPath"]

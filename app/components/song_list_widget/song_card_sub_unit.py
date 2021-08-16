@@ -316,3 +316,30 @@ class NoCheckBoxSongNameCard(SongNameCard):
         self.songNameLabel.move(x, self.songNameLabel.y())
         # 更新按钮位置
         self._moveButtonGroup()
+
+
+class OnlineSongNameCard(SongNameCard):
+    """ 在线音乐歌曲卡 """
+
+    def __init__(self, songName, parent):
+        super().__init__(songName, parent=parent)
+        self.songNameLabel.move(15, 18)
+        self.playingLabel.move(15, 22)
+        self.checkBox.setFixedWidth(0)
+        self.checkBox.lower()
+        self.addToButton.setIconPathDict({
+            "notSelected-notPlay": r"app\resource\images\search_result_interface\Download_black.png",
+            "notSelected-play": r"app\resource\images\search_result_interface\Download_green.png",
+            "selected": r"app\resource\images\search_result_interface\Download_white.png",
+        })
+
+    def setPlay(self, isPlay: bool, isSongExist: bool = True):
+        """ 设置播放状态并决定是否显示正在播放图标 """
+        self.isPlay = isPlay
+        self.playingLabel.setVisible(isPlay or (not isSongExist))
+        self.setWidgetHidden(not isPlay)
+        # 歌曲不存在时仍需显示图标
+        x = 41 if isPlay or (not isSongExist) else 15
+        self.songNameLabel.move(x, self.songNameLabel.y())
+        # 更新按钮位置
+        self._moveButtonGroup()

@@ -3,7 +3,7 @@ from copy import deepcopy
 
 from app.common.adjust_album_name import adjustAlbumName
 from app.common.auto_wrap import autoWrap
-from app.common.modify_song_info import modifySongInfo
+from app.common.meta_data_writer import writeSongInfo
 from app.components.buttons.perspective_button import PerspectivePushButton
 from app.components.label import ErrorIcon
 from app.components.line_edit import LineEdit
@@ -221,7 +221,7 @@ class SongInfoEditDialog(MaskDialogBase):
         else:
             self.songInfo["year"] = "未知年份"
 
-        if not modifySongInfo(self.songInfo):
+        if not writeSongInfo(self.songInfo):
             self.bottomErrorLabel.setText("遇到未知错误，请稍后再试")
             self.bottomErrorLabel.adjustSize()
             self.bottomErrorLabel.show()

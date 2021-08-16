@@ -102,8 +102,9 @@ class PlaylistCard(PerspectiveWidget):
         self.playlistName = playlist.get("playlistName", "未知播放列表")  # type:str
         self.songInfo_list = playlist.get("songInfo_list", [])  # type:list
         songInfo = self.songInfo_list[0] if self.songInfo_list else {}
-        self.playlistCoverPath = getCoverPath(
-            songInfo.get("modifiedAlbum"), 'playlist_small')
+        name = songInfo.get('singer', '未知歌手')+'_' + \
+            songInfo.get('modifiedAlbum', '未知专辑')
+        self.playlistCoverPath = getCoverPath(name, 'playlist_small')
 
     def __adjustLabel(self):
         """ 调整标签的文本长度和位置 """

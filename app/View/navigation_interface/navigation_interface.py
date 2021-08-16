@@ -79,6 +79,7 @@ class NavigationInterface(QWidget):
             self.__collapseWindow)
         self.navigationMenu.playingButton.clicked.connect(
             self.__collapseWindow)
+        self.navigationMenu.searchSig.connect(self.__collapseWindow)
         for widget in self.__navigation_list:
             widget.playingButton.clicked.connect(
                 self.showPlayingInterfaceSig)

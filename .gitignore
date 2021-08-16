@@ -6,24 +6,22 @@
 *.code-workspace
 
 # 忽略数据文件夹
-data/
-Data/
+data
+Data
 
 # 忽略配置文件夹
-config/
+config
 
 # 忽略播放列表文件夹
-Playlists/
+Playlists
 
 # 忽略专辑封面文件夹
-app/resource/Album_Cover/
-app/resource/crawl_album_covers/
+app/resource/Album_Cover
+app/resource/crawl_album_covers
+app/temp
 
 # 忽略json文件
 *.json
-
-# 忽略eddx文件
-*.eddx
 
 # 忽略python缓存文件
 */__pycache__
@@ -33,11 +31,9 @@ app/resource/crawl_album_covers/
 *.log
 
 # 忽略音频文件
-app/resource/test_audio/
+app/resource/test_audio
+app/download
 
 # 忽略测试文件
 test.py
 demo.py
-
-# 忽略备份文件夹
-backup/

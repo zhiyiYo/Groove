@@ -9,8 +9,10 @@ from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
 from PyQt5.QtGui import QFont, QFontMetrics, QMouseEvent
 from PyQt5.QtWidgets import QApplication, QWidget
 
+from .song_card_sub_unit import (NoCheckBoxSongNameCard, OnlineSongNameCard,
+                                 PlaylistSongNameCard)
 from .song_card_sub_unit import SongNameCard as SongTabSongNameCard
-from .song_card_sub_unit import TrackNumSongNameCard, PlaylistSongNameCard, NoCheckBoxSongNameCard
+from .song_card_sub_unit import TrackNumSongNameCard
 from .song_card_type import SongCardType
 
 
@@ -19,7 +21,6 @@ class BasicSongCard(QWidget):
 
     clicked = pyqtSignal(int)
     doubleClicked = pyqtSignal(int)
-    removeSongSignal = pyqtSignal(int)
     playButtonClicked = pyqtSignal(int)
     addSongToPlayingSig = pyqtSignal(dict)
     checkedStateChanged = pyqtSignal(int, bool)
@@ -42,12 +43,12 @@ class BasicSongCard(QWidget):
         """
         super().__init__(parent)
         self.setFixedHeight(60)
-        self._getInfo(songInfo)
+        self.setSongInfo(songInfo)
         self.__resizeTime = 0
         self.__songCardType = songCardType
         # 歌曲卡类型
         self.__SongNameCard = [SongTabSongNameCard, TrackNumSongNameCard,
-                               PlaylistSongNameCard, NoCheckBoxSongNameCard][songCardType.value]
+                               PlaylistSongNameCard, NoCheckBoxSongNameCard, OnlineSongNameCard][songCardType.value]
         # 初始化各标志位
         self.isSongExist = True
         self.isPlaying = False
@@ -76,23 +77,21 @@ class BasicSongCard(QWidget):
         self.__labelSpacing_list = []
         self.__label_list = []
         self.__widget_list = []  # 存放所有的小部件
+
         # 创建动画组和动画列表
         self.aniGroup = QParallelAnimationGroup(self)
         self.__aniWidget_list = []
         self.__deltaX_list = []
         self.ani_list = []
+
         # 安装事件过滤器
         self.installEventFilter(self)
-        # 信号连接到槽
-        self.playButton.clicked.connect(self.onPlayButtonClicked)
-        self.checkBox.stateChanged.connect(self.checkedStateChangedSlot)
-        if songCardType != SongCardType.PLAYLIST_INTERFACE_SONG_CARD:
-            self.addToButton.clicked.connect(self.__showAddToMenu)
-        else:
-            self.addToButton.clicked.connect(
-                lambda: self.removeSongSignal.emit(self.itemIndex))
 
-    def _getInfo(self, songInfo: dict):
+        # 信号连接到槽
+        self.playButton.clicked.connect(
+            lambda: self.playButtonClicked.emit(self.itemIndex))
+
+    def setSongInfo(self, songInfo: dict):
         """ 从歌曲信息字典中获取信息 """
         self.songInfo = songInfo
         self.songPath = songInfo.get("songPath", "")  # type:str
@@ -183,8 +182,13 @@ class BasicSongCard(QWidget):
         """ 设置播放状态并更新样式 """
         self.isPlaying = isPlay
         self.isSelected = isPlay
+
         # 判断歌曲文件是否存在
-        self.isSongExist = os.path.exists(self.songPath)
+        if self.__songCardType != SongCardType.ONLINE_SONG_CARD:
+            self.isSongExist = os.path.exists(self.songPath)
+        else:
+            self.isSongExist = True
+
         if isPlay:
             self.isSelected = True
             self.setCheckBoxBtLabelState("selected")
@@ -342,7 +346,7 @@ class BasicSongCard(QWidget):
         """ 播放按钮按下时更新样式 """
         self.playButtonClicked.emit(self.itemIndex)
 
-    def checkedStateChangedSlot(self):
+    def _onCheckedStateChanged(self):
         """ 复选框选中状态改变对应的槽函数 """
         self.isChecked = self.checkBox.isChecked()
         self.setSelected(self.isChecked)
@@ -426,7 +430,7 @@ class BasicSongCard(QWidget):
             fontMetrics.width(label.text()) for label in self.__scaleableWidget_list[1:]
         ]
 
-    def __showAddToMenu(self):
+    def _showAddToMenu(self):
         """ 显示添加到菜单 """
         menu = AddToMenu(parent=self)
         pos = self.mapToGlobal(

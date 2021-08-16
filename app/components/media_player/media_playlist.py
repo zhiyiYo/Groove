@@ -1,11 +1,11 @@
 # coding:utf-8
-
 import os
-from enum import Enum
 from copy import deepcopy
+from enum import Enum
 from json import dump, load
 
-from PyQt5.QtCore import QUrl, pyqtSignal
+from app.common.os_utils import checkDirExists
+from PyQt5.QtCore import QUrl
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlaylist
 
 
@@ -47,8 +47,8 @@ class MediaPlaylist(QMediaPlaylist):
         self.__readLastPlaylist()
         if self.playlist:
             for songInfo_dict in self.playlist:
-                super().addMedia(QMediaContent(
-                    QUrl.fromLocalFile(songInfo_dict["songPath"])))
+                super().addMedia(
+                    QMediaContent(QUrl(songInfo_dict["songPath"])))
 
     def addMedia(self, songInfo_dict: dict):
         """ 重载addMedia,一次向尾部添加一首歌 """
@@ -56,7 +56,7 @@ class MediaPlaylist(QMediaPlaylist):
             return
         self.playlist.append(songInfo_dict)
         super().addMedia(QMediaContent(
-            QUrl.fromLocalFile(songInfo_dict["songPath"])))
+            QUrl(songInfo_dict["songPath"])))
 
     def addMedias(self, songInfo_list: list):
         """ 向尾部添加要播放的音频文件列表 """
@@ -65,21 +65,22 @@ class MediaPlaylist(QMediaPlaylist):
         self.playlist.extend(songInfo_list)
         for songInfo_dict in songInfo_list:
             super().addMedia(
-                QMediaContent(QUrl.fromLocalFile(songInfo_dict["songPath"])))
+                QMediaContent(QUrl(songInfo_dict["songPath"])))
 
     def insertMedia(self, index, songInfo_dict: dict):
         """ 在指定位置插入要播放的歌曲 """
         super().insertMedia(
-            index, QMediaContent(QUrl.fromLocalFile(songInfo_dict["songPath"])))
+            index, QMediaContent(QUrl(songInfo_dict["songPath"])))
         self.playlist.insert(index, songInfo_dict)
 
     def insertMedias(self, index: int, songInfo_list: list):
         """ 插入播放列表 """
         if not songInfo_list:
             return
-        self.playlist = self.playlist[:index] + songInfo_list + self.playlist[index:]
+        self.playlist = self.playlist[:index] + \
+            songInfo_list + self.playlist[index:]
         mediaContent_list = [
-            QMediaContent(QUrl.fromLocalFile(songInfo_dict["songPath"]))
+            QMediaContent(QUrl(songInfo_dict["songPath"]))
             for songInfo_dict in songInfo_list
         ]
         super().insertMedia(index, mediaContent_list)
@@ -123,10 +124,10 @@ class MediaPlaylist(QMediaPlaylist):
         # 设置当前播放歌曲
         self.setCurrentIndex(self.playlist.index(songInfo_dict))
 
-    def playAlbum(self, songInfo_list: list):
+    def playAlbum(self, songInfo_list: list, index=0):
         """ 播放专辑中的歌曲 """
         self.playlistType = PlaylistType.ALBUM_CARD_PLAYLIST
-        self.setPlaylist(songInfo_list)
+        self.setPlaylist(songInfo_list, index)
 
     def setRandomPlay(self, isRandomPlay=False):
         """ 按下随机播放按钮时根据循环模式决定是否设置随机播放模式 """
@@ -150,19 +151,19 @@ class MediaPlaylist(QMediaPlaylist):
         self.addMedias(songInfo_list)
         self.setCurrentIndex(index)
 
+    @checkDirExists('app/data')
     def save(self):
         """ 保存播放列表到json文件中 """
         playlistInfo = {
             "lastPlaylist": self.playlist,
             "lastSongInfo": self.getCurrentSong(),
         }
-        self.__checkDataDir()
         with open("app/data/lastPlaylistInfo.json", "w", encoding="utf-8") as f:
             dump(playlistInfo, f)
 
+    @checkDirExists('app/data')
     def __readLastPlaylist(self):
         """ 从json文件中读取播放列表 """
-        self.__checkDataDir()
         try:
             with open("app/data/lastPlaylistInfo.json", encoding="utf-8") as f:
                 playlistInfo = load(f)  # type:dict
@@ -203,7 +204,3 @@ class MediaPlaylist(QMediaPlaylist):
         """ 更新播放列表中多首歌曲的信息 """
         for newSongInfo in newSongInfo_list:
             self.updateOneSongInfo(newSongInfo)
-
-    def __checkDataDir(self):
-        """ 检查数据文件夹是否存在，不存在则创建 """
-        os.makedirs('app/data', exist_ok=True)

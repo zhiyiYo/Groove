@@ -139,7 +139,7 @@ class SongListWidget(ListWidget):
         self.songCard_list.clear()
         self.currentIndex = 0 if isResetIndex else self.currentIndex
 
-    def updateSongCards(self, songInfo_list: list, isResetIndex: bool = True):
+    def updateSongCards(self, songInfo_list: list, isResetIndex=True, index=0):
         """ 更新所有歌曲卡信息 """
         # 长度相等就更新信息，不相等就根据情况创建或者删除item
         if self.songCard_list:
@@ -169,7 +169,7 @@ class SongListWidget(ListWidget):
             self.songCard_list[i].updateSongCard(songInfo_dict)
 
         # 更新样式和当前下标
-        self.currentIndex = 0 if isResetIndex else self.currentIndex
+        self.currentIndex = index if isResetIndex else self.currentIndex
         self.songCard_list[self.currentIndex].setPlay(True)
 
     def __switchToAlbumInterface(self, albumName: str, singerName: str):

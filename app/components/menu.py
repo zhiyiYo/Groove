@@ -1,5 +1,4 @@
 # coding:utf-8
-
 import os
 
 from app.common.window_effect import WindowEffect
@@ -137,6 +136,27 @@ class AddToMenu(DWMMenu):
     def actionCount(self):
         """ 返回菜单中的动作数 """
         return len(self.action_list)
+
+
+class DownloadMenu(DWMMenu):
+    """ 下载歌曲菜单 """
+
+    downloadSig = pyqtSignal(str)
+
+    def __init__(self, parent):
+        super().__init__(title="下载", parent=parent)
+        self.normalQualityAct = QAction('流畅音质', self)
+        self.highQualityAct = QAction('高品音质', self)
+        self.superQualityAct = QAction('超品音质', self)
+        self.addActions(
+            [self.normalQualityAct, self.highQualityAct, self.superQualityAct])
+        self.normalQualityAct.triggered.connect(
+            lambda: self.downloadSig.emit('流畅音质'))
+        self.highQualityAct.triggered.connect(
+            lambda: self.downloadSig.emit('高品音质'))
+        self.superQualityAct.triggered.connect(
+            lambda: self.downloadSig.emit('超品音质'))
+        self.setQss()
 
 
 class LineEditMenu(DWMMenu):

@@ -2,6 +2,7 @@
 import os
 from json import dump, load
 
+from app.common.os_utils import checkDirExists
 from app.components.buttons.switch_button import SwitchButton
 from app.components.dialog_box.folder_list_dialog import FolderListDialog
 from app.components.label import ClickableLabel
@@ -188,14 +189,15 @@ class SettingInterface(QWidget):
         # 发送更新歌曲文件夹列表的信号
         self.selectedFoldersChanged.emit(selectedFolders)
 
+    @checkDirExists('app/config')
     def __readConfig(self):
         """ 读入配置文件数据 """
-        self.__checkConfigDir()
         try:
             with open("app/config/config.json", encoding="utf-8") as f:
                 self.config = load(f)  # type:dict
         except:
             self.config = {"selected-folders": []}
+
         # 检查文件夹是否存在，不存在则从配置中移除
         for folder in self.config["selected-folders"].copy():
             if not os.path.exists(folder):
@@ -218,6 +220,7 @@ class SettingInterface(QWidget):
         """
         return self.config.get(configName, default)
 
+    @checkDirExists('app/config')
     def updateConfig(self, config: dict):
         """ 更新并保存配置数据
 
@@ -226,12 +229,6 @@ class SettingInterface(QWidget):
         config : dict
             配置信息字典
         """
-        self.__checkConfigDir()
         self.config.update(config)
         with open("app/config/config.json", "w", encoding="utf-8") as f:
             dump(self.config, f)
-
-    @staticmethod
-    def __checkConfigDir():
-        """ 检查配置文件夹是否存在，不存在则创建 """
-        os.makedirs('app/config', exist_ok=True)

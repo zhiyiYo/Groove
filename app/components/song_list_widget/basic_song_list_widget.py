@@ -9,7 +9,8 @@ from PyQt5.QtCore import QMargins, QSize, Qt, pyqtSignal
 from PyQt5.QtWidgets import QLabel, QListWidgetItem, QWidget
 
 from .song_card import (AlbumInterfaceSongCard, NoCheckBoxSongCard,
-                        PlaylistInterfaceSongCard, SongTabSongCard)
+                        OnlineSongCard, PlaylistInterfaceSongCard,
+                        SongTabSongCard)
 from .song_card_type import SongCardType
 
 
@@ -52,7 +53,7 @@ class BasicSongListWidget(ListWidget):
         self.paddingBottomHeight = paddingBottomHeight
         # 使用指定的歌曲卡类创建歌曲卡对象
         self.__SongCard = [SongTabSongCard, AlbumInterfaceSongCard,
-                           PlaylistInterfaceSongCard, NoCheckBoxSongCard][songCardType.value]
+                           PlaylistInterfaceSongCard, NoCheckBoxSongCard, OnlineSongCard][songCardType.value]
         self.songInfo_list = songInfo_list if songInfo_list else []  # type:List[dict]
         self.currentIndex = 0
         self.playingIndex = 0  # 正在播放的歌曲卡下标
