@@ -7,7 +7,6 @@ from PyQt5.QtWidgets import QWidget
 class NavigationWidgetBase(QWidget):
     """ 导航部件基类 """
 
-    switchInterfaceSig = pyqtSignal(int)
     selectedButtonChanged = pyqtSignal(str)
 
     def __init__(self, parent=None):

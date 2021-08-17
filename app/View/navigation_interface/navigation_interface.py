@@ -65,8 +65,8 @@ class NavigationInterface(QWidget):
             self.__onSelectedButtonChanged)
 
         # 发送搜索信号
-        self.navigationMenu.searchSig.connect(self.searchSig)
-        self.navigationWidget.searchSig.connect(self.searchSig)
+        self.navigationMenu.searchSig.connect(self.__onSearch)
+        self.navigationWidget.searchSig.connect(self.__onSearch)
 
         # 按钮点击信号连接到槽
         self.navigationBar.showMenuButton.clicked.connect(
@@ -103,6 +103,7 @@ class NavigationInterface(QWidget):
         """ 过滤事件 """
         if obj == self.navigationMenu:
             if e.type() == QEvent.Hide:
+                self.__isExpanded = False
                 self.navigationBar.show()
         return super().eventFilter(obj, e)
 
@@ -158,6 +159,13 @@ class NavigationInterface(QWidget):
         """ 更新窗口 """
         self.navigationMenu.updateWindow()
         self.navigationWidget.updateWindow()
+
+    def __onSearch(self, text):
+        """ 搜索信号槽函数 """
+        self.navigationBar.currentButton.setSelected(False)
+        self.navigationMenu.currentButton.setSelected(False)
+        self.navigationWidget.currentButton.setSelected(False)
+        self.searchSig.emit(text)
 
     @property
     def isOverlay(self):

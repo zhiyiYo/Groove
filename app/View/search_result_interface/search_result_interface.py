@@ -1,12 +1,14 @@
 # coding:utf-8
+import os
 from copy import deepcopy
 
 from app.common.crawler.kuwo_music_crawler import KuWoMusicCrawler
 from app.components.layout.v_box_layout import VBoxLayout
+from app.components.state_tooltip import StateTooltip
 from app.components.scroll_area import ScrollArea
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QLabel, QWidget
+from PyQt5.QtWidgets import QLabel, QWidget, QVBoxLayout
 
 from .album_group_box import AlbumGroupBox
 from .playlist_group_box import PlaylistGroupBox
@@ -33,7 +35,23 @@ class SearchResultInterface(ScrollArea):
     addSongsToNewCustomPlaylistSig = pyqtSignal(list)    # 添加歌曲到新的自定义的播放列表中
     addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 添加歌曲到自定义的播放列表中
 
-    def __init__(self, parent=None):
+    def __init__(self, onlineMusicPageSize=10, onlinePlayQuality='流畅音质',
+                 downloadFolder='app/download', parent=None):
+        """
+        Parameters
+        ----------
+        onlineMusicPageSize: int
+            在线音乐显示数量
+
+        onlinePlayQuality: str
+            在线音乐播放音质
+
+        downloadFolder: str
+            音乐下载目录
+
+        parent:
+            父级
+        """
         super().__init__(parent=parent)
         self.playlists = {}                 # 匹配到的本地播放列表
         self.albumInfo_list = []            # 匹配到的本地专辑列表
@@ -42,7 +60,7 @@ class SearchResultInterface(ScrollArea):
         self.titleLabel = QLabel(self)
         self.searchLabel = QLabel(self)
         self.scrollWidget = QWidget(self)
-        self.vBox = VBoxLayout(self.scrollWidget)
+        self.vBox = QVBoxLayout(self.scrollWidget)
         self.albumGroupBox = AlbumGroupBox(self.scrollWidget)
         self.playlistGroupBox = PlaylistGroupBox(self.scrollWidget)
         self.localSongGroupBox = SongGroupBox('本地歌曲', self.scrollWidget)
@@ -52,10 +70,12 @@ class SearchResultInterface(ScrollArea):
         self.localSongListWidget = self.localSongGroupBox.songListWidget
         self.onlineSongListWidget = self.onlineSongGroupBox.songListWidget
         self.crawler = KuWoMusicCrawler()
+        self.downloadFolder = downloadFolder
+        self.onlinePlayQuality = onlinePlayQuality
+        self.onlineMusicPageSize = onlineMusicPageSize
         self.getOnlineSongUrlThread = GetOnlineSongUrlThread(self)
-        self.downloadSongThread = DownloadSongThread('app/download', self)
-        self.onlineMusicQuality = '流畅音质'  # 播放的在线音乐的音质
-        self.saveDir = 'app/download'        # 保存下载音乐的文件夹P@
+        self.downloadSongThread = DownloadSongThread(self.downloadFolder, self)
+        self.downloadStateTooltip = None
         self.__initWidget()
 
     def __initWidget(self):
@@ -146,9 +166,23 @@ class SearchResultInterface(ScrollArea):
 
     def __downloadSong(self, songInfo: dict, quality: str):
         """ 下载歌曲 """
-        self.downloadSongThread.appendDownloadTask(songInfo,quality)
+        self.downloadSongThread.appendDownloadTask(songInfo, quality)
+
         if not self.downloadSongThread.isRunning():
+            self.downloadStateTooltip = DownloadStateTooltip(1, self.window())
+            self.downloadSongThread.downloadOneSongCompleteSig.connect(
+                self.downloadStateTooltip.completeOneDownloadTask)
+            self.downloadStateTooltip.move(
+                self.window().width() - self.downloadStateTooltip.width() - 30, 63)
+            self.downloadStateTooltip.show()
             self.downloadSongThread.start()
+        else:
+            self.downloadStateTooltip.appendOneDownloadTask()
+
+    def __onDownloadAllComplete(self):
+        """ 全部下载完成槽函数 """
+        self.downloadSongThread.disconnect()
+        self.downloadStateTooltip = None
 
     def search(self, keyWord: str, songInfo_list: list, albumInfo_list: list, playlists: dict):
         """ 搜索与关键词相匹配的专辑、歌曲和播放列表 """
@@ -173,9 +207,9 @@ class SearchResultInterface(ScrollArea):
 
         # 对在线歌曲进行匹配并获取播放地址和封面
         self.onlineSongInfo_list = self.crawler.getSongInfoList(
-            keyWord, 10)
+            keyWord, self.onlineMusicPageSize)
         self.getOnlineSongUrlThread.setSongInfoList(
-            self.onlineSongInfo_list, self.onlineMusicQuality)
+            self.onlineSongInfo_list, self.onlinePlayQuality)
         self.getOnlineSongUrlThread.start()
 
         # 对播放列表进行匹配
@@ -223,6 +257,24 @@ class SearchResultInterface(ScrollArea):
         if self.albumGroupBox.isHidden() and self.localSongGroupBox.isHidden() and \
                 self.playlistGroupBox.isHidden() and self.onlineSongGroupBox.isHidden():
             self.__setHintsLabelVisible(True)
+
+    def setDownloadFolder(self, folder: str):
+        """ 设置下载文件夹 """
+        if not os.path.exists(folder):
+            print(f'下载目录 `{folder}` 不存在')
+            return
+        self.downloadSongThread.downloadFolder = folder
+
+    def setOnlinePlayQuality(self, quality: str):
+        """ 设置下载文件夹 """
+        if quality not in ['流畅音质', '高品音质', '超品音质']:
+            print(f'"{quality}" 非法')
+            return
+        self.onlinePlayQuality = quality
+
+    def setOnlineMusicPageSize(self, pageSize: int):
+        """ 设置在线音乐显示数量 """
+        self.onlineMusicPageSize = pageSize
 
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
@@ -280,5 +332,30 @@ class SearchResultInterface(ScrollArea):
             self.addSongsToNewCustomPlaylistSig)
 
         # 线程信号连接到槽函数
+        self.downloadSongThread.finished.connect(self.__onDownloadAllComplete)
         self.getOnlineSongUrlThread.getUrlSignal.connect(
             self.__updateOnlineSongInfo)
+
+
+class DownloadStateTooltip(StateTooltip):
+    """ 下载状态提示条 """
+
+    def __init__(self, downloadTaskNum=1, parent=None):
+        super().__init__(title='正在下载歌曲中',
+                         content=f'还剩 {downloadTaskNum} 首，要耐心等待哦~~', parent=parent)
+        self.downloadTaskNum = downloadTaskNum
+
+    def completeOneDownloadTask(self):
+        """ 完成 1 个下载任务 """
+        self.downloadTaskNum -= 1
+        if self.downloadTaskNum>0:
+            self.setContent(f'还剩 {self.downloadTaskNum} 首，要耐心等待哦~~')
+        else:
+            self.setTitle('已完成所有下载任务')
+            self.setContent('下载完成啦，请查收~~')
+            self.setState(True)
+
+    def appendOneDownloadTask(self):
+        """ 添加 1 个下载任务 """
+        self.downloadTaskNum += 1
+        self.setContent(f'还剩 {self.downloadTaskNum} 首，要耐心等待哦~~')

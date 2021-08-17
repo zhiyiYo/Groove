@@ -49,7 +49,7 @@ class GetOnlineSongUrlThread(QThread):
             playUrl = self.crawler.getSongUrl(songInfo['rid'], self.quality)
 
             # 下载封面
-            name = f'{songInfo["singer"]}_{songInfo["modifiedAlbum"]}'
+            name = songInfo['coverName']
             save_path = f'app/resource/Album_Cover/{name}/{name}.jpg'
 
             if not os.path.exists(save_path):

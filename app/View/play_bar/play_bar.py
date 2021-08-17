@@ -1,12 +1,9 @@
 # coding:utf-8
-
-import os
-
 from PyQt5.QtCore import QPoint, Qt, pyqtSignal
+from PyQt5.QtGui import QColor, QPalette
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtMultimedia import QMediaPlaylist
 
-from app.common.window_effect import WindowEffect
 from app.common.get_dominant_color import DominantColor
 from app.View.play_bar.central_button_group import CentralButtonGroup
 from app.View.play_bar.more_actions_menu import MoreActionsMenu
@@ -33,13 +30,11 @@ class PlayBar(QWidget):
     showSmallestPlayInterfaceSig = pyqtSignal()
     loopModeChanged = pyqtSignal(QMediaPlaylist.PlaybackMode)
 
-    def __init__(self, songInfo: dict, parent=None):
+    def __init__(self, songInfo: dict, backgroundColor: list, parent=None):
         super().__init__(parent)
         self.originWidth = 1280
-        # 实例化窗口特效
-        self.acrylicColor = "225c7fCC"
+        self.backgroundColor = backgroundColor
         self.dominantColor = DominantColor()
-        self.windowEffect = WindowEffect()
         # 记录移动次数
         self.moveTime = 0
         self.resizeTime = 0
@@ -56,11 +51,11 @@ class PlayBar(QWidget):
 
     def __initWidget(self):
         """ 初始化小部件 """
-        self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
         self.resize(1312, 115)
         self.setFixedHeight(115)
-        # 初始化亚克力背景色
-        self.setAcrylicColor(self.acrylicColor)
+        # 设置背景色
+        self.setAutoFillBackground(True)
+        self.setBackgroundColor(self.backgroundColor)
         # 引用小部件
         self.referenceWidgets()
         # 连接槽函数
@@ -81,13 +76,15 @@ class PlayBar(QWidget):
 
     def updateDominantColor(self, albumPath: str):
         """ 更新主色调 """
-        color = self.dominantColor.getDominantColor(albumPath) + "CC"
-        self.setAcrylicColor(color)
+        r, g, b = self.dominantColor.getDominantColor(albumPath, tuple)
+        self.setBackgroundColor([r, g, b])
 
-    def setAcrylicColor(self, gradientColor: str):
-        """ 设置亚克力效果的混合色 """
-        self.acrylicColor = gradientColor
-        self.windowEffect.setAcrylicEffect(self.winId(), gradientColor, False)
+    def setBackgroundColor(self, backgroundColor: list):
+        """ 设置背景颜色 """
+        self.backgroundColor = backgroundColor
+        palette = QPalette()
+        palette.setColor(self.backgroundRole(), QColor(*backgroundColor))
+        self.setPalette(palette)
 
     def __setQss(self):
         """ 设置层叠样式 """

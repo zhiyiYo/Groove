@@ -6,7 +6,7 @@ from mutagen import File
 from tinytag import TinyTag
 
 from app.common.os_utils import checkDirExists
-from app.common.adjust_album_name import adjustAlbumName
+from app.common.os_utils import adjustName
 from PyQt5.QtCore import QFileInfo, Qt
 
 
@@ -114,7 +114,7 @@ class SongInfoGetter:
         tracknumber = str(tag.track) if tag.track else "0"
         genre = tag.genre if tag.genre else "未知流派"
         duration = f"{int(tag.duration//60)}:{int(tag.duration%60):02}"
-        album_list = adjustAlbumName(album)
+        coverName = adjustName(singer+'_'+album)
 
         # 调整曲目序号
         tracknumber = self.__adjustTrackNumber(tracknumber)
@@ -140,8 +140,8 @@ class SongInfoGetter:
             "songPath": songPath,
             "singer": singer,
             "songName": songName,
-            "album": album_list[0],  # album为原专辑名
-            "modifiedAlbum": album_list[-1],  # modifiedAlbum为修改后的专辑名
+            "album": album,  # album为原专辑名
+            "coverName": coverName,  # 保存下来的封面名字
             "genre": genre,
             "year": year,
             "tracknumber": tracknumber,

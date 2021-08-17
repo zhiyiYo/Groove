@@ -674,17 +674,17 @@ class AlbumCardInterface(ScrollArea):
         """ 从一首歌创建一个专辑信息 """
         album = songInfo["album"]  # type:str
         singer = songInfo["singer"]  # type:str
-        modifiedAlbum = songInfo["modifiedAlbum"]  # type:str
-        coverPath = getCoverPath(f'{singer}_{modifiedAlbum}', 'album_big')
+        coverName = songInfo["coverName"]  # type:str
+        coverPath = getCoverPath(coverName, 'album_big')
         albumInfo = {
             "modifiedTime": songInfo["createTime"],
             "album": album,
             "singer": singer,
             "genre": songInfo["genre"],
             "year": songInfo["year"],
-            "coverPath": coverPath,
             "songInfo_list": [songInfo.copy()],
-            "modifiedAlbum": modifiedAlbum,
+            "coverPath": coverPath,
+            "coverName": coverName,
         }
         return albumInfo
 

@@ -32,8 +32,11 @@
 
 ## Features
 
-* Play music
+* Play local music
 ![播放本地音乐](docs/screenshot/播放本地音乐.gif)
+
+* Search, play and download online music
+![搜索播放和下载在线音乐](docs/screenshot/搜索播放和下载在线音乐.gif)
 
 * Create playlist
 ![创建播放列表](docs/screenshot/创建播放列表.gif)

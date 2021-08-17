@@ -153,7 +153,7 @@ class TitleBar(QWidget):
         """ 过滤事件 """
         if obj == self.returnBt:
             if e.type() == QEvent.Hide:
-                cond = not (self.title.parent() is self)
+                cond = self.title.parent() is not self
                 self.title.move(15 * cond, 10 * cond)
             elif e.type() == QEvent.Show:
                 self.title.move(self.returnBt.width() + self.title.x(), self.title.y())

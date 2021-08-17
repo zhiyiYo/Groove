@@ -7,7 +7,7 @@ from hashlib import md5
 from urllib import parse
 from pprint import pprint
 
-from app.common.adjust_album_name import adjustAlbumName
+from app.common.os_utils import adjustName
 import requests
 
 
@@ -104,10 +104,11 @@ class KuGouMusicCrawler:
             song_info["songName"] = re.sub(pattern, '', info["SongName"])
             song_info["singer"] = re.sub(pattern, '', info["SingerName"])
             song_info["album"] = info["AlbumName"]
-            song_info["modifiedAlbum"] = adjustAlbumName(info["AlbumName"])[1]
             song_info["albumID"] = info["AlbumID"]
-            song_info["coverPath"] = ''
             song_info['songPath'] = ''
+            song_info["coverPath"] = ''
+            song_info["coverName"] = adjustName(
+                info["SingerName"] + '_' + info["AlbumName"])
 
             # 歌曲请求链接哈希值，对应普通、高音质和无损三种音质
             song_info["fileHash"] = info["FileHash"]

@@ -17,21 +17,21 @@ class AlbumInfoGetter:
         for songInfo in songInfo_list:
             album = songInfo["album"]  # type:str
             singer = songInfo["singer"]  # type:str
-            modifiedAlbum = songInfo["modifiedAlbum"]  # type:str
+            coverName = songInfo["coverName"]  # type:str
             # 如果(专辑名,歌手名)不在列表中，就往列表中插入新的专辑信息字典
             if (album, singer) not in albumSonger_list:
                 albumSonger_list.append((album, singer))
-                coverPath = getCoverPath(f'{singer}_{modifiedAlbum}', 'album_big')
+                coverPath = getCoverPath(coverName, 'album_big')
                 albumInfo_list.append(
                     {
-                        "modifiedTime": songInfo["createTime"],
                         "album": album,
                         "singer": singer,
+                        "songInfo_list": [songInfo],
+                        "coverName": coverName,
+                        "coverPath": coverPath,
                         "genre": songInfo["genre"],
                         "year": songInfo["year"],
-                        "coverPath": coverPath,
-                        "songInfo_list": [songInfo],
-                        "modifiedAlbum": modifiedAlbum,
+                        "modifiedTime": songInfo["createTime"]
                     }
                 )
             else:

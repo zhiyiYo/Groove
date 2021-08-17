@@ -1,11 +1,3 @@
-QWidget{
-    background-color: transparent;
-}
-
-QWidget#demo{
-    background-color: cyan;
-}
-
 QSlider:horizontal{
     height: 30px;
     background-color: transparent;

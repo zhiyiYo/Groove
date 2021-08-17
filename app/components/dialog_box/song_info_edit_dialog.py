@@ -1,7 +1,7 @@
 # coding:utf-8
 from copy import deepcopy
 
-from app.common.adjust_album_name import adjustAlbumName
+from app.common.os_utils import adjustName
 from app.common.auto_wrap import autoWrap
 from app.common.meta_data_writer import writeSongInfo
 from app.components.buttons.perspective_button import PerspectivePushButton
@@ -208,11 +208,11 @@ class SongInfoEditDialog(MaskDialogBase):
 
     def __saveInfo(self):
         """ 保存标签卡信息 """
-        album_list = adjustAlbumName(self.albumNameLineEdit.text())
         self.songInfo["songName"] = self.songNameLineEdit.text()
         self.songInfo["singer"] = self.singerNameLineEdit.text()
-        self.songInfo["album"] = album_list[0]
-        self.songInfo["modifiedAlbum"] = album_list[-1]
+        self.songInfo["album"] = self.albumNameLineEdit.text()
+        self.songInfo["coverName"] = adjustName(
+            self.songInfo["singer"]+'_'+self.songInfo["album"])
         # 根据后缀名选择曲目标签的写入方式
         self.songInfo["tracknumber"] = self.trackNumLineEdit.text()
         self.songInfo["genre"] = self.genreLineEdit.text()

@@ -78,7 +78,7 @@ class GetAlbumCover:
         isPicExist, sub_album_cover_folder = self.__isPicExist(songInfo)
         if isPicExist:
             return
-            
+
         id_card = File(songInfo["songPath"])
         # 如果文件后缀名与实际类型不匹配就调用另一个函数
         if id_card.mime[0].split("/")[-1] == "mp4":
@@ -112,7 +112,7 @@ class GetAlbumCover:
     def __isPicExist(self, songInfo: dict):
         """ 检测封面是否存在 """
         sub_album_cover_folder = os.path.join(
-            self.album_cover_folder, f'{songInfo["singer"]}_{songInfo["modifiedAlbum"]}')
+            self.album_cover_folder, songInfo['coverName'])
         # 默认封面存在
         isPicExist = True
         if os.path.exists(sub_album_cover_folder):
@@ -136,8 +136,8 @@ class GetAlbumCover:
         # 获取后缀名
         suffix = getPicSuffix(pic_data)
         # 封面路径
-        pic_path = os.path.join(
-            sub_album_cover_folder, f'{songInfo["singer"]}_{songInfo["modifiedAlbum"]}{suffix}')
+        pic_path = os.path.join(sub_album_cover_folder,
+                                songInfo['coverName']+suffix)
         # 写入封面
         with open(pic_path, "wb") as f:
             f.write(pic_data)

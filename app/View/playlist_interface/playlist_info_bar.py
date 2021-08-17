@@ -43,8 +43,7 @@ class PlaylistInfoBar(CollapsingAppBarBase):
         self.playlistName = playlist.get("playlistName", "未知播放列表")  # type:str
         self.songInfo_list = self.playlist.get("songInfo_list", [])
         songInfo = self.songInfo_list[0] if self.songInfo_list else {}
-        name = songInfo.get('singer', '未知歌手') + '_' + \
-            songInfo.get('modifiedAlbum', '未知专辑')
+        name = songInfo.get('coverName', '未知歌手_未知专辑')
         self.playlistCoverPath = getCoverPath(name, "playlist_big")
 
         # 统计时间

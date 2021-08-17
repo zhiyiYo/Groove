@@ -174,6 +174,7 @@ class NavigationWidget(NavigationWidgetBase):
         """ 搜索按钮点击槽函数 """
         text = self.searchLineEdit.text()
         if text:
+            self.currentButton.setSelected(False)
             self.searchSig.emit(text)
 
 

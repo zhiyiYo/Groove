@@ -1,7 +1,7 @@
 # coding:utf-8
 import os
 
-from app.common.adjust_album_name import adjustAlbumName
+from app.common.os_utils import adjustName
 from app.common.get_pic_suffix import getPicSuffix
 from app.components.buttons.perspective_button import PerspectivePushButton
 from app.components.label import ErrorIcon
@@ -208,17 +208,18 @@ class AlbumInfoEditDialog(MaskDialogBase):
         self.albumInfo["album"] = self.albumNameLineEdit.text()
         self.albumInfo["singer"] = self.albumSongerLineEdit.text()
         self.albumInfo["genre"] = self.genreLineEdit.text()
-        album_list = adjustAlbumName(self.albumNameLineEdit.text())
-        for songInfo, songInfoWidget in zip(
-            self.songInfo_list, self.songInfoWidget_list
-        ):
-            songInfo["album"] = album_list[0]
-            songInfo["modifiedAlbum"] = album_list[-1]
+        coverName = adjustName(
+            self.albumSongerLineEdit.text()+'_'+self.albumNameLineEdit.text())
+
+        for songInfo, songInfoWidget in zip(self.songInfo_list, self.songInfoWidget_list):
+            songInfo["album"] = self.albumNameLineEdit.text()
+            songInfo["coverName"] = coverName[-1]
             songInfo["songName"] = songInfoWidget.songNameLineEdit.text()
             songInfo["singer"] = songInfoWidget.singerLineEdit.text()
             songInfo["genre"] = self.genreLineEdit.text()
             # 根据后缀名选择曲目标签的写入方式
             songInfo["tracknumber"] = songInfoWidget.trackNumLineEdit.text()
+
         self.saveInfoSig.emit(self.albumInfo)
         # 保存失败时重新启用编辑框
         self.__setWidgetEnable(True)
@@ -259,7 +260,7 @@ class AlbumInfoEditDialog(MaskDialogBase):
             # 如果封面路径是默认专辑封面，就修改封面路径
             if self.cover_path == "app/resource/images/default_covers/默认专辑封面_200_200.png":
                 self.cover_path = "app/resource/Album_Cover/{0}/{0}{1}".format(
-                    self.albumInfo["modifiedAlbum"], newSuffix)
+                    self.albumInfo["coverName"], newSuffix)
             with open(self.cover_path, "wb") as f:
                 f.write(picData)
             oldName, oldSuffix = os.path.splitext(self.cover_path)

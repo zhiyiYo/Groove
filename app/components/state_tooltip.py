@@ -88,7 +88,8 @@ class StateTooltip(QWidget):
         """ 设置提示框内容 """
         self.content = content
         self.contentLabel.setText(content)
-        self.contentLabel.adjustSize()
+        # adjustSize() 会导致 spinner 卡顿
+        # self.contentLabel.adjustSize()
 
     def setState(self, isDone=False):
         """ 设置运行状态 """

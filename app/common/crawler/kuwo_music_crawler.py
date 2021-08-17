@@ -4,7 +4,7 @@ import os
 from urllib import parse
 
 import requests
-from app.common.adjust_album_name import adjustAlbumName
+from app.common.os_utils import adjustName
 from app.common.meta_data_writer import writeAlbumCover, writeSongInfo
 
 
@@ -69,10 +69,11 @@ class KuWoMusicCrawler:
             song_info['songName'] = info['name']
             song_info['singer'] = info['artist']
             song_info['album'] = info['album']
-            song_info['modifiedAlbum'] = adjustAlbumName(info['album'])[1]
             song_info['year'] = info['releaseDate'].split('-')[0]+'年'
             song_info['tracknumber'] = str(info['track'])
             song_info['coverPath'] = info['albumpic']
+            song_info['coverName'] = adjustName(
+                info['artist']+'_'+info['album'])
             song_info['genre'] = ''
 
             # 格式化时长
@@ -117,6 +118,8 @@ class KuWoMusicCrawler:
         """ 下载歌曲 """
         # 获取下载地址
         url = self.getSongUrl(song_info['rid'], quality)
+        if not url:
+            return ''
 
         # 请求歌曲资源
         headers = self.headers.copy()

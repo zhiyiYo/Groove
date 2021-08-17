@@ -71,7 +71,7 @@ class SongInfoCard(QWidget):
         self.album = self.songInfo.get("album", "未知专辑")
         self.songName = self.songInfo.get("songName", "未知歌名")
         self.singerName = self.songInfo.get("singer", "未知歌手")
-        name = self.singerName+'_'+self.songInfo.get('modifiedAlbum', '未知专辑')
+        name = self.songInfo.get('coverName', '未知歌手_未知专辑')
         self.albumCoverPath = getCoverPath(name, "album_big")
 
     def updateCard(self, songInfo: dict):

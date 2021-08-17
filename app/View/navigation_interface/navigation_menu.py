@@ -26,7 +26,8 @@ class NavigationMenu(NavigationWidget):
         self.setWindowFlags(Qt.NoDropShadowWindowHint | Qt.Popup)
         self.windowEffect.setAcrylicEffect(self.winId(), "F2F2F299", False)
         self.switchToPlaylistInterfaceSig.connect(self.aniHide)
-        self.switchInterfaceSig.connect(self.aniHide)
+        self.myMusicButton.clicked.connect(self.aniHide)
+        self.settingButton.clicked.connect(self.aniHide)
 
     def resizeEvent(self, e):
         """ 调整小部件尺寸 """
@@ -71,6 +72,7 @@ class NavigationMenu(NavigationWidget):
         text = self.searchLineEdit.text()
         if text:
             self.aniHide()
+            self.currentButton.setSelected(False)
             self.searchSig.emit(text)
 
     @property

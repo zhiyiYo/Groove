@@ -56,61 +56,82 @@ class MainWindow(FramelessWindow):
         # 主界面放置 totalStackWidget、playBar 和 titleBar
         # totalStackWidget用来放置 subMainWindow 和 playingInterface
         self.totalStackWidget = OpacityAniStackedWidget(self)
+
         # subMainWindow 用来放置堆叠窗口 subStackWidget
         self.subMainWindow = QWidget(self)
         self.titleBar = TitleBar(self)
-        # 实例化播放器和播放列表
+
+        # 创建播放器和播放列表
         self.player = QMediaPlayer(self)
         self.mediaPlaylist = MediaPlaylist(self)
+
         # subStackWidget用来放置myMusicInterface、albumInterface、settingInterface、
         # playlistCardInterface等需要在导航栏右边显示的窗口
         self.subStackWidget = PopUpAniStackedWidget(self.subMainWindow)
+
         # 创建设置界面
         self.settingInterface = SettingInterface(self.subMainWindow)
+
         # 从配置文件中的选择文件夹读取音频文件
         t3 = time()
         self.myMusicInterface = MyMusicInterface(
             self.settingInterface.getConfig("selected-folders", []), self.subMainWindow)
         t4 = time()
         print("创建整个我的音乐界面耗时：".ljust(15), t4 - t3)
+
         # 创建定时扫描歌曲信息的定时器
         self.rescanSongInfoTimer = QTimer(self)
+
         # 创建缩略图任务栏
         QtWin.enableBlurBehindWindow(self)
         self.thumbnailToolBar = ThumbnailToolBar(self)
         self.thumbnailToolBar.setWindow(self.windowHandle())
+
+        # 创建播放栏
+        bgColor = self.settingInterface.getConfig(
+            'playBar-background-color', [34, 92, 127])
+        self.playBar = PlayBar(self.mediaPlaylist.lastSongInfo, bgColor, self)
+
         # 创建正在播放界面
         self.playingInterface = PlayingInterface(
             self.mediaPlaylist.playlist, self)
+
         # 创建专辑界面
         self.albumInterface = AlbumInterface({}, self.subMainWindow)
+
         # 创建播放列表卡界面和播放列表界面
-        self.readCustomPlaylists()  # 读入所有播放列表
         self.playlistInterface = PlaylistInterface({}, self.subMainWindow)
         self.playlistCardInterface = PlaylistCardInterface(
             self.readCustomPlaylists(), self)
+
         # 创建导航界面
         self.navigationInterface = NavigationInterface(self.subMainWindow)
+
         # 创建标签导航界面
         self.labelNavigationInterface = LabelNavigationInterface(
             self.subMainWindow)
-        # 创建播放栏
-        self.playBar = PlayBar(self.mediaPlaylist.lastSongInfo, self)
+
         # 创建最小播放界面
         self.smallestPlayInterface = SmallestPlayInterface(
             self.mediaPlaylist.playlist, parent=self)
+
         # 创建搜索结果界面
-        self.searchResultInterface = SearchResultInterface(self)
+        pageSize = self.settingInterface.config.get(
+            'online-music-page-size', 10)
+        quality = self.settingInterface.config.get(
+            'online-play-quality', '流畅音质')
+        folder = self.settingInterface.config.get(
+            'download-folder', 'app/download')
+        self.searchResultInterface = SearchResultInterface(
+            pageSize, quality, folder, self)
+
         # 创建快捷键
         self.togglePlayPauseAct_1 = QAction(
             parent=self, shortcut=Qt.Key_Space, triggered=self.togglePlayState)
         self.showNormalAct = QAction(
             parent=self, shortcut=Qt.Key_Escape, triggered=self.exitFullScreen)
         self.lastSongAct = QAction(
-            parent=self,
-            shortcut=Qt.Key_MediaPrevious,
-            triggered=self.mediaPlaylist.previous,
-        )
+            parent=self, shortcut=Qt.Key_MediaPrevious, triggered=self.mediaPlaylist.previous,)
         self.nextSongAct = QAction(
             parent=self, shortcut=Qt.Key_MediaNext, triggered=self.mediaPlaylist.next)
         self.togglePlayPauseAct_2 = QAction(
@@ -200,6 +221,9 @@ class MainWindow(FramelessWindow):
         self.subMainWindow.resize(self.size())
         self.totalStackWidget.resize(self.size())
         self.titleBar.resize(self.width(), 40)
+        self.playBar.resize(self.width(), self.playBar.height())
+        self.playBar.move(0, self.height()-self.playBar.height())
+
         if hasattr(self, "navigationInterface"):
             self.navigationInterface.setOverlay(self.width() < 1280)
             self.subStackWidget.move(self.navigationInterface.width(), 0)
@@ -207,9 +231,6 @@ class MainWindow(FramelessWindow):
                 self.width() - self.navigationInterface.width(), self.height())
             self.navigationInterface.resize(
                 self.navigationInterface.width(), self.height())
-
-        if hasattr(self, "playBar"):
-            self.playBar.resize(self.width(), self.playBar.height())
 
     def eventFilter(self, obj, e: QEvent):
         """ 过滤事件 """
@@ -246,28 +267,12 @@ class MainWindow(FramelessWindow):
         self.titleBar.maxBt.setMaxState(
             self._isWindowMaximized(int(self.winId())))
 
-    def moveEvent(self, e):
-        if hasattr(self, "playBar"):
-            d = 9 if self.isMaximized() else 0
-            self.playBar.move(
-                self.x() + d, self.y() + self.height() - self.playBar.height() + d)
-
-    def showEvent(self, e):
-        super().showEvent(e)
-        if not self.playingInterface.isVisible():
-            self.playBar.show()
-
-    def hideEvent(self, e):
-        super().hideEvent(e)
-        self.playBar.hide()
-
     def closeEvent(self, e: QCloseEvent):
         """ 关闭窗口前更新json文件 """
         config = {}
         config["volume"] = self.playBar.volumeSlider.value()
-        config["playBar.acrylicColor"] = self.playBar.acrylicColor
+        config["playBar-background-color"] = self.playBar.backgroundColor
         self.settingInterface.updateConfig(config)
-        self.playBar.close()
         self.mediaPlaylist.save()
         e.accept()
 
@@ -382,7 +387,7 @@ class MainWindow(FramelessWindow):
 
         # 如果当前播放列表模式不是歌曲文件夹的所有歌曲或者指定的歌曲不在播放列表中就刷新播放列表
         if self.mediaPlaylist.playlistType != PlaylistType.ALL_SONG_PLAYLIST \
-                or songInfo_list!= self.mediaPlaylist.playlist:
+                or songInfo_list != self.mediaPlaylist.playlist:
             self.mediaPlaylist.playlistType = PlaylistType.ALL_SONG_PLAYLIST
             songInfo_list = self.songTabSongListWidget.songInfo_list
             index = songInfo_list.index(songInfo)
@@ -510,10 +515,7 @@ class MainWindow(FramelessWindow):
         # 初始化音量
         volume = self.settingInterface.getConfig("volume", 20)
         self.playingInterface.setVolume(volume)
-        # 初始化亚克力颜色
-        acrylicColor = self.settingInterface.getConfig(
-            "playBar.acrylicColor", "225c7fCC")
-        self.playBar.setAcrylicColor(acrylicColor)
+
         # 初始化歌曲卡信息
         if self.mediaPlaylist.playlist:
             self.playBar.updateSongInfoCard(
@@ -557,6 +559,7 @@ class MainWindow(FramelessWindow):
             self.albumInterface, self.labelNavigationInterface]
         if len(self.navigationHistories) == 1 and cond:
             self.titleBar.returnBt.hide()
+
         self.titleBar.title.setVisible(self.navigationInterface.isExpanded)
 
     def setQss(self):
@@ -1055,8 +1058,14 @@ class MainWindow(FramelessWindow):
         # todo:设置界面信号连接到槽函数
         self.settingInterface.crawlComplete.connect(
             self.myMusicInterface.rescanSongInfo)
-        self.settingInterface.selectedFoldersChanged.connect(
+        self.settingInterface.selectedMusicFoldersChanged.connect(
             self.myMusicInterface.scanTargetPathSongInfo)
+        self.settingInterface.downloadFolderChanged.connect(
+            self.searchResultInterface.setDownloadFolder)
+        self.settingInterface.onlinePlayQualityChanged.connect(
+            self.searchResultInterface.setOnlinePlayQuality)
+        self.settingInterface.pageSizeChanged.connect(
+            self.searchResultInterface.setOnlineMusicPageSize)
 
         # todo:标题栏返回按钮功能
         self.titleBar.returnBt.clicked.connect(self.onReturnButtonClicked)

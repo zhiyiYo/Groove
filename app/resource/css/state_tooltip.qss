@@ -8,7 +8,7 @@ QLabel#titleLabel {
 }
 
 QLabel#contentLabel {
-    color: rgba(255, 255, 255, 210);
+    color: white;
     font: 16px 'Microsoft YaHei';
 }
 
