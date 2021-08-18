@@ -53,7 +53,7 @@
     ```shell
     conda create -n Groove python=3.8
     conda activate Groove
-    pip install -r requirements.txt
+    pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
     ```
 
 2. Download [LAV Filters](https://github.com/Nevcairiel/LAVFilters/releases).
