@@ -63,9 +63,9 @@ class CollapsingAppBarBase(QWidget):
         self.coverLabel.setPixmap(QPixmap(self.coverPath).scaled(
             275, 275, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
         self.coverLabel.setScaledContents(True)
-        self.resize(1200, 385)
         self.setObjectName("CollapsingAppBar")
         self.moreActionsButton.clicked.connect(self.onMoreActionsButtonClicked)
+        self.resize(1300, 385)
 
     def setBackgroundColor(self):
         """ 设置背景颜色 """
@@ -76,12 +76,14 @@ class CollapsingAppBarBase(QWidget):
         """ 改变部件位置和大小 """
         h = self.height()
         needWhiteBar = self.needWhiteBar
+
         # 调整封面大小和位置
         coverWidth = 275 - \
             int((385-h)/230*192) if needWhiteBar else 295-int((385-h)/230*206)
         self.coverLabel.resize(coverWidth, coverWidth)
         y = 65-int((385-h)/230*17) if needWhiteBar else 45-int((385-h)/230*4)
         self.coverLabel.move(45, y)
+
         # 调整标签大小和位置
         self.titleFontSize = int(40/43*(43-(385-h)/230*12))
         self.contentFontSize = int(16-(385-h)/147*3)
@@ -98,9 +100,10 @@ class CollapsingAppBarBase(QWidget):
         self.titleLabel.move(x, y1)
         self.contentLabel.move(x, y2)
         self.contentLabel.setVisible(h >= 238)
+
         # 调整按钮位置
-        x = 45+coverWidth+22
-        y = 288-int((385-h)/230*206) if needWhiteBar else 308 - \
+        x = 45 + coverWidth + 22
+        y = 288 - int((385-h)/230*206) if needWhiteBar else 308 - \
             int((385-h)/230*220)
         for button in self.__buttons:
             button.move(x, y)

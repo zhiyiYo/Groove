@@ -61,7 +61,7 @@ class PlayingInterface(QWidget):
         self.blurPixmap = None
         self.blurBackgroundPic = QLabel(self)
         self.blurCoverThread = BlurCoverThread(self)
-        self.songInfoCardChute = SongInfoCardChute(self, self.playlist)
+        self.songInfoCardChute = SongInfoCardChute(self.playlist, self)
         self.parallelAniGroup = QParallelAnimationGroup(self)
         self.songInfoCardChuteAni = QPropertyAnimation(
             self.songInfoCardChute, b"geometry")
@@ -106,7 +106,7 @@ class PlayingInterface(QWidget):
         # 开启磨砂线程
         if self.playlist:
             self.startBlurThread(
-                self.songInfoCardChute.curSongInfoCard.albumCoverPath)
+                self.songInfoCardChute.cards[1].albumCoverPath)
         # 将信号连接到槽
         self.__connectSignalToSlot()
         # 初始化动画
@@ -328,9 +328,9 @@ class PlayingInterface(QWidget):
         """
         self.playlist = deepcopy(playlist) if playlist else []
         self.currentIndex = index if isResetIndex else self.currentIndex
-        if playlist:
-            self.songInfoCardChute.setPlaylist(self.playlist, isResetIndex, index)
-            self.songListWidget.updateSongCards(self.playlist, isResetIndex, index)
+        self.songInfoCardChute.setPlaylist(self.playlist, isResetIndex, index)
+        self.songListWidget.updateSongCards(self.playlist, isResetIndex, index)
+        self.startBlurThread(self.songInfoCardChute.cards[1].albumCoverPath)
 
         # 如果小部件不可见就显示
         if playlist and not self.songListWidget.isVisible():

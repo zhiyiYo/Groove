@@ -4,8 +4,7 @@ import os
 from copy import deepcopy
 from random import shuffle
 from time import time
-from typing import Dict, List
-from pprint import pprint
+from typing import Dict
 
 from app.common.os_utils import moveToTrash
 from app.components.dialog_box.create_playlist_dialog import \
@@ -29,7 +28,7 @@ from app.View.playlist_interface import PlaylistInterface
 from app.View.search_result_interface import SearchResultInterface
 from app.View.setting_interface import SettingInterface
 from app.View.smallest_play_interface import SmallestPlayInterface
-from PyQt5.QtCore import QEasingCurve, QEvent, Qt, QTimer
+from PyQt5.QtCore import QEasingCurve, QEvent, Qt, QTimer, QSize
 from PyQt5.QtGui import QCloseEvent, QIcon
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist
 from PyQt5.QtWidgets import QAction, QApplication, QWidget
@@ -148,7 +147,7 @@ class MainWindow(FramelessWindow):
 
     def __initWidget(self):
         """ 初始化小部件 """
-        self.resize(1260, 970)
+        self.resize(1240, 970)
         self.setMinimumSize(1030, 800)
         self.setWindowTitle("Groove 音乐")
         self.setWindowIcon(QIcon("app/resource/images/logo.png"))
@@ -162,7 +161,7 @@ class MainWindow(FramelessWindow):
         self.titleBar.raise_()
         # 设置窗口特效
         self.setWindowEffect()
-        # todo:将窗口添加到StackWidget中
+        # 将窗口添加到StackWidget中
         self.subStackWidget.addWidget(self.myMusicInterface, 0, 70)
         self.subStackWidget.addWidget(self.playlistCardInterface, 0, 120)
         self.subStackWidget.addWidget(self.settingInterface, 0, 120)
@@ -263,7 +262,6 @@ class MainWindow(FramelessWindow):
         """ 调整尺寸时同时调整子窗口的尺寸 """
         super().resizeEvent(e)
         self.adjustWidgetGeometry()
-        # 更新标题栏图标
         self.titleBar.maxBt.setMaxState(
             self._isWindowMaximized(int(self.winId())))
 
@@ -472,9 +470,9 @@ class MainWindow(FramelessWindow):
 
     def playAlbum(self, playlist: list, index=0):
         """ 播放专辑中的歌曲 """
-        self.mediaPlaylist.playAlbum(playlist, index)
         self.playingInterface.setPlaylist(playlist, index=index)
         self.smallestPlayInterface.setPlaylist(playlist)
+        self.mediaPlaylist.playAlbum(playlist, index)
         self.play()
 
     def onMultiSongsNextPlay(self, songInfo_list: list):
@@ -1048,14 +1046,14 @@ class MainWindow(FramelessWindow):
     def connectSignalToSlot(self):
         """ 将信号连接到槽 """
 
-        # todo:将播放器的信号连接到槽函数
+        # 将播放器的信号连接到槽函数
         self.player.positionChanged.connect(self.onPlayerPositionChanged)
         self.player.durationChanged.connect(self.onPlayerDurationChanged)
 
-        # todo:将播放列表的信号连接到槽函数
+        # 将播放列表的信号连接到槽函数
         self.mediaPlaylist.currentIndexChanged.connect(self.updateWindow)
 
-        # todo:设置界面信号连接到槽函数
+        # 将设置界面信号连接到槽函数
         self.settingInterface.crawlComplete.connect(
             self.myMusicInterface.rescanSongInfo)
         self.settingInterface.selectedMusicFoldersChanged.connect(
@@ -1067,10 +1065,10 @@ class MainWindow(FramelessWindow):
         self.settingInterface.pageSizeChanged.connect(
             self.searchResultInterface.setOnlineMusicPageSize)
 
-        # todo:标题栏返回按钮功能
+        # 将标题栏返回按钮点击信号连接到槽函数
         self.titleBar.returnBt.clicked.connect(self.onReturnButtonClicked)
 
-        # todo:导航界面信号连接到槽函数
+        # 将导航界面信号连接到槽函数
         self.navigationInterface.displayModeChanged.connect(
             self.onNavigationDisplayModeChanged)
         self.navigationInterface.showPlayingInterfaceSig.connect(
@@ -1088,12 +1086,12 @@ class MainWindow(FramelessWindow):
         self.navigationInterface.searchSig.connect(
             self.switchToSearchResultInterface)
 
-        # todo:缩略图任务栏各按钮的功能
+        # 缩略图任务栏信号连接到槽函数
         self.thumbnailToolBar.togglePlayStateSig.connect(self.togglePlayState)
         self.thumbnailToolBar.lastSongSig.connect(self.mediaPlaylist.previous)
         self.thumbnailToolBar.nextSongSig.connect(self.mediaPlaylist.next)
 
-        # todo:将播放栏信号连接到槽函数
+        # 将播放栏信号连接到槽函数
         self.playBar.muteStateChanged.connect(self.setMute)
         self.playBar.nextSongSig.connect(self.mediaPlaylist.next)
         self.playBar.lastSongSig.connect(self.mediaPlaylist.previous)
@@ -1111,7 +1109,7 @@ class MainWindow(FramelessWindow):
         self.playBar.savePlaylistSig.connect(
             lambda: self.showCreatePlaylistDialog(self.mediaPlaylist.playlist))
 
-        # todo:将正在播放界面信号连接到槽函数
+        # 将正在播放界面信号连接到槽函数
         self.playingInterface.currentIndexChanged.connect(
             self.onPlayingInterfaceCurrentIndexChanged)
         self.playingInterface.muteStateChanged.connect(self.setMute)
@@ -1141,7 +1139,7 @@ class MainWindow(FramelessWindow):
             self.onSelectionModeStateChanged)
         self.playingInterface.clearPlaylistSig.connect(self.clearPlaylist)
 
-        # todo:歌曲界面歌曲卡列表视图的信号连接到槽函数
+        # 将歌曲界面歌曲卡列表视图的信号连接到槽函数
         self.songTabSongListWidget.playSignal.connect(
             self.onSongTabSongCardPlay)
         self.songTabSongListWidget.playOneSongSig.connect(self.playOneSongCard)
@@ -1154,7 +1152,7 @@ class MainWindow(FramelessWindow):
         self.songTabSongListWidget.editSongInfoSignal.connect(
             self.onEditSongInfo)
 
-        # todo:将专辑卡的信号连接到槽函数
+        # 将专辑卡的信号连接到槽函数
         self.albumCardInterface.playSignal.connect(self.playAlbum)
         # self.albumCardInterface.editAlbumInfoSignal.connect(self.onEditAlbumInfo)
         self.albumCardInterface.nextPlaySignal.connect(
@@ -1162,7 +1160,7 @@ class MainWindow(FramelessWindow):
         self.albumCardInterface.switchToAlbumInterfaceSig.connect(
             self.switchToAlbumInterface)
 
-        # todo:将我的音乐界面连接到槽函数
+        # 将我的音乐界面连接到槽函数
         self.myMusicInterface.removeSongSig.connect(self.deleteSongs)
         self.myMusicInterface.randomPlayAllSig.connect(self.disorderPlayAll)
         self.myMusicInterface.playCheckedCardsSig.connect(
@@ -1182,10 +1180,10 @@ class MainWindow(FramelessWindow):
         self.myMusicInterface.showLabelNavigationInterfaceSig.connect(
             self.showLabelNavigationInterface)
 
-        # todo:将定时器信号连接到槽函数
+        # 将定时器信号连接到槽函数
         self.rescanSongInfoTimer.timeout.connect(self.rescanSongInfoTimerSlot)
 
-        # todo:将专辑界面的信号连接到槽函数
+        # 将专辑界面的信号连接到槽函数
         self.albumInterface.playAlbumSignal.connect(self.playAlbum)
         self.albumInterface.playOneSongCardSig.connect(self.playOneSongCard)
         self.albumInterface.editSongInfoSignal.connect(self.onEditSongInfo)
@@ -1208,7 +1206,7 @@ class MainWindow(FramelessWindow):
         self.albumInterface.addSongsToNewCustomPlaylistSig.connect(
             self.showCreatePlaylistDialog)
 
-        # todo:将播放界面信号连接到槽函数
+        # 将播放界面信号连接到槽函数
         self.playlistInterface.playAllSig.connect(self.playCustomPlaylist)
         self.playlistInterface.editSongInfoSignal.connect(self.onEditSongInfo)
         self.playlistInterface.playOneSongCardSig.connect(self.playOneSongCard)
@@ -1241,7 +1239,7 @@ class MainWindow(FramelessWindow):
         self.playlistInterface.switchToAlbumCardInterfaceSig.connect(
             self.switchToAlbumCardInterface)
 
-        # todo:将播放列表卡界面信号连接到槽函数
+        # 将播放列表卡界面信号连接到槽函数
         self.playlistCardInterface.selectionModeStateChanged.connect(
             self.onSelectionModeStateChanged)
         self.playlistCardInterface.createPlaylistSig.connect(
@@ -1262,7 +1260,7 @@ class MainWindow(FramelessWindow):
         self.playlistCardInterface.addSongsToPlayingPlaylistSig.connect(
             self.addSongsToPlayingPlaylist)
 
-        # todo:将最小播放界面连接到槽函数
+        # 将最小播放界面连接到槽函数
         self.smallestPlayInterface.nextSongSig.connect(self.mediaPlaylist.next)
         self.smallestPlayInterface.lastSongSig.connect(
             self.mediaPlaylist.previous)
@@ -1271,11 +1269,11 @@ class MainWindow(FramelessWindow):
         self.smallestPlayInterface.exitSmallestPlayInterfaceSig.connect(
             self.exitSmallestPlayInterface)
 
-        # todo:将标签导航界面的信号连接到槽函数
+        # 将标签导航界面的信号连接到槽函数
         self.labelNavigationInterface.labelClicked.connect(
             self.onNavigationLabelClicked)
 
-        # todo:将搜索结果界面信号连接到槽函数
+        # 将搜索结果界面信号连接到槽函数
         self.searchResultInterface.playAlbumSig.connect(self.playAlbum)
         self.searchResultInterface.deleteAlbumSig.connect(self.deleteSongs)
         self.searchResultInterface.playLocalSongSig.connect(

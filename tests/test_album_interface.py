@@ -2,10 +2,8 @@
 import sys
 import json
 
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QApplication, QWidget
-from app.View.album_interface_ import AlbumInterface
+from PyQt5.QtWidgets import QApplication
+from app.View.album_interface import AlbumInterface
 
 
 if __name__ == '__main__':
@@ -17,7 +15,7 @@ if __name__ == '__main__':
         "genre": "POP流行",
         "year": "2016年",
         "album": "Hush a by little girl",
-        "coverPath": "app/resource/Album_Cover/Hush a by little girl/Hush a by little girl.jpg",
+        "coverPath": "app/resource/Album_Cover/鎖那_Hush a by little girl/鎖那_Hush a by little girl.jpg",
         "songInfo_list": songInfo_list
     }
     w = AlbumInterface(albumInfo)

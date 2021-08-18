@@ -79,7 +79,7 @@ class LocalSongListWidget(BasicSongListWidget):
         super().__init__(None, SongCardType.NO_CHECKBOX_SONG_CARD,
                          parent, QMargins(30, 0, 30, 0), 0)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.__setQss()
 
     def __playButtonSlot(self, index):
@@ -197,7 +197,7 @@ class OnlineSongListWidget(BasicSongListWidget):
         super().__init__(None, SongCardType.ONLINE_SONG_CARD,
                          parent, QMargins(30, 0, 30, 0), 0)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.__setQss()
 
     def __playButtonSlot(self, index):

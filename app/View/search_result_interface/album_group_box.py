@@ -11,7 +11,7 @@ from app.components.menu import AddToMenu, DWMMenu
 from PyQt5.QtCore import (QParallelAnimationGroup, QEasingCurve, QPoint,
                           QPropertyAnimation, QSize, Qt, pyqtSignal)
 from PyQt5.QtGui import QContextMenuEvent, QIcon
-from PyQt5.QtWidgets import (QAction, QApplication, QLabel, QScrollArea,
+from PyQt5.QtWidgets import (QAction, QApplication, QScrollArea,
                              QToolButton, QWidget, QGraphicsOpacityEffect, QPushButton)
 
 

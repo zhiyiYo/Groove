@@ -15,7 +15,7 @@ class SongInfoCard(QWidget):
     hidePlayBarSignal = pyqtSignal()
     switchToAlbumInterfaceSig = pyqtSignal(str, str)
 
-    def __init__(self, parent=None, songInfo: dict = None):
+    def __init__(self, songInfo: dict = None, parent=None):
         super().__init__(parent)
         self.setSongInfo(songInfo)
         self.timer = QTimer(self)
@@ -85,6 +85,9 @@ class SongInfoCard(QWidget):
             )
         )
         # 调整文本
+        self.adjustText()
+
+    def resizeEvent(self, e):
         self.adjustText()
 
     def __setQss(self):
