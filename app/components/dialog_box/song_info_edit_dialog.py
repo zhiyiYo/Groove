@@ -29,7 +29,6 @@ class SongInfoEditDialog(MaskDialogBase):
         # 初始化小部件
         self.__initWidget()
         self.__initLayout()
-        # 设置层叠样式
 
     def __createWidgets(self):
         """ 实例化小部件 """
@@ -234,7 +233,7 @@ class SongInfoEditDialog(MaskDialogBase):
 
     def __onTrackNumLineEditTextChanged(self):
         """ 检查曲目输入框的内容是否为空 """
-        isEmpty = bool(self.genreLineEdit.text())
+        isEmpty = not bool(self.genreLineEdit.text())
 
         if isEmpty:
             self.bottomErrorLabel.setText("曲目必须是1000以下的数字")

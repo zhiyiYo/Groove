@@ -28,7 +28,7 @@ from app.View.playlist_interface import PlaylistInterface
 from app.View.search_result_interface import SearchResultInterface
 from app.View.setting_interface import SettingInterface
 from app.View.smallest_play_interface import SmallestPlayInterface
-from PyQt5.QtCore import QEasingCurve, QEvent, Qt, QTimer, QSize
+from PyQt5.QtCore import QEasingCurve, QEvent, QSize, Qt, QTimer
 from PyQt5.QtGui import QCloseEvent, QIcon
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist
 from PyQt5.QtWidgets import QAction, QApplication, QWidget
@@ -773,23 +773,28 @@ class MainWindow(FramelessWindow):
         self.playingInterface.updateOneSongCard(newSongInfo)
         self.songTabSongListWidget.updateOneSongCard(newSongInfo)
         self.playlistCardInterface.updateOneSongInfo(newSongInfo)
+        self.smallestPlayInterface.updateOneSongInfo(newSongInfo)
         self.albumInterface.updateOneSongCard(oldSongInfo, newSongInfo)
         self.albumCardInterface.updateOneSongInfo(oldSongInfo, newSongInfo)
         self.playlistInterface.updateOneSongCard(oldSongInfo, newSongInfo)
 
-    def onEditAlbumInfo(self, oldAlbumInfo: dict, newAlbumInfo: dict):
+    def onEditAlbumInfo(self, oldAlbumInfo: dict, newAlbumInfo: dict, coverPath: str):
         """ 更新专辑卡及其对应的歌曲卡信息 """
         newSongInfo_list = newAlbumInfo["songInfo_list"]
         self.mediaPlaylist.updateMultiSongInfo(newSongInfo_list)
         self.playingInterface.updateMultiSongCards(newSongInfo_list)
+        self.playlistInterface.updateMultiSongCards(newSongInfo_list)
+        self.smallestPlayInterface.updateMultiSongInfo(newSongInfo_list)
+        self.playlistCardInterface.updateMultiSongInfo(newSongInfo_list)
         self.songTabSongListWidget.updateMultiSongCards(newSongInfo_list)
-        # 更新专辑标签界面
-        with open("app/data/songInfo.json", encoding="utf-8") as f:
-            songInfo_list = json.load(f)
-        # 如果在专辑界面更新了专辑信息需要刷新对应的专辑卡的封面
-        # if self.sender() is self.albumInterface:
-        #     self.currentAlbumCard.updateAlbumCover(newAlbumInfo["coverPath"])
-        self.myMusicInterface.updateAlbumCardViewer(songInfo_list)
+
+        if self.sender() is self.albumInterface:
+            self.albumCardInterface.updateOneAlbumInfo(
+                oldAlbumInfo, newAlbumInfo, coverPath)
+            if not self.albumInterface.songInfo_list:
+                self.titleBar.returnBt.click()
+        elif self.sender() is self.albumCardInterface and oldAlbumInfo == self.albumInterface.albumInfo:
+            self.albumInterface.albumInfoBar.updateWindow(newAlbumInfo)
 
     def showSmallestPlayInterface(self):
         """ 切换到最小化播放模式 """
@@ -891,9 +896,9 @@ class MainWindow(FramelessWindow):
 
     def showCreatePlaylistDialog(self, songInfo_list: list = None):
         """ 显示创建播放列表面板 """
-        createPlaylistPanel = CreatePlaylistDialog(songInfo_list, self)
-        createPlaylistPanel.createPlaylistSig.connect(self.onCreatePlaylist)
-        createPlaylistPanel.exec_()
+        w = CreatePlaylistDialog(songInfo_list, self)
+        w.createPlaylistSig.connect(self.onCreatePlaylist)
+        w.exec_()
 
     def onCreatePlaylist(self, playlistName: str, playlist: dict):
         """ 创建播放列表 """
@@ -1154,7 +1159,8 @@ class MainWindow(FramelessWindow):
 
         # 将专辑卡的信号连接到槽函数
         self.albumCardInterface.playSignal.connect(self.playAlbum)
-        # self.albumCardInterface.editAlbumInfoSignal.connect(self.onEditAlbumInfo)
+        self.albumCardInterface.editAlbumInfoSignal.connect(
+            self.onEditAlbumInfo)
         self.albumCardInterface.nextPlaySignal.connect(
             self.onMultiSongsNextPlay)
         self.albumCardInterface.switchToAlbumInterfaceSig.connect(
@@ -1187,7 +1193,7 @@ class MainWindow(FramelessWindow):
         self.albumInterface.playAlbumSignal.connect(self.playAlbum)
         self.albumInterface.playOneSongCardSig.connect(self.playOneSongCard)
         self.albumInterface.editSongInfoSignal.connect(self.onEditSongInfo)
-        # self.albumInterface.editAlbumInfoSignal.connect(self.onEditAlbumInfo)
+        self.albumInterface.editAlbumInfoSignal.connect(self.onEditAlbumInfo)
         self.albumInterface.songCardPlaySig.connect(
             self.onAlbumInterfaceSongCardPlay)
         self.albumInterface.nextToPlayOneSongSig.connect(

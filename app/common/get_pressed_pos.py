@@ -27,6 +27,7 @@ def getPressedPos(widget, e: QMouseEvent):
     topY = 0 <= e.y() <= int(height / 3)
     midY = int(height / 3) < e.y() <= int(height * 2 / 3)
     bottomY = int(height * 2 / 3) < e.y() <= height
+    
     # 获取点击位置
     if leftX and topY:
         pressedPos = 'left-top'

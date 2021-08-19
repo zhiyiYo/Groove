@@ -18,18 +18,17 @@ from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsOpacityEffect,
 class AlbumCard(PerspectiveWidget):
     """ 定义包含专辑歌手名的窗口 """
 
-    playSignal = pyqtSignal(list)
-    deleteCardSig = pyqtSignal(str)
-    nextPlaySignal = pyqtSignal(list)
-    addToPlayingSignal = pyqtSignal(list)  # 将专辑添加到正在播放
-    hideBlurAlbumBackgroundSig = pyqtSignal()
-    editAlbumInfoSignal = pyqtSignal(dict, dict)
-    switchToAlbumInterfaceSig = pyqtSignal(str, str)  # albumName, singerName
-    checkedStateChanged = pyqtSignal(QWidget, bool)
-    addAlbumToNewCustomPlaylistSig = pyqtSignal(list)  # 将专辑添加到新建的播放列表
-    addAlbumToCustomPlaylistSig = pyqtSignal(str, list)  # 将专辑添加到已存在的自定义播放列表
-    showBlurAlbumBackgroundSig = pyqtSignal(QPoint, str)  # 发送专辑卡全局坐标
-    showAlbumInfoEditPanelSig = pyqtSignal(AlbumInfoEditDialog)  # 发送显示专辑信息面板信号
+    playSignal = pyqtSignal(list)                           # 播放专辑
+    deleteCardSig = pyqtSignal(str)                         # 删除专辑卡
+    nextPlaySignal = pyqtSignal(list)                       # 下一首播放
+    addToPlayingSignal = pyqtSignal(list)                   # 将专辑添加到正在播放
+    checkedStateChanged = pyqtSignal(QWidget, bool)         # 选中状态改变
+    switchToAlbumInterfaceSig = pyqtSignal(str, str)        # 切换到专辑界面
+    addAlbumToNewCustomPlaylistSig = pyqtSignal(list)       # 将专辑添加到新建的播放列表
+    addAlbumToCustomPlaylistSig = pyqtSignal(str, list)     # 将专辑添加到已存在的自定义播放列表
+    showAlbumInfoEditDialogSig = pyqtSignal(dict)           # 显示专辑信息面板信号
+    showBlurAlbumBackgroundSig = pyqtSignal(QPoint, str)    # 显示磨砂背景
+    hideBlurAlbumBackgroundSig = pyqtSignal()               # 隐藏磨砂背景
 
     def __init__(self, albumInfo: dict, parent):
         super().__init__(parent, True)
@@ -134,7 +133,7 @@ class AlbumCard(PerspectiveWidget):
             lambda: self.nextPlaySignal.emit(self.songInfo_list))
         menu.addToMenu.playingAct.triggered.connect(
             lambda: self.addToPlayingSignal.emit(self.songInfo_list))
-        menu.editInfoAct.triggered.connect(self.showAlbumInfoEditPanel)
+        menu.editInfoAct.triggered.connect(self.showAlbumInfoEditDialog)
         menu.selectAct.triggered.connect(self.__selectActSlot)
         menu.addToMenu.addSongsToPlaylistSig.connect(
             lambda name: self.addAlbumToCustomPlaylistSig.emit(name, self.songInfo_list))
@@ -198,28 +197,9 @@ class AlbumCard(PerspectiveWidget):
         self.coverPath = albumInfo.get(
             "coverPath", "app/resource/images/default_covers/默认专辑封面_200_200.png")
 
-    def showAlbumInfoEditPanel(self):
+    def showAlbumInfoEditDialog(self):
         """ 显示专辑信息编辑面板 """
-        oldAlbumInfo = deepcopy(self.albumInfo)
-        infoEditPanel = AlbumInfoEditDialog(self.albumInfo, self.window())
-        infoEditPanel.saveInfoSig.connect(
-            lambda newAlbumInfo: self.__saveAlbumInfoSlot(
-                oldAlbumInfo, newAlbumInfo)
-        )
-        self.showAlbumInfoEditPanelSig.emit(infoEditPanel)
-        infoEditPanel.setStyle(QApplication.style())
-        infoEditPanel.exec_()
-
-    def __saveAlbumInfoSlot(self, oldAlbumInfo: dict, newAlbumInfo: dict):
-        """ 保存专辑信息并更新界面 """
-        newAlbumInfo_copy = deepcopy(newAlbumInfo)
-        # self.updateWindow(newAlbumInfo)
-        self.editAlbumInfoSignal.emit(oldAlbumInfo, newAlbumInfo_copy)
-        self.albumInfo["songInfo_list"].sort(
-            key=lambda songInfo: int(songInfo["tracknumber"])
-        )
-        # 更新专辑封面
-        self.updateAlbumCover(newAlbumInfo["coverPath"])
+        self.showAlbumInfoEditDialogSig.emit(self.albumInfo)
 
     def updateAlbumCover(self, coverPath: str):
         """ 更新专辑封面 """

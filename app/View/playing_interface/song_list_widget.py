@@ -170,7 +170,8 @@ class SongListWidget(ListWidget):
 
         # 更新样式和当前下标
         self.currentIndex = index if isResetIndex else self.currentIndex
-        self.songCard_list[self.currentIndex].setPlay(True)
+        if self.songInfo_list:
+            self.songCard_list[self.currentIndex].setPlay(True)
 
     def __switchToAlbumInterface(self, albumName: str, singerName: str):
         """ 切换到专辑界面 """

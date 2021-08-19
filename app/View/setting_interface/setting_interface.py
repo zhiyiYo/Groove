@@ -3,18 +3,17 @@ import os
 from json import dump, load
 
 from app.common.os_utils import checkDirExists
+from app.common.thread.get_meta_data_thread import GetMetaDataThread
 from app.components.buttons.switch_button import SwitchButton
 from app.components.dialog_box.folder_list_dialog import FolderListDialog
 from app.components.label import ClickableLabel
 from app.components.scroll_area import ScrollArea
 from app.components.slider import Slider
 from app.components.state_tooltip import StateTooltip
-from PyQt5.QtCore import Qt, QUrl, pyqtSignal
+from PyQt5.QtCore import QEvent, Qt, QUrl, pyqtSignal
 from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtWidgets import (QFileDialog, QLabel, QPushButton, QRadioButton,
-                             QWidget, QLineEdit)
-
-from .get_meta_data_thread import GetMetaDataThread
+from PyQt5.QtWidgets import (QFileDialog, QLabel, QLineEdit, QPushButton,
+                             QRadioButton, QWidget)
 
 
 class SettingInterface(ScrollArea):
@@ -52,7 +51,7 @@ class SettingInterface(ScrollArea):
         self.selectMusicFolderLabel = ClickableLabel(
             "选择查找音乐的位置", self.scrollwidget)
         self.downloadFolderLabel = QLabel("下载目录", self.scrollwidget)
-        self.downloadFolderHintLabel=QLabel('')
+        self.downloadFolderHintLabel = QLabel('')
         self.downloadFolderButton = QPushButton("浏览", self.scrollwidget)
         self.downloadFolderLineEdit = QLineEdit(self.config.get(
             'download-folder', os.path.abspath('app/download').replace('\\', '/')), self.scrollwidget)
@@ -91,6 +90,9 @@ class SettingInterface(ScrollArea):
             QUrl('https://github.com/zhiyiYo/Groove#readme')))
         self.issueLabel.clicked.connect(lambda: QDesktopServices.openUrl(
             QUrl('https://github.com/zhiyiYo/Groove/issues')))
+
+        # 安装事件过滤器
+        self.downloadFolderLineEdit.installEventFilter(self)
 
         # 初始化布局和样式
         self.__initLayout()
@@ -195,6 +197,13 @@ class SettingInterface(ScrollArea):
         self.issueLabel.move(self.width() - 400, self.issueLabel.y())
         self.scrollwidget.resize(self.width(), self.scrollwidget.height())
         super().resizeEvent(e)
+
+    def eventFilter(self, obj, e: QEvent):
+        """ 事件过滤器 """
+        if obj is self.downloadFolderLineEdit:
+            if e.type() == QEvent.ContextMenu:
+                return True
+        return super().eventFilter(obj, e)
 
     def __showSongFolderListDialog(self):
         """ 显示歌曲文件夹选择面板 """

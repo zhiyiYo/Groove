@@ -1,8 +1,9 @@
 # coding:utf-8
 from time import time
 
-from app.components.menu import AddToMenu
+from app.common.meta_data_getter import *
 from app.components.dialog_box.message_dialog import MessageDialog
+from app.components.menu import AddToMenu
 from app.components.pop_up_ani_stacked_widget import PopUpAniStackedWidget
 from app.View.my_music_interface.album_tab_interface import AlbumCardInterface
 from app.View.my_music_interface.album_tab_interface.selection_mode_bar import \
@@ -14,9 +15,6 @@ from PyQt5.QtCore import QPoint, Qt, pyqtSignal
 from PyQt5.QtGui import QPalette
 from PyQt5.QtWidgets import QWidget
 
-from .get_info.get_album_cover import GetAlbumCover
-from .get_info.get_album_info import AlbumInfoGetter
-from .get_info.get_song_info import SongInfoGetter
 from .tool_bar import ToolBar
 
 
@@ -54,27 +52,32 @@ class MyMusicInterface(QWidget):
 
     def __createWidgets(self):
         """ 创建小部件 """
-        # 实例化标签界面
         self.stackedWidget = PopUpAniStackedWidget(self)
+
         # 扫描文件夹列表下的音频文件信息，顺序不能改动
-        self.__songInfoGetter = SongInfoGetter(self.folderPaths)
-        self.__albumCoverGetter = GetAlbumCover(self.folderPaths)
-        self.__albumInfoGetter = AlbumInfoGetter(
-            self.__songInfoGetter.songInfo_list)
+        self.songInfoGetter = SongInfoGetter(self.folderPaths)
+        self.albumCoverGetter = AlbumCoverGetter(
+            self.songInfoGetter.songInfo_list)
+        self.albumInfoGetter = AlbumInfoGetter(
+            self.songInfoGetter.songInfo_list)
+
         t1 = time()
         self.songListWidget = SongListWidget(
-            self.__songInfoGetter.songInfo_list, self)
+            self.songInfoGetter.songInfo_list, self)
         t2 = time()
         self.albumCardInterface = AlbumCardInterface(
-            self.__albumInfoGetter.albumInfo_list, self)
+            self.albumInfoGetter.albumInfo_list, self)
         t3 = time()
         print("创建歌曲标签界面耗时：".ljust(17), t2 - t1)
         print("创建专辑标签界面耗时：".ljust(17), t3 - t2)
+
         # 创建工具栏
         self.toolBar = ToolBar(self)
+
         # 引用小部件
         self.__referenceWidgets()
-        # 实例化底部选择栏
+
+        # 创建底部选择栏
         self.songTabSelectionModeBar = SongTabSelectionModeBar(self)
         self.albumTabSelectionModeBar = AlbumTabSelectionBar(self)
 
@@ -204,7 +207,7 @@ class MyMusicInterface(QWidget):
         elif self.sender() is self.albumTabSelectionModeBar.editInfoButton:
             albumCard = self.albumCardInterface.checkedAlbumCard_list[0]
             self.__unCheckAlbumCards()
-            albumCard.showAlbumInfoEditPanel()
+            albumCard.showAlbumInfoEditDialog()
 
     def __showCheckedSongCardProperty(self):
         """ 显示选中的歌曲卡的属性 """
@@ -319,45 +322,51 @@ class MyMusicInterface(QWidget):
     def scanTargetPathSongInfo(self, folderPaths: list):
         """ 重新扫描指定的歌曲文件夹列表中的歌曲信息并更新标签界面 """
         self.folderPaths = folderPaths
+
         # 重新扫描歌曲信息和专辑信息
-        self.__songInfoGetter.scanTargetFolderSongInfo(folderPaths)
-        self.__albumCoverGetter.updateAlbumCover(self.folderPaths)
-        self.__albumInfoGetter.updateAlbumInfo(
-            self.__songInfoGetter.songInfo_list)
+        self.songInfoGetter.scanTargetFolderSongInfo(folderPaths)
+        self.albumCoverGetter.updateAlbumCover(
+            self.songInfoGetter.songInfo_list)
+        self.albumInfoGetter.updateAlbumInfo(
+            self.songInfoGetter.songInfo_list)
+
         # 更新界面
         self.songListWidget.updateAllSongCards(
-            self.__songInfoGetter.songInfo_list)
+            self.songInfoGetter.songInfo_list)
         self.albumCardInterface.updateAllAlbumCards(
-            self.__albumInfoGetter.albumInfo_list)
+            self.albumInfoGetter.albumInfo_list)
 
     def rescanSongInfo(self):
         """ 重新当前的歌曲文件夹的歌曲信息 """
-        if not self.__songInfoGetter.rescanSongInfo():
+        if not self.songInfoGetter.rescanSongInfo():
             return
-        self.__albumCoverGetter.updateAlbumCover(self.folderPaths)
-        self.__albumInfoGetter.updateAlbumInfo(
-            self.__songInfoGetter.songInfo_list)
+
+        self.albumCoverGetter.updateAlbumCover(
+            self.songInfoGetter.songInfo_list)
+        self.albumInfoGetter.updateAlbumInfo(
+            self.songInfoGetter.songInfo_list)
+
         # 更新界面
         self.songListWidget.updateAllSongCards(
-            self.__songInfoGetter.songInfo_list)
+            self.songInfoGetter.songInfo_list)
         self.albumCardInterface.updateAllAlbumCards(
-            self.__albumInfoGetter.albumInfo_list)
+            self.albumInfoGetter.albumInfo_list)
 
     def hasSongModified(self):
-        return self.__songInfoGetter.hasSongModified()
+        return self.songInfoGetter.hasSongModified()
 
     def updateWindow(self, songInfo_list: list):
         """ 更新我的音乐界面 """
-        self.__songInfoGetter.songInfo_list = songInfo_list
+        self.songInfoGetter.songInfo_list = songInfo_list
         self.songListWidget.updateAllSongCards(songInfo_list)
         self.updateAlbumCardViewer(songInfo_list)
 
     def updateAlbumCardViewer(self, songInfo_list: list):
         """ 更新专辑卡界面 """
-        self.__albumCoverGetter.updateAlbumCover(self.folderPaths)
-        self.__albumInfoGetter.updateAlbumInfo(songInfo_list)
+        self.albumCoverGetter.updateAlbumCover(songInfo_list)
+        self.albumInfoGetter.updateAlbumInfo(songInfo_list)
         self.albumCardInterface.updateAllAlbumCards(
-            self.__albumInfoGetter.albumInfo_list)
+            self.albumInfoGetter.albumInfo_list)
 
     def __showSortModeMenu(self):
         """ 显示排序方式菜单 """

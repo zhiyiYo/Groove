@@ -4,7 +4,7 @@ from PyQt5.QtCore import QEvent, Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QFont, QFontMetrics, QPixmap
 from PyQt5.QtWidgets import QApplication, QLabel, QWidget
 
-from app.common.get_cover_path import getCoverPath
+from app.common.os_utils import getCoverPath
 from app.components.label import ClickableLabel
 
 

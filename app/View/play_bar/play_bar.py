@@ -4,7 +4,7 @@ from PyQt5.QtGui import QColor, QPalette
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtMultimedia import QMediaPlaylist
 
-from app.common.get_dominant_color import DominantColor
+from app.common.image_process_utils import DominantColor
 from app.View.play_bar.central_button_group import CentralButtonGroup
 from app.View.play_bar.more_actions_menu import MoreActionsMenu
 from app.View.play_bar.play_progress_bar import PlayProgressBar

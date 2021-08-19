@@ -2,7 +2,7 @@
 from copy import deepcopy
 
 from app.components.menu import AddToMenu
-from app.common.blur_cover_thread import BlurCoverThread
+from app.common.thread.blur_cover_thread import BlurCoverThread
 from app.components.buttons.three_state_button import ThreeStatePushButton
 from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve,
                           QParallelAnimationGroup, QPoint, QPropertyAnimation,

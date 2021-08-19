@@ -1,7 +1,7 @@
 # coding:utf-8
 from app.common.auto_wrap import autoWrap
-from app.common.get_cover_path import getCoverPath
-from app.common.get_dominant_color import DominantColor
+from app.common.os_utils import getCoverPath
+from app.common.image_process_utils import DominantColor
 from app.components.buttons.blur_button import BlurButton
 from app.components.check_box import CheckBox
 from app.components.menu import AddToMenu, DWMMenu

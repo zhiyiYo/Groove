@@ -4,7 +4,7 @@ import os
 from math import floor
 from colorthief import ColorThief
 
-from app.common.get_dominant_color import DominantColor
+from app.common.image_process_utils import DominantColor
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPalette, QPixmap, QColor

@@ -34,7 +34,7 @@ class RenamePlaylistDialog(MaskDialogBase):
         self.playlistExistedLabel.hide()
         self.lineEdit.selectAll()
         self.iconLabel.setPixmap(
-            QPixmap("app/resource/images/createPlaylistPanel/playList_icon.png"))
+            QPixmap("app/resource/images/create_playlist_dialog/playList_icon.png"))
         self.__setQss()
         self.__initLayout()
         # 信号连接到槽
@@ -84,7 +84,7 @@ class RenamePlaylistDialog(MaskDialogBase):
             "songInfo_list": self.oldPlaylist["songInfo_list"],
             "modifiedTime": QDateTime.currentDateTime().toString(Qt.ISODate),
         }
-        
+
         with open(f"app/Playlists/{self.oldPlaylistName}.json", "w", encoding="utf-8") as f:
             json.dump(newPlaylist, f)
         os.rename(f"app/Playlists/{self.oldPlaylistName}.json",
@@ -116,9 +116,9 @@ class LineEdit(QLineEdit):
     def __init__(self, text="", parent=None):
         super().__init__(text, parent)
         iconPath_dict = {
-            "normal": r"app\resource\images\createPlaylistPanel\清空按钮_normal_50_50.png",
-            "hover": r"app\resource\images\createPlaylistPanel\清空按钮_hover_50_50.png",
-            "pressed": r"app\resource\images\createPlaylistPanel\清空按钮_pressed_50_50.png",
+            "normal": r"app\resource\images\create_playlist_dialog\清空按钮_normal_50_50.png",
+            "hover": r"app\resource\images\create_playlist_dialog\清空按钮_hover_50_50.png",
+            "pressed": r"app\resource\images\create_playlist_dialog\清空按钮_pressed_50_50.png",
         }
 
         # 创建小部件
@@ -139,7 +139,7 @@ class LineEdit(QLineEdit):
         self.clearButton.hide()
         self.clearButton.installEventFilter(self)
         self.pencilPic.setPixmap(
-            QPixmap(r"app\resource\images\createPlaylistPanel\pencil_50_50.png")
+            QPixmap(r"app\resource\images\create_playlist_dialog\pencil_50_50.png")
         )
         # 设置文字的外间距，防止文字和文本重叠
         self.setTextMargins(
@@ -158,7 +158,7 @@ class LineEdit(QLineEdit):
         if self.property("noText") == "true":
             self.pencilPic.setPixmap(
                 QPixmap(
-                    r"app\resource\images\createPlaylistPanel\pencil_noFocus_hover_50_50.png"
+                    r"app\resource\images\create_playlist_dialog\pencil_noFocus_hover_50_50.png"
                 )
             )
 
@@ -167,7 +167,7 @@ class LineEdit(QLineEdit):
         if self.property("noText") == "true":
             self.pencilPic.setPixmap(
                 QPixmap(
-                    r"app\resource\images\createPlaylistPanel\pencil_noFocus_50_50.png"
+                    r"app\resource\images\create_playlist_dialog\pencil_noFocus_50_50.png"
                 )
             )
 
@@ -181,7 +181,7 @@ class LineEdit(QLineEdit):
         self.clearButton.hide()
         self.pencilPic.setPixmap(
             QPixmap(
-                r"app\resource\images\createPlaylistPanel\pencil_noFocus_50_50.png")
+                r"app\resource\images\create_playlist_dialog\pencil_noFocus_50_50.png")
         )
 
     def focusInEvent(self, e):
@@ -193,7 +193,7 @@ class LineEdit(QLineEdit):
         self.setProperty("noText", "false")
         self.setStyle(QApplication.style())
         self.pencilPic.setPixmap(
-            QPixmap(r"app\resource\images\createPlaylistPanel\pencil_50_50.png")
+            QPixmap(r"app\resource\images\create_playlist_dialog\pencil_50_50.png")
         )
 
     def mousePressEvent(self, e):

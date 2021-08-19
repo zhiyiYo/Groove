@@ -1,8 +1,9 @@
 # coding:utf-8
 import os
+from copy import deepcopy
 
 from app.common.os_utils import adjustName
-from app.common.get_pic_suffix import getPicSuffix
+from app.common.image_process_utils import getPicSuffix
 from app.components.buttons.perspective_button import PerspectivePushButton
 from app.components.label import ErrorIcon
 from app.components.line_edit import LineEdit
@@ -20,18 +21,19 @@ from .mask_dialog_base import MaskDialogBase
 class AlbumInfoEditDialog(MaskDialogBase):
     """ 专辑信息编辑对话框 """
 
-    saveInfoSig = pyqtSignal(dict)
+    saveInfoSig = pyqtSignal(dict, dict, str)
     MAXHEIGHT = 755
 
     def __init__(self, albumInfo: dict, parent):
         super().__init__(parent)
-        self.albumInfo = albumInfo
+        self.oldAlbumInfo = deepcopy(albumInfo)
+        self.albumInfo = deepcopy(albumInfo)
         self.genre = self.albumInfo["genre"]  # type:str
         self.singer = self.albumInfo["singer"]  # type:str
         self.albumName = self.albumInfo["album"]  # type:str
-        self.cover_path = self.albumInfo["coverPath"]  # type:str
+        self.coverPath = self.albumInfo["coverPath"]  # type:str
         self.songInfo_list = self.albumInfo["songInfo_list"]  # type:list
-        self.newAlbumCoverPath = None
+        self.newAlbumCoverPath = ''
         # 创建小部件
         self.__createWidgets()
         # 初始化
@@ -44,16 +46,17 @@ class AlbumInfoEditDialog(MaskDialogBase):
         self.scrollArea = ScrollArea(self.widget)
         self.scrollWidget = QWidget()
         self.editAlbumInfoLabel = QLabel("编辑专辑信息", self.widget)
+
         # 上半部分
         self.albumCover = AlbumCoverWindow(
-            self.cover_path, (170, 170), self.scrollWidget
-        )
+            self.coverPath, (170, 170), self.scrollWidget)
         self.albumNameLineEdit = LineEdit(self.albumName, self.scrollWidget)
         self.albumSongerLineEdit = LineEdit(self.singer, self.scrollWidget)
         self.genreLineEdit = LineEdit(self.genre, self.scrollWidget)
         self.albumNameLabel = QLabel("专辑标题", self.scrollWidget)
         self.albumSongerLabel = QLabel("专辑歌手", self.scrollWidget)
         self.genreLabel = QLabel("类型", self.scrollWidget)
+
         # 下半部分
         self.songInfoWidget_list = []
         for songInfo in self.songInfo_list:
@@ -62,6 +65,7 @@ class AlbumInfoEditDialog(MaskDialogBase):
             self.songInfoWidget_list.append(songInfoWidget)
         self.saveButton = PerspectivePushButton("保存", self.widget)
         self.cancelButton = PerspectivePushButton("取消", self.widget)
+
         # 创建gif
         self.loadingLabel = QLabel(self.widget)
         self.movie = QMovie(
@@ -153,7 +157,7 @@ class AlbumInfoEditDialog(MaskDialogBase):
             # 调整面板高度
             self.__adjustWidgetPos(senderIndex, isShowErrorMsg)
 
-    def saveErrorSlot(self, index: int):
+    def onSaveError(self, index: int):
         """ 保存信息失败槽函数 """
         songInfoWidget = self.songInfoWidget_list[index]
         if not songInfoWidget.bottomErrorLabel.isVisible():
@@ -161,9 +165,9 @@ class AlbumInfoEditDialog(MaskDialogBase):
             self.__adjustWidgetPos(senderIndex, True)
         songInfoWidget.setSaveSongInfoErrorMsgHidden(False)
 
-    def saveCompleteSlot(self):
+    def onSaveComplete(self):
         """ 保存成功槽函数 """
-        self.saveAlbumCover()
+        self.__saveAlbumCover()
         self.close()
 
     def __adjustWidgetPos(self, senderIndex, isShowErrorMsg: bool):
@@ -201,9 +205,9 @@ class AlbumInfoEditDialog(MaskDialogBase):
     def __saveAlbumInfo(self):
         """ 保存专辑信息 """
         # 禁用小部件
-        self.__showLoadingGif()
         self.__setWidgetEnable(False)
-        # 显示动图
+        self.__showLoadingGif()
+
         # 更新标签信息
         self.albumInfo["album"] = self.albumNameLineEdit.text()
         self.albumInfo["singer"] = self.albumSongerLineEdit.text()
@@ -213,14 +217,16 @@ class AlbumInfoEditDialog(MaskDialogBase):
 
         for songInfo, songInfoWidget in zip(self.songInfo_list, self.songInfoWidget_list):
             songInfo["album"] = self.albumNameLineEdit.text()
-            songInfo["coverName"] = coverName[-1]
+            songInfo["coverName"] = coverName
             songInfo["songName"] = songInfoWidget.songNameLineEdit.text()
             songInfo["singer"] = songInfoWidget.singerLineEdit.text()
             songInfo["genre"] = self.genreLineEdit.text()
             # 根据后缀名选择曲目标签的写入方式
             songInfo["tracknumber"] = songInfoWidget.trackNumLineEdit.text()
 
-        self.saveInfoSig.emit(self.albumInfo)
+        self.saveInfoSig.emit(
+            self.oldAlbumInfo, self.albumInfo, self.newAlbumCoverPath)
+
         # 保存失败时重新启用编辑框
         self.__setWidgetEnable(True)
         self.loadingLabel.hide()
@@ -239,35 +245,37 @@ class AlbumInfoEditDialog(MaskDialogBase):
             self, "打开", "./", "所有文件(*.png;*.jpg;*.jpeg;*jpe;*jiff)")
         if path:
             # 复制图片到封面文件夹下
-            if os.path.abspath(self.cover_path) == path:
+            if os.path.abspath(self.coverPath) == path:
                 return
             # 暂存图片地址并刷新图片
             self.newAlbumCoverPath = path
             self.albumCover.setAlbumCover(path)
 
-    def saveAlbumCover(self):
+    def __saveAlbumCover(self):
         """ 保存新专辑封面 """
         if not self.newAlbumCoverPath:
             return
         with open(self.newAlbumCoverPath, "rb") as f:
             picData = f.read()
-            # 给专辑中的所有文件写入同一张封面
+
             # 更换文件夹下的封面图片
-            if self.newAlbumCoverPath == os.path.abspath(self.cover_path):
+            if self.newAlbumCoverPath == os.path.abspath(self.coverPath):
                 return
+
             # 判断文件格式后修改后缀名
             newSuffix = getPicSuffix(picData)
             # 如果封面路径是默认专辑封面，就修改封面路径
-            if self.cover_path == "app/resource/images/default_covers/默认专辑封面_200_200.png":
-                self.cover_path = "app/resource/Album_Cover/{0}/{0}{1}".format(
+            if self.coverPath == "app/resource/images/default_covers/默认专辑封面_200_200.png":
+                self.coverPath = "app/resource/Album_Cover/{0}/{0}{1}".format(
                     self.albumInfo["coverName"], newSuffix)
-            with open(self.cover_path, "wb") as f:
+            with open(self.coverPath, "wb") as f:
                 f.write(picData)
-            oldName, oldSuffix = os.path.splitext(self.cover_path)
+
+            oldName, oldSuffix = os.path.splitext(self.coverPath)
             if newSuffix != oldSuffix:
-                os.rename(self.cover_path, oldName + newSuffix)
-                self.cover_path = oldName + newSuffix
-                self.albumInfo["coverPath"] = self.cover_path
+                os.rename(self.coverPath, oldName + newSuffix)
+                self.coverPath = oldName + newSuffix
+                self.albumInfo["coverPath"] = self.coverPath
 
     def __setWidgetEnable(self, isEnable: bool):
         """ 设置编辑框是否启用 """

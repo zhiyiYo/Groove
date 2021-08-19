@@ -1,7 +1,8 @@
 # coding:utf-8
 from copy import deepcopy
-from app.common.blur_cover_thread import BlurCoverThread
-from app.common.get_cover_path import getCoverPath
+
+from app.common.thread.blur_cover_thread import BlurCoverThread
+from app.common.os_utils import getCoverPath
 from app.components.buttons.circle_button import CircleButton
 from app.components.frameless_window import FramelessWindow
 from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
@@ -26,7 +27,7 @@ class SmallestPlayInterface(FramelessWindow):
 
     def __init__(self, playlist: list = None, parent=None):
         super().__init__(parent)
-        self.playlist = playlist if playlist else []
+        self.playlist = deepcopy(playlist) if playlist else []
         self.currentIndex = 0
         self.shiftLeftTime = 0
         self.shiftRightTime = 0
@@ -268,6 +269,17 @@ class SmallestPlayInterface(FramelessWindow):
         self.lastSongInfoCard = self.songInfoCard_list[lastIndex]
         self.nextSongInfoCard = self.songInfoCard_list[nextIndex]
 
+    def updateOneSongInfo(self, newSongInfo: dict):
+        """ 更新播放列表中一首歌曲的信息 """
+        for i, songInfo in enumerate(self.playlist):
+            if songInfo["songPath"] == newSongInfo["songPath"]:
+                self.playlist[i] = newSongInfo
+
+    def updateMultiSongInfo(self, newSongInfo_list: list):
+        """ 更新播放列表中多首歌曲的信息 """
+        for newSongInfo in newSongInfo_list:
+            self.updateOneSongInfo(newSongInfo)
+
     def setCurrentIndex(self, index):
         """ 更新当前下标并移动和更新歌曲信息卡 """
         if not self.playlist:
@@ -292,7 +304,7 @@ class SmallestPlayInterface(FramelessWindow):
         isResetIndex: bool
             是否从头播放歌曲
         """
-        self.playlist = deepcopy(playlist)
+        self.playlist = deepcopy(playlist) if playlist else []
         self.currentIndex = 0 if isResetIndex else self.currentIndex
         if playlist:
             self.curSongInfoCard.updateCard(self.playlist[0])

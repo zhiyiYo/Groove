@@ -1,14 +1,11 @@
 # coding:utf-8
-
 import re
 
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QFont, QFontMetrics, QPainter, QPixmap
 from PyQt5.QtWidgets import QLabel, QWidget
 
-from app.common.is_not_leave import isNotLeave
-from app.common.get_cover_path import getCoverPath
-from .window_mask import WindowMask
+from app.common.os_utils import getCoverPath
 
 from app.components.perspective_widget import PerspectiveWidget
 
@@ -87,6 +84,7 @@ class SongInfoCard(PerspectiveWidget):
 
         name = self.songInfo.get('coverName', '未知歌手_未知专辑')
         newCoverPath = getCoverPath(name, "album_big")
+        
         # 封面路径变化时发送信号并更新封面
         if newCoverPath != self.coverPath:
             self.albumChanged.emit(newCoverPath)
@@ -257,8 +255,7 @@ class ScrollTextWindow(QWidget):
             # 循环一次后就将滚动停止
             if self.isSongNameAllOut and not (x1 and x2):
                 # 判断鼠标是否离开,离开的话就停止滚动
-                notLeave = isNotLeave(self)
-                if not notLeave:
+                if not self.isNotLeave():
                     self.songNameTimer.stop()
                 else:
                     self.songNameTimer.stop()
@@ -284,8 +281,7 @@ class ScrollTextWindow(QWidget):
             painter.drawText(x3, 82, self.singerName)
             painter.drawText(x4, 82, self.singerName)
             if self.isSongerNameAllOut and not (x3 and x4):
-                notLeave = isNotLeave(self)
-                if not notLeave:
+                if not self.isNotLeave():
                     self.singerNameTimer.stop()
                 else:
                     self.singerNameTimer.stop()
@@ -307,3 +303,39 @@ class ScrollTextWindow(QWidget):
             self.songNameTimer.start()
         else:
             self.singerNameTimer.start()
+
+    def isNotLeave(self) -> bool:
+        """ 判断leaveEvent是否发生在小部件所占据的区域 """
+        if not self.isWindow():
+            globalPos = self.parent().mapToGlobal(self.pos())
+        else:
+            globalPos = self.pos()
+
+        globalX = globalPos.x()
+        globalY = globalPos.y()
+        # 判断事件发生的位置发生在自己所占的rect内
+        condX = (globalX <= self.cursor().pos().x()
+                <= globalX + self.width())
+        condY = (globalY <= self.cursor().pos().y()
+                <= globalY + self.height())
+        return (condX and condY)
+
+
+class WindowMask(QWidget):
+    """ 歌曲卡的半透明遮罩 """
+
+    def __init__(self, parent, maskColor: tuple = (255, 255, 255, 172)):
+        super().__init__(parent)
+        self.setWindowFlag(Qt.FramelessWindowHint)
+        self.setAttribute(Qt.WA_StyledBackground)
+        # 设置背景色
+        self.setStyleSheet(
+            f'background:rgba({maskColor[0]},{maskColor[1]},{maskColor[2]},{maskColor[-1]});')
+        self.hide()
+
+    def show(self):
+        """ 获取父窗口的位置后显示 """
+        parent_rect = self.parent().geometry()
+        self.setGeometry(0, 0, parent_rect.width(), parent_rect.height())
+        self.raise_()
+        super().show()

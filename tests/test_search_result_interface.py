@@ -5,8 +5,7 @@ import json
 
 from PyQt5.QtWidgets import QApplication
 
-from app.View.my_music_interface.get_info.get_album_info import AlbumInfoGetter
-from app.View.my_music_interface.get_info.get_song_info import SongInfoGetter
+from app.common.meta_data_getter import SongInfoGetter, AlbumInfoGetter
 from app.View.search_result_interface import SearchResultInterface
 
 

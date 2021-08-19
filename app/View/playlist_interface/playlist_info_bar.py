@@ -1,7 +1,7 @@
 # coding:utf-8
 from math import ceil
 
-from app.common.get_cover_path import getCoverPath
+from app.common.os_utils import getCoverPath
 from app.components.menu import AddToMenu
 from app.components.app_bar import (AppBarButton, CollapsingAppBarBase,
                                     MoreActionsMenu)

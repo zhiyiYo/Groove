@@ -4,8 +4,7 @@ from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QWidget
 
-from app.View.my_music_interface.get_info.get_song_info import SongInfoGetter
-from app.View.my_music_interface.get_info.get_album_info import AlbumInfoGetter
+from app.common.meta_data_getter import SongInfoGetter, AlbumInfoGetter
 from app.View.search_result_interface.album_group_box import AlbumGroupBox
 
 if __name__ == '__main__':

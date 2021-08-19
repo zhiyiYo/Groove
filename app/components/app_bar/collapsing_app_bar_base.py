@@ -1,9 +1,9 @@
 # coding:utf-8
 from typing import List
 
-from app.common.get_dominant_color import DominantColor
+from app.common.image_process_utils import DominantColor
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap, QPalette, QColor, QPainter, QFont, QFontMetrics, QResizeEvent
+from PyQt5.QtGui import QPixmap, QColor, QPainter, QFont, QFontMetrics, QResizeEvent
 from PyQt5.QtWidgets import QWidget, QLabel
 
 from .app_bar_button import AppBarButton

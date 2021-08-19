@@ -27,9 +27,6 @@ app/temp
 */__pycache__
 *.py[cod]
 
-# 忽略日志文件
-*.log
-
 # 忽略音频文件
 app/resource/test_audio
 app/download

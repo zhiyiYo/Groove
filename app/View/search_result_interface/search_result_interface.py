@@ -3,18 +3,18 @@ import os
 from copy import deepcopy
 
 from app.common.crawler.kuwo_music_crawler import KuWoMusicCrawler
+from app.common.thread.download_song_thread import DownloadSongThread
+from app.common.thread.get_online_song_url_thread import GetOnlineSongUrlThread
 from app.components.layout.v_box_layout import VBoxLayout
-from app.components.state_tooltip import StateTooltip
 from app.components.scroll_area import ScrollArea
+from app.components.state_tooltip import StateTooltip
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QLabel, QWidget, QVBoxLayout
+from PyQt5.QtWidgets import QLabel, QVBoxLayout, QWidget
 
 from .album_group_box import AlbumGroupBox
 from .playlist_group_box import PlaylistGroupBox
 from .song_group_box import SongGroupBox
-from .get_online_song_url_thread import GetOnlineSongUrlThread
-from .download_song_thread import DownloadSongThread
 
 
 class SearchResultInterface(ScrollArea):

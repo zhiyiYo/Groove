@@ -504,6 +504,11 @@ class PlaylistCardInterface(ScrollArea):
                     self.playlistCardInfo_list[index][1] = playlist
                     self.savePlaylist(playlist)
 
+    def updateMultiSongInfo(self, newSongInfo_list: list):
+        """ 更新多首歌曲信息 """
+        for songInfo in newSongInfo_list:
+            self.updateOneSongInfo(songInfo)
+
     def updateOnePlaylist(self, playlistName: str, songInfo_list: list):
         """ 更新一个播放列表中的歌曲
 

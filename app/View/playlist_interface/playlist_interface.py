@@ -123,6 +123,14 @@ class PlaylistInterface(ScrollArea):
             return
         self.songListWidget.updateOneSongCard(newSongInfo, False)
         self.playlist["songInfo_list"] = self.songListWidget.songInfo_list
+        self.songInfo_list = self.playlist["songInfo_list"]
+
+    def updateMultiSongCards(self, newSongInfo_list: list):
+        """ 更新多个歌曲卡 """
+        self.songListWidget.updateMultiSongCards(newSongInfo_list)
+        self.playlist["songInfo_list"] = self.songListWidget.songInfo_list
+        self.songInfo_list = self.playlist["songInfo_list"]
+        self.playlistInfoBar.updateWindow(self.playlist)
 
     def __setQss(self):
         """ 设置层叠样式 """

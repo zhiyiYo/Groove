@@ -33,6 +33,7 @@ class LineEdit(QLineEdit):
         """ 初始化小部件 """
         self.resize(500, 40)
         self.clearButton.hide()
+        self.setCursorPosition(0)
         self.textChanged.connect(self.textChangedEvent)
         self.clearButton.move(self.width() - self.clearButton.width(), 0)
         if self.isNeedClearBt:
