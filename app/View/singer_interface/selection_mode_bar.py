@@ -1,5 +1,4 @@
 # coding:utf-8
-
 from app.components.selection_mode_bar_base import (BasicButton,
                                                     SelectionModeBarBase,
                                                     CheckAllButton)
@@ -25,8 +24,6 @@ class SelectionModeBar(SelectionModeBarBase):
             r"app\resource\images\selection_mode_bar\下一首播放_20_20.png", "下一首播放", self)
         self.addToButton = BasicButton(
             r"app\resource\images\selection_mode_bar\Add.png", "添加到", self)
-        self.showSingerButton = BasicButton(
-            r"app\resource\images\selection_mode_bar\Contact.png", "显示歌手", self)
         self.editInfoButton = BasicButton(
             r"app\resource\images\selection_mode_bar\Edit.png", "编辑信息", self)
         self.pinToStartMenuButton = BasicButton(
@@ -53,7 +50,6 @@ class SelectionModeBar(SelectionModeBarBase):
                 self.playButton,
                 self.nextToPlayButton,
                 self.addToButton,
-                self.showSingerButton,
                 self.pinToStartMenuButton,
                 self.editInfoButton,
                 self.deleteButton,

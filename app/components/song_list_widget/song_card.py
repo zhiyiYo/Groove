@@ -11,7 +11,8 @@ from .song_card_type import SongCardType
 class SongTabSongCard(BasicSongCard):
     """ 我的音乐歌曲界面的歌曲卡 """
 
-    switchToAlbumInterfaceSig = pyqtSignal(str, str)  # 发送专辑名和歌手名
+    switchToAlbumInterfaceSig = pyqtSignal(str, str)    # 发送专辑名和歌手名
+    switchToSingerInterfaceSig = pyqtSignal(str)        # 切换到歌手界面
 
     def __init__(self, songInfo: dict, parent=None):
         super().__init__(songInfo, SongCardType.SONG_TAB_SONG_CARD, parent)
@@ -57,6 +58,8 @@ class SongTabSongCard(BasicSongCard):
         # 信号连接到槽
         self.addToButton.clicked.connect(self._showAddToMenu)
         self.checkBox.stateChanged.connect(self._onCheckedStateChanged)
+        self.singerLabel.clicked.connect(
+            lambda: self.switchToSingerInterfaceSig.emit(self.singer))
         self.albumLabel.clicked.connect(
             lambda: self.switchToAlbumInterfaceSig.emit(self.album, self.singer))
 
@@ -85,6 +88,8 @@ class SongTabSongCard(BasicSongCard):
 class AlbumInterfaceSongCard(BasicSongCard):
     """ 专辑界面的歌曲卡 """
 
+    switchToSingerInterfaceSig = pyqtSignal(str)  # 切换到歌手界面
+
     def __init__(self, songInfo: dict, parent=None):
         super().__init__(songInfo, SongCardType.ALBUM_INTERFACE_SONG_CARD, parent)
         # 创建小部件
@@ -110,6 +115,8 @@ class AlbumInterfaceSongCard(BasicSongCard):
         self.setWidgetState("notSelected-leave")
         self.setCheckBoxBtLabelState("notSelected-notPlay")
         # 信号连接到槽
+        self.singerLabel.clicked.connect(
+            lambda: self.switchToSingerInterfaceSig.emit(self.singer))
         self.addToButton.clicked.connect(self._showAddToMenu)
         self.checkBox.stateChanged.connect(self._onCheckedStateChanged)
 
@@ -136,7 +143,8 @@ class PlaylistInterfaceSongCard(BasicSongCard):
     """ 我的音乐歌曲界面的歌曲卡 """
 
     removeSongSignal = pyqtSignal(int)                # 移除歌曲
-    switchToAlbumInterfaceSig = pyqtSignal(str, str)  # 发送专辑名和歌手名
+    switchToAlbumInterfaceSig = pyqtSignal(str, str)  # 切换到专辑界面
+    switchToSingerInterfaceSig = pyqtSignal(str)      # 切换到歌手界面
 
     def __init__(self, songInfo: dict, parent=None):
         super().__init__(songInfo, SongCardType.PLAYLIST_INTERFACE_SONG_CARD, parent)
@@ -180,6 +188,8 @@ class PlaylistInterfaceSongCard(BasicSongCard):
         self.setWidgetState("notSelected-leave")
         self.setCheckBoxBtLabelState("notSelected-notPlay")
         # 信号连接到槽
+        self.singerLabel.clicked.connect(
+            lambda: self.switchToSingerInterfaceSig.emit(self.singer))
         self.albumLabel.clicked.connect(
             lambda: self.switchToAlbumInterfaceSig.emit(self.album, self.singer))
         self.addToButton.clicked.connect(
@@ -212,6 +222,7 @@ class NoCheckBoxSongCard(BasicSongCard):
     """ 没有复选框的歌曲卡 """
 
     switchToAlbumInterfaceSig = pyqtSignal(str, str)  # 发送专辑名和歌手名
+    switchToSingerInterfaceSig = pyqtSignal(str)      # 切换到歌手界面
 
     def __init__(self, songInfo: dict, parent=None):
         super().__init__(songInfo, SongCardType.NO_CHECKBOX_SONG_CARD, parent=parent)
@@ -255,6 +266,8 @@ class NoCheckBoxSongCard(BasicSongCard):
         self.setWidgetState("notSelected-leave")
         self.setCheckBoxBtLabelState("notSelected-notPlay")
         # 信号连接到槽
+        self.singerLabel.clicked.connect(
+            lambda: self.switchToSingerInterfaceSig.emit(self.singer))
         self.albumLabel.clicked.connect(
             lambda: self.switchToAlbumInterfaceSig.emit(self.album, self.singer))
         self.addToButton.clicked.connect(self._showAddToMenu)

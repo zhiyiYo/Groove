@@ -12,11 +12,12 @@ from .menu import AddToMenu
 class SongCard(QWidget):
     """ 歌曲卡 """
 
-    clicked = pyqtSignal(int)
-    aniStartSig = pyqtSignal()
-    checkedStateChanged = pyqtSignal(int, bool)
-    switchToAlbumInterfaceSig = pyqtSignal(str, str)
-    addSongToNewCustomPlaylistSig = pyqtSignal(dict)  # 添加歌曲到新建的播放列表
+    clicked = pyqtSignal(int)                           # 歌曲卡点击
+    aniStartSig = pyqtSignal()                          # 反弹动画开始
+    checkedStateChanged = pyqtSignal(int, bool)         # 歌曲卡选中状态改变
+    switchToSingerInterfaceSig = pyqtSignal(str)        # 切换到歌手界面
+    switchToAlbumInterfaceSig = pyqtSignal(str, str)    # 切换到专辑界面
+    addSongToNewCustomPlaylistSig = pyqtSignal(dict)    # 添加歌曲到新建的播放列表
     addSongToCustomPlaylistSig = pyqtSignal(str, dict)  # 添加歌曲到已存在的播放列表
 
     def __init__(self, songInfo: dict, parent=None):
@@ -317,9 +318,10 @@ class SongCard(QWidget):
         """ 信号连接到槽 """
         self.playButton.clicked.connect(
             lambda: self.clicked.emit(self.itemIndex))
+        self.singerLabel.clicked.connect(
+            lambda: self.switchToSingerInterfaceSig.emit(self.singer))
         self.albumLabel.clicked.connect(
-            lambda: self.switchToAlbumInterfaceSig.emit(
-                self.albumLabel.text(), self.singerLabel.text()))
+            lambda: self.switchToAlbumInterfaceSig.emit(self.album, self.singer))
         self.checkBox.stateChanged.connect(self.onCheckedStateChanged)
         self.addToButton.clicked.connect(self.__showAddToMenu)
 

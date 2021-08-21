@@ -20,7 +20,8 @@ class SongListWidget(ListWidget):
     isAllCheckedChanged = pyqtSignal(bool)              # 歌曲卡卡全部选中改变
     selectionModeStateChanged = pyqtSignal(bool)        # 进入或退出选择模式
     checkedSongCardNumChanged = pyqtSignal(int)         # 选中的歌曲卡数量改变
-    switchToAlbumInterfaceSig = pyqtSignal(str, str)    # albumName, singerName
+    switchToSingerInterfaceSig = pyqtSignal(str)        # 切换到歌手界面
+    switchToAlbumInterfaceSig = pyqtSignal(str, str)    # 切换到专辑界面
     addSongsToNewCustomPlaylistSig = pyqtSignal(list)   # 将歌曲添加到新的自定义播放列表
     addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 将歌曲添加到已存在的自定义播放列表
 
@@ -173,10 +174,6 @@ class SongListWidget(ListWidget):
         if self.songInfo_list:
             self.songCard_list[self.currentIndex].setPlay(True)
 
-    def __switchToAlbumInterface(self, albumName: str, singerName: str):
-        """ 切换到专辑界面 """
-        self.switchToAlbumInterfaceSig.emit(albumName, singerName)
-
     def updateOneSongCard(self, newSongInfo: dict):
         """ 更新一个歌曲卡 """
         for i, songInfo in enumerate(self.songInfo_list):
@@ -207,8 +204,10 @@ class SongListWidget(ListWidget):
         songCard.aniStartSig.connect(
             lambda: self.songCard_list[self.currentIndex].setPlay(False))
         songCard.clicked.connect(self.__emitCurrentChangedSignal)
+        songCard.switchToSingerInterfaceSig.connect(
+            self.switchToSingerInterfaceSig)
         songCard.switchToAlbumInterfaceSig.connect(
-            self.__switchToAlbumInterface)
+            self.switchToAlbumInterfaceSig)
         songCard.addSongToCustomPlaylistSig.connect(
             lambda name, songInfo: self.addSongsToCustomPlaylistSig.emit(name, [songInfo]))
         songCard.addSongToNewCustomPlaylistSig.connect(
@@ -277,12 +276,13 @@ class SongListWidget(ListWidget):
         menu.propertyAct.triggered.connect(self.showSongPropertyDialog)
         menu.removeAct.triggered.connect(
             lambda: self.removeSongCard(self.currentRow()))
+        menu.selectAct.triggered.connect(
+            lambda: self.songCard_list[self.currentRow()].setChecked(True))
         menu.showAlbumAct.triggered.connect(
-            lambda: self.__switchToAlbumInterface(
+            lambda: self.switchToAlbumInterfaceSig.emit(
                 self.songCard_list[self.currentRow()].album,
-                self.songCard_list[self.currentRow()].singer,
-            )
-        )
+                self.songCard_list[self.currentRow()].singer))
+
         menu.addToMenu.addSongsToPlaylistSig.connect(
             lambda name: self.addSongsToCustomPlaylistSig.emit(
                 name, [self.songInfo_list[self.currentRow()]]))

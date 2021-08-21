@@ -10,9 +10,10 @@ from PyQt5.QtWidgets import QAction
 class SongListWidget(BasicSongListWidget):
     """ 专辑界面歌曲卡列表视图 """
 
-    playSignal = pyqtSignal(int)
-    playOneSongSig = pyqtSignal(dict)        # 只播放选中的歌曲
-    nextToPlayOneSongSig = pyqtSignal(dict)  # 插入一首歌到播放列表中
+    playSignal = pyqtSignal(int)                    # 播放指定歌曲
+    playOneSongSig = pyqtSignal(dict)               # 只播放选中的歌曲
+    nextToPlayOneSongSig = pyqtSignal(dict)         # 插入一首歌到播放列表中
+    switchToSingerInterfaceSig = pyqtSignal(str)    # 切换到歌手界面
 
     def __init__(self, songInfo_list: list, parent=None):
         """
@@ -127,6 +128,8 @@ class SongListWidget(BasicSongListWidget):
         songCard.clicked.connect(self.setCurrentIndex)
         songCard.checkedStateChanged.connect(
             self.onSongCardCheckedStateChanged)
+        songCard.switchToSingerInterfaceSig.connect(
+            self.switchToSingerInterfaceSig)
 
     def __adjustHeight(self):
         """ 调整高度 """

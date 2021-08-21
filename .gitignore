@@ -18,7 +18,9 @@ Playlists
 # 忽略专辑封面文件夹
 app/resource/Album_Cover
 app/resource/crawl_album_covers
-app/temp
+
+# 忽略歌手头像文件夹
+app/resource/singer_avatar
 
 # 忽略json文件
 *.json

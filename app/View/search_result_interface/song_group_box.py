@@ -67,6 +67,7 @@ class LocalSongListWidget(BasicSongListWidget):
     playSignal = pyqtSignal(int)                        # 将播放列表的当前歌曲切换为指定的歌曲卡
     playOneSongSig = pyqtSignal(dict)                   # 重置播放列表为指定的一首歌
     nextToPlayOneSongSig = pyqtSignal(dict)             # 将歌曲添加到下一首播放
+    switchToSingerInterfaceSig = pyqtSignal(str)        # 切换到歌手界面
     switchToAlbumInterfaceSig = pyqtSignal(str, str)    # 切换到专辑界面
 
     def __init__(self, parent=None):
@@ -132,36 +133,29 @@ class LocalSongListWidget(BasicSongListWidget):
         super().clearSongCards()
         self.__adjustHeight()
 
-    def __connectContextMenuSignalToSlot(self, contextMenu):
+    def __connectContextMenuSignalToSlot(self, menu):
         """ 信号连接到槽 """
-        contextMenu.playAct.triggered.connect(
+        menu.playAct.triggered.connect(
             lambda: self.playOneSongSig.emit(
                 self.songCard_list[self.currentRow()].songInfo))
-        contextMenu.nextSongAct.triggered.connect(
+        menu.nextSongAct.triggered.connect(
             lambda: self.nextToPlayOneSongSig.emit(
                 self.songCard_list[self.currentRow()].songInfo))
-        # 显示属性面板
-        contextMenu.showPropertyAct.triggered.connect(
+        menu.showPropertyAct.triggered.connect(
             self.showSongPropertyDialog)
-        # 显示专辑界面
-        contextMenu.showAlbumAct.triggered.connect(
+        menu.showAlbumAct.triggered.connect(
             lambda: self.switchToAlbumInterfaceSig.emit(
                 self.songCard_list[self.currentRow()].album,
-                self.songCard_list[self.currentRow()].singer,
-            )
-        )
-        # 删除歌曲卡
-        contextMenu.deleteAct.triggered.connect(self.__showDeleteCardDialog)
-        # 将歌曲添加到正在播放列表
-        contextMenu.addToMenu.playingAct.triggered.connect(
+                self.songCard_list[self.currentRow()].singer))
+        menu.deleteAct.triggered.connect(self.__showDeleteCardDialog)
+
+        menu.addToMenu.playingAct.triggered.connect(
             lambda: self.addSongToPlayingSignal.emit(
                 self.songCard_list[self.currentRow()].songInfo))
-        # 将歌曲添加到已存在的自定义播放列表中
-        contextMenu.addToMenu.addSongsToPlaylistSig.connect(
+        menu.addToMenu.addSongsToPlaylistSig.connect(
             lambda name: self.addSongsToCustomPlaylistSig.emit(
                 name, [self.songCard_list[self.currentRow()].songInfo]))
-        # 将歌曲添加到新建的播放列表
-        contextMenu.addToMenu.newPlaylistAct.triggered.connect(
+        menu.addToMenu.newPlaylistAct.triggered.connect(
             lambda: self.addSongsToNewCustomPlaylistSig.emit(
                 [self.songCard_list[self.currentRow()].songInfo]))
 
@@ -171,6 +165,8 @@ class LocalSongListWidget(BasicSongListWidget):
         songCard.playButtonClicked.connect(self.__playButtonSlot)
         songCard.addSongToPlayingSig.connect(self.addSongToPlayingSignal)
         songCard.clicked.connect(self.setCurrentIndex)
+        songCard.switchToSingerInterfaceSig.connect(
+            self.switchToSingerInterfaceSig)
         songCard.switchToAlbumInterfaceSig.connect(
             self.switchToAlbumInterfaceSig)
         songCard.addSongsToCustomPlaylistSig.connect(

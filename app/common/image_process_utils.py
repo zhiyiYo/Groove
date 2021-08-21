@@ -41,7 +41,7 @@ def gaussianBlur(imagePath, savePath='', blurRadius=18, brightnessFactor=1, blur
         oldWidth, oldHeight = image.size
         ratio = min(blurPicSize[0] / oldWidth, blurPicSize[1] / oldHeight)
         newWidth, newHeight = oldWidth * ratio, oldHeight * ratio
-        # 如果新的尺寸小于旧尺寸才resize
+        # 如果新的尺寸小于旧尺寸才 resize
         if newWidth < oldWidth:
             imageArray = np.array(image.resize(
                 (int(newWidth), int(newHeight)), Image.ANTIALIAS))
@@ -50,10 +50,12 @@ def gaussianBlur(imagePath, savePath='', blurRadius=18, brightnessFactor=1, blur
     else:
         imageArray = np.array(Image.open(imagePath))
     blurImageArray = imageArray
+
     # 对每一个颜色通道分别磨砂
     for i in range(imageArray.shape[-1]):
         blurImageArray[:, :, i] = gaussian_filter(
             imageArray[:, :, i], blurRadius) * brightnessFactor
+            
     # 将ndarray转换为Image对象
     if savePath:
         blurImage = Image.fromarray(blurImageArray)

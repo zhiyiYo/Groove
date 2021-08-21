@@ -1,7 +1,7 @@
 # coding:utf-8
 
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QMouseEvent, QPixmap
+from PyQt5.QtGui import QMouseEvent, QPixmap, QPainter, QBrush
 from PyQt5.QtWidgets import QLabel
 
 
@@ -33,5 +33,31 @@ class ErrorIcon(QLabel):
         super().__init__(parent)
         # 设置提示条
         self.customToolTip = None
-        self.setPixmap(QPixmap("app/resource/images/song_tab_interface/info_red.png"))
+        self.setPixmap(
+            QPixmap("app/resource/images/song_tab_interface/info_red.png"))
         self.setFixedSize(19, 19)
+
+
+class AvatarLabel(QLabel):
+    """ 圆形头像 """
+
+    def __init__(self, imagePath: str, parent=None):
+        super().__init__(parent)
+        self.__pixmap = QPixmap(imagePath)
+        self.setScaledContents(True)
+        self.setAttribute(Qt.WA_TranslucentBackground)
+
+    def setPixmap(self, pixmap: QPixmap) -> None:
+        self.__pixmap = pixmap
+        self.update()
+
+    def paintEvent(self, e):
+        """ 绘制头像 """
+        painter = QPainter(self)
+        painter.setRenderHints(QPainter.Antialiasing |
+                               QPainter.SmoothPixmapTransform)
+        w = self.width()
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(QBrush(self.__pixmap.scaled(
+            w, w, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)))
+        painter.drawRoundedRect(self.rect(), w//2, w//2)

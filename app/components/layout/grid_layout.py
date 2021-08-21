@@ -53,21 +53,24 @@ class GridLayout(QGridLayout):
         currentRowNum = super().rowCount()
         currentColumnNum = super().columnCount()
         self.__columnNum = newColumnNum
-        self.__rowNum = newRowNum
+        self.__rowNum = newRowNum if newRowNum > 0 else 1
         # 先移除所有的小部件
         for widget in self.__widget_list:
             super().removeWidget(widget)
+
         # 调整网格的宽度和高度
         for col in range(newColumnNum):
             self.setColumnMinimumWidth(col, columnMinWidth)
         for row in range(newRowNum):
             self.setRowMinimumHeight(row, rowMinHeight)
+
         # 将小部件重新添加到布局中
         for index, widget in enumerate(self.__widget_list):
             x = index // newColumnNum
             y = index - newColumnNum * x
             super().addWidget(widget, x, y, 1, 1, Qt.AlignLeft)
         self.setAlignment(Qt.AlignLeft)
+
         # 如果现在的总行数小于旧的网格的总行数，就将多出来的行宽度的最小值设为0
         for i in range(currentRowNum - 1, newRowNum-1, -1):
             self.setRowMinimumHeight(i, 0)
@@ -85,7 +88,10 @@ class GridLayout(QGridLayout):
         """ 从布局移除所有小部件 """
         for widget in self.__widget_list:
             super().removeWidget(widget)
+
         self.__widget_list.clear()
+        self.__rowNum = 1
+        self.__columnNum = 1
 
     def rowCount(self):
         """ 返回网格行数 """

@@ -9,10 +9,11 @@ from PyQt5.QtWidgets import QAction
 class SongListWidget(BasicSongListWidget):
     """ 歌曲卡列表视图 """
 
-    playSignal = pyqtSignal(int)       # 将播放列表的当前歌曲切换为指定的歌曲卡
-    playOneSongSig = pyqtSignal(dict)   # 只播放一首歌
-    nextToPlayOneSongSig = pyqtSignal(dict)
-    switchToAlbumInterfaceSig = pyqtSignal(str, str)
+    playSignal = pyqtSignal(int)                        # 将当前歌曲切换为指定的歌曲卡
+    playOneSongSig = pyqtSignal(dict)                   # 只播放一首歌
+    nextToPlayOneSongSig = pyqtSignal(dict)             # 下一首播放
+    switchToSingerInterfaceSig = pyqtSignal(str)        # 切换到歌手界面
+    switchToAlbumInterfaceSig = pyqtSignal(str, str)    # 切换到专辑界面
 
     def __init__(self, songInfo_list: list, parent):
         """
@@ -99,6 +100,8 @@ class SongListWidget(BasicSongListWidget):
             self.onSongCardCheckedStateChanged)
         songCard.switchToAlbumInterfaceSig.connect(
             self.switchToAlbumInterfaceSig)
+        songCard.switchToSingerInterfaceSig.connect(
+            self.switchToSingerInterfaceSig)
 
     def __connectMenuSignalToSlot(self, contextMenu):
         """ 右击菜单信号连接到槽 """

@@ -30,6 +30,7 @@ class AlbumCardInterface(ScrollArea):
     addAlbumToPlayingSignal = pyqtSignal(list)                  # 将专辑添加到正在播放
     selectionModeStateChanged = pyqtSignal(bool)                # 进入/退出 选择模式
     checkedAlbumCardNumChanged = pyqtSignal(int)                # 选中的专辑卡数量改变
+    switchToSingerInterfaceSig = pyqtSignal(str)                # 切换到歌手界面
     switchToAlbumInterfaceSig = pyqtSignal(str, str)            # 切换到专辑界面
     editAlbumInfoSignal = pyqtSignal(dict, dict, str)           # 完成专辑信息编辑
     addAlbumToNewCustomPlaylistSig = pyqtSignal(list)           # 将专辑添加到新建的播放列表
@@ -135,6 +136,8 @@ class AlbumCardInterface(ScrollArea):
         albumCard.addToPlayingSignal.connect(self.addAlbumToPlayingSignal)
         albumCard.switchToAlbumInterfaceSig.connect(
             self.switchToAlbumInterfaceSig)
+        albumCard.switchToSingerInterfaceSig.connect(
+            self.switchToSingerInterfaceSig)
         albumCard.checkedStateChanged.connect(
             self.__onAlbumCardCheckedStateChanged)
         albumCard.showBlurAlbumBackgroundSig.connect(
@@ -467,12 +470,12 @@ class AlbumCardInterface(ScrollArea):
             self.selectionModeStateChanged.emit(False)
             self.isInSelectionMode = False
 
-    def __setAllAlbumCardSelectionModeOpen(self, isOpenSelectionMode: bool):
+    def __setAllAlbumCardSelectionModeOpen(self, isOpen: bool):
         """ 设置所有专辑卡是否进入选择模式 """
         for albumCard in self.albumCard_list:
-            albumCard.setSelectionModeOpen(isOpenSelectionMode)
+            albumCard.setSelectionModeOpen(isOpen)
         # 退出选择模式时开启隐藏所有复选框的动画
-        if not isOpenSelectionMode:
+        if not isOpen:
             self.__startHideCheckBoxAni()
 
     def __startHideCheckBoxAni(self):

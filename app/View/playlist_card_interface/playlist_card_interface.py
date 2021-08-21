@@ -192,21 +192,23 @@ class PlaylistCardInterface(ScrollArea):
         self.whiteMask.resize(self.width() - 15, 175)
         self.selectionModeBar.resize(
             self.width(), self.selectionModeBar.height())
-        if self.width() < 641 and self.columnNum != 1:
+        if self.width() < 641:
             self.__setColumnNum(1)
-        elif 641 <= self.width() < 954 and self.columnNum != 2:
+        elif 641 <= self.width() < 954:
             self.__setColumnNum(2)
-        elif 954 <= self.width() < 1267 and self.columnNum != 3:
+        elif 954 <= self.width() < 1267:
             self.__setColumnNum(3)
-        elif 1267 <= self.width() < 1580 and self.columnNum != 4:
+        elif 1267 <= self.width() < 1580:
             self.__setColumnNum(4)
-        elif 1580 <= self.width() < 1893 and self.columnNum != 5:
+        elif 1580 <= self.width() < 1893:
             self.__setColumnNum(5)
-        elif self.width() >= 1893 and self.columnNum != 6:
+        elif self.width() >= 1893:
             self.__setColumnNum(6)
 
     def __setColumnNum(self, columnNum: int):
         """ 设置网格列数 """
+        if columnNum == self.columnNum:
+            return
         self.columnNum = columnNum
         self.gridLayout.updateColumnNum(columnNum, 298, 288)
         self.scrollWidget.resize(
@@ -582,6 +584,7 @@ class PlaylistCardInterface(ScrollArea):
         self.selectionModeBar.addToButton.clicked.connect(self.__showAddToMenu)
         self.sortModeButton.clicked.connect(self.__showSortModeMenu)
         self.createPlaylistButton.clicked.connect(self.createPlaylistSig)
+        self.hideCheckBoxAniGroup.finished.connect(self.__hideAllCheckBox)
 
     @staticmethod
     def savePlaylist(playlist: dict):

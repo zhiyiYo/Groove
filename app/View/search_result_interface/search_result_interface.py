@@ -29,6 +29,7 @@ class SearchResultInterface(ScrollArea):
     deletePlaylistSig = pyqtSignal(str)                  # 删除整张播放列表
     playOneSongCardSig = pyqtSignal(dict)                # 将播放列表重置为一首歌
     renamePlaylistSig = pyqtSignal(dict, dict)           # 重命名播放列表
+    switchToSingerInterfaceSig = pyqtSignal(str)         # 切换到歌手界面
     switchToPlaylistInterfaceSig = pyqtSignal(str)       # 切换到播放列表界面
     switchToAlbumInterfaceSig = pyqtSignal(str, str)     # 切换到专辑界面
     addSongsToPlayingPlaylistSig = pyqtSignal(list)      # 添加歌曲到正在播放
@@ -210,7 +211,6 @@ class SearchResultInterface(ScrollArea):
             keyWord, self.onlineMusicPageSize)
         self.getOnlineSongUrlThread.setSongInfoList(
             self.onlineSongInfo_list, self.onlinePlayQuality)
-        self.getOnlineSongUrlThread.start()
 
         # 对播放列表进行匹配
         self.playlists = {}
@@ -225,6 +225,7 @@ class SearchResultInterface(ScrollArea):
         self.playlistGroupBox.updateWindow(self.playlists)
         self.localSongGroupBox.updateWindow(self.localSongInfo_list)
         self.onlineSongGroupBox.updateWindow(self.onlineSongInfo_list)
+        self.getOnlineSongUrlThread.start()
 
         # 调整窗口大小
         isAlbumVisible = len(self.albumInfo_list) > 0
@@ -290,6 +291,8 @@ class SearchResultInterface(ScrollArea):
             self.addSongsToCustomPlaylistSig)
         self.albumGroupBox.addAlbumToNewCustomPlaylistSig.connect(
             self.addSongsToNewCustomPlaylistSig)
+        self.albumGroupBox.switchToSingerInterfaceSig.connect(
+            self.switchToSingerInterfaceSig)
 
         # 本地歌曲列表信号连接到槽
         self.localSongListWidget.playSignal.connect(self.playLocalSongSig)
@@ -305,6 +308,8 @@ class SearchResultInterface(ScrollArea):
             lambda songInfo: self.addSongsToPlayingPlaylistSig.emit([songInfo]))
         self.localSongListWidget.switchToAlbumInterfaceSig.connect(
             self.switchToAlbumInterfaceSig)
+        self.localSongListWidget.switchToSingerInterfaceSig.connect(
+            self.switchToSingerInterfaceSig)
         self.localSongListWidget.removeSongSignal.connect(
             self.__onDeleteOneSong)
 
@@ -348,7 +353,7 @@ class DownloadStateTooltip(StateTooltip):
     def completeOneDownloadTask(self):
         """ 完成 1 个下载任务 """
         self.downloadTaskNum -= 1
-        if self.downloadTaskNum>0:
+        if self.downloadTaskNum > 0:
             self.setContent(f'还剩 {self.downloadTaskNum} 首，要耐心等待哦~~')
         else:
             self.setTitle('已完成所有下载任务')

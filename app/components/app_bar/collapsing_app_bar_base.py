@@ -2,8 +2,9 @@
 from typing import List
 
 from app.common.image_process_utils import DominantColor
+from app.components.label import AvatarLabel
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap, QColor, QPainter, QFont, QFontMetrics, QResizeEvent
+from PyQt5.QtGui import QPixmap, QColor, QPainter, QFont, QFontMetrics, QResizeEvent, QPalette
 from PyQt5.QtWidgets import QWidget, QLabel
 
 from .app_bar_button import AppBarButton
@@ -12,7 +13,7 @@ from .app_bar_button import AppBarButton
 class CollapsingAppBarBase(QWidget):
 
     def __init__(self, title: str, content: str, coverPath: str, buttons: List[AppBarButton],
-                 needWhiteBar=False, parent=None):
+                 coverType='album', parent=None):
         """
         Parameters
         ----------
@@ -28,21 +29,28 @@ class CollapsingAppBarBase(QWidget):
         buttons: List[AppBarButtons]
             工具栏按钮列表，不包括"更多操作"按钮
 
-        needWhiteBar: bool
-            是否需要在封面上绘制白条
+        coverType: str
+            封面类型，可以是 `album`、`playlist` 或者 `singer`
 
         parent:
             父级窗口
         """
+        if coverType not in ['album', 'playlist', 'singer']:
+            raise ValueError("封面类型非法")
+
         super().__init__(parent=parent)
         self.title = title
         self.content = content
         self.coverPath = coverPath
-        self.needWhiteBar = needWhiteBar
-        self.coverLabel = QLabel(self)
+        self.coverType = coverType
+        self.needWhiteBar = coverType == 'playlist'
+
         self.contentLabel = QLabel(content, self)
         self.titleLabel = QLabel(title, self)
         self.dominantColorGetter = DominantColor()
+        self.coverLabel = QLabel(
+            self) if coverType != 'singer' else AvatarLabel(self.coverPath, self)
+
         self.titleFontSize = 43
         self.contentFontSize = 16
         self.__buttons = buttons.copy()         # type:List[AppBarButton]
@@ -57,20 +65,24 @@ class CollapsingAppBarBase(QWidget):
         for button in self.__buttons:
             button.setParent(self)
         self.moreActionsButton.hide()
+        self.moreActionsButton.clicked.connect(self.onMoreActionsButtonClicked)
+
         self.setMinimumHeight(155)
         self.setMaximumHeight(385)
         self.setBackgroundColor()
+        self.setAutoFillBackground(True)
         self.coverLabel.setPixmap(QPixmap(self.coverPath).scaled(
             275, 275, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
         self.coverLabel.setScaledContents(True)
-        self.setObjectName("CollapsingAppBar")
-        self.moreActionsButton.clicked.connect(self.onMoreActionsButtonClicked)
+
         self.resize(1300, 385)
 
     def setBackgroundColor(self):
         """ 设置背景颜色 """
-        bgColor = self.dominantColorGetter.getDominantColor(self.coverPath)
-        self.setStyleSheet("#CollapsingAppBar{background:#"+bgColor+"}")
+        r, g, b = self.dominantColorGetter.getDominantColor(self.coverPath, tuple)
+        palette = QPalette()
+        palette.setColor(self.backgroundRole(), QColor(r, g, b))
+        self.setPalette(palette)
 
     def resizeEvent(self, e: QResizeEvent):
         """ 改变部件位置和大小 """

@@ -60,6 +60,8 @@ class MyMusicInterface(QWidget):
             self.songInfoGetter.songInfo_list)
         self.albumInfoGetter = AlbumInfoGetter(
             self.songInfoGetter.songInfo_list)
+        self.singerInfoGetter = SingerInfoGetter(
+            self.albumInfoGetter.albumInfo_list)
 
         t1 = time()
         self.songListWidget = SongListWidget(
@@ -208,6 +210,13 @@ class MyMusicInterface(QWidget):
             albumCard = self.albumCardInterface.checkedAlbumCard_list[0]
             self.__unCheckAlbumCards()
             albumCard.showAlbumInfoEditDialog()
+
+    def __onAlbumTabShowSingerButtonClicked(self):
+        """ 专辑选择模式栏显示歌手点击信号槽函数 """
+        albumCard = self.albumCardInterface.checkedAlbumCard_list[0]
+        self.__unCheckAlbumCards()
+        self.albumCardInterface.switchToSingerInterfaceSig.emit(
+            albumCard.singerName)
 
     def __showCheckedSongCardProperty(self):
         """ 显示选中的歌曲卡的属性 """
@@ -442,6 +451,10 @@ class MyMusicInterface(QWidget):
         """ 滚动到label指定的位置 """
         self.stackedWidget.currentWidget().scrollToLabel(label)
 
+    def findSingerInfo(self, singerName: str):
+        """ 获取歌手信息 """
+        return self.singerInfoGetter.singerInfos.get(singerName, {})
+
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
         # 将按钮点击信号连接到槽
@@ -532,3 +545,5 @@ class MyMusicInterface(QWidget):
             self.__showAddToMenu)
         self.albumTabSelectionModeBar.deleteButton.clicked.connect(
             self.__showDeleteAlbumsDialog)
+        self.albumTabSelectionModeBar.showSingerButton.clicked.connect(
+            self.__onAlbumTabShowSingerButtonClicked)

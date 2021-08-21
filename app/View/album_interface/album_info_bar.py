@@ -18,7 +18,7 @@ class AlbumInfoBar(CollapsingAppBarBase):
             r"app\resource\images\album_interface\Play.png", "全部播放")
         self.addToButton = AppBarButton(
             r"app\resource\images\album_interface\Add.png", "添加到")
-        self.showSongerButton = AppBarButton(
+        self.showSingerButton = AppBarButton(
             r"app\resource\images\album_interface\Contact.png", "显示歌手")
         self.pinToStartMenuButton = AppBarButton(
             r"app\resource\images\album_interface\Pin.png", '固定到"开始"菜单')
@@ -26,11 +26,12 @@ class AlbumInfoBar(CollapsingAppBarBase):
             r"app\resource\images\album_interface\Edit.png", "编辑信息")
         self.deleteButton = AppBarButton(
             r"app\resource\images\album_interface\Delete.png", "删除")
-        buttons = [self.playAllButton, self.addToButton, self.showSongerButton,
+        buttons = [self.playAllButton, self.addToButton, self.showSingerButton,
                    self.pinToStartMenuButton, self.editInfoButton, self.deleteButton]
         super().__init__(self.albumName,
                          f'{self.singerName}\n{self.year} • {self.genre}',
-                         self.albumCoverPath, buttons, False, parent)
+                         self.albumCoverPath, buttons, 'album', parent)
+
         self.actionNames = ["全部播放", "添加到", "显示歌手", '固定到"开始"菜单', "编辑信息", "删除"]
         self.action_list = [QAction(i, self) for i in self.actionNames]
         self.setAttribute(Qt.WA_StyledBackground)

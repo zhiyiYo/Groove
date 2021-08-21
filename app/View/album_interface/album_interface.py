@@ -25,13 +25,14 @@ class AlbumInterface(ScrollArea):
     addOneSongToPlayingSig = pyqtSignal(dict)            # 添加一首歌到正在播放
     editSongInfoSignal = pyqtSignal(dict, dict)          # 编辑歌曲信息信号
     selectionModeStateChanged = pyqtSignal(bool)         # 进入/退出 选择模式
+    switchToSingerInterfaceSig = pyqtSignal(str)         # 切换到歌手界面
     nextToPlayCheckedCardsSig = pyqtSignal(list)         # 将选中的多首歌添加到下一首播放
     addSongsToPlayingPlaylistSig = pyqtSignal(list)      # 添加歌曲到正在播放
     addSongsToNewCustomPlaylistSig = pyqtSignal(list)    # 添加歌曲到新建播放列表
     addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 添加歌曲到自定义的播放列表中
     editAlbumInfoSignal = pyqtSignal(dict, dict, str)    # 编辑专辑信息
 
-    def __init__(self, albumInfo: dict, parent=None):
+    def __init__(self, albumInfo: dict = None, parent=None):
         """
         Parameters
         ----------
@@ -42,8 +43,7 @@ class AlbumInterface(ScrollArea):
             父级窗口
         """
         super().__init__(parent)
-        self.albumInfo = deepcopy(albumInfo)
-        self.songInfo_list = albumInfo.get("songInfo_list", [])  # type:list
+        self.__getInfo(albumInfo)
         # 创建小部件
         self.scrollWidget = QWidget(self)
         self.vBox = QVBoxLayout(self.scrollWidget)
@@ -67,6 +67,15 @@ class AlbumInterface(ScrollArea):
         # 信号连接到槽
         self.__connectSignalToSlot()
 
+    def __getInfo(self, albumInfo: dict):
+        """ 获取信息 """
+        self.albumInfo = deepcopy(albumInfo) if albumInfo else {}
+        self.songInfo_list = self.albumInfo.get("songInfo_list", [])
+        self.album = self.albumInfo.get('album', '未知专辑')    # type:str
+        self.singer = self.albumInfo.get('singer', '未知歌手')  # type:str
+        self.year = self.albumInfo.get('year', '未知年份')      # type:str
+        self.genre = self.albumInfo.get('genre', '未知流派')    # type:str
+
     def __setQss(self):
         """ 设置层叠样式 """
         self.setObjectName("albumInterface")
@@ -79,9 +88,8 @@ class AlbumInterface(ScrollArea):
         if albumInfo == self.albumInfo:
             return
         self.verticalScrollBar().setValue(0)
-        self.albumInfo = deepcopy(albumInfo) if albumInfo else {}
+        self.__getInfo(albumInfo)
         self.albumInfoBar.updateWindow(self.albumInfo)
-        self.songInfo_list = self.albumInfo.get("songInfo_list", [])
         self.songListWidget.updateAllSongCards(self.songInfo_list)
         self.scrollWidget.resize(
             self.width(), self.songListWidget.height()+430)
@@ -261,6 +269,8 @@ class AlbumInterface(ScrollArea):
             lambda: self.playAlbumSignal.emit(self.songInfo_list))
         self.albumInfoBar.editInfoButton.clicked.connect(
             self.__showAlbumInfoEditDialog)
+        self.albumInfoBar.showSingerButton.clicked.connect(
+            lambda: self.switchToSingerInterfaceSig.emit(self.singer))
         self.albumInfoBar.addToPlayingPlaylistSig.connect(
             lambda: self.addSongsToPlayingPlaylistSig.emit(self.songInfo_list))
         self.albumInfoBar.addToNewCustomPlaylistSig.connect(
@@ -288,6 +298,8 @@ class AlbumInterface(ScrollArea):
             self.addSongsToNewCustomPlaylistSig)
         self.songListWidget.isAllCheckedChanged.connect(
             lambda x: self.selectionModeBar.checkAllButton.setCheckedState(not x))
+        self.songListWidget.switchToSingerInterfaceSig.connect(
+            self.switchToSingerInterfaceSig)
 
         # 选择栏信号连接到槽函数
         self.selectionModeBar.cancelButton.clicked.connect(

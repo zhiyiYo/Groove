@@ -34,6 +34,7 @@ class PlaylistInterface(ScrollArea):
     addSongsToPlayingPlaylistSig = pyqtSignal(list)         # 添加歌曲到正在播放
     addSongsToNewCustomPlaylistSig = pyqtSignal(list)       # 添加歌曲到新建播放列表
     addSongsToCustomPlaylistSig = pyqtSignal(str, list)     # 添加歌曲到自定义的播放列表中
+    switchToSingerInterfaceSig = pyqtSignal(str)            # 切换到歌手界面
     switchToAlbumInterfaceSig = pyqtSignal(str, str)        # 切换到专辑界面
 
     def __init__(self, playlist: dict, parent=None):
@@ -313,6 +314,8 @@ class PlaylistInterface(ScrollArea):
             self.__onSongListWidgetEmptyChanged)
         self.songListWidget.isAllCheckedChanged.connect(
             lambda x: self.selectionModeBar.checkAllButton.setCheckedState(not x))
+        self.songListWidget.switchToSingerInterfaceSig.connect(
+            self.switchToSingerInterfaceSig)
 
         # 选择栏信号连接到槽函数
         self.selectionModeBar.cancelButton.clicked.connect(

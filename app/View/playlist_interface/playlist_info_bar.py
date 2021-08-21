@@ -6,6 +6,7 @@ from app.components.menu import AddToMenu
 from app.components.app_bar import (AppBarButton, CollapsingAppBarBase,
                                     MoreActionsMenu)
 from PyQt5.QtCore import QPoint, Qt, pyqtSignal
+from PyQt5.QtGui import QPalette, QColor
 from PyQt5.QtWidgets import QAction
 
 
@@ -31,7 +32,7 @@ class PlaylistInfoBar(CollapsingAppBarBase):
                    self.pinToStartMenuButton, self.deleteButton]
         super().__init__(self.playlistName,
                          f'{len(self.songInfo_list)} 首歌曲 • {self.duration}',
-                         self.playlistCoverPath, buttons, True, parent)
+                         self.playlistCoverPath, buttons, 'playlist', parent)
         self.actionNames = ["全部播放", "添加到", "重命名", '固定到"开始"菜单', "删除"]
         self.action_list = [QAction(i, self) for i in self.actionNames]
         self.setAttribute(Qt.WA_StyledBackground)
@@ -91,4 +92,6 @@ class PlaylistInfoBar(CollapsingAppBarBase):
         if self.playlistCoverPath != path:
             super().setBackgroundColor()
         else:
-            self.setStyleSheet("background:rgb(24,24,24)")
+            palette = QPalette()
+            palette.setColor(self.backgroundRole(), QColor(24, 24, 24))
+            self.setPalette(palette)

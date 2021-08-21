@@ -30,26 +30,26 @@ def handleSelectionMode(func):
 class PlayingInterface(QWidget):
     """ 正在播放界面 """
 
-    nextSongSig = pyqtSignal()  # 点击下一首或者上一首按钮时由主界面的播放列表决定下一首的Index
-    lastSongSig = pyqtSignal()
-    togglePlayStateSig = pyqtSignal()
-    volumeChanged = pyqtSignal(int)
-    randomPlayAllSig = pyqtSignal()          # 创建新的无序播放列表
-    randomPlayChanged = pyqtSignal(bool)     # 随机播放当前播放列表
-    removeMediaSignal = pyqtSignal(int)
-    muteStateChanged = pyqtSignal(bool)
-    progressSliderMoved = pyqtSignal(int)
-    fullScreenChanged = pyqtSignal(bool)
-    clearPlaylistSig = pyqtSignal()
-    savePlaylistSig = pyqtSignal()
-    loopModeChanged = pyqtSignal(QMediaPlaylist.PlaybackMode)
-    # 点击歌曲卡或者滑动歌曲信息卡滑槽时直接设置新的index，index由自己决定
-    currentIndexChanged = pyqtSignal(int)
-    switchToAlbumInterfaceSig = pyqtSignal(str, str)     # albumName,singerName
+    lastSongSig = pyqtSignal()                           # 上一首
+    nextSongSig = pyqtSignal()                           # 下一首
+    togglePlayStateSig = pyqtSignal()                    # 播放/暂停
+    volumeChanged = pyqtSignal(int)                      # 改变音量
+    randomPlayAllSig = pyqtSignal()                      # 创建新的无序播放列表
+    randomPlayChanged = pyqtSignal(bool)                 # 随机播放当前播放列表
+    removeMediaSignal = pyqtSignal(int)                  # 从播放列表移除歌曲
+    muteStateChanged = pyqtSignal(bool)                  # 静音/取消静音
+    progressSliderMoved = pyqtSignal(int)                # 歌曲进度条滑动
+    fullScreenChanged = pyqtSignal(bool)                 # 进入/退出全屏
+    clearPlaylistSig = pyqtSignal()                      # 清空播放列表
+    savePlaylistSig = pyqtSignal()                       # 保存播放列表
+    currentIndexChanged = pyqtSignal(int)                # 当前歌曲改变
+    selectionModeStateChanged = pyqtSignal(bool)         # 进入/退出选择模式
+    switchToSingerInterfaceSig = pyqtSignal(str)         # 切换到歌手界面
+    switchToAlbumInterfaceSig = pyqtSignal(str, str)     # 切换到专辑界面
     showSmallestPlayInterfaceSig = pyqtSignal()          # 进入最小播放模式
     addSongsToNewCustomPlaylistSig = pyqtSignal(list)    # 将歌曲添加到新的自定义播放列表
     addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 将歌曲添加到已存在的自定义播放列表
-    selectionModeStateChanged = pyqtSignal(bool)
+    loopModeChanged = pyqtSignal(QMediaPlaylist.PlaybackMode)
 
     def __init__(self, playlist: list = None, parent=None):
         super().__init__(parent)
@@ -504,13 +504,13 @@ class PlayingInterface(QWidget):
         self.blurCoverThread.blurDone.connect(self.setBlurPixmap)
         self.randomPlayAllButton.clicked.connect(self.randomPlayAllSig)
 
-        # 更新背景封面和下标
+        # 歌曲信息卡滑动槽信号连接到槽
         self.songInfoCardChute.currentIndexChanged[int].connect(
             self.currentIndexChanged)
         self.songInfoCardChute.currentIndexChanged[str].connect(
             self.startBlurThread)
-
-        # 显示和隐藏播放栏
+        self.songInfoCardChute.switchToAlbumInterfaceSig.connect(
+            self.switchToAlbumInterfaceSig)
         self.songInfoCardChute.showPlayBarSignal.connect(self.showPlayBar)
         self.songInfoCardChute.hidePlayBarSignal.connect(self.hidePlayBar)
 
@@ -559,12 +559,10 @@ class PlayingInterface(QWidget):
             lambda n: self.selectionModeBar.setPartButtonHidden(n > 1))
         self.songListWidget.isAllCheckedChanged.connect(
             lambda x: self.selectionModeBar.checkAllButton.setCheckedState(not x))
-
-        # 切换到专辑界面
-        self.songInfoCardChute.switchToAlbumInterfaceSig.connect(
-            self.switchToAlbumInterfaceSig)
         self.songListWidget.switchToAlbumInterfaceSig.connect(
             self.switchToAlbumInterfaceSig)
+        self.songListWidget.switchToSingerInterfaceSig.connect(
+            self.switchToSingerInterfaceSig)
 
         # 选择栏信号连接到槽函数
         self.selectionModeBar.cancelButton.clicked.connect(

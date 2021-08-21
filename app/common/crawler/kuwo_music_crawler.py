@@ -143,7 +143,7 @@ class KuWoMusicCrawler:
         return song_path
 
     @exceptionHandler
-    def search(self, key_word: str, quality='流畅音质', page_size=10):
+    def searchSong(self, key_word: str, quality='流畅音质', page_size=10):
         """ 搜索音乐
 
         Parameters
@@ -163,6 +163,34 @@ class KuWoMusicCrawler:
             song_info['songPath'] = self.getSongUrl(song_info['rid'], quality)
 
         return song_info_list
+
+    @exceptionHandler
+    def getSingerAvatar(self, singer: str, save_dir: str):
+        """ 获取歌手头像 """
+        singer_ = parse.quote(singer)
+
+        # 配置请求头
+        headers = self.headers.copy()
+        headers["Referer"] = 'http://www.kuwo.cn/search/singers?key='+singer_
+
+        # 请求歌手信息列表
+        url = f'http://www.kuwo.cn/api/www/search/searchArtistBykeyWord?key={singer_}&pn=1&rn=3&reqId=c06e0e50-fe7c-11eb-9998-47e7e13a7206'
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+
+        # 请求歌手头像
+        artist_info = json.loads(response.text)["data"]["artistList"][0]
+        headers = self.headers.copy()
+        headers.pop('Referer')
+        headers.pop('csrf')
+        headers.pop('Host')
+        response = requests.get(artist_info['pic300'], headers=headers)
+        response.raise_for_status()
+
+        # 保存头像
+        os.makedirs(save_dir, exist_ok=True)
+        with open(os.path.join(save_dir, singer+'.jpg'), 'wb') as f:
+            f.write(response.content)
 
 
 if __name__ == '__main__':

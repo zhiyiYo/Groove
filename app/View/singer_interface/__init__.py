@@ -1,0 +1,1 @@
+from .singer_interface import SingerInterface

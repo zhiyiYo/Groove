@@ -22,6 +22,7 @@ class AlbumGroupBox(QScrollArea):
     nextToPlaySig = pyqtSignal(list)
     deleteAlbumSig = pyqtSignal(list)
     addAlbumToPlayingSig = pyqtSignal(list)
+    switchToSingerInterfaceSig = pyqtSignal(str)
     switchToAlbumInterfaceSig = pyqtSignal(str, str)
     addAlbumToNewCustomPlaylistSig = pyqtSignal(list)
     addAlbumToCustomPlaylistSig = pyqtSignal(str, list)
@@ -137,6 +138,8 @@ class AlbumGroupBox(QScrollArea):
         albumCard.nextPlaySignal.connect(self.nextToPlaySig)
         albumCard.deleteCardSig.connect(self.__showDeleteOneCardDialog)
         albumCard.addToPlayingSignal.connect(self.addAlbumToPlayingSig)
+        albumCard.switchToSingerInterfaceSig.connect(
+            self.switchToSingerInterfaceSig)
         albumCard.switchToAlbumInterfaceSig.connect(
             self.switchToAlbumInterfaceSig)
         albumCard.showBlurAlbumBackgroundSig.connect(
@@ -228,7 +231,6 @@ class AlbumGroupBox(QScrollArea):
                 albumInfo_list.remove(albumInfo)
 
         self.updateWindow(albumInfo_list)
-
 
     def deleteSongs(self, songPaths: list):
         """ 删除歌曲 """
