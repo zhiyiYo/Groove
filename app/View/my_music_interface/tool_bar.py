@@ -29,13 +29,13 @@ class ToolBar(QWidget):
         # 创建底部按钮
         self.randomPlayAllButton = ThreeStatePushButton(
             {
-                "normal": r"app\resource\images\ramdom_play_all\无序播放所有.png",
-                "hover": r"app\resource\images\ramdom_play_all\无序播放所有_hover.png",
-                "pressed": r"app\resource\images\ramdom_play_all\无序播放所有_pressed.png",
+                "normal": r"app\resource\images\ramdom_play_all\Shuffle_normal.png",
+                "hover": r"app\resource\images\ramdom_play_all\Shuffle_hover.png",
+                "pressed": r"app\resource\images\ramdom_play_all\Shuffle_pressed.png",
             },
             parent=self,
             text=" 无序播放所有",
-            iconSize=(19, 15),
+            iconSize=(20, 20),
         )
         self.sortModeLabel = QLabel("排序依据:", self)
         self.songSortModeButton = QPushButton("添加日期", self)

@@ -39,7 +39,7 @@ class SelectionModeBar(SelectionModeBarBase):
         self.checkAllButton = CheckAllButton(
             [
                 r"app\resource\images\selection_mode_bar\SelectAll.png",
-                r"app\resource\images\selection_mode_bar\取消全选_20_20.png",
+                r"app\resource\images\selection_mode_bar\CancelSelectAll.png",
             ],
             ["全选", "取消全选"],
             self,

@@ -184,21 +184,21 @@ class SingerInterface(ScrollArea):
             0, self.height()-self.selectionModeBar.height())
 
         # 调整布局
-        if self.width() < 420 and self.columnNum != 1:
+        if self.width() < 480 and self.columnNum != 1:
             self.__setColumnNum(1)
-        elif 420 <= self.width() < 640:
+        elif 480 <= self.width() < 700:
             self.__setColumnNum(2)
-        elif 640 <= self.width() < 860:
+        elif 700 <= self.width() < 920:
             self.__setColumnNum(3)
-        elif 860 <= self.width() < 1080:
+        elif 920 <= self.width() < 1140:
             self.__setColumnNum(4)
-        elif 1080 <= self.width() < 1300:
+        elif 1140 <= self.width() < 1360:
             self.__setColumnNum(5)
-        elif 1300 <= self.width() < 1520:
+        elif 1360 <= self.width() < 1580:
             self.__setColumnNum(6)
-        elif 1520 <= self.width() < 1740:
+        elif 1580 <= self.width() < 1800:
             self.__setColumnNum(7)
-        elif self.width() >= 1740:
+        elif self.width() >= 1800:
             self.__setColumnNum(8)
 
     def __setColumnNum(self, columnNum: int):
@@ -224,6 +224,32 @@ class SingerInterface(ScrollArea):
         with open('app/resource/css/singer_interface.qss', encoding='utf-8') as f:
             self.setStyleSheet(f.read())
         self.inYourMusicLabel.adjustSize()
+
+    def __onSelectionModeBarDeleteButtonClicked(self):
+        """ 选择模式栏删除按钮点击槽函数 """
+        if len(self.checkedAlbumCard_list) > 1:
+            title = "是否确定要删除这些项？"
+            content = "如果你删除这些专辑，它们将不再位于此设备上。"
+        else:
+            title = "是否确定要删除此项？"
+            albumCard = self.checkedAlbumCard_list[0]
+            content = f'如果删除"{albumCard.albumName}"，它将不再位于此设备上。'
+
+        w = MessageDialog(title, content, self.window())
+        w.yesSignal.connect(self.__onDeleteAlbumsYesButtonClicked)
+        w.exec()
+
+    def __onDeleteAlbumsYesButtonClicked(self):
+        """ 专辑界面选择模式栏删除按钮点击槽函数 """
+        albumNames = []
+        songPaths = []
+        for albumCard in self.checkedAlbumCard_list.copy():
+            albumNames.append(albumCard.albumName)
+            songPaths.extend([i["songPath"] for i in albumCard.songInfo_list])
+            albumCard.setChecked(False)
+
+        self.deleteAlbums(albumNames)
+        self.deleteAlbumSig.emit(songPaths)
 
     def __showDeleteOneCardDialog(self, albumName: str):
         """ 显示删除一个专辑卡的对话框 """
@@ -338,8 +364,7 @@ class SingerInterface(ScrollArea):
         self.sender().wait()
         self.sender().deleteLater()
 
-        # 更新所有专辑卡并发送信号
-        self.updateOneAlbumInfo(oldAlbumInfo, newAlbumInfo, coverPath)
+        # 发送信号
         self.editAlbumInfoSignal.emit(oldAlbumInfo, newAlbumInfo, coverPath)
 
     def __getSingerAvatar(self, singer: str):
@@ -360,10 +385,10 @@ class SingerInterface(ScrollArea):
         """ 更新窗口 """
         if self.singerInfo == singerInfo:
             return
+        self.__getSingerAvatar(singerInfo.get('singer', '未知歌手'))
+        self.__updateAllAlbumCards(singerInfo.get('albumInfo_list', []))
         self.__getInfo(singerInfo)
-        self.__getSingerAvatar(self.singer)
         self.singerInfoBar.updateWindow(self.singerInfo)
-        self.__updateAllAlbumCards(self.albumInfo_list)
 
     def showEvent(self, e):
         self.verticalScrollBar().setValue(0)
@@ -389,6 +414,7 @@ class SingerInterface(ScrollArea):
                 QApplication.processEvents()
 
         # 更新部分专辑卡
+        self.albumInfo_list = albumInfo_list
         n = oldCardNum if oldCardNum < newCardNum else newCardNum
         for i in range(n):
             albumInfo = albumInfo_list[i]
@@ -480,6 +506,8 @@ class SingerInterface(ScrollArea):
             self.__onSelectionModeBarPlayButtonClicked)
         self.selectionModeBar.nextToPlayButton.clicked.connect(
             self.__onSelectionModeBarPlayButtonClicked)
+        self.selectionModeBar.deleteButton.clicked.connect(
+            self.__onSelectionModeBarDeleteButtonClicked)
         self.selectionModeBar.addToButton.clicked.connect(self.__showAddToMenu)
 
         # 将歌手头像下载线程信号连接到槽

@@ -58,9 +58,9 @@ class PlaylistInterface(ScrollArea):
         self.noMusicLabel = QLabel("播放列表中没有音乐？", self)
         self.addMusicButton = ThreeStatePushButton(
             {
-                "normal": "app/resource/images/playlist_interface/album_normal.png",
-                "hover": "app/resource/images/playlist_interface/album_hover.png",
-                "pressed": "app/resource/images/playlist_interface/album_pressed.png",
+                "normal": "app/resource/images/playlist_interface/album_normal_.png",
+                "hover": "app/resource/images/playlist_interface/album_hover_.png",
+                "pressed": "app/resource/images/playlist_interface/album_pressed_.png",
             },
             " 从我的集锦中添加歌曲",
             (29, 29),

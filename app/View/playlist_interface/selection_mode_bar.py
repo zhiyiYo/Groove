@@ -27,7 +27,7 @@ class SelectionModeBar(SelectionModeBarBase):
         self.deleteButton = BasicButton(
             r"app\resource\images\selection_mode_bar\Delete.png", "从播放列表中删除", self)
         self.showAlbumButton = BasicButton(
-            r"app\resource\images\selection_mode_bar\显示专辑_20_20.png", "显示专辑", self)
+            r"app\resource\images\selection_mode_bar\ShowAlbum.png", "显示专辑", self)
         self.moveUpButton = BasicButton(
             r"app\resource\images\selection_mode_bar\Up.png", "向上移动", self)
         self.moveDownButton = BasicButton(
@@ -35,11 +35,11 @@ class SelectionModeBar(SelectionModeBarBase):
         self.editInfoButton = BasicButton(
             r"app\resource\images\selection_mode_bar\Edit.png", "编辑信息", self)
         self.propertyButton = BasicButton(
-            r"app\resource\images\selection_mode_bar\属性_20_20.png", "属性", self)
+            r"app\resource\images\selection_mode_bar\Property.png", "属性", self)
         self.checkAllButton = CheckAllButton(
             [
                 r"app\resource\images\selection_mode_bar\SelectAll.png",
-                r"app\resource\images\selection_mode_bar\取消全选_20_20.png",
+                r"app\resource\images\selection_mode_bar\CancelSelectAll.png",
             ],
             ["全选", "取消全选"],
             self,

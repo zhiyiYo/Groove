@@ -23,19 +23,19 @@ class SelectionModeBar(SelectionModeBarBase):
         self.nextToPlayButton = BasicButton(
             r"app\resource\images\selection_mode_bar\下一首播放_20_20.png", "下一首播放", self)
         self.showAlbumButton = BasicButton(
-            r"app\resource\images\selection_mode_bar\显示专辑_20_20.png", "显示专辑", self)
+            r"app\resource\images\selection_mode_bar\ShowAlbum.png", "显示专辑", self)
         self.addToButton = BasicButton(
             r"app\resource\images\selection_mode_bar\Add.png", "添加到", self)
         self.editInfoButton = BasicButton(
             r"app\resource\images\selection_mode_bar\Edit.png", "编辑信息", self)
         self.propertyButton = BasicButton(
-            r"app\resource\images\selection_mode_bar\属性_20_20.png", "属性", self)
+            r"app\resource\images\selection_mode_bar\Property.png", "属性", self)
         self.deleteButton = BasicButton(
             r"app\resource\images\selection_mode_bar\Delete.png", "删除", self)
         self.checkAllButton = CheckAllButton(
             [
                 r"app\resource\images\selection_mode_bar\SelectAll.png",
-                r"app\resource\images\selection_mode_bar\取消全选_20_20.png",
+                r"app\resource\images\selection_mode_bar\CancelSelectAll.png",
             ],
             ["全选", "取消全选"],
             self,

@@ -8,9 +8,10 @@ class SingerInfoGetter:
 
     def __init__(self, albumInfo_list: list) -> None:
         self.albumInfo_list = deepcopy(albumInfo_list)    # type:List[dict]
-        self.singerInfos = self.getSingerInfos(albumInfo_list)
+        self.singerInfos = self.getSingerInfos(self.albumInfo_list)
 
-    def getSingerInfos(self, albumInfo_list: list) -> Dict[str, dict]:
+    @staticmethod
+    def getSingerInfos(albumInfo_list: list) -> Dict[str, dict]:
         """ 获取歌手信息 """
         singerInfos = {}
 
@@ -42,3 +43,8 @@ class SingerInfoGetter:
                 key=lambda i: i.get('year', '0'), reverse=True)
 
         return singerInfos
+
+    def updateSingerInfos(self, albumInfo_list: list):
+        """ 更新歌手信息 """
+        self.albumInfo_list = deepcopy(albumInfo_list)    # type:List[dict]
+        self.singerInfos = self.getSingerInfos(self.albumInfo_list)

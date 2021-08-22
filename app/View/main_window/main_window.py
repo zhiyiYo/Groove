@@ -806,10 +806,9 @@ class MainWindow(FramelessWindow):
         """ 编辑歌曲卡完成信号的槽函数 """
         self.mediaPlaylist.updateOneSongInfo(newSongInfo)
         self.playingInterface.updateOneSongCard(newSongInfo)
-        self.songTabSongListWidget.updateOneSongCard(newSongInfo)
         self.playlistCardInterface.updateOneSongInfo(newSongInfo)
         self.smallestPlayInterface.updateOneSongInfo(newSongInfo)
-        self.albumInterface.updateOneSongCard(oldSongInfo, newSongInfo)
+        self.myMusicInterface.updateOneSongInfo(oldSongInfo, newSongInfo)
         self.albumCardInterface.updateOneSongInfo(oldSongInfo, newSongInfo)
         self.playlistInterface.updateOneSongCard(oldSongInfo, newSongInfo)
 
@@ -826,10 +825,24 @@ class MainWindow(FramelessWindow):
         if self.sender() is self.albumInterface:
             self.albumCardInterface.updateOneAlbumInfo(
                 oldAlbumInfo, newAlbumInfo, coverPath)
+            self.myMusicInterface.singerInfoGetter.updateSingerInfos(
+                self.albumCardInterface.albumInfo_list)
             if not self.albumInterface.songInfo_list:
                 self.titleBar.returnBt.click()
-        elif self.sender() is self.albumCardInterface and oldAlbumInfo == self.albumInterface.albumInfo:
-            self.albumInterface.albumInfoBar.updateWindow(newAlbumInfo)
+
+        elif self.sender() is self.albumCardInterface:
+            self.myMusicInterface.singerInfoGetter.updateSingerInfos(
+                self.albumCardInterface.albumInfo_list)
+            if oldAlbumInfo == self.albumInterface.albumInfo:
+                self.albumInterface.albumInfoBar.updateWindow(newAlbumInfo)
+
+        elif self.sender() is self.singerInterface:
+            self.albumCardInterface.updateOneAlbumInfo(
+                oldAlbumInfo, newAlbumInfo, coverPath)
+            self.myMusicInterface.singerInfoGetter.updateSingerInfos(
+                self.albumCardInterface.albumInfo_list)
+            self.singerInterface.updateWindow(
+                self.myMusicInterface.findSingerInfo(newAlbumInfo['singer']))
 
     def showSmallestPlayInterface(self):
         """ 切换到最小化播放模式 """
@@ -1057,8 +1070,10 @@ class MainWindow(FramelessWindow):
     def deleteSongs(self, songPaths: list):
         """ 删除歌曲 """
         self.playlistCardInterface.deleteSongs(songPaths)
-        if self.sender() is self.searchResultInterface:
+        if self.sender() in [self.searchResultInterface, self.singerInterface]:
             self.myMusicInterface.deleteSongs(songPaths)
+            if self.sender() is self.singerInterface and not self.singerInterface.albumInfo_list:
+                self.titleBar.returnBt.click()
 
         # 歌曲移动到回收站
         for songPath in songPaths:
@@ -1359,7 +1374,9 @@ class MainWindow(FramelessWindow):
 
         # 将歌手界面信号连接到槽函数
         self.singerInterface.playSig.connect(self.playCustomPlaylist)
+        self.singerInterface.deleteAlbumSig.connect(self.deleteSongs)
         self.singerInterface.nextToPlaySig.connect(self.onMultiSongsNextPlay)
+        self.singerInterface.editAlbumInfoSignal.connect(self.onEditAlbumInfo)
         self.singerInterface.switchToAlbumInterfaceSig.connect(
             self.switchToAlbumInterface)
         self.singerInterface.addSongsToPlayingPlaylistSig.connect(

@@ -252,12 +252,16 @@ class MyMusicInterface(QWidget):
     def __deleteSongs(self, songPaths):
         """ 删除指定的歌曲并发送删除信号 """
         self.albumCardInterface.deleteSongs(songPaths)
+        self.singerInfoGetter.updateSingerInfos(
+            self.albumCardInterface.albumInfo_list)
         self.removeSongSig.emit(songPaths)
 
     def deleteSongs(self, songPaths: list):
         """ 删除歌曲 """
         self.songListWidget.removeSongCards(songPaths)
         self.albumCardInterface.deleteSongs(songPaths)
+        self.singerInfoGetter.updateSingerInfos(
+            self.albumCardInterface.albumInfo_list)
 
     def __showDeleteAlbumsDialog(self):
         """ 显示删除专辑对话框 """
@@ -288,6 +292,8 @@ class MyMusicInterface(QWidget):
     def __deleteAlbums(self, songPaths: list):
         """ 删除指定的专辑并发送删除信号 """
         self.songListWidget.removeSongCards(songPaths)
+        self.singerInfoGetter.updateSingerInfos(
+            self.albumCardInterface.albumInfo_list)
         self.removeSongSig.emit(songPaths)
 
     def exitSelectionMode(self):
@@ -338,6 +344,8 @@ class MyMusicInterface(QWidget):
             self.songInfoGetter.songInfo_list)
         self.albumInfoGetter.updateAlbumInfo(
             self.songInfoGetter.songInfo_list)
+        self.singerInfoGetter.updateSingerInfos(
+            self.albumInfoGetter.albumInfo_list)
 
         # 更新界面
         self.songListWidget.updateAllSongCards(
@@ -354,6 +362,8 @@ class MyMusicInterface(QWidget):
             self.songInfoGetter.songInfo_list)
         self.albumInfoGetter.updateAlbumInfo(
             self.songInfoGetter.songInfo_list)
+        self.singerInfoGetter.updateSingerInfos(
+            self.albumInfoGetter.albumInfo_list)
 
         # 更新界面
         self.songListWidget.updateAllSongCards(
@@ -368,14 +378,19 @@ class MyMusicInterface(QWidget):
         """ 更新我的音乐界面 """
         self.songInfoGetter.songInfo_list = songInfo_list
         self.songListWidget.updateAllSongCards(songInfo_list)
-        self.updateAlbumCardViewer(songInfo_list)
-
-    def updateAlbumCardViewer(self, songInfo_list: list):
-        """ 更新专辑卡界面 """
         self.albumCoverGetter.updateAlbumCover(songInfo_list)
         self.albumInfoGetter.updateAlbumInfo(songInfo_list)
         self.albumCardInterface.updateAllAlbumCards(
             self.albumInfoGetter.albumInfo_list)
+        self.singerInfoGetter.updateSingerInfos(
+            self.albumInfoGetter.albumInfo_list)
+
+    def updateOneSongInfo(self, oldSongInfo: dict, newSongInfo: dict):
+        """ 更新一首歌的信息 """
+        self.songListWidget.updateOneSongCard(newSongInfo)
+        self.albumCardInterface.updateOneSongInfo(oldSongInfo, newSongInfo)
+        self.singerInfoGetter.updateSingerInfos(
+            self.albumCardInterface.albumInfo_list)
 
     def __showSortModeMenu(self):
         """ 显示排序方式菜单 """

@@ -126,7 +126,7 @@ class PlaylistCardInterface(ScrollArea):
         playlistCard.showBlurBackgroundSig.connect(self.__showBlurBackground)
         playlistCard.hideBlurBackgroundSig.connect(self.blurBackground.hide)
         playlistCard.renamePlaylistSig.connect(self.__showRenamePlaylistDialog)
-        playlistCard.deleteCardSig.connect(self.__showDeleteCardDialog)
+        playlistCard.deleteCardSig.connect(self.__showDeleteOneCardDialog)
         playlistCard.checkedStateChanged.connect(
             self.__onPlaylistCardCheckedStateChanged)
         playlistCard.switchToPlaylistInterfaceSig.connect(
@@ -377,7 +377,7 @@ class PlaylistCardInterface(ScrollArea):
         self.playlistCardInfo_list[index]["playlist"] = newPlaylist
         self.__sortPlaylist(self.sortMode)
 
-    def __showDeleteCardDialog(self, playlistName: str):
+    def __showDeleteOneCardDialog(self, playlistName: str):
         """ 显示删除播放列表卡对话框 """
         title = "是否确定要删除此项？"
         content = f"""如果删除"{playlistName}"，它将不再位于此设备上。"""
@@ -456,7 +456,7 @@ class PlaylistCardInterface(ScrollArea):
             playlistCard = self.checkedPlaylistCard_list[0]
             # 取消所有歌曲卡的选中
             self.__unCheckPlaylistCards()
-            self.__showDeleteCardDialog(playlistCard.playlistName)
+            self.__showDeleteOneCardDialog(playlistCard.playlistName)
         else:
             title = "确定要删除这些项？"
             content = f"若删除这些播放列表，它们将不再位于此设备上。"

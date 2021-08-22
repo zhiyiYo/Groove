@@ -146,7 +146,7 @@ class RandomPlayButton(QToolButton):
         painter.setRenderHints(QPainter.Antialiasing |
                                QPainter.SmoothPixmapTransform)
         painter.setPen(Qt.NoPen)
-        self.image = QPixmap(r'app\resource\images\play_bar\随机播放_45_45.png')
+        self.image = QPixmap(r'app\resource\images\play_bar\Shuffle.png')
         if self.isSelected:
             bgBrush = QBrush(QColor(0, 0, 0, 106))
             painter.setBrush(bgBrush)

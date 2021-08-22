@@ -137,7 +137,7 @@ class AlbumCard(PerspectiveWidget):
             lambda: self.deleteCardSig.emit(self.albumName))
         menu.editInfoAct.triggered.connect(self.showAlbumInfoEditDialog)
         menu.selectAct.triggered.connect(self.__selectActSlot)
-        menu.showSongerAct.triggered.connect(
+        menu.showSingerAct.triggered.connect(
             lambda: self.switchToSingerInterfaceSig.emit(self.singerName))
 
         menu.addToMenu.playingAct.triggered.connect(
@@ -284,7 +284,7 @@ class AlbumCardContextMenu(DWMMenu):
         self.pinToStartMenuAct = QAction('固定到"开始"菜单', self)
         self.deleteAct = QAction("删除", self)
         self.editInfoAct = QAction("编辑信息", self)
-        self.showSongerAct = QAction("显示歌手", self)
+        self.showSingerAct = QAction("显示歌手", self)
         self.addToMenu = AddToMenu("添加到", self)
 
         # 添加动作到菜单
@@ -293,7 +293,7 @@ class AlbumCardContextMenu(DWMMenu):
         self.addMenu(self.addToMenu)
         self.addActions(
             [
-                self.showSongerAct,
+                self.showSingerAct,
                 self.pinToStartMenuAct,
                 self.editInfoAct,
                 self.deleteAct,

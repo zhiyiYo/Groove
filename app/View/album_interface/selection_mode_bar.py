@@ -27,13 +27,13 @@ class SelectionModeBar(SelectionModeBarBase):
         self.editInfoButton = BasicButton(
             r"app\resource\images\selection_mode_bar\Edit.png", "编辑信息", self)
         self.propertyButton = BasicButton(
-            r"app\resource\images\selection_mode_bar\属性_20_20.png", "属性", self)
+            r"app\resource\images\selection_mode_bar\Property.png", "属性", self)
         self.deleteButton = BasicButton(
             r"app\resource\images\selection_mode_bar\Delete.png", "删除", self)
         self.checkAllButton = CheckAllButton(
             [
                 r"app\resource\images\selection_mode_bar\SelectAll.png",
-                r"app\resource\images\selection_mode_bar\取消全选_20_20.png",
+                r"app\resource\images\selection_mode_bar\CancelSelectAll.png",
             ],
             ["全选", "取消全选"],
             self,
