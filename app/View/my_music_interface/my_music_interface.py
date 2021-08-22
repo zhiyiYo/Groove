@@ -2,9 +2,11 @@
 from time import time
 
 from app.common.meta_data_getter import *
+from app.common.thread.get_info_thread import GetInfoThread
 from app.components.dialog_box.message_dialog import MessageDialog
 from app.components.menu import AddToMenu
 from app.components.pop_up_ani_stacked_widget import PopUpAniStackedWidget
+from app.components.state_tooltip import StateTooltip
 from app.View.my_music_interface.album_tab_interface import AlbumCardInterface
 from app.View.my_music_interface.album_tab_interface.selection_mode_bar import \
     SelectionModeBar as AlbumTabSelectionBar
@@ -338,20 +340,30 @@ class MyMusicInterface(QWidget):
         """ 重新扫描指定的歌曲文件夹列表中的歌曲信息并更新标签界面 """
         self.folderPaths = folderPaths
 
-        # 重新扫描歌曲信息和专辑信息
-        self.songInfoGetter.scanTargetFolderSongInfo(folderPaths)
-        self.albumCoverGetter.updateAlbumCover(
-            self.songInfoGetter.songInfo_list)
-        self.albumInfoGetter.updateAlbumInfo(
-            self.songInfoGetter.songInfo_list)
-        self.singerInfoGetter.updateSingerInfos(
-            self.albumInfoGetter.albumInfo_list)
+        # 创建线程来扫描信息
+        thread = GetInfoThread(folderPaths, self)
+        thread.scanFinished.connect(self.__onScanFinished)
+
+        # 创建状态提示条
+        if folderPaths:
+            w = StateTooltip('正在扫描歌曲信息', '请耐心等待哦~~', self.window())
+            thread.scanFinished.connect(lambda: w.setState(True))
+            w.move(self.window().width() - w.width() - 30, 63)
+            w.show()
+
+        thread.start()
+
+    def __onScanFinished(self, songInfo_list: list, albumInfo_list: list, singerInfos: dict):
+        """ 扫描线程完成 """
+        # 删除线程
+        self.sender().quit()
+        self.sender().wait()
+        self.sender().deleteLater()
 
         # 更新界面
-        self.songListWidget.updateAllSongCards(
-            self.songInfoGetter.songInfo_list)
-        self.albumCardInterface.updateAllAlbumCards(
-            self.albumInfoGetter.albumInfo_list)
+        self.songListWidget.updateAllSongCards(songInfo_list)
+        self.albumCardInterface.updateAllAlbumCards(albumInfo_list)
+        self.singerInfoGetter.singerInfos = singerInfos
 
     def rescanSongInfo(self):
         """ 重新当前的歌曲文件夹的歌曲信息 """
