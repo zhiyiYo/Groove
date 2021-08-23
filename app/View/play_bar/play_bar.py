@@ -1,15 +1,14 @@
 # coding:utf-8
-from PyQt5.QtCore import QPoint, Qt, pyqtSignal
-from PyQt5.QtGui import QColor, QPalette
-from PyQt5.QtWidgets import QWidget
-from PyQt5.QtMultimedia import QMediaPlaylist
-
 from app.common.image_process_utils import DominantColor
 from app.View.play_bar.central_button_group import CentralButtonGroup
 from app.View.play_bar.more_actions_menu import MoreActionsMenu
 from app.View.play_bar.play_progress_bar import PlayProgressBar
 from app.View.play_bar.right_widget_group import RightWidgetGroup
 from app.View.play_bar.song_info_card import SongInfoCard
+from PyQt5.QtCore import QPoint, Qt, pyqtSignal, QPropertyAnimation, QEasingCurve, pyqtProperty
+from PyQt5.QtGui import QColor, QPalette
+from PyQt5.QtMultimedia import QMediaPlaylist
+from PyQt5.QtWidgets import QWidget
 
 
 class PlayBar(QWidget):
@@ -30,10 +29,11 @@ class PlayBar(QWidget):
     showSmallestPlayInterfaceSig = pyqtSignal()
     loopModeChanged = pyqtSignal(QMediaPlaylist.PlaybackMode)
 
-    def __init__(self, songInfo: dict, backgroundColor: list, parent=None):
+    def __init__(self, songInfo: dict, color: QColor, parent=None):
         super().__init__(parent)
         self.originWidth = 1280
-        self.backgroundColor = backgroundColor
+        self.__color = color
+        self.colorAni = QPropertyAnimation(self, b'color', self)
         self.dominantColor = DominantColor()
         # 记录移动次数
         self.moveTime = 0
@@ -55,7 +55,7 @@ class PlayBar(QWidget):
         self.setFixedHeight(115)
         # 设置背景色
         self.setAutoFillBackground(True)
-        self.setBackgroundColor(self.backgroundColor)
+        self.setColor(self.__color)
         # 引用小部件
         self.referenceWidgets()
         # 连接槽函数
@@ -73,18 +73,6 @@ class PlayBar(QWidget):
             int(self.width() / 2 - self.centralButtonGroup.width() / 2), 0)
         self.rightWidgetGroup.move(
             self.width() - self.rightWidgetGroup.width(), 0)
-
-    def updateDominantColor(self, albumPath: str):
-        """ 更新主色调 """
-        r, g, b = self.dominantColor.getDominantColor(albumPath, tuple)
-        self.setBackgroundColor([r, g, b])
-
-    def setBackgroundColor(self, backgroundColor: list):
-        """ 设置背景颜色 """
-        self.backgroundColor = backgroundColor
-        palette = QPalette()
-        palette.setColor(self.backgroundRole(), QColor(*backgroundColor))
-        self.setPalette(palette)
 
     def __setQss(self):
         """ 设置层叠样式 """
@@ -198,3 +186,24 @@ class PlayBar(QWidget):
             self.showPlaylistSig)
         self.moreActionsMenu.clearPlayListAct.triggered.connect(
             self.clearPlaylistSig)
+
+    def updateDominantColor(self, albumPath: str):
+        """ 更新主色调 """
+        r, g, b = self.dominantColor.getDominantColor(albumPath, tuple)
+        self.colorAni.setStartValue(self.getColor())
+        self.colorAni.setEndValue(QColor(r, g, b))
+        self.colorAni.setEasingCurve(QEasingCurve.OutQuart)
+        self.colorAni.setDuration(100)
+        self.colorAni.start()
+
+    def setColor(self, color: QColor):
+        """ 设置背景颜色 """
+        self.__color = color
+        palette = QPalette()
+        palette.setColor(self.backgroundRole(), color)
+        self.setPalette(palette)
+
+    def getColor(self):
+        return self.__color
+
+    color = pyqtProperty(QColor, getColor, setColor)

@@ -36,3 +36,8 @@ app/download
 # 忽略测试文件
 test.py
 demo.py
+
+# 忽略打包文件夹
+dist
+build
+*.spec

@@ -30,7 +30,7 @@ from app.View.setting_interface import SettingInterface
 from app.View.singer_interface import SingerInterface
 from app.View.smallest_play_interface import SmallestPlayInterface
 from PyQt5.QtCore import QEasingCurve, QEvent, QSize, Qt, QTimer
-from PyQt5.QtGui import QCloseEvent, QIcon
+from PyQt5.QtGui import QCloseEvent, QIcon, QColor
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist
 from PyQt5.QtWidgets import QAction, QApplication, QWidget
 from PyQt5.QtWinExtras import QtWin
@@ -88,9 +88,9 @@ class MainWindow(FramelessWindow):
         self.thumbnailToolBar.setWindow(self.windowHandle())
 
         # 创建播放栏
-        bgColor = self.settingInterface.getConfig(
-            'playBar-background-color', [34, 92, 127])
-        self.playBar = PlayBar(self.mediaPlaylist.lastSongInfo, bgColor, self)
+        color = self.settingInterface.getConfig(
+            'playBar-color', [34, 92, 127])
+        self.playBar = PlayBar(self.mediaPlaylist.lastSongInfo, QColor(*color), self)
 
         # 创建正在播放界面
         self.playingInterface = PlayingInterface(
@@ -274,7 +274,9 @@ class MainWindow(FramelessWindow):
         """ 关闭窗口前更新json文件 """
         config = {}
         config["volume"] = self.playBar.volumeSlider.value()
-        config["playBar-background-color"] = self.playBar.backgroundColor
+        config["playBar-color"] = list(
+            self.playBar.getColor().getRgb()[:3])
+
         self.settingInterface.updateConfig(config)
         self.mediaPlaylist.save()
         e.accept()

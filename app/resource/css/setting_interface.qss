@@ -124,15 +124,16 @@ QSlider:horizontal {
 }
 
 QSlider::groove:horizontal {
-    width: 188px;
     border: none;
-    background-color: transparent;
+    height: 4px;
 }
 
 QSlider::handle:horizontal {
     width: 26px;
     height: 26px;
     border-radius: 13px;
+    margin-top: -11px;
+    margin-bottom: -11px;
     background-color: rgb(0, 153, 188);
 }
 
@@ -148,15 +149,14 @@ QSlider::handle:horizontal:pressed {
 QSlider::sub-page:horizontal {
     /*已划过部分的颜色*/
     background: rgb(0, 153, 187);
-    margin-top: 11px;
-    margin-bottom: 11px;
+    height: 4px;
+    border-radius: 2px;
 }
 
 QSlider::add-page:horizontal {
     background-color: rgb(153, 153, 153);
-    margin-top: 11px;
-    margin-bottom: 11px;
-    border-radius: 15px;
+    height: 4px;
+    border-radius: 2px;
 }
 
 /* 按钮 */
