@@ -1,8 +1,7 @@
 # coding: utf-8
-from PyQt5.QtCore import Qt, QTimer, pyqtProperty, pyqtSignal
-from PyQt5.QtGui import QColor, QPainter, QMouseEvent
-from PyQt5.QtWidgets import (QApplication, QHBoxLayout, QLabel, QToolButton,
-                             QWidget)
+from PyQt5.QtCore import QFile, Qt, QTimer, pyqtProperty, pyqtSignal
+from PyQt5.QtGui import QColor, QPainter
+from PyQt5.QtWidgets import QHBoxLayout, QLabel, QToolButton, QWidget
 
 
 class Indicator(QToolButton):
@@ -132,10 +131,16 @@ class SwitchButton(QWidget):
         self.setAttribute(Qt.WA_StyledBackground)
         self.hBox.setContentsMargins(0, 0, 0, 0)
         # 设置默认样式
-        with open('app/resource/css/switch_button.qss', encoding='utf-8') as f:
-            self.setStyleSheet(f.read())
+        self.__setQss()
         # 信号连接到槽
         self.indicator.checkedChanged.connect(self.checkedChanged)
+
+    def __setQss(self):
+        """ 设置层叠样式 """
+        f = QFile(":/qss/switch_button.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
 
     def isChecked(self):
         return self.indicator.isChecked()

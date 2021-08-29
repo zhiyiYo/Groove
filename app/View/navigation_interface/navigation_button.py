@@ -4,7 +4,7 @@ from PyQt5.QtCore import QPoint, Qt
 from PyQt5.QtGui import QBrush, QColor, QPainter, QPen, QPolygon, QPixmap, QFont
 from PyQt5.QtWidgets import QPushButton
 
-from app.common.get_pressed_pos import getPressedPos
+from common.get_pressed_pos import getPressedPos
 
 
 class NavigationButton(QPushButton):
@@ -61,9 +61,9 @@ class NavigationButton(QPushButton):
 
     def mouseReleaseEvent(self, e):
         """ 鼠标松开时更新样式 """
-        super().mouseReleaseEvent(e)
         self.pressedPos = None
         self.update()
+        super().mouseReleaseEvent(e)
 
     def paintEvent(self, e):
         """ 选中时在左边绘制选中标志 """
@@ -141,9 +141,7 @@ class ToolButton(NavigationButton):
             )
             self.drawIcon(painter, image, 0, 0, 2, 2)
 
-    def drawIcon(
-        self, painter, image: QPixmap, shearX: float = 0, shearY: float = 0, x=0, y=0
-    ):
+    def drawIcon(self, painter, image: QPixmap, shearX: float = 0, shearY: float = 0, x=0, y=0):
         """ 绘制图标 """
         painter.shear(shearX, shearY)
         painter.drawPixmap(x, y, image.width(), image.height(), image)
@@ -286,7 +284,7 @@ class CreatePlaylistButton(NavigationButton):
     """ 导航栏创建播放列表按钮 """
 
     def __init__(self, parent):
-        self.iconPath = r"app\resource\images\navigation_interface\黑色新建播放列表.png"
+        self.iconPath = ":/images/navigation_interface/Add.png"
         super().__init__(self.iconPath, parent=parent)
 
     def paintEvent(self, e):

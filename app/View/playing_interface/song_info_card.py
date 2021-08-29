@@ -1,11 +1,9 @@
 # coding:utf-8
-
-from PyQt5.QtCore import QEvent, Qt, QTimer, pyqtSignal
+from common.os_utils import getCoverPath
+from components.label import ClickableLabel
+from PyQt5.QtCore import QEvent, QFile, Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QFont, QFontMetrics, QPixmap
 from PyQt5.QtWidgets import QApplication, QLabel, QWidget
-
-from app.common.os_utils import getCoverPath
-from app.components.label import ClickableLabel
 
 
 class SongInfoCard(QWidget):
@@ -92,10 +90,10 @@ class SongInfoCard(QWidget):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open(
-            r"app\resource\css\playing_interface_song_info_card.qss", encoding="utf-8"
-        ) as f:
-            self.setStyleSheet(f.read())
+        f = QFile(":/qss/playing_interface_song_info_card.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
 
     def eventFilter(self, obj, e: QEvent):
         """ 重写事件过滤器 """

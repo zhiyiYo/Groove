@@ -1,21 +1,21 @@
 # coding:utf-8
 from copy import deepcopy
-from typing import List, Dict
+from typing import Dict, List
 
-from app.common.os_utils import moveToTrash
-from app.components.buttons.three_state_button import ThreeStatePushButton
-from app.components.dialog_box.message_dialog import MessageDialog
-from app.components.dialog_box.rename_playlist_dialog import \
-    RenamePlaylistDialog
-from app.components.layout.h_box_layout import HBoxLayout
-from app.components.menu import AddToMenu, DWMMenu
-from app.components.playlist_card import BlurBackground
-from app.components.playlist_card import PlaylistCard as PlaylistCardBase
-from PyQt5.QtCore import (QEasingCurve, QParallelAnimationGroup, QPoint,
+from common.os_utils import moveToTrash
+from components.buttons.three_state_button import ThreeStatePushButton
+from components.dialog_box.message_dialog import MessageDialog
+from components.dialog_box.rename_playlist_dialog import RenamePlaylistDialog
+from components.layout.h_box_layout import HBoxLayout
+from components.menu import AddToMenu, DWMMenu
+from components.playlist_card import BlurBackground
+from components.playlist_card import PlaylistCard as PlaylistCardBase
+from PyQt5.QtCore import (QEasingCurve, QFile, QParallelAnimationGroup, QPoint,
                           QPropertyAnimation, QSize, Qt, pyqtSignal)
 from PyQt5.QtGui import QContextMenuEvent, QIcon
 from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsOpacityEffect,
-                             QLabel, QScrollArea, QToolButton, QWidget, QPushButton)
+                             QPushButton, QScrollArea, QToolButton,
+                             QWidget)
 
 
 class PlaylistGroupBox(QScrollArea):
@@ -76,9 +76,9 @@ class PlaylistGroupBox(QScrollArea):
         self.scrollLeftButton.setIconSize(QSize(15, 15))
         self.scrollRightButton.setIconSize(QSize(15, 15))
         self.scrollLeftButton.setIcon(
-            QIcon('app/resource/images/search_result_interface/ChevronLeft.png'))
+            QIcon(':/images/search_result_interface/ChevronLeft.png'))
         self.scrollRightButton.setIcon(
-            QIcon('app/resource/images/search_result_interface/ChevronRight.png'))
+            QIcon(':/images/search_result_interface/ChevronRight.png'))
         self.scrollLeftButton.setGraphicsEffect(self.leftOpacityEffect)
         self.scrollRightButton.setGraphicsEffect(self.rightOpacityEffect)
         self.scrollLeftButton.hide()
@@ -96,8 +96,12 @@ class PlaylistGroupBox(QScrollArea):
         self.leftMask.setObjectName('leftMask')
         self.rightMask.setObjectName('rightMask')
         self.titleButton.setObjectName('titleButton')
-        with open('app/resource/css/playlist_group_box.qss', encoding='utf-8') as f:
-            self.setStyleSheet(f.read())
+
+        f = QFile(":/qss/playlist_group_box.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
+
         self.titleButton.adjustSize()
 
     def resizeEvent(self, e):
@@ -185,7 +189,7 @@ class PlaylistGroupBox(QScrollArea):
 
         # 删除播放列表卡和播放列表文件
         playlistCard.deleteLater()
-        moveToTrash(f'app/Playlists/{playlistName}.json')
+        moveToTrash(f'Playlists/{playlistName}.json')
 
     def deleteSongs(self, songPaths: list):
         """ 从各个播放列表中删除歌曲 """
@@ -311,7 +315,6 @@ class PlaylistGroupBox(QScrollArea):
             QApplication.processEvents()
 
         self.setStyle(QApplication.style())
-
 
 
 class PlaylistCard(PlaylistCardBase):

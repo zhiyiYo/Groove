@@ -2,15 +2,15 @@
 import os
 from json import dump, load
 
-from app.common.os_utils import checkDirExists
-from app.common.thread.get_meta_data_thread import GetMetaDataThread
-from app.components.buttons.switch_button import SwitchButton
-from app.components.dialog_box.folder_list_dialog import FolderListDialog
-from app.components.label import ClickableLabel
-from app.components.scroll_area import ScrollArea
-from app.components.slider import Slider
-from app.components.state_tooltip import StateTooltip
-from PyQt5.QtCore import QEvent, Qt, QUrl, pyqtSignal
+from common.os_utils import checkDirExists
+from common.thread.get_meta_data_thread import GetMetaDataThread
+from components.buttons.switch_button import SwitchButton
+from components.dialog_box.folder_list_dialog import FolderListDialog
+from components.label import ClickableLabel
+from components.scroll_area import ScrollArea
+from components.slider import Slider
+from components.state_tooltip import StateTooltip
+from PyQt5.QtCore import QEvent, QFile, Qt, QUrl, pyqtSignal
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import (QFileDialog, QLabel, QLineEdit, QPushButton,
                              QRadioButton, QWidget)
@@ -188,8 +188,10 @@ class SettingInterface(ScrollArea):
         self.onlinePlayQualityLabel.setObjectName('titleLabel')
         self.musicInThisPCLabel.setObjectName("titleLabel")
         self.selectMusicFolderLabel.setObjectName("clickableLabel")
-        with open("app/resource/css/setting_interface.qss", encoding="utf-8") as f:
-            self.setStyleSheet(f.read())
+        f = QFile(":/qss/setting_interface.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
 
     def resizeEvent(self, e):
         self.appLabel.move(self.width() - 400, self.appLabel.y())
@@ -226,11 +228,11 @@ class SettingInterface(ScrollArea):
         # 发送更新歌曲文件夹列表的信号
         self.selectedMusicFoldersChanged.emit(selectedFolders)
 
-    @ checkDirExists('app/config')
+    @ checkDirExists('config')
     def __readConfig(self):
         """ 读入配置文件数据 """
         try:
-            with open("app/config/config.json", encoding="utf-8") as f:
+            with open("config/config.json", encoding="utf-8") as f:
                 self.config = load(f)  # type:dict
         except:
             self.config = {"selected-folders": []}
@@ -257,7 +259,7 @@ class SettingInterface(ScrollArea):
         """
         return self.config.get(configName, default)
 
-    @ checkDirExists('app/config')
+    @ checkDirExists('config')
     def updateConfig(self, config: dict):
         """ 更新并保存配置数据
 
@@ -267,7 +269,7 @@ class SettingInterface(ScrollArea):
             配置信息字典
         """
         self.config.update(config)
-        with open("app/config/config.json", "w", encoding="utf-8") as f:
+        with open("config/config.json", "w", encoding="utf-8") as f:
             dump(self.config, f)
 
     def __setCheckedRadioButton(self):

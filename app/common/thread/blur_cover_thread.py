@@ -3,7 +3,7 @@
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtGui import QPixmap
 
-from app.common.image_process_utils import getBlurPixmap
+from common.image_process_utils import getBlurPixmap
 
 
 class BlurCoverThread(QThread):
@@ -30,7 +30,7 @@ class BlurCoverThread(QThread):
             self.__blurAlbumCover()
             self.blurDone.emit(self.blurPixmap)
 
-    def setTargetCover(self, albumCoverPath: str, blurRadius = 6, bluredPicMaxSize: tuple = (450, 450)):
+    def setTargetCover(self, albumCoverPath: str, blurRadius=6, bluredPicMaxSize: tuple = (450, 450)):
         """ 设置磨砂的目标图片
 
         Parameters

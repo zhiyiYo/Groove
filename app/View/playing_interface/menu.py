@@ -1,9 +1,9 @@
 # coding:utf-8
 import os
 
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import QFile, Qt, pyqtSignal
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QMenu, QAction
+from PyQt5.QtWidgets import QAction, QMenu
 
 
 class Menu(QMenu):
@@ -43,8 +43,10 @@ class Menu(QMenu):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open(r'app\resource\css\menu.qss', encoding='utf-8') as f:
-            self.setStyleSheet(f.read())
+        f = QFile(":/qss/menu.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
 
 
 class AddToMenu(QMenu):
@@ -56,12 +58,12 @@ class AddToMenu(QMenu):
         super().__init__(string, parent)
         # 创建动作
         self.playingAct = QAction(
-            QIcon(r'app\resource\images\playing_interface\正在播放_white_16_16.png'), '正在播放', self)
+            QIcon(':/images/playing_interface/Playing_white.png'), '正在播放', self)
         self.newPlaylistAct = QAction(
-            QIcon(r'app\resource\images\playing_interface\新的播放列表_20_20.png'), '新的播放列表', self)
+            QIcon(':/images/playing_interface/Add_20_20.png'), '新的播放列表', self)
         playlists = self.__getPlaylistNames()
         self.playlistAct_list = [QAction(QIcon(
-            "app/resource/images/playing_interface/播放列表_white_20_20.png"), i, self) for i in playlists]
+            ":/images/playing_interface/Album.png"), i, self) for i in playlists]
         self.addAction(self.playingAct)
         self.addSeparator()
         self.addActions([self.newPlaylistAct]+self.playlistAct_list)
@@ -81,9 +83,9 @@ class AddToMenu(QMenu):
     def __getPlaylistNames(self):
         """ 扫描播放列表文件夹下的播放列表名字 """
         # 扫描播放列表文件夹下的播放列表名字
-        os.makedirs('app/Playlists', exist_ok=True)
+        os.makedirs('Playlists', exist_ok=True)
         playlistName_list = [
-            i[:-5] for i in os.listdir("app/Playlists") if i.endswith(".json")]
+            i[:-5] for i in os.listdir("Playlists") if i.endswith(".json")]
         return playlistName_list
 
     def actionCount(self):
@@ -93,5 +95,7 @@ class AddToMenu(QMenu):
     def __setQss(self):
         """ 设置层叠样式 """
         self.setObjectName('blackAddToMenu')
-        with open(r'app\resource\css\menu.qss', encoding='utf-8') as f:
-            self.setStyleSheet(f.read())
+        f = QFile(":/qss/menu.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()

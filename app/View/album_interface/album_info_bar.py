@@ -1,7 +1,7 @@
 # coding:utf-8
-from app.components.menu import AddToMenu
-from app.components.app_bar import (AppBarButton, CollapsingAppBarBase,
-                                    MoreActionsMenu)
+from components.menu import AddToMenu
+from components.app_bar import (AppBarButton, CollapsingAppBarBase,
+                                MoreActionsMenu)
 from PyQt5.QtCore import QPoint, Qt, pyqtSignal
 from PyQt5.QtWidgets import QAction
 
@@ -15,17 +15,17 @@ class AlbumInfoBar(CollapsingAppBarBase):
     def __init__(self, albumInfo: dict, parent=None):
         self.setAlbumInfo(albumInfo)
         self.playAllButton = AppBarButton(
-            r"app\resource\images\album_interface\Play.png", "全部播放")
+            ":/images/album_interface/Play.png", "全部播放")
         self.addToButton = AppBarButton(
-            r"app\resource\images\album_interface\Add.png", "添加到")
+            ":/images/album_interface/Add.png", "添加到")
         self.showSingerButton = AppBarButton(
-            r"app\resource\images\album_interface\Contact.png", "显示歌手")
+            ":/images/album_interface/Contact.png", "显示歌手")
         self.pinToStartMenuButton = AppBarButton(
-            r"app\resource\images\album_interface\Pin.png", '固定到"开始"菜单')
+            ":/images/album_interface/Pin.png", '固定到"开始"菜单')
         self.editInfoButton = AppBarButton(
-            r"app\resource\images\album_interface\Edit.png", "编辑信息")
+            ":/images/album_interface/Edit.png", "编辑信息")
         self.deleteButton = AppBarButton(
-            r"app\resource\images\album_interface\Delete.png", "删除")
+            ":/images/album_interface/Delete.png", "删除")
         buttons = [self.playAllButton, self.addToButton, self.showSingerButton,
                    self.pinToStartMenuButton, self.editInfoButton, self.deleteButton]
         super().__init__(self.albumName,
@@ -45,7 +45,7 @@ class AlbumInfoBar(CollapsingAppBarBase):
         self.albumName = albumInfo.get("album", "未知专辑")  # type:str
         self.singerName = albumInfo.get("singer", "未知歌手")  # type:str
         self.albumCoverPath = albumInfo.get(
-            "coverPath", "app/resource/images/default_covers/默认专辑封面_200_200.png")  # type:str
+            "coverPath", ":/images/default_covers/album_200_200.png")  # type:str
 
     def onMoreActionsButtonClicked(self):
         """ 显示更多操作菜单 """

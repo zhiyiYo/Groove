@@ -3,10 +3,10 @@
 from typing import List
 
 import pinyin
-from app.components.label import ClickableLabel
-from app.components.scroll_area import ScrollArea
-from app.components.layout.v_box_layout import VBoxLayout
-from PyQt5.QtCore import Qt, pyqtSignal
+from components.label import ClickableLabel
+from components.scroll_area import ScrollArea
+from components.layout.v_box_layout import VBoxLayout
+from PyQt5.QtCore import Qt, pyqtSignal, QFile
 from PyQt5.QtWidgets import QGridLayout, QStackedWidget, QWidget
 
 
@@ -118,8 +118,10 @@ class LabelNavigationInterface(QWidget):
     def __setQss(self):
         """ 设置层叠样式 """
         self.scrollWidget.setObjectName("scrollWidget")
-        with open("app/resource/css/label_navigation_interface.qss", encoding="utf-8") as f:
-            self.setStyleSheet(f.read())
+        f = QFile(":/qss/label_navigation_interface.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
 
     def __connectLabelSigToSlot(self):
         """ 标签点击信号的槽函数 """

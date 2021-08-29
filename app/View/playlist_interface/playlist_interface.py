@@ -1,14 +1,13 @@
 # coding:utf-8
 from copy import deepcopy
 
-from app.components.dialog_box.message_dialog import MessageDialog
-from app.components.buttons.three_state_button import ThreeStatePushButton
-from app.components.dialog_box.rename_playlist_dialog import \
-    RenamePlaylistDialog
-from app.components.menu import AddToMenu
-from app.components.scroll_area import ScrollArea
-from PyQt5.QtCore import QPoint, Qt, pyqtSignal
-from PyQt5.QtWidgets import QVBoxLayout, QWidget, QLabel
+from components.buttons.three_state_button import ThreeStatePushButton
+from components.dialog_box.message_dialog import MessageDialog
+from components.dialog_box.rename_playlist_dialog import RenamePlaylistDialog
+from components.menu import AddToMenu
+from components.scroll_area import ScrollArea
+from PyQt5.QtCore import QFile, QPoint, Qt, pyqtSignal
+from PyQt5.QtWidgets import QLabel, QVBoxLayout, QWidget
 
 from .playlist_info_bar import PlaylistInfoBar
 from .selection_mode_bar import SelectionModeBar
@@ -58,9 +57,9 @@ class PlaylistInterface(ScrollArea):
         self.noMusicLabel = QLabel("播放列表中没有音乐？", self)
         self.addMusicButton = ThreeStatePushButton(
             {
-                "normal": "app/resource/images/playlist_interface/album_normal_.png",
-                "hover": "app/resource/images/playlist_interface/album_hover_.png",
-                "pressed": "app/resource/images/playlist_interface/album_pressed_.png",
+                "normal": ":/images/playlist_interface/album_normal.png",
+                "hover": ":/images/playlist_interface/album_hover.png",
+                "pressed": ":/images/playlist_interface/album_pressed.png",
             },
             " 从我的集锦中添加歌曲",
             (29, 29),
@@ -137,8 +136,10 @@ class PlaylistInterface(ScrollArea):
         """ 设置层叠样式 """
         self.setObjectName("playlistInterface")
         self.scrollWidget.setObjectName("scrollWidget")
-        with open('app/resource/css/playlist_interface.qss', encoding="utf-8") as f:
-            self.setStyleSheet(f.read())
+        f = QFile(":/qss/playlist_interface.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
 
     def __getPlaylistInfo(self, playlist: dict):
         """ 获取播放列表信息 """

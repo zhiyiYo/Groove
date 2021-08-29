@@ -1,9 +1,9 @@
 # coding:utf-8
 from typing import List
 
-from app.components.dialog_box.song_property_dialog import SongPropertyDialog
-from app.components.list_widget import ListWidget
-from PyQt5.QtCore import QSize, Qt, pyqtSignal
+from components.dialog_box.song_property_dialog import SongPropertyDialog
+from components.list_widget import ListWidget
+from PyQt5.QtCore import QFile, QSize, Qt, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent
 from PyQt5.QtWidgets import QApplication, QListWidgetItem
 
@@ -57,8 +57,10 @@ class SongListWidget(ListWidget):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open("app/resource/css/playing_interface_song_list_widget.qss", encoding="utf-8") as f:
-            self.setStyleSheet(f.read())
+        f = QFile(":/qss/playing_interface_song_list_widget.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
 
     def resizeEvent(self, e):
         """ 更新item的尺寸 """

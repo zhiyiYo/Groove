@@ -3,21 +3,19 @@ import os
 from copy import deepcopy
 from typing import Dict, List
 
-from app.common.crawler.kuwo_music_crawler import KuWoMusicCrawler
-from app.common.thread.save_album_info_thread import SaveAlbumInfoThread
-from app.common.thread.get_singer_avatar_thread import GetSingerAvatarThread
-from app.components.album_card import AlbumBlurBackground
-from app.components.album_card import AlbumCard as AlbumCardBase
-from app.components.buttons.three_state_button import ThreeStateButton
-from app.components.dialog_box.album_info_edit_dialog import \
-    AlbumInfoEditDialog
-from app.components.dialog_box.message_dialog import MessageDialog
-from app.components.layout.grid_layout import GridLayout
-from app.components.menu import AddToMenu, DWMMenu
-from app.components.scroll_area import ScrollArea
-from PyQt5.QtCore import (QParallelAnimationGroup, QPoint, QPropertyAnimation,
-                          Qt, pyqtSignal)
-from PyQt5.QtGui import QPixmap
+from common.crawler.kuwo_music_crawler import KuWoMusicCrawler
+from common.thread.get_singer_avatar_thread import GetSingerAvatarThread
+from common.thread.save_album_info_thread import SaveAlbumInfoThread
+from components.album_card import AlbumBlurBackground
+from components.album_card import AlbumCard as AlbumCardBase
+from components.buttons.three_state_button import ThreeStateButton
+from components.dialog_box.album_info_edit_dialog import AlbumInfoEditDialog
+from components.dialog_box.message_dialog import MessageDialog
+from components.layout.grid_layout import GridLayout
+from components.menu import AddToMenu, DWMMenu
+from components.scroll_area import ScrollArea
+from PyQt5.QtCore import (QFile, QParallelAnimationGroup, QPoint,
+                          QPropertyAnimation, Qt, pyqtSignal)
 from PyQt5.QtWidgets import QAction, QApplication, QLabel, QWidget
 
 from .selection_mode_bar import SelectionModeBar
@@ -70,9 +68,9 @@ class SingerInterface(ScrollArea):
         self.inYourMusicLabel = QLabel('在你的音乐中', self.scrollWidget)
         self.playButton = ThreeStateButton(
             {
-                "normal": "app/resource/images/singer_interface/Play_normal.png",
-                "hover": "app/resource/images/singer_interface/Play_hover.png",
-                "pressed": "app/resource/images/singer_interface/Play_pressed.png",
+                "normal": ":/images/singer_interface//Play_normal.png",
+                "hover": ":/images/singer_interface//Play_hover.png",
+                "pressed": ":/images/singer_interface//Play_pressed.png",
             },
             self.scrollWidget,
             (20, 20)
@@ -221,8 +219,12 @@ class SingerInterface(ScrollArea):
         """ 设置层叠样式 """
         self.scrollWidget.setObjectName('scrollWidget')
         self.inYourMusicLabel.setObjectName('inYourMusicLabel')
-        with open('app/resource/css/singer_interface.qss', encoding='utf-8') as f:
-            self.setStyleSheet(f.read())
+
+        f = QFile(":/qss/singer_interface.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
+
         self.inYourMusicLabel.adjustSize()
 
     def __onSelectionModeBarDeleteButtonClicked(self):
@@ -369,7 +371,7 @@ class SingerInterface(ScrollArea):
 
     def __getSingerAvatar(self, singer: str):
         """ 获取歌手头像 """
-        path = f'app/resource/singer_avatar/{singer}.jpg'
+        path = f'singer_avatar/{singer}.jpg'
         if not os.path.exists(path):
             self.singerInfoBar.coverLabel.hide()
             self.getAvatarThread.singer = singer

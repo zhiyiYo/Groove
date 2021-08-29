@@ -155,5 +155,5 @@ QCheckBox::indicator:unchecked:pressed {
 
 QCheckBox::indicator:checked {
     background: rgb(0, 107, 131);
-    border-image: url(app/resource/images/album_tab_interface/CheckMark.png);
+    border-image: url(:/images/album_tab_interface/CheckMark.png);
 }

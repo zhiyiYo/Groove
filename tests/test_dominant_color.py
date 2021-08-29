@@ -4,7 +4,7 @@ import os
 from math import floor
 from colorthief import ColorThief
 
-from app.common.image_process_utils import DominantColor
+from common.image_process_utils import DominantColor
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPalette, QPixmap, QColor
@@ -39,7 +39,7 @@ class Demo(QWidget):
         self.dominantColor = DominantColor()
         self.setFixedSize(400, 400)
         self.currentAlbumIndex = 0
-        self.albumFolder = "app/resource/Album_Cover"
+        self.albumFolder = "Album_Cover"
         self.getPicPaths()
         self.albumCoverLabel = QLabel(self)
         self.albumCoverLabel.setFixedSize(240, 240)

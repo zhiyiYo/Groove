@@ -14,13 +14,13 @@ QMenu::right-arrow {
     width: 16px;
     height: 16px;
     right: 16px;
-    border-image: url(app/resource/images/menu/子菜单右箭头2.png);
+    border-image: url(:/images/menu/ChevronRight.png);
 
 }
 
 QMenu::separator {
     height: 1px;
-    background: rgba(0,0,0,104);
+    background: rgba(0, 0, 0, 104);
     margin-right: 13px;
     margin-top: 5px;
     margin-bottom: 5px;
@@ -34,7 +34,7 @@ QMenu::item {
 QMenu::item:selected {
     border-width: 1px;
     border-color: rgb(212, 212, 212);
-    background: rgba(0,0,0,25);
+    background: rgba(0, 0, 0, 25);
     color: black;
 }
 
@@ -53,7 +53,7 @@ QMenu#blackAddToMenu::item {
 
 }
 
-QMenu#addToMenu::item:selected{
+QMenu#addToMenu::item:selected {
     background-color: rgba(0, 0, 0, 25);
 }
 
@@ -161,7 +161,7 @@ QMenu#moreActionsMenu::item {
 
 /*正在播放界面菜单样式*/
 QMenu#playingInterfaceMenu::right-arrow {
-    border-image: url(app/resource/images/playing_interface/ChevronRight.png);
+    border-image: url(:/images/playing_interface/ChevronRight.png);
 }
 
 QMenu#playingInterfaceMenu,
@@ -258,7 +258,7 @@ QMenu#albumCardContextMenu::separator,
 QMenu#playlistCardContextMenu::separator {
     height: 1px;
     width: 142px;
-    background: rgba(0,0,0,104);
+    background: rgba(0, 0, 0, 104);
     margin-right: 15px;
     margin-top: 5px;
     margin-bottom: 5px;
@@ -281,7 +281,7 @@ QMenu#appBarMoreActionsMenu::item {
 
 QMenu#appBarMoreActionsMenu::item:selected,
 QMenu#albumInterfaceAddToMenu::item:selected {
-    background: rgba(0,0,0,25);
+    background: rgba(0, 0, 0, 25);
     color: black;
 }
 
@@ -292,7 +292,7 @@ QMenu#albumInterfaceAddToMenu::item:selected {
 QMenu#albumInterfaceAddToMenu::separator {
     height: 1px;
     width: 140px;
-    background: rgba(0,0,0,104);
+    background: rgba(0, 0, 0, 104);
     margin-right: 15px;
     margin-top: 6px;
     margin-bottom: 6px;

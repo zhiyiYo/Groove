@@ -60,6 +60,7 @@
 3. Open Groove music:
 
     ```shell
+    cd app
     conda activate Groove
     python Groove.py
     ```

@@ -1,9 +1,8 @@
 # coding:utf-8
-
 from PIL import Image
 from PIL.ImageFilter import GaussianBlur
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPainter
+from PyQt5.QtGui import QPainter, QPixmap
 from PyQt5.QtWidgets import QWidget
 
 
@@ -21,13 +20,19 @@ class BlurBackground(QWidget):
         self.__blurRadius = blurRadius
         if not imagePath:
             return
+
         # 读入专辑封面
-        playlistCover = Image.open(imagePath).resize(
-            (288, 288)).crop((0, 92, 288, 288))  # type:Image.Image
+        if not imagePath.startswith(':'):
+            cover = Image.open(imagePath)
+        else:
+            cover = Image.fromqpixmap(QPixmap(imagePath))
+
+        cover = cover.resize((288, 288)).crop((0, 92, 288, 288))
         # 创建一个新图像
         blurImage = Image.new(
             'RGBA', (288 + 2 * blurRadius, 196 + 2 * blurRadius), (255, 255, 255, 0))
-        blurImage.paste(playlistCover, (blurRadius, blurRadius))
+        blurImage.paste(cover, (blurRadius, blurRadius))
+
         # 对图像进行高斯模糊
         blurImage = blurImage.filter(GaussianBlur(blurRadius/2))
         self.__blurPix = blurImage.toqpixmap()

@@ -1,7 +1,7 @@
 # coding:utf-8
 
-from app.common.get_pressed_pos import getPressedPos
-from app.common.image_process_utils import PixmapPerspectiveTransform
+from common.get_pressed_pos import getPressedPos
+from common.image_process_utils import PixmapPerspectiveTransform
 from PyQt5.QtCore import QPoint, Qt
 from PyQt5.QtGui import QPainter, QPixmap, QScreen
 from PyQt5.QtWidgets import QApplication, QWidget
@@ -84,63 +84,72 @@ class PerspectiveWidget(QWidget):
                 [5, 4],
                 [self.__perspectiveTrans.width - 2, 1],
                 [3, self.__perspectiveTrans.height - 3],
-                [self.__perspectiveTrans.width - 2, self.__perspectiveTrans.height - 1],
+                [self.__perspectiveTrans.width - 2,
+                    self.__perspectiveTrans.height - 1],
             )
         elif self.__pressedPos == "left-top":
             self.__perspectiveTrans.setDstPoints(
                 [7, 6],
                 [self.__perspectiveTrans.width - 1, 1],
                 [1, self.__perspectiveTrans.height - 2],
-                [self.__perspectiveTrans.width - 2, self.__perspectiveTrans.height - 1],
+                [self.__perspectiveTrans.width - 2,
+                    self.__perspectiveTrans.height - 1],
             )
         elif self.__pressedPos == "left-bottom":
             self.__perspectiveTrans.setDstPoints(
                 [0, 1],
                 [self.__perspectiveTrans.width - 3, 0],
                 [6, self.__perspectiveTrans.height - 5],
-                [self.__perspectiveTrans.width - 2, self.__perspectiveTrans.height - 2],
+                [self.__perspectiveTrans.width - 2,
+                    self.__perspectiveTrans.height - 2],
             )
         elif self.__pressedPos == "top":
             self.__perspectiveTrans.setDstPoints(
                 [4, 5],
                 [self.__perspectiveTrans.width - 5, 5],
                 [0, self.__perspectiveTrans.height - 1],
-                [self.__perspectiveTrans.width - 1, self.__perspectiveTrans.height - 1],
+                [self.__perspectiveTrans.width - 1,
+                    self.__perspectiveTrans.height - 1],
             )
         elif self.__pressedPos == "center":
             self.__perspectiveTrans.setDstPoints(
                 [3, 4],
                 [self.__perspectiveTrans.width - 4, 4],
                 [3, self.__perspectiveTrans.height - 3],
-                [self.__perspectiveTrans.width - 4, self.__perspectiveTrans.height - 3],
+                [self.__perspectiveTrans.width - 4,
+                    self.__perspectiveTrans.height - 3],
             )
         elif self.__pressedPos == "bottom":
             self.__perspectiveTrans.setDstPoints(
                 [0, 0],
                 [self.__perspectiveTrans.width - 1, 0],
                 [4, self.__perspectiveTrans.height - 4],
-                [self.__perspectiveTrans.width - 5, self.__perspectiveTrans.height - 4],
+                [self.__perspectiveTrans.width - 5,
+                    self.__perspectiveTrans.height - 4],
             )
         elif self.__pressedPos == "right-bottom":
             self.__perspectiveTrans.setDstPoints(
                 [1, 0],
                 [self.__perspectiveTrans.width - 3, 2],
                 [1, self.__perspectiveTrans.height - 2],
-                [self.__perspectiveTrans.width - 6, self.__perspectiveTrans.height - 5],
+                [self.__perspectiveTrans.width - 6,
+                    self.__perspectiveTrans.height - 5],
             )
         elif self.__pressedPos == "right-top":
             self.__perspectiveTrans.setDstPoints(
                 [0, 1],
                 [self.__perspectiveTrans.width - 7, 5],
                 [2, self.__perspectiveTrans.height - 1],
-                [self.__perspectiveTrans.width - 2, self.__perspectiveTrans.height - 2],
+                [self.__perspectiveTrans.width - 2,
+                    self.__perspectiveTrans.height - 2],
             )
         elif self.__pressedPos == "right":
             self.__perspectiveTrans.setDstPoints(
                 [1, 1],
                 [self.__perspectiveTrans.width - 6, 4],
                 [2, self.__perspectiveTrans.height - 1],
-                [self.__perspectiveTrans.width - 4, self.__perspectiveTrans.height - 3],
+                [self.__perspectiveTrans.width - 4,
+                    self.__perspectiveTrans.height - 3],
             )
 
     def __getTransformPixmap(self) -> QPixmap:
@@ -154,7 +163,8 @@ class PerspectiveWidget(QWidget):
         """ 对窗口口所在的桌面区域进行截图 """
         screen = QApplication.primaryScreen()  # type:QScreen
         pos = self.mapToGlobal(QPoint(0, 0))  # type:QPoint
-        pix = screen.grabWindow(0, pos.x(), pos.y(), self.width(), self.height())
+        pix = screen.grabWindow(0, pos.x(), pos.y(),
+                                self.width(), self.height())
         return pix
 
     def __adjustTransformPix(self):
@@ -163,11 +173,13 @@ class PerspectiveWidget(QWidget):
         self.__perspectiveTrans.setPixmap(self.__screenshotPix)
         self.__screenshotPressedPix = self.__getTransformPixmap()
         # 融合两张透视图
-        img_1 = self.__perspectiveTrans.transQPixmapToNdarray(self.__pressedPix)
+        img_1 = self.__perspectiveTrans.transQPixmapToNdarray(
+            self.__pressedPix)
         img_2 = self.__perspectiveTrans.transQPixmapToNdarray(
             self.__screenshotPressedPix
         )
         # 去除非透明背景部分
         mask = img_1[:, :, -1] == 0
         img_2[mask] = img_1[mask]
-        self.__pressedPix = self.__perspectiveTrans.transNdarrayToQPixmap(img_2)
+        self.__pressedPix = self.__perspectiveTrans.transNdarrayToQPixmap(
+            img_2)

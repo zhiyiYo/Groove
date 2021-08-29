@@ -1,5 +1,5 @@
 # coding:utf-8
-from app.common.meta_data_writer import writeSongInfo, writeAlbumCover
+from common.meta_data_writer import writeSongInfo, writeAlbumCover
 from PyQt5.QtCore import QThread, pyqtSignal
 
 

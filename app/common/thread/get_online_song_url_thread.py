@@ -2,8 +2,8 @@
 import requests
 import os
 
-from app.common.os_utils import checkDirExists
-from app.common.crawler.kuwo_music_crawler import KuWoMusicCrawler
+from common.os_utils import checkDirExists
+from common.crawler.kuwo_music_crawler import KuWoMusicCrawler
 from PyQt5.QtCore import Qt, pyqtSignal, QThread
 
 
@@ -41,7 +41,7 @@ class GetOnlineSongUrlThread(QThread):
         self.quality = quality
         self.songInfo_list = songInfo_list
 
-    @checkDirExists('app/resource/Album_Cover')
+    @checkDirExists('Album_Cover')
     def run(self):
         """ 根据歌曲哈希值爬取播放地址并下载封面 """
         for i, songInfo in enumerate(self.songInfo_list):
@@ -50,10 +50,10 @@ class GetOnlineSongUrlThread(QThread):
 
             # 下载封面
             name = songInfo['coverName']
-            save_path = f'app/resource/Album_Cover/{name}/{name}.jpg'
+            save_path = f'Album_Cover/{name}/{name}.jpg'
 
             if not os.path.exists(save_path):
-                os.makedirs(f'app/resource/Album_Cover/{name}', exist_ok=True)
+                os.makedirs(f'Album_Cover/{name}', exist_ok=True)
 
                 response = requests.get(
                     songInfo['coverPath'], headers=self.headers)

@@ -1,14 +1,16 @@
 # coding:utf-8
-from app.common.image_process_utils import DominantColor
-from app.View.play_bar.central_button_group import CentralButtonGroup
-from app.View.play_bar.more_actions_menu import MoreActionsMenu
-from app.View.play_bar.play_progress_bar import PlayProgressBar
-from app.View.play_bar.right_widget_group import RightWidgetGroup
-from app.View.play_bar.song_info_card import SongInfoCard
-from PyQt5.QtCore import QPoint, Qt, pyqtSignal, QPropertyAnimation, QEasingCurve, pyqtProperty
-from PyQt5.QtGui import QColor, QPalette
+from common.image_process_utils import DominantColor
+from components.menu import AeroMenu
+from components.slider import Slider
+from PyQt5.QtCore import (QEasingCurve, QFile, QPoint, QPropertyAnimation,
+                          QRect, Qt, pyqtProperty, pyqtSignal)
+from PyQt5.QtGui import QColor, QIcon, QPalette
 from PyQt5.QtMultimedia import QMediaPlaylist
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QAction, QHBoxLayout, QLabel, QVBoxLayout, QWidget
+from View.play_bar.song_info_card import SongInfoCard
+
+from .play_bar_buttons import (BasicButton, LoopModeButton, PlayButton,
+                               RandomPlayButton, VolumeButton)
 
 
 class PlayBar(QWidget):
@@ -34,7 +36,6 @@ class PlayBar(QWidget):
         self.originWidth = 1280
         self.__color = color
         self.colorAni = QPropertyAnimation(self, b'color', self)
-        self.dominantColor = DominantColor()
         # 记录移动次数
         self.moveTime = 0
         self.resizeTime = 0
@@ -76,8 +77,10 @@ class PlayBar(QWidget):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open(r"app\resource\css\play_bar.qss", encoding="utf-8") as f:
-            self.setStyleSheet(f.read())
+        f = QFile(":/qss/play_bar.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
 
     def resizeEvent(self, e):
         """ 调整歌曲信息卡宽度 """
@@ -189,7 +192,7 @@ class PlayBar(QWidget):
 
     def updateDominantColor(self, albumPath: str):
         """ 更新主色调 """
-        r, g, b = self.dominantColor.getDominantColor(albumPath, tuple)
+        r, g, b = DominantColor.getDominantColor(albumPath)
         self.colorAni.setStartValue(self.getColor())
         self.colorAni.setEndValue(QColor(r, g, b))
         self.colorAni.setEasingCurve(QEasingCurve.OutQuart)
@@ -207,3 +210,203 @@ class PlayBar(QWidget):
         return self.__color
 
     color = pyqtProperty(QColor, getColor, setColor)
+
+
+class CentralButtonGroup(QWidget):
+    """ 播放按钮组 """
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        # 创建按钮
+        self.randomPlayButton = RandomPlayButton(self)
+        self.lastSongButton = BasicButton(
+            ':/images/play_bar/Previous.png', self)
+        self.nextSongButton = BasicButton(':/images/play_bar/Next.png', self)
+        self.playButton = PlayButton(self)
+        self.loopModeButton = LoopModeButton(self)
+        self.button_list = [self.randomPlayButton, self.lastSongButton,
+                            self.playButton, self.nextSongButton, self.loopModeButton]
+
+        # 创建布局
+        self.h_layout = QHBoxLayout()
+        self.all_v_layout = QVBoxLayout(self)
+        self.initUI()
+
+    def initUI(self):
+        """ 初始化界面 """
+        self.setFixedSize(317, 67 + 8 + 3)
+        for i in range(5):
+            self.h_layout.addWidget(self.button_list[i], 0, Qt.AlignCenter)
+            if i != 4:
+                self.h_layout.addSpacing(16)
+        self.h_layout.setSpacing(0)
+        self.h_layout.setContentsMargins(0, 0, 0, 0)
+        self.all_v_layout.addSpacing(8)
+        self.all_v_layout.setSpacing(0)
+        self.all_v_layout.setContentsMargins(0, 0, 0, 0)
+        self.all_v_layout.addLayout(self.h_layout)
+
+
+class RightWidgetGroup(QWidget):
+    """ 播放按钮组 """
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        # 创建小部件
+        self.volumeButton = VolumeButton(self)
+        self.volumeSlider = Slider(Qt.Horizontal, self)
+        self.smallPlayModeButton = BasicButton(
+            ":/images/play_bar/SmallestPlayMode.png", self)
+        self.moreActionsButton = BasicButton(
+            ":/images/play_bar/More.png", self)
+        self.widget_list = [
+            self.volumeButton,
+            self.volumeSlider,
+            self.smallPlayModeButton,
+            self.moreActionsButton,
+        ]
+        # 创建布局
+        self.h_layout = QHBoxLayout()
+        # 初始化界面
+        self.__initWidget()
+        self.__initLayout()
+
+    def __initWidget(self):
+        """ 初始化小部件 """
+        self.setFixedSize(301, 16 + 67)
+        self.volumeSlider.setRange(0, 100)
+        self.volumeSlider.setObjectName("volumeSlider")
+        # 将音量滑动条数值改变信号连接到槽函数
+        self.volumeSlider.setValue(20)
+
+    def __initLayout(self):
+        """ 初始化布局 """
+        self.__spacing_list = [7, 8, 8, 5, 7]
+        self.h_layout.setSpacing(0)
+        self.h_layout.setContentsMargins(0, 0, 0, 0)
+        # 将小部件添加到布局中
+        for i in range(4):
+            self.h_layout.addSpacing(self.__spacing_list[i])
+            self.h_layout.addWidget(self.widget_list[i])
+        else:
+            self.h_layout.addSpacing(self.__spacing_list[-1])
+        self.setLayout(self.h_layout)
+
+
+class PlayProgressBar(QWidget):
+    """ 歌曲播放进度条 """
+
+    def __init__(self, duration: str, parent=None):
+        super().__init__(parent)
+        # 创建两个标签和一个进度条
+        self.progressSlider = Slider(Qt.Horizontal, self)
+        self.currentTimeLabel = QLabel("0:00", self)
+        self.totalTimeLabel = QLabel(duration, self)
+        # 创建布局
+        self.h_layout = QHBoxLayout()
+        # 初始化界面
+        self.__initUI()
+
+    def __initUI(self):
+        """ 初始化小部件 """
+        self.resize(450, 30)
+        self.progressSlider.setObjectName("progressSlider")
+        self.currentTimeLabel.setObjectName("timeLabel")
+        self.totalTimeLabel.setObjectName("timeLabel")
+        # 将小部件添加到布局中
+        self.h_layout.addWidget(self.currentTimeLabel, 0, Qt.AlignHCenter)
+        self.h_layout.addWidget(self.progressSlider, 0, Qt.AlignHCenter)
+        self.h_layout.addWidget(self.totalTimeLabel, 0, Qt.AlignHCenter)
+        self.h_layout.setContentsMargins(0, 0, 0, 0)
+        self.h_layout.setSpacing(10)
+        self.setLayout(self.h_layout)
+
+    def setCurrentTime(self, currentTime: int):
+        """ 更新当前时间标签，currentTime的单位为ms """
+        seconds, minutes = self.getSecondMinute(currentTime)
+        self.currentTimeLabel.setText(f'{minutes}:{str(seconds).rjust(2,"0")}')
+
+    def setTotalTime(self, totalTime):
+        """ 更新总时长标签，totalTime的单位为ms """
+        seconds, minutes = self.getSecondMinute(totalTime)
+        self.totalTimeLabel.setText(f'{minutes}:{str(seconds).rjust(2,"0")}')
+
+    def getSecondMinute(self, time):
+        """ 将毫秒转换为分和秒 """
+        seconds = int(time / 1000)
+        minutes = seconds // 60
+        seconds -= minutes * 60
+        return seconds, minutes
+
+    def resizeEvent(self, e):
+        """ 改变宽度时调整滑动条的宽度 """
+        self.progressSlider.setFixedWidth(self.width() - 100)
+        super().resizeEvent(e)
+
+
+class MoreActionsMenu(AeroMenu):
+    """ 更多操作菜单 """
+
+    def __init__(self, parent=None, actionFlag=1):
+        """
+        Parameters
+        ----------
+        parent:
+            父级窗口
+
+        actionFlag: int
+            1 有四个动作，0 有三个动作 """
+        super().__init__(parent=parent)
+        self.actionFlag = actionFlag
+        # 创建动作和动画
+        self.createActions()
+        self.animation = QPropertyAnimation(self, b"geometry")
+        # 初始化界面
+        self.initWidget()
+
+    def initWidget(self):
+        """ 初始化小部件 """
+        self.setObjectName("moreActionsMenu")
+        self.animation.setDuration(300)
+        self.animation.setEasingCurve(QEasingCurve.OutQuad)
+
+    def createActions(self):
+        """ 创建动作"""
+        self.savePlayListAct = QAction(
+            QIcon(":/images/menu/Add.png"), "保存为播放列表", self)
+        self.clearPlayListAct = QAction(
+            QIcon(":/images/menu/Clear.png"), '清空"正在播放"', self)
+
+        if self.actionFlag:
+            self.showPlayListAct = QAction(
+                QIcon(":/images/menu/Playlist.png"), "显示正在播放列表", self)
+            self.fullScreenAct = QAction(
+                QIcon(":/images/menu/FullScreen.png"), "转到全屏", self)
+            self.action_list = [
+                self.showPlayListAct,
+                self.fullScreenAct,
+                self.savePlayListAct,
+                self.clearPlayListAct,
+            ]
+            self.actionNum = 4
+        else:
+            self.showSongerCover = QAction(
+                QIcon(":/images/menu/Contact.png"), "显示歌手封面", self)
+            self.action_list = [
+                self.savePlayListAct,
+                self.showSongerCover,
+                self.clearPlayListAct,
+            ]
+            self.actionNum = 3
+        self.addActions(self.action_list)
+
+    def exec(self, pos):
+        """ 重写exec_() """
+        height = self.actionNum * 38
+        width = [188, 206][self.actionFlag]
+        self.animation.setStartValue(QRect(pos.x(), pos.y(), 1, height))
+        self.animation.setEndValue(QRect(pos.x(), pos.y(), width, height))
+        # 开始动画
+        self.animation.start()
+        super().exec(pos)

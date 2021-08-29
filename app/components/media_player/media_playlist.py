@@ -4,7 +4,7 @@ from copy import deepcopy
 from enum import Enum
 from json import dump, load
 
-from app.common.os_utils import checkDirExists
+from common.os_utils import checkDirExists
 from PyQt5.QtCore import QUrl
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlaylist
 
@@ -151,21 +151,21 @@ class MediaPlaylist(QMediaPlaylist):
         self.addMedias(songInfo_list)
         self.setCurrentIndex(index)
 
-    @checkDirExists('app/data')
+    @checkDirExists('data')
     def save(self):
         """ 保存播放列表到json文件中 """
         playlistInfo = {
             "lastPlaylist": self.playlist,
             "lastSongInfo": self.getCurrentSong(),
         }
-        with open("app/data/lastPlaylistInfo.json", "w", encoding="utf-8") as f:
+        with open("data/lastPlaylistInfo.json", "w", encoding="utf-8") as f:
             dump(playlistInfo, f)
 
-    @checkDirExists('app/data')
+    @checkDirExists('data')
     def __readLastPlaylist(self):
         """ 从json文件中读取播放列表 """
         try:
-            with open("app/data/lastPlaylistInfo.json", encoding="utf-8") as f:
+            with open("data/lastPlaylistInfo.json", encoding="utf-8") as f:
                 playlistInfo = load(f)  # type:dict
                 self.playlist = playlistInfo.get(
                     "lastPlaylist", [])  # type:list

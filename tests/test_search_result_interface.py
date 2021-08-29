@@ -5,14 +5,14 @@ import json
 
 from PyQt5.QtWidgets import QApplication
 
-from app.common.meta_data_getter import SongInfoGetter, AlbumInfoGetter
-from app.View.search_result_interface import SearchResultInterface
+from common.meta_data_getter import SongInfoGetter, AlbumInfoGetter
+from View.search_result_interface import SearchResultInterface
 
 
 def getPlaylists():
     """ 获取播放列表 """
     playlists = {}
-    folder = "app/Playlists"
+    folder = "Playlists"
     for file in os.listdir(folder):
         path = f'{folder}/{file}'
         if file.endswith('.json'):
@@ -22,7 +22,7 @@ def getPlaylists():
 
 
 if __name__ == '__main__':
-    songInfoGetter = SongInfoGetter(['app/resource/test_audio'])
+    songInfoGetter = SongInfoGetter(['resource/test_audio'])
     albumInfoGetter = AlbumInfoGetter(songInfoGetter.songInfo_list)
     songInfo_list = songInfoGetter.songInfo_list
     albumInfo_list = albumInfoGetter.albumInfo_list

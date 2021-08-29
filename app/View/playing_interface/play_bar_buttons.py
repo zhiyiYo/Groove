@@ -1,5 +1,5 @@
 # coding:utf-8
-from app.components.buttons.circle_button import CircleButton
+from components.buttons.circle_button import CircleButton
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QPainter, QPen, QPixmap
 from PyQt5.QtMultimedia import QMediaPlaylist
@@ -8,9 +8,7 @@ from PyQt5.QtMultimedia import QMediaPlaylist
 class SelectableButton(CircleButton):
     """ 可选中的按钮 """
 
-    def __init__(
-        self, iconPath_list: list, parent=None, iconSize=(47, 47), buttonSize=(47, 47)
-    ):
+    def __init__(self, iconPath_list: list, parent=None, iconSize=(47, 47), buttonSize=(47, 47)):
         super().__init__(iconPath_list[0], parent, iconSize, buttonSize)
         self.iconPath_list = iconPath_list
         # 设置选中标志位
@@ -229,8 +227,8 @@ class PlayButton(TwoStateButton):
 
     def __init__(self, parent=None):
         self.iconPath_list = [
-            r"app\resource\images\playing_interface\Pause_47_47.png",
-            r"app\resource\images\playing_interface\Play_47_47.png",
+            ":/images/playing_interface/Pause_47_47.png",
+            ":/images/playing_interface/Play_47_47.png",
         ]
         super().__init__(self.iconPath_list, parent)
         # 设置暂停标志位
@@ -250,8 +248,8 @@ class FullScreenButton(TwoStateButton):
 
     def __init__(self, parent=None):
         self.iconPath_list = [
-            r"app\resource\images\playing_interface\FullScreen.png",
-            r"app\resource\images\playing_interface\BackToWindow.png",
+            ":/images/playing_interface/FullScreen.png",
+            ":/images/playing_interface/BackToWindow.png",
         ]
         super().__init__(self.iconPath_list, parent, False)
         # 设置全屏标志位
@@ -276,11 +274,11 @@ class VolumeButton(CircleButton):
     def __init__(self, parent=None):
         # 按钮图标地址列表
         self.__iconPath_list = [
-            r"app\resource\images\playing_interface\Volume0.png",
-            r"app\resource\images\playing_interface\Volume1.png",
-            r"app\resource\images\playing_interface\Volume2.png",
-            r"app\resource\images\playing_interface\Volume3.png",
-            r"app\resource\images\playing_interface\volume_white_level_mute_47_47.png",
+            ":/images/playing_interface/Volume0.png",
+            ":/images/playing_interface/Volume1.png",
+            ":/images/playing_interface/Volume2.png",
+            ":/images/playing_interface/Volume3.png",
+            ":/images/playing_interface/volume_white_level_mute_47_47.png",
         ]
         self.pixmap_list = [QPixmap(i) for i in self.__iconPath_list]
         super().__init__(self.__iconPath_list[0], parent)

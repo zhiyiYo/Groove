@@ -1,7 +1,7 @@
 # coding:utf-8
 import os
 
-from app.components.scroll_area import ScrollArea
+from components.scroll_area import ScrollArea
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QColor, QPainter, QPen
 from PyQt5.QtWidgets import QWidget
@@ -32,18 +32,18 @@ class NavigationWidget(NavigationWidgetBase):
     def __createButtons(self):
         """实例化按钮 """
         self.showBarButton = ToolButton(
-            "app/resource/images/navigation_interface/GlobalNavButton.png", parent=self)
+            ":/images/navigation_interface/GlobalNavButton.png", parent=self)
         self.myMusicButton = PushButton(
-            "app/resource/images/navigation_interface/MusicInCollection.png", "我的音乐", (400, 60), self.scrollWidget)
+            ":/images/navigation_interface/MusicInCollection.png", "我的音乐", (400, 60), self.scrollWidget)
         self.historyButton = PushButton(
-            "app/resource/images/navigation_interface/Recent.png", "最近播放的内容", (400, 62), self.scrollWidget)
+            ":/images/navigation_interface/Recent.png", "最近播放的内容", (400, 62), self.scrollWidget)
         self.playingButton = PushButton(
-            "app/resource/images/navigation_interface/黑色导航栏正在播放.png", "正在播放", (400, 62), self.scrollWidget)
+            ":/images/navigation_interface/Playing.png", "正在播放", (400, 62), self.scrollWidget)
         self.playlistButton = PushButton(
-            "app/resource/images/navigation_interface/黑色播放列表.png", "播放列表", (340, 60), self.scrollWidget)
+            ":/images/navigation_interface/Playlist.png", "播放列表", (340, 60), self.scrollWidget)
         self.createPlaylistButton = CreatePlaylistButton(self.scrollWidget)
         self.settingButton = PushButton(
-            "app/resource/images/navigation_interface/Settings.png", "设置", (400, 62), self)
+            ":/images/navigation_interface/Settings.png", "设置", (400, 62), self)
         # 创建播放列表名字按钮
         self.__createPlaylistNameButtons(self.getPlaylistNames())
         # 设置当前按钮
@@ -110,9 +110,9 @@ class NavigationWidget(NavigationWidgetBase):
     @staticmethod
     def getPlaylistNames():
         """ 扫描播放列表名字 """
-        os.makedirs('app/Playlists', exist_ok=True)
+        os.makedirs('Playlists', exist_ok=True)
         playlists = [
-            i[:-5] for i in os.listdir("app/Playlists") if i.endswith(".json")
+            i[:-5] for i in os.listdir("Playlists") if i.endswith(".json")
         ]
         return playlists
 
@@ -158,7 +158,7 @@ class NavigationWidget(NavigationWidgetBase):
         """ 创建播放列表名字按钮 """
         self.playlistNames = playlistNames
         self.playlistNameButtons = [
-            PushButton("app/resource/images/navigation_interface/黑色我喜欢_60_62.png",
+            PushButton(":/images/navigation_interface/Album.png",
                        i, (400, 62), self.scrollWidget)
             for i in playlistNames
         ]

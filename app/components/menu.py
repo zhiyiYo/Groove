@@ -1,8 +1,9 @@
 # coding:utf-8
 import os
 
-from app.common.window_effect import WindowEffect
-from PyQt5.QtCore import QEasingCurve, QEvent, QPropertyAnimation, QRect, Qt, pyqtSignal
+from common.window_effect import WindowEffect
+from PyQt5.QtCore import (QEasingCurve, QEvent, QFile, QPropertyAnimation,
+                          QRect, Qt, pyqtSignal)
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction, QApplication, QMenu
 
@@ -32,8 +33,10 @@ class AeroMenu(QMenu):
 
     def setQss(self):
         """ 设置层叠样式 """
-        with open("app/resource/css/menu.qss", encoding="utf-8") as f:
-            self.setStyleSheet(f.read())
+        f = QFile(":/qss/menu.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
 
 
 class AcrylicMenu(QMenu):
@@ -63,8 +66,10 @@ class AcrylicMenu(QMenu):
 
     def setQss(self):
         """ 设置层叠样式 """
-        with open("app/resource/css/menu.qss", encoding="utf-8") as f:
-            self.setStyleSheet(f.read())
+        f = QFile(":/qss/menu.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
 
 
 class DWMMenu(QMenu):
@@ -86,8 +91,10 @@ class DWMMenu(QMenu):
 
     def setQss(self):
         """ 设置层叠样式表 """
-        with open("app/resource/css/menu.qss", encoding="utf-8") as f:
-            self.setStyleSheet(f.read())
+        f = QFile(":/qss/menu.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
 
 
 class AddToMenu(DWMMenu):
@@ -105,13 +112,13 @@ class AddToMenu(DWMMenu):
     def createActions(self):
         """ 创建三个动作 """
         self.playingAct = QAction(
-            QIcon("app/resource/images/menu/正在播放.png"), "正在播放", self)
+            QIcon(":/images/menu/Playing.png"), "正在播放", self)
         self.newPlaylistAct = QAction(
-            QIcon("app/resource/images/menu/黑色加号.png"), "新的播放列表", self)
+            QIcon(":/images/menu/Add.png"), "新的播放列表", self)
         # 根据播放列表创建动作
         playlistName_list = self.__getPlaylistNames()
         self.playlistNameAct_list = [
-            QAction(QIcon(r"app\resource\images\menu\黑色我喜欢_20_20.png"), name, self)
+            QAction(QIcon(":/images/menu/Album.png"), name, self)
             for name in playlistName_list
         ]
         self.action_list = [self.playingAct,
@@ -128,9 +135,9 @@ class AddToMenu(DWMMenu):
     def __getPlaylistNames(self):
         """ 扫描播放列表文件夹下的播放列表名字 """
         # 扫描播放列表文件夹下的播放列表名字
-        os.makedirs('app/Playlists', exist_ok=True)
+        os.makedirs('Playlists', exist_ok=True)
         playlistName_list = [
-            i[:-5] for i in os.listdir("app/Playlists") if i.endswith(".json")]
+            i[:-5] for i in os.listdir("Playlists") if i.endswith(".json")]
         return playlistName_list
 
     def actionCount(self):
@@ -173,28 +180,28 @@ class LineEditMenu(DWMMenu):
     def createActions(self):
         # 创建动作
         self.cutAct = QAction(
-            QIcon("app/resource/images/menu/黑色剪刀.png"),
+            QIcon(":/images/menu/Cut.png"),
             "剪切",
             self,
             shortcut="Ctrl+X",
             triggered=self.parent().cut,
         )
         self.copyAct = QAction(
-            QIcon("app/resource/images/menu/黑色复制.png"),
+            QIcon(":/images/menu/Copy.png"),
             "复制",
             self,
             shortcut="Ctrl+C",
             triggered=self.parent().copy,
         )
         self.pasteAct = QAction(
-            QIcon("app/resource/images/menu/黑色粘贴.png"),
+            QIcon(":/images/menu/Paste.png"),
             "粘贴",
             self,
             shortcut="Ctrl+V",
             triggered=self.parent().paste,
         )
         self.cancelAct = QAction(
-            QIcon("app/resource/images/menu/黑色撤销.png"),
+            QIcon(":/images/menu/Cancel.png"),
             "取消操作",
             self,
             shortcut="Ctrl+Z",

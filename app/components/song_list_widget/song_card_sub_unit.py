@@ -40,17 +40,17 @@ class ButtonGroup(QWidget):
         # 创建按钮
         self.playButton = ToolButton(
             {
-                "notSelected-notPlay": r"app\resource\images\song_tab_interface\Play_black.png",
-                "notSelected-play": r"app\resource\images\song_tab_interface\Play_green.png",
-                "selected": r"app\resource\images\song_tab_interface\Play_white.png",
+                "notSelected-notPlay": ":/images/song_tab_interface/Play_black.png",
+                "notSelected-play": ":/images/song_tab_interface/Play_green.png",
+                "selected": ":/images/song_tab_interface/Play_white.png",
             },
             self,
         )
         self.addToButton = ToolButton(
             {
-                "notSelected-notPlay": r"app\resource\images\song_tab_interface\Add_black.png",
-                "notSelected-play": r"app\resource\images\song_tab_interface\Add_green.png",
-                "selected": r"app\resource\images\song_tab_interface\Add_white.png",
+                "notSelected-notPlay": ":/images/song_tab_interface/Add_black.png",
+                "notSelected-play": ":/images/song_tab_interface/Add_green.png",
+                "selected": ":/images/song_tab_interface/Add_white.png",
             },
             self,
         )
@@ -181,13 +181,15 @@ class SongNameCard(QWidget):
         self.checkBox.setProperty("state", state)
         self.songNameLabel.setProperty("state", state)
         self.buttonGroup.setButtonState(state)
+
         # 根据选中状态和歌曲状态选择图标
         if isSongExit:
-            color = "白" if state == "selected" else "绿"
-            path = f"app/resource/images/song_tab_interface/{color}色正在播放_16_16.png"
+            color = "white" if state == "selected" else "green"
+            path = f":/images/song_tab_interface/Playing_{color}.png"
         else:
             color = "white" if state == "selected" else "red"
-            path = f"app/resource/images/song_tab_interface/Info_{color}.png"
+            path = f":/images/song_tab_interface/Info_{color}.png"
+
         self.playingLabel.setPixmap(QPixmap(path))
 
     def setButtonGroupState(self, state: str):
@@ -290,9 +292,9 @@ class PlaylistSongNameCard(SongNameCard):
     def __init__(self, songName, parent):
         super().__init__(songName, parent=parent)
         self.addToButton.setIconPathDict({
-            "notSelected-notPlay": r"app\resource\images\playlist_interface\Delete_black.png",
-            "notSelected-play": r"app\resource\images\playlist_interface\Delete_green.png",
-            "selected": r"app\resource\images\playlist_interface\Delete_white.png",
+            "notSelected-notPlay": ":/images/playlist_interface/Delete_black.png",
+            "notSelected-play": ":/images/playlist_interface/Delete_green.png",
+            "selected": ":/images/playlist_interface/Delete_white.png",
         })
 
 
@@ -328,9 +330,9 @@ class OnlineSongNameCard(SongNameCard):
         self.checkBox.setFixedWidth(0)
         self.checkBox.lower()
         self.addToButton.setIconPathDict({
-            "notSelected-notPlay": r"app\resource\images\search_result_interface\Download_black.png",
-            "notSelected-play": r"app\resource\images\search_result_interface\Download_green.png",
-            "selected": r"app\resource\images\search_result_interface\Download_white.png",
+            "notSelected-notPlay": ":/images/search_result_interface/Download_black.png",
+            "notSelected-play": ":/images/search_result_interface/Download_green.png",
+            "selected": ":/images/search_result_interface/Download_white.png",
         })
 
     def setPlay(self, isPlay: bool, isSongExist: bool = True):

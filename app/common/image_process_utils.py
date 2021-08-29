@@ -10,7 +10,7 @@ from PyQt5.QtGui import QImage, QPixmap
 from scipy.ndimage.filters import gaussian_filter
 
 
-def gaussianBlur(imagePath, savePath='', blurRadius=18, brightnessFactor=1, blurPicSize: tuple = None) -> np.ndarray:
+def gaussianBlur(imagePath: str, savePath='', blurRadius=18, brightnessFactor=1, blurPicSize: tuple = None) -> np.ndarray:
     """ 对图片进行高斯模糊处理
 
     Parameters
@@ -35,12 +35,17 @@ def gaussianBlur(imagePath, savePath='', blurRadius=18, brightnessFactor=1, blur
     blurImageArray: `~np.ndarray`
         高斯模糊后的图像数组
     """
+    if not imagePath.startswith(':'):
+            image = Image.open(imagePath)
+    else:
+        image = Image.fromqpixmap(QPixmap(imagePath))
+
     if blurPicSize:
         # 调整图片尺寸，减小计算量，还能增加额外的模糊(手动滑稽)
-        image = Image.open(imagePath)
         oldWidth, oldHeight = image.size
         ratio = min(blurPicSize[0] / oldWidth, blurPicSize[1] / oldHeight)
         newWidth, newHeight = oldWidth * ratio, oldHeight * ratio
+
         # 如果新的尺寸小于旧尺寸才 resize
         if newWidth < oldWidth:
             imageArray = np.array(image.resize(
@@ -48,14 +53,15 @@ def gaussianBlur(imagePath, savePath='', blurRadius=18, brightnessFactor=1, blur
         else:
             imageArray = np.array(image)
     else:
-        imageArray = np.array(Image.open(imagePath))
+        imageArray = np.array(image)
+
     blurImageArray = imageArray
 
     # 对每一个颜色通道分别磨砂
     for i in range(imageArray.shape[-1]):
         blurImageArray[:, :, i] = gaussian_filter(
             imageArray[:, :, i], blurRadius) * brightnessFactor
-            
+
     # 将ndarray转换为Image对象
     if savePath:
         blurImage = Image.fromarray(blurImageArray)
@@ -103,10 +109,8 @@ def getBlurPixmap(imagePath, blurRadius=30, brightnessFactor=1, blurPicSize: tup
 class DominantColor:
     """ 获取图像的主色调 """
 
-    def __init__(self):
-        self.rgb = tuple()
-
-    def getDominantColor(self, imagePath: str, resType=str):
+    @classmethod
+    def getDominantColor(cls, imagePath: str):
         """ 获取指定图片的主色调
 
         Parameters
@@ -117,7 +121,9 @@ class DominantColor:
         reType:
             返回类型，str 返回十六进制字符串，否则为 rgb 元组
         """
-        self.imagePath = imagePath
+        if imagePath.startswith(':'):
+            return (24, 24, 24)
+
         colorThief = ColorThief(imagePath)
 
         # 调整图像大小，加快运算速度
@@ -125,28 +131,26 @@ class DominantColor:
             colorThief.image = colorThief.image.resize((400, 400))
 
         palette = colorThief.get_palette(quality=9)
+
         # 调整调色板明度
-        palette = self.__adjustPaletteValue(palette)
+        palette = cls.__adjustPaletteValue(palette)
         for rgb in palette[:]:
-            h, s, v = self.rgb2hsv(rgb)
+            h, s, v = cls.rgb2hsv(rgb)
             if h < 0.02:
                 palette.remove(rgb)
                 if len(palette) <= 2:
                     break
         palette = palette[:4]
-        palette.sort(key=lambda rgb: self.rgb2hsv(rgb)[1], reverse=True)
-        self.rgb = palette[0]
-        # 根据指定的返回类型决定返回十六进制颜色代码还是元组
-        if resType is str:
-            rgb = "".join([hex(i)[2:].rjust(2, "0") for i in self.rgb])
-            return rgb
-        return self.rgb
+        palette.sort(key=lambda rgb: cls.rgb2hsv(rgb)[1], reverse=True)
 
-    def __adjustPaletteValue(self, palette: list):
+        return palette[0]
+
+    @classmethod
+    def __adjustPaletteValue(cls, palette: list):
         """ 调整调色板的明度 """
         newPalette = []
         for rgb in palette:
-            h, s, v = self.rgb2hsv(rgb)
+            h, s, v = cls.rgb2hsv(rgb)
             if v > 0.9:
                 factor = 0.8
             elif 0.8 < v <= 0.9:
@@ -156,7 +160,7 @@ class DominantColor:
             else:
                 factor = 1
             v *= factor
-            newPalette.append(self.hsv2rgb(h, s, v))
+            newPalette.append(cls.hsv2rgb(h, s, v))
         return newPalette
 
     @staticmethod

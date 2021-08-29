@@ -1,9 +1,10 @@
 # coding:utf-8
-from .mask_dialog_base import MaskDialogBase
-from app.common.auto_wrap import autoWrap
-from app.components.buttons.perspective_button import PerspectivePushButton
-from PyQt5.QtCore import Qt
+from common.auto_wrap import autoWrap
+from components.buttons.perspective_button import PerspectivePushButton
+from PyQt5.QtCore import QFile, Qt
 from PyQt5.QtWidgets import QLabel
+
+from .mask_dialog_base import MaskDialogBase
 
 
 class SongPropertyDialog(MaskDialogBase):
@@ -170,5 +171,8 @@ class SongPropertyDialog(MaskDialogBase):
         self.songPath.setObjectName("songPath")
         self.albumSonger.setObjectName("singer")
         self.propertyLabel.setObjectName("propertyLabel")
-        with open("app/resource/css/song_property_dialog.qss",  encoding="utf-8") as f:
-            self.setStyleSheet(f.read())
+
+        f = QFile(":/qss/song_property_dialog.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()

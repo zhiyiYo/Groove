@@ -1,8 +1,8 @@
 # coding:utf-8
 from typing import List
 
-from app.common.image_process_utils import DominantColor
-from app.components.label import AvatarLabel
+from common.image_process_utils import DominantColor
+from components.label import AvatarLabel
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QColor, QPainter, QFont, QFontMetrics, QResizeEvent, QPalette
 from PyQt5.QtWidgets import QWidget, QLabel
@@ -47,7 +47,6 @@ class CollapsingAppBarBase(QWidget):
 
         self.contentLabel = QLabel(content, self)
         self.titleLabel = QLabel(title, self)
-        self.dominantColorGetter = DominantColor()
         self.coverLabel = QLabel(
             self) if coverType != 'singer' else AvatarLabel(self.coverPath, self)
 
@@ -56,8 +55,7 @@ class CollapsingAppBarBase(QWidget):
         self.__buttons = buttons.copy()         # type:List[AppBarButton]
         self.__nButtons = len(self.__buttons)
         self.hiddenButtonNum = 0
-        self.moreActionsButton = AppBarButton(
-            "app/resource/images/album_interface/More.png", "", self)
+        self.moreActionsButton = AppBarButton(":/images/album_interface/More.png", "", self)
         self.__initWidget()
 
     def __initWidget(self):
@@ -79,7 +77,7 @@ class CollapsingAppBarBase(QWidget):
 
     def setBackgroundColor(self):
         """ 设置背景颜色 """
-        r, g, b = self.dominantColorGetter.getDominantColor(self.coverPath, tuple)
+        r, g, b = DominantColor.getDominantColor(self.coverPath)
         palette = QPalette()
         palette.setColor(self.backgroundRole(), QColor(r, g, b))
         self.setPalette(palette)

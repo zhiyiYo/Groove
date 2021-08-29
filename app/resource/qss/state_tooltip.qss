@@ -17,13 +17,13 @@ QToolButton {
     margin: 0px;
     width: 14px;
     height: 14px;
-    background: url(app/resource/images/state_tooltip/close_normal.png) top center no-repeat;
+    background: url(:/images/state_tooltip/close_normal.png) top center no-repeat;
 }
 
 QToolButton:hover {
-    background: url(app/resource/images/state_tooltip/close_hover.png) top center no-repeat;
+    background: url(:/images/state_tooltip/close_hover.png) top center no-repeat;
 }
 
 QToolButton:pressed {
-    background: url(app/resource/images/state_tooltip/close_hover.png) top center no-repeat;
+    background: url(:/images/state_tooltip/close_hover.png) top center no-repeat;
 }

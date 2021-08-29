@@ -1,21 +1,20 @@
 # coding:utf-8
 from copy import deepcopy
-from typing import Dict, List
 from pprint import pprint
+from typing import Dict, List
 
 import pinyin
-from app.common.meta_data_getter import AlbumCoverGetter
-from app.common.os_utils import getCoverPath
-from app.common.thread.save_album_info_thread import SaveAlbumInfoThread
-from app.components.album_card import AlbumBlurBackground, AlbumCard
-from app.components.dialog_box.album_info_edit_dialog import \
-    AlbumInfoEditDialog
-from app.components.dialog_box.message_dialog import MessageDialog
-from app.components.group_box import GroupBox
-from app.components.layout.grid_layout import GridLayout
-from app.components.scroll_area import ScrollArea
-from PyQt5.QtCore import (QParallelAnimationGroup, QPoint, QPropertyAnimation,
-                          Qt, pyqtSignal)
+from common.meta_data_getter import AlbumCoverGetter
+from common.os_utils import getCoverPath
+from common.thread.save_album_info_thread import SaveAlbumInfoThread
+from components.album_card import AlbumBlurBackground, AlbumCard
+from components.dialog_box.album_info_edit_dialog import AlbumInfoEditDialog
+from components.dialog_box.message_dialog import MessageDialog
+from components.group_box import GroupBox
+from components.layout.grid_layout import GridLayout
+from components.scroll_area import ScrollArea
+from PyQt5.QtCore import (QFile, QParallelAnimationGroup, QPoint,
+                          QPropertyAnimation, Qt, pyqtSignal)
 from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget
 
 
@@ -418,8 +417,10 @@ class AlbumCardInterface(ScrollArea):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open("app/resource/css/album_card_interface.qss", encoding="utf-8") as f:
-            self.setStyleSheet(f.read())
+        f = QFile(":/qss/album_card_interface.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
 
     def findAlbumCardByAlbumInfo(self, albumInfo: dict) -> AlbumCard:
         """ 通过专辑信息查找专辑卡，没找到则返回 None """

@@ -1,5 +1,5 @@
 # coding:utf-8
-from app.common.os_utils import getCoverPath, adjustName
+from common.os_utils import getCoverPath, adjustName
 from .get_album_cover import AlbumCoverGetter
 
 class AlbumInfoGetter:
@@ -77,7 +77,7 @@ class AlbumInfoGetter:
         album = songInfo["album"]
         singer = songInfo["singer"]
         coverName = adjustName(singer+'_'+album)
-        
+
         coverPath = getCoverPath(coverName, 'album_big')
         albumInfo = {
             "album": album,

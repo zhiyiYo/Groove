@@ -5,9 +5,9 @@ from PyQt5.QtCore import Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QFont, QFontMetrics, QPainter, QPixmap
 from PyQt5.QtWidgets import QLabel, QWidget
 
-from app.common.os_utils import getCoverPath
+from common.os_utils import getCoverPath
 
-from app.components.perspective_widget import PerspectiveWidget
+from components.perspective_widget import PerspectiveWidget
 
 
 class SongInfoCard(PerspectiveWidget):
@@ -84,7 +84,7 @@ class SongInfoCard(PerspectiveWidget):
 
         name = self.songInfo.get('coverName', '未知歌手_未知专辑')
         newCoverPath = getCoverPath(name, "album_big")
-        
+
         # 封面路径变化时发送信号并更新封面
         if newCoverPath != self.coverPath:
             self.albumChanged.emit(newCoverPath)
@@ -315,9 +315,9 @@ class ScrollTextWindow(QWidget):
         globalY = globalPos.y()
         # 判断事件发生的位置发生在自己所占的rect内
         condX = (globalX <= self.cursor().pos().x()
-                <= globalX + self.width())
+                 <= globalX + self.width())
         condY = (globalY <= self.cursor().pos().y()
-                <= globalY + self.height())
+                 <= globalY + self.height())
         return (condX and condY)
 
 

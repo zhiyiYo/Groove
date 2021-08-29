@@ -4,7 +4,7 @@ from PyQt5.QtCore import QPoint, Qt, pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QFont, QPainter, QPen, QPolygon
 from PyQt5.QtWidgets import QPushButton
 
-from app.common.get_pressed_pos import getPressedPos
+from common.get_pressed_pos import getPressedPos
 
 
 class TabButton(QPushButton):
@@ -60,7 +60,8 @@ class TabButton(QPushButton):
     def paintEvent(self, QPaintEvent):
         """ 绘制背景 """
         painter = QPainter(self)
-        painter.setRenderHints(QPainter.Antialiasing | QPainter.TextAntialiasing)
+        painter.setRenderHints(QPainter.Antialiasing |
+                               QPainter.TextAntialiasing)
         painter.setFont(QFont("Microsoft YaHei", 15))
         if not self.isSelected:
             self.__paintAllText(painter, 14)
@@ -128,7 +129,8 @@ class TabButton(QPushButton):
         painter.setPen(Qt.NoPen)
         brush = QBrush(QColor(0, 153, 188))
         painter.setBrush(brush)
-        points = [QPoint(x1, y1), QPoint(x2, y2), QPoint(x3, y3), QPoint(x4, y4)]
+        points = [QPoint(x1, y1), QPoint(x2, y2),
+                  QPoint(x3, y3), QPoint(x4, y4)]
         painter.drawPolygon(QPolygon(points), 4)
 
     def __paintAllText(self, painter, fontSize=16):
@@ -152,4 +154,3 @@ class TabButton(QPushButton):
             # 左下角和右上角
             elif self.pressedPos in ["left-bottom", "right-top"]:
                 self.__paintText(painter, 0.03, 0)
-

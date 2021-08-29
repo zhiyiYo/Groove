@@ -2,8 +2,8 @@
 import sys
 import json
 
-from app.components.scroll_area import ScrollArea
-from app.View.playlist_interface.playlist_info_bar import PlaylistInfoBar
+from components.scroll_area import ScrollArea
+from View.playlist_interface.playlist_info_bar import PlaylistInfoBar
 from PyQt5.QtCore import Qt, pyqtSignal, QSize
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget, QListWidget, QListWidgetItem, QVBoxLayout, QApplication
@@ -69,7 +69,7 @@ class Demo(ScrollArea):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    with open("app/Playlists/我喜欢.json", encoding="utf-8") as f:
+    with open("Playlists/我喜欢.json", encoding="utf-8") as f:
         playlist = json.load(f)
     w = Demo(playlist)
     w.show()

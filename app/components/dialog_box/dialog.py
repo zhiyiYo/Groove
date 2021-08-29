@@ -1,8 +1,7 @@
 # coding:utf-8
 import textwrap
 
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import QFile, Qt, pyqtSignal
 from PyQt5.QtWidgets import QDialog, QLabel, QPushButton
 
 
@@ -60,5 +59,7 @@ class Dialog(QDialog):
         """ 设置层叠样式 """
         self.titleLabel.setObjectName("titleLabel")
         self.contentLabel.setObjectName("contentLabel")
-        with open('app/resource/css/dialog.qss', encoding='utf-8') as f:
-            self.setStyleSheet(f.read())
+        f = QFile(":/qss/dialog.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()

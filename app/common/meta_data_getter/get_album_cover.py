@@ -7,13 +7,13 @@ from mutagen.m4a import M4A
 from mutagen.mp3 import MP3
 from mutagen.flac import FLAC
 
-from app.common.image_process_utils import getPicSuffix
+from common.image_process_utils import getPicSuffix
 
 
 class AlbumCoverGetter:
     """ 获取专辑封面的类 """
 
-    coverFolder = "app/resource/Album_Cover"
+    coverFolder = "Album_Cover"
 
     def __init__(self, songInfo_list: list):
         """
@@ -55,7 +55,7 @@ class AlbumCoverGetter:
         isPicExist, sub_album_cover_folder = cls.__isPicExist(songInfo)
         if isPicExist:
             return
-            
+
         # 如果文件夹中不存在图片就扫描歌曲元数据来提取
         id_card = File(songInfo["songPath"])
 

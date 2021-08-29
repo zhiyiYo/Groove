@@ -1,12 +1,11 @@
 # coding:utf-8
-
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPainter, QPen, QColor
-from PyQt5.QtWidgets import QWidget, QLabel, QPushButton, QAction
+from components.buttons.three_state_button import ThreeStatePushButton
+from components.menu import AeroMenu
+from PyQt5.QtCore import QFile, Qt
+from PyQt5.QtGui import QColor, QPainter, QPen
+from PyQt5.QtWidgets import QAction, QLabel, QPushButton, QWidget
 
 from .tab_button import TabButton
-from app.components.buttons.three_state_button import ThreeStatePushButton
-from app.components.menu import AeroMenu
 
 
 class ToolBar(QWidget):
@@ -29,9 +28,9 @@ class ToolBar(QWidget):
         # 创建底部按钮
         self.randomPlayAllButton = ThreeStatePushButton(
             {
-                "normal": r"app\resource\images\ramdom_play_all\Shuffle_normal.png",
-                "hover": r"app\resource\images\ramdom_play_all\Shuffle_hover.png",
-                "pressed": r"app\resource\images\ramdom_play_all\Shuffle_pressed.png",
+                "normal": ":/images/random_play_all/Shuffle_normal.png",
+                "hover": ":/images/random_play_all/Shuffle_hover.png",
+                "pressed": ":/images/random_play_all/Shuffle_pressed.png",
             },
             parent=self,
             text=" 无序播放所有",
@@ -92,9 +91,9 @@ class ToolBar(QWidget):
         self.albumTabButton.move(239, 136)
         self.singerTabButton.move(136, 136)
         self.randomPlayAllButton.move(31, 199)
-        self.sortModeLabel.move(231, 204)
-        self.songSortModeButton.move(306, 199)
-        self.albumSortModeButton.move(306, 199)
+        self.sortModeLabel.move(231, 200)
+        self.songSortModeButton.move(306, 195)
+        self.albumSortModeButton.move(306, 195)
 
     def paintEvent(self, QPaintEvent):
         """ 绘制背景 """
@@ -105,5 +104,7 @@ class ToolBar(QWidget):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open(r"app\resource\css\my_music_interface_toolBar.qss", encoding="utf-8") as f:
-            self.setStyleSheet(f.read())
+        f = QFile(":/qss/my_music_interface_toolBar.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()

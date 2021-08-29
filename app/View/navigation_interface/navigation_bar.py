@@ -1,5 +1,4 @@
 # coding:utf-8
-
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QVBoxLayout
 
@@ -22,20 +21,20 @@ class NavigationBar(NavigationWidgetBase):
     def __createButtons(self):
         """实例化按钮 """
         self.showMenuButton = ToolButton(
-            r'app\resource\images\navigation_interface\GlobalNavButton.png', parent=self)
+            ':/images/navigation_interface/GlobalNavButton.png', parent=self)
         self.searchButton = ToolButton(
-            r'app\resource\images\navigation_interface\Search.png', (60, 62), self)
+            ':/images/navigation_interface/Search.png', (60, 62), self)
         self.myMusicButton = ToolButton(
-            r'app\resource\images\navigation_interface\MusicInCollection.png', (60, 62), self)
+            ':/images/navigation_interface/MusicInCollection.png', (60, 62), self)
         self.historyButton = ToolButton(
-            r'app\resource\images\navigation_interface\Recent.png', (60, 62), self)
+            ':/images/navigation_interface/Recent.png', (60, 62), self)
         self.playingButton = ToolButton(
-            r'app\resource\images\navigation_interface\黑色导航栏正在播放.png', (60, 62), self)
+            ':/images/navigation_interface/Playing.png', (60, 62), self)
         self.playlistButton = ToolButton(
-            r'app\resource\images\navigation_interface\黑色播放列表.png', parent=self)
+            ':/images/navigation_interface/Playlist.png', parent=self)
         self.createPlaylistButton = CreatePlaylistButton(self)
         self.settingButton = ToolButton(
-            r'app\resource\images\navigation_interface\Settings.png', parent=self)
+            ':/images/navigation_interface/Settings.png', parent=self)
         # 初始化当前选中的按钮
         self.currentButton = self.myMusicButton
         # 创建一个按钮列表

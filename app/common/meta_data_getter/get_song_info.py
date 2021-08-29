@@ -5,8 +5,8 @@ import json
 from mutagen import File
 from tinytag import TinyTag
 
-from app.common.os_utils import checkDirExists
-from app.common.os_utils import adjustName
+from common.os_utils import checkDirExists
+from common.os_utils import adjustName
 from PyQt5.QtCore import QFileInfo, Qt
 
 
@@ -21,11 +21,11 @@ class SongInfoGetter:
         self.songInfo_list = []
         self.getInfo(folderPaths)
 
-    @checkDirExists('app/data')
+    @checkDirExists('data')
     def scanTargetFolderSongInfo(self, folderPaths: list):
         """ 扫描指定文件夹的歌曲信息并更新歌曲信息 """
         self.folderPaths = folderPaths
-        with open("app/data/songInfo.json", "w", encoding="utf-8") as f:
+        with open("data/songInfo.json", "w", encoding="utf-8") as f:
             json.dump([{}], f)
         self.songInfo_list = []
         self.getInfo(folderPaths)
@@ -35,7 +35,7 @@ class SongInfoGetter:
         hasSongModified = False
 
         # 如果歌曲信息被删除了，就重新扫描一遍
-        if not os.path.exists("app/data/songInfo.json"):
+        if not os.path.exists("data/songInfo.json"):
             self.scanTargetFolderSongInfo(self.folderPaths)
             return True
 
@@ -69,7 +69,7 @@ class SongInfoGetter:
         self.save()
         return hasSongModified
 
-    @checkDirExists('app/data')
+    @checkDirExists('data')
     def getInfo(self, folderPaths: list):
         """ 从指定的目录读取符合匹配规则的歌曲的标签卡信息 """
         self.folderPaths = folderPaths
@@ -106,7 +106,7 @@ class SongInfoGetter:
         """ 获取一首歌的信息 """
         tag = TinyTag.get(songPath)
         fileInfo = QFileInfo(songPath)
-        
+
         # 获取标签信息
         suffix = "." + fileInfo.suffix()
         songName = tag.title if tag.title and tag.title.strip() else fileInfo.baseName()
@@ -181,16 +181,16 @@ class SongInfoGetter:
     def __readSongInfoFromJson(self) -> list:
         """ 从 json 文件中读取歌曲信息 """
         try:
-            with open("app/data/songInfo.json", "r", encoding="utf-8") as f:
+            with open("data/songInfo.json", "r", encoding="utf-8") as f:
                 songInfo_list = json.load(f)
         except:
             songInfo_list = [{}]
         return songInfo_list
 
-    @checkDirExists('app/data')
+    @checkDirExists('data')
     def save(self):
         """ 保存歌曲信息 """
-        with open("app/data/songInfo.json", "w", encoding="utf-8") as f:
+        with open("data/songInfo.json", "w", encoding="utf-8") as f:
             json.dump(self.songInfo_list, f)
 
     def __getSongFilePaths(self):
@@ -208,7 +208,7 @@ class SongInfoGetter:
     def hasSongModified(self):
         """ 检测是否有歌曲被修改 """
         # 如果歌曲信息被删除了，就重新扫描一遍
-        if not os.path.exists("app/data/songInfo.json"):
+        if not os.path.exists("data/songInfo.json"):
             return True
 
         # 利用当前的歌曲信息进行更新

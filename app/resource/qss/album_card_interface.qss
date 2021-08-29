@@ -6,14 +6,35 @@ QWidget#albumCard[isChecked='False'] {
     background: transparent;
 }
 
+QWidget {
+    background-color: transparent;
+}
+
+
 QScrollArea {
     background-color: white;
     border: none;
 }
 
-QWidget#scrollWidget{
-    background-color: white;
+QGroupBox {
+    background-color: transparent;
+    font: 21px 'Microsoft YaHei';
+    color: rgb(0, 107, 131);
+    border: none;
+    /*改标题懒到组内小部件的垂直距离*/
+    margin-top: 30px;
 }
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding-left: 10px;
+}
+
+QGridLayout {
+    background-color: transparent;
+}
+
 
 /*滚动条*/
 QScrollBar {
@@ -73,8 +94,12 @@ QLabel#contentLabel[isChecked='True'] {
     color: rgb(153, 196, 205);
 }
 
-QLabel#inYourMusicLabel {
-    font: 22px "Microsoft YaHei";
+QLabel#contentLabel[isChecked='False']:hover {
+    color: rgb(150, 150, 150);
+}
+
+QLabel#contentLabel[isChecked='True']:hover {
+    color: rgb(122, 178, 190);
 }
 
 
@@ -97,5 +122,5 @@ QCheckBox::indicator:unchecked:pressed {
 
 QCheckBox::indicator:checked {
     background: rgb(0, 107, 131);
-    border-image: url(app/resource/images/album_tab_interface/CheckMark.png);
+    border-image: url(:/images/album_tab_interface/CheckMark.png);
 }

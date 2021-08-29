@@ -27,6 +27,6 @@ class ImagePalette(QWidget):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    demo = ImagePalette("app/resource/Album_Cover/風に吹かれて/風に吹かれて.png", 5)
+    demo = ImagePalette("Album_Cover/風に吹かれて/風に吹かれて.png", 5)
     demo.show()
     sys.exit(app.exec_())

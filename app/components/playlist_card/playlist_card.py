@@ -1,11 +1,11 @@
 # coding:utf-8
-from app.common.auto_wrap import autoWrap
-from app.common.os_utils import getCoverPath
-from app.common.image_process_utils import DominantColor
-from app.components.buttons.blur_button import BlurButton
-from app.components.check_box import CheckBox
-from app.components.menu import AddToMenu, DWMMenu
-from app.components.perspective_widget import PerspectiveWidget
+from common.auto_wrap import autoWrap
+from common.os_utils import getCoverPath
+from common.image_process_utils import DominantColor
+from components.buttons.blur_button import BlurButton
+from components.check_box import CheckBox
+from components.menu import AddToMenu, DWMMenu
+from components.perspective_widget import PerspectiveWidget
 from PIL import Image
 from PIL.ImageFilter import GaussianBlur
 from PyQt5.QtCore import QPoint, Qt, pyqtSignal
@@ -41,13 +41,13 @@ class PlaylistCard(PerspectiveWidget):
         self.playButton = BlurButton(
             self,
             (35, 70),
-            r"app\resource\images\album_tab_interface\Play.png",
+            ":/images/album_tab_interface/Play.png",
             self.playlistCoverPath,
         )
         self.addToButton = BlurButton(
             self,
             (105, 70),
-            r"app\resource\images\album_tab_interface\Add.png",
+            ":/images/album_tab_interface/Add.png",
             self.playlistCoverPath,
         )
         self.playlistNameLabel = QLabel(self.playlistName, self)
@@ -237,13 +237,12 @@ class PlaylistCard(PerspectiveWidget):
 class PlaylistCover(QWidget):
     """ 播放列表封面 """
 
-    def __init__(self, parent=None, picPath: str = "", picSize: tuple = (135, 135)):
+    def __init__(self, parent=None, picPath: str = ""):
         super().__init__(parent)
         self.resize(288, 196)
         self.__blurPix = None
         self.__playlistCoverPix = None
         self.playlistCoverPath = ''
-        self.__dominantColor = DominantColor()
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setPlaylistCover(picPath)
 
@@ -251,15 +250,22 @@ class PlaylistCover(QWidget):
         """ 设置封面 """
         if picPath == self.playlistCoverPath:
             return
+
         # 封面磨砂
         self.playlistCoverPath = picPath
-        img = Image.open(picPath).resize((288, 288)).crop((0, 46, 288, 242))
-        self.__blurPix = img.filter(GaussianBlur(50)).toqpixmap()
+
+        if not picPath.startswith(':'):
+            img = Image.open(picPath)
+        else:
+            img = Image.fromqpixmap(QPixmap(picPath))
+
+        img = img.resize((288, 288)).crop((0, 46, 288, 242))
+        self.__blurPix = img.filter(GaussianBlur(40)).toqpixmap()
         self.__playlistCoverPix = QPixmap(picPath).scaled(
             135, 135, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)  # type:QPixmap
+
         # 获取主色调
-        self.dominantRgb = self.__dominantColor.getDominantColor(
-            picPath, tuple)
+        self.dominantRgb = DominantColor.getDominantColor(picPath)
         self.update()
 
     def paintEvent(self, e):

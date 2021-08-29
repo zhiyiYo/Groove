@@ -1,9 +1,9 @@
 # coding:utf-8
 import os
 
-from app.common.meta_data_writer import writeAlbumCover, writeSongInfo
-from app.common.crawler.qq_music_crawler import QQMusicCrawler
-from PyQt5.QtCore import QObject, pyqtSignal, QThread
+from common.meta_data_writer import writeAlbumCover, writeSongInfo
+from common.crawler.qq_music_crawler import QQMusicCrawler
+from PyQt5.QtCore import pyqtSignal, QThread
 
 
 class GetMetaDataThread(QThread):
@@ -19,7 +19,7 @@ class GetMetaDataThread(QThread):
     def run(self):
         """ 获取歌曲元数据 """
         # 创建一个本地专辑封面缓存文件夹
-        cover_folder = 'app/resource/crawl_album_covers'
+        cover_folder = 'crawl_album_covers'
         os.makedirs(cover_folder, exist_ok=True)
         albumCovers = {}
 

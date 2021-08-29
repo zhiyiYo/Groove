@@ -6,35 +6,35 @@ from random import shuffle
 from time import time
 from typing import Dict
 
-from app.common.os_utils import moveToTrash
-from app.components.dialog_box.create_playlist_dialog import \
-    CreatePlaylistDialog
-from app.components.dialog_box.message_dialog import MessageDialog
-from app.components.frameless_window import FramelessWindow
-from app.components.label_navigation_interface import LabelNavigationInterface
-from app.components.media_player import MediaPlaylist, PlaylistType
-from app.components.opacity_ani_stacked_widget import OpacityAniStackedWidget
-from app.components.pop_up_ani_stacked_widget import PopUpAniStackedWidget
-from app.components.state_tooltip import StateTooltip
-from app.components.thumbnail_tool_bar import ThumbnailToolBar
-from app.components.title_bar import TitleBar
-from app.View.album_interface import AlbumInterface
-from app.View.my_music_interface import MyMusicInterface
-from app.View.navigation_interface import NavigationInterface
-from app.View.play_bar import PlayBar
-from app.View.playing_interface import PlayingInterface
-from app.View.playlist_card_interface import PlaylistCardInterface
-from app.View.playlist_interface import PlaylistInterface
-from app.View.search_result_interface import SearchResultInterface
-from app.View.setting_interface import SettingInterface
-from app.View.singer_interface import SingerInterface
-from app.View.smallest_play_interface import SmallestPlayInterface
-from PyQt5.QtCore import QEasingCurve, QEvent, QSize, Qt, QTimer
-from PyQt5.QtGui import QCloseEvent, QIcon, QColor
+from common import resource
+from common.os_utils import moveToTrash
+from components.dialog_box.create_playlist_dialog import CreatePlaylistDialog
+from components.dialog_box.message_dialog import MessageDialog
+from components.frameless_window import FramelessWindow
+from components.label_navigation_interface import LabelNavigationInterface
+from components.media_player import MediaPlaylist, PlaylistType
+from components.opacity_ani_stacked_widget import OpacityAniStackedWidget
+from components.pop_up_ani_stacked_widget import PopUpAniStackedWidget
+from components.state_tooltip import StateTooltip
+from components.thumbnail_tool_bar import ThumbnailToolBar
+from components.title_bar import TitleBar
+from PyQt5.QtCore import QEasingCurve, QEvent, QFile, Qt, QTimer
+from PyQt5.QtGui import QCloseEvent, QColor, QIcon
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist
 from PyQt5.QtWidgets import QAction, QApplication, QWidget
 from PyQt5.QtWinExtras import QtWin
 from system_hotkey import SystemHotkey
+from View.album_interface import AlbumInterface
+from View.my_music_interface import MyMusicInterface
+from View.navigation_interface import NavigationInterface
+from View.play_bar import PlayBar
+from View.playing_interface import PlayingInterface
+from View.playlist_card_interface import PlaylistCardInterface
+from View.playlist_interface import PlaylistInterface
+from View.search_result_interface import SearchResultInterface
+from View.setting_interface import SettingInterface
+from View.singer_interface import SingerInterface
+from View.smallest_play_interface import SmallestPlayInterface
 
 
 class MainWindow(FramelessWindow):
@@ -90,7 +90,8 @@ class MainWindow(FramelessWindow):
         # 创建播放栏
         color = self.settingInterface.getConfig(
             'playBar-color', [34, 92, 127])
-        self.playBar = PlayBar(self.mediaPlaylist.lastSongInfo, QColor(*color), self)
+        self.playBar = PlayBar(
+            self.mediaPlaylist.lastSongInfo, QColor(*color), self)
 
         # 创建正在播放界面
         self.playingInterface = PlayingInterface(
@@ -106,7 +107,6 @@ class MainWindow(FramelessWindow):
         self.playlistInterface = PlaylistInterface({}, self.subMainWindow)
         self.playlistCardInterface = PlaylistCardInterface(
             self.readCustomPlaylists(), self)
-
         # 创建导航界面
         self.navigationInterface = NavigationInterface(self.subMainWindow)
 
@@ -154,7 +154,7 @@ class MainWindow(FramelessWindow):
         self.resize(1240, 970)
         self.setMinimumSize(1030, 800)
         self.setWindowTitle("Groove 音乐")
-        self.setWindowIcon(QIcon("app/resource/images/logo.png"))
+        self.setWindowIcon(QIcon(":/images/logo.png"))
         self.setAttribute(Qt.WA_TranslucentBackground | Qt.WA_StyledBackground)
         # 在去除任务栏的显示区域居中显示
         desktop = QApplication.desktop().availableGeometry()
@@ -240,9 +240,9 @@ class MainWindow(FramelessWindow):
         """ 过滤事件 """
         if obj == self.navigationInterface.navigationMenu:
             # 显示导航菜单是更改标题栏返回按钮和标题的父级为导航菜单
-            isVisible = self.titleBar.returnBt.isVisible()
+            isVisible = self.titleBar.returnButton.isVisible()
             if e.type() == QEvent.Show:
-                self.titleBar.returnBt.setParent(obj)
+                self.titleBar.returnButton.setParent(obj)
                 # 显示标题
                 self.titleBar.title.setParent(obj)
                 self.titleBar.title.move(15, 10)
@@ -257,10 +257,10 @@ class MainWindow(FramelessWindow):
             elif e.type() == QEvent.Hide:
                 # 隐藏标题
                 self.titleBar.title.setParent(self.titleBar)
-                self.titleBar.returnBt.setParent(self.titleBar)
+                self.titleBar.returnButton.setParent(self.titleBar)
                 self.titleBar.title.hide()
             # 根据情况显示/隐藏返回按钮和标题
-            self.titleBar.returnBt.setVisible(isVisible)
+            self.titleBar.returnButton.setVisible(isVisible)
         return super().eventFilter(obj, e)
 
     def resizeEvent(self, e):
@@ -535,7 +535,7 @@ class MainWindow(FramelessWindow):
         self.exitSelectionMode()
         self.playBar.hide()
         self.titleBar.title.hide()
-        self.titleBar.returnBt.show()
+        self.titleBar.returnButton.show()
         if not self.playingInterface.isPlaylistVisible:
             self.playingInterface.songInfoCardChute.move(
                 0, -self.playingInterface.playBar.height() + 68)
@@ -558,7 +558,7 @@ class MainWindow(FramelessWindow):
         whiteInterface = [self.albumInterface,
                           self.playlistInterface, self.singerInterface]
         if self.subStackWidget.currentWidget() in whiteInterface:
-            self.titleBar.returnBt.setWhiteIcon(False)
+            self.titleBar.returnButton.setWhiteIcon(False)
         else:
             self.titleBar.setWhiteIcon(False)
 
@@ -566,14 +566,16 @@ class MainWindow(FramelessWindow):
         cond = self.subStackWidget.currentWidget() not in [
             self.albumInterface, self.labelNavigationInterface]
         if len(self.navigationHistories) == 1 and cond:
-            self.titleBar.returnBt.hide()
+            self.titleBar.returnButton.hide()
 
         self.titleBar.title.setVisible(self.navigationInterface.isExpanded)
 
     def setQss(self):
         """ 设置层叠样式 """
-        with open(r"app\resource\css\main_window.qss", encoding="utf-8") as f:
-            self.setStyleSheet(f.read())
+        f = QFile(":/qss/main_window.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
 
     def onPlayingInterfaceCurrentIndexChanged(self, index):
         """ 正在播放界面下标变化槽函数 """
@@ -613,7 +615,7 @@ class MainWindow(FramelessWindow):
         self.showNormal()
         # 更新最大化按钮图标
         self.titleBar.maxBt.setMaxState(False)
-        self.titleBar.returnBt.show()
+        self.titleBar.returnButton.show()
         self.titleBar.show()
         self.playingInterface.playBar.FullScreenButton.setFullScreen(False)
         if self.playingInterface.isPlaylistVisible:
@@ -658,14 +660,14 @@ class MainWindow(FramelessWindow):
         playlist = self.playlistCardInterface.playlists[playlistName]
 
         # 显示返回按钮
-        self.titleBar.returnBt.show()
+        self.titleBar.returnButton.show()
         QApplication.processEvents()
         self.playlistInterface.updateWindow(playlist)
         self.subStackWidget.setCurrentWidget(
             self.playlistInterface, duration=300)
         self.totalStackWidget.setCurrentIndex(0)
         self.titleBar.setWhiteIcon(True)
-        self.titleBar.returnBt.setWhiteIcon(False)
+        self.titleBar.returnButton.setWhiteIcon(False)
         self.playBar.show()
 
         # 增加导航历史
@@ -691,7 +693,7 @@ class MainWindow(FramelessWindow):
             return
 
         # 显示返回按钮
-        self.titleBar.returnBt.show()
+        self.titleBar.returnButton.show()
         QApplication.processEvents()
         self.singerInterface.updateWindow(singerInfo)
         self.subStackWidget.setCurrentWidget(
@@ -699,7 +701,7 @@ class MainWindow(FramelessWindow):
         self.totalStackWidget.setCurrentIndex(0)
         self.singerInterface.albumBlurBackground.hide()
         self.titleBar.setWhiteIcon(True)
-        self.titleBar.returnBt.setWhiteIcon(False)
+        self.titleBar.returnButton.setWhiteIcon(False)
         self.playBar.show()
 
         # 增加导航历史
@@ -719,13 +721,13 @@ class MainWindow(FramelessWindow):
             return
 
         # 显示返回按钮
-        self.titleBar.returnBt.show()
+        self.titleBar.returnButton.show()
         QApplication.processEvents()
         self.albumInterface.updateWindow(albumInfo)
         self.subStackWidget.setCurrentWidget(self.albumInterface, duration=300)
         self.totalStackWidget.setCurrentIndex(0)
         self.titleBar.setWhiteIcon(True)
-        self.titleBar.returnBt.setWhiteIcon(False)
+        self.titleBar.returnButton.setWhiteIcon(False)
         self.playBar.show()
 
         # 增加导航历史
@@ -792,17 +794,17 @@ class MainWindow(FramelessWindow):
             whiteIndexes = [self.subStackWidget.indexOf(
                 i) for i in [self.playlistInterface, self.albumInterface, self.singerInterface]]
             self.titleBar.setWhiteIcon(index in whiteIndexes)
-            self.titleBar.returnBt.setWhiteIcon(False)
+            self.titleBar.returnButton.setWhiteIcon(False)
 
         self.hidePlayingInterface()
 
         if len(self.navigationHistories) == 1:
-            self.titleBar.returnBt.hide()
+            self.titleBar.returnButton.hide()
 
     def onMyMucicInterfaceStackWidgetIndexChanged(self, index):
         """ 堆叠窗口下标改变时的槽函数 """
         self.navigationHistories.append(("myMusicInterfaceStackWidget", index))
-        self.titleBar.returnBt.show()
+        self.titleBar.returnButton.show()
 
     def onEditSongInfo(self, oldSongInfo: dict, newSongInfo: dict):
         """ 编辑歌曲卡完成信号的槽函数 """
@@ -830,7 +832,7 @@ class MainWindow(FramelessWindow):
             self.myMusicInterface.singerInfoGetter.updateSingerInfos(
                 self.albumCardInterface.albumInfo_list)
             if not self.albumInterface.songInfo_list:
-                self.titleBar.returnBt.click()
+                self.titleBar.returnButton.click()
 
         elif self.sender() is self.albumCardInterface:
             self.myMusicInterface.singerInfoGetter.updateSingerInfos(
@@ -885,7 +887,7 @@ class MainWindow(FramelessWindow):
 
         # 更新标题栏
         self.titleBar.setWhiteIcon(False)
-        self.titleBar.returnBt.show()
+        self.titleBar.returnButton.show()
 
         # 增加导航历史
         index = self.subStackWidget.indexOf(self.settingInterface)
@@ -898,7 +900,7 @@ class MainWindow(FramelessWindow):
 
         # 更新标题栏
         self.titleBar.setWhiteIcon(False)
-        self.titleBar.returnBt.show()
+        self.titleBar.returnButton.show()
 
         # 增加导航历史
         index = self.subStackWidget.indexOf(self.myMusicInterface)
@@ -912,7 +914,7 @@ class MainWindow(FramelessWindow):
 
         # 更新标题栏
         self.titleBar.setWhiteIcon(False)
-        self.titleBar.returnBt.show()
+        self.titleBar.returnButton.show()
 
         # 增加导航历史
         index = self.subStackWidget.indexOf(self.playlistCardInterface)
@@ -932,7 +934,7 @@ class MainWindow(FramelessWindow):
     @staticmethod
     def readCustomPlaylists():
         """ 读取自定义播放列表 """
-        path = "app/Playlists"
+        path = "Playlists"
         os.makedirs(path, exist_ok=True)
 
         customPlaylists = {}  # type:Dict[str, dict]
@@ -966,7 +968,7 @@ class MainWindow(FramelessWindow):
         self.navigationInterface.updateWindow()
         if self.sender() is self.playlistInterface:
             self.playlistCardInterface.deleteOnePlaylistCard(playlistName)
-            self.titleBar.returnBt.click()
+            self.titleBar.returnButton.click()
         elif self.sender() is self.searchResultInterface:
             self.playlistCardInterface.deleteOnePlaylistCard(playlistName)
 
@@ -1012,7 +1014,7 @@ class MainWindow(FramelessWindow):
         """ 切换到专辑卡界面 """
         self.subStackWidget.setCurrentWidget(self.myMusicInterface)
         self.titleBar.setWhiteIcon(False)
-        self.titleBar.returnBt.show()
+        self.titleBar.returnButton.show()
         self.myMusicInterface.setCurrentTab(1)
         self.navigationInterface.setCurrentIndex(0)
 
@@ -1032,7 +1034,7 @@ class MainWindow(FramelessWindow):
         )
 
         # 切换界面
-        self.titleBar.returnBt.show()
+        self.titleBar.returnButton.show()
         QApplication.processEvents()
         self.subStackWidget.setCurrentWidget(
             self.searchResultInterface, duration=300)
@@ -1075,7 +1077,7 @@ class MainWindow(FramelessWindow):
         if self.sender() in [self.searchResultInterface, self.singerInterface]:
             self.myMusicInterface.deleteSongs(songPaths)
             if self.sender() is self.singerInterface and not self.singerInterface.albumInfo_list:
-                self.titleBar.returnBt.click()
+                self.titleBar.returnButton.click()
 
         # 歌曲移动到回收站
         for songPath in songPaths:
@@ -1124,7 +1126,7 @@ class MainWindow(FramelessWindow):
             self.searchResultInterface.setOnlineMusicPageSize)
 
         # 将标题栏返回按钮点击信号连接到槽函数
-        self.titleBar.returnBt.clicked.connect(self.onReturnButtonClicked)
+        self.titleBar.returnButton.clicked.connect(self.onReturnButtonClicked)
 
         # 将导航界面信号连接到槽函数
         self.navigationInterface.displayModeChanged.connect(

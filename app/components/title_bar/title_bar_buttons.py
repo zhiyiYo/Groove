@@ -1,5 +1,4 @@
 # coding:utf-8
-
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QPushButton, QToolButton
@@ -65,26 +64,26 @@ class MaximizeButton(QPushButton):
         self.iconPathDict_list = [
             [
                 {
-                    "normal": "app/resource/images/titleBar/透明黑色最大化按钮_57_40.png",
-                    "hover": "app/resource/images/titleBar/绿色最大化按钮_hover_57_40.png",
-                    "pressed": "app/resource/images/titleBar/黑色最大化按钮_pressed_57_40.png",
+                    "normal": ":/images/title_bar/透明黑色最大化按钮_57_40.png",
+                    "hover": ":/images/title_bar/绿色最大化按钮_hover_57_40.png",
+                    "pressed": ":/images/title_bar/黑色最大化按钮_pressed_57_40.png",
                 },
                 {
-                    "normal": "app/resource/images/titleBar/白色最大化按钮_57_40.png",
-                    "hover": "app/resource/images/titleBar/绿色最大化按钮_hover_57_40.png",
-                    "pressed": "app/resource/images/titleBar/黑色最大化按钮_pressed_57_40.png",
+                    "normal": ":/images/title_bar/白色最大化按钮_57_40.png",
+                    "hover": ":/images/title_bar/绿色最大化按钮_hover_57_40.png",
+                    "pressed": ":/images/title_bar/黑色最大化按钮_pressed_57_40.png",
                 },
             ],
             [
                 {
-                    "normal": "app/resource/images/titleBar/黑色向下还原按钮_57_40.png",
-                    "hover": "app/resource/images/titleBar/绿色向下还原按钮_hover_57_40.png",
-                    "pressed": "app/resource/images/titleBar/向下还原按钮_pressed_57_40.png",
+                    "normal": ":/images/title_bar/黑色向下还原按钮_57_40.png",
+                    "hover": ":/images/title_bar/绿色向下还原按钮_hover_57_40.png",
+                    "pressed": ":/images/title_bar/向下还原按钮_pressed_57_40.png",
                 },
                 {
-                    "normal": "app/resource/images/titleBar/白色向下还原按钮_57_40.png",
-                    "hover": "app/resource/images/titleBar/绿色向下还原按钮_hover_57_40.png",
-                    "pressed": "app/resource/images/titleBar/向下还原按钮_pressed_57_40.png",
+                    "normal": ":/images/title_bar/白色向下还原按钮_57_40.png",
+                    "hover": ":/images/title_bar/绿色向下还原按钮_hover_57_40.png",
+                    "pressed": ":/images/title_bar/向下还原按钮_pressed_57_40.png",
                 },
             ],
         ]
@@ -94,7 +93,7 @@ class MaximizeButton(QPushButton):
         self.isWhiteIcon = False
         self.setStyleSheet("QPushButton{border:none;margin:0}")
         self.setIcon(
-            QIcon("app/resource/images/titleBar/透明黑色最大化按钮_57_40.png"))
+            QIcon(":/images/title_bar/透明黑色最大化按钮_57_40.png"))
         self.setIconSize(QSize(57, 40))
 
     def setWhiteIcon(self, isWhite: bool):

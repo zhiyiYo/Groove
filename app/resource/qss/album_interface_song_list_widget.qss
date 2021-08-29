@@ -112,11 +112,11 @@ QCheckBox::indicator[state='notSelected-play']:pressed {
 }
 
 QCheckBox::indicator:checked {
-    border-image: url(app/resource/images/song_tab_interface/CheckMark.png);
+    border-image: url(:/images/song_tab_interface/CheckMark.png);
 }
 
 QCheckBox::indicator:checked:pressed {
-    border-image: url(app/resource/images/song_tab_interface/CheckMark_pressed.png);
+    border-image: url(:/images/song_tab_interface/CheckMark_pressed.png);
 }
 
 

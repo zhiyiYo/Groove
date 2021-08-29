@@ -1,11 +1,9 @@
 # coding:utf-8
-
-from PyQt5.QtCore import Qt, QEvent, pyqtSignal
-from PyQt5.QtGui import QPixmap, QPainter, QBrush, QPen, QColor
+from components.buttons.circle_button import CircleButton
+from components.slider import Slider
+from PyQt5.QtCore import QEvent, QFile, Qt, pyqtSignal
+from PyQt5.QtGui import QBrush, QColor, QPainter, QPen, QPixmap
 from PyQt5.QtWidgets import QWidget
-
-from app.components.buttons.circle_button import CircleButton
-from app.components.slider import Slider
 
 
 class VolumeSliderWidget(QWidget):
@@ -36,12 +34,15 @@ class VolumeSliderWidget(QWidget):
         # 信号连接到槽
         self.volumeButton.muteStateChanged.connect(self.muteStateChanged)
         self.volumeButton.volumeLevelChanged.connect(self.volumeLevelChanged)
-        self.volumeSlider.valueChanged.connect(self.volumeButton.setVolumeLevel)
+        self.volumeSlider.valueChanged.connect(
+            self.volumeButton.setVolumeLevel)
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open("app/resource/css/volume_slider_widget.qss", encoding="utf-8") as f:
-            self.setStyleSheet(f.read())
+        f = QFile(":/qss/volume_slider_widget.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
 
     def paintEvent(self, e):
         """ 绘制背景 """
@@ -68,11 +69,11 @@ class VolumeButton(CircleButton):
     def __init__(self, parent=None):
         # 按钮图标地址列表
         self.__iconPath_list = [
-            r"app\resource\images\playing_interface\Volume0_black.png",
-            r"app\resource\images\playing_interface\Volume1_black.png",
-            r"app\resource\images\playing_interface\Volume2_black.png",
-            r"app\resource\images\playing_interface\Volume3_black.png",
-            r"app\resource\images\playing_interface\volume_black_level_mute_47_47.png",
+            ":/images/playing_interface/Volume0_black.png",
+            ":/images/playing_interface/Volume1_black.png",
+            ":/images/playing_interface/Volume2_black.png",
+            ":/images/playing_interface/Volume3_black.png",
+            ":/images/playing_interface/volume_black_level_mute_47_47.png",
         ]
         self.pixmap_list = [QPixmap(i) for i in self.__iconPath_list]
         super().__init__(self.__iconPath_list[0], parent)

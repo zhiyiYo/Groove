@@ -1,5 +1,5 @@
 # coding:utf-8
-from app.components.label import ClickableLabel
+from components.label import ClickableLabel
 from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
                           QParallelAnimationGroup, QPropertyAnimation, QRect,
                           Qt, pyqtSignal, QSize, QPoint)
@@ -353,15 +353,15 @@ class ButtonGroup(QWidget):
         # 创建按钮
         self.playButton = ToolButton(
             [
-                r"app\resource\images\playing_interface\Play_60_60.png",
-                r"app\resource\images\playing_interface\Play_green_60_60.png",
+                ":/images/playing_interface/Play_60_60.png",
+                ":/images/playing_interface/Play_green_60_60.png",
             ],
             self,
         )
         self.addToButton = ToolButton(
             [
-                r"app\resource\images\playing_interface\Add.png",
-                r"app\resource\images\playing_interface\Add_green.png",
+                ":/images/playing_interface/Add.png",
+                ":/images/playing_interface/Add_green.png",
             ],
             self,
         )
@@ -400,7 +400,7 @@ class SongNameCard(QWidget):
         self.resize(390, 60)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.playingLabel.setPixmap(
-            QPixmap(r"app\resource\images\playing_interface\正在播放_green_16_16.png"))
+            QPixmap(":/images/playing_interface/Playing_green.png"))
         self.playingLabel.setObjectName('playingLabel')
         # 隐藏小部件
         self.checkBox.hide()

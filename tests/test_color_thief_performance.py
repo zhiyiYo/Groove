@@ -17,7 +17,7 @@ def getColor_(path):
     thief.get_palette(quality=9)
 
 
-path = 'app/resource/Album_Cover/ねぐせ/ねぐせ.jpg'
+path = 'Album_Cover/ねぐせ/ねぐせ.jpg'
 
 # 统计耗时
 t1 = Timer(f"getColor('{path}')", "from __main__ import getColor")

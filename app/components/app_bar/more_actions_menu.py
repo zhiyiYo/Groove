@@ -1,10 +1,10 @@
 # coding:utf-8
 from typing import List
 
-from app.common.window_effect import WindowEffect
-from PyQt5.QtCore import (QEasingCurve, QEvent, QPoint, QPropertyAnimation,
-                          QRect, Qt)
-from PyQt5.QtWidgets import QMenu, QAction
+from common.window_effect import WindowEffect
+from PyQt5.QtCore import (QEasingCurve, QEvent, QFile, QPoint,
+                          QPropertyAnimation, QRect, Qt)
+from PyQt5.QtWidgets import QAction, QMenu
 
 
 class MoreActionsMenu(QMenu):
@@ -36,8 +36,10 @@ class MoreActionsMenu(QMenu):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open("app/resource/css/menu.qss", encoding="utf-8") as f:
-            self.setStyleSheet(f.read())
+        f = QFile(":/qss/menu.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
 
     def addActions(self, actions):
         super().addActions(actions)
@@ -47,7 +49,7 @@ class MoreActionsMenu(QMenu):
         super().addAction(action)
         self.action_list.append(action)
 
-    def exec(self, pos:QPoint):
+    def exec(self, pos: QPoint):
         """ 显示菜单 """
         w = 120 if max([len(i.text()) for i in self.action_list]) <= 5 else 168
         h = len(self.action_list)*38+10

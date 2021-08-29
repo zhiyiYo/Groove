@@ -1,10 +1,10 @@
 # coding:utf-8
 from copy import deepcopy
 
-from app.components.menu import AddToMenu
-from app.common.thread.blur_cover_thread import BlurCoverThread
-from app.components.buttons.three_state_button import ThreeStatePushButton
-from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve,
+from common.thread.blur_cover_thread import BlurCoverThread
+from components.buttons.three_state_button import ThreeStatePushButton
+from components.menu import AddToMenu
+from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QFile,
                           QParallelAnimationGroup, QPoint, QPropertyAnimation,
                           QRect, QSize, Qt, QTimer, pyqtSignal)
 from PyQt5.QtMultimedia import QMediaPlaylist
@@ -74,9 +74,9 @@ class PlayingInterface(QWidget):
         self.guideLabel = QLabel("在这里，你将看到正在播放的歌曲以及即将播放的歌曲。", self)
         self.randomPlayAllButton = ThreeStatePushButton(
             {
-                "normal": r"app\resource\images\playing_interface\全部随机播放_normal.png",
-                "hover": r"app\resource\images\playing_interface\全部随机播放_hover.png",
-                "pressed": r"app\resource\images\playing_interface\全部随机播放_pressed.png",
+                "normal": ":/images/playing_interface/Shuffle_normal.png",
+                "hover": ":/images/playing_interface/Shuffle_hover.png",
+                "pressed": ":/images/playing_interface/Shuffle_pressed.png",
             },
             " 随机播放你收藏中的所有内容",
             (30, 22),
@@ -127,8 +127,10 @@ class PlayingInterface(QWidget):
         self.setObjectName("playingInterface")
         self.guideLabel.setObjectName("guideLabel")
         self.randomPlayAllButton.setObjectName("randomPlayAllButton")
-        with open(r"app\resource\css\playing_interface.qss", encoding="utf-8") as f:
-            self.setStyleSheet(f.read())
+        f = QFile(":/qss/playing_interface.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
 
     def setBlurPixmap(self, blurPixmap):
         """ 设置磨砂pixmap """

@@ -1,10 +1,10 @@
 # coding:utf-8
 from math import ceil
 
-from app.common.os_utils import getCoverPath
-from app.components.menu import AddToMenu
-from app.components.app_bar import (AppBarButton, CollapsingAppBarBase,
-                                    MoreActionsMenu)
+from common.os_utils import getCoverPath
+from components.menu import AddToMenu
+from components.app_bar import (AppBarButton, CollapsingAppBarBase,
+                                MoreActionsMenu)
 from PyQt5.QtCore import QPoint, Qt, pyqtSignal
 from PyQt5.QtGui import QPalette, QColor
 from PyQt5.QtWidgets import QAction
@@ -19,15 +19,15 @@ class PlaylistInfoBar(CollapsingAppBarBase):
     def __init__(self, playlist: dict, parent=None):
         self.__getPlaylistInfo(playlist)
         self.playAllButton = AppBarButton(
-            r"app\resource\images\album_interface\Play.png", "全部播放")
+            ":/images/album_interface/Play.png", "全部播放")
         self.addToButton = AppBarButton(
-            r"app\resource\images\album_interface\Add.png", "添加到")
+            ":/images/album_interface/Add.png", "添加到")
         self.renameButton = AppBarButton(
-            r"app\resource\images\album_interface\Edit.png", "重命名")
+            ":/images/album_interface/Edit.png", "重命名")
         self.pinToStartMenuButton = AppBarButton(
-            r"app\resource\images\album_interface\Pin.png", '固定到"开始"菜单')
+            ":/images/album_interface/Pin.png", '固定到"开始"菜单')
         self.deleteButton = AppBarButton(
-            r"app\resource\images\album_interface\Delete.png", "删除")
+            ":/images/album_interface/Delete.png", "删除")
         buttons = [self.playAllButton, self.addToButton, self.renameButton,
                    self.pinToStartMenuButton, self.deleteButton]
         super().__init__(self.playlistName,
@@ -88,7 +88,7 @@ class PlaylistInfoBar(CollapsingAppBarBase):
 
     def setBackgroundColor(self):
         """ 根据封面背景颜色 """
-        path = "app/resource/images/default_covers/默认播放列表封面_275_275.png"
+        path = ":/images/default_covers/playlist_113_113.png"
         if self.playlistCoverPath != path:
             super().setBackgroundColor()
         else:

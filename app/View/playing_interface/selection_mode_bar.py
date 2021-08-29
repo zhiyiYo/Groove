@@ -1,7 +1,7 @@
 # coding:utf-8
-from app.components.selection_mode_bar_base import (BasicButton,
-                                                    SelectionModeBarBase,
-                                                    CheckAllButton)
+from components.selection_mode_bar_base import (BasicButton,
+                                                SelectionModeBarBase,
+                                                CheckAllButton)
 
 
 class SelectionModeBar(SelectionModeBarBase):
@@ -17,25 +17,25 @@ class SelectionModeBar(SelectionModeBarBase):
     def __createButtons(self):
         """ 创建按钮 """
         self.cancelButton = BasicButton(
-            r"app\resource\images\selection_mode_bar\Cancel.png", "取消", self)
+            ":/images/selection_mode_bar/Cancel.png", "取消", self)
         self.playButton = BasicButton(
-            r"app\resource\images\selection_mode_bar\Play.png", "播放", self)
+            ":/images/selection_mode_bar/Play.png", "播放", self)
         self.addToButton = BasicButton(
-            r"app\resource\images\selection_mode_bar\Add.png", "添加到", self)
+            ":/images/selection_mode_bar/Add.png", "添加到", self)
         self.deleteButton = BasicButton(
-            r"app\resource\images\selection_mode_bar\Delete.png", "移除", self)
+            ":/images/selection_mode_bar/Delete.png", "移除", self)
         self.moveUpButton = BasicButton(
-            r"app\resource\images\selection_mode_bar\Up.png", "向上移动", self)
+            ":/images/selection_mode_bar/Up.png", "向上移动", self)
         self.moveDownButton = BasicButton(
-            r"app\resource\images\selection_mode_bar\Down.png", "向下移动", self)
+            ":/images/selection_mode_bar/Down.png", "向下移动", self)
         self.showAlbumButton = BasicButton(
-            r"app\resource\images\selection_mode_bar\ShowAlbum.png", "显示专辑", self)
+            ":/images/selection_mode_bar/ShowAlbum.png", "显示专辑", self)
         self.propertyButton = BasicButton(
-            r"app\resource\images\selection_mode_bar\Property.png", "属性", self)
+            ":/images/selection_mode_bar/Property.png", "属性", self)
         self.checkAllButton = CheckAllButton(
             [
-                r"app\resource\images\selection_mode_bar\SelectAll.png",
-                r"app\resource\images\selection_mode_bar\CancelSelectAll.png",
+                ":/images/selection_mode_bar/SelectAll.png",
+                ":/images/selection_mode_bar/CancelSelectAll.png",
             ],
             ["全选", "取消全选"],
             self,

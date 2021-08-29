@@ -2,7 +2,7 @@
 
 from ctypes.wintypes import HWND
 
-from app.common.window_effect import WindowEffect
+from common.window_effect import WindowEffect
 from PyQt5.QtCore import QEasingCurve, QPropertyAnimation, QRect, Qt
 
 from .navigation_widget import NavigationWidget
@@ -35,7 +35,8 @@ class NavigationMenu(NavigationWidget):
         self.scrollArea.resize(self.width(), self.height() - 232)
         self.settingButton.move(
             0, self.height() - 62 - 10 - self.__isShowBottomSpacing * 115)
-        self.searchLineEdit.resize(self.width() - 30, self.searchLineEdit.height())
+        self.searchLineEdit.resize(
+            self.width() - 30, self.searchLineEdit.height())
 
     def aniShow(self):
         """ 动画显示 """

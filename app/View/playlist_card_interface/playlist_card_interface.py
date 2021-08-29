@@ -4,16 +4,15 @@ from json import dump
 from typing import Dict, List
 
 import pinyin
-from app.common.os_utils import moveToTrash
-from app.components.buttons.three_state_button import ThreeStatePushButton
-from app.components.dialog_box.message_dialog import MessageDialog
-from app.components.dialog_box.rename_playlist_dialog import \
-    RenamePlaylistDialog
-from app.components.layout.grid_layout import GridLayout
-from app.components.menu import AddToMenu, AeroMenu
-from app.components.playlist_card import BlurBackground, PlaylistCard
-from app.components.scroll_area import ScrollArea
-from PyQt5.QtCore import (QDateTime, QParallelAnimationGroup, QPoint,
+from common.os_utils import moveToTrash
+from components.buttons.three_state_button import ThreeStatePushButton
+from components.dialog_box.message_dialog import MessageDialog
+from components.dialog_box.rename_playlist_dialog import RenamePlaylistDialog
+from components.layout.grid_layout import GridLayout
+from components.menu import AddToMenu, AeroMenu
+from components.playlist_card import BlurBackground, PlaylistCard
+from components.scroll_area import ScrollArea
+from PyQt5.QtCore import (QDateTime, QFile, QParallelAnimationGroup, QPoint,
                           QPropertyAnimation, Qt, pyqtSignal)
 from PyQt5.QtWidgets import QAction, QLabel, QPushButton, QWidget
 
@@ -71,9 +70,9 @@ class PlaylistCardInterface(ScrollArea):
         self.sortModeButton = QPushButton("修改日期", self)
         self.createPlaylistButton = ThreeStatePushButton(
             {
-                "normal": r"app\resource\images\playlist_card_interface\newPlaylist_normal.png",
-                "hover": r"app\resource\images\playlist_card_interface\newPlaylist_hover.png",
-                "pressed": r"app\resource\images\playlist_card_interface\newPlaylist_pressed.png",
+                "normal": ":/images/playlist_card_interface/Add_normal.png",
+                "hover": ":/images/playlist_card_interface/Add_hover.png",
+                "pressed": ":/images/playlist_card_interface/Add_pressed.png",
             },
             " 新的播放列表",
             (19, 19),
@@ -183,8 +182,10 @@ class PlaylistCardInterface(ScrollArea):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open(r"app\resource\css\playlist_card_interface.qss", encoding="utf-8") as f:
-            self.setStyleSheet(f.read())
+        f = QFile(":/qss/playlist_card_interface.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
 
     def resizeEvent(self, e):
         """ 调整小部件尺寸和位置 """
@@ -389,6 +390,7 @@ class PlaylistCardInterface(ScrollArea):
     def deleteOnePlaylistCard(self, playlistName: str):
         """ 删除一个播放列表卡 """
         playlistCard = self.playlistName2Card_dict[playlistName]
+        index = self.playlistCard_list.index(playlistCard)
 
         # 从布局中移除播放列表卡
         self.gridLayout.removeWidget(playlistCard)
@@ -400,10 +402,11 @@ class PlaylistCardInterface(ScrollArea):
         # 更新字典
         self.playlists.pop(playlistName)
         self.playlistName2Card_dict.pop(playlistName)
+        self.hideCheckBoxAniGroup.takeAnimation(index)
 
         # 删除播放列表卡和播放列表文件
         playlistCard.deleteLater()
-        moveToTrash(f'app/Playlists/{playlistName}.json')
+        moveToTrash(f'Playlists/{playlistName}.json')
 
         # 调整高度
         self.scrollWidget.resize(
@@ -590,5 +593,5 @@ class PlaylistCardInterface(ScrollArea):
     def savePlaylist(playlist: dict):
         """ 保存播放列表 """
         name = playlist["playlistName"]
-        with open(f"app/Playlists/{name}.json", "w", encoding="utf-8") as f:
+        with open(f"Playlists/{name}.json", "w", encoding="utf-8") as f:
             dump(playlist, f)

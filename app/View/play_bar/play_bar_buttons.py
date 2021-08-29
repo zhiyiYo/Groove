@@ -25,8 +25,7 @@ class PlayButton(QToolButton):
         self.isPressed = False
         # 设置图标
         self.iconPath_list = [
-            r'app\resource\images\play_bar\Play.png',
-            r'app\resource\images\play_bar\Pause.png']
+            ':/images/play_bar/Play.png', ':/images/play_bar/Pause.png']
         self.setFixedSize(65, 65)
         self.setStyleSheet(
             "QToolButton{border:none;margin:0;background:transparent}")
@@ -146,7 +145,7 @@ class RandomPlayButton(QToolButton):
         painter.setRenderHints(QPainter.Antialiasing |
                                QPainter.SmoothPixmapTransform)
         painter.setPen(Qt.NoPen)
-        self.image = QPixmap(r'app\resource\images\play_bar\Shuffle.png')
+        self.image = QPixmap(':/images/play_bar/Shuffle.png')
         if self.isSelected:
             bgBrush = QBrush(QColor(0, 0, 0, 106))
             painter.setBrush(bgBrush)
@@ -247,9 +246,9 @@ class LoopModeButton(QToolButton):
         self.__loopMode_list = [QMediaPlaylist.Sequential,
                                 QMediaPlaylist.Loop, QMediaPlaylist.CurrentItemInLoop]
 
-        self.__iconPath_list = [r'app\resource\images\play_bar\RepeatAll.png',
-                                r'app\resource\images\play_bar\RepeatAll.png',
-                                r'app\resource\images\play_bar\RepeatOne.png']
+        self.__iconPath_list = [':/images/play_bar/RepeatAll.png',
+                                ':/images/play_bar/RepeatAll.png',
+                                ':/images/play_bar/RepeatOne.png']
         self.setFixedSize(47, 47)
         self.installEventFilter(self)
 
@@ -339,11 +338,12 @@ class VolumeButton(QToolButton):
         self.isMute = False
         # 当前音量等级及其各个图标地址
         self.currentVolumeLevel = 1
-        self.__iconPath_list = [r'app\resource\images\play_bar\Volume0.png',
-                                r'app\resource\images\play_bar\Volume1.png',
-                                r'app\resource\images\play_bar\Volume2.png',
-                                r'app\resource\images\play_bar\Volume3.png',
-                                r'app\resource\images\play_bar\音量按钮_静音_45_45.png']
+        self.__iconPath_list = [
+            ':/images/play_bar/Volume0.png',
+            ':/images/play_bar/Volume1.png',
+            ':/images/play_bar/Volume2.png',
+            ':/images/play_bar/Volume3.png',
+            ':/images/play_bar/Volumex.png']
         self.pixmap_list = [QPixmap(i) for i in self.__iconPath_list]
         self.iconPixmap = self.pixmap_list[1]
         self.setFixedSize(47, 47)

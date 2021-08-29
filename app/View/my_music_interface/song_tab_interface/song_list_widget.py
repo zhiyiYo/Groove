@@ -1,8 +1,8 @@
 # coding:utf-8
-from app.components.dialog_box.message_dialog import MessageDialog
-from app.components.menu import AddToMenu, DWMMenu
-from app.components.song_list_widget import BasicSongListWidget, SongCardType
-from PyQt5.QtCore import QMargins, Qt, pyqtSignal
+from components.dialog_box.message_dialog import MessageDialog
+from components.menu import AddToMenu, DWMMenu
+from components.song_list_widget import BasicSongListWidget, SongCardType
+from PyQt5.QtCore import QFile, QMargins, Qt, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent
 from PyQt5.QtWidgets import QAction
 
@@ -70,8 +70,10 @@ class SongListWidget(BasicSongListWidget):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open("app/resource/css/song_tab_interface_song_list_widget.qss", encoding="utf-8") as f:
-            self.setStyleSheet(f.read())
+        f = QFile(":/qss/song_tab_interface_song_list_widget.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
 
     def setSortMode(self, sortMode: str):
         """ 根据当前的排序模式来排序歌曲卡

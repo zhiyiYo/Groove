@@ -2,11 +2,11 @@
 import json
 import os
 
-from app.components.buttons.three_state_button import ThreeStateButton
-from app.components.dialog_box.mask_dialog_base import MaskDialogBase
-from app.components.label import ClickableLabel
-from app.components.menu import LineEditMenu
-from PyQt5.QtCore import QDateTime, QEvent, Qt, pyqtSignal
+from components.buttons.three_state_button import ThreeStateButton
+from components.dialog_box.mask_dialog_base import MaskDialogBase
+from components.label import ClickableLabel
+from components.menu import LineEditMenu
+from PyQt5.QtCore import QDateTime, QEvent, QFile, Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QLabel, QLineEdit, QPushButton
 
@@ -34,7 +34,7 @@ class RenamePlaylistDialog(MaskDialogBase):
         self.playlistExistedLabel.hide()
         self.lineEdit.selectAll()
         self.iconLabel.setPixmap(
-            QPixmap("app/resource/images/create_playlist_dialog/playList_icon.png"))
+            QPixmap(":/images/create_playlist_dialog/playlist.png"))
         self.__setQss()
         self.__initLayout()
         # 信号连接到槽
@@ -46,8 +46,10 @@ class RenamePlaylistDialog(MaskDialogBase):
     def __setQss(self):
         """ 设置层叠样式 """
         self.cancelLabel.setObjectName("cancelLabel")
-        with open("app/resource/css/rename_playlist_dialog.qss", encoding="utf-8") as f:
-            self.setStyleSheet(f.read())
+        f = QFile(":/qss/rename_playlist_dialog.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
 
     def __initLayout(self):
         """ 初始化布局 """
@@ -61,10 +63,10 @@ class RenamePlaylistDialog(MaskDialogBase):
 
     def __isPlaylistExist(self, playlistName: str) -> bool:
         """ 检测播放列表是否已经存在，如果已存在就显示提示标签 """
-        os.makedirs('app/Playlists', exist_ok=True)
+        os.makedirs('Playlists', exist_ok=True)
         # 扫描播放列表文件夹下的播放列表名字
         playlistNames = [os.path.splitext(i)[0]
-                         for i in os.listdir("app/Playlists")]
+                         for i in os.listdir("Playlists")]
         isExist = playlistName in playlistNames
         # 如果播放列表名字禁用按钮
         self.playlistExistedLabel.hide()
@@ -85,10 +87,10 @@ class RenamePlaylistDialog(MaskDialogBase):
             "modifiedTime": QDateTime.currentDateTime().toString(Qt.ISODate),
         }
 
-        with open(f"app/Playlists/{self.oldPlaylistName}.json", "w", encoding="utf-8") as f:
+        with open(f"Playlists/{self.oldPlaylistName}.json", "w", encoding="utf-8") as f:
             json.dump(newPlaylist, f)
-        os.rename(f"app/Playlists/{self.oldPlaylistName}.json",
-                  f"app/Playlists/{playlistName}.json")
+        os.rename(f"Playlists/{self.oldPlaylistName}.json",
+                  f"Playlists/{playlistName}.json")
 
         # 发送信号
         self.renamePlaylistSig.emit(self.oldPlaylist, newPlaylist)
@@ -116,9 +118,9 @@ class LineEdit(QLineEdit):
     def __init__(self, text="", parent=None):
         super().__init__(text, parent)
         iconPath_dict = {
-            "normal": r"app\resource\images\create_playlist_dialog\清空按钮_normal_50_50.png",
-            "hover": r"app\resource\images\create_playlist_dialog\清空按钮_hover_50_50.png",
-            "pressed": r"app\resource\images\create_playlist_dialog\清空按钮_pressed_50_50.png",
+            "normal": ":/images/create_playlist_dialog/clear_normal_50_50.png",
+            "hover": ":/images/create_playlist_dialog/clear_hover_50_50.png",
+            "pressed": ":/images/create_playlist_dialog/clear_pressed_50_50.png",
         }
 
         # 创建小部件
@@ -139,37 +141,26 @@ class LineEdit(QLineEdit):
         self.clearButton.hide()
         self.clearButton.installEventFilter(self)
         self.pencilPic.setPixmap(
-            QPixmap(r"app\resource\images\create_playlist_dialog\pencil_50_50.png")
-        )
+            QPixmap(":/images/create_playlist_dialog/pencil_50_50.png"))
         # 设置文字的外间距，防止文字和文本重叠
         self.setTextMargins(
-            0, 0, self.clearButton.width() + self.pencilPic.pixmap().width() + 1, 0
-        )
+            0, 0, self.clearButton.width() + self.pencilPic.pixmap().width() + 1, 0)
 
     def textChangedEvent(self):
         """ 编辑框的文本改变时选择是否显示清空按钮 """
-        if self.text():
-            self.clearButton.show()
-        else:
-            self.clearButton.hide()
+        self.clearButton.setVisible(bool(self.text()))
 
     def enterEvent(self, e):
         """ 鼠标进入更新样式 """
         if self.property("noText") == "true":
             self.pencilPic.setPixmap(
-                QPixmap(
-                    r"app\resource\images\create_playlist_dialog\pencil_noFocus_hover_50_50.png"
-                )
-            )
+                QPixmap(":/images/create_playlist_dialog/pencil_noFocus_hover_50_50.png"))
 
     def leaveEvent(self, e):
         """ 鼠标离开更新样式 """
         if self.property("noText") == "true":
             self.pencilPic.setPixmap(
-                QPixmap(
-                    r"app\resource\images\create_playlist_dialog\pencil_noFocus_50_50.png"
-                )
-            )
+                QPixmap(":/images/create_playlist_dialog/pencil_noFocus_50_50.png"))
 
     def focusOutEvent(self, e):
         """ 当焦点移到别的输入框时隐藏按钮 """
@@ -180,9 +171,7 @@ class LineEdit(QLineEdit):
             self.setText("       命名此播放列表")
         self.clearButton.hide()
         self.pencilPic.setPixmap(
-            QPixmap(
-                r"app\resource\images\create_playlist_dialog\pencil_noFocus_50_50.png")
-        )
+            QPixmap(":/images/create_playlist_dialog/pencil_noFocus_50_50.png"))
 
     def focusInEvent(self, e):
         """ 焦点进入时更换样式并取消提示文字 """
@@ -193,7 +182,7 @@ class LineEdit(QLineEdit):
         self.setProperty("noText", "false")
         self.setStyle(QApplication.style())
         self.pencilPic.setPixmap(
-            QPixmap(r"app\resource\images\create_playlist_dialog\pencil_50_50.png")
+            QPixmap(":/images/create_playlist_dialog/pencil_50_50.png")
         )
 
     def mousePressEvent(self, e):
@@ -229,5 +218,7 @@ class LineEdit(QLineEdit):
 
     def setQss(self):
         """ 设置层叠样式 """
-        with open("app/resource/css/line_edit.qss", encoding="utf-8") as f:
-            self.setStyleSheet(f.read())
+        f = QFile(":/qss/line_edit.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()

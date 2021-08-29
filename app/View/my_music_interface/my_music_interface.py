@@ -1,17 +1,17 @@
 # coding:utf-8
 from time import time
 
-from app.common.meta_data_getter import *
-from app.common.thread.get_info_thread import GetInfoThread
-from app.components.dialog_box.message_dialog import MessageDialog
-from app.components.menu import AddToMenu
-from app.components.pop_up_ani_stacked_widget import PopUpAniStackedWidget
-from app.components.state_tooltip import StateTooltip
-from app.View.my_music_interface.album_tab_interface import AlbumCardInterface
-from app.View.my_music_interface.album_tab_interface.selection_mode_bar import \
+from common.meta_data_getter import *
+from common.thread.get_info_thread import GetInfoThread
+from components.dialog_box.message_dialog import MessageDialog
+from components.menu import AddToMenu
+from components.pop_up_ani_stacked_widget import PopUpAniStackedWidget
+from components.state_tooltip import StateTooltip
+from View.my_music_interface.album_tab_interface import AlbumCardInterface
+from View.my_music_interface.album_tab_interface.selection_mode_bar import \
     SelectionModeBar as AlbumTabSelectionBar
-from app.View.my_music_interface.song_tab_interface import SongListWidget
-from app.View.my_music_interface.song_tab_interface.selection_mode_bar import \
+from View.my_music_interface.song_tab_interface import SongListWidget
+from View.my_music_interface.song_tab_interface.selection_mode_bar import \
     SelectionModeBar as SongTabSelectionModeBar
 from PyQt5.QtCore import QPoint, Qt, pyqtSignal
 from PyQt5.QtGui import QPalette

@@ -2,9 +2,9 @@
 from json import dump
 from typing import List
 
-from app.components.dialog_box.song_info_edit_dialog import SongInfoEditDialog
-from app.components.dialog_box.song_property_dialog import SongPropertyDialog
-from app.components.list_widget import ListWidget
+from components.dialog_box.song_info_edit_dialog import SongInfoEditDialog
+from components.dialog_box.song_property_dialog import SongPropertyDialog
+from components.list_widget import ListWidget
 from PyQt5.QtCore import QMargins, QSize, Qt, pyqtSignal
 from PyQt5.QtWidgets import QLabel, QListWidgetItem, QWidget
 
@@ -217,7 +217,7 @@ class BasicSongListWidget(ListWidget):
 
         if isNeedWriteToFile:
             # 将修改的信息存入json文件
-            with open("app/data/songInfo.json", "w", encoding="utf-8") as f:
+            with open("data/songInfo.json", "w", encoding="utf-8") as f:
                 dump(self.songInfo_list, f)
 
     def updateMultiSongCards(self, newSongInfo_list: list):
@@ -226,7 +226,7 @@ class BasicSongListWidget(ListWidget):
             self.updateOneSongCard(newSongInfo, False)
 
         # 将修改的信息存入json文件
-        with open("app/data/songInfo.json", "w", encoding="utf-8") as f:
+        with open("data/songInfo.json", "w", encoding="utf-8") as f:
             dump(self.songInfo_list, f)
 
     def resizeEvent(self, e):

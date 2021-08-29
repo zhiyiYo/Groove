@@ -30,54 +30,55 @@ class TitleBar(QWidget):
 
     def __createButtons(self):
         """ 创建各按钮 """
-        self.minBt = BasicButton(
+        self.minButton = BasicButton(
             [
                 {
-                    "normal": r"app\resource\images\titleBar\透明黑色最小化按钮_57_40.png",
-                    "hover": r"app\resource\images\titleBar\绿色最小化按钮_hover_57_40.png",
-                    "pressed": r"app\resource\images\titleBar\黑色最小化按钮_pressed_57_40.png",
+                    "normal": ":/images/title_bar/透明黑色最小化按钮_57_40.png",
+                    "hover": ":/images/title_bar/绿色最小化按钮_hover_57_40.png",
+                    "pressed": ":/images/title_bar/黑色最小化按钮_pressed_57_40.png",
                 },
                 {
-                    "normal": r"app\resource\images\titleBar\白色最小化按钮_57_40.png",
-                    "hover": r"app\resource\images\titleBar\绿色最小化按钮_hover_57_40.png",
-                    "pressed": r"app\resource\images\titleBar\黑色最小化按钮_pressed_57_40.png",
+                    "normal": ":/images/title_bar/白色最小化按钮_57_40.png",
+                    "hover": ":/images/title_bar/绿色最小化按钮_hover_57_40.png",
+                    "pressed": ":/images/title_bar/黑色最小化按钮_pressed_57_40.png",
                 },
             ],
             self,
         )
-        self.closeBt = BasicButton(
+        self.closeButton = BasicButton(
             [
                 {
-                    "normal": r"app\resource\images\titleBar\透明黑色关闭按钮_57_40.png",
-                    "hover": r"app\resource\images\titleBar\关闭按钮_hover_57_40.png",
-                    "pressed": r"app\resource\images\titleBar\关闭按钮_pressed_57_40.png",
+                    "normal": ":/images/title_bar/透明黑色关闭按钮_57_40.png",
+                    "hover": ":/images/title_bar/关闭按钮_hover_57_40.png",
+                    "pressed": ":/images/title_bar/关闭按钮_pressed_57_40.png",
                 },
                 {
-                    "normal": r"app\resource\images\titleBar\透明白色关闭按钮_57_40.png",
-                    "hover": r"app\resource\images\titleBar\关闭按钮_hover_57_40.png",
-                    "pressed": r"app\resource\images\titleBar\关闭按钮_pressed_57_40.png",
+                    "normal": ":/images/title_bar/透明白色关闭按钮_57_40.png",
+                    "hover": ":/images/title_bar/关闭按钮_hover_57_40.png",
+                    "pressed": ":/images/title_bar/关闭按钮_pressed_57_40.png",
                 },
             ],
             self,
         )
-        self.returnBt = BasicButton(
+        self.returnButton = BasicButton(
             [
                 {
-                    "normal": r"app\resource\images\titleBar\黑色返回按钮_60_40.png",
-                    "hover": r"app\resource\images\titleBar\黑色返回按钮_hover_60_40.png",
-                    "pressed": r"app\resource\images\titleBar\黑色返回按钮_pressed_60_40.png",
+                    "normal": ":/images/title_bar/黑色返回按钮_60_40.png",
+                    "hover": ":/images/title_bar/黑色返回按钮_hover_60_40.png",
+                    "pressed": ":/images/title_bar/黑色返回按钮_pressed_60_40.png",
                 },
                 {
-                    "normal": r"app\resource\images\titleBar\白色返回按钮_60_40.png",
-                    "hover": r"app\resource\images\titleBar\白色返回按钮_hover_60_40.png",
-                    "pressed": r"app\resource\images\titleBar\白色返回按钮_pressed_60_40.png",
+                    "normal": ":/images/title_bar/白色返回按钮_60_40.png",
+                    "hover": ":/images/title_bar/白色返回按钮_hover_60_40.png",
+                    "pressed": ":/images/title_bar/白色返回按钮_pressed_60_40.png",
                 },
             ],
             self,
             iconSize_tuple=(60, 40),
         )
         self.maxBt = MaximizeButton(self)
-        self.button_list = [self.minBt, self.maxBt, self.closeBt, self.returnBt]
+        self.button_list = [self.minButton, self.maxBt,
+                            self.closeButton, self.returnButton]
 
     def __initWidget(self):
         """ 初始化小部件 """
@@ -90,20 +91,20 @@ class TitleBar(QWidget):
         # 隐藏抬头
         self.title.hide()
         # 将按钮的点击信号连接到槽函数
-        self.minBt.clicked.connect(self.window().showMinimized)
+        self.minButton.clicked.connect(self.window().showMinimized)
         self.maxBt.clicked.connect(self.__showRestoreWindow)
-        self.closeBt.clicked.connect(self.window().close)
+        self.closeButton.clicked.connect(self.window().close)
         # 给返回按钮安装事件过滤器
-        self.returnBt.installEventFilter(self)
+        self.returnButton.installEventFilter(self)
         self.title.installEventFilter(self)
-        self.returnBt.hide()
+        self.returnButton.hide()
 
     def __adjustButtonPos(self):
         """ 初始化小部件位置 """
-        self.title.move(self.returnBt.isVisible() * 60, 0)
-        self.closeBt.move(self.width() - 57, 0)
+        self.title.move(self.returnButton.isVisible() * 60, 0)
+        self.closeButton.move(self.width() - 57, 0)
         self.maxBt.move(self.width() - 2 * 57, 0)
-        self.minBt.move(self.width() - 3 * 57, 0)
+        self.minButton.move(self.width() - 3 * 57, 0)
 
     def resizeEvent(self, e: QResizeEvent):
         """ 尺寸改变时移动按钮 """
@@ -139,9 +140,9 @@ class TitleBar(QWidget):
     def __isPointInDragRegion(self, pos) -> bool:
         """ 检查鼠标按下的点是否属于允许拖动的区域 """
         x = pos.x()
-        left = 60 if self.returnBt.isVisible() else 0
+        left = 60 if self.returnButton.isVisible() else 0
         # 如果最小化按钮看不见也意味着最大化按钮看不见
-        right = self.width() - 57 * 3 if self.minBt.isVisible() else self.width() - 57
+        right = self.width() - 57 * 3 if self.minButton.isVisible() else self.width() - 57
         return left < x < right
 
     def setWhiteIcon(self, isWhiteIcon: bool):
@@ -151,13 +152,15 @@ class TitleBar(QWidget):
 
     def eventFilter(self, obj, e: QEvent):
         """ 过滤事件 """
-        if obj == self.returnBt:
+        if obj == self.returnButton:
             if e.type() == QEvent.Hide:
                 cond = self.title.parent() is not self
                 self.title.move(15 * cond, 10 * cond)
             elif e.type() == QEvent.Show:
-                self.title.move(self.returnBt.width() + self.title.x(), self.title.y())
+                self.title.move(self.returnButton.width() +
+                                self.title.x(), self.title.y())
         elif obj == self.title:
-            if e.type() == QEvent.Show and self.returnBt.isVisible():
-                self.title.move(self.returnBt.width() + self.title.y(), self.title.y())
+            if e.type() == QEvent.Show and self.returnButton.isVisible():
+                self.title.move(self.returnButton.width() +
+                                self.title.y(), self.title.y())
         return super().eventFilter(obj, e)

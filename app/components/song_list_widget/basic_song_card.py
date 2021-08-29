@@ -2,7 +2,7 @@
 
 import os
 
-from app.components.menu import AddToMenu
+from components.menu import AddToMenu
 from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
                           QParallelAnimationGroup, QPoint, QPropertyAnimation,
                           QRect, Qt, pyqtSignal)

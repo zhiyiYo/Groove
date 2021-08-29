@@ -1,6 +1,5 @@
 # coding:utf-8
-
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import QFile, pyqtSignal
 from PyQt5.QtWidgets import QWidget
 
 
@@ -74,5 +73,7 @@ class NavigationWidgetBase(QWidget):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open('app/resource/css/navigation.qss', encoding='utf-8') as f:
-            self.setStyleSheet(f.read())
+        f = QFile(":/qss/navigation.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()

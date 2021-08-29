@@ -34,7 +34,7 @@ class ErrorIcon(QLabel):
         # 设置提示条
         self.customToolTip = None
         self.setPixmap(
-            QPixmap("app/resource/images/song_tab_interface/info_red.png"))
+            QPixmap(":/images/song_tab_interface/info_red.png"))
         self.setFixedSize(19, 19)
 
 

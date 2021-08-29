@@ -1,12 +1,11 @@
 # coding:utf-8
 from copy import deepcopy
 
-from app.common.thread.save_album_info_thread import SaveAlbumInfoThread
-from app.components.dialog_box.album_info_edit_dialog import \
-    AlbumInfoEditDialog
-from app.components.menu import AddToMenu
-from app.components.scroll_area import ScrollArea
-from PyQt5.QtCore import QPoint, Qt, pyqtSignal
+from common.thread.save_album_info_thread import SaveAlbumInfoThread
+from components.dialog_box.album_info_edit_dialog import AlbumInfoEditDialog
+from components.menu import AddToMenu
+from components.scroll_area import ScrollArea
+from PyQt5.QtCore import QFile, QPoint, Qt, pyqtSignal
 from PyQt5.QtWidgets import QApplication, QVBoxLayout, QWidget
 
 from .album_info_bar import AlbumInfoBar
@@ -80,8 +79,10 @@ class AlbumInterface(ScrollArea):
         """ 设置层叠样式 """
         self.setObjectName("albumInterface")
         self.scrollWidget.setObjectName("scrollWidget")
-        with open('app/resource/css/album_interface.qss', encoding="utf-8") as f:
-            self.setStyleSheet(f.read())
+        f = QFile(":/qss/album_interface.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
 
     def updateWindow(self, albumInfo: dict):
         """ 更新窗口 """

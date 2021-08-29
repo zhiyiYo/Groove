@@ -4,8 +4,8 @@ import os
 from urllib import parse
 
 import requests
-from app.common.os_utils import adjustName
-from app.common.meta_data_writer import writeAlbumCover, writeSongInfo
+from common.os_utils import adjustName
+from common.meta_data_writer import writeAlbumCover, writeSongInfo
 
 
 def exceptionHandler(func):

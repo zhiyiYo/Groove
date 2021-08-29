@@ -60,12 +60,18 @@ class BlurButton(QToolButton):
 
     def __blur(self):
         """ 真正进行磨砂操作 """
-        img = Image.open(self.blurPicPath).convert('RGB').resize((200, 200))
+        if not self.blurPicPath.startswith(':'):
+            img = Image.open(self.blurPicPath)
+        else:
+            img = Image.fromqpixmap(QPixmap(self.blurPicPath))
+
+        img = img.convert('RGB').resize((200, 200))
         img = img.crop((self.cropX, self.cropY,
                         self.width() + self.cropX, self.height() + self.cropY))
         img = img.filter(GaussianBlur(self.blurRadius)
                          ).point(lambda x: int(x * 0.7))
         self.blurPix = img.toqpixmap()
+        
         self.update()
 
     def paintEvent(self, e):

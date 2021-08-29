@@ -8,7 +8,7 @@ from PyQt5.QtCore import Qt, QEvent
 from PyQt5.QtGui import QResizeEvent
 from PyQt5.QtWidgets import QLabel, QWidget
 
-from app.components.buttons.three_state_button import ThreeStateButton
+from components.buttons.three_state_button import ThreeStateButton
 
 
 class TitleBar(QWidget):
@@ -18,9 +18,9 @@ class TitleBar(QWidget):
         super().__init__(parent)
         self.closeButton = ThreeStateButton(
             {
-                "normal": r"app\resource\images\titleBar\透明白色关闭按钮_57_40.png",
-                "hover": r"app\resource\images\titleBar\关闭按钮_hover_57_40.png",
-                "pressed": r"app\resource\images\titleBar\关闭按钮_pressed_57_40.png",
+                "normal": ":/images/title_bar/透明白色关闭按钮_57_40.png",
+                "hover": ":/images/title_bar/关闭按钮_hover_57_40.png",
+                "pressed": ":/images/title_bar/关闭按钮_pressed_57_40.png",
             },
             self,
             (57, 40)

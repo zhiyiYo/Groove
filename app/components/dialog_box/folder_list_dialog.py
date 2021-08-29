@@ -1,8 +1,8 @@
 # coding:utf-8
 import os
 
-from app.components.buttons.perspective_button import PerspectivePushButton
-from PyQt5.QtCore import Qt, pyqtSignal
+from components.buttons.perspective_button import PerspectivePushButton
+from PyQt5.QtCore import Qt, pyqtSignal, QFile
 from PyQt5.QtGui import (QBrush, QColor, QFont, QFontMetrics, QMouseEvent,
                          QPainter, QPen, QPixmap)
 from PyQt5.QtWidgets import QApplication, QFileDialog, QLabel, QWidget
@@ -92,8 +92,10 @@ class FolderListDialog(MaskDialogBase):
         self.titleLabel.setObjectName('titleLabel')
         self.contentLabel.setObjectName('contentLabel')
         self.completeButton.setObjectName('completeButton')
-        with open('app/resource/css/folder_list_dialog.qss', encoding='utf-8') as f:
-            self.setStyleSheet(f.read())
+        f = QFile(":/qss/folder_list_dialog.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
 
     def __onButtonClicked(self):
         """ 完成按钮点击槽函数 """
@@ -170,8 +172,7 @@ class FolderCard(ClickableWindow):
         super().__init__(parent)
         self.folderPath = folderPath
         self.folderName = os.path.basename(folderPath)
-        self.__closeIcon = QPixmap(
-            "app/resource/images/setting_interface/黑色叉号.png")
+        self.__closeIcon = QPixmap(":/images/setting_interface/Close.png")
 
     def paintEvent(self, e):
         """ 绘制背景 """
@@ -211,8 +212,7 @@ class AddFolderCard(ClickableWindow):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.__iconPix = QPixmap(
-            "app/resource/images/setting_interface/黑色加号.png")
+        self.__iconPix = QPixmap(":/images/setting_interface/Add.png")
 
     def paintEvent(self, e):
         """ 绘制背景 """

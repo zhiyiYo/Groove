@@ -1,6 +1,6 @@
 # coding:utf-8
-from app.components.buttons.three_state_button import ThreeStateButton
-from app.components.menu import LineEditMenu
+from components.buttons.three_state_button import ThreeStateButton
+from components.menu import LineEditMenu
 from PyQt5.QtCore import QEvent, Qt
 from PyQt5.QtGui import QContextMenuEvent
 from PyQt5.QtWidgets import QHBoxLayout, QLineEdit
@@ -16,9 +16,9 @@ class LineEdit(QLineEdit):
         self.customToolTip = None
         self.clickedTime = 0
         iconPath_dict = {
-            "normal": r"app\resource\images\lineEdit\clearInfo_cross_normal.png",
-            "hover": r"app\resource\images\lineEdit\clearInfo_cross_hover.png",
-            "pressed": r"app\resource\images\lineEdit\clearInfo_cross_pressed.png",
+            "normal": ":/images/line_edit/clear_normal.png",
+            "hover": ":/images/line_edit/clear_hover.png",
+            "pressed": ":/images/line_edit/clear_pressed.png",
         }
 
         # 实例化一个用于清空内容的按钮
@@ -61,7 +61,6 @@ class LineEdit(QLineEdit):
 
     def focusOutEvent(self, e):
         """ 当焦点移到别的输入框时隐藏按钮 """
-        # 调用父类的函数，消除焦点
         super().focusOutEvent(e)
         self.clickedTime = 0
         self.clearButton.hide()

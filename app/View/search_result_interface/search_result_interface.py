@@ -2,13 +2,13 @@
 import os
 from copy import deepcopy
 
-from app.common.crawler.kuwo_music_crawler import KuWoMusicCrawler
-from app.common.thread.download_song_thread import DownloadSongThread
-from app.common.thread.get_online_song_url_thread import GetOnlineSongUrlThread
-from app.components.layout.v_box_layout import VBoxLayout
-from app.components.scroll_area import ScrollArea
-from app.components.state_tooltip import StateTooltip
-from PyQt5.QtCore import Qt, pyqtSignal
+from common import resource
+from common.crawler.kuwo_music_crawler import KuWoMusicCrawler
+from common.thread.download_song_thread import DownloadSongThread
+from common.thread.get_online_song_url_thread import GetOnlineSongUrlThread
+from components.scroll_area import ScrollArea
+from components.state_tooltip import StateTooltip
+from PyQt5.QtCore import QFile, Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QLabel, QVBoxLayout, QWidget
 
@@ -91,7 +91,7 @@ class SearchResultInterface(ScrollArea):
         self.setViewportMargins(0, 115, 0, 0)
         self.__setQss()
         self.searchLabel.setPixmap(
-            QPixmap("app/resource/images/search_result_interface/Search.png"))
+            QPixmap(":/images/search_result_interface/Search.png"))
         self.__setHintsLabelVisible(False)
         self.titleLabel.move(30, 55)
         self.titleLabel.raise_()
@@ -118,8 +118,12 @@ class SearchResultInterface(ScrollArea):
         self.titleLabel.setObjectName('titleLabel')
         self.checkSpellLabel.setObjectName('checkSpellLabel')
         self.searchOthersLabel.setObjectName('searchOthersLabel')
-        with open('app/resource/css/search_result_interface.qss', encoding='utf-8') as f:
-            self.setStyleSheet(f.read())
+
+        f = QFile(":/qss/search_result_interface.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
+
         self.checkSpellLabel.adjustSize()
         self.searchOthersLabel.adjustSize()
 

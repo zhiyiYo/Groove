@@ -2,16 +2,16 @@
 import os
 from copy import deepcopy
 
-from app.common.os_utils import adjustName
-from app.common.image_process_utils import getPicSuffix
-from app.components.buttons.perspective_button import PerspectivePushButton
-from app.components.label import ErrorIcon
-from app.components.line_edit import LineEdit
-from app.components.perspective_widget import PerspectiveWidget
-from app.components.scroll_area import ScrollArea
-from PyQt5.QtCore import QRegExp, Qt, QTimer, pyqtSignal
-from PyQt5.QtGui import (QBrush, QColor, QLinearGradient, QMovie, QPainter,
-                         QPixmap, QRegExpValidator)
+from common.image_process_utils import getPicSuffix
+from common.os_utils import adjustName
+from components.buttons.perspective_button import PerspectivePushButton
+from components.label import ErrorIcon
+from components.line_edit import LineEdit
+from components.perspective_widget import PerspectiveWidget
+from components.scroll_area import ScrollArea
+from PyQt5.QtCore import QFile, QRegExp, Qt, QTimer, pyqtSignal
+from PyQt5.QtGui import (QBrush, QColor, QLinearGradient, QPainter, QPixmap,
+                         QRegExpValidator)
 from PyQt5.QtWidgets import (QApplication, QCompleter, QFileDialog, QLabel,
                              QWidget)
 
@@ -66,19 +66,12 @@ class AlbumInfoEditDialog(MaskDialogBase):
         self.saveButton = PerspectivePushButton("保存", self.widget)
         self.cancelButton = PerspectivePushButton("取消", self.widget)
 
-        # 创建gif
-        self.loadingLabel = QLabel(self.widget)
-        self.movie = QMovie(
-            r"app\resource\images\loading_gif\loading.gif", parent=self.widget)
-
     def __initWidget(self):
         """ 初始化小部件 """
         self.widget.setFixedWidth(936)
         self.widget.setMaximumHeight(self.MAXHEIGHT)
-        self.loadingLabel.setMovie(self.movie)
         self.scrollArea.setWidget(self.scrollWidget)
         self.songInfoWidgetNum = len(self.songInfoWidget_list)  # type:int
-        self.loadingLabel.hide()
         # 初始化定时器
         self.delayTimer.setInterval(300)
         self.delayTimer.timeout.connect(self.__showFileDialog)
@@ -145,8 +138,10 @@ class AlbumInfoEditDialog(MaskDialogBase):
         """ 设置层叠样式表 """
         self.scrollArea.setObjectName("infoEditScrollArea")
         self.editAlbumInfoLabel.setObjectName("editAlbumInfo")
-        with open("app/resource/css/album_info_edit_dialog.qss", encoding="utf-8") as f:
-            self.setStyleSheet(f.read())
+        f = QFile(":/qss/album_info_edit_dialog.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
 
     def __trackNumEmptySlot(self, isShowErrorMsg: bool):
         """ 如果曲目为空则禁用保存按钮 """
@@ -206,7 +201,6 @@ class AlbumInfoEditDialog(MaskDialogBase):
         """ 保存专辑信息 """
         # 禁用小部件
         self.__setWidgetEnable(False)
-        self.__showLoadingGif()
 
         # 更新标签信息
         self.albumInfo["album"] = self.albumNameLineEdit.text()
@@ -229,8 +223,6 @@ class AlbumInfoEditDialog(MaskDialogBase):
 
         # 保存失败时重新启用编辑框
         self.__setWidgetEnable(True)
-        self.loadingLabel.hide()
-        self.movie.stop()
 
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
@@ -265,8 +257,8 @@ class AlbumInfoEditDialog(MaskDialogBase):
             # 判断文件格式后修改后缀名
             newSuffix = getPicSuffix(picData)
             # 如果封面路径是默认专辑封面，就修改封面路径
-            if self.coverPath == "app/resource/images/default_covers/默认专辑封面_200_200.png":
-                self.coverPath = "app/resource/Album_Cover/{0}/{0}{1}".format(
+            if self.coverPath == ":/images/default_covers/album_200_200.png":
+                self.coverPath = "Album_Cover/{0}/{0}{1}".format(
                     self.albumInfo["coverName"], newSuffix)
             with open(self.coverPath, "wb") as f:
                 f.write(picData)
@@ -282,17 +274,6 @@ class AlbumInfoEditDialog(MaskDialogBase):
         self.setEnabled(isEnable)
         # 更新样式
         self.setStyle(QApplication.style())
-
-    def __showLoadingGif(self):
-        """ 显示正在加载动画 """
-        self.loadingLabel.resize(77, 77)
-        self.loadingLabel.move(
-            int(self.widget.width() / 2 - self.loadingLabel.width() / 2),
-            int(self.widget.height() / 2 - self.loadingLabel.height() / 2),
-        )
-        self.loadingLabel.raise_()
-        self.loadingLabel.show()
-        self.movie.start()
 
 
 class SongInfoWidget(QWidget):
@@ -418,7 +399,7 @@ class AlbumCoverWindow(PerspectiveWidget):
         # 必须将标签的背景设置为透明
         self.editAlbumCoverLabel.setAttribute(Qt.WA_TranslucentBackground)
         self.editAlbumCoverLabel.setPixmap(
-            QPixmap("app/resource/images/album_interface/Edit.png"))
+            QPixmap(":/images/album_interface/Edit.png"))
         self.editAlbumCoverLabel.move(14, 137)
 
     def setAlbumCover(self, picPath: str):

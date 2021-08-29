@@ -52,11 +52,11 @@ QLabel#clickableLabel[state='notChecked-notPlay-enter']:hover {
 }
 
 QLabel#playingLabel[state="notChecked"] {
-    qproperty-pixmap: url(app/resource/images/playing_interface/正在播放_green_16_16.png)
+    qproperty-pixmap: url(:/images/playing_interface/Playing_green.png)
 }
 
 QLabel#playingLabel[state="checked"] {
-    qproperty-pixmap: url(app/resource/images/playing_interface/正在播放_white_16_16.png)
+    qproperty-pixmap: url(:/images/playing_interface/Playing_white.png)
 }
 
 /* 歌曲卡背景 */
@@ -123,7 +123,7 @@ QCheckBox::indicator[state='checked'] {
 }
 
 QCheckBox::indicator:checked {
-    border-image: url(app/resource/images/playing_interface/CheckMark.png);
+    border-image: url(:/images/playing_interface/CheckMark.png);
 }
 
 

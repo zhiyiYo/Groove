@@ -1,5 +1,5 @@
 # coding:utf-8
-from app.common.meta_data_getter import *
+from common.meta_data_getter import *
 from PyQt5.QtCore import Qt, pyqtSignal, QThread
 
 

@@ -1,15 +1,16 @@
 # coding:utf-8
 from copy import deepcopy
 
-from app.common.os_utils import adjustName
-from app.common.auto_wrap import autoWrap
-from app.common.meta_data_writer import writeSongInfo
-from app.components.buttons.perspective_button import PerspectivePushButton
-from app.components.label import ErrorIcon
-from app.components.line_edit import LineEdit
-from PyQt5.QtCore import QRegExp, Qt, pyqtSignal
+from common.auto_wrap import autoWrap
+from common.meta_data_writer import writeSongInfo
+from common.os_utils import adjustName
+from components.buttons.perspective_button import PerspectivePushButton
+from components.label import ErrorIcon
+from components.line_edit import LineEdit
+from PyQt5.QtCore import QFile, QRegExp, Qt, pyqtSignal
 from PyQt5.QtGui import QRegExpValidator
-from PyQt5.QtWidgets import QApplication, QCompleter, QLabel, QGridLayout, QVBoxLayout
+from PyQt5.QtWidgets import (QApplication, QCompleter, QGridLayout, QLabel,
+                             QVBoxLayout)
 
 from .mask_dialog_base import MaskDialogBase
 
@@ -198,8 +199,12 @@ class SongInfoEditDialog(MaskDialogBase):
         self.albumSongerLineEdit.setObjectName("singer")
         self.songPath.setObjectName("songPath")
         self.bottomErrorLabel.setObjectName("bottomErrorLabel")
-        with open("app/resource/css/song_info_edit_dialog.qss", encoding="utf-8") as f:
-            self.setStyleSheet(f.read())
+
+        f = QFile(":/qss/song_info_edit_dialog.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
+
         self.saveButton.adjustSize()
         self.cancelButton.adjustSize()
         self.songPath.adjustSize()

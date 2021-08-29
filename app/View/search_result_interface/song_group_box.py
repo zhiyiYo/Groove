@@ -1,10 +1,8 @@
 # coding:utf-8
-from app.components.dialog_box.message_dialog import MessageDialog
-from app.components.buttons.three_state_button import ThreeStatePushButton
-from app.components.menu import AddToMenu, DWMMenu, DownloadMenu
-from app.components.song_list_widget import BasicSongListWidget, SongCardType
-from PyQt5.QtCore import QMargins, Qt, pyqtSignal
-from PyQt5.QtGui import QPixmap
+from components.dialog_box.message_dialog import MessageDialog
+from components.menu import AddToMenu, DWMMenu, DownloadMenu
+from components.song_list_widget import BasicSongListWidget, SongCardType
+from PyQt5.QtCore import QMargins, Qt, pyqtSignal, QFile
 from PyQt5.QtWidgets import QAction, QWidget, QPushButton
 
 
@@ -45,8 +43,12 @@ class SongGroupBox(QWidget):
     def __setQss(self):
         """ 设置层叠样式 """
         self.titleButton.setObjectName('titleButton')
-        with open('app/resource/css/song_group_box.qss', encoding='utf-8') as f:
-            self.setStyleSheet(f.read())
+
+        f = QFile(":/qss/song_group_box.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
+
         self.titleButton.adjustSize()
 
     def resizeEvent(self, e):
@@ -99,8 +101,10 @@ class LocalSongListWidget(BasicSongListWidget):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open("app/resource/css/song_tab_interface_song_list_widget.qss", encoding="utf-8") as f:
-            self.setStyleSheet(f.read())
+        f = QFile(":/qss/song_tab_interface_song_list_widget.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
 
     def __showDeleteCardDialog(self):
         index = self.currentRow()
@@ -212,8 +216,10 @@ class OnlineSongListWidget(BasicSongListWidget):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open("app/resource/css/song_tab_interface_song_list_widget.qss", encoding="utf-8") as f:
-            self.setStyleSheet(f.read())
+        f = QFile(":/qss/song_tab_interface_song_list_widget.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
 
     def __adjustHeight(self):
         """ 调整高度 """

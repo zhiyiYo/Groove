@@ -7,8 +7,8 @@ from PyQt5.QtWidgets import QWidget
 from win32 import win32api, win32gui
 from win32.lib import win32con
 
-from app.common.window_effect import WindowEffect
-from app.common.window_effect.c_structures import MINMAXINFO, NCCALCSIZE_PARAMS
+from common.window_effect import WindowEffect
+from common.window_effect.c_structures import MINMAXINFO, NCCALCSIZE_PARAMS
 
 
 class FramelessWindow(QWidget):

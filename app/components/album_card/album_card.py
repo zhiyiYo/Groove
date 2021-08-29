@@ -1,14 +1,10 @@
 # coding:utf-8
-from copy import deepcopy
-
-from app.common.auto_wrap import autoWrap
-from app.components.buttons.blur_button import BlurButton
-from app.components.check_box import CheckBox
-from app.components.dialog_box.album_info_edit_dialog import \
-    AlbumInfoEditDialog
-from app.components.label import ClickableLabel
-from app.components.menu import AddToMenu, DWMMenu
-from app.components.perspective_widget import PerspectiveWidget
+from common.auto_wrap import autoWrap
+from components.buttons.blur_button import BlurButton
+from components.check_box import CheckBox
+from components.label import ClickableLabel
+from components.menu import AddToMenu, DWMMenu
+from components.perspective_widget import PerspectiveWidget
 from PyQt5.QtCore import QPoint, Qt, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent, QFont, QFontMetrics, QPixmap
 from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsOpacityEffect,
@@ -52,13 +48,13 @@ class AlbumCard(PerspectiveWidget):
         self.playButton = BlurButton(
             self,
             (30, 65),
-            r"app\resource\images\album_tab_interface\Play.png",
+            ":/images/album_tab_interface/Play.png",
             self.coverPath,
         )
         self.addToButton = BlurButton(
             self,
             (100, 65),
-            r"app\resource\images\album_tab_interface\Add.png",
+            ":/images/album_tab_interface/Add.png",
             self.coverPath,
         )
         # 创建复选框
@@ -202,7 +198,7 @@ class AlbumCard(PerspectiveWidget):
         self.singerName = albumInfo.get("singer", "未知歌手")   # type:str
         self.year = albumInfo.get('year', '未知年份')           # type:str
         self.coverPath = albumInfo.get(
-            "coverPath", "app/resource/images/default_covers/默认专辑封面_200_200.png")
+            "coverPath", ":/images/default_covers/album_200_200.png")
 
     def showAlbumInfoEditDialog(self):
         """ 显示专辑信息编辑面板 """

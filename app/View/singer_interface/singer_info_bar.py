@@ -1,9 +1,9 @@
 # coding:utf-8
 import os
 
-from app.components.menu import AddToMenu
-from app.common.image_process_utils import getBlurPixmap
-from app.components.app_bar import AppBarButton, CollapsingAppBarBase, MoreActionsMenu
+from components.menu import AddToMenu
+from common.image_process_utils import getBlurPixmap
+from components.app_bar import AppBarButton, CollapsingAppBarBase, MoreActionsMenu
 from PyQt5.QtCore import Qt, pyqtSignal, QPoint
 from PyQt5.QtGui import QPalette, QColor, QPixmap
 from PyQt5.QtWidgets import QLabel, QAction
@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import QLabel, QAction
 class SingerInfoBar(CollapsingAppBarBase):
     """ 歌手信息栏 """
 
-    defaultCoverPath = 'app/resource/images/default_covers/默认歌手封面_295_295.png'
+    defaultCoverPath = ':/images/default_covers/singer_295_295.png'
 
     addSongsToPlayingPlaylistSig = pyqtSignal()
     addSongsToNewCustomPlaylistSig = pyqtSignal()
@@ -23,11 +23,11 @@ class SingerInfoBar(CollapsingAppBarBase):
 
         # 创建按钮
         self.playAllButton = AppBarButton(
-            r"app\resource\images\album_interface\Play.png", "全部播放")
+            ":/images/album_interface/Play.png", "全部播放")
         self.addToButton = AppBarButton(
-            r"app\resource\images\album_interface\Add.png", "添加到")
+            ":/images/album_interface/Add.png", "添加到")
         self.pinToStartMenuButton = AppBarButton(
-            r"app\resource\images\album_interface\Pin.png", '固定到"开始"菜单')
+            ":/images/album_interface/Pin.png", '固定到"开始"菜单')
         buttons = [self.playAllButton,
                    self.addToButton, self.pinToStartMenuButton]
         super().__init__(self.singer, self.genre, self.coverPath, buttons, 'singer', parent)
@@ -106,7 +106,6 @@ class SingerInfoBar(CollapsingAppBarBase):
         menu.newPlaylistAct.triggered.connect(
             self.addSongsToNewCustomPlaylistSig)
         menu.exec(QPoint(x, y))
-
 
 
 class BlurLabel(QLabel):

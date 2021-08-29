@@ -1,11 +1,11 @@
 # coding:utf-8
 from copy import deepcopy
 
-from app.common.thread.blur_cover_thread import BlurCoverThread
-from app.common.os_utils import getCoverPath
-from app.components.buttons.circle_button import CircleButton
-from app.components.frameless_window import FramelessWindow
-from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
+from common.os_utils import getCoverPath
+from common.thread.blur_cover_thread import BlurCoverThread
+from components.buttons.circle_button import CircleButton
+from components.frameless_window import FramelessWindow
+from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent, QFile,
                           QParallelAnimationGroup, QPropertyAnimation, QRect,
                           Qt, pyqtSignal)
 from PyQt5.QtGui import QFont, QFontMetrics
@@ -38,17 +38,17 @@ class SmallestPlayInterface(FramelessWindow):
         # 创建按钮
         self.playButton = PlayButton(
             [
-                r"app\resource\images\smallest_play_interface\Pause.png",
-                r"app\resource\images\smallest_play_interface\Play.png",
+                ":/images/smallest_play_interface/Pause.png",
+                ":/images/smallest_play_interface/Play.png",
             ],
             self,
         )
         self.lastSongButton = SmallestPlayModeButton(
-            r"app\resource\images\smallest_play_interface\Previous.png", self)
+            ":/images/smallest_play_interface/Previous.png", self)
         self.nextSongButton = SmallestPlayModeButton(
-            r"app\resource\images\smallest_play_interface\Next.png", self)
+            ":/images/smallest_play_interface/Next.png", self)
         self.exitSmallestModeButton = CircleButton(
-            r"app\resource\images\playing_interface\最小模式播放_47_47.png", self)
+            ":/images/playing_interface/SmallestPlayMode.png", self)
         self.progressBar = QSlider(Qt.Horizontal, self)
         self.aniGroup = QParallelAnimationGroup(self)
         # 创建标题栏
@@ -149,8 +149,10 @@ class SmallestPlayInterface(FramelessWindow):
 
     def __setQss(self):
         """ 设置层叠样式 """
-        with open(r"app\resource\css\smallest_play_interface.qss", encoding="utf-8") as f:
-            self.setStyleSheet(f.read())
+        f = QFile(":/qss/smallest_play_interface.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
 
     def eventFilter(self, obj, e: QEvent):
         """ 过滤事件 """

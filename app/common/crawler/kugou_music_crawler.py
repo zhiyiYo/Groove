@@ -7,7 +7,7 @@ from hashlib import md5
 from urllib import parse
 from pprint import pprint
 
-from app.common.os_utils import adjustName
+from common.os_utils import adjustName
 import requests
 
 
