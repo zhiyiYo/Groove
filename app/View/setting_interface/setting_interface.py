@@ -30,31 +30,57 @@ class SettingInterface(ScrollArea):
         # 读入数据
         self.__readConfig()
 
-        # 创建小部件
+        # 滚动小部件
         self.scrollwidget = QWidget()
-        self.settingLabel = QLabel("设置", self)
-        self.appLabel = QLabel("应用", self.scrollwidget)
-        self.mediaInfoLabel = QLabel("媒体信息", self.scrollwidget)
-        self.helpLabel = ClickableLabel("帮助", self.scrollwidget)
-        self.issueLabel = ClickableLabel("反馈", self.scrollwidget)
-        self.musicInThisPCLabel = QLabel("此PC上的音乐", self.scrollwidget)
-        self.getMetaDataSwitchButton = SwitchButton("关", self.scrollwidget)
-        self.getMetaDataLabel = QLabel("自动检索并更新缺失的专辑封面和元数据", self.scrollwidget)
-        self.onlinePlayQualityLabel = QLabel('在线播放音质', self.scrollwidget)
-        self.normalQualityButton = QRadioButton('流畅', self.scrollwidget)
-        self.highQualityButton = QRadioButton('高品', self.scrollwidget)
-        self.superQualityButton = QRadioButton('超品', self.scrollwidget)
-        self.searchLabel = QLabel('搜索', self.scrollwidget)
-        self.pageSizeHintLabel = QLabel('显示的在线音乐数量', self.scrollwidget)
+
+        # 设置
+        self.settingLabel = QLabel(self.tr("Settings"), self)
+
+        # 选择音乐文件夹
+        self.musicInThisPCLabel = QLabel(
+            self.tr("Music on this PC"), self.scrollwidget)
+        self.selectMusicFolderLabel = ClickableLabel(
+            self.tr("Choose where we look for music"), self.scrollwidget)
+
+        # 媒体信息
+        self.mediaInfoLabel = QLabel(self.tr("Media Info"), self.scrollwidget)
+        self.getMetaDataLabel = QLabel(self.tr(
+            "Automatically retrieve and update missing album art and metadata"), self.scrollwidget)
+        self.getMetaDataSwitchButton = SwitchButton(
+            self.tr("Off"), self.scrollwidget)
+
+        # 搜索
+        self.searchLabel = QLabel(self.tr('Search'), self.scrollwidget)
         self.pageSizeSlider = Slider(Qt.Horizontal, self.scrollwidget)
         self.pageSizeValueLabel = QLabel(self.scrollwidget)
-        self.selectMusicFolderLabel = ClickableLabel(
-            "选择查找音乐的位置", self.scrollwidget)
-        self.downloadFolderLabel = QLabel("下载目录", self.scrollwidget)
+        self.pageSizeHintLabel = QLabel(
+            self.tr('Set the number of online music displayed'), self.scrollwidget)
+
+        # 在线音乐音质
+        self.onlinePlayQualityLabel = QLabel(
+            self.tr('Online Playing Quality'), self.scrollwidget)
+        self.standardQualityButton = QRadioButton(
+            self.tr('Standard quality'), self.scrollwidget)
+        self.highQualityButton = QRadioButton(
+            self.tr('High quality'), self.scrollwidget)
+        self.superQualityButton = QRadioButton(
+            self.tr('Super quality'), self.scrollwidget)
+
+        # 下载目录
         self.downloadFolderHintLabel = QLabel('')
-        self.downloadFolderButton = QPushButton("浏览", self.scrollwidget)
+        self.downloadFolderButton = QPushButton(
+            self.tr("Choose"), self.scrollwidget)
         self.downloadFolderLineEdit = QLineEdit(self.config.get(
-            'download-folder', os.path.abspath('app/download').replace('\\', '/')), self.scrollwidget)
+            'download-folder', os.path.abspath('download').replace('\\', '/')), self.scrollwidget)
+        self.downloadFolderLabel = QLabel(
+            self.tr("Download directory"), self.scrollwidget)
+
+        # 应用
+        self.appLabel = QLabel(self.tr("App"), self.scrollwidget)
+        self.helpLabel = ClickableLabel(self.tr("Help"), self.scrollwidget)
+        self.issueLabel = ClickableLabel(
+            self.tr("Feedback"), self.scrollwidget)
+
         self.__initWidget()
 
     def __initWidget(self):
@@ -74,6 +100,9 @@ class SettingInterface(ScrollArea):
         self.issueLabel.setCursor(Qt.PointingHandCursor)
 
         # 设置播放音质
+        self.standardQualityButton.setProperty('quality', 'Standard quality')
+        self.highQualityButton.setProperty('quality', 'High quality')
+        self.superQualityButton.setProperty('quality', 'Super quality')
         self.__setCheckedRadioButton()
 
         # 设置滑动条
@@ -118,7 +147,7 @@ class SettingInterface(ScrollArea):
         self.pageSizeValueLabel.move(230, 342)
         # 在线音乐音质
         self.onlinePlayQualityLabel.move(30, 402)
-        self.normalQualityButton.move(30, 452)
+        self.standardQualityButton.move(30, 452)
         self.highQualityButton.move(30, 492)
         self.superQualityButton.move(30, 532)
         # 下载目录
@@ -140,13 +169,13 @@ class SettingInterface(ScrollArea):
     def onCheckBoxStatedChanged(self):
         """ 复选框状态改变对应的槽函数 """
         if self.getMetaDataSwitchButton.isChecked():
-            self.getMetaDataSwitchButton.setText("开")
+            self.getMetaDataSwitchButton.setText(self.tr("On"))
             self.getMetaDataSwitchButton.setEnabled(False)
             # 开始爬取信息
             self.__crawlMetaData()
         else:
             self.getMetaDataSwitchButton.setEnabled(True)
-            self.getMetaDataSwitchButton.setText("关")
+            self.getMetaDataSwitchButton.setText(self.tr("Off"))
 
     def __crawlMetaData(self):
         """ 爬取歌曲元数据 """
@@ -155,7 +184,7 @@ class SettingInterface(ScrollArea):
 
         # 创建状态提示条
         stateToolTip = StateTooltip(
-            "正在爬取歌曲元数据", f"当前进度：{0:>3.0%}", self.window())
+            self.tr("Crawling metadata"), self.tr("Current progress: ")+f"{0:>3.0%}", self.window())
         stateToolTip.move(self.window().width()-stateToolTip.width() - 30, 63)
         stateToolTip.show()
 
@@ -173,7 +202,7 @@ class SettingInterface(ScrollArea):
         self.sender().deleteLater()
         self.getMetaDataSwitchButton.setEnabled(True)
         self.getMetaDataSwitchButton.setChecked(False)
-        self.getMetaDataSwitchButton.setText("关")
+        self.getMetaDataSwitchButton.setText(self.tr("Off"))
         self.crawlComplete.emit()
 
     def __setQss(self):
@@ -209,8 +238,8 @@ class SettingInterface(ScrollArea):
 
     def __showSongFolderListDialog(self):
         """ 显示歌曲文件夹选择面板 """
-        title = '从本地曲库创建个人"收藏"'
-        content = '现在我们正在查看这些文件夹:'
+        title = self.tr('Build your collection from your local music files')
+        content = self.tr("Right now, we're watching these folders:")
         w = FolderListDialog(
             self.config["selected-folders"], title, content, self.window())
         # 如果歌曲文件夹选择面板更新了json文件那么自己也得更新
@@ -274,10 +303,10 @@ class SettingInterface(ScrollArea):
 
     def __setCheckedRadioButton(self):
         """ 设置选中的单选按钮 """
-        quality = self.config.get('online-play-quality', '流畅音质')
-        if quality == '流畅音质':
-            self.normalQualityButton.setChecked(True)
-        elif quality == '高品音质':
+        quality = self.config.get('online-play-quality', 'Standard quality')
+        if quality == 'Standard quality':
+            self.standardQualityButton.setChecked(True)
+        elif quality == 'High quality':
             self.highQualityButton.setChecked(True)
         else:
             self.superQualityButton.setChecked(True)
@@ -292,7 +321,7 @@ class SettingInterface(ScrollArea):
 
     def __onOnlinePlayQualityChanged(self):
         """ 在线播放音质改变槽函数 """
-        quality = self.sender().text() + '音质'
+        quality = self.sender().property('quality')
         if self.config.get('online-play-quality', '') == quality:
             return
         self.config['online-play-quality'] = quality
@@ -316,7 +345,7 @@ class SettingInterface(ScrollArea):
             self.__showSongFolderListDialog)
         self.pageSizeSlider.valueChanged.connect(
             self.__onPageSliderValueChanged)
-        self.normalQualityButton.clicked.connect(
+        self.standardQualityButton.clicked.connect(
             self.__onOnlinePlayQualityChanged)
         self.highQualityButton.clicked.connect(
             self.__onOnlinePlayQualityChanged)

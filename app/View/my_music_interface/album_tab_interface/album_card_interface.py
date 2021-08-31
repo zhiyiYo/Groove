@@ -53,12 +53,12 @@ class AlbumCardInterface(ScrollArea):
         self.isInSelectionMode = False
         self.isAllAlbumCardsChecked = False
         # 设置当前排序方式
-        self.sortMode = "添加日期"    # type:str
+        self.sortMode = "Date added"    # type:str
         self.__sortFunctions = {
-            "添加日期": self.sortByAddTime,
-            "A到Z": self.sortByFirstLetter,
-            "发行年份": self.sortByYear,
-            "歌手": self.sortBySonger
+            "Date added": self.sortByAddTime,
+            "A to Z": self.sortByFirstLetter,
+            "Release year": self.sortByYear,
+            "Artist": self.sortBySonger
         }
         # 分组标签列表
         self.groupTitle_list = []
@@ -90,9 +90,10 @@ class AlbumCardInterface(ScrollArea):
 
     def __createGuideLabel(self):
         """ 创建导航标签 """
-        self.guideLabel = QLabel("这里没有可显示的内容。请尝试其他筛选器。", self)
+        self.guideLabel = QLabel(
+            self.tr("There is nothing to display here. Try a different filter."), self)
         self.guideLabel.setStyleSheet(
-            "color: black; font: 25px 'Microsoft YaHei'")
+            "color: black; font: 25px 'Segoe UI','Microsoft YaHei'")
         self.guideLabel.resize(500, 26)
         self.guideLabel.move(35, 286)
 
@@ -204,7 +205,7 @@ class AlbumCardInterface(ScrollArea):
         self.scrollWidget.resize(
             self.width(),
             310 * rowCount
-            + 60 * containerCount * (self.sortMode != "添加日期")
+            + 60 * containerCount * (self.sortMode != "Date added")
             + 120
             + 245,
         )
@@ -238,7 +239,7 @@ class AlbumCardInterface(ScrollArea):
 
     def sortByAddTime(self):
         """ 按照添加时间分组 """
-        self.sortMode = "添加日期"
+        self.sortMode = "Date added"
         # 创建一个包含所有歌曲卡的网格布局
         container = QWidget()
         gridLayout = GridLayout()
@@ -266,7 +267,7 @@ class AlbumCardInterface(ScrollArea):
 
     def sortByFirstLetter(self):
         """ 按照专辑名的首字母进行分组排序 """
-        self.sortMode = "A到Z"
+        self.sortMode = "A to Z"
         # 将专辑卡从旧布局中移除
         self.__removeContainerFromVBoxLayout()
         self.groupTitle_list.clear()
@@ -320,7 +321,7 @@ class AlbumCardInterface(ScrollArea):
 
     def sortByYear(self):
         """ 按照专辑的年份进行分组排序 """
-        self.sortMode = "发行年份"
+        self.sortMode = "Release year"
         self.groupTitle_list.clear()
         self.groupTitle_dict.clear()
         # 将专辑卡从旧布局中移除
@@ -373,7 +374,7 @@ class AlbumCardInterface(ScrollArea):
 
     def sortBySonger(self):
         """ 按照专辑的专辑进行分组排序 """
-        self.sortMode = "歌手"
+        self.sortMode = "Artist"
         # 将专辑卡从旧布局中移除
         self.groupTitle_list.clear()
         self.__removeContainerFromVBoxLayout()
@@ -679,7 +680,7 @@ class AlbumCardInterface(ScrollArea):
         Parameters
         ----------
         sortMode: str
-            排序方式，有`添加日期`、`A到Z`、`发行年份` 和 `歌手` 四种
+            排序方式，有`Date added`、`A to Z`、`Release year` 和 `Artist` 四种
         """
         if self.sortMode == sortMode:
             return
@@ -688,8 +689,10 @@ class AlbumCardInterface(ScrollArea):
     def __showDeleteOneCardDialog(self, albumName: str):
         """ 显示删除一个专辑卡的对话框 """
         songPaths = [i["songPath"] for i in self.sender().songInfo_list]
-        title = "是否确定要删除此项？"
-        content = f"""如果删除"{albumName}"，它将不再位于此设备上。"""
+        title = self.tr("Are you sure you want to delete this?")
+        content = self.tr("If you delete") + f' "{albumName}" ' + \
+                self.tr("it won't be on be this device anymore.")
+
         w = MessageDialog(title, content, self.window())
         w.yesSignal.connect(lambda: self.deleteAlbums([albumName]))
         w.yesSignal.connect(lambda: self.deleteAlbumSig.emit(songPaths))

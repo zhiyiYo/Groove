@@ -71,14 +71,15 @@ class PlayingInterface(QWidget):
         self.songListWidgetAni = QPropertyAnimation(
             self.songListWidget, b"geometry")
         self.selectionModeBar = SelectionModeBar(self)
-        self.guideLabel = QLabel("在这里，你将看到正在播放的歌曲以及即将播放的歌曲。", self)
+        self.guideLabel = QLabel(self.tr(
+            "Here, you will see the song being played and the songs to be played."), self)
         self.randomPlayAllButton = ThreeStatePushButton(
             {
                 "normal": ":/images/playing_interface/Shuffle_normal.png",
                 "hover": ":/images/playing_interface/Shuffle_hover.png",
                 "pressed": ":/images/playing_interface/Shuffle_pressed.png",
             },
-            " 随机播放你收藏中的所有内容",
+            self.tr(" Shuffle all songs in your collection"),
             (30, 22),
             self
         )

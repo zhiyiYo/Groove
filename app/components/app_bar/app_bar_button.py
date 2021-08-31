@@ -17,7 +17,7 @@ class AppBarButton(QPushButton):
             spacing: 10px;
             color: white;
             background: transparent;
-            font: 16px "Microsoft YaHei";
+            font: 16px "Segoe UI", "Microsoft YaHei";
             padding: 13px 24px 13px 24px;
         }
 

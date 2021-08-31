@@ -18,7 +18,7 @@ QScrollArea {
 
 QGroupBox {
     background-color: transparent;
-    font: 21px 'Microsoft YaHei';
+    font: 21px 'Segoe UI', 'Microsoft YaHei';
     color: rgb(0, 107, 131);
     border: none;
     /*改标题懒到组内小部件的垂直距离*/
@@ -70,19 +70,19 @@ QScrollBar::sub-page:vertical {
 
 /*标签*/
 QLabel {
-    font: 17px 'Microsoft YaHei Light';
+    font: 17px 'Segoe UI Semilight','Microsoft YaHei Light';
     background-color: transparent;
 }
 
 QLabel#albumNameLabel[isChecked='False'] {
     color: black;
-    font-family: 'Microsoft YaHei';
+    font-family: 'Segoe UI', 'Microsoft YaHei';
     font-weight: bold;
 }
 
 QLabel#albumNameLabel[isChecked='True'] {
     color: white;
-    font-family: 'Microsoft YaHei';
+    font-family: 'Segoe UI', 'Microsoft YaHei';
     font-weight: bold;
 }
 

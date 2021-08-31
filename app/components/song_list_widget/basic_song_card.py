@@ -95,13 +95,13 @@ class BasicSongCard(QWidget):
         """ 从歌曲信息字典中获取信息 """
         self.songInfo = songInfo
         self.songPath = songInfo.get("songPath", "")  # type:str
-        self.songName = songInfo.get("songName", "未知歌曲")  # type:str
-        self.singer = songInfo.get("singer", "未知歌手")  # type:str
-        self.album = songInfo.get("album", "未知专辑")  # type:str
-        self.year = songInfo.get("year", "未知年份")  # type:str
-        self.genre = songInfo.get("genre", "未知流派")  # type:str
-        self.duration = songInfo.get("duration", "0:00")  # type:str
-        self.tracknumber = songInfo.get("tracknumber", "0")  # type:str
+        self.songName = songInfo.get("songName", self.tr("Unknown song"))   # type:str
+        self.singer = songInfo.get("singer", self.tr("Unknown artist"))       # type:str
+        self.album = songInfo.get("album", self.tr("Unknown album"))         # type:str
+        self.year = songInfo.get("year", self.tr("Unknown year"))           # type:str
+        self.genre = songInfo.get("genre", self.tr("Unknown genre"))         # type:str
+        self.duration = songInfo.get("duration", "0:00")
+        self.tracknumber = songInfo.get("tracknumber", "0")
 
     def setScalableWidgets(self, scaleableWidget_list: list, scalebaleWidgetWidth_list: list, fixedWidth=0):
         """ 设置可随着歌曲卡的伸缩而伸缩的标签

@@ -13,17 +13,17 @@ QLabel {
 }
 
 QLabel#titleLabel {
-    font: 25px 'Microsoft YaHei';
+    font: 25px 'Segoe UI', 'Microsoft YaHei';
 }
 
 QLabel#contentLabel {
-    font: 18px 'Microsoft YaHei';
+    font: 18px 'Segoe UI', 'Microsoft YaHei';
 }
 
 QPushButton#completeButton {
     background-color: rgb(204, 204, 204);
     padding: 11px 64px 11px 64px;
-    font: 19px 'Microsoft YaHei';
+    font: 19px 'Segoe UI', 'Microsoft YaHei';
     border: none;
     height: 20px;
     width: 55px;

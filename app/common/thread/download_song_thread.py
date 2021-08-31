@@ -29,6 +29,6 @@ class DownloadSongThread(QThread):
             # 发送完成一首歌下载信号
             self.downloadOneSongCompleteSig.emit()
 
-    def appendDownloadTask(self, songInfo: dict, quality='流畅音质'):
+    def appendDownloadTask(self, songInfo: dict, quality='Standard quality'):
         """ 添加下载任务 """
         self.download_queque.put((songInfo, quality))

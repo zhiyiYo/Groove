@@ -45,7 +45,8 @@ class GetMetaDataThread(QThread):
                     writeAlbumCover(songPath, coverPath)
 
             # 发送信号
-            self.crawlSignal.emit(f"当前进度：{(i+1)/len(songPaths):>3.0%}")
+            text = self.tr("Current progress: ")
+            self.crawlSignal.emit(text+f"{(i+1)/len(songPaths):>3.0%}")
 
     def __getAudioFiles(self):
         """ 获取音频文件路径和不包含后缀名的文件名

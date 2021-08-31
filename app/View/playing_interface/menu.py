@@ -12,14 +12,14 @@ class Menu(QMenu):
     def __init__(self, parent=None):
         super().__init__(parent)
         # 创建动作
-        self.playAct = QAction('播放', self)
-        self.addToMenu = AddToMenu(parent=self)
-        self.removeAct = QAction('移除', self)
-        self.moveUpAct = QAction('向上移动', self)
-        self.moveDownAct = QAction('向下移动', self)
-        self.showAlbumAct = QAction('显示专辑', self)
-        self.propertyAct = QAction('属性', self)
-        self.selectAct = QAction('选择', self)
+        self.playAct = QAction(self.tr('Play'), self)
+        self.addToMenu = AddToMenu(self.tr('Add to'), self)
+        self.removeAct = QAction(self.tr('Remove'), self)
+        self.moveUpAct = QAction(self.tr('Move up'), self)
+        self.moveDownAct = QAction(self.tr('Move down'), self)
+        self.showAlbumAct = QAction(self.tr('Show album'), self)
+        self.propertyAct = QAction(self.tr('Properties'), self)
+        self.selectAct = QAction(self.tr('Select'), self)
         self.action_list = [self.playAct, self.removeAct, self.moveUpAct,
                             self.moveDownAct, self.showAlbumAct, self.propertyAct, self.selectAct]
         # 初始化
@@ -54,13 +54,13 @@ class AddToMenu(QMenu):
 
     addSongsToPlaylistSig = pyqtSignal(str)  # 将歌曲添加到已存在的自定义播放列表
 
-    def __init__(self, string='添加到', parent=None):
-        super().__init__(string, parent)
+    def __init__(self, title='Add to', parent=None):
+        super().__init__(title, parent)
         # 创建动作
         self.playingAct = QAction(
-            QIcon(':/images/playing_interface/Playing_white.png'), '正在播放', self)
+            QIcon(':/images/playing_interface/Playing_white.png'), self.tr('Now playing'), self)
         self.newPlaylistAct = QAction(
-            QIcon(':/images/playing_interface/Add_20_20.png'), '新的播放列表', self)
+            QIcon(':/images/playing_interface/Add_20_20.png'), self.tr('New playlist'), self)
         playlists = self.__getPlaylistNames()
         self.playlistAct_list = [QAction(QIcon(
             ":/images/playing_interface/Album.png"), i, self) for i in playlists]

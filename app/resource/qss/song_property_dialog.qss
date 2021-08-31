@@ -4,13 +4,13 @@ QWidget#centerWidget {
 }
 
 QLabel {
-    font: 18px 'Microsoft YaHei';
+    font: 18px 'Segoe UI', 'Microsoft YaHei';
     selection-background-color: rgb(0, 153, 188);
     border: none;
 }
 
 QLabel#propertyLabel {
-    font: 21px 'Microsoft YaHei';
+    font: 21px 'Segoe UI', 'Microsoft YaHei';
 }
 
 QLabel#songPath,
@@ -21,7 +21,7 @@ QLabel#singer {
 QPushButton {
     background-color: rgb(204, 204, 204);
     padding: 9px 65px 9px 65px;
-    font: 19px 'Microsoft YaHei';
+    font: 18px 'Segoe UI', 'Microsoft YaHei';
     border: transparent;
     border-radius: 4px;
 }

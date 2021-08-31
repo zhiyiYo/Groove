@@ -2,7 +2,7 @@
 import os
 
 from components.scroll_area import ScrollArea
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal, QObject
 from PyQt5.QtGui import QColor, QPainter, QPen
 from PyQt5.QtWidgets import QWidget
 
@@ -34,21 +34,21 @@ class NavigationWidget(NavigationWidgetBase):
         self.showBarButton = ToolButton(
             ":/images/navigation_interface/GlobalNavButton.png", parent=self)
         self.myMusicButton = PushButton(
-            ":/images/navigation_interface/MusicInCollection.png", "我的音乐", (400, 60), self.scrollWidget)
+            ":/images/navigation_interface/MusicInCollection.png", self.tr("My music"), (400, 60), self.scrollWidget)
         self.historyButton = PushButton(
-            ":/images/navigation_interface/Recent.png", "最近播放的内容", (400, 62), self.scrollWidget)
+            ":/images/navigation_interface/Recent.png", self.tr("Recent plays"), (400, 62), self.scrollWidget)
         self.playingButton = PushButton(
-            ":/images/navigation_interface/Playing.png", "正在播放", (400, 62), self.scrollWidget)
+            ":/images/navigation_interface/Playing.png", self.tr("Now playing"), (400, 62), self.scrollWidget)
         self.playlistButton = PushButton(
-            ":/images/navigation_interface/Playlist.png", "播放列表", (340, 60), self.scrollWidget)
+            ":/images/navigation_interface/Playlist.png", self.tr("Playlists"), (340, 60), self.scrollWidget)
         self.createPlaylistButton = CreatePlaylistButton(self.scrollWidget)
         self.settingButton = PushButton(
-            ":/images/navigation_interface/Settings.png", "设置", (400, 62), self)
+            ":/images/navigation_interface/Settings.png", self.tr("Settings"), (400, 62), self)
         # 创建播放列表名字按钮
         self.__createPlaylistNameButtons(self.getPlaylistNames())
         # 设置当前按钮
         self.currentButton = self.myMusicButton
-        # todo:设置可选中的按钮列表
+        # 设置可选中的按钮列表
         self._selectableButtons = [
             self.myMusicButton,
             self.historyButton,
@@ -56,7 +56,7 @@ class NavigationWidget(NavigationWidgetBase):
             self.playlistButton,
             self.settingButton,
         ] + self.playlistNameButtons
-        # todo:设置可选中的按钮名字列表
+        # 设置可选中的按钮名字列表
         self._selectableButtonNames = [
             "myMusicButton",
             "historyButton",

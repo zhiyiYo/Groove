@@ -4,7 +4,7 @@ import os
 from components.menu import AddToMenu
 from common.image_process_utils import getBlurPixmap
 from components.app_bar import AppBarButton, CollapsingAppBarBase, MoreActionsMenu
-from PyQt5.QtCore import Qt, pyqtSignal, QPoint
+from PyQt5.QtCore import Qt, pyqtSignal, QPoint, QObject
 from PyQt5.QtGui import QPalette, QColor, QPixmap
 from PyQt5.QtWidgets import QLabel, QAction
 
@@ -20,31 +20,35 @@ class SingerInfoBar(CollapsingAppBarBase):
 
     def __init__(self, singerInfo: dict, parent=None):
         self.__getInfo(singerInfo)
+        super().__init__(self.singer, self.genre, self.coverPath, 'singer', parent)
 
         # 创建按钮
         self.playAllButton = AppBarButton(
-            ":/images/album_interface/Play.png", "全部播放")
+            ":/images/album_interface/Play.png", self.tr("Play all"))
         self.addToButton = AppBarButton(
-            ":/images/album_interface/Add.png", "添加到")
+            ":/images/album_interface/Add.png", self.tr("Add to"))
         self.pinToStartMenuButton = AppBarButton(
-            ":/images/album_interface/Pin.png", '固定到"开始"菜单')
-        buttons = [self.playAllButton,
-                   self.addToButton, self.pinToStartMenuButton]
-        super().__init__(self.singer, self.genre, self.coverPath, buttons, 'singer', parent)
+            ":/images/album_interface/Pin.png", self.tr('Pin to Start'))
+        self.setButtons([self.playAllButton, self.addToButton,
+                        self.pinToStartMenuButton])
 
         self.blurLabel = BlurLabel(self.coverPath, 8, self)
         self.blurLabel.lower()
-        self.actionNames = ["全部播放", "添加到", '固定到"开始"菜单']
+        self.blurLabel.setHidden(self.coverPath == self.defaultCoverPath)
+
+        self.actionNames = [
+            self.tr("Play all"), self.tr("Add to"), self.tr('Pin to Start')]
         self.action_list = [QAction(i, self) for i in self.actionNames]
         self.addToButton.clicked.connect(self.__onAddToButtonClicked)
-        self.blurLabel.setHidden(self.coverPath == self.defaultCoverPath)
+
         self.setAttribute(Qt.WA_StyledBackground)
         self.setAutoFillBackground(True)
 
     def __getInfo(self, singerInfo: dict):
         """ 获取信息 """
-        self.singer = singerInfo.get('singer', '未知歌手')
-        self.genre = singerInfo.get('genre', '未知流派')
+        obj = QObject()
+        self.singer = singerInfo.get('singer', obj.tr('Unknown artist'))
+        self.genre = singerInfo.get('genre', obj.tr('Unknown genre'))
         self.coverPath = singerInfo.get('coverPath', "")
         self.albumInfo_list = singerInfo.get('albumInfo_list', [])
         if not os.path.exists(self.coverPath):

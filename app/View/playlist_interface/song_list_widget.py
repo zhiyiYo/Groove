@@ -79,9 +79,9 @@ class SongListWidget(BasicSongListWidget):
             return
         self.playSignal.emit(index)
 
-    def __onRemoveButtonClicked(self, index):
+    def __onRemoveButtonClicked(self, index, songCard=None):
         """ 移除歌曲卡按钮点击槽函数 """
-        path = self.sender().songPath
+        path = songCard.songPath if songCard else self.sender().songPath
         self.removeSongCard(index)
         self.removeSongSignal.emit(path)
 
@@ -105,32 +105,32 @@ class SongListWidget(BasicSongListWidget):
         songCard.switchToSingerInterfaceSig.connect(
             self.switchToSingerInterfaceSig)
 
-    def __connectMenuSignalToSlot(self, contextMenu):
+    def __connectMenuSignalToSlot(self, menu):
         """ 右击菜单信号连接到槽 """
-        contextMenu.playAct.triggered.connect(
+        menu.playAct.triggered.connect(
             lambda: self.playOneSongSig.emit(
                 self.songCard_list[self.currentRow()].songInfo))
-        contextMenu.nextSongAct.triggered.connect(
+        menu.nextSongAct.triggered.connect(
             lambda: self.nextToPlayOneSongSig.emit(
                 self.songCard_list[self.currentRow()].songInfo))
-        contextMenu.editInfoAct.triggered.connect(self.showSongInfoEditDialog)
-        contextMenu.showPropertyAct.triggered.connect(
+        menu.editInfoAct.triggered.connect(self.showSongInfoEditDialog)
+        menu.showPropertyAct.triggered.connect(
             self.showSongPropertyDialog)
-        contextMenu.deleteAct.triggered.connect(
-            lambda: self.__onRemoveButtonClicked(self.currentRow()))
-        contextMenu.selectAct.triggered.connect(
+        menu.deleteAct.triggered.connect(lambda: self.__onRemoveButtonClicked(
+            self.currentRow(), self.songCard_list[self.currentRow()]))
+        menu.selectAct.triggered.connect(
             lambda: self.songCard_list[self.currentRow()].setChecked(True))
-        contextMenu.showAlbumAct.triggered.connect(lambda: self.switchToAlbumInterfaceSig.emit(
+        menu.showAlbumAct.triggered.connect(lambda: self.switchToAlbumInterfaceSig.emit(
             self.songCard_list[self.currentRow()].album,
             self.songCard_list[self.currentRow()].singer))
 
-        contextMenu.addToMenu.playingAct.triggered.connect(
+        menu.addToMenu.playingAct.triggered.connect(
             lambda: self.addSongToPlayingSignal.emit(
                 self.songCard_list[self.currentRow()].songInfo))
-        contextMenu.addToMenu.addSongsToPlaylistSig.connect(
+        menu.addToMenu.addSongsToPlaylistSig.connect(
             lambda name: self.addSongsToCustomPlaylistSig.emit(
                 name, self.songInfo_list))
-        contextMenu.addToMenu.newPlaylistAct.triggered.connect(
+        menu.addToMenu.newPlaylistAct.triggered.connect(
             lambda: self.addSongsToNewCustomPlaylistSig.emit(
                 [self.songCard_list[self.currentRow()].songInfo]))
 
@@ -141,15 +141,15 @@ class SongCardListContextMenu(DWMMenu):
     def __init__(self, parent):
         super().__init__("", parent)
         # 创建主菜单动作
-        self.playAct = QAction("播放", self)
-        self.nextSongAct = QAction("下一首播放", self)
-        self.deleteAct = QAction("从播放列表中删除", self)
-        self.showAlbumAct = QAction("显示专辑", self)
-        self.editInfoAct = QAction("编辑信息", self)
-        self.showPropertyAct = QAction("属性", self)
-        self.selectAct = QAction("选择", self)
+        self.playAct = QAction(self.tr("Play"), self)
+        self.nextSongAct = QAction(self.tr("Play next"), self)
+        self.deleteAct = QAction(self.tr("Delete from playlist"), self)
+        self.showAlbumAct = QAction(self.tr("Show album"), self)
+        self.editInfoAct = QAction(self.tr("Edit info"), self)
+        self.showPropertyAct = QAction(self.tr("Properties"), self)
+        self.selectAct = QAction(self.tr("Select"), self)
         # 创建菜单和子菜单
-        self.addToMenu = AddToMenu("添加到", self)
+        self.addToMenu = AddToMenu(self.tr("Add to"), self)
         # 将动作添加到菜单中
         self.addActions([self.playAct, self.nextSongAct])
         # 将子菜单添加到主菜单

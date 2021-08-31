@@ -8,7 +8,8 @@ from components.label import ClickableLabel
 from components.menu import LineEditMenu
 from PyQt5.QtCore import QDateTime, QEvent, QFile, Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QApplication, QLabel, QLineEdit, QPushButton
+from PyQt5.QtWidgets import (QApplication, QLabel, QLineEdit, QPushButton,
+                             QVBoxLayout)
 
 
 class RenamePlaylistDialog(MaskDialogBase):
@@ -20,11 +21,13 @@ class RenamePlaylistDialog(MaskDialogBase):
         super().__init__(parent=parent)
         self.oldPlaylist = oldPlaylist
         self.oldPlaylistName = oldPlaylist["playlistName"]  # type:str
+        self.vBoxLayout = QVBoxLayout(self.widget)
         self.iconLabel = QLabel(self.widget)
         self.lineEdit = LineEdit(self.oldPlaylistName, self.widget)
-        self.cancelLabel = ClickableLabel("取消", self.widget)
-        self.renamePlaylistButton = QPushButton('重命名', self.widget)
-        self.playlistExistedLabel = QLabel("此名称已经存在。请尝试其他名称。", self.widget)
+        self.cancelLabel = ClickableLabel(self.tr("Cancel"), self.widget)
+        self.renamePlaylistButton = QPushButton(self.tr('Rename'), self.widget)
+        self.playlistExistedLabel = QLabel(
+            self.tr("This name already exists. Please try a different name."), self.widget)
         self.__initWidget()
 
     def __initWidget(self):
@@ -53,25 +56,29 @@ class RenamePlaylistDialog(MaskDialogBase):
 
     def __initLayout(self):
         """ 初始化布局 """
-        self.renamePlaylistButton.adjustSize()
-        self.lineEdit.move(52, 309)
-        self.iconLabel.move(188, 74)
-        self.playlistExistedLabel.move(152, 405)
-        self.cancelLabel.move(276, self.widget.height()-74)
-        self.renamePlaylistButton.move(self.widget.width()//2-self.renamePlaylistButton.width()//2,
-                                       self.widget.height() - 103 - self.renamePlaylistButton.height())
+        self.vBoxLayout.setContentsMargins(0, 74, 0, 0)
+        self.vBoxLayout.setSpacing(0)
+        args = (0, Qt.AlignHCenter)
+        self.vBoxLayout.addWidget(self.iconLabel, *args)
+        self.vBoxLayout.addSpacing(25)
+        self.vBoxLayout.addWidget(self.lineEdit, *args)
+        self.vBoxLayout.addSpacing(25)
+        self.vBoxLayout.addWidget(self.playlistExistedLabel, *args)
+        self.vBoxLayout.addSpacing(20)
+        self.vBoxLayout.addWidget(self.renamePlaylistButton, *args)
+        self.vBoxLayout.addSpacing(28)
+        self.vBoxLayout.addWidget(self.cancelLabel, *args)
+        self.vBoxLayout.setAlignment(Qt.AlignTop)
 
     def __isPlaylistExist(self, playlistName: str) -> bool:
         """ 检测播放列表是否已经存在，如果已存在就显示提示标签 """
         os.makedirs('Playlists', exist_ok=True)
+
         # 扫描播放列表文件夹下的播放列表名字
         playlistNames = [os.path.splitext(i)[0]
                          for i in os.listdir("Playlists")]
         isExist = playlistName in playlistNames
-        # 如果播放列表名字禁用按钮
-        self.playlistExistedLabel.hide()
-        self.playlistExistedLabel.setVisible(isExist)
-        self.renamePlaylistButton.setEnabled(not isExist)
+
         return isExist
 
     def __onRenamePlaylistButtonClicked(self):
@@ -98,17 +105,15 @@ class RenamePlaylistDialog(MaskDialogBase):
 
     def __onLineEditTextChanged(self, playlistName: str):
         """ 单行输入框中的播放列表名字改变对应的槽函数 """
-        self.renamePlaylistButton.setEnabled(
-            not (playlistName in ["", self.oldPlaylistName, "       命名此播放列表"])
-        )
+        # 如果播放列表名字存在或者没变就禁用按钮
+        isExist = self.__isPlaylistExist(playlistName)
+        isDisabled = playlistName in ["", self.oldPlaylistName]
+        self.renamePlaylistButton.setDisabled(isDisabled or isExist)
+
         # 如果播放列表名已存在，显示提示标签
-        if self.__isPlaylistExist(playlistName) and self.widget.height() != 627 and playlistName != self.oldPlaylistName:
-            self.widget.setFixedSize(586, 627)
-            self.__initLayout()
+        if isExist and playlistName != self.oldPlaylistName:
             self.playlistExistedLabel.show()
-        elif not self.__isPlaylistExist(playlistName) and self.widget.height() == 627:
-            self.widget.setFixedSize(586, 594)
-            self.__initLayout()
+        elif not isExist:
             self.playlistExistedLabel.hide()
 
 
@@ -152,23 +157,24 @@ class LineEdit(QLineEdit):
 
     def enterEvent(self, e):
         """ 鼠标进入更新样式 """
-        if self.property("noText") == "true":
+        if not self.text():
             self.pencilPic.setPixmap(
                 QPixmap(":/images/create_playlist_dialog/pencil_noFocus_hover_50_50.png"))
 
     def leaveEvent(self, e):
         """ 鼠标离开更新样式 """
-        if self.property("noText") == "true":
+        if not self.text():
             self.pencilPic.setPixmap(
                 QPixmap(":/images/create_playlist_dialog/pencil_noFocus_50_50.png"))
 
     def focusOutEvent(self, e):
         """ 当焦点移到别的输入框时隐藏按钮 """
         super().focusOutEvent(e)
+
         if not self.text():
             self.setProperty("noText", "true")
             self.setStyle(QApplication.style())
-            self.setText("       命名此播放列表")
+
         self.clearButton.hide()
         self.pencilPic.setPixmap(
             QPixmap(":/images/create_playlist_dialog/pencil_noFocus_50_50.png"))
@@ -176,14 +182,15 @@ class LineEdit(QLineEdit):
     def focusInEvent(self, e):
         """ 焦点进入时更换样式并取消提示文字 """
         super().focusInEvent(e)
+
         # 必须有判断的一步，不然每次右击菜单执行完都会触发focusInEvent()导致菜单功能混乱
         if self.property("noText") == "true":
             self.clear()
+
         self.setProperty("noText", "false")
         self.setStyle(QApplication.style())
         self.pencilPic.setPixmap(
-            QPixmap(":/images/create_playlist_dialog/pencil_50_50.png")
-        )
+            QPixmap(":/images/create_playlist_dialog/pencil_50_50.png"))
 
     def mousePressEvent(self, e):
         """ 鼠标点击事件 """

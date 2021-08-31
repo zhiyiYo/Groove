@@ -8,7 +8,8 @@ QScrollArea {
 }
 
 QLabel {
-    font: 18px 'Microsoft YaHei';
+    font-size: 18px;
+    font-family: 'Segoe UI', 'Microsoft YaHei';
 }
 
 QLabel#settingLabel {
@@ -16,12 +17,13 @@ QLabel#settingLabel {
 }
 
 QLabel#titleLabel {
-    font: 29px 'Microsoft YaHei';
+    font: 29px 'Segoe UI', 'Microsoft YaHei';
 }
 
 QLabel#clickableLabel {
     color: rgb(0, 107, 131);
-    font: 18px 'Microsoft YaHei';
+    font-family: 'Segoe UI', 'Microsoft YaHei';
+    font-size: 18px;
 }
 
 QLabel#clickableLabel:hover {
@@ -32,7 +34,8 @@ QLabel#clickableLabel:hover {
 QRadioButton {
     spacing: 10px;
     color: black;
-    font: 18px 'Microsoft YaHei';
+    font-size: 18px;
+    font-family: 'Segoe UI', 'Microsoft YaHei';
     background-color: transparent;
 }
 
@@ -162,7 +165,8 @@ QSlider::add-page:horizontal {
 /* 按钮 */
 QPushButton {
     background-color: rgb(204, 204, 204);
-    font: 17px 'Microsoft YaHei';
+    font-size: 17px;
+    font-family: 'Segoe UI', 'Microsoft YaHei';
     border: none;
     border-radius: 4px;
     padding: 9px 11px 9px 11px;
@@ -178,8 +182,8 @@ QPushButton:hover {
 
 
 /* 输入框 */
-QLineEdit{
-    font: 16px 'Microsoft YaHei';
+QLineEdit {
+    font: 16px 'Segoe UI', 'Microsoft YaHei';
     padding: 6px 11px 6px 11px;
     selection-background-color: rgb(0, 153, 188);
     background-color: rgb(249, 249, 249);
@@ -187,7 +191,7 @@ QLineEdit{
     border-radius: 4px;
 }
 
-QLineEdit:hover{
+QLineEdit:hover {
     background-color: rgb(242, 242, 242);
     border: 1px solid rgb(230, 230, 230);
 }

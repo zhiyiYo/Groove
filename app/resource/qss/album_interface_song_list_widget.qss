@@ -44,7 +44,7 @@ QWidget[state='selected-pressed'] {
 }
 
 QLabel {
-    font-family: 'Microsoft YaHei';
+    font-family: 'Segoe UI', 'Microsoft YaHei';
     font-size: 9pt;
     background-color: transparent;
 }

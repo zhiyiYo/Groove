@@ -45,7 +45,8 @@ class AlbumInfoEditDialog(MaskDialogBase):
         # 创建滚动区域和抬头
         self.scrollArea = ScrollArea(self.widget)
         self.scrollWidget = QWidget()
-        self.editAlbumInfoLabel = QLabel("编辑专辑信息", self.widget)
+        self.editAlbumInfoLabel = QLabel(
+            self.tr("Edit Album Info"), self.widget)
 
         # 上半部分
         self.albumCover = AlbumCoverWindow(
@@ -53,9 +54,10 @@ class AlbumInfoEditDialog(MaskDialogBase):
         self.albumNameLineEdit = LineEdit(self.albumName, self.scrollWidget)
         self.albumSongerLineEdit = LineEdit(self.singer, self.scrollWidget)
         self.genreLineEdit = LineEdit(self.genre, self.scrollWidget)
-        self.albumNameLabel = QLabel("专辑标题", self.scrollWidget)
-        self.albumSongerLabel = QLabel("专辑歌手", self.scrollWidget)
-        self.genreLabel = QLabel("类型", self.scrollWidget)
+        self.albumNameLabel = QLabel(self.tr("Album title"), self.scrollWidget)
+        self.albumSongerLabel = QLabel(
+            self.tr("Album artist"), self.scrollWidget)
+        self.genreLabel = QLabel(self.tr("Genre"), self.scrollWidget)
 
         # 下半部分
         self.songInfoWidget_list = []
@@ -63,8 +65,9 @@ class AlbumInfoEditDialog(MaskDialogBase):
             songInfoWidget = SongInfoWidget(songInfo, self.scrollWidget)
             songInfoWidget.isTrackNumEmptySig.connect(self.__trackNumEmptySlot)
             self.songInfoWidget_list.append(songInfoWidget)
-        self.saveButton = PerspectivePushButton("保存", self.widget)
-        self.cancelButton = PerspectivePushButton("取消", self.widget)
+        self.saveButton = PerspectivePushButton(self.tr("Save"), self.widget)
+        self.cancelButton = PerspectivePushButton(
+            self.tr("Cancel"), self.widget)
 
     def __initWidget(self):
         """ 初始化小部件 """
@@ -80,28 +83,30 @@ class AlbumInfoEditDialog(MaskDialogBase):
             self.scrollArea.resize(931, 216 + self.songInfoWidgetNum * 83)
         else:
             self.scrollArea.resize(931, 595)
+        # 设置层叠样式
+        self.__setQss()
         # 初始化布局
         self.__initLayout()
         # 信号连接到槽
         self.__connectSignalToSlot()
-        # 设置层叠样式
-        self.__setQss()
-        # 设置补全
         # 流派补全
         genres = [
-            "POP流行",
+            "Pop",
             "Blues",
-            "Japanese Pop & Rock",
             "Soundtrack",
+            "Japanese Pop & Rock",
+            "Rock",
             "J-Pop",
             "RAP/HIP HOP",
-            "Soundtrack",
-            "古典",
-            "经典",
+            "Classical",
             "Country",
             "R&B",
-            "ROCK",
-            "anime",
+            "Anime",
+            "Dance",
+            "Jazz",
+            "New Age",
+            "Folk",
+            "Easy Listening"
         ]
         self.genreCompleter = QCompleter(genres, self.widget)
         self.genreCompleter.setCompletionMode(QCompleter.InlineCompletion)
@@ -125,23 +130,27 @@ class AlbumInfoEditDialog(MaskDialogBase):
         self.albumNameLineEdit.resize(327, 40)
         self.albumSongerLineEdit.resize(326, 40)
         self.genreLineEdit.resize(327, 40)
-        self.saveButton.resize(168, 40)
-        self.cancelButton.resize(168, 40)
+
         self.widget.setFixedSize(
             936, self.scrollArea.y() + self.scrollArea.height() + 98)
-        self.saveButton.move(563, self.widget.height() - 16 -
-                             self.saveButton.height())
-        self.cancelButton.move(735, self.widget.height() -
-                               16 - self.saveButton.height())
+
+        self.cancelButton.move(self.widget.width()-self.cancelButton.width()-30,
+                               self.widget.height()-16-self.cancelButton.height())
+        self.saveButton.move(self.cancelButton.x() -
+                             self.saveButton.width()-5, self.cancelButton.y())
 
     def __setQss(self):
         """ 设置层叠样式表 """
         self.scrollArea.setObjectName("infoEditScrollArea")
         self.editAlbumInfoLabel.setObjectName("editAlbumInfo")
+
         f = QFile(":/qss/album_info_edit_dialog.qss")
         f.open(QFile.ReadOnly)
         self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
         f.close()
+
+        self.saveButton.adjustSize()
+        self.cancelButton.adjustSize()
 
     def __trackNumEmptySlot(self, isShowErrorMsg: bool):
         """ 如果曲目为空则禁用保存按钮 """
@@ -234,7 +243,7 @@ class AlbumInfoEditDialog(MaskDialogBase):
         """ 显示专辑图片选取对话框 """
         self.delayTimer.stop()
         path, _ = QFileDialog.getOpenFileName(
-            self, "打开", "./", "所有文件(*.png;*.jpg;*.jpeg;*jpe;*jiff)")
+            self, self.tr("Open"), "./", self.tr("All files")+"(*.png;*.jpg;*.jpeg;*jpe;*jiff)")
         if path:
             # 复制图片到封面文件夹下
             if os.path.abspath(self.coverPath) == path:
@@ -285,15 +294,16 @@ class SongInfoWidget(QWidget):
         super().__init__(parent)
         self.songInfo = songInfo
         # 创建小部件
-        self.trackNumLabel = QLabel("曲目", self)
-        self.songNameLabel = QLabel("歌名", self)
-        self.singerLabel = QLabel("歌手", self)
+        self.trackNumLabel = QLabel(self.tr("Track"), self)
+        self.songNameLabel = QLabel(self.tr("Song title"), self)
+        self.singerLabel = QLabel(self.tr("Song artist"), self)
         self.trackNumLineEdit = LineEdit(songInfo["tracknumber"], self, False)
         self.songNameLineEdit = LineEdit(songInfo["songName"], self)
         self.singerLineEdit = LineEdit(songInfo["singer"], self)
         self.errorIcon = ErrorIcon(self)
         self.bottomErrorIcon = ErrorIcon(self)
-        self.bottomErrorLabel = QLabel("曲目必须是1000以下的数字", self)
+        self.bottomErrorLabel = QLabel(
+            self.tr("The track must be a number below 1000"), self)
         # 初始化
         self.__initWidget()
 
@@ -352,7 +362,8 @@ class SongInfoWidget(QWidget):
         """ 设置曲目为空错误信息是否显示 """
         self.errorIcon.setHidden(isHidden)
         self.bottomErrorIcon.setHidden(isHidden)
-        self.bottomErrorLabel.setText("曲目必须是1000以下的数字")
+        self.bottomErrorLabel.setText(
+            self.tr("The track must be a number below 1000"))
         self.bottomErrorLabel.adjustSize()
         self.bottomErrorLabel.setHidden(isHidden)
 
@@ -364,7 +375,8 @@ class SongInfoWidget(QWidget):
             self.setFixedSize(903, 83)
         self.errorIcon.setHidden(isHidden)
         self.bottomErrorIcon.setHidden(isHidden)
-        self.bottomErrorLabel.setText("遇到未知错误，请稍后再试")
+        self.bottomErrorLabel.setText(
+            self.tr("An unknown error was encountered. Please try again later"))
         self.bottomErrorLabel.adjustSize()
         self.bottomErrorLabel.setHidden(isHidden)
 
@@ -405,11 +417,8 @@ class AlbumCoverWindow(PerspectiveWidget):
     def setAlbumCover(self, picPath: str):
         """ 更换专辑封面 """
         self.__picPath = picPath
-        self.albumCoverLabel.setPixmap(
-            QPixmap(picPath).scaled(
-                self.width(), self.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation
-            )
-        )
+        self.albumCoverLabel.setPixmap(QPixmap(picPath).scaled(
+            self.width(), self.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
     def mouseReleaseEvent(self, e):
         """ 鼠标松开发送点击信号 """

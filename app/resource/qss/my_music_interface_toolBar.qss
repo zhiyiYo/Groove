@@ -9,17 +9,17 @@ QPushButton {
     color: rgb(75, 75, 75);
     font-size: 16px;
     background-color: transparent;
-    font-family: 'Microsoft YaHei';
+    font-family: 'Segoe UI', 'Microsoft YaHei';
 }
 
 QLabel#sortModeLabel {
     color: black;
-    font: 16px 'Microsoft YaHei';
+    font: 16px 'Segoe UI', 'Microsoft YaHei';
 }
 
 QLabel#guideLabel {
     color: black;
-    font: 25px 'Microsoft YaHei';
+    font: 25px 'Segoe UI', 'Microsoft YaHei';
 }
 
 QLabel#myMusicLabel {
@@ -36,7 +36,7 @@ QPushButton {
 }
 
 QPushButton#sortModeButton {
-    color: rgb(81, 154, 170);
+    color: rgb(0, 107, 131);
 }
 
 QPushButton#sortModeButton:hover {
@@ -45,12 +45,11 @@ QPushButton#sortModeButton:hover {
 
 QPushButton#randomPlayButton,
 QPushButton#sortModeButton {
-    font-weight: 500;
     font-size: 16px;
 }
 
 QPushButton#randomPlayButton {
-    font: 15px 'Microsoft YaHei';
+    font: 15px 'Segoe UI', 'Microsoft YaHei';
     padding-bottom: 1px;
     color: black;
 }
@@ -65,6 +64,6 @@ QPushButton#randomPlayButton:pressed {
 
 
 /*菜单*/
-QMenu#sortModeMenu[actionNum='4']{
+QMenu#sortModeMenu[actionNum='4'] {
     height: 150px;
 }

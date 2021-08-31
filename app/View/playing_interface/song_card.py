@@ -110,11 +110,11 @@ class SongCard(QWidget):
     def __getInfo(self, songInfo: dict):
         """ 从歌曲信息中分离信息 """
         self.songInfo = songInfo
-        self.singer = songInfo.get("singer", "未知歌手")  # type:str
-        self.album = songInfo.get("album", "未知专辑")  # type:str
-        self.duration = songInfo.get("duration", "0:00")  # type:str
-        self.songName = songInfo.get("songName", "未知歌曲")  # type:str
-        self.year = songInfo.get("year", "")  # type:str
+        self.singer = songInfo.get("singer", self.tr("Unknown artist"))
+        self.album = songInfo.get("album", self.tr("Unknown album"))
+        self.duration = songInfo.get("duration", "0:00")
+        self.songName = songInfo.get("songName", self.tr("Unknown song"))
+        self.year = songInfo.get("year", "")
         if self.year == '未知年份':
             self.year = ''
 

@@ -5,17 +5,17 @@ QWidget#centerWidget {
 
 /*标签*/
 QLabel {
-    font: 18px 'Microsoft YaHei';
+    font: 18px 'Segoe UI', 'Microsoft YaHei';
     border: none;
 }
 
 QLabel#songPath {
-    font: 17px 'Microsoft YaHei';
+    font: 17px 'Segoe UI', 'Microsoft YaHei';
 }
 
 QLabel#editSongInfo,
 QLabel#editAlbumInfo {
-    font: 21px 'Microsoft YaHei';
+    font: 21px 'Segoe UI', 'Microsoft YaHei';
 }
 
 QLabel#bottomErrorLabel {
@@ -26,7 +26,7 @@ QLabel#bottomErrorLabel {
 /*单行编辑框*/
 QLineEdit {
     padding: 8px 13px 7px 13px;
-    font: 17px 'Microsoft YaHei';
+    font: 17px 'Segoe UI', 'Microsoft YaHei';
     selection-background-color: rgb(0, 153, 188);
     border: 1px solid rgb(102, 102, 102);
 }
@@ -54,7 +54,7 @@ QLineEdit:disabled {
 /*按钮*/
 QPushButton {
     background-color: rgb(204, 204, 204);
-    font: 18px 'Microsoft YaHei';
+    font: 18px 'Segoe UI', 'Microsoft YaHei';
     border: none;
     border-radius: 4px;
     padding: 8px 67px 8px 67px;

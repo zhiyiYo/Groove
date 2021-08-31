@@ -37,38 +37,26 @@ class SongInfoCard(QWidget):
         # 初始化定时器
         self.timer.setInterval(3000)
         self.timer.timeout.connect(self.timerSlot)
-        # 分配ID
-        self.songNameLabel.setObjectName("songNameLabel")
-        self.singerAlbumLabel.setObjectName("singerAlbumLabel")
-        # 设置属性
-        self.songNameLabel.setProperty("state", "normal")
-        self.singerAlbumLabel.setProperty("state", "normal")
-        # self.__initLayout()
         self.__setQss()
         # 安装事件过滤器
         self.songNameLabel.installEventFilter(self)
         self.singerAlbumLabel.installEventFilter(self)
         # 信号连接到槽
-
-        def slot():
-            return self.switchToAlbumInterfaceSig.emit(self.album, self.singerName)
-
-        self.songNameLabel.clicked.connect(slot)
-        self.singerAlbumLabel.clicked.connect(slot)
-
-    def __initLayout(self):
-        """ 初始化布局 """
-        self.songNameLabel.move(186, 30)
-        self.singerAlbumLabel.move(186, 82)
+        self.songNameLabel.clicked.connect(
+            lambda: self.switchToAlbumInterfaceSig.emit(self.album, self.singerName))
+        self.singerAlbumLabel.clicked.connect(
+            lambda: self.switchToAlbumInterfaceSig.emit(self.album, self.singerName))
 
     def setSongInfo(self, songInfo: dict):
         """ 设置歌曲信息 """
         self.songInfo = songInfo
         if not self.songInfo:
             self.songInfo = {}
-        self.album = self.songInfo.get("album", "未知专辑")
-        self.songName = self.songInfo.get("songName", "未知歌名")
-        self.singerName = self.songInfo.get("singer", "未知歌手")
+
+        self.album = self.songInfo.get("album", self.tr("Unknown album"))
+        self.songName = self.songInfo.get("songName", self.tr("Unknown song"))
+        self.singerName = self.songInfo.get(
+            "singer", self.tr("Unknown artist"))
         name = self.songInfo.get('coverName', '未知歌手_未知专辑')
         self.albumCoverPath = getCoverPath(name, "album_big")
 
@@ -90,6 +78,11 @@ class SongInfoCard(QWidget):
 
     def __setQss(self):
         """ 设置层叠样式 """
+        self.songNameLabel.setObjectName("songNameLabel")
+        self.singerAlbumLabel.setObjectName("singerAlbumLabel")
+        self.songNameLabel.setProperty("state", "normal")
+        self.singerAlbumLabel.setProperty("state", "normal")
+
         f = QFile(":/qss/playing_interface_song_info_card.qss")
         f.open(QFile.ReadOnly)
         self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
@@ -133,13 +126,12 @@ class SongInfoCard(QWidget):
         """ 根据文本长度决定是否插入换行符 """
         maxWidth = self.width() - 232
         # 设置专辑名歌手名标签的长度
-        fontMetrics = QFontMetrics(QFont("Microsoft YaHei", 13))
-        singerAlbumWidth = sum(
-            [fontMetrics.width(i) for i in self.singerAlbumLabel.text()]
-        )
-        self.singerAlbumLabel.setFixedWidth(min(maxWidth, singerAlbumWidth))
+        fontMetrics = self.singerAlbumLabel.fontMetrics()
+        w = fontMetrics.width(self.singerAlbumLabel.text())
+        self.singerAlbumLabel.setFixedWidth(min(maxWidth, w))
+
         # 调整专辑名标签
-        fontMetrics = QFontMetrics(QFont("Microsoft YaHei", 21, 75))
+        fontMetrics = self.songNameLabel.fontMetrics()
         newSongName_list = list(self.songName)  # type:list
         totalWidth = 0
         isWrap = False
@@ -149,6 +141,7 @@ class SongInfoCard(QWidget):
                 newSongName_list.insert(i, "\n")
                 isWrap = True
                 break
+
         if isWrap:
             self.songNameLabel.setText("".join(newSongName_list))
             self.songNameLabel.move(186, 6)

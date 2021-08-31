@@ -14,21 +14,22 @@ class SongGroupBox(QWidget):
         Parameters
         ----------
         song_type: str
-            歌曲类型，可以是 `'本地歌曲'` 或 `'在线歌曲'`
+            歌曲类型，可以是 `'Online songs'` 或 `'Local songs'`
 
         parent:
             父级窗口
         """
         super().__init__(parent=parent)
-        if song_type not in ['本地歌曲', '在线歌曲']:
-            raise ValueError("歌曲类型必须是 '本地歌曲' 或 '在线歌曲'")
+        if song_type not in ['Online songs', 'Local songs']:
+            raise ValueError("歌曲类型必须是 'Online songs' 或 'Local songs'")
 
         self.songInfo_list = []
-        self.titleButton = QPushButton(song_type, self)
-        if song_type == '本地歌曲':
+        if song_type == 'Local songs':
             self.songListWidget = LocalSongListWidget(self)
+            self.titleButton = QPushButton(self.tr('Local songs'), self)
         else:
             self.songListWidget = OnlineSongListWidget(self)
+            self.titleButton = QPushButton(self.tr('Online songs'), self)
 
         self.__initWidget()
 
@@ -109,8 +110,12 @@ class LocalSongListWidget(BasicSongListWidget):
     def __showDeleteCardDialog(self):
         index = self.currentRow()
         songInfo = self.songInfo_list[index]
-        title = "是否确定要删除此项？"
-        content = f"""如果删除"{songInfo['songName']}"，它将不再位于此设备上。"""
+
+        name = songInfo['songName']
+        title = self.tr("Are you sure you want to delete this?")
+        content = self.tr("If you delete") + f' "{name}" ' + \
+            self.tr("it won't be on be this device anymore.")
+
         w = MessageDialog(title, content, self.window())
         w.yesSignal.connect(lambda: self.removeSongCard(index))
         w.yesSignal.connect(
@@ -266,13 +271,13 @@ class LocalSongListContextMenu(DWMMenu):
     def __init__(self, parent):
         super().__init__("", parent)
         # 创建主菜单动作
-        self.playAct = QAction("播放", self)
-        self.nextSongAct = QAction("下一首播放", self)
-        self.showAlbumAct = QAction("显示专辑", self)
-        self.showPropertyAct = QAction("属性", self)
-        self.deleteAct = QAction("删除", self)
+        self.playAct = QAction(self.tr("Play"), self)
+        self.nextSongAct = QAction(self.tr("Play next"), self)
+        self.showAlbumAct = QAction(self.tr("Show album"), self)
+        self.showPropertyAct = QAction(self.tr("Properties"), self)
+        self.deleteAct = QAction(self.tr("Delete"), self)
         # 创建菜单和子菜单
-        self.addToMenu = AddToMenu("添加到", self)
+        self.addToMenu = AddToMenu(self.tr("Add to"), self)
         # 将动作添加到菜单中
         self.addActions([self.playAct, self.nextSongAct])
         # 将子菜单添加到主菜单
@@ -287,12 +292,13 @@ class OnlineSongListContextMenu(DWMMenu):
 
     def __init__(self, parent):
         super().__init__("", parent)
+        self.setObjectName('onlineSongListContextMenu')
         # 创建主菜单动作
-        self.playAct = QAction("播放", self)
-        self.nextSongAct = QAction("下一首播放", self)
-        self.showPropertyAct = QAction("属性", self)
+        self.playAct = QAction(self.tr("Play"), self)
+        self.nextSongAct = QAction(self.tr("Play next"), self)
+        self.showPropertyAct = QAction(self.tr("Properties"), self)
         # 创建菜单和子菜单
-        self.downloadMenu = DownloadMenu(self)
+        self.downloadMenu = DownloadMenu(self.tr('Download'), self)
         # 将动作添加到菜单中
         self.addActions([self.playAct, self.nextSongAct])
         # 将子菜单添加到主菜单

@@ -60,18 +60,18 @@ QScrollBar::sub-page:vertical {
 
 /*标签*/
 QLabel {
-    font: 17px 'Microsoft YaHei Light';
+    font: 17px 'Segoe UI Semilight', 'Microsoft YaHei Light';
     background-color: transparent;
 }
 
 QLabel#sortModeLabel {
     color: black;
-    font: 16px 'Microsoft YaHei';
+    font: 16px 'Segoe UI', 'Microsoft YaHei';
 }
 
 QLabel#guideLabel {
     color: black;
-    font: 25px 'Microsoft YaHei';
+    font: 25px 'Segoe UI', 'Microsoft YaHei';
 }
 
 QLabel#playlistLabel {
@@ -82,13 +82,13 @@ QLabel#playlistLabel {
 
 QLabel#playlistNameLabel[isChecked='False'] {
     color: black;
-    font-family: 'Microsoft YaHei';
+    font-family: 'Segoe UI', 'Microsoft YaHei';
     font-weight: bold;
 }
 
 QLabel#playlistNameLabel[isChecked='True'] {
     color: white;
-    font-family: 'Microsoft YaHei';
+    font-family: 'Segoe UI', 'Microsoft YaHei';
     font-weight: bold;
 }
 
@@ -107,12 +107,11 @@ QPushButton {
     color: black;
     font-size: 16px;
     background-color: transparent;
-    font-family: 'Microsoft YaHei';
+    font-family: 'Segoe UI', 'Microsoft YaHei';
 }
 
 QPushButton#sortModeButton {
-    color: rgb(51, 136, 155);
-    font-weight: 500;
+    color: rgb(0, 107, 131);
     font-size: 16px;
 }
 

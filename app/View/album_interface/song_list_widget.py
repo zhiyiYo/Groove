@@ -45,8 +45,10 @@ class SongListWidget(BasicSongListWidget):
 
     def __showMaskDialog(self):
         index = self.currentRow()
-        title = "是否确定要删除此项？"
-        content = f"""如果删除"{self.songInfo_list[index]['songName']}"，它将不再位于此设备上。"""
+        name = self.songInfo_list[index]['songName']
+        title = self.tr("Are you sure you want to delete this?")
+        content = self.tr("If you delete") + f' "{name}" ' + \
+            self.tr("it won't be on be this device anymore.")
         w = MessageDialog(title, content, self.window())
         w.yesSignal.connect(lambda: self.removeSongCard(index))
         w.exec_()
@@ -147,14 +149,14 @@ class SongCardListContextMenu(DWMMenu):
     def __init__(self, parent):
         super().__init__("", parent)
         # 创建主菜单动作
-        self.playAct = QAction("播放", self)
-        self.nextSongAct = QAction("下一首播放", self)
-        self.editInfoAct = QAction("编辑信息", self)
-        self.showPropertyAct = QAction("属性", self)
-        self.deleteAct = QAction("删除", self)
-        self.selectAct = QAction("选择", self)
+        self.playAct = QAction(self.tr("Play"), self)
+        self.nextSongAct = QAction(self.tr("Play next"), self)
+        self.editInfoAct = QAction(self.tr("Edit info"), self)
+        self.showPropertyAct = QAction(self.tr("Properties"), self)
+        self.deleteAct = QAction(self.tr("Delete"), self)
+        self.selectAct = QAction(self.tr("Select"), self)
         # 创建菜单和子菜单
-        self.addToMenu = AddToMenu("添加到", self)
+        self.addToMenu = AddToMenu(self.tr("Add to"), self)
         # 将动作添加到菜单中
         self.addActions([self.playAct, self.nextSongAct])
         # 将子菜单添加到主菜单

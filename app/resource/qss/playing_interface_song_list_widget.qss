@@ -14,7 +14,7 @@ QListWidget::item {
 
 /*歌曲卡样式*/
 QLabel {
-    font-family: 'Microsoft YaHei';
+    font-family: 'Segoe UI', 'Microsoft YaHei';
     font-size: 9pt;
     background-color: transparent;
 }

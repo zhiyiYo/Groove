@@ -374,39 +374,31 @@ class MoreActionsMenu(AeroMenu):
     def createActions(self):
         """ 创建动作"""
         self.savePlayListAct = QAction(
-            QIcon(":/images/menu/Add.png"), "保存为播放列表", self)
+            QIcon(":/images/menu/Add.png"), self.tr("Save as a playlist"), self)
         self.clearPlayListAct = QAction(
-            QIcon(":/images/menu/Clear.png"), '清空"正在播放"', self)
+            QIcon(":/images/menu/Clear.png"), self.tr('Clear now playing'), self)
 
         if self.actionFlag:
             self.showPlayListAct = QAction(
-                QIcon(":/images/menu/Playlist.png"), "显示正在播放列表", self)
+                QIcon(":/images/menu/Playlist.png"), self.tr("Show now playing list"), self)
             self.fullScreenAct = QAction(
-                QIcon(":/images/menu/FullScreen.png"), "转到全屏", self)
-            self.action_list = [
-                self.showPlayListAct,
-                self.fullScreenAct,
-                self.savePlayListAct,
-                self.clearPlayListAct,
-            ]
-            self.actionNum = 4
+                QIcon(":/images/menu/FullScreen.png"), self.tr("Go full screen"), self)
+            self.action_list = [self.showPlayListAct, self.fullScreenAct,
+                                self.savePlayListAct, self.clearPlayListAct]
         else:
             self.showSongerCover = QAction(
-                QIcon(":/images/menu/Contact.png"), "显示歌手封面", self)
-            self.action_list = [
-                self.savePlayListAct,
-                self.showSongerCover,
-                self.clearPlayListAct,
-            ]
-            self.actionNum = 3
+                QIcon(":/images/menu/Contact.png"), self.tr("Show artist cover"), self)
+            self.action_list = [self.savePlayListAct,
+                                self.showSongerCover, self.clearPlayListAct]
+
         self.addActions(self.action_list)
 
     def exec(self, pos):
-        """ 重写exec_() """
-        height = self.actionNum * 38
-        width = [188, 206][self.actionFlag]
-        self.animation.setStartValue(QRect(pos.x(), pos.y(), 1, height))
-        self.animation.setEndValue(QRect(pos.x(), pos.y(), width, height))
+        h = len(self.action_list) * 38
+        w = max(self.fontMetrics().width(i.text())
+                for i in self.action_list) + 65
+        self.animation.setStartValue(QRect(pos.x(), pos.y(), 1, h))
+        self.animation.setEndValue(QRect(pos.x(), pos.y(), w, h))
         # 开始动画
         self.animation.start()
         super().exec(pos)

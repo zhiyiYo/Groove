@@ -14,7 +14,7 @@ QLabel#titleLabel {
 
 QLabel#contentLabel {
     color: white;
-    font: 18px 'Microsoft YaHei';
+    font: 18px 'Segoe UI', 'Microsoft YaHei';
     font-weight: 400;
 }
 
@@ -23,7 +23,7 @@ QPushButton {
     border: 3px solid white;
     padding: 5px 35px 5px 35px;
     background: rgb(0, 126, 153);
-    font: 18px 'Microsoft YaHei';
+    font: 18px 'Segoe UI', 'Microsoft YaHei';
     font-weight: bold;
 }
 

@@ -6,14 +6,14 @@ QLabel {
     background-color: transparent;
 }
 
-QLabel#guideLabel{
-    color:white;
-    font: 25px 'Microsoft YaHei';
+QLabel#guideLabel {
+    color: white;
+    font: 25px 'Segoe UI', 'Microsoft YaHei';
 }
 
-QPushButton#randomPlayAllButton{
+QPushButton#randomPlayAllButton {
     color: rgb(72, 210, 242);
-    font: 23px "Microsoft YaHei";
+    font: 23px 'Segoe UI', 'Microsoft YaHei';
     background-color: transparent;
 }
 
@@ -69,6 +69,6 @@ QSlider#progressSlider::add-page:horizontal {
 
 QLabel#timeLabel {
     color: white;
-    font: 14px "Microsoft YaHei";
+    font: 14px 'Segoe UI', 'Microsoft YaHei';
     background-color: transparent;
 }

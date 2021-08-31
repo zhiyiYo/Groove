@@ -17,27 +17,27 @@ class SelectionModeBar(SelectionModeBarBase):
     def __createButtons(self):
         """ 创建按钮 """
         self.cancelButton = BasicButton(
-            ":/images/selection_mode_bar/Cancel.png", "取消", self)
+            ":/images/selection_mode_bar/Cancel.png", self.tr("Cancel"), self)
         self.playButton = BasicButton(
-            ":/images/selection_mode_bar/Play.png", "播放", self)
+            ":/images/selection_mode_bar/Play.png", self.tr("Play"), self)
         self.nextToPlayButton = BasicButton(
-            ":/images/selection_mode_bar/NextToPlay.png", "下一首播放", self)
+            ":/images/selection_mode_bar/NextToPlay.png", self.tr("Play next"), self)
         self.showAlbumButton = BasicButton(
-            ":/images/selection_mode_bar/ShowAlbum.png", "显示专辑", self)
+            ":/images/selection_mode_bar/ShowAlbum.png", self.tr("Show album"), self)
         self.addToButton = BasicButton(
-            ":/images/selection_mode_bar/Add.png", "添加到", self)
+            ":/images/selection_mode_bar/Add.png", self.tr("Add to"), self)
         self.editInfoButton = BasicButton(
-            ":/images/selection_mode_bar/Edit.png", "编辑信息", self)
+            ":/images/selection_mode_bar/Edit.png", self.tr("Edit info"), self)
         self.propertyButton = BasicButton(
-            ":/images/selection_mode_bar/Property.png", "属性", self)
+            ":/images/selection_mode_bar/Property.png", self.tr("Properties"), self)
         self.deleteButton = BasicButton(
-            ":/images/selection_mode_bar/Delete.png", "删除", self)
+            ":/images/selection_mode_bar/Delete.png", self.tr("Delete"), self)
         self.checkAllButton = CheckAllButton(
             [
                 ":/images/selection_mode_bar/SelectAll.png",
                 ":/images/selection_mode_bar/CancelSelectAll.png",
             ],
-            ["全选", "取消全选"],
+            [self.tr("Select all"), self.tr("Deselect all")],
             self,
         )
 

@@ -1,5 +1,5 @@
 # coding:utf-8
-from typing import List
+from typing import List, Union
 
 from common.image_process_utils import DominantColor
 from components.label import AvatarLabel
@@ -12,8 +12,7 @@ from .app_bar_button import AppBarButton
 
 class CollapsingAppBarBase(QWidget):
 
-    def __init__(self, title: str, content: str, coverPath: str, buttons: List[AppBarButton],
-                 coverType='album', parent=None):
+    def __init__(self, title: str, content: str, coverPath: str, coverType='album', parent=None):
         """
         Parameters
         ----------
@@ -25,9 +24,6 @@ class CollapsingAppBarBase(QWidget):
 
         coverPath: str
             封面路径
-
-        buttons: List[AppBarButtons]
-            工具栏按钮列表，不包括"更多操作"按钮
 
         coverType: str
             封面类型，可以是 `album`、`playlist` 或者 `singer`
@@ -52,17 +48,16 @@ class CollapsingAppBarBase(QWidget):
 
         self.titleFontSize = 43
         self.contentFontSize = 16
-        self.__buttons = buttons.copy()         # type:List[AppBarButton]
+        self.__buttons = []         # type:List[AppBarButton]
         self.__nButtons = len(self.__buttons)
         self.hiddenButtonNum = 0
-        self.moreActionsButton = AppBarButton(":/images/album_interface/More.png", "", self)
+        self.moreActionsButton = AppBarButton(
+            ":/images/album_interface/More.png", "", self)
         self.__initWidget()
 
     def __initWidget(self):
         """ 初始化小部件 """
-        for button in self.__buttons:
-            button.setParent(self)
-        self.moreActionsButton.hide()
+        # self.moreActionsButton.hide()
         self.moreActionsButton.clicked.connect(self.onMoreActionsButtonClicked)
 
         self.setMinimumHeight(155)
@@ -74,6 +69,13 @@ class CollapsingAppBarBase(QWidget):
         self.coverLabel.setScaledContents(True)
 
         self.resize(1300, 385)
+
+    def setButtons(self, buttons: List[AppBarButton]):
+        """ 设置工具栏按钮 """
+        self.__buttons = buttons.copy()
+        self.__nButtons = len(self.__buttons)
+        for button in buttons:
+            button.setParent(self)
 
     def setBackgroundColor(self):
         """ 设置背景颜色 """
@@ -99,11 +101,12 @@ class CollapsingAppBarBase(QWidget):
         self.contentFontSize = int(16-(385-h)/147*3)
         self.__adjustText()
         self.titleLabel.setStyleSheet(self.__getLabelStyleSheet(
-            'Microsoft YaHei Light', self.titleFontSize))
+            ['Segoe UI Semilight', 'Microsoft YaHei Light'], self.titleFontSize))
         self.contentLabel.setStyleSheet(
-            self.__getLabelStyleSheet('Microsoft YaHei', self.contentFontSize))
+            self.__getLabelStyleSheet(['Segoe UI', 'Microsoft YaHei'], self.contentFontSize))
         self.titleLabel.adjustSize()
         self.contentLabel.adjustSize()
+
         x = 45 + coverWidth + 44
         y1 = int(71/81*(71-(385-h)/230*25)) if needWhiteBar else y
         y2 = int(132-(385-h)/147*15) if needWhiteBar else y+56
@@ -112,9 +115,13 @@ class CollapsingAppBarBase(QWidget):
         self.contentLabel.setVisible(h >= 238)
 
         # 调整按钮位置
+        if not self.__buttons:
+            return
+
         x = 45 + coverWidth + 22
         y = 288 - int((385-h)/230*206) if needWhiteBar else 308 - \
             int((385-h)/230*220)
+
         for button in self.__buttons:
             button.move(x, y)
             x += button.width()+10
@@ -159,7 +166,7 @@ class CollapsingAppBarBase(QWidget):
         painter.drawRect(x+2*h_, y-2*h_, w2, h_)
 
     @staticmethod
-    def __getLabelStyleSheet(fontFamily: str, fontSize: int, fontWeight=400):
+    def __getLabelStyleSheet(fontFamily: Union[str, List[str]], fontSize: int, fontWeight=400):
         """ 获取标签样式表
 
         Parameters
@@ -173,11 +180,16 @@ class CollapsingAppBarBase(QWidget):
         fontWeight: int or str
             字体粗细
         """
+        if isinstance(fontFamily, str):
+            fontFamily = f"'{fontFamily}'"
+        elif isinstance(fontFamily, list):
+            fontFamily = ', '.join([f"'{i}'" for i in fontFamily])
+
         styleSheet = f"""
             color: white;
             margin: 0;
             padding: 0;
-            font-family: '{fontFamily}';
+            font-family: {fontFamily};
             font-size: {fontSize}px;
             font-weight: {fontWeight};
         """

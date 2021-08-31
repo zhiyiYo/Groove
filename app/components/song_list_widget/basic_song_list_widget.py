@@ -90,9 +90,10 @@ class BasicSongListWidget(ListWidget):
 
     def __createGuideLabel(self):
         """ 创建导航标签 """
-        self.guideLabel = QLabel("这里没有可显示的内容。请尝试其他筛选器。", self)
+        self.guideLabel = QLabel(
+            self.tr("There is nothing to display here. Try a different filter."), self)
         self.guideLabel.setStyleSheet(
-            "color: black; font: 25px 'Microsoft YaHei'")
+            "color: black; font: 25px 'Segoe UI', 'Microsoft YaHei'")
         self.guideLabel.adjustSize()
         self.guideLabel.move(35, 286)
 

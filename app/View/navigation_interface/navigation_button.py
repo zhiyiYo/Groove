@@ -27,17 +27,11 @@ class NavigationButton(QPushButton):
             父级窗口
         """
         super().__init__(text, parent)
-        # 保存数据
         self.image = QPixmap(iconPath)
         self.buttonSizeTuple = buttonSize
-        self.initWidget()
-
-    def initWidget(self):
-        """ 初始化小部件 """
-        # 设置按钮的图标
         self.setFixedSize(*self.buttonSizeTuple)
-        # 设置属性防止qss不起作用
-        self.setAttribute(Qt.WA_StyledBackground | Qt.WA_TranslucentBackground)
+        self.setAttribute(Qt.WA_TranslucentBackground)
+        self.setStyleSheet("QPushButton{font: 18px 'Segoe UI', 'Microsoft YaHei'}")
         # 初始化标志位
         self.isEnter = False
         self.isSelected = False
@@ -115,16 +109,14 @@ class ToolButton(NavigationButton):
             elif self.pressedPos in ["left-top", "right-bottom", "top"]:
                 # 绘制选中标志
                 self.drawLine(
-                    painter, 2, 2, 6, 2, 4, self.height() - 2, 0, self.height() - 2
-                )
+                    painter, 2, 2, 6, 2, 4, self.height() - 2, 0, self.height() - 2)
             elif self.pressedPos in ["left-bottom", "right-top", "bottom"]:
                 self.drawLine(
-                    painter, 0, 1, 4, 1, 6, self.height() - 2, 2, self.height() - 2
-                )
+                    painter, 0, 1, 4, 1, 6, self.height() - 2, 2, self.height() - 2)
             elif self.pressedPos in ["left", "right", "center"]:
                 self.drawLine(
-                    painter, 1, 2, 5, 2, 5, self.height() - 2, 1, self.height() - 2
-                )
+                    painter, 1, 2, 5, 2, 5, self.height() - 2, 1, self.height() - 2)
+
         # 绘制图标
         if not self.pressedPos:
             self.drawIcon(painter, self.image)
@@ -182,33 +174,27 @@ class PushButton(NavigationButton):
             # 左上角和顶部
             elif self.pressedPos in ["left-top", "top"]:
                 self.drawLine(
-                    painter, 5, 2, 9, 2, 7, self.height() - 2, 3, self.height() - 2
-                )
+                    painter, 5, 2, 9, 2, 7, self.height() - 2, 3, self.height() - 2)
             # 左下角和底部
             elif self.pressedPos in ["left-bottom", "bottom"]:
                 self.drawLine(
-                    painter, 3, 2, 7, 2, 9, self.height() - 3, 5, self.height() - 3
-                )
+                    painter, 3, 2, 7, 2, 9, self.height() - 3, 5, self.height() - 3)
             # 左边和中间
             elif self.pressedPos in ["left", "center"]:
                 self.drawLine(
-                    painter, 5, 2, 9, 2, 9, self.height() - 2, 5, self.height() - 2
-                )
+                    painter, 5, 2, 9, 2, 9, self.height() - 2, 5, self.height() - 2)
             # 右上角
             elif self.pressedPos == "right-top":
                 self.drawLine(
-                    painter, 0, 2, 4, 2, 3, self.height() - 2, 0, self.height() - 2
-                )
+                    painter, 0, 2, 4, 2, 3, self.height() - 2, 0, self.height() - 2)
             # 右边
             elif self.pressedPos == "right":
                 self.drawLine(
-                    painter, 1, 1, 5, 1, 5, self.height() - 1, 1, self.height() - 1
-                )
+                    painter, 1, 1, 5, 1, 5, self.height() - 1, 1, self.height() - 1)
             # 右下角
             elif self.pressedPos == "right-bottom":
                 self.drawLine(
-                    painter, 0, 2, 3, 2, 4, self.height() - 2, 0, self.height() - 2
-                )
+                    painter, 0, 2, 3, 2, 4, self.height() - 2, 0, self.height() - 2)
 
         # 绘制图标和文字
         if not self.pressedPos:
@@ -247,7 +233,7 @@ class PushButton(NavigationButton):
 
     def drawTextIcon(
         self,
-        painter,
+        painter: QPainter,
         image: QPixmap,
         shearX: float = 0,
         shearY: float = 0,
@@ -264,11 +250,13 @@ class PushButton(NavigationButton):
         # 绘制文字
         if self.text():
             painter.setPen(QPen(Qt.black))
-            painter.setFont(QFont("Microsoft YaHei", fontSize, 25))
+            painter.setFont(self.font())
+            # 处理过长的文字
+            text = painter.fontMetrics().elidedText(self.text(), Qt.ElideRight, 320)
             if self.objectName() not in ["myLoveButton", "playListButton"]:
-                painter.drawText(textX, textY + 16, self.text())
+                painter.drawText(textX, textY + 16, text)
             else:
-                painter.drawText(textX, textY + 18, self.text())
+                painter.drawText(textX, textY + 18, text)
 
     def drawLine(self, painter, x1, y1, x2, y2, x3, y3, x4, y4):
         """ 绘制选中标志 """

@@ -1,16 +1,14 @@
 /*设置菜单样式*/
 QMenu {
     background-color: rgb(232, 232, 232);
-    /*background-color: white;*/
     font-size: 18px;
-    font: 18px "Microsoft YaHei";
+    font: 18px 'Segoe UI', 'Microsoft YaHei';
     padding: 5px 0px 16px 0px;
     border: 1px solid rgb(200, 200, 200);
     border-radius: 5px;
 }
 
 QMenu::right-arrow {
-    /*position: relative;*/
     width: 16px;
     height: 16px;
     right: 16px;
@@ -59,7 +57,6 @@ QMenu#addToMenu::item:selected {
 
 QMenu#addToMenu::separator {
     height: 1px;
-    width: 140px;
     margin-right: 14px;
     margin-left: 14px;
 }
@@ -75,12 +72,10 @@ QMenu#blackAddToMenu::icon {
 /*排序模式菜单样式*/
 QMenu#sortModeMenu {
     font-size: 16px;
-    width: 158px;
     height: 114px;
     border: 1px solid rgb(41, 41, 41);
     border-bottom: none;
     padding-top: 1px;
-    /*padding: 1px;*/
     border-radius: 0px;
 }
 
@@ -93,8 +88,7 @@ QMenu#sortModeMenu[modeNumber='2'] {
 }
 
 QMenu#sortModeMenu::item {
-    width: 57;
-    height: 14;
+    height: 14px;
     color: black;
     padding: 11px 85px 11px 12px;
     margin: 0px 1px 1px 1px;
@@ -115,7 +109,6 @@ QMenu#sortModeMenu::item:default:selected {
 
 /*单行输入框右击菜单样式*/
 QMenu#lineEditMenu {
-    /*width: 182px;*/
     width: 1px;
     height: 1px;
     border: 1px solid rgb(200, 200, 200);
@@ -124,7 +117,6 @@ QMenu#lineEditMenu {
 }
 
 QMenu#lineEditMenu[hasCancelAct='true'] {
-    /*width: 213px;*/
     width: 1px;
 }
 
@@ -171,20 +163,16 @@ QMenu#blackAddToMenu {
     border: 1px solid rgb(20, 20, 20);
     border-radius: 5px;
     font-size: 18px;
-    font: 18px "Microsoft YaHei";
-}
-
-QMenu#playingInterfaceMenu {
-    width: 130px;
-}
-
-QMenu#blackAddToMenu {
-    width: 170px;
+    font: 18px 'Segoe UI', 'Microsoft YaHei';
 }
 
 QMenu#playingInterfaceMenu::separator,
 QMenu#blackAddToMenu::separator {
     background-color: rgb(120, 120, 120);
+}
+
+QMenu#playingInterfaceMenu::item{
+    padding-right: 42px;
 }
 
 QMenu#playingInterfaceMenu::item,
@@ -257,7 +245,6 @@ QMenu#playlistCardContextMenu::item:selected {
 QMenu#albumCardContextMenu::separator,
 QMenu#playlistCardContextMenu::separator {
     height: 1px;
-    width: 142px;
     background: rgba(0, 0, 0, 104);
     margin-right: 15px;
     margin-top: 5px;
@@ -291,7 +278,6 @@ QMenu#albumInterfaceAddToMenu::item:selected {
 
 QMenu#albumInterfaceAddToMenu::separator {
     height: 1px;
-    width: 140px;
     background: rgba(0, 0, 0, 104);
     margin-right: 15px;
     margin-top: 6px;
@@ -310,4 +296,8 @@ QMenu#albumInterfaceAddToMenu::item {
     /*设置文字边距*/
     padding-left: 20px;
     margin-bottom: 2px;
+}
+
+QMenu#onlineSongListContextMenu::item {
+    padding-right: 35px;
 }

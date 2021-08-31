@@ -65,7 +65,8 @@ class SingerInterface(ScrollArea):
         self.hideCheckBoxAniGroup = QParallelAnimationGroup(self)
         self.gridLayout = GridLayout(self.scrollWidget)
         self.albumBlurBackground = AlbumBlurBackground(self.scrollWidget)
-        self.inYourMusicLabel = QLabel('在你的音乐中', self.scrollWidget)
+        self.inYourMusicLabel = QLabel(
+            self.tr('In your music'), self.scrollWidget)
         self.playButton = ThreeStateButton(
             {
                 "normal": ":/images/singer_interface//Play_normal.png",
@@ -102,7 +103,7 @@ class SingerInterface(ScrollArea):
 
     def __createOneAlbumCard(self, albumInfo):
         """ 创建一个专辑卡 """
-        albumName = albumInfo.get("album", '未知专辑')
+        albumName = albumInfo.get("album", self.tr('Unknown album'))
         albumCard = AlbumCard(albumInfo, self.scrollWidget)
         ani = QPropertyAnimation(albumCard.checkBoxOpacityEffect, b'opacity')
         self.hideCheckBoxAniGroup.addAnimation(ani)
@@ -211,8 +212,8 @@ class SingerInterface(ScrollArea):
     def __getInfo(self, singerInfo: dict):
         """ 获取信息 """
         self.singerInfo = deepcopy(singerInfo) if singerInfo else {}
-        self.genre = self.singerInfo.get('genre', '未知流派')
-        self.singer = self.singerInfo.get('singer', '未知歌手')
+        self.genre = self.singerInfo.get('genre', self.tr('Unknown genre'))
+        self.singer = self.singerInfo.get('singer', self.tr('Unknown artist'))
         self.albumInfo_list = self.singerInfo.get('albumInfo_list', [])
 
     def __setQss(self):
@@ -230,12 +231,14 @@ class SingerInterface(ScrollArea):
     def __onSelectionModeBarDeleteButtonClicked(self):
         """ 选择模式栏删除按钮点击槽函数 """
         if len(self.checkedAlbumCard_list) > 1:
-            title = "是否确定要删除这些项？"
-            content = "如果你删除这些专辑，它们将不再位于此设备上。"
+            title = self.tr("Are you sure you want to delete these?")
+            content = self.tr(
+                "If you delete these albums, they won't be on be this device anymore.")
         else:
-            title = "是否确定要删除此项？"
-            albumCard = self.checkedAlbumCard_list[0]
-            content = f'如果删除"{albumCard.albumName}"，它将不再位于此设备上。'
+            name = self.checkedAlbumCard_list[0].albumName
+            title = self.tr("Are you sure you want to delete this?")
+            content = self.tr("If you delete") + f' "{name}" ' + \
+                self.tr("it won't be on be this device anymore.")
 
         w = MessageDialog(title, content, self.window())
         w.yesSignal.connect(self.__onDeleteAlbumsYesButtonClicked)
@@ -256,8 +259,10 @@ class SingerInterface(ScrollArea):
     def __showDeleteOneCardDialog(self, albumName: str):
         """ 显示删除一个专辑卡的对话框 """
         songPaths = [i["songPath"] for i in self.sender().songInfo_list]
-        title = "是否确定要删除此项？"
-        content = f"""如果删除"{albumName}"，它将不再位于此设备上。"""
+        title = self.tr("Are you sure you want to delete this?")
+        content = self.tr("If you delete") + f' "{albumName}" ' + \
+            self.tr("it won't be on be this device anymore.")
+
         w = MessageDialog(title, content, self.window())
         w.yesSignal.connect(lambda: self.deleteAlbums([albumName]))
         w.yesSignal.connect(lambda: self.deleteAlbumSig.emit(songPaths))
@@ -387,7 +392,8 @@ class SingerInterface(ScrollArea):
         """ 更新窗口 """
         if self.singerInfo == singerInfo:
             return
-        self.__getSingerAvatar(singerInfo.get('singer', '未知歌手'))
+        self.__getSingerAvatar(singerInfo.get(
+            'singer', self.tr('Unknown artist')))
         self.__updateAllAlbumCards(singerInfo.get('albumInfo_list', []))
         self.__getInfo(singerInfo)
         self.singerInfoBar.updateWindow(self.singerInfo)
@@ -563,13 +569,13 @@ class AlbumCardContextMenu(DWMMenu):
     def __createActions(self):
         """ 创建动作 """
         # 创建动作
-        self.playAct = QAction("播放", self)
-        self.selectAct = QAction("选择", self)
-        self.nextToPlayAct = QAction("下一首播放", self)
-        self.pinToStartMenuAct = QAction('固定到"开始"菜单', self)
-        self.deleteAct = QAction("删除", self)
-        self.editInfoAct = QAction("编辑信息", self)
-        self.addToMenu = AddToMenu("添加到", self)
+        self.playAct = QAction(self.tr("Play"), self)
+        self.selectAct = QAction(self.tr("Select"), self)
+        self.nextToPlayAct = QAction(self.tr("Play next"), self)
+        self.pinToStartMenuAct = QAction(self.tr('Pin to Start'), self)
+        self.deleteAct = QAction(self.tr("Delete"), self)
+        self.editInfoAct = QAction(self.tr("Edit info"), self)
+        self.addToMenu = AddToMenu(self.tr("Add to"), self)
 
         # 添加动作到菜单
         self.addActions([self.playAct, self.nextToPlayAct])

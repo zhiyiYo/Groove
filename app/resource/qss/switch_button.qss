@@ -1,4 +1,4 @@
-QWidget{
+QWidget {
     background-color: white;
 }
 
@@ -6,9 +6,9 @@ SwitchButton {
     qproperty-spacing: 15;
 }
 
-SwitchButton > QLabel {
+SwitchButton>QLabel {
     color: black;
-    font: 18px 'Microsoft YaHei';
+    font: 18px 'Segoe UI', 'Microsoft YaHei';
 }
 
 
@@ -52,7 +52,7 @@ Indicator:checked:pressed {
     background-color: rgb(0, 107, 131);
 }
 
-Indicator:disabled{
+Indicator:disabled {
     border: 1px solid rgb(194, 194, 191);
     background-color: rgb(194, 194, 191);
 }

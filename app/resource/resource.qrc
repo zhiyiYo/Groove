@@ -234,6 +234,6 @@
         <file>images/song_tab_interface/Play_black.png</file>
         <file>images/song_tab_interface/Play_green.png</file>
         <file>images/song_tab_interface/Play_white.png</file>
-
+        <file>i18n/Groove_zh.qm</file>
     </qresource>
 </RCC>

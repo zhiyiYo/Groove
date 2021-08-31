@@ -96,23 +96,14 @@ class SelectionModeBarBase(QWidget):
 class BasicButton(QPushButton):
     """ 选择模式栏按钮 """
 
-    def __init__(self, iconPath: str, text: str, parent=None, buttonSize: tuple = (84, 70)):
+    def __init__(self, iconPath: str, text: str, parent=None, buttonSize: tuple = (85, 70)):
         super().__init__(parent)
         self.resize(*buttonSize)
-        self.__iconPath = iconPath
         self.__iconPixmap = QPixmap(iconPath)
         self.buttonText = text
         self.__isEnter = False
-        # 初始化
-        self.__initWidget()
-
-    def __initWidget(self):
-        """ 初始化小部件 """
         self.installEventFilter(self)
-        # 计算字符串宽度
-        self.fontMetrics = QFontMetrics(QFont('Microsoft YaHei', 9))
-        self.__textWidth = self.fontMetrics.width(self.buttonText)
-        # 调整字符串
+        self.setStyleSheet("QPushButton{font: 15px 'Segoe UI', 'Microsoft YaHei'}")
         self.__adjustText()
 
     def setText(self, text: str):
@@ -123,24 +114,24 @@ class BasicButton(QPushButton):
 
     def setIcon(self, iconPath: str):
         """ 设置按钮图标 """
-        self.__iconPath = iconPath
         self.__iconPixmap = QPixmap(iconPath)
         self.update()
 
     def __adjustText(self):
         """ 根据字符串宽度调整按钮高度和字符串换行 """
-        maxWidth = self.width() - 8
+        maxWidth = self.width()-4
         buttonChar_list = list(self.buttonText)
+
         # 计算宽度
         textWidth = 0
         for index, char in enumerate(self.buttonText):
-            if textWidth + self.fontMetrics.width(char) > maxWidth:
+            if textWidth + self.fontMetrics().width(char) > maxWidth:
                 textWidth = 0
-                self.__textWidth = maxWidth
                 # 插入换行符并调整尺寸
                 buttonChar_list.insert(index, '\n')
                 self.resize(self.width(), self.height() + 20)
-            textWidth += self.fontMetrics.width(char)
+            textWidth += self.fontMetrics().width(char)
+
         # 更新字符串和字符串所占rect
         self.buttonText = ''.join(buttonChar_list)
         self.__textRect = QRect(0, 40, self.width(), self.height() - 40)
@@ -168,12 +159,14 @@ class BasicButton(QPushButton):
             painter.setPen(QPen(QColor(170, 170, 170)))
             painter.setBrush(QBrush(QColor(0, 0, 0, 17)))
             painter.drawRect(self.rect())
+
         # 绘制图标
         painter.drawPixmap(32, 15, self.__iconPixmap.width(),
                            self.__iconPixmap.height(), self.__iconPixmap)
+
         # 绘制文字
         painter.setPen(QPen(Qt.black))
-        painter.setFont(QFont('Microsoft YaHei', 9))
+        painter.setFont(self.font())
         painter.drawText(
             self.__textRect, Qt.AlignHCenter, self.buttonText)
 
@@ -181,7 +174,7 @@ class BasicButton(QPushButton):
 class TwoStateButton(BasicButton):
     """ 双态按钮 """
 
-    def __init__(self, iconPath_list: list, text_list: list, parent=None, buttonSize: tuple = (84, 70), isState_1=0):
+    def __init__(self, iconPath_list: list, text_list: list, parent=None, buttonSize: tuple = (85, 70), isState_1=0):
         """
         Parameters
         ----------

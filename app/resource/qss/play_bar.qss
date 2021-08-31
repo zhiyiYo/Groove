@@ -1,24 +1,24 @@
-QSlider:horizontal{
+QSlider:horizontal {
     height: 30px;
     background-color: transparent;
     /*padding:10px 0px 10px 0px;*/
 }
 
-QSlider#volumeSlider{
+QSlider#volumeSlider {
     width: 125px;
 }
 
-QSlider::groove:horizontal{
+QSlider::groove:horizontal {
     height: 30px;
     border: none;
     background-color: transparent;
 }
 
-QSlider::handle:horizontal{
+QSlider::handle:horizontal {
     width: 30px;
     height: 30px;
     border-radius: 15px;
-    background: qradialgradient(cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5,stop:0.7 white, stop:0.76 rgba(255, 255, 255, 0));
+    background: qradialgradient(cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5, stop:0.7 white, stop:0.76 rgba(255, 255, 255, 0));
 }
 
 QSlider::handle:horizontal:pressed {
@@ -35,14 +35,14 @@ QSlider::sub-page:horizontal {
 
 }
 
-QSlider#progressSlider::sub-page:horizontal{
+QSlider#progressSlider::sub-page:horizontal {
     /*已划过部分的颜色*/
     background: white;
 }
 
 QSlider#volumeSlider::sub-page:horizontal {
     /*已划过部分的颜色*/
-    background: rgb(70,23,180);
+    background: rgb(70, 23, 180);
 }
 
 QSlider::add-page:horizontal {
@@ -50,12 +50,12 @@ QSlider::add-page:horizontal {
     margin-top: 13px;
     margin-bottom: 13px;
     /*还未划过的颜色*/
-    background-color: rgba(255,255,255,0.25);
+    background-color: rgba(255, 255, 255, 0.25);
 }
 
-QLabel#timeLabel{
-    color:white;
-    font:14px "Microsoft YaHei";
+QLabel#timeLabel {
+    color: white;
+    font: 14px 'Segoe UI', 'Microsoft YaHei';
     /* padding-left: 10px;
     padding-right: 10px; */
     background-color: transparent;

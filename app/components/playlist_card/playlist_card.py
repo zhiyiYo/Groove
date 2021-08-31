@@ -1,7 +1,7 @@
 # coding:utf-8
 from common.auto_wrap import autoWrap
-from common.os_utils import getCoverPath
 from common.image_process_utils import DominantColor
+from common.os_utils import getCoverPath
 from components.buttons.blur_button import BlurButton
 from components.check_box import CheckBox
 from components.menu import AddToMenu, DWMMenu
@@ -9,10 +9,9 @@ from components.perspective_widget import PerspectiveWidget
 from PIL import Image
 from PIL.ImageFilter import GaussianBlur
 from PyQt5.QtCore import QPoint, Qt, pyqtSignal
-from PyQt5.QtGui import (QBrush, QColor, QFont, QFontMetrics, QLinearGradient,
-                         QPainter, QPixmap)
-from PyQt5.QtWidgets import (QApplication, QGraphicsOpacityEffect, QLabel,
-                             QWidget, QAction)
+from PyQt5.QtGui import QBrush, QColor, QLinearGradient, QPainter, QPixmap
+from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsOpacityEffect,
+                             QLabel, QVBoxLayout, QWidget)
 
 
 class PlaylistCard(PerspectiveWidget):
@@ -37,6 +36,7 @@ class PlaylistCard(PerspectiveWidget):
         self.isInSelectionMode = False
         self.__getPlaylistInfo(playlist)
         # 创建小部件
+        self.vBoxLayout = QVBoxLayout(self)
         self.playlistCover = PlaylistCover(self)
         self.playButton = BlurButton(
             self,
@@ -51,7 +51,8 @@ class PlaylistCard(PerspectiveWidget):
             self.playlistCoverPath,
         )
         self.playlistNameLabel = QLabel(self.playlistName, self)
-        self.playlistLenLabel = QLabel(f"{len(self.songInfo_list)} 首歌曲", self)
+        self.playlistLenLabel = QLabel(
+            str(len(self.songInfo_list))+self.tr(" songs"), self)
         # 创建复选框
         self.checkBox = CheckBox(self, forwardTargetWidget=self.playlistCover)
         # 创建动画和窗口特效
@@ -67,9 +68,6 @@ class PlaylistCard(PerspectiveWidget):
         self.checkBox.hide()
         self.playButton.hide()
         self.addToButton.hide()
-        # 设置标签字体
-        self.playlistNameLabel.setFont(QFont("Microsoft YaHei", 10, 75))
-        self.playlistLenLabel.setFont(QFont("Microsoft YaHei", 9))
         self.playlistLenLabel.setMinimumWidth(200)
         # 给小部件添加特效
         self.checkBox.setGraphicsEffect(self.checkBoxOpacityEffect)
@@ -88,18 +86,26 @@ class PlaylistCard(PerspectiveWidget):
 
     def __initLayout(self):
         """ 初始化布局 """
+        self.vBoxLayout.setContentsMargins(5, 5, 0, 0)
+        self.vBoxLayout.setSpacing(0)
+        self.vBoxLayout.addWidget(self.playlistCover)
+        self.vBoxLayout.addSpacing(11)
+        self.vBoxLayout.addWidget(self.playlistNameLabel)
+        self.vBoxLayout.addSpacing(5)
+        self.vBoxLayout.addWidget(self.playlistLenLabel)
+        self.vBoxLayout.setAlignment(Qt.AlignTop)
         self.checkBox.move(262, 21)
         self.playButton.move(80, 68)
-        self.playlistCover.move(5, 5)
         self.addToButton.move(148, 68)
-        self.playlistNameLabel.move(5, 213)
         # 调整播放列表标签
         self.__adjustLabel()
 
     def __getPlaylistInfo(self, playlist: dict):
         """ 获取播放列表信息 """
         self.playlist = playlist
-        self.playlistName = playlist.get("playlistName", "未知播放列表")  # type:str
+        self.playlistName = playlist.get(
+            "playlistName", self.tr("Unknown playlist"))
+
         self.songInfo_list = playlist.get("songInfo_list", [])  # type:list
         songInfo = self.songInfo_list[0] if self.songInfo_list else {}
         name = songInfo.get('coverName', '未知歌手_未知专辑')
@@ -111,17 +117,14 @@ class PlaylistCard(PerspectiveWidget):
         if isWordWrap:
             # 添加省略号
             index = newText.index("\n")
-            fontMetrics = QFontMetrics(QFont("Microsoft YaHei", 10, 75))
+            fontMetrics = self.playlistNameLabel.fontMetrics()
             secondLineText = fontMetrics.elidedText(
-                newText[index + 1:], Qt.ElideRight, 288
-            )
+                newText[index + 1:], Qt.ElideRight, 288)
             newText = newText[: index + 1] + secondLineText
             self.playlistNameLabel.setText(newText)
+
         self.playlistNameLabel.adjustSize()
         self.playlistLenLabel.adjustSize()
-        self.playlistLenLabel.move(
-            5, self.playlistNameLabel.y() + self.playlistNameLabel.height() + 5
-        )
 
     def enterEvent(self, e):
         """ 鼠标进入窗口时显示磨砂背景和按钮 """
@@ -155,7 +158,8 @@ class PlaylistCard(PerspectiveWidget):
         self.__getPlaylistInfo(playlist)
         self.playlistCover.setPlaylistCover(self.playlistCoverPath)
         self.playlistNameLabel.setText(self.playlistName)
-        self.playlistLenLabel.setText(f"{len(self.songInfo_list)} 首歌曲")
+        self.playlistLenLabel.setText(
+            str(len(self.songInfo_list))+self.tr(" songs"))
         self.playButton.setBlurPic(self.playlistCoverPath, 40)
         self.addToButton.setBlurPic(self.playlistCoverPath, 40)
         self.__adjustLabel()
@@ -239,7 +243,7 @@ class PlaylistCover(QWidget):
 
     def __init__(self, parent=None, picPath: str = ""):
         super().__init__(parent)
-        self.resize(288, 196)
+        self.setFixedSize(288, 196)
         self.__blurPix = None
         self.__playlistCoverPix = None
         self.playlistCoverPath = ''
@@ -306,13 +310,13 @@ class PlaylistCardContextMenu(DWMMenu):
     def __createActions(self):
         """ 创建动作 """
         # 创建动作
-        self.playAct = QAction("播放", self)
-        self.nextToPlayAct = QAction("下一首播放", self)
-        self.addToMenu = AddToMenu("添加到", self)
-        self.renameAct = QAction("重命名", self)
-        self.pinToStartMenuAct = QAction('固定到"开始"菜单', self)
-        self.deleteAct = QAction("删除", self)
-        self.selectAct = QAction("选择", self)
+        self.playAct = QAction(self.tr("Play"), self)
+        self.nextToPlayAct = QAction(self.tr("Play next"), self)
+        self.addToMenu = AddToMenu(self.tr("Add to"), self)
+        self.renameAct = QAction(self.tr("Rename"), self)
+        self.pinToStartMenuAct = QAction(self.tr('Pin to Start'), self)
+        self.deleteAct = QAction(self.tr("Delete"), self)
+        self.selectAct = QAction(self.tr("Select"), self)
 
         # 添加动作到菜单
         self.addActions([self.playAct, self.nextToPlayAct])

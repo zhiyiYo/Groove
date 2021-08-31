@@ -8,12 +8,12 @@
 
 QLabel {
     color: black;
-    font: 25px "Microsoft YaHei";
+    font: 25px 'Segoe UI', 'Microsoft YaHei';
 }
 
 ThreeStatePushButton {
     color: black;
-    font: 18px "Microsoft YaHei";
+    font: 18px 'Segoe UI', 'Microsoft YaHei';
     border: none;
 }
 

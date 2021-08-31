@@ -38,7 +38,7 @@ class SearchLineEdit(QLineEdit):
         self.clearButton.hide()
         self.setAttribute(Qt.WA_StyledBackground)
         # 设置提示文字
-        self.setPlaceholderText("搜索")
+        self.setPlaceholderText(self.tr("Search"))
         self.textChanged.connect(self.__onTextChanged)
         # 设置外边距
         self.setTextMargins(

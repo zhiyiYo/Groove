@@ -18,8 +18,9 @@ class MessageDialog(MaskDialogBase):
         self.content = content
         self.titleLabel = QLabel(title, self.widget)
         self.contentLabel = QLabel(content, self.widget)
-        self.yesButton = PerspectivePushButton('确定', self.widget)
-        self.cancelButton = PerspectivePushButton('取消', self.widget)
+        self.yesButton = PerspectivePushButton(self.tr('OK'), self.widget)
+        self.cancelButton = PerspectivePushButton(
+            self.tr('Cancel'), self.widget)
         self.__initWidget()
 
     def __initWidget(self):

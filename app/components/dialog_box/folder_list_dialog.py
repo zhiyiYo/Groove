@@ -24,7 +24,8 @@ class FolderListDialog(MaskDialogBase):
         self.folderPaths = folderPaths.copy()
         self.titleLabel = QLabel(title, self.widget)
         self.contentLabel = QLabel(content, self.widget)
-        self.completeButton = PerspectivePushButton('完成', self.widget)
+        self.completeButton = PerspectivePushButton(
+            self.tr('Done'), self.widget)
         self.addFolderCard = AddFolderCard(self.widget)
         self.folderCards = [FolderCard(i, self.widget)
                             for i in folderPaths]
@@ -32,9 +33,12 @@ class FolderListDialog(MaskDialogBase):
 
     def __initWidget(self):
         """ 初始化小部件 """
-        self.widget.setFixedSize(440, 324 + 100*len(self.folderPaths))
         self.__setQss()
+
+        w = max(self.titleLabel.width()+60, self.contentLabel.width()+60, 440)
+        self.widget.setFixedSize(w, 324 + 100*len(self.folderPaths))
         self.__initLayout()
+
         # 信号连接到槽
         self.addFolderCard.clicked.connect(self.__showFileDialog)
         self.completeButton.clicked.connect(self.__onButtonClicked)
@@ -45,30 +49,40 @@ class FolderListDialog(MaskDialogBase):
         """ 初始化布局 """
         self.titleLabel.move(30, 30)
         self.contentLabel.move(30, 79)
-        self.addFolderCard.move(35, 120)
-        self.completeButton.move(223, self.widget.height() - 71)
-        for i, folderCard in enumerate(self.folderCards):
-            folderCard.move(36, 220 + i*100)
+        self.completeButton.move(
+            self.widget.width()-30-self.completeButton.width(), self.widget.height() - 71)
+
+        x = self.widget.width()//2-self.addFolderCard.width()//2
+        self.addFolderCard.move(x, 120)
+        for i, card in enumerate(self.folderCards):
+            card.move(x, 220 + i*100)
 
     def __showFileDialog(self):
         """ 显示文件对话框 """
-        path = QFileDialog.getExistingDirectory(self, "选择文件夹", "./")
+        path = QFileDialog.getExistingDirectory(
+            self, self.tr("Choose folder"), "./")
         if path and path not in self.folderPaths:
-            # 创建文件路径卡
             self.widget.setFixedHeight(self.widget.height() + 100)
-            folderCard = FolderCard(path, self.widget)
-            folderCard.move(36, self.widget.height() - 206)
-            folderCard.clicked.connect(self.__showDeleteFolderCardDialog)
-            folderCard.show()
+
+            # 创建文件路径卡
+            card = FolderCard(path, self.widget)
+            card.move(self.widget.width()//2 - card.width() //
+                      2, self.widget.height() - 206)
+            card.clicked.connect(self.__showDeleteFolderCardDialog)
+            card.show()
+
             self.folderPaths.append(path)
-            self.folderCards.append(folderCard)
-            self.completeButton.move(223, self.widget.height() - 71)
+            self.folderCards.append(card)
+            self.completeButton.move(
+                self.completeButton.x(), self.widget.height() - 71)
 
     def __showDeleteFolderCardDialog(self):
         """ 显示删除文件夹卡片对话框 """
         sender = self.sender()
-        title = '确认删除文件夹吗？'
-        content = f'如果将"{sender.folderName}"文件夹从列表中移除，则该文件夹不会再出现在列表中，但不会被删除。'
+        title = self.tr('Are you sure you want to delete the folder?')
+        content = self.tr("If you delete the ") + f'"{sender.folderName}"' + \
+            self.tr(" folder and remove it from the list, the folder will no "
+                    "longer appear in the list, but will not be deleted.")
         dialog = Dialog(title, content, self.window())
         dialog.yesSignal.connect(lambda: self.__deleteFolderCard(sender))
         dialog.exec_()
@@ -80,9 +94,11 @@ class FolderListDialog(MaskDialogBase):
         self.folderCards.pop(index)
         self.folderPaths.pop(index)
         folderCard.deleteLater()
+
         # 将下面的卡片上移
         for card in self.folderCards[index:]:
             card.move(card.x(), card.y() - 100)
+
         # 更新高度
         self.widget.setFixedHeight(self.widget.height() - 100)
         self.completeButton.move(223, self.widget.height() - 71)
@@ -92,10 +108,15 @@ class FolderListDialog(MaskDialogBase):
         self.titleLabel.setObjectName('titleLabel')
         self.contentLabel.setObjectName('contentLabel')
         self.completeButton.setObjectName('completeButton')
+
         f = QFile(":/qss/folder_list_dialog.qss")
         f.open(QFile.ReadOnly)
         self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
         f.close()
+
+        self.titleLabel.adjustSize()
+        self.contentLabel.adjustSize()
+        self.completeButton.adjustSize()
 
     def __onButtonClicked(self):
         """ 完成按钮点击槽函数 """
@@ -208,7 +229,7 @@ class FolderCard(ClickableWindow):
 
 
 class AddFolderCard(ClickableWindow):
-    """ 点击选择模型 """
+    """ 添加文件夹卡 """
 
     def __init__(self, parent=None):
         super().__init__(parent)

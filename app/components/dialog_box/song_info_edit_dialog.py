@@ -34,19 +34,19 @@ class SongInfoEditDialog(MaskDialogBase):
     def __createWidgets(self):
         """ 实例化小部件 """
         # 实例化按钮
-        self.saveButton = PerspectivePushButton("保存", self.widget)
-        self.cancelButton = PerspectivePushButton("取消", self.widget)
+        self.saveButton = PerspectivePushButton(self.tr("Save"), self.widget)
+        self.cancelButton = PerspectivePushButton(self.tr("Cancel"), self.widget)
         # 实例化标签
-        self.yearLabel = QLabel("年", self.widget)
-        self.genreLabel = QLabel("类型", self.widget)
-        self.diskLabel = QLabel("光盘", self.widget)
-        self.trackNumLabel = QLabel("曲目", self.widget)
-        self.songNameLabel = QLabel("歌曲名", self.widget)
-        self.songPathLabel = QLabel("文件位置", self.widget)
-        self.albumNameLabel = QLabel("专辑标题", self.widget)
-        self.singerNameLabel = QLabel("歌曲歌手", self.widget)
-        self.albumSongerLabel = QLabel("专辑歌手", self.widget)
-        self.editInfoLabel = QLabel("编辑歌曲信息", self.widget)
+        self.yearLabel = QLabel(self.tr("Year"), self.widget)
+        self.genreLabel = QLabel(self.tr("Genre"), self.widget)
+        self.diskLabel = QLabel(self.tr("Disk"), self.widget)
+        self.trackNumLabel = QLabel(self.tr("Track"), self.widget)
+        self.songNameLabel = QLabel(self.tr("Song title"), self.widget)
+        self.songPathLabel = QLabel(self.tr("File location"), self.widget)
+        self.albumNameLabel = QLabel(self.tr("Album title"), self.widget)
+        self.singerNameLabel = QLabel(self.tr("Song artist"), self.widget)
+        self.albumSongerLabel = QLabel(self.tr("Album artist"), self.widget)
+        self.editInfoLabel = QLabel(self.tr("Edit Song Info"), self.widget)
         self.songPath = QLabel(
             self.songInfo["songPath"].replace('\\', '/'), self.widget)
         self.emptyTrackErrorIcon = ErrorIcon(self.widget)
@@ -67,21 +67,22 @@ class SongInfoEditDialog(MaskDialogBase):
             self.songInfo["tracknumber"], self.widget)
         # 流派补全
         genres = [
-            "POP流行",
+            "Pop",
             "Blues",
-            "SOUNDTRACK原声",
-            "Japanese Pop & Rock",
-            "摇滚",
             "Soundtrack",
+            "Japanese Pop & Rock",
+            "Rock",
             "J-Pop",
             "RAP/HIP HOP",
-            "Soundtrack",
-            "古典",
-            "经典",
+            "Classical",
             "Country",
             "R&B",
-            "ROCK摇滚",
-            "anime",
+            "Anime",
+            "Dance",
+            "Jazz",
+            "New Age",
+            "Folk",
+            "Easy Listening"
         ]
         self.genreCompleter = QCompleter(genres, self.widget)
         self.genreCompleter.setCompletionMode(QCompleter.InlineCompletion)
@@ -183,7 +184,7 @@ class SongInfoEditDialog(MaskDialogBase):
     def __installValidator(self):
         """ 给输入框设置过滤器 """
         rex_trackNum = QRegExp(r"(\d)|([1-9]\d{1,2})")
-        rex_year = QRegExp(r"\d{4}年{0,1}")
+        rex_year = QRegExp(r"\d{4}")
         validator_tracknum = QRegExpValidator(
             rex_trackNum, self.trackNumLineEdit)
         validator_disk = QRegExpValidator(rex_trackNum, self.diskLineEdit)
@@ -220,13 +221,14 @@ class SongInfoEditDialog(MaskDialogBase):
         # 根据后缀名选择曲目标签的写入方式
         self.songInfo["tracknumber"] = self.trackNumLineEdit.text()
         self.songInfo["genre"] = self.genreLineEdit.text()
-        if self.yearLineEdit.text()[:4] != "未知年份":
-            self.songInfo["year"] = self.yearLineEdit.text()[:4] + "年"
+        if self.yearLineEdit.text() != self.tr("Unknown year"):
+            self.songInfo["year"] = self.yearLineEdit.text()
         else:
-            self.songInfo["year"] = "未知年份"
+            self.songInfo["year"] = self.tr("Unknown year")
 
         if not writeSongInfo(self.songInfo):
-            self.bottomErrorLabel.setText("遇到未知错误，请稍后再试")
+            self.bottomErrorLabel.setText(
+                self.tr("An unknown error was encountered. Please try again later"))
             self.bottomErrorLabel.adjustSize()
             self.bottomErrorLabel.show()
             self.bottomErrorIcon.show()
@@ -241,7 +243,8 @@ class SongInfoEditDialog(MaskDialogBase):
         isEmpty = not bool(self.genreLineEdit.text())
 
         if isEmpty:
-            self.bottomErrorLabel.setText("曲目必须是1000以下的数字")
+            self.bottomErrorLabel.setText(
+                self.tr("The track must be a number below 1000"))
             self.bottomErrorLabel.adjustSize()
 
         # 设置提示标签可见性和按钮是否启用

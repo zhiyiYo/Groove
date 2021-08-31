@@ -69,7 +69,7 @@ class KuWoMusicCrawler:
             song_info['songName'] = info['name']
             song_info['singer'] = info['artist']
             song_info['album'] = info['album']
-            song_info['year'] = info['releaseDate'].split('-')[0]+'年'
+            song_info['year'] = info['releaseDate'].split('-')[0]
             song_info['tracknumber'] = str(info['track'])
             song_info['coverPath'] = info['albumpic']
             song_info['coverName'] = adjustName(
@@ -84,7 +84,7 @@ class KuWoMusicCrawler:
 
         return song_info_list
 
-    def getSongUrl(self, rid: str, quality='标准音质'):
+    def getSongUrl(self, rid: str, quality='Standard quality'):
         """ 获取歌曲播放地址
 
         Parameters
@@ -93,9 +93,13 @@ class KuWoMusicCrawler:
             歌曲 rid
 
         quality: str
-            歌曲音质，有 `流畅音质`、`高品音质` 和 `超品音质` 三种
+            歌曲音质，有 `Standard quality`、`High quality` 和 `Super quality` 三种
         """
-        br = {'流畅音质': '128k', '高品音质': '192k', '超品音质': '320k'}[quality]
+        br = {
+            'Standard quality': '128k',
+            'High quality': '192k',
+            'Super quality': '320k'
+        }[quality]
 
         # 构造请求头
         headers = self.headers.copy()
@@ -114,7 +118,7 @@ class KuWoMusicCrawler:
         return play_url
 
     @exceptionHandler
-    def downloadSong(self, song_info: dict, save_dir: str, quality='流畅音质'):
+    def downloadSong(self, song_info: dict, save_dir: str, quality='Standard quality'):
         """ 下载歌曲 """
         # 获取下载地址
         url = self.getSongUrl(song_info['rid'], quality)
@@ -143,7 +147,7 @@ class KuWoMusicCrawler:
         return song_path
 
     @exceptionHandler
-    def searchSong(self, key_word: str, quality='流畅音质', page_size=10):
+    def searchSong(self, key_word: str, quality='Standard quality', page_size=10):
         """ 搜索音乐
 
         Parameters
@@ -152,7 +156,7 @@ class KuWoMusicCrawler:
             搜索关键词
 
         quality: str
-            歌曲音质，有 `流畅音质`、`高品音质` 和 `超品音质` 三种
+            歌曲音质，有 `Standard quality`、`High quality` 和 `Super quality` 三种
 
         page_size: int
             最多返回歌曲下载地址数

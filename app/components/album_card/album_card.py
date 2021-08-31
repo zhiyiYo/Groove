@@ -8,7 +8,7 @@ from components.perspective_widget import PerspectiveWidget
 from PyQt5.QtCore import QPoint, Qt, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent, QFont, QFontMetrics, QPixmap
 from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsOpacityEffect,
-                             QLabel, QWidget)
+                             QLabel, QWidget, QVBoxLayout)
 
 
 class AlbumCard(PerspectiveWidget):
@@ -40,6 +40,7 @@ class AlbumCard(PerspectiveWidget):
 
     def __createWidgets(self):
         """ 创建小部件 """
+        self.vBoxLayout = QVBoxLayout(self)
         # 实例化专辑名和歌手名
         self.albumNameLabel = ClickableLabel(self.albumName, self)
         self.contentLabel = ClickableLabel(self.singerName, self, False)
@@ -99,9 +100,14 @@ class AlbumCard(PerspectiveWidget):
 
     def __initLayout(self):
         """ 初始化布局 """
-        self.albumPic.move(5, 5)
-        self.albumNameLabel.move(5, 213)
-        self.contentLabel.move(5, 239)
+        self.vBoxLayout.setContentsMargins(5, 5, 0, 0)
+        self.vBoxLayout.setSpacing(0)
+        self.vBoxLayout.addWidget(self.albumPic)
+        self.vBoxLayout.addSpacing(11)
+        self.vBoxLayout.addWidget(self.albumNameLabel)
+        self.vBoxLayout.addSpacing(2)
+        self.vBoxLayout.addWidget(self.contentLabel)
+        self.vBoxLayout.setAlignment(Qt.AlignTop)
         self.checkBox.move(178, 8)
         self.checkBox.hide()
         self.__adjustLabel()
@@ -156,6 +162,7 @@ class AlbumCard(PerspectiveWidget):
                 newText[index + 1:], Qt.ElideRight, 200)
             newText = newText[: index + 1] + secondLineText
             self.albumNameLabel.setText(newText)
+
         # 给歌手名添加省略号
         fontMetrics = QFontMetrics(QFont("Microsoft YaHei", 10, 25))
         newSongerName = fontMetrics.elidedText(
@@ -163,8 +170,6 @@ class AlbumCard(PerspectiveWidget):
         self.contentLabel.setText(newSongerName)
         self.contentLabel.adjustSize()
         self.albumNameLabel.adjustSize()
-        self.contentLabel.move(
-            5, self.albumNameLabel.y() + self.albumNameLabel.height() - 4)
 
     def mouseReleaseEvent(self, e):
         """ 鼠标松开发送切换到专辑界面信号或者取反选中状态 """
@@ -194,9 +199,9 @@ class AlbumCard(PerspectiveWidget):
         """ 获取专辑信息 """
         self.albumInfo = albumInfo
         self.songInfo_list = self.albumInfo.get("songInfo_list", [])
-        self.albumName = albumInfo.get("album", "未知专辑")     # type:str
-        self.singerName = albumInfo.get("singer", "未知歌手")   # type:str
-        self.year = albumInfo.get('year', '未知年份')           # type:str
+        self.albumName = albumInfo.get("album", self.tr("Unknown album"))
+        self.singerName = albumInfo.get("singer", self.tr("Unknown artist"))
+        self.year = albumInfo.get('year', self.tr('Unknown year'))
         self.coverPath = albumInfo.get(
             "coverPath", ":/images/default_covers/album_200_200.png")
 
@@ -274,14 +279,14 @@ class AlbumCardContextMenu(DWMMenu):
     def __createActions(self):
         """ 创建动作 """
         # 创建动作
-        self.playAct = QAction("播放", self)
-        self.selectAct = QAction("选择", self)
-        self.nextToPlayAct = QAction("下一首播放", self)
-        self.pinToStartMenuAct = QAction('固定到"开始"菜单', self)
-        self.deleteAct = QAction("删除", self)
-        self.editInfoAct = QAction("编辑信息", self)
-        self.showSingerAct = QAction("显示歌手", self)
-        self.addToMenu = AddToMenu("添加到", self)
+        self.playAct = QAction(self.tr("Play"), self)
+        self.selectAct = QAction(self.tr("Select"), self)
+        self.nextToPlayAct = QAction(self.tr("Play next"), self)
+        self.pinToStartMenuAct = QAction(self.tr('Pin to Start'), self)
+        self.deleteAct = QAction(self.tr("Delete"), self)
+        self.editInfoAct = QAction(self.tr("Edit info"), self)
+        self.showSingerAct = QAction(self.tr("Show artist"), self)
+        self.addToMenu = AddToMenu(self.tr("Add to"), self)
 
         # 添加动作到菜单
         self.addActions([self.playAct, self.nextToPlayAct])

@@ -5,7 +5,7 @@ from common.os_utils import getCoverPath
 from components.menu import AddToMenu
 from components.app_bar import (AppBarButton, CollapsingAppBarBase,
                                 MoreActionsMenu)
-from PyQt5.QtCore import QPoint, Qt, pyqtSignal
+from PyQt5.QtCore import QPoint, Qt, pyqtSignal, QObject
 from PyQt5.QtGui import QPalette, QColor
 from PyQt5.QtWidgets import QAction
 
@@ -18,30 +18,39 @@ class PlaylistInfoBar(CollapsingAppBarBase):
 
     def __init__(self, playlist: dict, parent=None):
         self.__getPlaylistInfo(playlist)
+        content = str(len(self.songInfo_list)) + \
+            QObject().tr(" songs")+f' • {self.duration}'
+        super().__init__(self.playlistName, content,
+                         self.playlistCoverPath, 'playlist', parent)
+
         self.playAllButton = AppBarButton(
-            ":/images/album_interface/Play.png", "全部播放")
+            ":/images/album_interface/Play.png", self.tr("Play all"))
         self.addToButton = AppBarButton(
-            ":/images/album_interface/Add.png", "添加到")
+            ":/images/album_interface/Add.png", self.tr("Add to"))
         self.renameButton = AppBarButton(
-            ":/images/album_interface/Edit.png", "重命名")
+            ":/images/album_interface/Edit.png", self.tr("Rename"))
         self.pinToStartMenuButton = AppBarButton(
-            ":/images/album_interface/Pin.png", '固定到"开始"菜单')
+            ":/images/album_interface/Pin.png", self.tr('Pin to Start'))
         self.deleteButton = AppBarButton(
-            ":/images/album_interface/Delete.png", "删除")
-        buttons = [self.playAllButton, self.addToButton, self.renameButton,
-                   self.pinToStartMenuButton, self.deleteButton]
-        super().__init__(self.playlistName,
-                         f'{len(self.songInfo_list)} 首歌曲 • {self.duration}',
-                         self.playlistCoverPath, buttons, 'playlist', parent)
-        self.actionNames = ["全部播放", "添加到", "重命名", '固定到"开始"菜单', "删除"]
+            ":/images/album_interface/Delete.png", self.tr("Delete"))
+
+        self.setButtons([self.playAllButton, self.addToButton, self.renameButton,
+                         self.pinToStartMenuButton, self.deleteButton])
+
+        self.actionNames = [
+            self.tr("Play all"), self.tr("Add to"),
+            self.tr("Rename"), self.tr('Pin to Start'), self.tr("Delete")]
         self.action_list = [QAction(i, self) for i in self.actionNames]
         self.setAttribute(Qt.WA_StyledBackground)
         self.addToButton.clicked.connect(self.__onAddToButtonClicked)
 
     def __getPlaylistInfo(self, playlist: dict):
         """ 设置专辑信息 """
+        obj = QObject()
         self.playlist = playlist if playlist else {}
-        self.playlistName = playlist.get("playlistName", "未知播放列表")  # type:str
+        self.playlistName = playlist.get(
+            "playlistName", obj.tr("Unknown playlist"))
+
         self.songInfo_list = self.playlist.get("songInfo_list", [])
         songInfo = self.songInfo_list[0] if self.songInfo_list else {}
         name = songInfo.get('coverName', '未知歌手_未知专辑')
@@ -54,7 +63,9 @@ class PlaylistInfoBar(CollapsingAppBarBase):
             seconds += m*60+s
         self.hours = seconds//3600
         self.minutes = ceil((seconds % 3600)/60)
-        self.duration = f"{self.hours} 小时 {self.minutes} 分钟" if self.hours > 0 else f"{self.minutes} 分钟"
+        h = obj.tr('hrs')
+        m = obj.tr('mins')
+        self.duration = f"{self.hours} {h} {self.minutes} {m}" if self.hours > 0 else f"{self.minutes} {m}"
 
     def onMoreActionsButtonClicked(self):
         """ 显示更多操作菜单 """
@@ -82,9 +93,9 @@ class PlaylistInfoBar(CollapsingAppBarBase):
     def updateWindow(self, playlist: dict):
         """ 更新窗口 """
         self.__getPlaylistInfo(playlist)
-        super().updateWindow(self.playlistName,
-                             f'{len(self.songInfo_list)} 首歌曲 • {self.duration}',
-                             self.playlistCoverPath)
+        content = str(len(self.songInfo_list)) + \
+            self.tr(" songs")+f' • {self.duration}'
+        super().updateWindow(self.playlistName, content, self.playlistCoverPath)
 
     def setBackgroundColor(self):
         """ 根据封面背景颜色 """

@@ -2,7 +2,7 @@
 from components.menu import AddToMenu
 from components.app_bar import (AppBarButton, CollapsingAppBarBase,
                                 MoreActionsMenu)
-from PyQt5.QtCore import QPoint, Qt, pyqtSignal
+from PyQt5.QtCore import QPoint, Qt, pyqtSignal, QObject
 from PyQt5.QtWidgets import QAction
 
 
@@ -14,38 +14,44 @@ class AlbumInfoBar(CollapsingAppBarBase):
 
     def __init__(self, albumInfo: dict, parent=None):
         self.setAlbumInfo(albumInfo)
-        self.playAllButton = AppBarButton(
-            ":/images/album_interface/Play.png", "全部播放")
-        self.addToButton = AppBarButton(
-            ":/images/album_interface/Add.png", "添加到")
-        self.showSingerButton = AppBarButton(
-            ":/images/album_interface/Contact.png", "显示歌手")
-        self.pinToStartMenuButton = AppBarButton(
-            ":/images/album_interface/Pin.png", '固定到"开始"菜单')
-        self.editInfoButton = AppBarButton(
-            ":/images/album_interface/Edit.png", "编辑信息")
-        self.deleteButton = AppBarButton(
-            ":/images/album_interface/Delete.png", "删除")
-        buttons = [self.playAllButton, self.addToButton, self.showSingerButton,
-                   self.pinToStartMenuButton, self.editInfoButton, self.deleteButton]
         super().__init__(self.albumName,
                          f'{self.singerName}\n{self.year} • {self.genre}',
-                         self.albumCoverPath, buttons, 'album', parent)
+                         self.albumCoverPath, 'album', parent)
 
-        self.actionNames = ["全部播放", "添加到", "显示歌手", '固定到"开始"菜单', "编辑信息", "删除"]
+        self.playAllButton = AppBarButton(
+            ":/images/album_interface/Play.png", self.tr("Play all"))
+        self.addToButton = AppBarButton(
+            ":/images/album_interface/Add.png", self.tr("Add to"))
+        self.showSingerButton = AppBarButton(
+            ":/images/album_interface/Contact.png", self.tr("Show artist"))
+        self.pinToStartMenuButton = AppBarButton(
+            ":/images/album_interface/Pin.png", self.tr('Pin to Start'))
+        self.editInfoButton = AppBarButton(
+            ":/images/album_interface/Edit.png", self.tr("Edit info"))
+        self.deleteButton = AppBarButton(
+            ":/images/album_interface/Delete.png", self.tr("Delete"))
+        self.setButtons([self.playAllButton, self.addToButton, self.showSingerButton,
+                        self.pinToStartMenuButton, self.editInfoButton, self.deleteButton])
+
+        self.actionNames = [
+            self.tr("Play all"), self.tr("Add to"),
+            self.tr("Show artist"), self.tr("Pin to Start"),
+            self.tr("Edit info"), self.tr("Delete")
+        ]
         self.action_list = [QAction(i, self) for i in self.actionNames]
         self.setAttribute(Qt.WA_StyledBackground)
         self.addToButton.clicked.connect(self.__onAddToButtonClicked)
 
     def setAlbumInfo(self, albumInfo: dict):
         """ 设置专辑信息 """
+        obj = QObject()
         self.albumInfo = albumInfo if albumInfo else {}
-        self.year = albumInfo.get("year", "未知年份")  # type:str
-        self.genre = albumInfo.get("genre", "未知流派")  # type:str
-        self.albumName = albumInfo.get("album", "未知专辑")  # type:str
-        self.singerName = albumInfo.get("singer", "未知歌手")  # type:str
+        self.year = albumInfo.get("year", obj.tr("Unknown year"))
+        self.genre = albumInfo.get("genre", obj.tr("Unknown genre"))
+        self.albumName = albumInfo.get("album", obj.tr("Unknown album"))
+        self.singerName = albumInfo.get("singer", obj.tr("Unknown artist"))
         self.albumCoverPath = albumInfo.get(
-            "coverPath", ":/images/default_covers/album_200_200.png")  # type:str
+            "coverPath", ":/images/default_covers/album_200_200.png")
 
     def onMoreActionsButtonClicked(self):
         """ 显示更多操作菜单 """

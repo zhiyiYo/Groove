@@ -65,16 +65,16 @@ class PlaylistCardInterface(ScrollArea):
         self.__createPlaylistCards()
         # 创建白色遮罩
         self.whiteMask = QWidget(self)
-        self.sortModeLabel = QLabel("排序依据:", self)
-        self.playlistLabel = QLabel("播放列表", self)
-        self.sortModeButton = QPushButton("修改日期", self)
+        self.playlistLabel = QLabel(self.tr("Playlist"), self)
+        self.sortModeLabel = QLabel(self.tr("Sort by:"), self)
+        self.sortModeButton = QPushButton(self.tr("Date modified"), self)
         self.createPlaylistButton = ThreeStatePushButton(
             {
                 "normal": ":/images/playlist_card_interface/Add_normal.png",
                 "hover": ":/images/playlist_card_interface/Add_hover.png",
                 "pressed": ":/images/playlist_card_interface/Add_pressed.png",
             },
-            " 新的播放列表",
+            self.tr(" New playlist"),
             (19, 19),
             self,
         )
@@ -87,9 +87,9 @@ class PlaylistCardInterface(ScrollArea):
         # 创建排序菜单
         self.sortModeMenu = AeroMenu(parent=self)
         self.sortByModifiedTimeAct = QAction(
-            "修改时间", self, triggered=lambda: self.__sortPlaylist("modifiedTime"))
+            self.tr("Date modified"), self, triggered=lambda: self.__sortPlaylist("modifiedTime"))
         self.sortByAToZAct = QAction(
-            "A到Z", self, triggered=lambda: self.__sortPlaylist("AToZ"))
+            self.tr("A to Z"), self, triggered=lambda: self.__sortPlaylist("AToZ"))
         self.sortAct_list = [self.sortByModifiedTimeAct, self.sortByAToZAct]
         # 创建选择状态栏
         self.selectionModeBar = SelectionModeBar(self)
@@ -163,9 +163,10 @@ class PlaylistCardInterface(ScrollArea):
     def __initLayout(self):
         """ 初始化布局 """
         self.playlistLabel.move(30, 54)
-        self.sortModeLabel.move(190, 131)
-        self.sortModeButton.move(264, 127)
         self.createPlaylistButton.move(30, 130)
+        self.sortModeLabel.move(
+            self.createPlaylistButton.geometry().right()+30, 131)
+        self.sortModeButton.move(self.sortModeLabel.geometry().right()+7, 127)
         self.selectionModeBar.move(
             0, self.height() - self.selectionModeBar.height())
         # 设置布局的间距和外边距
@@ -186,6 +187,9 @@ class PlaylistCardInterface(ScrollArea):
         f.open(QFile.ReadOnly)
         self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
         f.close()
+
+        self.createPlaylistButton.adjustSize()
+        self.sortModeLabel.adjustSize()
 
     def resizeEvent(self, e):
         """ 调整小部件尺寸和位置 """
@@ -219,15 +223,16 @@ class PlaylistCardInterface(ScrollArea):
         """ 排序播放列表 """
         self.sortMode = key
         if key == "modifiedTime":
-            self.sortModeButton.setText("修改时间")
+            self.sortModeButton.setText(self.tr("Date modified"))
             self.currentSortAct = self.sortByModifiedTimeAct
             self.playlistCardInfo_list.sort(
                 key=self.__sortPlaylistByModifiedTime, reverse=True)
         else:
-            self.sortModeButton.setText("A到Z")
+            self.sortModeButton.setText(self.tr("A to Z"))
             self.currentSortAct = self.sortByAToZAct
             self.playlistCardInfo_list.sort(
                 key=self.__sortPlaylistByAToZ, reverse=False)
+
         # 先将小部件布局中移除
         self.gridLayout.removeAllWidgets()
         # 将小部件添加到布局中
@@ -380,8 +385,10 @@ class PlaylistCardInterface(ScrollArea):
 
     def __showDeleteOneCardDialog(self, playlistName: str):
         """ 显示删除播放列表卡对话框 """
-        title = "是否确定要删除此项？"
-        content = f"""如果删除"{playlistName}"，它将不再位于此设备上。"""
+        title = self.tr("Are you sure you want to delete this?")
+        content = self.tr("If you delete") + f' "{playlistName}" ' + \
+            self.tr("it won't be on be this device anymore.")
+
         w = MessageDialog(title, content, self.window())
         w.yesSignal.connect(lambda: self.deleteOnePlaylistCard(playlistName))
         w.yesSignal.connect(lambda: self.deletePlaylistSig.emit(playlistName))
@@ -461,8 +468,9 @@ class PlaylistCardInterface(ScrollArea):
             self.__unCheckPlaylistCards()
             self.__showDeleteOneCardDialog(playlistCard.playlistName)
         else:
-            title = "确定要删除这些项？"
-            content = f"若删除这些播放列表，它们将不再位于此设备上。"
+            title = self.tr("Are you sure you want to delete these?")
+            content = self.tr(
+                "If you delete these playlists, they won't be on be this device anymore.")
             playlistNames = [
                 i.playlistName for i in self.checkedPlaylistCard_list]
 

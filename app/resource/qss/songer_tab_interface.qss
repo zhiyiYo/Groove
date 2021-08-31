@@ -7,7 +7,7 @@ QPushButton#randomPlayButton {
     border: none;
     margin-top: 2px;
     margin-left: 12px;
-    font: 15px 'Microsoft YaHei';
+    font: 15px 'Segoe UI', 'Microsoft YaHei';
 }
 
 QPushButton#randomPlayButton:hover {
@@ -17,11 +17,11 @@ QPushButton#randomPlayButton:hover {
 QLabel {
     margin-top: 1px;
     font-size: 16px;
-    font-family: 'Microsoft YaHei';
+    font-family: 'Segoe UI', 'Microsoft YaHei';
 }
 
 QLabel#AToZ {
     padding-top: 1px;
     color: rgb(102, 102, 102);
-    font: 16px 'Microsoft YaHei';
+    font: 16px 'Segoe UI', 'Microsoft YaHei';
 }

@@ -1,25 +1,25 @@
-QScrollArea{
+QScrollArea {
     background-color: white;
     border: none;
 }
 
-QWidget{
+QWidget {
     background-color: white;
 }
 
-#titleLabel{
+#titleLabel {
     font: 43px "Microsoft YaHei Light";
     background-color: transparent;
 }
 
-#searchOthersLabel{
+#searchOthersLabel {
     color: rgb(81, 81, 81);
-    font: 18px "Microsoft YaHei";
+    font: 18px 'Segoe UI', 'Microsoft YaHei';
     background-color: transparent;
 }
 
-#checkSpellLabel{
-    font: 42px "Microsoft YaHei";
+#checkSpellLabel {
+    font: 42px 'Segoe UI', 'Microsoft YaHei';
     background-color: transparent;
 }
 

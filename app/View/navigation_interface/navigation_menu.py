@@ -1,7 +1,4 @@
 # coding:utf-8
-
-from ctypes.wintypes import HWND
-
 from common.window_effect import WindowEffect
 from PyQt5.QtCore import QEasingCurve, QPropertyAnimation, QRect, Qt
 
@@ -25,6 +22,13 @@ class NavigationMenu(NavigationWidget):
         self.resize(60, 800)
         self.setWindowFlags(Qt.NoDropShadowWindowHint | Qt.Popup)
         self.windowEffect.setAcrylicEffect(self.winId(), "F2F2F299", False)
+        # 强制刷新按钮文字
+        self.myMusicButton.setText(self.tr('My music'))
+        self.historyButton.setText(self.tr("Recent plays"))
+        self.playingButton.setText(self.tr('Now playing'))
+        self.playlistButton.setText(self.tr('Playlists'))
+        self.settingButton.setText(self.tr('Settings'))
+        # 信号连接到槽
         self.switchToPlaylistInterfaceSig.connect(self.aniHide)
         self.myMusicButton.clicked.connect(self.aniHide)
         self.settingButton.clicked.connect(self.aniHide)

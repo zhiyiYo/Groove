@@ -122,12 +122,12 @@ class SongInfoGetter:
 
         # 获取年份
         if tag.year and tag.year[0] != "0":
-            year = tag.year[:4] + "年"
+            year = tag.year[:4]
         else:
             tag = File(songPath)
             key_dict = {".m4a": "©day", ".mp3": "TDRC", ".flac": "year"}
             year = (
-                str(tag.get(key_dict[suffix])[0])[:4] + "年"
+                str(tag.get(key_dict[suffix])[0])[:4]
                 if tag.get(key_dict[suffix])
                 else "未知年份"
             )

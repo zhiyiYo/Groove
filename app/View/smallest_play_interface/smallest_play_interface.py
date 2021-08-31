@@ -365,8 +365,8 @@ class SongInfoCard(QWidget):
         """ 设置标签信息 """
         if not songInfo:
             songInfo = {}
-        self.songName = songInfo.get("songName", "未知歌曲")  # type:str
-        self.singerName = songInfo.get("singer", "未知歌手")  # type:str
+        self.songName = songInfo.get("songName", self.tr("Unknown song"))
+        self.singerName = songInfo.get("singer", self.tr("Unknown artist"))
         self.songNameLabel.setText(self.songName)
         self.singerNameLabel.setText(self.singerName)
 

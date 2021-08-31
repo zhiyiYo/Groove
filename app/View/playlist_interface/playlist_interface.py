@@ -54,14 +54,14 @@ class PlaylistInterface(ScrollArea):
         self.songListWidget = SongListWidget(self.songInfo_list, self)
         self.playlistInfoBar = PlaylistInfoBar(self.playlist, self)
         self.selectionModeBar = SelectionModeBar(self)
-        self.noMusicLabel = QLabel("播放列表中没有音乐？", self)
+        self.noMusicLabel = QLabel(self.tr("No music in playlist?"), self)
         self.addMusicButton = ThreeStatePushButton(
             {
                 "normal": ":/images/playlist_interface/album_normal.png",
                 "hover": ":/images/playlist_interface/album_hover.png",
                 "pressed": ":/images/playlist_interface/album_pressed.png",
             },
-            " 从我的集锦中添加歌曲",
+            self.tr(" Add songs from my collection"),
             (29, 29),
             self
         )
@@ -145,7 +145,8 @@ class PlaylistInterface(ScrollArea):
         """ 获取播放列表信息 """
         self.playlist = deepcopy(playlist)
         self.songInfo_list = self.playlist.get("songInfo_list", [])
-        self.playlistName = self.playlist.get("playlistName", "未知播放列表")
+        self.playlistName = self.playlist.get(
+            "playlistName", self.tr("Unknown playlist"))
 
     def __onSelectionModeStateChanged(self, isOpenSelectionMode: bool):
         """ 选择状态改变对应的槽函数 """
@@ -242,8 +243,9 @@ class PlaylistInterface(ScrollArea):
     def __showDeletePlaylistDialog(self):
         """ 显示删除播放列表对话框 """
         name = self.playlistName
-        title = "是否确定要删除此项？"
-        content = f"""如果删除"{name}"，它将不再位于此设备上。"""
+        title = self.tr("Are you sure you want to delete this?")
+        content = self.tr("If you delete") + f' "{name}" ' + \
+            self.tr("it won't be on be this device anymore.")
         w = MessageDialog(title, content, self.window())
         w.yesSignal.connect(lambda: self.deletePlaylistSig.emit(name))
         w.exec()

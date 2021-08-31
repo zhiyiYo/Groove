@@ -8,7 +8,7 @@ from components.label import ClickableLabel
 from components.menu import LineEditMenu
 from PyQt5.QtCore import QDateTime, QEvent, Qt, pyqtSignal, QFile
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QApplication, QLabel, QLineEdit, QPushButton
+from PyQt5.QtWidgets import QApplication, QLabel, QLineEdit, QPushButton, QVBoxLayout
 
 
 class CreatePlaylistDialog(MaskDialogBase):
@@ -19,23 +19,27 @@ class CreatePlaylistDialog(MaskDialogBase):
     def __init__(self, songInfo_list: list = None, parent=None):
         super().__init__(parent=parent)
         self.songInfo_list = songInfo_list
+        self.vBoxLayout = QVBoxLayout(self.widget)
         self.iconLabel = QLabel(self.widget)
         self.lineEdit = LineEdit(parent=self.widget)
-        self.cancelLabel = ClickableLabel("取消", self.widget)
-        self.yourCreationLabel = QLabel("您创建的", self.widget)
-        self.createPlaylistButton = QPushButton('创建播放列表', self.widget)
-        self.playlistExistedLabel = QLabel("此名称已经存在。请尝试其他名称。", self.widget)
+        self.cancelLabel = ClickableLabel(self.tr("Cancel"), self.widget)
+        self.yourCreationLabel = QLabel(self.tr("Created by you"), self.widget)
+        self.createPlaylistButton = QPushButton(
+            self.tr('Create playlist'), self.widget)
+        self.playlistExistedLabel = QLabel(
+            self.tr("This name already exists. Please try a different name."), self.widget)
         self.__initWidget()
 
     def __initWidget(self):
         """ 初始化小部件 """
         self.widget.setFixedSize(586, 644)
-        self.createPlaylistButton.resize(313, 48)
         self.playlistExistedLabel.hide()
         self.iconLabel.setPixmap(
             QPixmap(":/images/create_playlist_dialog/playlist.png"))
+
         self.__setQss()
         self.__initLayout()
+
         # 信号连接到槽
         self.cancelLabel.clicked.connect(self.close)
         self.lineEdit.textChanged.connect(self.__isPlaylistExist)
@@ -52,20 +56,31 @@ class CreatePlaylistDialog(MaskDialogBase):
 
     def __initLayout(self):
         """ 初始化布局 """
-        self.lineEdit.move(52, 309)
-        self.iconLabel.move(188, 74)
-        self.cancelLabel.move(276, 570)
-        self.yourCreationLabel.move(255, 398)
-        self.playlistExistedLabel.move(152, 440)
-        self.createPlaylistButton.move(137, 496)
+        self.vBoxLayout.setContentsMargins(0, 74, 0, 0)
+        self.vBoxLayout.setSpacing(0)
+        args = (0, Qt.AlignHCenter)
+        self.vBoxLayout.addWidget(self.iconLabel, *args)
+        self.vBoxLayout.addSpacing(25)
+        self.vBoxLayout.addWidget(self.lineEdit, *args)
+        self.vBoxLayout.addSpacing(20)
+        self.vBoxLayout.addWidget(self.yourCreationLabel, *args)
+        self.vBoxLayout.addSpacing(23)
+        self.vBoxLayout.addWidget(self.playlistExistedLabel, *args)
+        self.vBoxLayout.addSpacing(38)
+        self.vBoxLayout.addWidget(self.createPlaylistButton, *args)
+        self.vBoxLayout.addSpacing(28)
+        self.vBoxLayout.addWidget(self.cancelLabel, *args)
+        self.vBoxLayout.setAlignment(Qt.AlignTop)
 
     def __isPlaylistExist(self, playlistName: str) -> bool:
         """ 检测播放列表是否已经存在，如果已存在就显示提示标签 """
         os.makedirs('Playlists', exist_ok=True)
+
         # 扫描播放列表文件夹下的播放列表名字
         playlistNames = [
             os.path.splitext(i)[0] for i in os.listdir("Playlists")]
         isExist = playlistName in playlistNames
+
         # 如果播放列表名字已存在显示提示标签
         self.playlistExistedLabel.setVisible(isExist)
         self.createPlaylistButton.setEnabled(not isExist)
@@ -73,13 +88,13 @@ class CreatePlaylistDialog(MaskDialogBase):
 
     def __onCreatePlaylistButtonClicked(self):
         """ 发出创建播放列表的信号 """
-        if self.lineEdit.text() and self.lineEdit.text() != "       命名此播放列表":
-            playlistName = self.lineEdit.text()
-        else:
-            playlistName = "新的播放列表"
+        text = self.lineEdit.text()
+        playlistName = text if text else self.tr("New playlist")
+
         # 如果播放列表已存在，显示提示消息并直接返回
         if self.__isPlaylistExist(playlistName):
             return
+
         # 创建播放列表
         songInfo_list = self.songInfo_list if self.songInfo_list else []
         playlist = {
@@ -89,6 +104,7 @@ class CreatePlaylistDialog(MaskDialogBase):
         }
         with open(f"Playlists/{playlistName}.json", "w", encoding="utf-8") as f:
             json.dump(playlist, f)
+
         self.createPlaylistSig.emit(playlistName, playlist)
         self.close()
 
@@ -118,11 +134,14 @@ class LineEdit(QLineEdit):
         self.adjustButtonPos()
         self.textChanged.connect(self.textChangedEvent)
         self.setObjectName("createPlaylistPanelLineEdit")
+        self.setPlaceholderText(self.tr("Name the playlist"))
+        
         # 初始化按钮
         self.clearButton.hide()
         self.clearButton.installEventFilter(self)
         self.pencilPic.setPixmap(
             QPixmap(":/images/create_playlist_dialog/pencil_50_50.png"))
+
         # 设置文字的外间距，防止文字和文本重叠
         self.setTextMargins(
             0, 0, self.clearButton.width() + self.pencilPic.pixmap().width() + 1, 0)
@@ -133,23 +152,24 @@ class LineEdit(QLineEdit):
 
     def enterEvent(self, e):
         """ 鼠标进入更新样式 """
-        if self.property("noText") == "true":
+        if not self.text():
             self.pencilPic.setPixmap(
                 QPixmap(":/images/create_playlist_dialog/pencil_noFocus_hover_50_50.png"))
 
     def leaveEvent(self, e):
         """ 鼠标离开更新样式 """
-        if self.property("noText") == "true":
+        if not self.text():
             self.pencilPic.setPixmap(
                 QPixmap(":/images/create_playlist_dialog/pencil_noFocus_50_50.png"))
 
     def focusOutEvent(self, e):
         """ 当焦点移到别的输入框时隐藏按钮 """
         super().focusOutEvent(e)
+
         if not self.text():
             self.setProperty("noText", "true")
             self.setStyle(QApplication.style())
-            self.setText("       命名此播放列表")
+
         self.clearButton.hide()
         self.pencilPic.setPixmap(
             QPixmap(":/images/create_playlist_dialog/pencil_noFocus_50_50.png"))

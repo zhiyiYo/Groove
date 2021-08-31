@@ -4,12 +4,12 @@ QWidget {
 
 QLabel#titleLabel {
     color: white;
-    font: 17px 'Microsoft YaHei';
+    font: 17px 'Segoe UI', 'Microsoft YaHei';
 }
 
 QLabel#contentLabel {
     color: white;
-    font: 16px 'Microsoft YaHei';
+    font: 16px 'Segoe UI', 'Microsoft YaHei';
 }
 
 QToolButton {

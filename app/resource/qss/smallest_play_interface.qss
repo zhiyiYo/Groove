@@ -4,13 +4,13 @@ QLabel {
 
 QLabel#songNameLabel {
     color: white;
-    font: 12pt 'Microsoft YaHei';
+    font: 12pt 'Segoe UI', 'Microsoft YaHei';
     font-weight: bold;
 }
 
 QLabel#singerNameLabel {
     color: white;
-    font: 11pt 'Microsoft YaHei';
+    font: 11pt 'Segoe UI', 'Microsoft YaHei';
 }
 
 QSlider {

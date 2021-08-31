@@ -3,7 +3,6 @@ import json
 import os
 from copy import deepcopy
 from random import shuffle
-from time import time
 from typing import Dict
 
 from common import resource
@@ -73,11 +72,8 @@ class MainWindow(FramelessWindow):
         self.settingInterface = SettingInterface(self.subMainWindow)
 
         # 从配置文件中的选择文件夹读取音频文件
-        t3 = time()
         self.myMusicInterface = MyMusicInterface(
             self.settingInterface.getConfig("selected-folders", []), self.subMainWindow)
-        t4 = time()
-        print("创建整个我的音乐界面耗时：".ljust(15), t4 - t3)
 
         # 创建定时扫描歌曲信息的定时器
         self.rescanSongInfoTimer = QTimer(self)
@@ -122,9 +118,9 @@ class MainWindow(FramelessWindow):
         pageSize = self.settingInterface.config.get(
             'online-music-page-size', 10)
         quality = self.settingInterface.config.get(
-            'online-play-quality', '流畅音质')
+            'online-play-quality', 'Standard quality')
         folder = self.settingInterface.config.get(
-            'download-folder', 'app/download')
+            'download-folder', 'download')
         self.searchResultInterface = SearchResultInterface(
             pageSize, quality, folder, self.subMainWindow)
 
@@ -153,7 +149,7 @@ class MainWindow(FramelessWindow):
         """ 初始化小部件 """
         self.resize(1240, 970)
         self.setMinimumSize(1030, 800)
-        self.setWindowTitle("Groove 音乐")
+        self.setWindowTitle(self.tr("Groove Music"))
         self.setWindowIcon(QIcon(":/images/logo.png"))
         self.setAttribute(Qt.WA_TranslucentBackground | Qt.WA_StyledBackground)
         # 在去除任务栏的显示区域居中显示
@@ -997,12 +993,16 @@ class MainWindow(FramelessWindow):
         # 如果有重复的歌曲就显示对话框
         if repeatNum > 0:
             if planToAddNum == 1:
-                content = "此歌已在你的播放列表中。是否要添加？"
+                content = self.tr(
+                    "This song is already in your playlist. Do you want to add?")
             elif repeatNum < planToAddNum:
-                content = "部分歌曲已在你的播放列表中。是否要添加？"
+                content = self.tr(
+                    "Some songs are already in your playlist. Do you want to add?")
             else:
-                content = "所有这些歌曲都已在你的播放列表中。是否要添加？"
-            w = MessageDialog("歌曲重复", content, self.window())
+                content = self.tr(
+                    "All these songs are already in your playlist. Do you want to add?")
+            w = MessageDialog(self.tr("Song duplication"),
+                              content, self.window())
             w.cancelSignal.connect(lambda: resetSongInfo(
                 songInfo_list, differentSongInfo_list))
             w.exec_()
@@ -1065,7 +1065,9 @@ class MainWindow(FramelessWindow):
         """ 重新扫描歌曲信息 """
         if self.isInSelectionMode or not self.myMusicInterface.hasSongModified():
             return
-        w = StateTooltip("正在更新歌曲列表", "要耐心等待哦 ٩(๑>◡<๑)۶ ", self)
+
+        w = StateTooltip(self.tr("Updating song list"),
+                         self.tr("Please wait patiently"), self)
         w.move(self.width()-w.width()-30, 63)
         w.show()
         self.myMusicInterface.rescanSongInfo()

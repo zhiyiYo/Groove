@@ -70,10 +70,10 @@ class AlbumInterface(ScrollArea):
         """ 获取信息 """
         self.albumInfo = deepcopy(albumInfo) if albumInfo else {}
         self.songInfo_list = self.albumInfo.get("songInfo_list", [])
-        self.album = self.albumInfo.get('album', '未知专辑')    # type:str
-        self.singer = self.albumInfo.get('singer', '未知歌手')  # type:str
-        self.year = self.albumInfo.get('year', '未知年份')      # type:str
-        self.genre = self.albumInfo.get('genre', '未知流派')    # type:str
+        self.album = self.albumInfo.get('album', self.tr('Unknown album'))
+        self.singer = self.albumInfo.get('singer', self.tr('Unknown artist'))
+        self.year = self.albumInfo.get('year', self.tr('Unknown year'))
+        self.genre = self.albumInfo.get('genre', self.tr('Unknown genre'))
 
     def __setQss(self):
         """ 设置层叠样式 """

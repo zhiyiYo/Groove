@@ -51,7 +51,8 @@ class MoreActionsMenu(QMenu):
 
     def exec(self, pos: QPoint):
         """ 显示菜单 """
-        w = 120 if max([len(i.text()) for i in self.action_list]) <= 5 else 168
+        w = max(self.fontMetrics().width(i.text())
+                for i in self.action_list)+40
         h = len(self.action_list)*38+10
         self.animation.setStartValue(QRect(pos.x(), pos.y(), 1, h))
         self.animation.setEndValue(QRect(pos.x(), pos.y(), w, h))

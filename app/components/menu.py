@@ -3,7 +3,7 @@ import os
 
 from common.window_effect import WindowEffect
 from PyQt5.QtCore import (QEasingCurve, QEvent, QFile, QPropertyAnimation,
-                          QRect, Qt, pyqtSignal)
+                          QRect, Qt, pyqtSignal, QObject)
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction, QApplication, QMenu
 
@@ -102,7 +102,7 @@ class AddToMenu(DWMMenu):
 
     addSongsToPlaylistSig = pyqtSignal(str)  # 将歌曲添加到已存在的自定义播放列表
 
-    def __init__(self, title="添加到", parent=None):
+    def __init__(self, title="Add to", parent=None):
         super().__init__(title, parent)
         self.setObjectName("addToMenu")
         # 创建动作
@@ -112,9 +112,9 @@ class AddToMenu(DWMMenu):
     def createActions(self):
         """ 创建三个动作 """
         self.playingAct = QAction(
-            QIcon(":/images/menu/Playing.png"), "正在播放", self)
+            QIcon(":/images/menu/Playing.png"), self.tr("Now playing"), self)
         self.newPlaylistAct = QAction(
-            QIcon(":/images/menu/Add.png"), "新的播放列表", self)
+            QIcon(":/images/menu/Add.png"), self.tr("New playlist"), self)
         # 根据播放列表创建动作
         playlistName_list = self.__getPlaylistNames()
         self.playlistNameAct_list = [
@@ -150,19 +150,19 @@ class DownloadMenu(DWMMenu):
 
     downloadSig = pyqtSignal(str)
 
-    def __init__(self, parent):
-        super().__init__(title="下载", parent=parent)
-        self.normalQualityAct = QAction('流畅音质', self)
-        self.highQualityAct = QAction('高品音质', self)
-        self.superQualityAct = QAction('超品音质', self)
+    def __init__(self, title="Download", parent=None):
+        super().__init__(title=title, parent=parent)
+        self.standardQualityAct = QAction(self.tr('Standard'), self)
+        self.highQualityAct = QAction(self.tr('HQ'), self)
+        self.superQualityAct = QAction(self.tr('SQ'), self)
         self.addActions(
-            [self.normalQualityAct, self.highQualityAct, self.superQualityAct])
-        self.normalQualityAct.triggered.connect(
-            lambda: self.downloadSig.emit('流畅音质'))
+            [self.standardQualityAct, self.highQualityAct, self.superQualityAct])
+        self.standardQualityAct.triggered.connect(
+            lambda: self.downloadSig.emit('Standard quality'))
         self.highQualityAct.triggered.connect(
-            lambda: self.downloadSig.emit('高品音质'))
+            lambda: self.downloadSig.emit('High quality'))
         self.superQualityAct.triggered.connect(
-            lambda: self.downloadSig.emit('超品音质'))
+            lambda: self.downloadSig.emit('Super quality'))
         self.setQss()
 
 
@@ -181,35 +181,34 @@ class LineEditMenu(DWMMenu):
         # 创建动作
         self.cutAct = QAction(
             QIcon(":/images/menu/Cut.png"),
-            "剪切",
+            self.tr("Cut"),
             self,
             shortcut="Ctrl+X",
             triggered=self.parent().cut,
         )
         self.copyAct = QAction(
             QIcon(":/images/menu/Copy.png"),
-            "复制",
+            self.tr("Copy"),
             self,
             shortcut="Ctrl+C",
             triggered=self.parent().copy,
         )
         self.pasteAct = QAction(
             QIcon(":/images/menu/Paste.png"),
-            "粘贴",
+            self.tr("Paste"),
             self,
             shortcut="Ctrl+V",
             triggered=self.parent().paste,
         )
         self.cancelAct = QAction(
             QIcon(":/images/menu/Cancel.png"),
-            "取消操作",
+            self.tr("Cancel"),
             self,
             shortcut="Ctrl+Z",
             triggered=self.parent().undo,
         )
         self.selectAllAct = QAction(
-            "全选", self, shortcut="Ctrl+A", triggered=self.parent().selectAll
-        )
+            self.tr("Select all"), self, shortcut="Ctrl+A", triggered=self.parent().selectAll)
         # 创建动作列表
         self.action_list = [
             self.cutAct,
@@ -226,43 +225,40 @@ class LineEditMenu(DWMMenu):
         self.createActions()
         # 初始化属性
         self.setProperty("hasCancelAct", "false")
-        width = 176
-        actionNum = len(self.action_list)
+
         # 访问系统剪贴板
         self.clipboard = QApplication.clipboard()
+
         # 根据剪贴板内容是否为text分两种情况讨论
         if self.clipboard.mimeData().hasText():
             # 再根据3种情况分类讨论
             if self.parent().text():
                 self.setProperty("hasCancelAct", "true")
-                width = 213
                 if self.parent().selectedText():
                     self.addActions(self.action_list)
                 else:
                     self.addActions(self.action_list[2:])
-                    actionNum -= 2
             else:
                 self.addAction(self.pasteAct)
-                actionNum = 1
         else:
             if self.parent().text():
                 self.setProperty("hasCancelAct", "true")
-                width = 213
                 if self.parent().selectedText():
                     self.addActions(
                         self.action_list[:2] + self.action_list[3:])
-                    actionNum -= 1
                 else:
                     self.addActions(self.action_list[3:])
-                    actionNum -= 3
             else:
                 return
-        # 每个item的高度为38px，10为上下的内边距和
-        height = actionNum * 38 + 10
+
+        w = 130+max(self.fontMetrics().width(i.text()) for i in self.actions())
+        h = len(self.actions()) * 40 + 10
+
         # 不能把初始的宽度设置为0px，不然会报警
         self.animation.setStartValue(QRect(pos.x(), pos.y(), 1, 1))
-        self.animation.setEndValue(QRect(pos.x(), pos.y(), width, height))
+        self.animation.setEndValue(QRect(pos.x(), pos.y(), w, h))
         self.setStyle(QApplication.style())
+
         # 开始动画
         self.animation.start()
         super().exec_(pos)

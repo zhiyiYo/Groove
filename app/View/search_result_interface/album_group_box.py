@@ -31,7 +31,7 @@ class AlbumGroupBox(QScrollArea):
         super().__init__(parent=parent)
         self.albumCard_list = []  # type:List[AlbumCard]
         self.albumInfo_list = []  # type:List[dict]
-        self.titleButton = QPushButton('专辑', self)
+        self.titleButton = QPushButton(self.tr('Albums'), self)
         self.scrollRightButton = QToolButton(self)
         self.scrollLeftButton = QToolButton(self)
         self.opacityAniGroup = QParallelAnimationGroup(self)
@@ -166,8 +166,11 @@ class AlbumGroupBox(QScrollArea):
     def __showDeleteOneCardDialog(self, albumName: str):
         """ 显示删除一个专辑卡的对话框 """
         songPaths = [i["songPath"] for i in self.sender().songInfo_list]
-        title = "是否确定要删除此项？"
-        content = f"""如果删除"{albumName}"，它将不再位于此设备上。"""
+
+        title = self.tr("Are you sure you want to delete this?")
+        content = self.tr("If you delete") + f' "{albumName}" ' + \
+            self.tr("it won't be on be this device anymore.")
+
         w = MessageDialog(title, content, self.window())
         w.yesSignal.connect(lambda: self.deleteAlbums([albumName]))
         w.yesSignal.connect(lambda: self.deleteAlbumSig.emit(songPaths))
@@ -326,21 +329,16 @@ class AlbumCardContextMenu(DWMMenu):
     def __createActions(self):
         """ 创建动作 """
         # 创建动作
-        self.playAct = QAction("播放", self)
-        self.nextToPlayAct = QAction("下一首播放", self)
-        self.pinToStartMenuAct = QAction('固定到"开始"菜单', self)
-        self.deleteAct = QAction("删除", self)
-        self.showSingerAct = QAction("显示歌手", self)
-        self.addToMenu = AddToMenu("添加到", self)
+        self.playAct = QAction(self.tr("Play"), self)
+        self.nextToPlayAct = QAction(self.tr("Play next"), self)
+        self.pinToStartMenuAct = QAction(self.tr('Pin to Start'), self)
+        self.deleteAct = QAction(self.tr("Delete"), self)
+        self.showSingerAct = QAction(self.tr("Show artist"), self)
+        self.addToMenu = AddToMenu(self.tr("Add to"), self)
 
         # 添加动作到菜单
         self.addActions([self.playAct, self.nextToPlayAct])
         # 将子菜单添加到主菜单
         self.addMenu(self.addToMenu)
         self.addActions(
-            [
-                self.showSingerAct,
-                self.pinToStartMenuAct,
-                self.deleteAct,
-            ]
-        )
+            [self.showSingerAct, self.pinToStartMenuAct, self.deleteAct])

@@ -11,7 +11,7 @@ QScrollArea {
     border: none;
 }
 
-QWidget#scrollWidget{
+QWidget#scrollWidget {
     background-color: white;
 }
 
@@ -55,13 +55,13 @@ QLabel {
 
 QLabel#albumNameLabel[isChecked='False'] {
     color: black;
-    font-family: 'Microsoft YaHei';
+    font-family: 'Segoe UI', 'Microsoft YaHei';
     font-weight: bold;
 }
 
 QLabel#albumNameLabel[isChecked='True'] {
     color: white;
-    font-family: 'Microsoft YaHei';
+    font-family: 'Segoe UI', 'Microsoft YaHei';
     font-weight: bold;
 }
 
@@ -74,7 +74,7 @@ QLabel#contentLabel[isChecked='True'] {
 }
 
 QLabel#inYourMusicLabel {
-    font: 22px "Microsoft YaHei";
+    font: 22px 'Segoe UI', 'Microsoft YaHei';
 }
 
 

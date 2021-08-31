@@ -35,7 +35,7 @@ class PlaylistGroupBox(QScrollArea):
         self.playlists = {}
         self.playlistCard_list = []  # type:List[PlaylistCard]
         self.playlistName2Card_dict = {}  # type:Dict[str, PlaylistCard]
-        self.titleButton = QPushButton('播放列表', self)
+        self.titleButton = QPushButton(self.tr('Playlists'), self)
         self.scrollRightButton = QToolButton(self)
         self.scrollLeftButton = QToolButton(self)
         self.opacityAniGroup = QParallelAnimationGroup(self)
@@ -166,8 +166,10 @@ class PlaylistGroupBox(QScrollArea):
 
     def __showDeleteCardDialog(self, playlistName: str):
         """ 显示删除播放列表卡对话框 """
-        title = "是否确定要删除此项？"
-        content = f"""如果删除"{playlistName}"，它将不再位于此设备上。"""
+        title = self.tr("Are you sure you want to delete this?")
+        content = self.tr("If you delete") + f' "{playlistName}" ' + \
+            self.tr("it won't be on be this device anymore.")
+
         w = MessageDialog(title, content, self.window())
         w.yesSignal.connect(lambda: self.deleteOnePlaylistCard(playlistName))
         w.yesSignal.connect(lambda: self.deletePlaylistSig.emit(playlistName))
@@ -350,12 +352,12 @@ class PlaylistCardContextMenu(DWMMenu):
 
     def __createActions(self):
         """ 创建动作 """
-        self.playAct = QAction("播放", self)
-        self.nextToPlayAct = QAction("下一首播放", self)
-        self.addToMenu = AddToMenu("添加到", self)
-        self.renameAct = QAction("重命名", self)
-        self.pinToStartMenuAct = QAction('固定到"开始"菜单', self)
-        self.deleteAct = QAction("删除", self)
+        self.playAct = QAction(self.tr("Play"), self)
+        self.nextToPlayAct = QAction(self.tr("Play next"), self)
+        self.addToMenu = AddToMenu(self.tr("Add to"), self)
+        self.renameAct = QAction(self.tr("Rename"), self)
+        self.pinToStartMenuAct = QAction(self.tr('Pin to Start'), self)
+        self.deleteAct = QAction(self.tr("Delete"), self)
 
         # 添加动作到菜单
         self.addActions([self.playAct, self.nextToPlayAct])

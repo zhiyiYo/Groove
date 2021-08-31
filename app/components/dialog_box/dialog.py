@@ -1,6 +1,5 @@
 # coding:utf-8
-import textwrap
-
+from common.auto_wrap import autoWrap
 from PyQt5.QtCore import QFile, Qt, pyqtSignal
 from PyQt5.QtWidgets import QDialog, QLabel, QPushButton
 
@@ -17,8 +16,8 @@ class Dialog(QDialog):
         self.content = content
         self.titleLabel = QLabel(title, self)
         self.contentLabel = QLabel(content, self)
-        self.yesButton = QPushButton('确定', self)
-        self.cancelButton = QPushButton('取消', self)
+        self.yesButton = QPushButton(self.tr('OK'), self)
+        self.cancelButton = QPushButton(self.tr('Cancel'), self)
         self.__initWidget()
 
     def __initWidget(self):
@@ -26,14 +25,11 @@ class Dialog(QDialog):
         self.yesButton.setFocus()
         self.titleLabel.move(30, 22)
         self.contentLabel.setMaximumWidth(900)
-        self.contentLabel.setText('\n'.join(textwrap.wrap(self.content, 51)))
+        self.contentLabel.setText(autoWrap(self.content, 100)[0])
         self.contentLabel.move(30, self.titleLabel.y()+50)
         # 设置层叠样式
         self.__setQss()
         # 调整窗口大小
-        self.yesButton.adjustSize()
-        self.cancelButton.adjustSize()
-        self.contentLabel.adjustSize()
         rect = self.contentLabel.rect()
         self.setFixedSize(60+rect.right()+self.cancelButton.width(),
                           self.contentLabel.y()+self.contentLabel.height()+self.yesButton.height()+60)
@@ -59,7 +55,12 @@ class Dialog(QDialog):
         """ 设置层叠样式 """
         self.titleLabel.setObjectName("titleLabel")
         self.contentLabel.setObjectName("contentLabel")
+
         f = QFile(":/qss/dialog.qss")
         f.open(QFile.ReadOnly)
         self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
         f.close()
+
+        self.yesButton.adjustSize()
+        self.cancelButton.adjustSize()
+        self.contentLabel.adjustSize()

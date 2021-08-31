@@ -1,6 +1,4 @@
 # coding:utf-8
-from time import time
-
 from common.meta_data_getter import *
 from common.thread.get_info_thread import GetInfoThread
 from components.dialog_box.message_dialog import MessageDialog
@@ -65,15 +63,10 @@ class MyMusicInterface(QWidget):
         self.singerInfoGetter = SingerInfoGetter(
             self.albumInfoGetter.albumInfo_list)
 
-        t1 = time()
         self.songListWidget = SongListWidget(
             self.songInfoGetter.songInfo_list, self)
-        t2 = time()
         self.albumCardInterface = AlbumCardInterface(
             self.albumInfoGetter.albumInfo_list, self)
-        t3 = time()
-        print("创建歌曲标签界面耗时：".ljust(17), t2 - t1)
-        print("创建专辑标签界面耗时：".ljust(17), t3 - t2)
 
         # 创建工具栏
         self.toolBar = ToolBar(self)
@@ -92,9 +85,13 @@ class MyMusicInterface(QWidget):
         self.stackedWidget.addWidget(self.songListWidget, 0, 30)
         self.stackedWidget.addWidget(self.albumCardInterface, 0, 30)
         self.songTabButton.setSelected(True)
+
         # 初始化按钮
+        text = self.tr(" Shuffle all")
         self.toolBar.randomPlayAllButton.setText(
-            f" 无序播放所有({self.songListWidget.songCardNum()})")
+            text+f" ({self.songListWidget.songCardNum()})")
+        self.toolBar.randomPlayAllButton.adjustSize()
+
         # 隐藏底部选择栏和磨砂背景
         self.songTabSelectionModeBar.hide()
         self.albumTabSelectionModeBar.hide()
@@ -109,12 +106,15 @@ class MyMusicInterface(QWidget):
         """ 当前标签窗口改变时刷新工具栏 """
         self.toolBar.songSortModeButton.setVisible(index == 0)
         self.toolBar.albumSortModeButton.setVisible(index == 1)
+
+        text = self.tr(" Shuffle all")
         if index == 0:
             self.toolBar.randomPlayAllButton.setText(
-                f" 无序播放所有({self.songListWidget.songCardNum()})")
+                text+f" ({self.songListWidget.songCardNum()})")
         elif index == 1:
             self.toolBar.randomPlayAllButton.setText(
-                f" 无序播放所有({len(self.albumCardInterface.albumCard_list)})")
+                text+f" ({len(self.albumCardInterface.albumCard_list)})")
+
         self.toolBar.randomPlayAllButton.adjustSize()
 
     def __onCheckedCardNumChanged(self, num):
@@ -229,12 +229,14 @@ class MyMusicInterface(QWidget):
     def __showDeleteSongsDialog(self):
         """ 显示删除歌曲对话框 """
         if len(self.songListWidget.checkedSongCard_list) > 1:
-            title = "是否确定要删除这些项？"
-            content = "如果你删除这些歌曲，它们将不再位于此设备上。"
+            title = self.tr("Are you sure you want to delete these?")
+            content = self.tr(
+                "If you delete these songs, they won't be on be this device anymore.")
         else:
-            title = "是否确定要删除此项？"
-            songCard = self.songListWidget.checkedSongCard_list[0]
-            content = f'如果删除"{songCard.songName}"，它将不再位于此设备上。'
+            name = self.songListWidget.checkedSongCard_list[0].songName
+            title = self.tr("Are you sure you want to delete this?")
+            content = self.tr("If you delete") + f' "{name}" ' + \
+                self.tr("it won't be on be this device anymore.")
 
         w = MessageDialog(title, content, self.window())
         w.yesSignal.connect(self.__onDeleteSongsYesButtonClicked)
@@ -268,12 +270,14 @@ class MyMusicInterface(QWidget):
     def __showDeleteAlbumsDialog(self):
         """ 显示删除专辑对话框 """
         if len(self.albumCardInterface.checkedAlbumCard_list) > 1:
-            title = "是否确定要删除这些项？"
-            content = "如果你删除这些专辑，它们将不再位于此设备上。"
+            title = self.tr("Are you sure you want to delete these?")
+            content = self.tr(
+                "If you delete these albums, they won't be on be this device anymore.")
         else:
-            title = "是否确定要删除此项？"
-            albumCard = self.albumCardInterface.checkedAlbumCard_list[0]
-            content = f'如果删除"{albumCard.albumName}"，它将不再位于此设备上。'
+            name = self.albumCardInterface.checkedAlbumCard_list[0].albumName
+            title = self.tr("Are you sure you want to delete this?")
+            content = self.tr("If you delete") + f' "{name}" ' + \
+                self.tr("it won't be on be this device anymore.")
 
         w = MessageDialog(title, content, self.window())
         w.yesSignal.connect(self.__onDeleteAlbumsYesButtonClicked)
@@ -346,8 +350,12 @@ class MyMusicInterface(QWidget):
 
         # 创建状态提示条
         if folderPaths:
-            w = StateTooltip('正在扫描歌曲信息', '请耐心等待哦~~', self.window())
+            title = self.tr("Scanning song information")
+            content = self.tr("Please wait patiently")
+            w = StateTooltip(title, content, self.window())
             thread.scanFinished.connect(lambda: w.setState(True))
+            thread.scanFinished.connect(lambda: self.window().resize(
+                self.window().width()+1, self.window().height()))
             w.move(self.window().width() - w.width() - 30, 63)
             w.show()
 
@@ -382,6 +390,9 @@ class MyMusicInterface(QWidget):
             self.songInfoGetter.songInfo_list)
         self.albumCardInterface.updateAllAlbumCards(
             self.albumInfoGetter.albumInfo_list)
+
+        # 强制调整窗口宽度，防止时长显示异常
+        self.window().resize(self.window().width()+1, self.window().height())
 
     def hasSongModified(self):
         return self.songInfoGetter.hasSongModified()
@@ -434,7 +445,7 @@ class MyMusicInterface(QWidget):
         sender = self.sender()
         self.currentSongSortAct = sender
         self.toolBar.songSortModeButton.setText(sender.text())
-        self.songListWidget.setSortMode(sender.text())
+        self.songListWidget.setSortMode(sender.property('mode'))
 
     def __sortAlbumCard(self):
         """ 根据所选的排序方式对歌曲卡进行重新排序 """
@@ -442,12 +453,13 @@ class MyMusicInterface(QWidget):
         self.currentAlbumSortAct = sender
         self.albumCardInterface.albumBlurBackground.hide()
         self.toolBar.albumSortModeButton.setText(sender.text())
-        self.albumCardInterface.setSortMode(sender.text())
+        self.albumCardInterface.setSortMode(sender.property('mode'))
 
     def __showAddToMenu(self):
         """ 显示添加到菜单 """
         menu = AddToMenu(parent=self)
         addToButton = self.sender()
+
         # 获取选中的播放列表
         songInfo_list = []
         if self.sender() is self.songTabSelectionModeBar.addToButton:
@@ -458,11 +470,13 @@ class MyMusicInterface(QWidget):
             selectionModeBar = self.albumTabSelectionModeBar
             for albumCard in self.albumCardInterface.checkedAlbumCard_list:
                 songInfo_list.extend(albumCard.songInfo_list)
+
         # 计算菜单弹出位置
         pos = selectionModeBar.mapToGlobal(addToButton.pos())
         x = pos.x() + addToButton.width() + 5
         y = pos.y() + int(
             addToButton.height() / 2 - (13 + 38 * menu.actionCount()) / 2)
+
         # 信号连接到槽
         for act in menu.action_list:
             act.triggered.connect(self.exitSelectionMode)

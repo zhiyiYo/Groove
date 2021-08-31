@@ -59,8 +59,6 @@ class StateTooltip(QWidget):
 
     def __initLayout(self):
         """ 初始化布局 """
-        self.titleLabel.adjustSize()
-        self.contentLabel.adjustSize()
         self.setFixedSize(max(self.titleLabel.width(),
                           self.contentLabel.width()) + 70, 64)
         self.titleLabel.move(40, 11)
