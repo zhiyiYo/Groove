@@ -149,6 +149,7 @@ class SongPropertyDialog(MaskDialogBase):
         newAlbumSonger, isAlbumSongerWrap = autoWrap(
             self.albumSonger.text(), 33)
         newSongPath, isSongPathWrap = autoWrap(self.songPath.text(), 110)
+
         if isSongNameWrap or isSongerWrap:
             self.songName.setText(newSongName)
             self.singer.setText(newSonger)
@@ -157,6 +158,7 @@ class SongPropertyDialog(MaskDialogBase):
                 label.move(label.geometry().x(), label.geometry().y() + 25)
             self.widget.setFixedSize(
                 self.widget.width(), self.widget.height() + 25)
+
         if isAlbumNameWrap or isAlbumSongerWrap:
             self.albumName.setText(newAlbumName)
             self.albumSonger.setText(newAlbumSonger)
@@ -165,6 +167,7 @@ class SongPropertyDialog(MaskDialogBase):
                 label.move(label.geometry().x(), label.geometry().y() + 25)
             self.widget.setFixedSize(
                 self.widget.width(), self.widget.height() + 25)
+                
         if isSongPathWrap:
             self.songPath.setText(newSongPath)
             self.widget.setFixedSize(

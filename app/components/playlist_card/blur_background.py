@@ -16,8 +16,6 @@ class BlurBackground(QWidget):
 
     def setBlurPic(self, imagePath: str, blurRadius: int = 30):
         """ 设置磨砂图片 """
-        self.__picPath = imagePath
-        self.__blurRadius = blurRadius
         if not imagePath:
             return
 

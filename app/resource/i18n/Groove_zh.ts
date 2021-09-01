@@ -91,19 +91,24 @@
         <translation>这里没有可显示的内容。请尝试其他筛选器。</translation>
     </message>
     <message>
-        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="692"/>
+        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="697"/>
         <source>Are you sure you want to delete this?</source>
         <translation>是否确定要删除此项？</translation>
     </message>
     <message>
-        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="693"/>
+        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="698"/>
         <source>If you delete</source>
         <translation>如果删除</translation>
     </message>
     <message>
-        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="694"/>
+        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="699"/>
         <source>it won&apos;t be on be this device anymore.</source>
         <translation>，它将不再位于此设备上。</translation>
+    </message>
+    <message>
+        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="369"/>
+        <source>Unknown</source>
+        <translation>未知</translation>
     </message>
 </context>
 <context>
@@ -218,7 +223,7 @@
         <translation>未知歌手</translation>
     </message>
     <message>
-        <location filename="../../View/album_interface/album_interface.py" line="75"/>
+        <location filename="../../View/album_interface/album_interface.py" line="77"/>
         <source>Unknown year</source>
         <translation>未知年份</translation>
     </message>
@@ -1411,6 +1416,24 @@
     </message>
 </context>
 <context>
+    <name>SongInfoGetter</name>
+    <message>
+        <location filename="../../common/meta_data_getter/get_song_info.py" line="113"/>
+        <source>Unknown artist</source>
+        <translation>未知歌手</translation>
+    </message>
+    <message>
+        <location filename="../../common/meta_data_getter/get_song_info.py" line="114"/>
+        <source>Unknown album</source>
+        <translation>未知专辑</translation>
+    </message>
+    <message>
+        <location filename="../../common/meta_data_getter/get_song_info.py" line="116"/>
+        <source>Unknown genre</source>
+        <translation>未知流派</translation>
+    </message>
+</context>
+<context>
     <name>SongInfoWidget</name>
     <message>
         <location filename="../../components/dialog_box/album_info_edit_dialog.py" line="297"/>
@@ -1623,11 +1646,6 @@
         <translation>分钟</translation>
     </message>
     <message>
-        <location filename="../../View/album_interface/album_info_bar.py" line="49"/>
-        <source>Unknown year</source>
-        <translation>未知年份</translation>
-    </message>
-    <message>
         <location filename="../../View/singer_interface/singer_info_bar.py" line="51"/>
         <source>Unknown genre</source>
         <translation>未知流派</translation>
@@ -1656,6 +1674,11 @@
         <location filename="../../View/search_result_interface/search_result_interface.py" line="358"/>
         <source>left. Please wait patiently</source>
         <translation>首，要耐心等待哦</translation>
+    </message>
+    <message>
+        <location filename="../../View/album_interface/album_info_bar.py" line="49"/>
+        <source>Unknown year</source>
+        <translation>未知年份</translation>
     </message>
 </context>
 </TS>

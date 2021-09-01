@@ -74,6 +74,8 @@ class AlbumInterface(ScrollArea):
         self.singer = self.albumInfo.get('singer', self.tr('Unknown artist'))
         self.year = self.albumInfo.get('year', self.tr('Unknown year'))
         self.genre = self.albumInfo.get('genre', self.tr('Unknown genre'))
+        self.albumInfo['year'] = self.year if self.year else self.tr(
+            'Unknown year')
 
     def __setQss(self):
         """ 设置层叠样式 """

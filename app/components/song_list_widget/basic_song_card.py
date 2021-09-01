@@ -95,11 +95,16 @@ class BasicSongCard(QWidget):
         """ 从歌曲信息字典中获取信息 """
         self.songInfo = songInfo
         self.songPath = songInfo.get("songPath", "")  # type:str
-        self.songName = songInfo.get("songName", self.tr("Unknown song"))   # type:str
-        self.singer = songInfo.get("singer", self.tr("Unknown artist"))       # type:str
-        self.album = songInfo.get("album", self.tr("Unknown album"))         # type:str
-        self.year = songInfo.get("year", self.tr("Unknown year"))           # type:str
-        self.genre = songInfo.get("genre", self.tr("Unknown genre"))         # type:str
+        self.songName = songInfo.get(
+            "songName", self.tr("Unknown song"))   # type:str
+        self.singer = songInfo.get("singer", self.tr(
+            "Unknown artist"))       # type:str
+        self.album = songInfo.get("album", self.tr(
+            "Unknown album"))         # type:str
+        self.year = songInfo.get("year", self.tr(
+            "Unknown year"))           # type:str
+        self.genre = songInfo.get("genre", self.tr(
+            "Unknown genre"))         # type:str
         self.duration = songInfo.get("duration", "0:00")
         self.tracknumber = songInfo.get("tracknumber", "0")
 
@@ -427,8 +432,7 @@ class BasicSongCard(QWidget):
         """ 计算可拉伸的标签的文本宽度 """
         fontMetrics = QFontMetrics(QFont("Microsoft YaHei", 9))
         self.__scaleableLabelTextWidth_list = [
-            fontMetrics.width(label.text()) for label in self.__scaleableWidget_list[1:]
-        ]
+            fontMetrics.width(label.text()) for label in self.__scaleableWidget_list[1:]]
 
     def _showAddToMenu(self):
         """ 显示添加到菜单 """

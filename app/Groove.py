@@ -1,11 +1,11 @@
 # coding:utf-8
 import sys
 
-from PyQt5.QtCore import Qt, QTranslator, QLocale
-from PyQt5.QtGui import QFont
+from PyQt5.QtCore import QLocale, Qt, QTranslator
 from PyQt5.QtWidgets import QApplication
 
 from View.main_window import MainWindow
+
 
 app = QApplication(sys.argv)
 

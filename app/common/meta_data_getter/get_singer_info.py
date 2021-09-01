@@ -17,8 +17,8 @@ class SingerInfoGetter:
 
         year = '0'
         for albumInfo in albumInfo_list:
-            singer = albumInfo.get('singer', '未知歌手')
-            genre = albumInfo.get('genre', '未知流派')
+            singer = albumInfo['singer']
+            genre = albumInfo['genre']
             year_ = albumInfo.get('year', '0')
 
             # 如果字典中没有该歌手的信息就插入一个

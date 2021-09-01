@@ -115,8 +115,6 @@ class SongCard(QWidget):
         self.duration = songInfo.get("duration", "0:00")
         self.songName = songInfo.get("songName", self.tr("Unknown song"))
         self.year = songInfo.get("year", "")
-        if self.year == '未知年份':
-            self.year = ''
 
     def __createAnimations(self):
         """ 创建动画 """

@@ -45,12 +45,12 @@ QWidget[state='selected-pressed'] {
 
 QLabel {
     font-family: 'Segoe UI', 'Microsoft YaHei';
-    font-size: 9pt;
+    font-size: 15px;
     background-color: transparent;
 }
 
 QLabel#songNameLabel {
-    font-size: 10pt;
+    font-size: 16px;
 }
 
 QLabel[state='notSelected-notPlay'] {

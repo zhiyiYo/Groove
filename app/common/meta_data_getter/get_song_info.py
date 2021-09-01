@@ -7,17 +7,18 @@ from tinytag import TinyTag
 
 from common.os_utils import checkDirExists
 from common.os_utils import adjustName
-from PyQt5.QtCore import QFileInfo, Qt
+from PyQt5.QtCore import QFileInfo, Qt, QObject
 
 
-class SongInfoGetter:
+class SongInfoGetter(QObject):
     """ 创建一个获取和保存歌曲信息的类 """
 
     def __init__(self, folderPaths: list):
-        # 获取音频文件夹列表
+        super().__init__()
         self.folderPaths = folderPaths
         if not folderPaths:
             self.folderPaths = []
+
         self.songInfo_list = []
         self.getInfo(folderPaths)
 
@@ -89,8 +90,7 @@ class SongInfoGetter:
         commonSongs = newSongs & oldSongs
         if commonSongs:
             self.songInfo_list = [
-                info for info in oldInfo if info["songPath"] in commonSongs
-            ]
+                info for info in oldInfo if info["songPath"] in commonSongs]
 
         # 如果有差集的存在就需要更新json文件
         for songPath in newSongs - oldSongs:
@@ -110,10 +110,10 @@ class SongInfoGetter:
         # 获取标签信息
         suffix = "." + fileInfo.suffix()
         songName = tag.title if tag.title and tag.title.strip() else fileInfo.baseName()
-        singer = tag.artist if tag.artist and tag.artist.strip() else "未知歌手"
-        album = tag.album if tag.album and tag.album.strip() else "未知专辑"
+        singer = tag.artist if tag.artist and tag.artist.strip() else self.tr("Unknown artist")
+        album = tag.album if tag.album and tag.album.strip() else self.tr("Unknown album")
         tracknumber = str(tag.track) if tag.track else "0"
-        genre = tag.genre if tag.genre else "未知流派"
+        genre = tag.genre if tag.genre else self.tr("Unknown genre")
         duration = f"{int(tag.duration//60)}:{int(tag.duration%60):02}"
         coverName = adjustName(singer+'_'+album)
 
@@ -129,7 +129,7 @@ class SongInfoGetter:
             year = (
                 str(tag.get(key_dict[suffix])[0])[:4]
                 if tag.get(key_dict[suffix])
-                else "未知年份"
+                else ''
             )
 
         # 获取时间戳
@@ -156,8 +156,7 @@ class SongInfoGetter:
     def sortByCreateTime(self):
         """ 依据文件创建日期排序文件信息列表 """
         self.songInfo_list.sort(
-            key=lambda songInfo: songInfo["createTime"], reverse=True
-        )
+            key=lambda songInfo: songInfo["createTime"], reverse=True)
 
     def sortByDictOrder(self):
         """ 以字典序排序文件信息列表 """

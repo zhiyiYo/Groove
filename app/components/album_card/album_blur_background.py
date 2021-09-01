@@ -5,7 +5,7 @@ from PIL.ImageFilter import GaussianBlur
 from PIL.ImageQt import ImageQt
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPainter
+from PyQt5.QtGui import QPainter, QPixmap
 from PyQt5.QtWidgets import QWidget
 
 
@@ -32,24 +32,27 @@ class AlbumBlurBackground(QWidget):
 
     def setBlurAlbum(self, imagePath: str, imageSize: tuple = (210, 210), blurRadius=30):
         """ 更新磨砂专辑封面 """
-        self.__imagePath = imagePath
-        self.__imageSize = imageSize
         self.__blurRadius = blurRadius
         if not imagePath:
             return
-        # 读入专辑封面
-        albumCover = Image.open(imagePath).resize(
-            imageSize)  # type:Image.Image
+
+        if not imagePath.startswith(':'):
+            albumCover = Image.open(imagePath)
+        else:
+            albumCover=Image.fromqpixmap(QPixmap(imagePath))
+
+        albumCover = albumCover.resize(imageSize)
+
         # 创建一个新图像
         blurAlbumCover = Image.new(
             'RGBA', (imageSize[0]+2*blurRadius, imageSize[1]+2*blurRadius), (255, 255, 255, 0))
         blurAlbumCover.paste(albumCover, (blurRadius, blurRadius))
+
         # 对图像进行高斯模糊
         blurAlbumCover = blurAlbumCover.filter(GaussianBlur(blurRadius/2))
         self.__blurImage = ImageQt(blurAlbumCover)
-        # 调整窗口大小
+
         self.resize(*blurAlbumCover.size)
-        # 绘制磨砂图
         self.update()
 
     def setBlurRadius(self, blurRadius):

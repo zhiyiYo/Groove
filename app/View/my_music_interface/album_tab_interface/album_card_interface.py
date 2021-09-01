@@ -332,10 +332,12 @@ class AlbumCardInterface(ScrollArea):
         # 将专辑加到分组中
         for albumCard_dict in self.albumCardInfo_list:
             year = albumCard_dict["year"]
-            year = "未知" if year == "未知年份" else year
+            year = self.tr("Unknown") if year == '' else year
+
             # 如果年份不在年份列表中就创建分组
             if year not in year_list:
                 year_list.append(year)
+
                 # 实例化分组和网格布局
                 group = GroupBox(year)
                 gridLayout = GridLayout()
@@ -352,19 +354,22 @@ class AlbumCardInterface(ScrollArea):
                 )
                 self.groupTitle_list.append(group.title())
                 self.groupTitle_dict[year] = group
+
             # 将专辑卡添加到分组中
             index = year_list.index(year)
             self.yearGroupInfo_list[index]["albumCard_list"].append(
-                albumCard_dict["albumCard"]
-            )
+                albumCard_dict["albumCard"])
+
         # 按照年份从进到远排序
         self.groupTitle_list.sort(reverse=True)
         self.yearGroupInfo_list.sort(
             key=lambda item: item["year"], reverse=True)
+
         # 检测是否含有未知分组,有的话将其移到最后一个
-        if "未知" in year_list:
+        if self.tr("Unknown") in year_list:
             unique_group = self.yearGroupInfo_list.pop(0)
             self.yearGroupInfo_list.append(unique_group)
+
         # 将专辑加到分组的网格布局中
         self.currentGroupInfo_list = self.yearGroupInfo_list
         self.__addAlbumCardToGridLayout()
@@ -691,7 +696,7 @@ class AlbumCardInterface(ScrollArea):
         songPaths = [i["songPath"] for i in self.sender().songInfo_list]
         title = self.tr("Are you sure you want to delete this?")
         content = self.tr("If you delete") + f' "{albumName}" ' + \
-                self.tr("it won't be on be this device anymore.")
+            self.tr("it won't be on be this device anymore.")
 
         w = MessageDialog(title, content, self.window())
         w.yesSignal.connect(lambda: self.deleteAlbums([albumName]))
