@@ -18,9 +18,9 @@ from components.state_tooltip import StateTooltip
 from components.thumbnail_tool_bar import ThumbnailToolBar
 from components.title_bar import TitleBar
 from PyQt5.QtCore import QEasingCurve, QEvent, QFile, Qt, QTimer
-from PyQt5.QtGui import QCloseEvent, QColor, QIcon
+from PyQt5.QtGui import QCloseEvent, QColor, QIcon, QPixmap
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist
-from PyQt5.QtWidgets import QAction, QApplication, QWidget
+from PyQt5.QtWidgets import QAction, QApplication, QWidget, QLabel, QHBoxLayout
 from PyQt5.QtWinExtras import QtWin
 from system_hotkey import SystemHotkey
 from View.album_interface import AlbumInterface
@@ -58,7 +58,24 @@ class MainWindow(FramelessWindow):
 
         # subMainWindow 用来放置堆叠窗口 subStackWidget
         self.subMainWindow = QWidget(self)
+
+        # 启动界面
+        self.splashScreen = SplashScreen(self)
+
+        # 标题栏
         self.titleBar = TitleBar(self)
+
+        self.resize(1240, 970)
+        self.setWindowTitle(self.tr("Groove Music"))
+        self.setWindowIcon(QIcon(":/images/logo.png"))
+        self.setWindowEffect()
+
+        # 在去除任务栏的显示区域居中显示
+        desktop = QApplication.desktop().availableGeometry()
+        self.move(desktop.width()//2 - self.width()//2,
+                  desktop.height()//2 - self.height()//2)
+        self.show()
+        QApplication.processEvents()
 
         # 创建播放器和播放列表
         self.player = QMediaPlayer(self)
@@ -149,18 +166,15 @@ class MainWindow(FramelessWindow):
         """ 初始化小部件 """
         self.resize(1240, 970)
         self.setMinimumSize(1030, 800)
-        self.setWindowTitle(self.tr("Groove Music"))
-        self.setWindowIcon(QIcon(":/images/logo.png"))
-        self.setAttribute(Qt.WA_TranslucentBackground | Qt.WA_StyledBackground)
+
+
         # 在去除任务栏的显示区域居中显示
         desktop = QApplication.desktop().availableGeometry()
-        self.move(desktop.width()//2 - self.width()//2,
-                  desktop.height()//2 - self.height()//2)
         self.smallestPlayInterface.move(desktop.width() - 390, 40)
+
         # 标题栏置顶
         self.titleBar.raise_()
-        # 设置窗口特效
-        self.setWindowEffect()
+
         # 将窗口添加到 StackWidget 中
         self.subStackWidget.addWidget(self.myMusicInterface, 0, 70)
         self.subStackWidget.addWidget(self.playlistCardInterface, 0, 120)
@@ -195,6 +209,14 @@ class MainWindow(FramelessWindow):
         # 安装事件过滤器
         self.navigationInterface.navigationMenu.installEventFilter(self)
         self.rescanSongInfoTimer.start()
+        self.onInitFinished()
+
+    def onInitFinished(self):
+        """ 初始化完成 """
+        self.splashScreen.hide()
+        self.subStackWidget.show()
+        self.navigationInterface.show()
+        self.playBar.show()
 
     def setHotKey(self):
         """ 设置全局热键 """
@@ -211,6 +233,7 @@ class MainWindow(FramelessWindow):
 
     def setWindowEffect(self):
         """ 设置窗口特效 """
+        self.setAttribute(Qt.WA_TranslucentBackground | Qt.WA_StyledBackground)
         # 开启窗口动画
         self.windowEffect.addWindowAnimation(self.winId())
         # 开启亚克力效果和阴影效果
@@ -218,19 +241,26 @@ class MainWindow(FramelessWindow):
 
     def adjustWidgetGeometry(self):
         """ 调整小部件的geometry """
+        self.titleBar.resize(self.width(), 40)
+        self.splashScreen.resize(self.size())
+
+        if not hasattr(self, 'playBar'):
+            return
+
         self.subMainWindow.resize(self.size())
         self.totalStackWidget.resize(self.size())
-        self.titleBar.resize(self.width(), 40)
         self.playBar.resize(self.width(), self.playBar.height())
         self.playBar.move(0, self.height()-self.playBar.height())
 
-        if hasattr(self, "navigationInterface"):
-            self.navigationInterface.setOverlay(self.width() < 1280)
-            self.subStackWidget.move(self.navigationInterface.width(), 0)
-            self.subStackWidget.resize(
-                self.width() - self.navigationInterface.width(), self.height())
-            self.navigationInterface.resize(
-                self.navigationInterface.width(), self.height())
+        if not hasattr(self, "navigationInterface"):
+            return
+
+        self.navigationInterface.setOverlay(self.width() < 1280)
+        self.subStackWidget.move(self.navigationInterface.width(), 0)
+        self.subStackWidget.resize(
+            self.width() - self.navigationInterface.width(), self.height())
+        self.navigationInterface.resize(
+            self.navigationInterface.width(), self.height())
 
     def eventFilter(self, obj, e: QEvent):
         """ 过滤事件 """
@@ -1393,3 +1423,16 @@ class MainWindow(FramelessWindow):
             self.addSongsToCustomPlaylist)
         self.singerInterface.selectionModeStateChanged.connect(
             self.onSelectionModeStateChanged)
+
+
+class SplashScreen(QWidget):
+    """ 启动界面 """
+
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self.hBoxLayout = QHBoxLayout(self)
+        self.logo = QLabel(self)
+        self.logo.setPixmap(QPixmap(":/images/splash_screen_logo.png"))
+        self.hBoxLayout.addWidget(self.logo, 0, Qt.AlignCenter)
+        self.setAttribute(Qt.WA_StyledBackground)
+        self.setStyleSheet('background:white')
