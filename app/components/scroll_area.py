@@ -3,7 +3,7 @@ from collections import deque
 from enum import Enum
 from math import cos, pi
 
-from PyQt5.QtCore import QDateTime, Qt, QTimer
+from PyQt5.QtCore import QDateTime, Qt, QTimer, QPoint
 from PyQt5.QtGui import QWheelEvent
 from PyQt5.QtWidgets import QApplication, QScrollArea
 
@@ -69,8 +69,8 @@ class ScrollArea(QScrollArea):
         # 构造滚轮事件
         e = QWheelEvent(self.lastWheelEvent.pos(),
                         self.lastWheelEvent.globalPos(),
-                        self.lastWheelEvent.pos(),
-                        self.lastWheelEvent.globalPos(),
+                        QPoint(),
+                        QPoint(0, totalDelta),
                         round(totalDelta),
                         Qt.Vertical,
                         self.lastWheelEvent.buttons(),
