@@ -4,13 +4,14 @@ from collections import deque
 from enum import Enum
 from math import cos, pi
 
-from PyQt5.QtCore import QDateTime, Qt, QTimer
+from PyQt5.QtCore import QDateTime, Qt, QTimer, QPoint
 from PyQt5.QtGui import QWheelEvent
 from PyQt5.QtWidgets import QApplication, QListWidget, QListWidgetItem
 
 
 class ListWidget(QListWidget):
     """ 一个可以平滑滚动的列表控件"""
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.fps = 60
@@ -68,10 +69,12 @@ class ListWidget(QListWidget):
         # 构造滚轮事件
         e = QWheelEvent(self.lastWheelEvent.pos(),
                         self.lastWheelEvent.globalPos(),
-                        self.lastWheelEvent.pos(),
-                        self.lastWheelEvent.globalPos(),
-                        round(totalDelta), Qt.Vertical,
-                        self.lastWheelEvent.buttons(), Qt.NoModifier)
+                        QPoint(),
+                        QPoint(0, totalDelta),
+                        round(totalDelta),
+                        Qt.Vertical,
+                        self.lastWheelEvent.buttons(),
+                        Qt.NoModifier)
 
         # 将构造出来的滚轮事件发送给app处理
         QApplication.sendEvent(self.verticalScrollBar(), e)
@@ -96,7 +99,6 @@ class ListWidget(QListWidget):
         elif self.smoothMode == SmoothMode.COSINE:
             res = (cos(x * pi / m) + 1) / (2 * m) * delta
         return res
-
 
 
 class SmoothMode(Enum):
