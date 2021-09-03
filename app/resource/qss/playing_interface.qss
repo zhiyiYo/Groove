@@ -69,6 +69,6 @@ QSlider#progressSlider::add-page:horizontal {
 
 QLabel#timeLabel {
     color: white;
-    font: 14px 'Segoe UI', 'Microsoft YaHei';
+    font: 14px 'Microsoft YaHei';
     background-color: transparent;
 }

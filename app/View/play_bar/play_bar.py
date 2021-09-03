@@ -48,10 +48,10 @@ class PlayBar(QWidget):
         self.moreActionsMenu = MoreActionsMenu(self)
         # 初始化小部件
         self.__initWidget()
-        self.__setQss()
 
     def __initWidget(self):
         """ 初始化小部件 """
+        self.__setQss()
         self.resize(1312, 115)
         self.setFixedHeight(115)
         # 设置背景色

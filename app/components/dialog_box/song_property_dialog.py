@@ -122,7 +122,6 @@ class SongPropertyDialog(MaskDialogBase):
         self.duration.move(584, 362)
         self.trackNumber.move(28, 202)
         self.albumSonger.move(584, 282)
-        self.closeButton.move(732, 535)
 
         # 将关闭信号连接到槽函数
         self.closeButton.clicked.connect(self.close)
@@ -167,11 +166,14 @@ class SongPropertyDialog(MaskDialogBase):
                 label.move(label.geometry().x(), label.geometry().y() + 25)
             self.widget.setFixedSize(
                 self.widget.width(), self.widget.height() + 25)
-                
+
         if isSongPathWrap:
             self.songPath.setText(newSongPath)
             self.widget.setFixedSize(
                 self.widget.width(), self.widget.height() + 25)
+
+        self.closeButton.move(self.widget.width()-self.closeButton.width()-30,
+                              self.widget.height()-self.closeButton.height()-30)
 
     def setQss(self):
         """ 设置层叠样式表 """
