@@ -65,7 +65,8 @@ class SearchResultInterface(ScrollArea):
         self.albumGroupBox = AlbumGroupBox(self.scrollWidget)
         self.playlistGroupBox = PlaylistGroupBox(self.scrollWidget)
         self.localSongGroupBox = SongGroupBox('Local songs', self.scrollWidget)
-        self.onlineSongGroupBox = SongGroupBox('Online songs', self.scrollWidget)
+        self.onlineSongGroupBox = SongGroupBox(
+            'Online songs', self.scrollWidget)
         self.searchOthersLabel = QLabel(
             self.tr("Try searching for something else."), self)
         self.checkSpellLabel = QLabel(
@@ -176,7 +177,12 @@ class SearchResultInterface(ScrollArea):
         self.downloadSongThread.appendDownloadTask(songInfo, quality)
 
         if not self.downloadSongThread.isRunning():
-            self.downloadStateTooltip = DownloadStateTooltip(1, self.window())
+            # 在 DownloadStateTooltip 的构造函数里使用 QObject().tr() 不起作用
+            title = self.tr('Downloading songs')
+            content = self.tr('There are') + f' {1} ' + \
+                self.tr('left. Please wait patiently')
+            self.downloadStateTooltip = DownloadStateTooltip(
+                title, content, 1, self.window())
             self.downloadSongThread.downloadOneSongCompleteSig.connect(
                 self.downloadStateTooltip.completeOneDownloadTask)
             self.downloadStateTooltip.move(
@@ -351,11 +357,7 @@ class SearchResultInterface(ScrollArea):
 class DownloadStateTooltip(StateTooltip):
     """ 下载状态提示条 """
 
-    def __init__(self, downloadTaskNum=1, parent=None):
-        obj = QObject()
-        title = obj.tr('Downloading songs')
-        content = obj.tr('There are') + f' {downloadTaskNum} ' + \
-            obj.tr('left. Please wait patiently')
+    def __init__(self, title, content, downloadTaskNum=1, parent=None):
         super().__init__(title=title, content=content, parent=parent)
         self.downloadTaskNum = downloadTaskNum
 

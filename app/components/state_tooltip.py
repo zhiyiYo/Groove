@@ -10,7 +10,7 @@ class StateTooltip(QWidget):
 
     closedSignal = pyqtSignal()
 
-    def __init__(self, title="", content="", parent=None):
+    def __init__(self, title, content, parent=None):
         """
         Parameters
         ----------

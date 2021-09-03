@@ -2,6 +2,7 @@
 import json
 import os
 from urllib import parse
+from pprint import pprint
 
 import requests
 from common.os_utils import adjustName
@@ -71,7 +72,7 @@ class KuWoMusicCrawler:
             song_info['album'] = info['album']
             song_info['year'] = info['releaseDate'].split('-')[0]
             song_info['tracknumber'] = str(info['track'])
-            song_info['coverPath'] = info['albumpic']
+            song_info['coverPath'] = info.get('albumpic', '')
             song_info['coverName'] = adjustName(
                 info['artist']+'_'+info['album'])
             song_info['genre'] = ''

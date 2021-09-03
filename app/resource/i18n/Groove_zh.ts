@@ -241,22 +241,22 @@
         <translation>未知歌曲</translation>
     </message>
     <message>
-        <location filename="../../components/song_list_widget/basic_song_card.py" line="99"/>
+        <location filename="../../components/song_list_widget/basic_song_card.py" line="100"/>
         <source>Unknown artist</source>
         <translation>未知歌手</translation>
     </message>
     <message>
-        <location filename="../../components/song_list_widget/basic_song_card.py" line="100"/>
+        <location filename="../../components/song_list_widget/basic_song_card.py" line="102"/>
         <source>Unknown album</source>
         <translation>未知专辑</translation>
     </message>
     <message>
-        <location filename="../../components/song_list_widget/basic_song_card.py" line="101"/>
+        <location filename="../../components/song_list_widget/basic_song_card.py" line="104"/>
         <source>Unknown year</source>
         <translation>未知年份</translation>
     </message>
     <message>
-        <location filename="../../components/song_list_widget/basic_song_card.py" line="102"/>
+        <location filename="../../components/song_list_widget/basic_song_card.py" line="106"/>
         <source>Unknown genre</source>
         <translation>未知流派</translation>
     </message>
@@ -331,22 +331,22 @@
 <context>
     <name>DownloadStateTooltip</name>
     <message>
-        <location filename="../../View/search_result_interface/search_result_interface.py" line="377"/>
+        <location filename="../../View/search_result_interface/search_result_interface.py" line="379"/>
         <source>There are</source>
         <translation>还剩</translation>
     </message>
     <message>
-        <location filename="../../View/search_result_interface/search_result_interface.py" line="378"/>
+        <location filename="../../View/search_result_interface/search_result_interface.py" line="380"/>
         <source>left. Please wait patiently</source>
         <translation>首，要耐心等待哦</translation>
     </message>
     <message>
-        <location filename="../../View/search_result_interface/search_result_interface.py" line="371"/>
+        <location filename="../../View/search_result_interface/search_result_interface.py" line="373"/>
         <source>Download completed, please check</source>
         <translation>下载完成啦，请查收</translation>
     </message>
     <message>
-        <location filename="../../View/search_result_interface/search_result_interface.py" line="370"/>
+        <location filename="../../View/search_result_interface/search_result_interface.py" line="372"/>
         <source>Download complete</source>
         <translation>下载完成</translation>
     </message>
@@ -477,37 +477,37 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="152"/>
+        <location filename="../../View/main_window/main_window.py" line="69"/>
         <source>Groove Music</source>
         <translation>Groove 音乐</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="996"/>
+        <location filename="../../View/main_window/main_window.py" line="1026"/>
         <source>This song is already in your playlist. Do you want to add?</source>
         <translation>此歌已在你的播放列表中。是否要添加？</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="999"/>
+        <location filename="../../View/main_window/main_window.py" line="1029"/>
         <source>Some songs are already in your playlist. Do you want to add?</source>
         <translation>部分歌曲已在你的播放列表中。是否要添加？</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1002"/>
+        <location filename="../../View/main_window/main_window.py" line="1032"/>
         <source>All these songs are already in your playlist. Do you want to add?</source>
         <translation>所有这些歌曲都已在你的播放列表中。是否要添加？</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1004"/>
+        <location filename="../../View/main_window/main_window.py" line="1034"/>
         <source>Song duplication</source>
         <translation>歌曲重复</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1069"/>
+        <location filename="../../View/main_window/main_window.py" line="1099"/>
         <source>Updating song list</source>
         <translation>正在更新歌曲列表</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1069"/>
+        <location filename="../../View/main_window/main_window.py" line="1099"/>
         <source>Please wait patiently</source>
         <translation>请耐心等待</translation>
     </message>
@@ -958,19 +958,34 @@
 <context>
     <name>SearchResultInterface</name>
     <message>
-        <location filename="../../View/search_result_interface/search_result_interface.py" line="69"/>
+        <location filename="../../View/search_result_interface/search_result_interface.py" line="70"/>
         <source>Try searching for something else.</source>
         <translation>请尝试搜索其他内容。</translation>
     </message>
     <message>
-        <location filename="../../View/search_result_interface/search_result_interface.py" line="71"/>
+        <location filename="../../View/search_result_interface/search_result_interface.py" line="72"/>
         <source>Check your spelling, or search for something else</source>
         <translation>请检查拼写情况，或搜索其他内容</translation>
     </message>
     <message>
-        <location filename="../../View/search_result_interface/search_result_interface.py" line="228"/>
+        <location filename="../../View/search_result_interface/search_result_interface.py" line="234"/>
         <source>Search Result</source>
         <translation>的搜索结果</translation>
+    </message>
+    <message>
+        <location filename="../../View/search_result_interface/search_result_interface.py" line="181"/>
+        <source>Downloading songs</source>
+        <translation>正在下载歌曲中</translation>
+    </message>
+    <message>
+        <location filename="../../View/search_result_interface/search_result_interface.py" line="182"/>
+        <source>There are</source>
+        <translation>还剩</translation>
+    </message>
+    <message>
+        <location filename="../../View/search_result_interface/search_result_interface.py" line="183"/>
+        <source>left. Please wait patiently</source>
+        <translation>首，要耐心等待哦</translation>
     </message>
 </context>
 <context>
@@ -1659,21 +1674,6 @@
         <location filename="../../View/singer_interface/singer_info_bar.py" line="50"/>
         <source>Unknown artist</source>
         <translation>未知歌手</translation>
-    </message>
-    <message>
-        <location filename="../../View/search_result_interface/search_result_interface.py" line="356"/>
-        <source>Downloading songs</source>
-        <translation>正在下载歌曲中</translation>
-    </message>
-    <message>
-        <location filename="../../View/search_result_interface/search_result_interface.py" line="357"/>
-        <source>There are</source>
-        <translation>还剩</translation>
-    </message>
-    <message>
-        <location filename="../../View/search_result_interface/search_result_interface.py" line="358"/>
-        <source>left. Please wait patiently</source>
-        <translation>首，要耐心等待哦</translation>
     </message>
     <message>
         <location filename="../../View/album_interface/album_info_bar.py" line="49"/>

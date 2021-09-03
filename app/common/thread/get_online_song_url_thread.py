@@ -52,7 +52,8 @@ class GetOnlineSongUrlThread(QThread):
             name = songInfo['coverName']
             save_path = f'Album_Cover/{name}/{name}.jpg'
 
-            if not os.path.exists(save_path):
+            # 如果本地不存在封面并且获取到了服务器上的封面 url 就下载
+            if not os.path.exists(save_path) and songInfo['coverPath']:
                 os.makedirs(f'Album_Cover/{name}', exist_ok=True)
 
                 response = requests.get(
