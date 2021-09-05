@@ -1,34 +1,12 @@
 # coding:utf-8
 import sys
 import os
-from math import floor
-from colorthief import ColorThief
 
-from common.image_process_utils import DominantColor
+from app.common.image_process_utils import DominantColor
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPalette, QPixmap, QColor
 from PyQt5.QtWidgets import QWidget, QLabel, QPushButton, QApplication
-
-
-class DominantColor_:
-
-    @classmethod
-    def getDominantColor(cls, imagePath, resType=str):
-        """ 获取主题色 """
-        imagePath = imagePath
-        colorThief = ColorThief(imagePath)
-
-        # 调整图像大小，加快运算速度
-        if max(colorThief.image.size) > 400:
-            colorThief.image = colorThief.image.resize((400, 400))
-
-        palette = colorThief.get_palette(quality=9)
-        rgb = palette[0]
-        if resType is str:
-            rgb = "".join([hex(i)[2:].rjust(2, "0") for i in rgb])
-
-        return rgb
 
 
 class Demo(QWidget):
@@ -36,10 +14,9 @@ class Demo(QWidget):
 
     def __init__(self):
         super().__init__()
-        self.dominantColor = DominantColor()
         self.setFixedSize(400, 400)
         self.currentAlbumIndex = 0
-        self.albumFolder = "Album_Cover"
+        self.albumFolder = "app/Album_Cover"
         self.getPicPaths()
         self.albumCoverLabel = QLabel(self)
         self.albumCoverLabel.setFixedSize(240, 240)
@@ -67,7 +44,7 @@ class Demo(QWidget):
             folder = os.path.join(self.albumFolder, folder)
             fileName_list = os.listdir(folder)
             for album in fileName_list:
-                if album.endswith("png") or album.endswith("jpg"):
+                if album.endswith(("png", "jpg")):
                     self.albumPath_list.append(os.path.join(folder, album))
 
     def updateAlbumCover(self):
@@ -80,13 +57,13 @@ class Demo(QWidget):
             if self.currentAlbumIndex == len(self.albumPath_list) - 1:
                 return
             self.currentAlbumIndex += 1
+
         albumPath = self.albumPath_list[self.currentAlbumIndex]
         self.albumCoverLabel.setPixmap(
             QPixmap(albumPath).scaled(
-                240, 240, Qt.KeepAspectRatio, Qt.SmoothTransformation
-            )
-        )
-        r, g, b = self.dominantColor.getDominantColor(albumPath, tuple)
+                240, 240, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+
+        r, g, b = DominantColor.getDominantColor(albumPath)
         palette = QPalette()
         palette.setColor(self.backgroundRole(), QColor(r, g, b))
         self.setPalette(palette)

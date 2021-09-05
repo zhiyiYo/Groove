@@ -169,28 +169,14 @@ class AlbumCardInterface(ScrollArea):
     def resizeEvent(self, event):
         """ 根据宽度调整网格的列数 """
         super().resizeEvent(event)
-        # 如果第一次超过1337就调整网格的列数
-        if self.width() >= 1790 and self.columnNum != 8:
-            self.__updateColumnNum(8)
-        if 1570 <= self.width() < 1790 and self.columnNum != 7:
-            self.__updateColumnNum(7)
-        elif 1350 <= self.width() < 1570 and self.columnNum != 6:
-            self.__updateColumnNum(6)
-        elif 1130 < self.width() < 1350 and self.columnNum != 5:
-            self.__updateColumnNum(5)
-        elif 910 < self.width() <= 1130 and self.columnNum != 4:
-            self.__updateColumnNum(4)
-        elif 690 < self.width() <= 910:
-            self.__updateColumnNum(3)
-        elif self.width() <= 690:
-            self.__updateColumnNum(2)
+        column = 2 if self.width() <= 690 else (self.width()-690)//220+3
+        if self.columnNum == column:
+            return
 
-    def __updateColumnNum(self, columnNum: int):
-        """ 更新网格列数 """
-        self.columnNum = columnNum
+        self.columnNum = column
         for currentGroup_dict in self.currentGroupInfo_list:
             gridLayout = currentGroup_dict["gridLayout"]  # type:GridLayout
-            gridLayout.updateColumnNum(columnNum, 210, 290)
+            gridLayout.updateColumnNum(column, 210, 290)
         self.__adjustScrollWidgetSize()
 
     def __adjustScrollWidgetSize(self):

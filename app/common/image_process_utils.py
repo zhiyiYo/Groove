@@ -1,8 +1,8 @@
 # coding:utf-8
-import cv2 as cv
-from math import floor
 import imghdr
+from math import floor
 
+import cv2 as cv
 import numpy as np
 from colorthief import ColorThief
 from PIL import Image
@@ -36,7 +36,7 @@ def gaussianBlur(imagePath: str, savePath='', blurRadius=18, brightnessFactor=1,
         高斯模糊后的图像数组
     """
     if not imagePath.startswith(':'):
-            image = Image.open(imagePath)
+        image = Image.open(imagePath)
     else:
         image = Image.fromqpixmap(QPixmap(imagePath))
 
@@ -117,9 +117,6 @@ class DominantColor:
         ----------
         imagePath: str
             图片路径
-
-        reType:
-            返回类型，str 返回十六进制字符串，否则为 rgb 元组
         """
         if imagePath.startswith(':'):
             return (24, 24, 24)
@@ -140,8 +137,9 @@ class DominantColor:
                 palette.remove(rgb)
                 if len(palette) <= 2:
                     break
-        palette = palette[:4]
-        palette.sort(key=lambda rgb: cls.rgb2hsv(rgb)[1], reverse=True)
+
+        palette = palette[:5]
+        palette.sort(key=lambda rgb: cls.colorfulness(*rgb), reverse=True)
 
         return palette[0]
 
@@ -161,6 +159,7 @@ class DominantColor:
                 factor = 1
             v *= factor
             newPalette.append(cls.hsv2rgb(h, s, v))
+
         return newPalette
 
     @staticmethod
@@ -207,6 +206,21 @@ class DominantColor:
             r, g, b = v, p, q
         r, g, b = int(r * 255), int(g * 255), int(b * 255)
         return (r, g, b)
+
+    @staticmethod
+    def colorfulness(r: int, g: int, b: int):
+        rg = np.absolute(r - g)
+        yb = np.absolute(0.5 * (r + g) - b)
+
+        # Compute the mean and standard deviation of both `rg` and `yb`.
+        rg_mean, rg_std = (np.mean(rg), np.std(rg))
+        yb_mean, yb_std = (np.mean(yb), np.std(yb))
+
+        # Combine the mean and standard deviations.
+        std_root = np.sqrt((rg_std ** 2) + (yb_std ** 2))
+        mean_root = np.sqrt((rg_mean ** 2) + (yb_mean ** 2))
+
+        return std_root + (0.3 * mean_root)
 
 
 def getPicSuffix(pic_data) -> str:

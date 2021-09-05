@@ -182,30 +182,12 @@ class SingerInterface(ScrollArea):
         self.selectionModeBar.move(
             0, self.height()-self.selectionModeBar.height())
 
-        # 调整布局
-        if self.width() < 480 and self.columnNum != 1:
-            self.__setColumnNum(1)
-        elif 480 <= self.width() < 700:
-            self.__setColumnNum(2)
-        elif 700 <= self.width() < 920:
-            self.__setColumnNum(3)
-        elif 920 <= self.width() < 1140:
-            self.__setColumnNum(4)
-        elif 1140 <= self.width() < 1360:
-            self.__setColumnNum(5)
-        elif 1360 <= self.width() < 1580:
-            self.__setColumnNum(6)
-        elif 1580 <= self.width() < 1800:
-            self.__setColumnNum(7)
-        elif self.width() >= 1800:
-            self.__setColumnNum(8)
-
-    def __setColumnNum(self, columnNum: int):
-        """ 设置网格列数 """
-        if columnNum == self.columnNum:
+        column = 1 if self.width() < 480 else 2+(self.width()-480)//220
+        if column == self.columnNum:
             return
-        self.columnNum = columnNum
-        self.gridLayout.updateColumnNum(columnNum, 210, 290)
+
+        self.columnNum = column
+        self.gridLayout.updateColumnNum(column, 210, 290)
         self.scrollWidget.resize(
             self.width(), 456 + self.gridLayout.rowCount() * 300 + 120)
 
