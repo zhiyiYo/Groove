@@ -1,6 +1,6 @@
 # coding:utf-8
 from PyQt5.QtCore import QSize, Qt, QEvent
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtGui import QIcon, QPixmap, QFontMetrics, QFont
 from PyQt5.QtWidgets import QCheckBox, QLabel, QToolButton, QWidget, QApplication
 
 
@@ -137,7 +137,8 @@ class SongNameCard(QWidget):
 
     def __getSongNameWidth(self):
         """ 计算歌名的长度 """
-        self.songNameWidth = self.songNameLabel.fontMetrics().width(self.songName)
+        fontMetrics = QFontMetrics(QFont("Microsoft YaHei", 10))
+        self.songNameWidth = fontMetrics.width(self.songName)
 
     def _moveButtonGroup(self):
         """ 移动按钮组 """

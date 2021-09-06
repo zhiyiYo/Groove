@@ -167,7 +167,6 @@ class MainWindow(FramelessWindow):
         self.resize(1240, 970)
         self.setMinimumSize(1030, 800)
 
-
         # 在去除任务栏的显示区域居中显示
         desktop = QApplication.desktop().availableGeometry()
         self.smallestPlayInterface.move(desktop.width() - 390, 40)

@@ -53,6 +53,7 @@ class MessageDialog(MaskDialogBase):
         self.close()
 
     def __onYesButtonClicked(self):
+        self.setEnabled(False)
         self.yesSignal.emit()
         self.close()
 
