@@ -13,6 +13,7 @@ class GetMetaDataThread(QThread):
 
     def __init__(self, folderPaths: list, parent=None):
         super().__init__(parent=parent)
+        self.__isStopped = False
         self.folderPaths = folderPaths
         self.crawler = QQMusicCrawler()
 
@@ -25,6 +26,8 @@ class GetMetaDataThread(QThread):
 
         songPaths, fileNames = self.__getAudioFiles()
         for i, (songPath, fileName) in enumerate(zip(songPaths, fileNames)):
+            if self.__isStopped:
+                break
             songInfo = self.crawler.getSongInfo(fileName)
             if songInfo:
                 # 修改歌曲信息
@@ -47,6 +50,10 @@ class GetMetaDataThread(QThread):
             # 发送信号
             text = self.tr("Current progress: ")
             self.crawlSignal.emit(text+f"{(i+1)/len(songPaths):>3.0%}")
+
+    def stop(self):
+        """ 停止爬取歌曲信息 """
+        self.__isStopped = True
 
     def __getAudioFiles(self):
         """ 获取音频文件路径和不包含后缀名的文件名

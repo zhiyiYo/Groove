@@ -192,6 +192,7 @@ class SettingInterface(ScrollArea):
         crawler.finished.connect(lambda: stateToolTip.setState(True))
         crawler.finished.connect(self.__onCrawlFinished)
         crawler.crawlSignal.connect(stateToolTip.setContent)
+        stateToolTip.closedSignal.connect(crawler.stop)
 
         crawler.start()
 

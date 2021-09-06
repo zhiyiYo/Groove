@@ -49,7 +49,7 @@ class StateTooltip(QWidget):
         self.closeTimer.setInterval(1000)
         self.contentLabel.setMinimumWidth(200)
         # 将信号连接到槽函数
-        self.closeButton.clicked.connect(self.hide)  # 点击关闭按钮只是隐藏了提示条
+        self.closeButton.clicked.connect(self.__onCloseButtonClicked)  # 点击关闭按钮只是隐藏了提示条
         self.rotateTimer.timeout.connect(self.__rotateTimerFlowSlot)
         self.closeTimer.timeout.connect(self.__slowlyClose)
         self.__setQss()
