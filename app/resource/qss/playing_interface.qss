@@ -6,6 +6,12 @@ QLabel {
     background-color: transparent;
 }
 
+QLabel#timeLabel {
+    color: white;
+    font: 14px 'Microsoft YaHei';
+    background-color: transparent;
+}
+
 QLabel#guideLabel {
     color: white;
     font: 25px 'Segoe UI', 'Microsoft YaHei';
@@ -25,50 +31,3 @@ QPushButton#randomPlayAllButton:pressed {
     color: rgb(28, 84, 96);
 }
 
-/* 歌曲进度条 */
-QSlider#progressSlider:horizontal {
-    height: 38px;
-    background-color: transparent;
-    /*padding:10px 0px 10px 0px;*/
-}
-
-QSlider#progressSlider::groove:horizontal {
-    height: 38px;
-    border: none;
-    background-color: transparent;
-}
-
-QSlider#progressSlider::handle:horizontal {
-    width: 38px;
-    height: 38px;
-    border-radius: 19px;
-    background: qradialgradient(cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5, stop:0.6 white, stop:0.66 rgba(255, 255, 255, 0));
-}
-
-QSlider#progressSlider::handle:horizontal:pressed {
-    width: 38px;
-    height: 38px;
-    background-color: white;
-}
-
-QSlider#progressSlider::sub-page:horizontal {
-    height: 38px;
-    /*需要隐藏掉上下的一部分颜色*/
-    margin-top: 17px;
-    margin-bottom: 18px;
-    background: white;
-}
-
-QSlider#progressSlider::add-page:horizontal {
-    height: 38px;
-    margin-top: 17px;
-    margin-bottom: 18px;
-    /*还未划过的颜色*/
-    background-color: rgba(255, 255, 255, 0.2);
-}
-
-QLabel#timeLabel {
-    color: white;
-    font: 14px 'Microsoft YaHei';
-    background-color: transparent;
-}

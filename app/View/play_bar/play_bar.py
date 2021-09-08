@@ -1,7 +1,7 @@
 # coding:utf-8
 from common.image_process_utils import DominantColor
 from components.menu import AeroMenu
-from components.slider import Slider
+from components.slider import Slider, HollowHandleStyle
 from PyQt5.QtCore import (QEasingCurve, QFile, QPoint, QPropertyAnimation,
                           QRect, Qt, pyqtProperty, pyqtSignal)
 from PyQt5.QtGui import QColor, QIcon, QPalette
@@ -51,7 +51,6 @@ class PlayBar(QWidget):
 
     def __initWidget(self):
         """ 初始化小部件 """
-        self.__setQss()
         self.resize(1312, 115)
         self.setFixedHeight(115)
         # 设置背景色
@@ -74,13 +73,6 @@ class PlayBar(QWidget):
             int(self.width() / 2 - self.centralButtonGroup.width() / 2), 0)
         self.rightWidgetGroup.move(
             self.width() - self.rightWidgetGroup.width(), 0)
-
-    def __setQss(self):
-        """ 设置层叠样式 """
-        f = QFile(":/qss/play_bar.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
 
     def resizeEvent(self, e):
         """ 调整歌曲信息卡宽度 """
@@ -276,7 +268,9 @@ class RightWidgetGroup(QWidget):
         """ 初始化小部件 """
         self.setFixedSize(301, 16 + 67)
         self.volumeSlider.setRange(0, 100)
-        self.volumeSlider.setObjectName("volumeSlider")
+        self.volumeSlider.setStyle(HollowHandleStyle(
+            {"sub-page.color": QColor(70, 23, 180)}))
+        self.volumeSlider.setFixedHeight(28)
         # 将音量滑动条数值改变信号连接到槽函数
         self.volumeSlider.setValue(20)
 
@@ -306,14 +300,24 @@ class PlayProgressBar(QWidget):
         # 创建布局
         self.h_layout = QHBoxLayout()
         # 初始化界面
-        self.__initUI()
+        self.__initWidget()
 
-    def __initUI(self):
+    def __initWidget(self):
         """ 初始化小部件 """
         self.resize(450, 30)
-        self.progressSlider.setObjectName("progressSlider")
-        self.currentTimeLabel.setObjectName("timeLabel")
-        self.totalTimeLabel.setObjectName("timeLabel")
+
+        # 设置样式
+        self.setStyleSheet("""
+            QLabel {
+                color: white;
+                font: 15px 'Segoe UI';
+                font-weight: 500;
+                background-color: transparent;
+            }
+        """)
+        self.progressSlider.setStyle(HollowHandleStyle())
+        self.progressSlider.setFixedHeight(28)
+
         # 将小部件添加到布局中
         self.h_layout.addWidget(self.currentTimeLabel, 0, Qt.AlignHCenter)
         self.h_layout.addWidget(self.progressSlider, 0, Qt.AlignHCenter)

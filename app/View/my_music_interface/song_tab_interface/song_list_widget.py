@@ -4,7 +4,7 @@ from components.menu import AddToMenu, DWMMenu
 from components.song_list_widget import BasicSongListWidget, SongCardType
 from PyQt5.QtCore import QFile, QMargins, Qt, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent
-from PyQt5.QtWidgets import QAction
+from PyQt5.QtWidgets import QAction, QLabel
 
 
 class SongListWidget(BasicSongListWidget):
@@ -33,9 +33,12 @@ class SongListWidget(BasicSongListWidget):
             QMargins(30, 245, 30, 0),
         )
         self.resize(1150, 758)
-        self.sortMode = "添加时间"
+        self.sortMode = "createTime"
         # 创建歌曲卡
         self.createSongCards(self.__connectSongCardSignalToSlot)
+        self.guideLabel = QLabel(
+            self.tr("There is nothing to display here. Try a different filter."), self)
+
         # 初始化
         self.__initWidget()
 
@@ -45,6 +48,8 @@ class SongListWidget(BasicSongListWidget):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         # 设置层叠样式
         self.__setQss()
+        self.guideLabel.move(35, 286)
+        self.guideLabel.setHidden(bool(self.songInfo_list))
 
     def __playButtonSlot(self, index):
         """ 歌曲卡播放按钮槽函数 """
@@ -70,10 +75,12 @@ class SongListWidget(BasicSongListWidget):
 
     def __setQss(self):
         """ 设置层叠样式 """
+        self.guideLabel.setObjectName('guideLabel')
         f = QFile(":/qss/song_tab_interface_song_list_widget.qss")
         f.open(QFile.ReadOnly)
         self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
         f.close()
+        self.guideLabel.adjustSize()
 
     def setSortMode(self, sortMode: str):
         """ 根据当前的排序模式来排序歌曲卡
@@ -97,6 +104,7 @@ class SongListWidget(BasicSongListWidget):
     def updateAllSongCards(self, songInfo_list: list):
         """ 更新所有歌曲卡，根据给定的信息决定创建或者删除歌曲卡 """
         super().updateAllSongCards(songInfo_list, self.__connectSongCardSignalToSlot)
+        self.guideLabel.setHidden(bool(self.songInfo_list))
 
     def __showDeleteCardDialog(self):
         index = self.currentRow()

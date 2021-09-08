@@ -65,8 +65,6 @@ class BasicSongListWidget(ListWidget):
         self.item_list = []
         self.songCard_list = []
         self.checkedSongCard_list = []
-        # 创建导航标签标签
-        self.__createGuideLabel()
         # 交错颜色
         self.setAlternatingRowColors(True)
         # 设置边距
@@ -83,19 +81,9 @@ class BasicSongListWidget(ListWidget):
         self.clearSongCards()
         for songInfo in self.songInfo_list:
             self.appendOneSongCard(songInfo, connectSongCardToSlotFunc)
-        # 设置导航标签是否隐藏
-        self.guideLabel.setHidden(bool(self.songCard_list))
+
         # 添加一个空白item来填补playBar所占高度
         self.__createPaddingBottomItem()
-
-    def __createGuideLabel(self):
-        """ 创建导航标签 """
-        self.guideLabel = QLabel(
-            self.tr("There is nothing to display here. Try a different filter."), self)
-        self.guideLabel.setStyleSheet(
-            "color: black; font: 25px 'Segoe UI', 'Microsoft YaHei'")
-        self.guideLabel.adjustSize()
-        self.guideLabel.move(35, 286)
 
     def appendOneSongCard(self, songInfo: dict, connectSongCardSigToSlotFunc=None):
         """ 在列表尾部添加一个歌曲卡
@@ -195,8 +183,8 @@ class BasicSongListWidget(ListWidget):
     def showSongInfoEditDialog(self, songCard=None):
         """ 显示编辑歌曲信息面板 """
         if not songCard:
-            # 歌曲卡默认为当前右键点击的歌曲卡
             songCard = self.songCard_list[self.currentRow()]
+
         # 获取歌曲卡下标和歌曲信息
         w = SongInfoEditDialog(songCard.songInfo, self.window())
         w.saveInfoSig.connect(self.__saveModifidiedSongInfo)
@@ -204,9 +192,7 @@ class BasicSongListWidget(ListWidget):
 
     def __saveModifidiedSongInfo(self, oldSongInfo, newSongInfo):
         """ 保存被更改的歌曲信息 """
-        # 更新歌曲卡和歌曲信息列表
-        self.updateOneSongCard(oldSongInfo, newSongInfo)
-        # 发出歌曲卡被更改信息
+        self.updateOneSongCard(newSongInfo)
         self.editSongInfoSignal.emit(oldSongInfo, newSongInfo)
 
     def updateOneSongCard(self, newSongInfo, isNeedWriteToFile=True):
@@ -237,6 +223,7 @@ class BasicSongListWidget(ListWidget):
         for item in self.item_list:
             item.setSizeHint(
                 QSize(self.width() - margins.left() - margins.right(), 60))
+
         if self.paddingBottomHeight:
             self.paddingBottomItem.setSizeHint(
                 QSize(self.width()-margins.left()-margins.right(), self.paddingBottomHeight))
@@ -249,6 +236,7 @@ class BasicSongListWidget(ListWidget):
         if songCard not in self.checkedSongCard_list and isChecked:
             self.checkedSongCard_list.append(songCard)
             self.checkedSongCardNumChanged.emit(len(self.checkedSongCard_list))
+            
         # 如果歌曲卡已经在列表中且该歌曲卡变为非选中状态就弹出该歌曲卡
         elif songCard in self.checkedSongCard_list and not isChecked:
             self.checkedSongCard_list.remove(songCard)
@@ -350,8 +338,6 @@ class BasicSongListWidget(ListWidget):
         for songCard in self.songCard_list:
             songCard.setPlay(False)
 
-        # 如果歌曲卡为空就显示导航标签
-        self.guideLabel.setHidden(bool(self.songCard_list))
         # 创建新占位行
         self.__createPaddingBottomItem()
 

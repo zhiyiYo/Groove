@@ -53,6 +53,10 @@ QLabel#songNameLabel {
     font-size: 16px;
 }
 
+QLabel#trackNumLabel {
+    font-size: 17px;
+}
+
 QLabel[state='notSelected-notPlay'] {
     color: rgb(48, 48, 48);
 }

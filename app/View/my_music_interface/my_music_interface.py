@@ -329,7 +329,7 @@ class MyMusicInterface(QWidget):
         """ 当窗口大小发生改变时隐藏小部件 """
         # 调整标签页面尺寸
         self.stackedWidget.resize(self.width(), self.height())
-        self.toolBar.resize(self.width() - 30, self.toolBar.height())
+        self.toolBar.resize(self.width()-10, self.toolBar.height())
         # 调整选中模式栏的位置和宽度
         self.songTabSelectionModeBar.resize(
             self.width(), self.songTabSelectionModeBar.height())

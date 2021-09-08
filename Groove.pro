@@ -38,7 +38,6 @@ SOURCES += app/View/main_window/main_window.py \
         app/View/my_music_interface/song_tab_interface/song_list_widget.py \
         app/View/my_music_interface/song_tab_interface/selection_mode_bar.py \
         app/components/album_card/album_card.py \
-        app/components/song_list_widget/basic_song_list_widget.py \
         app/components/song_list_widget/basic_song_card.py \
         app/components/song_list_widget/song_card_sub_unit.py \
         app/components/dialog_box/song_property_dialog.py \

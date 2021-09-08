@@ -21,7 +21,6 @@
         <file>qss/playlist_card_interface.qss</file>
         <file>qss/playlist_group_box.qss</file>
         <file>qss/playlist_interface.qss</file>
-        <file>qss/play_bar.qss</file>
         <file>qss/rename_playlist_dialog.qss</file>
         <file>qss/search_result_interface.qss</file>
         <file>qss/setting_interface.qss</file>

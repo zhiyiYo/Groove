@@ -94,7 +94,7 @@ class AlbumCardInterface(ScrollArea):
             self.tr("There is nothing to display here. Try a different filter."), self)
         self.guideLabel.setStyleSheet(
             "color: black; font: 25px 'Segoe UI','Microsoft YaHei'")
-        self.guideLabel.resize(500, 26)
+        self.guideLabel.adjustSize()
         self.guideLabel.move(35, 286)
 
     def __createAlbumCards(self):

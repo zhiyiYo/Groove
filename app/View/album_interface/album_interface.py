@@ -163,6 +163,10 @@ class AlbumInterface(ScrollArea):
         self.albumInfo["songInfo_list"] = self.songListWidget.songInfo_list
         self.songInfo_list = self.songListWidget.songInfo_list
 
+    def __onEditSongInfo(self, oldSongInfo: dict, newSongInfo: dict):
+        self.__sortSongCardsByTrackNum()
+        self.editSongInfoSignal.emit(oldSongInfo, newSongInfo)
+
     def __onSaveAlbumInfoFinished(self, oldAlbumInfo: dict, newAlbumInfo: dict, coverPath: str):
         """ 保存专辑信息 """
         # 删除线程
@@ -183,8 +187,6 @@ class AlbumInterface(ScrollArea):
         self.albumInfoBar.updateWindow(albumInfo)
         self.updateWindow(albumInfo)
         self.__sortSongCardsByTrackNum()
-        self.albumInfo["songInfo_list"] = self.songListWidget.songInfo_list
-        self.songInfo_list = self.songListWidget.songInfo_list
         self.editAlbumInfoSignal.emit(oldAlbumInfo, newAlbumInfo, coverPath)
 
     def __unCheckSongCards(self):
@@ -286,7 +288,7 @@ class AlbumInterface(ScrollArea):
         # 歌曲列表信号
         self.songListWidget.playSignal.connect(self.songCardPlaySig)
         self.songListWidget.playOneSongSig.connect(self.playOneSongCardSig)
-        self.songListWidget.editSongInfoSignal.connect(self.editSongInfoSignal)
+        self.songListWidget.editSongInfoSignal.connect(self.__onEditSongInfo)
         self.songListWidget.nextToPlayOneSongSig.connect(
             self.nextToPlayOneSongSig)
         self.songListWidget.addSongToPlayingSignal.connect(

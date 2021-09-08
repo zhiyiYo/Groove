@@ -114,7 +114,7 @@ class ToolBar(QWidget):
         super().paintEvent(QPaintEvent)
         painter = QPainter(self)
         painter.setPen(QPen(QColor(229, 229, 229)))
-        painter.drawLine(30, 176, self.width(), 176)
+        painter.drawLine(30, 176, self.width()-20, 176)
 
     def __setQss(self):
         """ 设置层叠样式 """

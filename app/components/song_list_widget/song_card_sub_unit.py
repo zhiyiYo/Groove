@@ -232,7 +232,7 @@ class TrackNumSongNameCard(SongNameCard):
         """ 初始化 """
         self.__adjustTrackNumLabelPos()
         self.trackNumLabel.setFixedWidth(25)
-        self.trackNumLabel.setObjectName("songNameLabel")
+        self.trackNumLabel.setObjectName("trackNumLabel")
         # 安装事件过滤器
         self.checkBox.installEventFilter(self)
 

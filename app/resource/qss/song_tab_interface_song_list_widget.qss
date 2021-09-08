@@ -73,6 +73,11 @@ QLabel#clickableLabel[state='selected']:hover {
     color: rgb(204, 225, 230);
 }
 
+QLabel#guideLabel{
+    color: black;
+    font: 25px 'Segoe UI', 'Microsoft YaHei';
+}
+
 
 /*复选框样式*/
 QCheckBox {

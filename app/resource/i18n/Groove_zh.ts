@@ -91,22 +91,22 @@
         <translation>这里没有可显示的内容。请尝试其他筛选器。</translation>
     </message>
     <message>
-        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="697"/>
+        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="683"/>
         <source>Are you sure you want to delete this?</source>
         <translation>是否确定要删除此项？</translation>
     </message>
     <message>
-        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="698"/>
+        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="684"/>
         <source>If you delete</source>
         <translation>如果删除</translation>
     </message>
     <message>
-        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="699"/>
+        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="685"/>
         <source>it won&apos;t be on be this device anymore.</source>
         <translation>，它将不再位于此设备上。</translation>
     </message>
     <message>
-        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="369"/>
+        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="355"/>
         <source>Unknown</source>
         <translation>未知</translation>
     </message>
@@ -262,14 +262,6 @@
     </message>
 </context>
 <context>
-    <name>BasicSongListWidget</name>
-    <message>
-        <location filename="../../components/song_list_widget/basic_song_list_widget.py" line="93"/>
-        <source>There is nothing to display here. Try a different filter.</source>
-        <translation>这里没有可显示的内容。请尝试其他筛选器。</translation>
-    </message>
-</context>
-<context>
     <name>CreatePlaylistDialog</name>
     <message>
         <location filename="../../components/dialog_box/create_playlist_dialog.py" line="25"/>
@@ -382,7 +374,7 @@
 <context>
     <name>GetMetaDataThread</name>
     <message>
-        <location filename="../../common/thread/get_meta_data_thread.py" line="48"/>
+        <location filename="../../common/thread/get_meta_data_thread.py" line="51"/>
         <source>Current progress: </source>
         <translation>当前进度: </translation>
     </message>
@@ -482,32 +474,32 @@
         <translation>Groove 音乐</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1026"/>
+        <location filename="../../View/main_window/main_window.py" line="1025"/>
         <source>This song is already in your playlist. Do you want to add?</source>
         <translation>此歌已在你的播放列表中。是否要添加？</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1029"/>
+        <location filename="../../View/main_window/main_window.py" line="1028"/>
         <source>Some songs are already in your playlist. Do you want to add?</source>
         <translation>部分歌曲已在你的播放列表中。是否要添加？</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1032"/>
+        <location filename="../../View/main_window/main_window.py" line="1031"/>
         <source>All these songs are already in your playlist. Do you want to add?</source>
         <translation>所有这些歌曲都已在你的播放列表中。是否要添加？</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1034"/>
+        <location filename="../../View/main_window/main_window.py" line="1033"/>
         <source>Song duplication</source>
         <translation>歌曲重复</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1099"/>
+        <location filename="../../View/main_window/main_window.py" line="1098"/>
         <source>Updating song list</source>
         <translation>正在更新歌曲列表</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1099"/>
+        <location filename="../../View/main_window/main_window.py" line="1098"/>
         <source>Please wait patiently</source>
         <translation>请耐心等待</translation>
     </message>
@@ -571,27 +563,27 @@
 <context>
     <name>MoreActionsMenu</name>
     <message>
-        <location filename="../../View/play_bar/play_bar.py" line="376"/>
+        <location filename="../../View/play_bar/play_bar.py" line="380"/>
         <source>Save as a playlist</source>
         <translation>保存为播放列表</translation>
     </message>
     <message>
-        <location filename="../../View/play_bar/play_bar.py" line="378"/>
+        <location filename="../../View/play_bar/play_bar.py" line="382"/>
         <source>Clear now playing</source>
         <translation>清空&quot;正在播放&quot;</translation>
     </message>
     <message>
-        <location filename="../../View/play_bar/play_bar.py" line="382"/>
+        <location filename="../../View/play_bar/play_bar.py" line="386"/>
         <source>Show now playing list</source>
         <translation>显示正在播放列表</translation>
     </message>
     <message>
-        <location filename="../../View/play_bar/play_bar.py" line="384"/>
+        <location filename="../../View/play_bar/play_bar.py" line="388"/>
         <source>Go full screen</source>
         <translation>转到全屏</translation>
     </message>
     <message>
-        <location filename="../../View/play_bar/play_bar.py" line="389"/>
+        <location filename="../../View/play_bar/play_bar.py" line="393"/>
         <source>Show artist cover</source>
         <translation>显示歌手封面</translation>
     </message>
@@ -1109,7 +1101,7 @@
         <translation>此 PC 上的音乐</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="205"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="206"/>
         <source>Off</source>
         <translation>关</translation>
     </message>
@@ -1174,12 +1166,12 @@
         <translation>当前进度: </translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="242"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="243"/>
         <source>Right now, we&apos;re watching these folders:</source>
         <translation>现在我们正在查看这些文件夹:</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="241"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="242"/>
         <source>Build your collection from your local music files</source>
         <translation>从本地曲库创建个人&quot;收藏&quot;</translation>
     </message>
@@ -1220,37 +1212,37 @@
         <translation>未知专辑</translation>
     </message>
     <message>
-        <location filename="../../View/singer_interface/singer_interface.py" line="215"/>
+        <location filename="../../View/singer_interface/singer_interface.py" line="197"/>
         <source>Unknown genre</source>
         <translation>未知流派</translation>
     </message>
     <message>
-        <location filename="../../View/singer_interface/singer_interface.py" line="395"/>
+        <location filename="../../View/singer_interface/singer_interface.py" line="377"/>
         <source>Unknown artist</source>
         <translation>未知歌手</translation>
     </message>
     <message>
-        <location filename="../../View/singer_interface/singer_interface.py" line="234"/>
+        <location filename="../../View/singer_interface/singer_interface.py" line="216"/>
         <source>Are you sure you want to delete these?</source>
         <translation>是否确定要删除这些项？</translation>
     </message>
     <message>
-        <location filename="../../View/singer_interface/singer_interface.py" line="235"/>
+        <location filename="../../View/singer_interface/singer_interface.py" line="217"/>
         <source>If you delete these albums, they won&apos;t be on be this device anymore.</source>
         <translation>如果你删除这些专辑，它们将不再位于此设备上。</translation>
     </message>
     <message>
-        <location filename="../../View/singer_interface/singer_interface.py" line="262"/>
+        <location filename="../../View/singer_interface/singer_interface.py" line="244"/>
         <source>Are you sure you want to delete this?</source>
         <translation>是否确定要删除此项？</translation>
     </message>
     <message>
-        <location filename="../../View/singer_interface/singer_interface.py" line="263"/>
+        <location filename="../../View/singer_interface/singer_interface.py" line="245"/>
         <source>If you delete</source>
         <translation>如果删除</translation>
     </message>
     <message>
-        <location filename="../../View/singer_interface/singer_interface.py" line="264"/>
+        <location filename="../../View/singer_interface/singer_interface.py" line="246"/>
         <source>it won&apos;t be on be this device anymore.</source>
         <translation>，它将不再位于此设备上。</translation>
     </message>
@@ -1276,12 +1268,12 @@
 <context>
     <name>SongCardListContextMenu</name>
     <message>
-        <location filename="../../View/my_music_interface/song_tab_interface/song_list_widget.py" line="178"/>
+        <location filename="../../View/my_music_interface/song_tab_interface/song_list_widget.py" line="186"/>
         <source>Play</source>
         <translation>播放</translation>
     </message>
     <message>
-        <location filename="../../View/my_music_interface/song_tab_interface/song_list_widget.py" line="179"/>
+        <location filename="../../View/my_music_interface/song_tab_interface/song_list_widget.py" line="187"/>
         <source>Play next</source>
         <translation>下一首播放</translation>
     </message>
@@ -1291,32 +1283,32 @@
         <translation>从播放列表中删除</translation>
     </message>
     <message>
-        <location filename="../../View/my_music_interface/song_tab_interface/song_list_widget.py" line="180"/>
+        <location filename="../../View/my_music_interface/song_tab_interface/song_list_widget.py" line="188"/>
         <source>Show album</source>
         <translation>显示专辑</translation>
     </message>
     <message>
-        <location filename="../../View/my_music_interface/song_tab_interface/song_list_widget.py" line="181"/>
+        <location filename="../../View/my_music_interface/song_tab_interface/song_list_widget.py" line="189"/>
         <source>Edit info</source>
         <translation>编辑信息</translation>
     </message>
     <message>
-        <location filename="../../View/my_music_interface/song_tab_interface/song_list_widget.py" line="182"/>
+        <location filename="../../View/my_music_interface/song_tab_interface/song_list_widget.py" line="190"/>
         <source>Properties</source>
         <translation>属性</translation>
     </message>
     <message>
-        <location filename="../../View/my_music_interface/song_tab_interface/song_list_widget.py" line="184"/>
+        <location filename="../../View/my_music_interface/song_tab_interface/song_list_widget.py" line="192"/>
         <source>Select</source>
         <translation>选择</translation>
     </message>
     <message>
-        <location filename="../../View/my_music_interface/song_tab_interface/song_list_widget.py" line="186"/>
+        <location filename="../../View/my_music_interface/song_tab_interface/song_list_widget.py" line="194"/>
         <source>Add to</source>
         <translation>添加到</translation>
     </message>
     <message>
-        <location filename="../../View/my_music_interface/song_tab_interface/song_list_widget.py" line="183"/>
+        <location filename="../../View/my_music_interface/song_tab_interface/song_list_widget.py" line="191"/>
         <source>Delete</source>
         <translation>删除</translation>
     </message>
@@ -1479,19 +1471,24 @@
 <context>
     <name>SongListWidget</name>
     <message>
-        <location filename="../../View/my_music_interface/song_tab_interface/song_list_widget.py" line="106"/>
+        <location filename="../../View/my_music_interface/song_tab_interface/song_list_widget.py" line="114"/>
         <source>Are you sure you want to delete this?</source>
         <translation>是否确定要删除此项？</translation>
     </message>
     <message>
-        <location filename="../../View/my_music_interface/song_tab_interface/song_list_widget.py" line="107"/>
+        <location filename="../../View/my_music_interface/song_tab_interface/song_list_widget.py" line="115"/>
         <source>If you delete</source>
         <translation>如果删除</translation>
     </message>
     <message>
-        <location filename="../../View/my_music_interface/song_tab_interface/song_list_widget.py" line="108"/>
+        <location filename="../../View/my_music_interface/song_tab_interface/song_list_widget.py" line="116"/>
         <source>it won&apos;t be on be this device anymore.</source>
         <translation>，它将不再位于此设备上。</translation>
+    </message>
+    <message>
+        <location filename="../../View/my_music_interface/song_tab_interface/song_list_widget.py" line="39"/>
+        <source>There is nothing to display here. Try a different filter.</source>
+        <translation>这里没有可显示的内容。请尝试其他筛选器。</translation>
     </message>
 </context>
 <context>

@@ -1,6 +1,6 @@
 # coding:utf-8
 from components.buttons.circle_button import CircleButton
-from components.slider import Slider
+from components.slider import Slider, HollowHandleStyle
 from PyQt5.QtCore import QPoint, Qt, pyqtSignal
 from PyQt5.QtWidgets import QLabel, QWidget
 from View.play_bar import MoreActionsMenu
@@ -163,10 +163,17 @@ class PlayProgressBar(QWidget):
 
     def __initWidget(self):
         """ 初始化小部件 """
-        self.setFixedHeight(38)
+        self.setFixedHeight(24)
         self.progressSlider.move(73, 0)
-        self.currentTimeLabel.move(33, 9)
-        self.progressSlider.setObjectName("progressSlider")
+
+        # 设置样式
+        style = HollowHandleStyle({
+            "handle.ring-width": 3,
+            "handle.hollow-radius": 9,
+            "handle.margin": 0
+        })
+        self.progressSlider.setStyle(style)
+        self.progressSlider.setFixedHeight(24)
         self.currentTimeLabel.setObjectName("timeLabel")
         self.totalTimeLabel.setObjectName("timeLabel")
 
@@ -180,7 +187,7 @@ class PlayProgressBar(QWidget):
         seconds, minutes = self.getSecondMinute(currentTime)
         self.currentTimeLabel.setText(f'{minutes}:{str(seconds).rjust(2,"0")}')
         self.currentTimeLabel.move(
-            33 - 9 * (len(self.totalTimeLabel.text()) - 4), 9)
+            33 - 9 * (len(self.totalTimeLabel.text()) - 4), 1)
 
     def setTotalTime(self, totalTime):
         """ 更新总时长标签，totalTime的单位为ms """
@@ -196,6 +203,7 @@ class PlayProgressBar(QWidget):
 
     def resizeEvent(self, e):
         """ 改变尺寸时拉伸进度条 """
-        self.progressSlider.resize(self.width() - 146, 38)
-        self.totalTimeLabel.move(self.width() - 57, 10)
+        self.progressSlider.resize(self.width() - 146, 24)
+        self.totalTimeLabel.move(self.width() - 57, 1)
+        self.currentTimeLabel.move(33, 1)
         super().resizeEvent(e)

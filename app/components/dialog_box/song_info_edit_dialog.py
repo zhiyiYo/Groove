@@ -22,7 +22,6 @@ class SongInfoEditDialog(MaskDialogBase):
 
     def __init__(self, songInfo: dict, parent):
         super().__init__(parent)
-
         self.songInfo = deepcopy(songInfo)
         self.oldSongInfo = songInfo
         # 实例化小部件
