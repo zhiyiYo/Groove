@@ -7,6 +7,8 @@ QScrollArea {
     border: none;
 }
 
+
+/* 标签 */
 QLabel {
     font-size: 18px;
     font-family: 'Segoe UI', 'Microsoft YaHei';
@@ -31,6 +33,8 @@ QLabel#clickableLabel:hover {
 }
 
 
+
+/* 单选按钮 */
 QRadioButton {
     spacing: 10px;
     color: black;
@@ -49,7 +53,6 @@ QRadioButton::indicator:unchecked {
     border: 2px solid rgb(154, 154, 154);
     border-radius: 13px;
 }
-
 
 QRadioButton::indicator:checked {
     height: 12px;
@@ -88,6 +91,8 @@ QRadioButton::indicator:checked:pressed {
     border-radius: 13px;
 }
 
+
+/* 滚动条 */
 QScrollBar {
     background: transparent;
     width: 4px;

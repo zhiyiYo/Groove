@@ -319,7 +319,6 @@ class MyMusicInterface(QWidget):
 
     def __onButtonSelected(self, tabIndex: int):
         """ 按钮点击时切换界面 """
-        # 如果此时处于选择状态则不切换界面
         if self.isInSelectionMode:
             return
         self.setCurrentTab(tabIndex)

@@ -73,15 +73,6 @@ class ToolBar(QWidget):
         # 将动作添加到菜单中
         self.songSortModeMenu.addActions(self.songSortAction_list)
         self.albumSortModeMenu.addActions(self.albumSortAction_list)
-        # 分配ID
-        self.myMusicLabel.setObjectName("myMusicLabel")
-        self.sortModeLabel.setObjectName("sortModeLabel")
-        self.songSortModeMenu.setObjectName("sortModeMenu")
-        self.albumSortModeMenu.setObjectName("sortModeMenu")
-        self.albumSortModeMenu.setProperty("modeNumber", "4")
-        self.songSortModeButton.setObjectName("sortModeButton")
-        self.albumSortModeButton.setObjectName("sortModeButton")
-        self.randomPlayAllButton.setObjectName("randomPlayButton")
         # 设置属性
         self.songSortByCratedTimeAct.setProperty('mode', 'Date added')
         self.songSortByDictOrderAct.setProperty('mode', 'A to Z')
@@ -102,7 +93,7 @@ class ToolBar(QWidget):
         self.albumTabButton.move(
             self.singerTabButton.geometry().right()+55, 136)
 
-        self.randomPlayAllButton.move(31, 199)
+        self.randomPlayAllButton.move(31, 200)
         self.sortModeLabel.move(
             self.randomPlayAllButton.geometry().right()+50, 200)
         self.songSortModeButton.move(
@@ -118,6 +109,15 @@ class ToolBar(QWidget):
 
     def __setQss(self):
         """ 设置层叠样式 """
+        self.myMusicLabel.setObjectName("myMusicLabel")
+        self.sortModeLabel.setObjectName("sortModeLabel")
+        self.songSortModeMenu.setObjectName("sortModeMenu")
+        self.albumSortModeMenu.setObjectName("sortModeMenu")
+        self.songSortModeButton.setObjectName("sortModeButton")
+        self.albumSortModeButton.setObjectName("sortModeButton")
+        self.randomPlayAllButton.setObjectName("randomPlayButton")
+        self.albumSortModeMenu.setProperty("modeNumber", "4")
+
         f = QFile(":/qss/my_music_interface_toolBar.qss")
         f.open(QFile.ReadOnly)
         self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
