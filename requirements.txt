@@ -52,7 +52,7 @@ parse==1.16.0
 parso==0.7.1
 pathspec==0.8.1
 pickleshare==0.7.5
-Pillow==8.1.2
+Pillow==8.3.2
 pinyin==0.4.0
 prometheus-client==0.8.0
 prompt-toolkit==3.0.7
