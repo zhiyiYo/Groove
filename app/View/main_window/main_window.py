@@ -838,7 +838,6 @@ class MainWindow(FramelessWindow):
         self.playlistCardInterface.updateOneSongInfo(newSongInfo)
         self.smallestPlayInterface.updateOneSongInfo(newSongInfo)
         self.myMusicInterface.updateOneSongInfo(oldSongInfo, newSongInfo)
-        self.albumCardInterface.updateOneSongInfo(oldSongInfo, newSongInfo)
         self.playlistInterface.updateOneSongCard(oldSongInfo, newSongInfo)
 
     def onEditAlbumInfo(self, oldAlbumInfo: dict, newAlbumInfo: dict, coverPath: str):
@@ -872,6 +871,11 @@ class MainWindow(FramelessWindow):
                 self.albumCardInterface.albumInfo_list)
             self.singerInterface.updateWindow(
                 self.myMusicInterface.findSingerInfo(newAlbumInfo['singer']))
+
+        self.myMusicInterface.songInfoGetter.songInfo_list = deepcopy(
+            self.songTabSongListWidget.songInfo_list)
+        self.myMusicInterface.albumInfoGetter.albumInfo_list = deepcopy(
+            self.albumCardInterface.albumInfo_list)
 
     def showSmallestPlayInterface(self):
         """ 切换到最小化播放模式 """

@@ -1,4 +1,6 @@
 # coding:utf-8
+from copy import deepcopy
+
 from common.meta_data_getter import *
 from common.thread.get_info_thread import GetInfoThread
 from components.dialog_box.message_dialog import MessageDialog
@@ -400,22 +402,15 @@ class MyMusicInterface(QWidget):
     def hasSongModified(self):
         return self.songInfoGetter.hasSongModified()
 
-    def updateWindow(self, songInfo_list: list):
-        """ 更新我的音乐界面 """
-        self.songInfoGetter.songInfo_list = songInfo_list
-        self.songListWidget.updateAllSongCards(songInfo_list)
-        self.albumCoverGetter.updateAlbumCover(songInfo_list)
-        self.albumInfoGetter.updateAlbumInfo(songInfo_list)
-        self.albumCardInterface.updateAllAlbumCards(
-            self.albumInfoGetter.albumInfo_list)
-        self.singerInfoGetter.updateSingerInfos(
-            self.albumInfoGetter.albumInfo_list)
-
     def updateOneSongInfo(self, oldSongInfo: dict, newSongInfo: dict):
         """ 更新一首歌的信息 """
         self.songListWidget.updateOneSongCard(newSongInfo)
         self.albumCardInterface.updateOneSongInfo(oldSongInfo, newSongInfo)
         self.singerInfoGetter.updateSingerInfos(
+            self.albumCardInterface.albumInfo_list)
+        self.songInfoGetter.songInfo_list = deepcopy(
+            self.songListWidget.songInfo_list)
+        self.albumInfoGetter.albumInfo_list = deepcopy(
             self.albumCardInterface.albumInfo_list)
 
     def __showSortModeMenu(self):
