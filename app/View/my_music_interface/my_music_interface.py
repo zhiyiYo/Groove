@@ -344,6 +344,7 @@ class MyMusicInterface(QWidget):
     def scanTargetPathSongInfo(self, folderPaths: list):
         """ 重新扫描指定的歌曲文件夹列表中的歌曲信息并更新标签界面 """
         self.folderPaths = folderPaths
+        self.songInfoGetter.folderPaths = folderPaths
 
         # 创建线程来扫描信息
         thread = GetInfoThread(folderPaths, self)
@@ -372,6 +373,8 @@ class MyMusicInterface(QWidget):
         self.songListWidget.updateAllSongCards(songInfo_list)
         self.albumCardInterface.updateAllAlbumCards(albumInfo_list)
         self.singerInfoGetter.singerInfos = singerInfos
+        self.songInfoGetter.songInfo_list = deepcopy(songInfo_list)
+        self.albumInfoGetter.albumInfo_list = deepcopy(albumInfo_list)
 
     def rescanSongInfo(self):
         """ 重新当前的歌曲文件夹的歌曲信息 """

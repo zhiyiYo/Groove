@@ -31,16 +31,7 @@ def adjustName(name: str):
     name: str
         调整后的名字
     """
-    rex = r'[><:\\/\*\?]'
-    name = re.sub(r'[\"]', "'", name)
-    name = name.strip()
-
-    if re.search(rex, name):
-        # 替换不符合命名规则的专辑名
-        name = re.sub(rex, ' ', name)
-        name = re.sub(r'[\"]', "'", name)
-        name = name.strip()
-
+    name = re.sub(r'[\\/:*?"<>|\r\n]+', "_", name).strip()
     return name
 
 

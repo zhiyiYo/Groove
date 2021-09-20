@@ -652,8 +652,10 @@ class AlbumCardInterface(ScrollArea):
 
         # 重新排序专辑卡
         self.__sortFunctions[self.sortMode]()
+        
         # 根据当前专辑卡数决定是否显示导航标签
         self.guideLabel.setHidden(bool(albumInfo_list))
+
         # 更新 "专辑名.歌手名"：专辑卡 字典
         self.albumSinger2AlbumCard_dict.clear()
         self.albumSinger2AlbumInfo_dict.clear()

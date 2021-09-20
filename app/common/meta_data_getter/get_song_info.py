@@ -226,7 +226,5 @@ class SongInfoGetter(QObject):
                     return True
             else:
                 return True
-        for songPath in set(songPath_list) - oldSongs:
-            return True
 
-        return False
+        return bool(set(songPath_list)-oldSongs)
