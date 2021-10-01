@@ -1,7 +1,7 @@
 # coding:utf-8
 from components.dialog_box.message_dialog import MessageDialog
 from components.menu import AddToMenu, DWMMenu, DownloadMenu
-from components.song_list_widget import BasicSongListWidget, SongCardType
+from components.song_list_widget import NoScrollSongListWidget, SongCardType
 from PyQt5.QtCore import QMargins, Qt, pyqtSignal, QFile
 from PyQt5.QtWidgets import QAction, QWidget, QPushButton
 
@@ -64,7 +64,7 @@ class SongGroupBox(QWidget):
         self.setFixedHeight(57+self.songListWidget.height())
 
 
-class LocalSongListWidget(BasicSongListWidget):
+class LocalSongListWidget(NoScrollSongListWidget):
     """ 本地音乐歌曲卡列表 """
 
     playSignal = pyqtSignal(int)                        # 将播放列表的当前歌曲切换为指定的歌曲卡
@@ -122,26 +122,6 @@ class LocalSongListWidget(BasicSongListWidget):
             lambda: self.removeSongSignal.emit(songInfo["songPath"]))
         w.exec_()
 
-    def __adjustHeight(self):
-        """ 调整高度 """
-        self.resize(self.width(), 60*len(self.songCard_list))
-
-    def wheelEvent(self, e):
-        return
-
-    def updateAllSongCards(self, songInfo_list: list):
-        """ 更新所有歌曲卡，根据给定的信息决定创建或者删除歌曲卡 """
-        super().updateAllSongCards(songInfo_list)
-        self.__adjustHeight()
-
-    def removeSongCard(self, index):
-        super().removeSongCard(index)
-        self.__adjustHeight()
-
-    def clearSongCards(self):
-        super().clearSongCards()
-        self.__adjustHeight()
-
     def __connectContextMenuSignalToSlot(self, menu):
         """ 信号连接到槽 """
         menu.playAct.triggered.connect(
@@ -184,7 +164,7 @@ class LocalSongListWidget(BasicSongListWidget):
             lambda songInfo: self.addSongsToNewCustomPlaylistSig.emit([songInfo]))
 
 
-class OnlineSongListWidget(BasicSongListWidget):
+class OnlineSongListWidget(NoScrollSongListWidget):
     """ 在线音乐歌曲卡列表 """
 
     playSignal = pyqtSignal(int)                # 将播放列表的当前歌曲切换为指定的歌曲卡
@@ -201,8 +181,6 @@ class OnlineSongListWidget(BasicSongListWidget):
         """
         super().__init__(None, SongCardType.ONLINE_SONG_CARD,
                          parent, QMargins(30, 0, 30, 0), 0)
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.__setQss()
 
     def __playButtonSlot(self, index):
@@ -225,26 +203,6 @@ class OnlineSongListWidget(BasicSongListWidget):
         f.open(QFile.ReadOnly)
         self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
         f.close()
-
-    def __adjustHeight(self):
-        """ 调整高度 """
-        self.resize(self.width(), 60*len(self.songCard_list))
-
-    def wheelEvent(self, e):
-        return
-
-    def updateAllSongCards(self, songInfo_list: list):
-        """ 更新所有歌曲卡，根据给定的信息决定创建或者删除歌曲卡 """
-        super().updateAllSongCards(songInfo_list)
-        self.__adjustHeight()
-
-    def removeSongCard(self, index):
-        super().removeSongCard(index)
-        self.__adjustHeight()
-
-    def clearSongCards(self):
-        super().clearSongCards()
-        self.__adjustHeight()
 
     def _connectSongCardSignalToSlot(self, songCard):
         """ 将歌曲卡信号连接到槽 """

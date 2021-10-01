@@ -1,13 +1,13 @@
 # coding:utf-8
 from components.dialog_box.message_dialog import MessageDialog
 from components.menu import AddToMenu, DWMMenu
-from components.song_list_widget import BasicSongListWidget, SongCardType
+from components.song_list_widget import NoScrollSongListWidget, SongCardType
 from PyQt5.QtCore import QFile, QMargins, Qt, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent
 from PyQt5.QtWidgets import QAction
 
 
-class SongListWidget(BasicSongListWidget):
+class SongListWidget(NoScrollSongListWidget):
     """ 专辑界面歌曲卡列表视图 """
 
     playSignal = pyqtSignal(int)                    # 播放指定歌曲
@@ -25,23 +25,9 @@ class SongListWidget(BasicSongListWidget):
         parent:
             父级窗口
         """
-        super().__init__(
-            songInfo_list,
-            SongCardType.ALBUM_INTERFACE_SONG_CARD,
-            parent,
-            QMargins(30, 0, 30, 0),
-            0
-        )
-        # 创建歌曲卡
+        super().__init__(songInfo_list, SongCardType.ALBUM_INTERFACE_SONG_CARD, parent)
         self.createSongCards()
-        # 初始化
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.setAttribute(Qt.WA_StyledBackground)
         self.__setQss()
-
-    def appendOneSongCard(self, songInfo: dict):
-        super().appendOneSongCard(songInfo)
-        self.__adjustHeight()
 
     def __showMaskDialog(self):
         index = self.currentRow()
@@ -53,14 +39,6 @@ class SongListWidget(BasicSongListWidget):
         w.yesSignal.connect(lambda: self.removeSongCard(index))
         w.exec_()
 
-    def removeSongCard(self, index):
-        super().removeSongCard(index)
-        self.__adjustHeight()
-
-    def clearSongCards(self):
-        super().clearSongCards()
-        self.__adjustHeight()
-
     def contextMenuEvent(self, e: QContextMenuEvent):
         """ 重写鼠标右击时间的响应函数 """
         hitIndex = self.indexAt(e.pos()).column()
@@ -69,11 +47,6 @@ class SongListWidget(BasicSongListWidget):
             contextMenu = SongCardListContextMenu(self)
             self.__connectMenuSignalToSlot(contextMenu)
             contextMenu.exec(self.cursor().pos())
-
-    def updateAllSongCards(self, songInfo_list: list):
-        """ 更新所有歌曲卡，根据给定的信息决定创建或者删除歌曲卡 """
-        super().updateAllSongCards(songInfo_list)
-        self.__adjustHeight()
 
     def sortSongCardByTrackNum(self):
         """ 以曲序为基准排序歌曲卡 """
@@ -134,13 +107,6 @@ class SongListWidget(BasicSongListWidget):
             self.onSongCardCheckedStateChanged)
         songCard.switchToSingerInterfaceSig.connect(
             self.switchToSingerInterfaceSig)
-
-    def __adjustHeight(self):
-        """ 调整高度 """
-        self.resize(self.width(), 60*len(self.songCard_list)+116)
-
-    def wheelEvent(self, e):
-        return
 
 
 class SongCardListContextMenu(DWMMenu):

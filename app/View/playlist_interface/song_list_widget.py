@@ -1,12 +1,12 @@
 # coding:utf-8
 from components.menu import AddToMenu, DWMMenu
-from components.song_list_widget import BasicSongListWidget, SongCardType
-from PyQt5.QtCore import QMargins, Qt, pyqtSignal, QFile
+from components.song_list_widget import NoScrollSongListWidget, SongCardType
+from PyQt5.QtCore import pyqtSignal, QFile
 from PyQt5.QtGui import QContextMenuEvent
 from PyQt5.QtWidgets import QAction
 
 
-class SongListWidget(BasicSongListWidget):
+class SongListWidget(NoScrollSongListWidget):
     """ 歌曲卡列表视图 """
 
     playSignal = pyqtSignal(int)                        # 将当前歌曲切换为指定的歌曲卡
@@ -25,31 +25,10 @@ class SongListWidget(BasicSongListWidget):
         parent:
             父级窗口
         """
-        super().__init__(songInfo_list, SongCardType.PLAYLIST_INTERFACE_SONG_CARD,
-                         parent, QMargins(30, 0, 30, 0), 0)
+        super().__init__(songInfo_list, SongCardType.PLAYLIST_INTERFACE_SONG_CARD, parent)
         self.resize(1150, 758)
         self.createSongCards()
-        self.setAlternatingRowColors(True)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.__setQss()
-
-    def appendOneSongCard(self, songInfo: dict):
-        super().appendOneSongCard(songInfo)
-        self.__adjustHeight()
-
-    def removeSongCard(self, index):
-        super().removeSongCard(index)
-        self.__adjustHeight()
-
-    def clearSongCards(self):
-        super().clearSongCards()
-        self.__adjustHeight()
-
-    def updateAllSongCards(self, songInfo_list: list):
-        """ 更新所有歌曲卡 """
-        super().updateAllSongCards(songInfo_list)
-        self.__adjustHeight()
 
     def contextMenuEvent(self, e: QContextMenuEvent):
         """ 重写鼠标右击时间的响应函数 """
@@ -84,13 +63,6 @@ class SongListWidget(BasicSongListWidget):
         path = songCard.songPath if songCard else self.sender().songPath
         self.removeSongCard(index)
         self.removeSongSignal.emit(path)
-
-    def __adjustHeight(self):
-        """ 调整高度 """
-        self.resize(self.width(), 60*len(self.songCard_list)+116)
-
-    def wheelEvent(self, e):
-        return
 
     def _connectSongCardSignalToSlot(self, songCard):
         """ 将歌曲卡信号连接到槽 """
