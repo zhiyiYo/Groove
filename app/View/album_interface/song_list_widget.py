@@ -33,14 +33,14 @@ class SongListWidget(BasicSongListWidget):
             0
         )
         # 创建歌曲卡
-        self.createSongCards(self.__connectSongCardSignalToSlot)
+        self.createSongCards()
         # 初始化
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setAttribute(Qt.WA_StyledBackground)
         self.__setQss()
 
-    def appendOneSongCard(self, songInfo: dict, connectSongCardSigToSlotFunc):
-        super().appendOneSongCard(songInfo, connectSongCardSigToSlotFunc)
+    def appendOneSongCard(self, songInfo: dict):
+        super().appendOneSongCard(songInfo)
         self.__adjustHeight()
 
     def __showMaskDialog(self):
@@ -72,7 +72,7 @@ class SongListWidget(BasicSongListWidget):
 
     def updateAllSongCards(self, songInfo_list: list):
         """ 更新所有歌曲卡，根据给定的信息决定创建或者删除歌曲卡 """
-        super().updateAllSongCards(songInfo_list, self.__connectSongCardSignalToSlot)
+        super().updateAllSongCards(songInfo_list)
         self.__adjustHeight()
 
     def sortSongCardByTrackNum(self):
@@ -125,7 +125,7 @@ class SongListWidget(BasicSongListWidget):
             lambda: self.addSongsToNewCustomPlaylistSig.emit(
                 [self.songCard_list[self.currentRow()].songInfo]))
 
-    def __connectSongCardSignalToSlot(self, songCard):
+    def _connectSongCardSignalToSlot(self, songCard):
         """ 将歌曲卡信号连接到槽 """
         songCard.doubleClicked.connect(self.__onSongCardDoubleClicked)
         songCard.playButtonClicked.connect(self.__playButtonSlot)

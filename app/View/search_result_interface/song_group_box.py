@@ -131,7 +131,7 @@ class LocalSongListWidget(BasicSongListWidget):
 
     def updateAllSongCards(self, songInfo_list: list):
         """ 更新所有歌曲卡，根据给定的信息决定创建或者删除歌曲卡 """
-        super().updateAllSongCards(songInfo_list, self.__connectSongCardSignalToSlot)
+        super().updateAllSongCards(songInfo_list)
         self.__adjustHeight()
 
     def removeSongCard(self, index):
@@ -168,7 +168,7 @@ class LocalSongListWidget(BasicSongListWidget):
             lambda: self.addSongsToNewCustomPlaylistSig.emit(
                 [self.songCard_list[self.currentRow()].songInfo]))
 
-    def __connectSongCardSignalToSlot(self, songCard):
+    def _connectSongCardSignalToSlot(self, songCard):
         """ 将歌曲卡信号连接到槽 """
         songCard.doubleClicked.connect(self.playSignal)
         songCard.playButtonClicked.connect(self.__playButtonSlot)
@@ -235,7 +235,7 @@ class OnlineSongListWidget(BasicSongListWidget):
 
     def updateAllSongCards(self, songInfo_list: list):
         """ 更新所有歌曲卡，根据给定的信息决定创建或者删除歌曲卡 """
-        super().updateAllSongCards(songInfo_list, self.__connectSongCardSignalToSlot)
+        super().updateAllSongCards(songInfo_list)
         self.__adjustHeight()
 
     def removeSongCard(self, index):
@@ -246,7 +246,7 @@ class OnlineSongListWidget(BasicSongListWidget):
         super().clearSongCards()
         self.__adjustHeight()
 
-    def __connectSongCardSignalToSlot(self, songCard):
+    def _connectSongCardSignalToSlot(self, songCard):
         """ 将歌曲卡信号连接到槽 """
         songCard.doubleClicked.connect(self.playSignal)
         songCard.playButtonClicked.connect(self.__playButtonSlot)

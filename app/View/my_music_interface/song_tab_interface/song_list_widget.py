@@ -35,7 +35,7 @@ class SongListWidget(BasicSongListWidget):
         self.resize(1150, 758)
         self.sortMode = "createTime"
         # 创建歌曲卡
-        self.createSongCards(self.__connectSongCardSignalToSlot)
+        self.createSongCards()
         self.guideLabel = QLabel(
             self.tr("There is nothing to display here. Try a different filter."), self)
 
@@ -103,7 +103,7 @@ class SongListWidget(BasicSongListWidget):
 
     def updateAllSongCards(self, songInfo_list: list):
         """ 更新所有歌曲卡，根据给定的信息决定创建或者删除歌曲卡 """
-        super().updateAllSongCards(songInfo_list, self.__connectSongCardSignalToSlot)
+        super().updateAllSongCards(songInfo_list)
         self.guideLabel.setHidden(bool(self.songInfo_list))
 
     def __showDeleteCardDialog(self):
@@ -159,7 +159,7 @@ class SongListWidget(BasicSongListWidget):
             lambda: self.addSongsToNewCustomPlaylistSig.emit(
                 [self.songCard_list[self.currentRow()].songInfo]))
 
-    def __connectSongCardSignalToSlot(self, songCard):
+    def _connectSongCardSignalToSlot(self, songCard):
         """ 将歌曲卡信号连接到槽 """
         songCard.addSongToPlayingSig.connect(self.addSongToPlayingSignal)
         songCard.doubleClicked.connect(self.__onSongCardDoubleClicked)

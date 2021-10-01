@@ -70,7 +70,7 @@ class BasicSongListWidget(ListWidget):
         # 设置边距
         self.setViewportMargins(viewportMargins)
 
-    def createSongCards(self, connectSongCardToSlotFunc):
+    def createSongCards(self):
         """ 清空列表并创建新歌曲卡
 
         Parameter
@@ -80,12 +80,12 @@ class BasicSongListWidget(ListWidget):
         """
         self.clearSongCards()
         for songInfo in self.songInfo_list:
-            self.appendOneSongCard(songInfo, connectSongCardToSlotFunc)
+            self.appendOneSongCard(songInfo)
 
         # 添加一个空白item来填补playBar所占高度
         self.__createPaddingBottomItem()
 
-    def appendOneSongCard(self, songInfo: dict, connectSongCardSigToSlotFunc=None):
+    def appendOneSongCard(self, songInfo: dict):
         """ 在列表尾部添加一个歌曲卡
 
         Parameters
@@ -103,15 +103,13 @@ class BasicSongListWidget(ListWidget):
         item.setSizeHint(QSize(songCard.width(), 60))
         self.addItem(item)
         self.setItemWidget(item, songCard)
+
         # 将项目添加到项目列表中
         self.songCard_list.append(songCard)
         self.item_list.append(item)
-        # 将歌曲卡信号连接到槽函数
-        if connectSongCardSigToSlotFunc:
-            # 调用子类的方法
-            connectSongCardSigToSlotFunc(songCard)
-        else:
-            self.__connectSongCardSignalToSlot(songCard)
+
+        # 信号连接到槽
+        self._connectSongCardSignalToSlot(songCard)
 
     def setCurrentIndex(self, index):
         """ 设置当前下标 """
@@ -236,7 +234,7 @@ class BasicSongListWidget(ListWidget):
         if songCard not in self.checkedSongCard_list and isChecked:
             self.checkedSongCard_list.append(songCard)
             self.checkedSongCardNumChanged.emit(len(self.checkedSongCard_list))
-            
+
         # 如果歌曲卡已经在列表中且该歌曲卡变为非选中状态就弹出该歌曲卡
         elif songCard in self.checkedSongCard_list and not isChecked:
             self.checkedSongCard_list.remove(songCard)
@@ -287,7 +285,7 @@ class BasicSongListWidget(ListWidget):
         for songCard in self.checkedSongCard_list.copy():
             songCard.setChecked(False)
 
-    def updateAllSongCards(self, songInfo_list: list, connectSongCardSigToSlotFunc=None):
+    def updateAllSongCards(self, songInfo_list: list):
         """ 更新所有歌曲卡，根据给定的信息决定创建或者删除歌曲卡，该函数必须被子类重写
 
         Parameters
@@ -311,7 +309,7 @@ class BasicSongListWidget(ListWidget):
         if newSongNum > oldSongNum:
             # 添加item
             for songInfo in songInfo_list[oldSongNum:]:
-                self.appendOneSongCard(songInfo, connectSongCardSigToSlotFunc)
+                self.appendOneSongCard(songInfo)
                 # QApplication.processEvents()
         elif newSongNum < oldSongNum:
             # 删除多余的item
@@ -397,7 +395,7 @@ class BasicSongListWidget(ListWidget):
     def songCardType(self) -> SongCardType:
         return self.__songCardType
 
-    def __connectSongCardSignalToSlot(self, songCard):
+    def _connectSongCardSignalToSlot(self, songCard):
         """ 将一个歌曲卡的信号连接到槽函数 """
         # 必须被子类重写
         raise NotImplementedError

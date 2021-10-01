@@ -28,14 +28,14 @@ class SongListWidget(BasicSongListWidget):
         super().__init__(songInfo_list, SongCardType.PLAYLIST_INTERFACE_SONG_CARD,
                          parent, QMargins(30, 0, 30, 0), 0)
         self.resize(1150, 758)
-        self.createSongCards(self.__connectSongCardSignalToSlot)
+        self.createSongCards()
         self.setAlternatingRowColors(True)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.__setQss()
 
-    def appendOneSongCard(self, songInfo: dict, connectSongCardSigToSlotFunc):
-        super().appendOneSongCard(songInfo, connectSongCardSigToSlotFunc)
+    def appendOneSongCard(self, songInfo: dict):
+        super().appendOneSongCard(songInfo)
         self.__adjustHeight()
 
     def removeSongCard(self, index):
@@ -48,7 +48,7 @@ class SongListWidget(BasicSongListWidget):
 
     def updateAllSongCards(self, songInfo_list: list):
         """ 更新所有歌曲卡 """
-        super().updateAllSongCards(songInfo_list, self.__connectSongCardSignalToSlot)
+        super().updateAllSongCards(songInfo_list)
         self.__adjustHeight()
 
     def contextMenuEvent(self, e: QContextMenuEvent):
@@ -92,7 +92,7 @@ class SongListWidget(BasicSongListWidget):
     def wheelEvent(self, e):
         return
 
-    def __connectSongCardSignalToSlot(self, songCard):
+    def _connectSongCardSignalToSlot(self, songCard):
         """ 将歌曲卡信号连接到槽 """
         songCard.doubleClicked.connect(self.__onSongCardDoubleClicked)
         songCard.removeSongSignal.connect(self.__onRemoveButtonClicked)
