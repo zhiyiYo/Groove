@@ -12,13 +12,13 @@ from PyQt5.QtMultimedia import QMediaContent, QMediaPlaylist
 class PlaylistType(Enum):
     """ 播放列表种类枚举 """
 
-    SONG_CARD_PLAYLIST = 0  # 播放列表为一首歌
-    SONGER_CARD_PLAYLIST = 1  # 播放列表为选中歌手的歌
-    ALBUM_CARD_PLAYLIST = 2  # 播放列表为选中专辑的歌
-    LAST_PLAYLIST = 3  # 上一次的播放列表
-    NO_PLAYLIST = 4  # 没有播放列表
-    CUSTOM_PLAYLIST = 5  # 自定义播放列表
-    ALL_SONG_PLAYLIST = 6  # 播放列表为歌曲文件夹中的所有歌曲
+    SONG_CARD_PLAYLIST = 0      # 播放列表为一首歌
+    SONGER_CARD_PLAYLIST = 1    # 播放列表为选中歌手的歌
+    ALBUM_CARD_PLAYLIST = 2     # 播放列表为选中专辑的歌
+    LAST_PLAYLIST = 3           # 上一次的播放列表
+    NO_PLAYLIST = 4             # 没有播放列表
+    CUSTOM_PLAYLIST = 5         # 自定义播放列表
+    ALL_SONG_PLAYLIST = 6       # 播放列表为歌曲文件夹中的所有歌曲
 
 
 class MediaPlaylist(QMediaPlaylist):
@@ -100,7 +100,10 @@ class MediaPlaylist(QMediaPlaylist):
             elif self.playbackMode() == QMediaPlaylist.Random:
                 super().next()
         else:
-            super().next()
+            if self.playbackMode() == QMediaPlaylist.CurrentItemInLoop:
+                self.setCurrentIndex(self.currentIndex()+1)
+            else:
+                super().next()
 
     def previous(self):
         """ 播放上一首 """
@@ -109,7 +112,10 @@ class MediaPlaylist(QMediaPlaylist):
             if self.playbackMode() == QMediaPlaylist.Loop:
                 self.setCurrentIndex(self.mediaCount() - 1)
         else:
-            super().previous()
+            if self.playbackMode() == QMediaPlaylist.CurrentItemInLoop:
+                self.setCurrentIndex(self.currentIndex()-1)
+            else:
+                super().previous()
 
     def getCurrentSong(self) -> dict:
         """ 获取当前播放的歌曲信息 """
