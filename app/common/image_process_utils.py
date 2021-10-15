@@ -55,6 +55,10 @@ def gaussianBlur(imagePath: str, savePath='', blurRadius=18, brightnessFactor=1,
     else:
         imageArray = np.array(image)
 
+    # 处理图像是灰度图的情况
+    if len(imageArray.shape) == 2:
+        imageArray = np.stack([imageArray, imageArray, imageArray], axis=-1)
+
     blurImageArray = imageArray
 
     # 对每一个颜色通道分别磨砂

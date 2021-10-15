@@ -41,6 +41,8 @@ class MainWindow(FramelessWindow):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.setObjectName("mainWindow")
+
         # 实例化小部件
         self.createWidgets()
         # 初始化标志位
@@ -68,7 +70,6 @@ class MainWindow(FramelessWindow):
         self.resize(1240, 970)
         self.setWindowTitle(self.tr("Groove Music"))
         self.setWindowIcon(QIcon(":/images/logo.png"))
-        self.setWindowEffect()
 
         # 在去除任务栏的显示区域居中显示
         desktop = QApplication.desktop().availableGeometry()
@@ -167,6 +168,10 @@ class MainWindow(FramelessWindow):
         self.resize(1240, 970)
         self.setMinimumSize(1030, 800)
 
+        # 先设置普通的阴影效果可以保证原生的窗口效果
+        self.windowEffect.addShadowEffect(self.winId())
+        self.setWindowEffect()
+
         # 在去除任务栏的显示区域居中显示
         desktop = QApplication.desktop().availableGeometry()
         self.smallestPlayInterface.move(desktop.width() - 390, 40)
@@ -230,13 +235,15 @@ class MainWindow(FramelessWindow):
         self.playHotKey.register(
             ("f5",), callback=lambda x: self.togglePlayState)
 
-    def setWindowEffect(self):
+    def setWindowEffect(self, isEnableAcrylic=True):
         """ 设置窗口特效 """
-        self.setAttribute(Qt.WA_TranslucentBackground | Qt.WA_StyledBackground)
-        # 开启窗口动画
-        self.windowEffect.addWindowAnimation(self.winId())
-        # 开启亚克力效果和阴影效果
-        self.windowEffect.setAcrylicEffect(self.winId(), "FFFFFFCC", True)
+        if isEnableAcrylic:
+            self.windowEffect.setAcrylicEffect(self.winId(), "F2F2F299", True)
+            self.setStyleSheet("#mainWindow{background:transparent}")
+        else:
+            self.setStyleSheet("#mainWindow{background:#F2F2F2}")
+            self.windowEffect.addShadowEffect(self.winId())
+            self.windowEffect.removeBackgroundEffect(self.winId())
 
     def adjustWidgetGeometry(self):
         """ 调整小部件的geometry """
@@ -1151,6 +1158,8 @@ class MainWindow(FramelessWindow):
         # 将设置界面信号连接到槽函数
         self.settingInterface.crawlComplete.connect(
             self.myMusicInterface.rescanSongInfo)
+        self.settingInterface.acrylicEnableChanged.connect(
+            self.setWindowEffect)
         self.settingInterface.selectedMusicFoldersChanged.connect(
             self.myMusicInterface.scanTargetPathSongInfo)
         self.settingInterface.downloadFolderChanged.connect(

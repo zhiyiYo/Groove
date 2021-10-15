@@ -451,7 +451,7 @@ class AlbumCardInterface(ScrollArea):
                         == len(self.albumCard_list))
         if isAllChecked != self.isAllAlbumCardsChecked:
             self.isAllAlbumCardsChecked = isAllChecked
-            self.isAllAlbumCardsChecked.emit(isAllChecked)
+            self.isAllCheckedChanged.emit(isAllChecked)
 
         # 如果先前不处于选择模式那么这次发生选中状态改变就进入选择模式
         if not self.isInSelectionMode:
@@ -652,7 +652,7 @@ class AlbumCardInterface(ScrollArea):
 
         # 重新排序专辑卡
         self.__sortFunctions[self.sortMode]()
-        
+
         # 根据当前专辑卡数决定是否显示导航标签
         self.guideLabel.setHidden(bool(albumInfo_list))
 

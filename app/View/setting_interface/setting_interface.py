@@ -21,6 +21,7 @@ class SettingInterface(ScrollArea):
 
     crawlComplete = pyqtSignal()
     pageSizeChanged = pyqtSignal(int)
+    acrylicEnableChanged = pyqtSignal(bool)
     downloadFolderChanged = pyqtSignal(str)
     onlinePlayQualityChanged = pyqtSignal(str)
     selectedMusicFoldersChanged = pyqtSignal(list)
@@ -47,6 +48,14 @@ class SettingInterface(ScrollArea):
         self.getMetaDataLabel = QLabel(self.tr(
             "Automatically retrieve and update missing album art and metadata"), self.scrollwidget)
         self.getMetaDataSwitchButton = SwitchButton(
+            self.tr("Off"), self.scrollwidget)
+
+        # 启动亚克力背景
+        self.acrylicLabel = QLabel(
+            self.tr("Acrylic Background"), self.scrollwidget)
+        self.acrylicHintLabel = QLabel(
+            self.tr("Use the acrylic background effect"), self.scrollwidget)
+        self.acrylicSwitchButton = SwitchButton(
             self.tr("Off"), self.scrollwidget)
 
         # 搜索
@@ -89,7 +98,7 @@ class SettingInterface(ScrollArea):
         self.downloadFolderLineEdit.resize(313, 42)
         self.downloadFolderLineEdit.setReadOnly(True)
         self.downloadFolderLineEdit.setCursorPosition(0)
-        self.scrollwidget.resize(self.width(), 850)
+        self.scrollwidget.resize(self.width(), 1000)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setViewportMargins(0, 120, 0, 0)
         self.setWidget(self.scrollwidget)
@@ -98,6 +107,10 @@ class SettingInterface(ScrollArea):
         self.selectMusicFolderLabel.setCursor(Qt.PointingHandCursor)
         self.helpLabel.setCursor(Qt.PointingHandCursor)
         self.issueLabel.setCursor(Qt.PointingHandCursor)
+
+        # 设置亚克力开关按钮的状态
+        self.acrylicSwitchButton.setChecked(
+            self.config.get("enable-acrylic-background", True))
 
         # 设置播放音质
         self.standardQualityButton.setProperty('quality', 'Standard quality')
@@ -140,20 +153,24 @@ class SettingInterface(ScrollArea):
         self.mediaInfoLabel.move(30, 125)
         self.getMetaDataLabel.move(30, 168)
         self.getMetaDataSwitchButton.move(30, 200)
+        # 亚克力效果
+        self.acrylicLabel.move(30, 262)
+        self.acrylicHintLabel.move(30, 312)
+        self.acrylicSwitchButton.move(30, 344)
         # 搜索
-        self.searchLabel.move(30, 262)
-        self.pageSizeHintLabel.move(30, 312)
-        self.pageSizeSlider.move(30, 342)
-        self.pageSizeValueLabel.move(230, 342)
+        self.searchLabel.move(30, 406)
+        self.pageSizeHintLabel.move(30, 456)
+        self.pageSizeSlider.move(30, 486)
+        self.pageSizeValueLabel.move(230, 486)
         # 在线音乐音质
-        self.onlinePlayQualityLabel.move(30, 402)
-        self.standardQualityButton.move(30, 452)
-        self.highQualityButton.move(30, 492)
-        self.superQualityButton.move(30, 532)
+        self.onlinePlayQualityLabel.move(30, 548)
+        self.standardQualityButton.move(30, 598)
+        self.highQualityButton.move(30, 638)
+        self.superQualityButton.move(30, 678)
         # 下载目录
-        self.downloadFolderLabel.move(30, 594)
-        self.downloadFolderLineEdit.move(30, 644)
-        self.downloadFolderButton.move(350, 644)
+        self.downloadFolderLabel.move(30, 740)
+        self.downloadFolderLineEdit.move(30, 790)
+        self.downloadFolderButton.move(350, 790)
         # 应用
         self.appLabel.move(self.width() - 400, 18)
         self.helpLabel.move(self.width() - 400, 64)
@@ -212,6 +229,7 @@ class SettingInterface(ScrollArea):
         self.downloadFolderLabel.setObjectName("titleLabel")
         self.settingLabel.setObjectName("settingLabel")
         self.mediaInfoLabel.setObjectName("titleLabel")
+        self.acrylicLabel.setObjectName("titleLabel")
         self.searchLabel.setObjectName('titleLabel')
         self.helpLabel.setObjectName("clickableLabel")
         self.issueLabel.setObjectName("clickableLabel")
@@ -265,7 +283,15 @@ class SettingInterface(ScrollArea):
             with open("config/config.json", encoding="utf-8") as f:
                 self.config = load(f)  # type:dict
         except:
-            self.config = {"selected-folders": []}
+            self.config = {
+                "selected-folders": [],
+                "online-play-quality": "Standard quality",
+                "online-music-page-size": 20,
+                "enable-acrylic-background": True,
+                "volume": 30,
+                "playBar-color": [34, 92, 127],
+                'download-folder': 'download'
+            }
 
         # 检查文件夹是否存在，不存在则从配置中移除
         for folder in self.config["selected-folders"].copy():
@@ -338,6 +364,11 @@ class SettingInterface(ScrollArea):
             self.downloadFolderChanged.emit(path)
             self.updateConfig(self.config)
 
+    def __onAcrylicCheckedChanged(self, isChecked: bool):
+        """ 是否启用亚克力效果开关按钮状态改变槽函数 """
+        self.config["enable-acrylic-background"] = isChecked
+        self.acrylicEnableChanged.emit(isChecked)
+
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
         self.getMetaDataSwitchButton.checkedChanged.connect(
@@ -354,3 +385,5 @@ class SettingInterface(ScrollArea):
             self.__onOnlinePlayQualityChanged)
         self.downloadFolderButton.clicked.connect(
             self.__onDownloadFolderButtonClicked)
+        self.acrylicSwitchButton.checkedChanged.connect(
+            self.__onAcrylicCheckedChanged)

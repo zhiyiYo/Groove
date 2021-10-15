@@ -6,13 +6,17 @@
     background-color: white;
 }
 
+QScrollArea{
+    border: none;
+}
+
 /*滚动条*/
 QScrollBar {
     background: transparent;
-    width: 4px;
+    width: 5px;
     margin-top: 60px;
     margin-bottom: 133px;
-    margin-right: 1px;
+    margin-right: 2px;
 }
 
 /*隐藏上箭头*/

@@ -79,6 +79,11 @@ class WindowEffect:
         # 开启亚克力
         self.SetWindowCompositionAttribute(hWnd, pointer(self.winCompAttrData))
 
+    def removeBackgroundEffect(self, hWnd):
+        """ 移除背景特效效果 """
+        self.accentPolicy.AccentState = ACCENT_STATE.ACCENT_DISABLED.value[0]
+        self.SetWindowCompositionAttribute(hWnd, pointer(self.winCompAttrData))
+
     def setAeroEffect(self, hWnd):
         """ 给窗口开启Aero效果
 

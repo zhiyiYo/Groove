@@ -64,3 +64,20 @@
     conda activate Groove
     python Groove.py
     ```
+
+
+## FAQs
+#### Q1: Why does the window get stuck when it is dragged?
+
+**A:** Because the interface background uses acrylic effect, this problem will occur for some versions of win10. There are three solutions:
+
+1. Upgrade win10 to the latest version
+2. Uncheck the check box of **Advanced system settings - > Performance - > Show window contents when dragging**
+3. Turn off the option to enable acrylic background in the setting interface
+
+#### Q2: Why didn't the song list update immediately after I downloaded a song?
+
+**A:** The song list is updated every three minutes, so please wait patiently :)
+
+#### Q3: Why can't some online songs be played?
+**A:** Some songs themselves cannot be played. If you see that the year of the song is 1970, it is very likely that this song cannot be played.

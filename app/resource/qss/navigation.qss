@@ -7,8 +7,9 @@ QLabel#titleLabel {
     /* padding: 10px 15px 10px 15px; */
 }
 
-QWidget {
+QWidget,QScrollArea {
     background-color: transparent;
+    border: none;
 }
 
 /*滚动条*/

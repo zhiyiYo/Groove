@@ -6,6 +6,10 @@
     background-color: white;
 }
 
+QScrollArea {
+    border: none;
+}
+
 QLabel {
     color: black;
     font: 25px 'Segoe UI', 'Microsoft YaHei';
@@ -28,10 +32,10 @@ ThreeStatePushButton:pressed {
 /*滚动条*/
 QScrollBar {
     background: transparent;
-    width: 4px;
+    width: 5px;
     margin-top: 60px;
     margin-bottom: 133px;
-    padding-right: 1px;
+    padding-right: 2px;
 }
 
 /*隐藏上箭头*/
