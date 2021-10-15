@@ -110,7 +110,7 @@ class SettingInterface(ScrollArea):
 
         # 设置亚克力开关按钮的状态
         self.acrylicSwitchButton.setChecked(
-            self.config.get("enable-acrylic-background", True))
+            self.config.get("enable-acrylic-background", False))
 
         # 设置播放音质
         self.standardQualityButton.setProperty('quality', 'Standard quality')
@@ -287,7 +287,7 @@ class SettingInterface(ScrollArea):
                 "selected-folders": [],
                 "online-play-quality": "Standard quality",
                 "online-music-page-size": 20,
-                "enable-acrylic-background": True,
+                "enable-acrylic-background": False,
                 "volume": 30,
                 "playBar-color": [34, 92, 127],
                 'download-folder': 'download'

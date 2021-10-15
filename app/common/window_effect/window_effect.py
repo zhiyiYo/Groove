@@ -79,11 +79,6 @@ class WindowEffect:
         # 开启亚克力
         self.SetWindowCompositionAttribute(hWnd, pointer(self.winCompAttrData))
 
-    def removeBackgroundEffect(self, hWnd):
-        """ 移除背景特效效果 """
-        self.accentPolicy.AccentState = ACCENT_STATE.ACCENT_DISABLED.value[0]
-        self.SetWindowCompositionAttribute(hWnd, pointer(self.winCompAttrData))
-
     def setAeroEffect(self, hWnd):
         """ 给窗口开启Aero效果
 
@@ -94,6 +89,16 @@ class WindowEffect:
         """
         self.accentPolicy.AccentState = ACCENT_STATE.ACCENT_ENABLE_BLURBEHIND.value[0]
         # 开启Aero
+        self.SetWindowCompositionAttribute(hWnd, pointer(self.winCompAttrData))
+
+    def setTransparentEffect(self, hWnd):
+        """ 设置窗口透明效果 """
+        self.accentPolicy.AccentState = ACCENT_STATE.ACCENT_ENABLE_TRANSPARENTGRADIENT.value[0]
+        self.SetWindowCompositionAttribute(hWnd, pointer(self.winCompAttrData))
+
+    def removeBackgroundEffect(self, hWnd):
+        """ 移除背景特效效果 """
+        self.accentPolicy.AccentState = ACCENT_STATE.ACCENT_DISABLED.value[0]
         self.SetWindowCompositionAttribute(hWnd, pointer(self.winCompAttrData))
 
     def moveWindow(self, hWnd):

@@ -121,6 +121,7 @@ class MainWindow(FramelessWindow):
         self.playlistInterface = PlaylistInterface({}, self.subMainWindow)
         self.playlistCardInterface = PlaylistCardInterface(
             self.readCustomPlaylists(), self)
+
         # 创建导航界面
         self.navigationInterface = NavigationInterface(self.subMainWindow)
 
@@ -167,10 +168,6 @@ class MainWindow(FramelessWindow):
         """ 初始化小部件 """
         self.resize(1240, 970)
         self.setMinimumSize(1030, 800)
-
-        # 先设置普通的阴影效果可以保证原生的窗口效果
-        self.windowEffect.addShadowEffect(self.winId())
-        self.setWindowEffect()
 
         # 在去除任务栏的显示区域居中显示
         desktop = QApplication.desktop().availableGeometry()
@@ -221,6 +218,10 @@ class MainWindow(FramelessWindow):
         self.subStackWidget.show()
         self.navigationInterface.show()
         self.playBar.show()
+        # 先设置普通的阴影效果可以保证原生的窗口效果
+        self.windowEffect.addShadowEffect(self.winId())
+        self.setWindowEffect(self.settingInterface.getConfig(
+            "enable-acrylic-background", False))
 
     def setHotKey(self):
         """ 设置全局热键 """
@@ -235,7 +236,7 @@ class MainWindow(FramelessWindow):
         self.playHotKey.register(
             ("f5",), callback=lambda x: self.togglePlayState)
 
-    def setWindowEffect(self, isEnableAcrylic=True):
+    def setWindowEffect(self, isEnableAcrylic: bool):
         """ 设置窗口特效 """
         if isEnableAcrylic:
             self.windowEffect.setAcrylicEffect(self.winId(), "F2F2F299", True)
@@ -367,6 +368,21 @@ class MainWindow(FramelessWindow):
         self.thumbnailToolBar.setPlay(isPlay)
         self.smallestPlayInterface.setPlay(isPlay)
 
+    def setPlayButtonEnabled(self, isEnabled: bool):
+        """ 设置播放按钮是否启用 """
+        self.playBar.playButton.setEnabled(isEnabled)
+        self.playBar.nextSongButton.setEnabled(isEnabled)
+        self.playBar.lastSongButton.setEnabled(isEnabled)
+        self.playingInterface.playBar.playButton.setEnabled(isEnabled)
+        self.playingInterface.playBar.nextSongButton.setEnabled(isEnabled)
+        self.playingInterface.playBar.lastSongButton.setEnabled(isEnabled)
+        self.thumbnailToolBar.playButton.setEnabled(isEnabled)
+        self.thumbnailToolBar.nextSongButton.setEnabled(isEnabled)
+        self.thumbnailToolBar.lastSongButton.setEnabled(isEnabled)
+        self.smallestPlayInterface.playButton.setEnabled(isEnabled)
+        self.smallestPlayInterface.lastSongButton.setEnabled(isEnabled)
+        self.smallestPlayInterface.nextSongButton.setEnabled(isEnabled)
+
     def onVolumeChanged(self, volume: int):
         """ 音量滑动条数值改变时更换图标并设置音量 """
         self.player.setVolume(volume)
@@ -468,6 +484,15 @@ class MainWindow(FramelessWindow):
 
     def updateWindow(self, index: int):
         """ 切换歌曲时更新歌曲卡、播放栏和最小化播放窗口 """
+
+        if len(self.mediaPlaylist.playlist) == 0:
+            self.playBar.songInfoCard.hide()
+            self.setPlayButtonState(False)
+            self.setPlayButtonEnabled(False)
+            return
+        else:
+            self.setPlayButtonEnabled(True)
+
         songInfo = self.mediaPlaylist.playlist[index]
 
         # 更新正在播放界面、播放栏、专辑界面、播放列表界面、搜索界面和最小播放界面
@@ -568,10 +593,12 @@ class MainWindow(FramelessWindow):
         self.playBar.hide()
         self.titleBar.title.hide()
         self.titleBar.returnButton.show()
-        if not self.playingInterface.isPlaylistVisible:
+
+        if not self.playingInterface.isPlaylistVisible and len(self.playingInterface.playlist) > 0:
             self.playingInterface.songInfoCardChute.move(
                 0, -self.playingInterface.playBar.height() + 68)
             self.playingInterface.playBar.show()
+
         self.totalStackWidget.setCurrentIndex(1)
         self.titleBar.setWhiteIcon(True)
 
@@ -669,6 +696,9 @@ class MainWindow(FramelessWindow):
         self.mediaPlaylist.clear()
         self.playingInterface.clearPlaylist()
         self.smallestPlayInterface.clearPlaylist()
+        self.playBar.songInfoCard.hide()
+        self.setPlayButtonState(False)
+        self.setPlayButtonEnabled(False)
 
     def addOneSongToPlayingPlaylist(self, songInfo: dict):
         """ 向正在播放列表尾部添加一首歌 """

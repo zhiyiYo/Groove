@@ -38,7 +38,7 @@ class PlayButton(QToolButton):
 
     def eventFilter(self, obj, e):
         """ 按钮按下时更换按钮 """
-        if obj == self:
+        if obj == self and self.isEnabled():
             if e.type() == QEvent.MouseButtonRelease and e.button() == Qt.LeftButton:
                 self.isPlaying = not self.isPlaying
                 self.isPressed = False

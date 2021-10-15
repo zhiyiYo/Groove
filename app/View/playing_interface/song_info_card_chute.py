@@ -34,7 +34,6 @@ class SongInfoCardChute(QWidget):
         """
         super().__init__(parent)
         self.playlist = playlist if playlist else []
-        self.songNum = len(self.playlist)
         self.currentIndex = 0
         self.lastMousePosX = 0          # 鼠标移动位置
         self.mousePressedPosX = 0       # 鼠标按下的横坐标
@@ -52,8 +51,8 @@ class SongInfoCardChute(QWidget):
             ani = QPropertyAnimation(card, b'geometry', self)
             self.scrollAnis.append(ani)
             self.aniGroup.addAnimation(ani)
-            card.setVisible(0 <= i-1 <= self.songNum-1)
-            if 0 <= i-1 <= self.songNum-1:
+            card.setVisible(0 <= i-1 <= len(self.playlist)-1)
+            if 0 <= i-1 <= len(self.playlist)-1:
                 card.updateCard(self.playlist[i-1])
 
         # 初始化小部件
@@ -101,7 +100,7 @@ class SongInfoCardChute(QWidget):
         dx = self.mouseDeltaX = self.lastMousePosX-self.mousePressedPosX
 
         # 开始移动动画
-        n = self.songNum
+        n = len(self.playlist)
         index = self.currentIndex
         if 0 <= n <= 1 or (index == 0 and dx > 0) or (index == n-1 and dx < 0):
             self.__restoreCardPosition()
@@ -187,7 +186,7 @@ class SongInfoCardChute(QWidget):
     def __updateSongInfoCards(self):
         """ 根据当前歌曲下标更新所有歌曲卡 """
         for i, card in enumerate(self.cards):
-            isVisible = 0 <= self.currentIndex+i-1 < self.songNum
+            isVisible = 0 <= self.currentIndex+i-1 < len(self.playlist)
             card.setVisible(isVisible)
             if isVisible:
                 card.updateCard(self.playlist[self.currentIndex+i-1])
@@ -224,10 +223,9 @@ class SongInfoCardChute(QWidget):
     def setPlaylist(self, playlist: list, isResetIndex: bool, index=0):
         """ 设置播放列表 """
         self.playlist = playlist
-        self.songNum = len(self.playlist)
         self.currentIndex = index if isResetIndex else self.currentIndex
         for i, card in enumerate(self.cards):
-            isVisible = 0 <= self.currentIndex+i-1 <= self.songNum-1
+            isVisible = 0 <= self.currentIndex+i-1 <= len(self.playlist)-1
             card.setVisible(isVisible)
             if isVisible:
                 card.updateCard(self.playlist[self.currentIndex+i-1])

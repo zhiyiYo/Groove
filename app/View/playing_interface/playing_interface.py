@@ -359,10 +359,28 @@ class PlayingInterface(QWidget):
         if self.currentIndex > index:
             self.currentIndex -= 1
             self.songInfoCardChute.currentIndex -= 1
+
         elif self.currentIndex == index:
             self.currentIndex -= 1
             self.songInfoCardChute.currentIndex -= 1
-            self.songInfoCardChute.setCurrentIndex(self.currentIndex)
+
+        # 强制更新当前歌曲的信息
+        n = len(self.playlist)
+        if n > 0:
+            self.songInfoCardChute.cards[1].updateCard(
+                self.playlist[self.currentIndex])
+
+            if self.currentIndex == n-1:
+                self.songInfoCardChute.cards[-1].hide()
+            else:
+                self.songInfoCardChute.cards[-1].updateCard(
+                    self.playlist[self.currentIndex+1])
+
+            if self.currentIndex == 0:
+                self.songInfoCardChute.cards[0].hide()
+            else:
+                self.songInfoCardChute.cards[0].updateCard(
+                    self.playlist[self.currentIndex-1])
 
         self.removeMediaSignal.emit(index)
 
@@ -377,12 +395,14 @@ class PlayingInterface(QWidget):
         self.songListWidget.clearSongCards()
         # 显示随机播放所有按钮
         self.__setGuideLabelHidden(False)
+        self.playBar.hide()
 
     def __setGuideLabelHidden(self, isHidden):
         """ 设置导航标签和随机播放所有按钮的可见性 """
         self.randomPlayAllButton.setHidden(isHidden)
         self.guideLabel.setHidden(isHidden)
         self.songListWidget.setHidden(not isHidden)
+
         if isHidden:
             # 隐藏导航标签时根据播放列表是否可见设置磨砂背景和播放栏的可见性
             self.blurBackgroundPic.setHidden(self.isPlaylistVisible)
@@ -391,6 +411,7 @@ class PlayingInterface(QWidget):
             # 显示导航标签时隐藏磨砂背景
             self.blurBackgroundPic.hide()
             self.playBar.hide()
+
         # 最后再显示歌曲信息卡
         self.songInfoCardChute.setHidden(not isHidden)
 

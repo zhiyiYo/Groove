@@ -88,7 +88,7 @@ class CreatePlaylistDialog(MaskDialogBase):
 
     def __onCreatePlaylistButtonClicked(self):
         """ 发出创建播放列表的信号 """
-        text = self.lineEdit.text()
+        text = self.lineEdit.text().strip()
         playlistName = text if text else self.tr("New playlist")
 
         # 如果播放列表已存在，显示提示消息并直接返回
@@ -135,7 +135,7 @@ class LineEdit(QLineEdit):
         self.textChanged.connect(self.textChangedEvent)
         self.setObjectName("createPlaylistPanelLineEdit")
         self.setPlaceholderText(self.tr("Name the playlist"))
-        
+
         # 初始化按钮
         self.clearButton.hide()
         self.clearButton.installEventFilter(self)

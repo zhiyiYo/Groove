@@ -83,7 +83,7 @@ class RenamePlaylistDialog(MaskDialogBase):
 
     def __onRenamePlaylistButtonClicked(self):
         """ 重命名播放列表按钮点击槽函数 """
-        playlistName = self.lineEdit.text()
+        playlistName = self.lineEdit.text().strip()
         if self.__isPlaylistExist(playlistName):
             return
 
@@ -105,6 +105,7 @@ class RenamePlaylistDialog(MaskDialogBase):
 
     def __onLineEditTextChanged(self, playlistName: str):
         """ 单行输入框中的播放列表名字改变对应的槽函数 """
+        playlistName = playlistName.strip()
         # 如果播放列表名字存在或者没变就禁用按钮
         isExist = self.__isPlaylistExist(playlistName)
         isDisabled = playlistName in ["", self.oldPlaylistName]
