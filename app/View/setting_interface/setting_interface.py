@@ -1,6 +1,6 @@
 # coding:utf-8
 import os
-from json import dump, load
+import json
 
 from common.os_utils import checkDirExists
 from common.thread.get_meta_data_thread import GetMetaDataThread
@@ -28,7 +28,19 @@ class SettingInterface(ScrollArea):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        # 读入数据
+
+        # 默认配置
+        self.config = {
+            "selected-folders": [],
+            "online-play-quality": "Standard quality",
+            "online-music-page-size": 20,
+            "enable-acrylic-background": False,
+            "volume": 30,
+            "playBar-color": [34, 92, 127],
+            'download-folder': os.path.abspath('download').replace("\\", '/')
+        }
+
+        # 读入用户配置
         self.__readConfig()
 
         # 滚动小部件
@@ -79,10 +91,10 @@ class SettingInterface(ScrollArea):
         self.downloadFolderHintLabel = QLabel('')
         self.downloadFolderButton = QPushButton(
             self.tr("Choose"), self.scrollwidget)
-        self.downloadFolderLineEdit = QLineEdit(self.config.get(
-            'download-folder', os.path.abspath('download').replace('\\', '/')), self.scrollwidget)
+        self.downloadFolderLineEdit = QLineEdit(
+            self.config['download-folder'].replace('\\', '/'), self.scrollwidget)
         self.downloadFolderLabel = QLabel(
-            self.tr("Download directory"), self.scrollwidget)
+            self.tr("Download Directory"), self.scrollwidget)
 
         # 应用
         self.appLabel = QLabel(self.tr("App"), self.scrollwidget)
@@ -110,7 +122,7 @@ class SettingInterface(ScrollArea):
 
         # 设置亚克力开关按钮的状态
         self.acrylicSwitchButton.setChecked(
-            self.config.get("enable-acrylic-background", False))
+            self.config["enable-acrylic-background"])
 
         # 设置播放音质
         self.standardQualityButton.setProperty('quality', 'Standard quality')
@@ -119,13 +131,13 @@ class SettingInterface(ScrollArea):
         self.__setCheckedRadioButton()
 
         # 设置滑动条
-        pageSize = self.config.get('online-music-page-size', 10)
+        pageSize = self.config['online-music-page-size']
         self.pageSizeSlider.setRange(1, 50)
         self.pageSizeSlider.setValue(pageSize)
         self.pageSizeValueLabel.setNum(pageSize)
 
         # 根据是否有选中目录来设置爬虫复选框的启用与否
-        self.__updateSwitchButtonEnabled()
+        self.__updateMetaDataSwitchButtonEnabled()
 
         # 设置超链接
         self.helpLabel.clicked.connect(lambda: QDesktopServices.openUrl(
@@ -176,14 +188,14 @@ class SettingInterface(ScrollArea):
         self.helpLabel.move(self.width() - 400, 64)
         self.issueLabel.move(self.width() - 400, 94)
 
-    def __updateSwitchButtonEnabled(self):
+    def __updateMetaDataSwitchButtonEnabled(self):
         """ 根据是否有选中目录来设置爬虫复选框的启用与否 """
-        if self.config.get("selected-folders"):
+        if self.config["selected-folders"]:
             self.getMetaDataSwitchButton.setEnabled(True)
         else:
             self.getMetaDataSwitchButton.setEnabled(False)
 
-    def onCheckBoxStatedChanged(self):
+    def __onCheckBoxStatedChanged(self):
         """ 复选框状态改变对应的槽函数 """
         if self.getMetaDataSwitchButton.isChecked():
             self.getMetaDataSwitchButton.setText(self.tr("On"))
@@ -261,7 +273,8 @@ class SettingInterface(ScrollArea):
         content = self.tr("Right now, we're watching these folders:")
         w = FolderListDialog(
             self.config["selected-folders"], title, content, self.window())
-        # 如果歌曲文件夹选择面板更新了json文件那么自己也得更新
+
+        # 用户选择的歌曲文件夹变化
         w.folderChanged.connect(self.__updateSelectedFolders)
         w.exec_()
 
@@ -269,38 +282,32 @@ class SettingInterface(ScrollArea):
         """ 更新选中的歌曲文件夹列表 """
         if self.config["selected-folders"] == selectedFolders:
             return
+
         self.config["selected-folders"] = selectedFolders
-        self.__updateSwitchButtonEnabled()
-        # 更新配置文件
-        self.updateConfig({"selected-folders": selectedFolders})
-        # 发送更新歌曲文件夹列表的信号
+        self.__updateMetaDataSwitchButtonEnabled()
+        self.saveConfig()
         self.selectedMusicFoldersChanged.emit(selectedFolders)
 
-    @ checkDirExists('config')
+    @checkDirExists('config')
     def __readConfig(self):
         """ 读入配置文件数据 """
         try:
             with open("config/config.json", encoding="utf-8") as f:
-                self.config = load(f)  # type:dict
+                self.config.update(json.load(f))
         except:
-            self.config = {
-                "selected-folders": [],
-                "online-play-quality": "Standard quality",
-                "online-music-page-size": 20,
-                "enable-acrylic-background": False,
-                "volume": 30,
-                "playBar-color": [34, 92, 127],
-                'download-folder': 'download'
-            }
+            pass
 
-        # 检查文件夹是否存在，不存在则从配置中移除
+        # 检查音乐文件夹是否存在，不存在则从配置中移除
         for folder in self.config["selected-folders"].copy():
             if not os.path.exists(folder):
                 self.config["selected-folders"].remove(folder)
 
+        # 检测下载文件夹是否存在，不存在就新建一个
+        os.makedirs(self.config['download-folder'], exist_ok=True)
+
         # 根据是否有选中目录来设置爬虫复选框的启用与否
         if hasattr(self, "getMetaDataSwitchButton"):
-            self.__updateSwitchButtonEnabled()
+            self.__updateMetaDataSwitchButtonEnabled()
 
     def getConfig(self, configName: str, default=None):
         """ 获取配置
@@ -315,9 +322,8 @@ class SettingInterface(ScrollArea):
         """
         return self.config.get(configName, default)
 
-    @ checkDirExists('config')
     def updateConfig(self, config: dict):
-        """ 更新并保存配置数据
+        """ 更新并保存配置
 
         Parameters
         ----------
@@ -325,12 +331,17 @@ class SettingInterface(ScrollArea):
             配置信息字典
         """
         self.config.update(config)
+        self.saveConfig()
+
+    @checkDirExists('config')
+    def saveConfig(self):
+        """ 保存配置 """
         with open("config/config.json", "w", encoding="utf-8") as f:
-            dump(self.config, f)
+            json.dump(self.config, f)
 
     def __setCheckedRadioButton(self):
         """ 设置选中的单选按钮 """
-        quality = self.config.get('online-play-quality', 'Standard quality')
+        quality = self.config['online-play-quality']
         if quality == 'Standard quality':
             self.standardQualityButton.setChecked(True)
         elif quality == 'High quality':
@@ -344,35 +355,36 @@ class SettingInterface(ScrollArea):
         self.pageSizeValueLabel.adjustSize()
         self.config['online-music-page-size'] = value
         self.pageSizeChanged.emit(value)
-        self.updateConfig(self.config)
+        self.saveConfig()
 
     def __onOnlinePlayQualityChanged(self):
         """ 在线播放音质改变槽函数 """
         quality = self.sender().property('quality')
-        if self.config.get('online-play-quality', '') == quality:
+        if self.config['online-play-quality'] == quality:
             return
         self.config['online-play-quality'] = quality
         self.onlinePlayQualityChanged.emit(quality)
-        self.updateConfig(self.config)
+        self.saveConfig()
 
     def __onDownloadFolderButtonClicked(self):
         """ 下载文件夹按钮点击槽函数 """
-        path = QFileDialog.getExistingDirectory(self, "选择文件夹", "./")
-        if path and self.config.get('download-folder', '') != path:
-            self.config['download-folder'] = path
-            self.downloadFolderLineEdit.setText(path)
-            self.downloadFolderChanged.emit(path)
-            self.updateConfig(self.config)
+        folder = QFileDialog.getExistingDirectory(self, "选择文件夹", "./")
+        if folder and self.config['download-folder'] != folder:
+            self.config['download-folder'] = folder
+            self.downloadFolderLineEdit.setText(folder)
+            self.downloadFolderChanged.emit(folder)
+            self.saveConfig()
 
     def __onAcrylicCheckedChanged(self, isChecked: bool):
         """ 是否启用亚克力效果开关按钮状态改变槽函数 """
         self.config["enable-acrylic-background"] = isChecked
         self.acrylicEnableChanged.emit(isChecked)
+        self.saveConfig()
 
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
         self.getMetaDataSwitchButton.checkedChanged.connect(
-            self.onCheckBoxStatedChanged)
+            self.__onCheckBoxStatedChanged)
         self.selectMusicFolderLabel.clicked.connect(
             self.__showSongFolderListDialog)
         self.pageSizeSlider.valueChanged.connect(

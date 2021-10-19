@@ -11,7 +11,7 @@ app = QApplication(sys.argv)
 
 app.setAttribute(Qt.AA_DontCreateNativeWidgetSiblings)
 
-# 设置语言
+# 国际化
 translator = QTranslator()
 translator.load(QLocale.system(), ":/i18n/Groove_")
 app.installTranslator(translator)

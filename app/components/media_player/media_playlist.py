@@ -177,7 +177,6 @@ class MediaPlaylist(QMediaPlaylist):
                     "lastPlaylist", [])  # type:list
                 self.lastSongInfo = playlistInfo.get(
                     "lastSongInfo", {})  # type:dict
-
         except:
             self.playlist = []
             # 关闭窗口前正在播放的歌曲

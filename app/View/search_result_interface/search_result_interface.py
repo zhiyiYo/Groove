@@ -221,6 +221,9 @@ class SearchResultInterface(ScrollArea):
         # 对在线歌曲进行匹配并获取播放地址和封面
         self.onlineSongInfo_list = self.crawler.getSongInfoList(
             keyWord, self.onlineMusicPageSize)
+
+        # 获取在线歌曲的播放地址，必须在获取之前就将歌曲卡创建出来
+        self.onlineSongGroupBox.updateWindow(self.onlineSongInfo_list)
         self.getOnlineSongUrlThread.setSongInfoList(
             self.onlineSongInfo_list, self.onlinePlayQuality)
 
@@ -236,7 +239,6 @@ class SearchResultInterface(ScrollArea):
         self.albumGroupBox.updateWindow(self.albumInfo_list)
         self.playlistGroupBox.updateWindow(self.playlists)
         self.localSongGroupBox.updateWindow(self.localSongInfo_list)
-        self.onlineSongGroupBox.updateWindow(self.onlineSongInfo_list)
         self.getOnlineSongUrlThread.start()
 
         # 调整窗口大小

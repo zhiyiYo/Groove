@@ -78,7 +78,3 @@
 * **Why didn't the song list update immediately after I downloaded a song?**
 
   The song list is updated every three minutes, so please wait patiently :)
-
-* **Why can't some online songs be played?**
-
-  Some songs themselves cannot be played. If you see that the year of the song is 1970, it is very likely that this song cannot be played.

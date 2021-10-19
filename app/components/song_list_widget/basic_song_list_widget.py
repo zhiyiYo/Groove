@@ -162,10 +162,19 @@ class BasicSongListWidget(ListWidget):
             self.songCard_list[index].setPlay(True)
             self.playingSongInfo = self.songInfo_list[index]
 
+    def setPlayBySongInfo(self, songInfo: dict):
+        """ 设置歌曲卡播放状态，如果指定的歌曲不在当前歌曲列表中，将正在播放的歌曲卡取消播放状态 """
+        index = self.index(songInfo)
+        if index is not None:
+            self.setPlay(index)
+        else:
+            self.cancelPlayState()
+
     def cancelPlayState(self):
         """ 取消正在播放的歌曲卡的播放状态 """
-        if not self.songCard_list:
+        if not self.songCard_list or self.playingIndex is None:
             return
+
         self.songCard_list[self.playingIndex].setPlay(False)
         self.currentIndex = 0
         self.playingIndex = 0

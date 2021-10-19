@@ -469,39 +469,54 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="69"/>
+        <location filename="../../View/main_window/main_window.py" line="71"/>
         <source>Groove Music</source>
         <translation>Groove 音乐</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1029"/>
+        <location filename="../../View/main_window/main_window.py" line="1078"/>
         <source>This song is already in your playlist. Do you want to add?</source>
         <translation>此歌已在你的播放列表中。是否要添加？</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1032"/>
+        <location filename="../../View/main_window/main_window.py" line="1081"/>
         <source>Some songs are already in your playlist. Do you want to add?</source>
         <translation>部分歌曲已在你的播放列表中。是否要添加？</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1035"/>
+        <location filename="../../View/main_window/main_window.py" line="1084"/>
         <source>All these songs are already in your playlist. Do you want to add?</source>
         <translation>所有这些歌曲都已在你的播放列表中。是否要添加？</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1037"/>
+        <location filename="../../View/main_window/main_window.py" line="1087"/>
         <source>Song duplication</source>
         <translation>歌曲重复</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1102"/>
+        <location filename="../../View/main_window/main_window.py" line="1151"/>
         <source>Updating song list</source>
         <translation>正在更新歌曲列表</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1102"/>
+        <location filename="../../View/main_window/main_window.py" line="1151"/>
         <source>Please wait patiently</source>
         <translation>请耐心等待</translation>
+    </message>
+    <message>
+        <location filename="../../View/main_window/main_window.py" line="370"/>
+        <source>Can&apos;t play this song</source>
+        <translation>无法播放此歌曲</translation>
+    </message>
+    <message>
+        <location filename="../../View/main_window/main_window.py" line="372"/>
+        <source>Close</source>
+        <translation>关闭</translation>
+    </message>
+    <message>
+        <location filename="../../View/main_window/main_window.py" line="370"/>
+        <source>It&apos;s not on this device or somewhere we can stream from.</source>
+        <translation>它不在这台设备上，也不在我们可以从中流式传输的某个位置。</translation>
     </message>
 </context>
 <context>
@@ -1071,124 +1086,124 @@
 <context>
     <name>SettingInterface</name>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="37"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="50"/>
         <source>Settings</source>
         <translation>设置</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="87"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="100"/>
         <source>App</source>
         <translation>应用</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="46"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="59"/>
         <source>Media Info</source>
         <translation>媒体信息</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="88"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="101"/>
         <source>Help</source>
         <translation>帮助</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="89"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="102"/>
         <source>Feedback</source>
         <translation>反馈</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="40"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="53"/>
         <source>Music on this PC</source>
         <translation>此 PC 上的音乐</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="218"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="235"/>
         <source>Off</source>
         <translation>关</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="47"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="60"/>
         <source>Automatically retrieve and update missing album art and metadata</source>
         <translation>自动检索并更新缺失的专辑封面和元数据</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="68"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="81"/>
         <source>Online Playing Quality</source>
         <translation>在线播放音质</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="70"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="83"/>
         <source>Standard quality</source>
         <translation>流畅</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="72"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="85"/>
         <source>High quality</source>
         <translation>高品</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="74"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="87"/>
         <source>Super quality</source>
         <translation>超品</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="61"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="74"/>
         <source>Search</source>
         <translation>搜索</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="64"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="77"/>
         <source>Set the number of online music displayed</source>
         <translation>显示的在线音乐数量</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="42"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="55"/>
         <source>Choose where we look for music</source>
         <translation>选择查找音乐的位置</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="83"/>
-        <source>Download directory</source>
-        <translation>下载目录</translation>
-    </message>
-    <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="79"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="92"/>
         <source>Choose</source>
         <translation>浏览</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="184"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="201"/>
         <source>On</source>
         <translation>开</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="198"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="215"/>
         <source>Current progress: </source>
         <translation>当前进度: </translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="256"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="273"/>
         <source>Right now, we&apos;re watching these folders:</source>
         <translation>现在我们正在查看这些文件夹:</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="255"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="272"/>
         <source>Build your collection from your local music files</source>
         <translation>从本地曲库创建个人&quot;收藏&quot;</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="198"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="215"/>
         <source>Crawling metadata</source>
         <translation>正在爬取歌曲信息</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="53"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="66"/>
         <source>Acrylic Background</source>
         <translation>亚克力背景</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="55"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="68"/>
         <source>Use the acrylic background effect</source>
         <translation>使用亚克力背景效果</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="96"/>
+        <source>Download Directory</source>
+        <translation>下载目录</translation>
     </message>
 </context>
 <context>

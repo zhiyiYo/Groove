@@ -19,7 +19,7 @@ from components.thumbnail_tool_bar import ThumbnailToolBar
 from components.title_bar import TitleBar
 from PyQt5.QtCore import QEasingCurve, QEvent, QFile, Qt, QTimer
 from PyQt5.QtGui import QCloseEvent, QColor, QIcon, QPixmap
-from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist
+from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist, QMediaContent
 from PyQt5.QtWidgets import QAction, QApplication, QWidget, QLabel, QHBoxLayout
 from PyQt5.QtWinExtras import QtWin
 from system_hotkey import SystemHotkey
@@ -91,7 +91,7 @@ class MainWindow(FramelessWindow):
 
         # 从配置文件中的选择文件夹读取音频文件
         self.myMusicInterface = MyMusicInterface(
-            self.settingInterface.getConfig("selected-folders", []), self.subMainWindow)
+            self.settingInterface.config["selected-folders"], self.subMainWindow)
 
         # 创建定时扫描歌曲信息的定时器
         self.rescanSongInfoTimer = QTimer(self)
@@ -102,8 +102,7 @@ class MainWindow(FramelessWindow):
         self.thumbnailToolBar.setWindow(self.windowHandle())
 
         # 创建播放栏
-        color = self.settingInterface.getConfig(
-            'playBar-color', [34, 92, 127])
+        color = self.settingInterface.config['playBar-color']
         self.playBar = PlayBar(
             self.mediaPlaylist.lastSongInfo, QColor(*color), self)
 
@@ -134,12 +133,9 @@ class MainWindow(FramelessWindow):
             self.mediaPlaylist.playlist, parent=self)
 
         # 创建搜索结果界面
-        pageSize = self.settingInterface.config.get(
-            'online-music-page-size', 10)
-        quality = self.settingInterface.config.get(
-            'online-play-quality', 'Standard quality')
-        folder = self.settingInterface.config.get(
-            'download-folder', 'download')
+        pageSize = self.settingInterface.config['online-music-page-size']
+        quality = self.settingInterface.config['online-play-quality']
+        folder = self.settingInterface.config['download-folder']
         self.searchResultInterface = SearchResultInterface(
             pageSize, quality, folder, self.subMainWindow)
 
@@ -220,8 +216,8 @@ class MainWindow(FramelessWindow):
         self.playBar.show()
         # 先设置普通的阴影效果可以保证原生的窗口效果
         self.windowEffect.addShadowEffect(self.winId())
-        self.setWindowEffect(self.settingInterface.getConfig(
-            "enable-acrylic-background", False))
+        self.setWindowEffect(
+            self.settingInterface.config["enable-acrylic-background"])
 
     def setHotKey(self):
         """ 设置全局热键 """
@@ -339,6 +335,7 @@ class MainWindow(FramelessWindow):
             self.smallestPlayInterface.setPlaylist(songInfo_list)
             self.mediaPlaylist.setPlaylist(songInfo_list)
             self.mediaPlaylist.playlistType = PlaylistType.ALL_SONG_PLAYLIST
+            self.songTabSongListWidget.setPlay(0)
 
         # 将当前歌曲设置为上次关闭前播放的歌曲
         if self.mediaPlaylist.lastSongInfo in self.mediaPlaylist.playlist:
@@ -360,6 +357,27 @@ class MainWindow(FramelessWindow):
             self.thumbnailToolBar.setButtonsEnabled(True)
         else:
             self.play()
+
+    def checkMediaAvailable(self):
+        """ 当前播放的音频切换槽函数 """
+        if not self.mediaPlaylist.playlist:
+            return
+
+        # 判断媒体是否可用
+        songPath = self.mediaPlaylist.getCurrentSong().get("songPath", '')
+        if songPath.startswith('http') or os.path.exists(songPath):
+            return
+
+        # 媒体不可用时暂停播放器
+        self.player.pause()
+        self.setPlayButtonState(False)
+
+        # 弹出提示框
+        w = MessageDialog(self.tr("Can't play this song"), self.tr(
+            "It's not on this device or somewhere we can stream from."), self)
+        w.cancelButton.setText(self.tr('Close'))
+        w.yesButton.hide()
+        w.exec()
 
     def setPlayButtonState(self, isPlay: bool):
         """ 设置播放按钮状态 """
@@ -493,6 +511,10 @@ class MainWindow(FramelessWindow):
         else:
             self.setPlayButtonEnabled(True)
 
+        # 处理歌曲不存在的情况
+        if index < 0:
+            return
+
         songInfo = self.mediaPlaylist.playlist[index]
 
         # 更新正在播放界面、播放栏、专辑界面、播放列表界面、搜索界面和最小播放界面
@@ -502,35 +524,16 @@ class MainWindow(FramelessWindow):
         if self.smallestPlayInterface.isVisible():
             self.smallestPlayInterface.setCurrentIndex(index)
 
-        if songInfo in self.albumInterface.songInfo_list:
-            i = self.albumInterface.songListWidget.index(songInfo)
-            self.albumInterface.songListWidget.setPlay(i)
-        elif self.albumInterface.songListWidget.playingIndex is not None:
-            self.albumInterface.songListWidget.cancelPlayState()
+        self.songTabSongListWidget.setPlayBySongInfo(songInfo)
+        self.albumInterface.songListWidget.setPlayBySongInfo(songInfo)
+        self.playlistInterface.songListWidget.setPlayBySongInfo(songInfo)
+        self.searchResultInterface.localSongListWidget.setPlayBySongInfo(
+            songInfo)
+        self.searchResultInterface.onlineSongListWidget.setPlayBySongInfo(
+            songInfo)
 
-        if songInfo in self.playlistInterface.songInfo_list:
-            i = self.playlistInterface.songListWidget.index(songInfo)
-            self.playlistInterface.songListWidget.setPlay(i)
-        elif self.playlistInterface.songListWidget.playingIndex is not None:
-            self.playlistInterface.songListWidget.cancelPlayState()
-
-        if songInfo in self.searchResultInterface.localSongListWidget.songInfo_list:
-            i = self.searchResultInterface.localSongListWidget.index(songInfo)
-            self.searchResultInterface.localSongListWidget.setPlay(i)
-        elif self.searchResultInterface.localSongListWidget.playingIndex is not None:
-            self.searchResultInterface.localSongListWidget.cancelPlayState()
-
-        if songInfo in self.searchResultInterface.onlineSongListWidget.songInfo_list:
-            i = self.searchResultInterface.onlineSongListWidget.index(songInfo)
-            self.searchResultInterface.onlineSongListWidget.setPlay(i)
-        elif self.searchResultInterface.onlineSongListWidget.playingIndex is not None:
-            self.searchResultInterface.onlineSongListWidget.cancelPlayState()
-
-        index = self.songTabSongListWidget.index(songInfo)
-        if index is not None:
-            self.songTabSongListWidget.setPlay(index)
-        else:
-            self.songTabSongListWidget.cancelPlayState()
+        # 在更新完界面之后，检查媒体是否可用（需要显示警告图标）
+        self.checkMediaAvailable()
 
     def playAlbum(self, playlist: list, index=0):
         """ 播放专辑中的歌曲 """
@@ -575,7 +578,7 @@ class MainWindow(FramelessWindow):
     def initPlayBar(self):
         """ 从配置文件中读取配置数据来初始化播放栏 """
         # 初始化音量
-        volume = self.settingInterface.getConfig("volume", 20)
+        volume = self.settingInterface.config["volume"]
         self.playingInterface.setVolume(volume)
 
         # 初始化歌曲卡信息
@@ -699,6 +702,7 @@ class MainWindow(FramelessWindow):
         self.playBar.songInfoCard.hide()
         self.setPlayButtonState(False)
         self.setPlayButtonEnabled(False)
+        self.songTabSongListWidget.cancelPlayState()
 
     def addOneSongToPlayingPlaylist(self, songInfo: dict):
         """ 向正在播放列表尾部添加一首歌 """
@@ -798,9 +802,7 @@ class MainWindow(FramelessWindow):
 
         # 根据当前播放的歌曲设置歌曲卡播放状态
         songInfo = self.mediaPlaylist.getCurrentSong()
-        if songInfo in self.albumInterface.songInfo_list:
-            index = self.albumInterface.songInfo_list.index(songInfo)
-            self.albumInterface.songListWidget.setPlay(index)
+        self.albumInterface.songListWidget.setPlayBySongInfo(songInfo)
 
     def onAlbumInterfaceSongCardPlay(self, index):
         """ 专辑界面歌曲卡播放按钮按下时 """
@@ -1071,8 +1073,8 @@ class MainWindow(FramelessWindow):
             else:
                 content = self.tr(
                     "All these songs are already in your playlist. Do you want to add?")
-            w = MessageDialog(self.tr("Song duplication"),
-                              content, self.window())
+
+            w = MessageDialog(self.tr("Song duplication"), content, self)
             w.cancelSignal.connect(lambda: resetSongInfo(
                 songInfo_list, differentSongInfo_list))
             w.exec_()
@@ -1114,6 +1116,10 @@ class MainWindow(FramelessWindow):
         index = self.subStackWidget.indexOf(self.searchResultInterface)
         if self.navigationHistories[-1] != ("subStackWidget", index):
             self.navigationHistories.append(('subStackWidget', index))
+
+        # 设置当前播放歌曲
+        self.searchResultInterface.localSongListWidget.setPlayBySongInfo(
+            self.mediaPlaylist.getCurrentSong())
 
     def showLabelNavigationInterface(self, label_list: list, layout: str):
         """ 显示标签导航界面 """
