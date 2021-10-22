@@ -2,24 +2,40 @@
 import json
 import os
 from urllib import parse
-from pprint import pprint
+from copy import deepcopy
 
 import requests
 from common.os_utils import adjustName
 from common.meta_data_writer import writeAlbumCover, writeSongInfo
 
 
-def exceptionHandler(func):
-    """ 处理请求异常装饰器 """
+def exceptionHandler(*default):
+    """ 请求异常处理装饰器
 
-    def wrapper(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except:
-            print('发生异常')
-            return []
+    Parameters
+    ----------
+    *default:
+        发生异常时返回的默认值
+    """
 
-    return wrapper
+    def outer(func):
+
+        def inner(*args, **kwargs):
+            try:
+                return func(*args, **kwargs)
+            except:
+                print('发生异常')
+                value = deepcopy(default)
+                if len(value) == 0:
+                    return None
+                elif len(value) == 1:
+                    return value[0]
+                else:
+                    return value
+
+        return inner
+
+    return outer
 
 
 class KuWoMusicCrawler:
@@ -37,8 +53,8 @@ class KuWoMusicCrawler:
             'Referer': ''
         }
 
-    @exceptionHandler
-    def getSongInfoList(self, key_word: str, page_size=10):
+    @exceptionHandler([], 0)
+    def getSongInfoList(self, key_word: str, page_num=1, page_size=10):
         """ 获取歌曲列表
 
         Parameters
@@ -46,8 +62,19 @@ class KuWoMusicCrawler:
         key_word: str
             搜索关键词
 
+        page_num: int
+            当前页码
+
         page_size: int
-            返回的最多歌曲数量
+            每一页最多显示的条目数量
+
+        Returns
+        -------
+        song_info_list: List[dict]
+            歌曲信息列表
+
+        total: int
+            数据库中符合搜索条件的歌曲总数
         """
         key_word = parse.quote(key_word)
 
@@ -56,14 +83,14 @@ class KuWoMusicCrawler:
         headers["Referer"] = 'http://www.kuwo.cn/search/list?key='+key_word
 
         # 请求歌曲信息列表
-        url = f'http://www.kuwo.cn/api/www/search/searchMusicBykeyWord?key={key_word}&pn=1&rn={page_size}&reqId=c06e0e50-fe7c-11eb-9998-47e7e13a7206'
+        url = f'http://www.kuwo.cn/api/www/search/searchMusicBykeyWord?key={key_word}&pn={page_num}&rn={page_size}&reqId=c06e0e50-fe7c-11eb-9998-47e7e13a7206'
         response = requests.get(url, headers=headers)
         response.raise_for_status()
 
         # 获取歌曲信息
         song_info_list = []
-        info_list = json.loads(response.text)['data']['list']
-        for info in info_list:
+        data = json.loads(response.text)['data']
+        for info in data['list']:
             song_info = {}
             song_info['rid'] = info['rid']
             song_info['songPath'] = ''
@@ -83,8 +110,9 @@ class KuWoMusicCrawler:
 
             song_info_list.append(song_info)
 
-        return song_info_list
+        return song_info_list, int(data['total'])
 
+    @exceptionHandler('')
     def getSongUrl(self, rid: str, quality='Standard quality'):
         """ 获取歌曲播放地址
 
@@ -109,16 +137,13 @@ class KuWoMusicCrawler:
 
         # 请求歌曲播放地址
         url = f'http://www.kuwo.cn/url?rid={rid}&type=convert_url3&br={br}mp3'
-        try:
-            response = requests.get(url, headers=headers)
-            response.raise_for_status()
-            play_url = json.loads(response.text)['url']
-        except:
-            play_url = ''
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        play_url = json.loads(response.text)['url']
 
         return play_url
 
-    @exceptionHandler
+    @exceptionHandler('')
     def downloadSong(self, song_info: dict, save_dir: str, quality='Standard quality'):
         """ 下载歌曲 """
         # 获取下载地址
@@ -147,8 +172,8 @@ class KuWoMusicCrawler:
 
         return song_path
 
-    @exceptionHandler
-    def searchSong(self, key_word: str, quality='Standard quality', page_size=10):
+    @exceptionHandler([], 0)
+    def searchSong(self, key_word: str, quality='Standard quality', page_num=1, page_size=10):
         """ 搜索音乐
 
         Parameters
@@ -159,17 +184,29 @@ class KuWoMusicCrawler:
         quality: str
             歌曲音质，有 `Standard quality`、`High quality` 和 `Super quality` 三种
 
+        page_num: int
+            当前页码
+
         page_size: int
             最多返回歌曲下载地址数
+
+        Returns
+        -------
+        song_info_list: List[dict]
+            歌曲信息列表
+
+        total: int
+            数据库中符合搜索条件的歌曲总数
         """
-        song_info_list = self.getSongInfoList(key_word, page_size)
+        song_info_list, total = self.getSongInfoList(
+            key_word, page_num, page_size)
 
         for song_info in song_info_list:
             song_info['songPath'] = self.getSongUrl(song_info['rid'], quality)
 
-        return song_info_list
+        return song_info_list, total
 
-    @exceptionHandler
+    @exceptionHandler()
     def getSingerAvatar(self, singer: str, save_dir: str):
         """ 获取歌手头像 """
         singer_ = parse.quote(singer)

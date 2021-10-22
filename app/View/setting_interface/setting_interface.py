@@ -55,19 +55,19 @@ class SettingInterface(ScrollArea):
         self.selectMusicFolderLabel = ClickableLabel(
             self.tr("Choose where we look for music"), self.scrollwidget)
 
-        # 媒体信息
-        self.mediaInfoLabel = QLabel(self.tr("Media Info"), self.scrollwidget)
-        self.getMetaDataLabel = QLabel(self.tr(
-            "Automatically retrieve and update missing album art and metadata"), self.scrollwidget)
-        self.getMetaDataSwitchButton = SwitchButton(
-            self.tr("Off"), self.scrollwidget)
-
         # 启动亚克力背景
         self.acrylicLabel = QLabel(
             self.tr("Acrylic Background"), self.scrollwidget)
         self.acrylicHintLabel = QLabel(
             self.tr("Use the acrylic background effect"), self.scrollwidget)
         self.acrylicSwitchButton = SwitchButton(
+            self.tr("Off"), self.scrollwidget)
+
+        # 媒体信息
+        self.mediaInfoLabel = QLabel(self.tr("Media Info"), self.scrollwidget)
+        self.getMetaDataLabel = QLabel(self.tr(
+            "Automatically retrieve and update missing album art and metadata"), self.scrollwidget)
+        self.getMetaDataSwitchButton = SwitchButton(
             self.tr("Off"), self.scrollwidget)
 
         # 搜索
@@ -115,14 +115,16 @@ class SettingInterface(ScrollArea):
         self.setViewportMargins(0, 120, 0, 0)
         self.setWidget(self.scrollwidget)
 
+        # 设置亚克力开关按钮的状态
+        enableAcrylic = self.config["enable-acrylic-background"]
+        self.acrylicSwitchButton.setChecked(enableAcrylic)
+        self.acrylicSwitchButton.setText(
+            self.tr('On') if enableAcrylic else self.tr('Off'))
+
         # 设置鼠标光标
         self.selectMusicFolderLabel.setCursor(Qt.PointingHandCursor)
         self.helpLabel.setCursor(Qt.PointingHandCursor)
         self.issueLabel.setCursor(Qt.PointingHandCursor)
-
-        # 设置亚克力开关按钮的状态
-        self.acrylicSwitchButton.setChecked(
-            self.config["enable-acrylic-background"])
 
         # 设置播放音质
         self.standardQualityButton.setProperty('quality', 'Standard quality')
@@ -132,7 +134,7 @@ class SettingInterface(ScrollArea):
 
         # 设置滑动条
         pageSize = self.config['online-music-page-size']
-        self.pageSizeSlider.setRange(1, 50)
+        self.pageSizeSlider.setRange(1, 30)
         self.pageSizeSlider.setValue(pageSize)
         self.pageSizeValueLabel.setNum(pageSize)
 
@@ -161,14 +163,14 @@ class SettingInterface(ScrollArea):
         # 选择歌曲文件夹
         self.musicInThisPCLabel.move(30, 18)
         self.selectMusicFolderLabel.move(30, 64)
-        # 媒体信息
-        self.mediaInfoLabel.move(30, 125)
-        self.getMetaDataLabel.move(30, 168)
-        self.getMetaDataSwitchButton.move(30, 200)
         # 亚克力效果
-        self.acrylicLabel.move(30, 262)
-        self.acrylicHintLabel.move(30, 312)
-        self.acrylicSwitchButton.move(30, 344)
+        self.acrylicLabel.move(30, 125)
+        self.acrylicHintLabel.move(30, 168)
+        self.acrylicSwitchButton.move(30, 200)
+        # 媒体信息
+        self.mediaInfoLabel.move(30, 262)
+        self.getMetaDataLabel.move(30, 312)
+        self.getMetaDataSwitchButton.move(30, 344)
         # 搜索
         self.searchLabel.move(30, 406)
         self.pageSizeHintLabel.move(30, 456)

@@ -66,15 +66,12 @@
     ```
 
 
-## FAQs
+## FAQ
 * **Why does the window get stuck when it is dragged?**
 
   Because the interface background uses acrylic effect, this problem will occur for some versions of win10. There are three solutions:
 
   * Upgrade win10 to the latest version.
-  * Uncheck the check box of **Advanced system settings - > Performance - > Show window contents when dragging**.
+  * Uncheck the check box of **Advanced system settings --> Performance --> Show window contents when dragging**.
   * Turn off the option to enable acrylic background in the setting interface.
 
-* **Why didn't the song list update immediately after I downloaded a song?**
-
-  The song list is updated every three minutes, so please wait patiently :)

@@ -44,3 +44,19 @@ QToolButton:hover {
 QToolButton:pressed {
     background-color: rgba(0, 0, 0, 0.8);
 }
+
+ClickableLabel {
+    font: 18px 'Segoe UI', 'Microsoft YaHei';
+}
+
+ClickableLabel[loadFinished="false"] {
+    color: rgb(0, 107, 131);
+}
+
+ClickableLabel[loadFinished="false"]:hover {
+    color: rgb(0, 153, 188);
+}
+
+ClickableLabel[loadFinished="true"] {
+    color: rgb(0, 0, 0, 0.4);
+}

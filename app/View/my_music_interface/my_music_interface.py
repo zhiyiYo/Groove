@@ -356,7 +356,6 @@ class MyMusicInterface(QWidget):
             content = self.tr("Please wait patiently")
             w = StateTooltip(title, content, self.window())
             thread.scanFinished.connect(lambda: w.setState(True))
-            thread.scanFinished.connect(self.__adjustWindowWidth)
             w.move(self.window().width() - w.width() - 30, 63)
             w.show()
 
@@ -377,7 +376,7 @@ class MyMusicInterface(QWidget):
         self.albumInfoGetter.albumInfo_list = deepcopy(albumInfo_list)
 
     def rescanSongInfo(self):
-        """ 重新当前的歌曲文件夹的歌曲信息 """
+        """ 重新扫描当前的歌曲文件夹的歌曲信息 """
         if not self.songInfoGetter.rescanSongInfo():
             return
 
@@ -393,14 +392,6 @@ class MyMusicInterface(QWidget):
             self.songInfoGetter.songInfo_list)
         self.albumCardInterface.updateAllAlbumCards(
             self.albumInfoGetter.albumInfo_list)
-
-        # 强制调整窗口宽度，防止时长显示异常
-        self.__adjustWindowWidth()
-
-    def __adjustWindowWidth(self):
-        """ 调整窗口宽度 """
-        if not self.window().isMaximized():
-            self.window().resize(self.window().width()+1, self.window().height())
 
     def hasSongModified(self):
         return self.songInfoGetter.hasSongModified()

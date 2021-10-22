@@ -40,6 +40,10 @@ class NoScrollSongListWidget(BasicSongListWidget):
         super().appendOneSongCard(songInfo)
         self.__adjustHeight()
 
+    def appendSongCards(self, songInfo_list: list):
+        super().appendSongCards(songInfo_list)
+        self.__adjustHeight()
+
     def updateAllSongCards(self, songInfo_list: list):
         """ 更新所有歌曲卡，根据给定的信息决定创建或者删除歌曲卡 """
         super().updateAllSongCards(songInfo_list)

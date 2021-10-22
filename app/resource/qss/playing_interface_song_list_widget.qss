@@ -130,9 +130,9 @@ QCheckBox::indicator:checked {
 /*滚动条*/
 QScrollBar:vertical {
     background: transparent;
-    width: 4px;
+    width: 5px;
     border: none;
-    padding-right: 1px;
+    padding-right: 2px;
 }
 
 

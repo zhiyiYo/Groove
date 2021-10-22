@@ -1,5 +1,6 @@
 # coding:utf-8
 from components.dialog_box.message_dialog import MessageDialog
+from components.label import ClickableLabel
 from components.menu import AddToMenu, DWMMenu, DownloadMenu
 from components.song_list_widget import NoScrollSongListWidget, SongCardType
 from PyQt5.QtCore import QMargins, Qt, pyqtSignal, QFile
@@ -8,6 +9,8 @@ from PyQt5.QtWidgets import QAction, QWidget, QPushButton
 
 class SongGroupBox(QWidget):
     """ 歌曲分组框 """
+
+    loadMoreSignal = pyqtSignal()
 
     def __init__(self, song_type: str, parent=None):
         """
@@ -23,13 +26,17 @@ class SongGroupBox(QWidget):
         if song_type not in ['Online songs', 'Local songs']:
             raise ValueError("歌曲类型必须是 'Online songs' 或 'Local songs'")
 
+        self.songType = song_type
         self.songInfo_list = []
         if song_type == 'Local songs':
             self.songListWidget = LocalSongListWidget(self)
             self.titleButton = QPushButton(self.tr('Local songs'), self)
+            self.loadMoreLabel = ClickableLabel()
+            self.loadMoreLabel.hide()   # 隐藏本地歌曲的加载更多标签
         else:
             self.songListWidget = OnlineSongListWidget(self)
             self.titleButton = QPushButton(self.tr('Online songs'), self)
+            self.loadMoreLabel = ClickableLabel(self.tr("Load more"), self)
 
         self.__initWidget()
 
@@ -37,13 +44,16 @@ class SongGroupBox(QWidget):
         """ 初始化小部件 """
         self.resize(1200, 500)
         self.setMinimumHeight(47)
-        self.songListWidget.move(0, 57)
         self.titleButton.move(35, 0)
+        self.songListWidget.move(0, 57)
+        self.loadMoreLabel.setCursor(Qt.PointingHandCursor)
+        self.loadMoreLabel.clicked.connect(self.__onLoadMoreLabelClicked)
         self.__setQss()
 
     def __setQss(self):
         """ 设置层叠样式 """
         self.titleButton.setObjectName('titleButton')
+        self.loadMoreLabel.setProperty("loadFinished", "false")
 
         f = QFile(":/qss/song_group_box.qss")
         f.open(QFile.ReadOnly)
@@ -54,6 +64,15 @@ class SongGroupBox(QWidget):
 
     def resizeEvent(self, e):
         self.songListWidget.resize(self.width(), self.songListWidget.height())
+        self.loadMoreLabel.move(self.width()//2-self.loadMoreLabel.width()//2,
+                                57+self.songListWidget.height()+17)
+
+    def __adjustHeight(self):
+        """ 调节高度 """
+        spacing = 0 if self.loadMoreLabel.isHidden() else 17*2+19
+        self.setFixedHeight(57+self.songListWidget.height()+spacing)
+        self.loadMoreLabel.move(self.loadMoreLabel.x(),
+                                57+self.songListWidget.height()+17)
 
     def updateWindow(self, songInfo_list):
         """ 更新窗口 """
@@ -61,7 +80,29 @@ class SongGroupBox(QWidget):
             return
         self.songInfo_list = songInfo_list
         self.songListWidget.updateAllSongCards(self.songInfo_list)
-        self.setFixedHeight(57+self.songListWidget.height())
+        self.__adjustHeight()
+
+    def loadMoreOnlineMusic(self, songInfo_list: list):
+        """ 载入更多在线音乐
+
+        Parameters
+        ----------
+        songInfo_list: list
+            新添加的歌曲信息列表
+        """
+        if self.songType != 'Online songs':
+            raise Exception('歌曲类型不是在线音乐，无法载入更多')
+
+        self.songInfo_list.extend(songInfo_list)
+        self.songListWidget.songInfo_list = self.songInfo_list
+        self.songListWidget.appendSongCards(songInfo_list)
+        self.__adjustHeight()
+
+    def __onLoadMoreLabelClicked(self):
+        """ 加载更多 """
+        if self.loadMoreLabel.isHidden() or self.loadMoreLabel.property("loadFinished") == "true":
+            return
+        self.loadMoreSignal.emit()
 
 
 class LocalSongListWidget(NoScrollSongListWidget):

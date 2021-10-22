@@ -89,11 +89,8 @@ class SongInfoCard(PerspectiveWidget):
         if newCoverPath != self.coverPath:
             self.albumChanged.emit(newCoverPath)
             self.coverPath = newCoverPath
-            self.albumPic.setPixmap(
-                QPixmap(self.coverPath).scaled(
-                    115, 115, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation
-                )
-            )
+            self.albumPic.setPixmap(QPixmap(newCoverPath).scaled(
+                115, 115, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
 
     def mouseReleaseEvent(self, e):
         """ 鼠标松开发送信号 """

@@ -6,7 +6,8 @@ from components.dialog_box.song_info_edit_dialog import SongInfoEditDialog
 from components.dialog_box.song_property_dialog import SongPropertyDialog
 from components.list_widget import ListWidget
 from PyQt5.QtCore import QMargins, QSize, Qt, pyqtSignal
-from PyQt5.QtWidgets import QLabel, QListWidgetItem, QWidget
+from PyQt5.QtGui import QResizeEvent
+from PyQt5.QtWidgets import QApplication, QLabel, QListWidgetItem, QWidget
 
 from .song_card import (AlbumInterfaceSongCard, NoCheckBoxSongCard,
                         OnlineSongCard, PlaylistInterfaceSongCard,
@@ -71,13 +72,7 @@ class BasicSongListWidget(ListWidget):
         self.setViewportMargins(viewportMargins)
 
     def createSongCards(self):
-        """ 清空列表并创建新歌曲卡
-
-        Parameter
-        ----------
-        connectSongCardSigToSlotFunc:
-             将歌曲卡信号连接到槽函数的函数对象
-        """
+        """ 清空列表并创建新歌曲卡 """
         self.clearSongCards()
         for songInfo in self.songInfo_list:
             self.appendOneSongCard(songInfo)
@@ -86,15 +81,12 @@ class BasicSongListWidget(ListWidget):
         self.__createPaddingBottomItem()
 
     def appendOneSongCard(self, songInfo: dict):
-        """ 在列表尾部添加一个歌曲卡
+        """ 在列表尾部添加一个歌曲卡，注意这不会改变歌曲信息列表
 
         Parameters
         ----------
         songInfo: dict
             歌曲信息字典
-
-        connectSongCardSigToSlotFunc:
-             将歌曲卡信号连接到槽函数的函数对象
         """
         item = QListWidgetItem()
         songCard = self.__SongCard(songInfo)
@@ -110,6 +102,25 @@ class BasicSongListWidget(ListWidget):
 
         # 信号连接到槽
         self._connectSongCardSignalToSlot(songCard)
+
+    def appendSongCards(self, songInfo_list: list):
+        """  在列表尾部添加一个歌曲卡，注意这不会改变歌曲信息列表
+
+        Parameters
+        ----------
+        songInfo_list: list
+            歌曲信息字典列表
+        """
+        self.__removePaddingBottomItem()
+
+        for songInfo in songInfo_list:
+            self.appendOneSongCard(songInfo)
+
+        self.__createPaddingBottomItem()
+
+        # 手动触发一次事件
+        e = QResizeEvent(QSize(self.size()), QSize(self.size()))
+        QApplication.sendEvent(self, e)
 
     def setCurrentIndex(self, index):
         """ 设置当前下标 """
@@ -226,10 +237,11 @@ class BasicSongListWidget(ListWidget):
     def resizeEvent(self, e):
         """ 更新item的尺寸 """
         super().resizeEvent(e)
+
         margins = self.viewportMargins()  # type:QMargins
+        size = QSize(self.width() - margins.left() - margins.right(), 60)
         for item in self.item_list:
-            item.setSizeHint(
-                QSize(self.width() - margins.left() - margins.right(), 60))
+            item.setSizeHint(size)
 
         if self.paddingBottomHeight:
             self.paddingBottomItem.setSizeHint(
@@ -295,20 +307,17 @@ class BasicSongListWidget(ListWidget):
             songCard.setChecked(False)
 
     def updateAllSongCards(self, songInfo_list: list):
-        """ 更新所有歌曲卡，根据给定的信息决定创建或者删除歌曲卡，该函数必须被子类重写
+        """ 更新所有歌曲卡
 
         Parameters
         ----------
         songInfo_list: list
             歌曲信息列表
-
-        connectSongCardSigToSlotFunc:
-            将歌曲卡信号连接到槽函数的函数对象
         """
-        # 删除旧占位行并取消当前歌曲卡播放状态
-        if self.paddingBottomHeight:
-            self.removeItemWidget(self.paddingBottomItem)
-            self.takeItem(len(self.songCard_list))
+        # 删除旧占位行
+        self.__removePaddingBottomItem()
+
+        # 取消当前歌曲卡播放状态
         if self.songCard_list:
             self.songCard_list[self.currentIndex].setPlay(False)
 
@@ -347,6 +356,10 @@ class BasicSongListWidget(ListWidget):
 
         # 创建新占位行
         self.__createPaddingBottomItem()
+
+        # 手动触发一次事件
+        e = QResizeEvent(QSize(self.size()), QSize(self.size()))
+        QApplication.sendEvent(self, e)
 
         # 发出歌曲卡数量改变信号
         if oldSongNum != newSongNum:
@@ -399,6 +412,12 @@ class BasicSongListWidget(ListWidget):
             QSize(width, self.paddingBottomHeight))
         self.setItemWidget(self.paddingBottomItem, self.paddingBottomWidget)
         self.addItem(self.paddingBottomItem)
+
+    def __removePaddingBottomItem(self):
+        """ 移除底部占位行 """
+        if self.paddingBottomHeight:
+            self.removeItemWidget(self.paddingBottomItem)
+            self.takeItem(len(self.songCard_list))
 
     @property
     def songCardType(self) -> SongCardType:

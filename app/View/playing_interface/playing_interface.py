@@ -338,6 +338,8 @@ class PlayingInterface(QWidget):
         # 如果小部件不可见就显示
         if playlist and not self.songListWidget.isVisible():
             self.__setGuideLabelHidden(True)
+        else:
+            self.__setGuideLabelHidden(False)
 
     def setPlay(self, isPlay: bool):
         """ 设置播放状态 """

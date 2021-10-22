@@ -2,6 +2,7 @@
 import json
 import os
 from copy import deepcopy
+from pathlib import Path
 from random import shuffle
 from typing import Dict
 
@@ -19,8 +20,8 @@ from components.thumbnail_tool_bar import ThumbnailToolBar
 from components.title_bar import TitleBar
 from PyQt5.QtCore import QEasingCurve, QEvent, QFile, Qt, QTimer
 from PyQt5.QtGui import QCloseEvent, QColor, QIcon, QPixmap
-from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist, QMediaContent
-from PyQt5.QtWidgets import QAction, QApplication, QWidget, QLabel, QHBoxLayout
+from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer, QMediaPlaylist
+from PyQt5.QtWidgets import QAction, QApplication, QHBoxLayout, QLabel, QWidget
 from PyQt5.QtWinExtras import QtWin
 from system_hotkey import SystemHotkey
 from View.album_interface import AlbumInterface
@@ -72,6 +73,10 @@ class MainWindow(FramelessWindow):
         self.setWindowIcon(QIcon(":/images/logo.png"))
 
         # 在去除任务栏的显示区域居中显示
+        QtWin.enableBlurBehindWindow(self)
+        self.setWindowFlags(Qt.FramelessWindowHint |
+                            Qt.WindowMinMaxButtonsHint)
+        self.windowEffect.addWindowAnimation(self.winId())
         desktop = QApplication.desktop().availableGeometry()
         self.move(desktop.width()//2 - self.width()//2,
                   desktop.height()//2 - self.height()//2)
@@ -97,7 +102,6 @@ class MainWindow(FramelessWindow):
         self.rescanSongInfoTimer = QTimer(self)
 
         # 创建缩略图任务栏
-        QtWin.enableBlurBehindWindow(self)
         self.thumbnailToolBar = ThumbnailToolBar(self)
         self.thumbnailToolBar.setWindow(self.windowHandle())
 
@@ -203,6 +207,9 @@ class MainWindow(FramelessWindow):
         self.connectSignalToSlot()
         # 初始化播放栏
         self.initPlayBar()
+        # 设置播放按钮可用性
+        self.setPlayButtonEnabled(
+            len(self.songTabSongListWidget.songInfo_list) > 0)
         # 安装事件过滤器
         self.navigationInterface.navigationMenu.installEventFilter(self)
         self.rescanSongInfoTimer.start()
@@ -214,8 +221,6 @@ class MainWindow(FramelessWindow):
         self.subStackWidget.show()
         self.navigationInterface.show()
         self.playBar.show()
-        # 先设置普通的阴影效果可以保证原生的窗口效果
-        self.windowEffect.addShadowEffect(self.winId())
         self.setWindowEffect(
             self.settingInterface.config["enable-acrylic-background"])
 
@@ -502,8 +507,7 @@ class MainWindow(FramelessWindow):
 
     def updateWindow(self, index: int):
         """ 切换歌曲时更新歌曲卡、播放栏和最小化播放窗口 """
-
-        if len(self.mediaPlaylist.playlist) == 0:
+        if not self.mediaPlaylist.playlist:
             self.playBar.songInfoCard.hide()
             self.setPlayButtonState(False)
             self.setPlayButtonEnabled(False)
@@ -567,13 +571,16 @@ class MainWindow(FramelessWindow):
 
     def play(self):
         """ 播放歌曲并改变按钮样式 """
-        self.player.play()
-        self.setPlayButtonState(True)
-        # 显示被隐藏的歌曲信息卡
-        if self.mediaPlaylist.playlist and self.playBar.songInfoCard.isHidden() and self.playBar.isVisible():
+        if not self.mediaPlaylist.playlist:
+            self.playBar.songInfoCard.hide()
+            self.setPlayButtonState(False)
+            self.setPlayButtonEnabled(False)
+            self.playBar.setTotalTime(0)
+            self.playBar.progressSlider.setRange(0, 0)
+        else:
+            self.player.play()
+            self.setPlayButtonState(True)
             self.playBar.songInfoCard.show()
-            self.playBar.songInfoCard.updateSongInfoCard(
-                self.mediaPlaylist.playlist[0])
 
     def initPlayBar(self):
         """ 从配置文件中读取配置数据来初始化播放栏 """
@@ -664,6 +671,8 @@ class MainWindow(FramelessWindow):
             self.titleBar.hide()
             # 切换到正在播放界面
             self.totalStackWidget.setCurrentIndex(1)
+            # 增加导航历史
+            self.navigationHistories.append(("totalStackWidget", 1))
             self.showFullScreen()
             self.playingInterface.setFullScreen(True)
             if self.playingInterface.isPlaylistVisible:
@@ -703,6 +712,8 @@ class MainWindow(FramelessWindow):
         self.setPlayButtonState(False)
         self.setPlayButtonEnabled(False)
         self.songTabSongListWidget.cancelPlayState()
+        self.playBar.setTotalTime(0)
+        self.playBar.progressSlider.setRange(0, 0)
 
     def addOneSongToPlayingPlaylist(self, songInfo: dict):
         """ 向正在播放列表尾部添加一首歌 """
@@ -1147,6 +1158,8 @@ class MainWindow(FramelessWindow):
         w.move(self.width()-w.width()-30, 63)
         w.show()
         self.myMusicInterface.rescanSongInfo()
+        self.songTabSongListWidget.setPlayBySongInfo(
+            self.mediaPlaylist.getCurrentSong())
         w.setState(True)
 
     def deleteSongs(self, songPaths: list):
@@ -1181,12 +1194,30 @@ class MainWindow(FramelessWindow):
 
         self.mediaPlaylist.setCurrentIndex(index)
 
+    def onDownloadFinished(self, downloadFolder):
+        """ 下载完成槽函数 """
+        downloadFolder = Path(downloadFolder).absolute()
+        musicFolders = [Path(i).absolute()
+                        for i in self.settingInterface.config['selected-folders']]
+        needUpdate = any([downloadFolder == i for i in musicFolders])
+        if needUpdate:
+            self.myMusicInterface.rescanSongInfo()
+            self.songTabSongListWidget.setPlayBySongInfo(
+                self.mediaPlaylist.getCurrentSong())
+
+    def onMediaStatusChanged(self, status: QMediaPlayer.MediaStatus):
+        """ 媒体状态改变槽函数 """
+        if status != QMediaPlayer.NoMedia:
+            return
+        self.setPlayButtonState(False)
+
     def connectSignalToSlot(self):
         """ 将信号连接到槽 """
 
         # 将播放器的信号连接到槽函数
         self.player.positionChanged.connect(self.onPlayerPositionChanged)
         self.player.durationChanged.connect(self.onPlayerDurationChanged)
+        self.player.mediaStatusChanged.connect(self.onMediaStatusChanged)
 
         # 将播放列表的信号连接到槽函数
         self.mediaPlaylist.currentIndexChanged.connect(self.updateWindow)
@@ -1455,6 +1486,8 @@ class MainWindow(FramelessWindow):
             self.addSongsToCustomPlaylist)
         self.searchResultInterface.deleteSongSig.connect(
             lambda songPath: self.deleteSongs([songPath]))
+        self.searchResultInterface.downloadFinished.connect(
+            self.onDownloadFinished)
 
         # 将歌手界面信号连接到槽函数
         self.singerInterface.playSig.connect(self.playCustomPlaylist)

@@ -316,6 +316,7 @@ class PlayProgressBar(QWidget):
             }
         """)
         self.progressSlider.setStyle(HollowHandleStyle())
+        self.progressSlider.setRange(0, 0)
         self.progressSlider.setFixedHeight(28)
 
         # 将小部件添加到布局中
@@ -331,12 +332,17 @@ class PlayProgressBar(QWidget):
         seconds, minutes = self.getSecondMinute(currentTime)
         self.currentTimeLabel.setText(f'{minutes}:{str(seconds).rjust(2,"0")}')
 
-    def setTotalTime(self, totalTime):
-        """ 更新总时长标签，totalTime的单位为ms """
+    def setTotalTime(self, totalTime: int):
+        """ 更新总时长标签
+
+        Parameters
+        ----------
+        totalTime:
+            总时长，单位为 ms """
         seconds, minutes = self.getSecondMinute(totalTime)
         self.totalTimeLabel.setText(f'{minutes}:{str(seconds).rjust(2,"0")}')
 
-    def getSecondMinute(self, time):
+    def getSecondMinute(self, time: int):
         """ 将毫秒转换为分和秒 """
         seconds = int(time / 1000)
         minutes = seconds // 60

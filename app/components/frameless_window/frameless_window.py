@@ -24,7 +24,7 @@ class FramelessWindow(QWidget):
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowSystemMenuHint |
                             Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint)
         # 添加阴影和窗口动画
-        # self.windowEffect.addShadowEffect(self.winId())
+        self.windowEffect.addShadowEffect(self.winId())
         self.windowEffect.addWindowAnimation(self.winId())
         self.resize(500, 500)
 

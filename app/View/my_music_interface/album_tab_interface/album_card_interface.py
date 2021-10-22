@@ -1,6 +1,5 @@
 # coding:utf-8
 from copy import deepcopy
-from pprint import pprint
 from typing import Dict, List
 
 import pinyin

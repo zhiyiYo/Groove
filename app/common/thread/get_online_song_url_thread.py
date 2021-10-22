@@ -14,6 +14,7 @@ class GetOnlineSongUrlThread(QThread):
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
+        self.offset = 0
         self.songInfo_list = []
         self.quality = 'Standard quality'
         self.headers = {
@@ -25,7 +26,7 @@ class GetOnlineSongUrlThread(QThread):
         }
         self.crawler = KuWoMusicCrawler()
 
-    def setSongInfoList(self, songInfo_list: list, quality='Standard quality'):
+    def setSongInfoList(self, songInfo_list: list, offset=0, quality='Standard quality'):
         """ 设置歌曲信息列表
 
         Parameters
@@ -33,11 +34,16 @@ class GetOnlineSongUrlThread(QThread):
         songInfo_list: list
             歌曲信息列表，由 `kugouCrawler.getSongInfoList(key_word)` 返回
 
+        offset: int
+            发送的信号的第一个参数(序号)的偏移量
+
         quality: str
             歌曲音质，可以是 `Standard quality`、`High quality` 或者 `Super quality`
         """
         if quality not in ['Standard quality', 'High quality', 'Super quality']:
             raise ValueError("音质非法")
+
+        self.offset = offset if offset >= 0 else 0
         self.quality = quality
         self.songInfo_list = songInfo_list
 
@@ -62,6 +68,6 @@ class GetOnlineSongUrlThread(QThread):
                     f.write(response.content)
 
             # 发送信号
-            self.getUrlSignal.emit(i, playUrl, save_path)
+            self.getUrlSignal.emit(i+self.offset, playUrl, save_path)
 
         self.finished.emit()

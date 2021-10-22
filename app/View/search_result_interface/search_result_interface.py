@@ -1,6 +1,7 @@
 # coding:utf-8
 import os
 from copy import deepcopy
+from math import ceil
 
 from common import resource
 from common.crawler.kuwo_music_crawler import KuWoMusicCrawler
@@ -8,9 +9,9 @@ from common.thread.download_song_thread import DownloadSongThread
 from common.thread.get_online_song_url_thread import GetOnlineSongUrlThread
 from components.scroll_area import ScrollArea
 from components.state_tooltip import StateTooltip
-from PyQt5.QtCore import QFile, pyqtSignal, QObject
+from PyQt5.QtCore import QFile, QObject, Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QLabel, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget
 
 from .album_group_box import AlbumGroupBox
 from .playlist_group_box import PlaylistGroupBox
@@ -19,6 +20,7 @@ from .song_group_box import SongGroupBox
 
 class SearchResultInterface(ScrollArea):
 
+    downloadFinished = pyqtSignal(str)                   # 下载歌曲完成
     playAlbumSig = pyqtSignal(list)                      # 播放专辑
     playPlaylistSig = pyqtSignal(list)                   # 播放自定义播放列表
     playLocalSongSig = pyqtSignal(int)                   # 播放本地歌曲
@@ -54,6 +56,7 @@ class SearchResultInterface(ScrollArea):
             父级
         """
         super().__init__(parent=parent)
+        self.keyWord = ''                   # 搜索关键字
         self.playlists = {}                 # 匹配到的本地播放列表
         self.albumInfo_list = []            # 匹配到的本地专辑列表
         self.localSongInfo_list = []        # 匹配到的本地歌曲列表
@@ -74,9 +77,12 @@ class SearchResultInterface(ScrollArea):
         self.localSongListWidget = self.localSongGroupBox.songListWidget
         self.onlineSongListWidget = self.onlineSongGroupBox.songListWidget
         self.crawler = KuWoMusicCrawler()
-        self.downloadFolder = downloadFolder
-        self.onlinePlayQuality = onlinePlayQuality
-        self.onlineMusicPageSize = onlineMusicPageSize
+        self.totalPages = 1                             # 在线音乐总分页数
+        self.currentPage = 1                            # 当前在线音乐页码
+        self.totalOnlineMusic = 0                       # 数据库中所有符合条件的在线音乐数
+        self.downloadFolder = downloadFolder            # 在线音乐的下载目录
+        self.onlinePlayQuality = onlinePlayQuality      # 在线音乐播放音质
+        self.onlineMusicPageSize = onlineMusicPageSize  # 每页最多显示的在线音乐数量
         self.getOnlineSongUrlThread = GetOnlineSongUrlThread(self)
         self.downloadSongThread = DownloadSongThread(self.downloadFolder, self)
         self.downloadStateTooltip = None
@@ -196,11 +202,12 @@ class SearchResultInterface(ScrollArea):
         """ 全部下载完成槽函数 """
         self.downloadSongThread.disconnect()
         self.downloadStateTooltip = None
+        self.downloadFinished.emit(self.downloadFolder)
 
     def search(self, keyWord: str, songInfo_list: list, albumInfo_list: list, playlists: dict):
         """ 搜索与关键词相匹配的专辑、歌曲和播放列表 """
         keyWord_ = keyWord
-        keyWord = keyWord.lower()
+        self.keyWord = keyWord = keyWord.lower()
 
         # 对专辑进行匹配
         self.albumInfo_list = []
@@ -219,13 +226,20 @@ class SearchResultInterface(ScrollArea):
                 self.localSongInfo_list.append(songInfo)
 
         # 对在线歌曲进行匹配并获取播放地址和封面
-        self.onlineSongInfo_list = self.crawler.getSongInfoList(
-            keyWord, self.onlineMusicPageSize)
+        self.currentPage = 1
+        self.onlineSongInfo_list, self.totalOnlineMusic = self.crawler.getSongInfoList(
+            keyWord, 1, self.onlineMusicPageSize)
+        self.totalPages = 1 if not self.totalOnlineMusic else ceil(
+            self.totalOnlineMusic/self.onlineMusicPageSize)
+
+        # 根据页面数更新加载更多标签
+        self.__updateLoadMoreLabel()
 
         # 获取在线歌曲的播放地址，必须在获取之前就将歌曲卡创建出来
         self.onlineSongGroupBox.updateWindow(self.onlineSongInfo_list)
         self.getOnlineSongUrlThread.setSongInfoList(
-            self.onlineSongInfo_list, self.onlinePlayQuality)
+            self.onlineSongInfo_list, 0, self.onlinePlayQuality)
+        self.getOnlineSongUrlThread.start()
 
         # 对播放列表进行匹配
         self.playlists = {}
@@ -239,8 +253,14 @@ class SearchResultInterface(ScrollArea):
         self.albumGroupBox.updateWindow(self.albumInfo_list)
         self.playlistGroupBox.updateWindow(self.playlists)
         self.localSongGroupBox.updateWindow(self.localSongInfo_list)
-        self.getOnlineSongUrlThread.start()
 
+        # 显示/隐藏 提示标签
+        self.__adjustHeight()
+        self.__updateWidgetsVisible()
+        self.verticalScrollBar().setValue(0)
+
+    def __adjustHeight(self):
+        """ 调整窗口长度 """
         # 调整窗口大小
         isAlbumVisible = len(self.albumInfo_list) > 0
         isPlaylistVisible = len(self.playlists) > 0
@@ -250,6 +270,7 @@ class SearchResultInterface(ScrollArea):
         visibleNum = isAlbumVisible+isLocalSongVisible + \
             isPlaylistVisible+isOnlineSongVisible
         spacing = 0 if not visibleNum else (visibleNum-1)*20
+
         self.scrollWidget.resize(
             self.width(),
             241 + isAlbumVisible*self.albumGroupBox.height() +
@@ -257,11 +278,7 @@ class SearchResultInterface(ScrollArea):
             isOnlineSongVisible*self.onlineSongGroupBox.height() +
             isPlaylistVisible*self.playlistGroupBox.height() + spacing
         )
-
-        # 显示/隐藏 提示标签
-        self.__updateWidgetsVisible()
         self.__setHintsLabelVisible(visibleNum == 0)
-        self.verticalScrollBar().setValue(0)
 
     def __updateWidgetsVisible(self):
         """ 更新小部件的可见性 """
@@ -276,20 +293,59 @@ class SearchResultInterface(ScrollArea):
     def setDownloadFolder(self, folder: str):
         """ 设置下载文件夹 """
         if not os.path.exists(folder):
-            print(f'下载目录 `{folder}` 不存在')
-            return
+            raise ValueError(f'下载目录 `{folder}` 不存在')
+
         self.downloadSongThread.downloadFolder = folder
 
     def setOnlinePlayQuality(self, quality: str):
         """ 设置下载文件夹 """
         if quality not in ['Standard quality', 'High quality', 'Super quality']:
-            print(f'"{quality}" 非法')
-            return
+            raise ValueError(f'"{quality}" 非法')
+
         self.onlinePlayQuality = quality
 
     def setOnlineMusicPageSize(self, pageSize: int):
         """ 设置在线音乐显示数量 """
-        self.onlineMusicPageSize = pageSize
+        self.onlineMusicPageSize = pageSize if pageSize > 0 else 20
+
+    def __updateLoadMoreLabel(self):
+        """ 更新加载更多标签 """
+        label = self.onlineSongGroupBox.loadMoreLabel
+
+        if self.currentPage < self.totalPages:
+            label.setText(self.tr('Load more'))
+            label.setProperty('loadFinished', 'false')
+            label.setCursor(Qt.PointingHandCursor)
+        else:
+            label.setText(self.tr('No more results'))
+            label.setProperty('loadFinished', 'true')
+            label.setCursor(Qt.ArrowCursor)
+
+        label.adjustSize()
+        label.setStyle(QApplication.style())
+
+    def __loadMoreOnlineMusic(self):
+        """ 加载更多在线音乐 """
+        if self.currentPage == self.totalPages:
+            return
+
+        # 获取在线音乐
+        songInfo_list, _ = self.crawler.getSongInfoList(
+            self.keyWord, self.currentPage, self.onlineMusicPageSize)
+
+        # 更新在线音乐列表
+        offset = len(self.onlineSongListWidget.songInfo_list)
+        self.onlineSongGroupBox.loadMoreOnlineMusic(songInfo_list)
+        self.onlineSongInfo_list = self.onlineSongListWidget.songInfo_list
+
+        # 再去获取这些歌曲的 URL
+        self.getOnlineSongUrlThread.setSongInfoList(
+            songInfo_list, offset, self.onlinePlayQuality)
+        self.getOnlineSongUrlThread.start()
+
+        self.currentPage += 1
+        self.__updateLoadMoreLabel()
+        self.__adjustHeight()
 
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
@@ -334,6 +390,8 @@ class SearchResultInterface(ScrollArea):
             self.playOneSongCardSig)
         self.onlineSongListWidget.nextToPlayOneSongSig.connect(
             lambda songInfo: self.nextToPlaySig.emit([songInfo]))
+        self.onlineSongGroupBox.loadMoreSignal.connect(
+            self.__loadMoreOnlineMusic)
 
         # 播放列表分组框信号连接到槽函数
         self.playlistGroupBox.playSig.connect(self.playPlaylistSig)

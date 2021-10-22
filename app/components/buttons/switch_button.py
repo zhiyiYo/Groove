@@ -130,23 +130,22 @@ class SwitchButton(QWidget):
         self.hBox.setAlignment(Qt.AlignLeft)
         self.setAttribute(Qt.WA_StyledBackground)
         self.hBox.setContentsMargins(0, 0, 0, 0)
-        # 设置默认样式
-        self.__setQss()
-        # 信号连接到槽
-        self.indicator.checkedChanged.connect(self.checkedChanged)
 
-    def __setQss(self):
-        """ 设置层叠样式 """
-        f = QFile(":/qss/switch_button.qss")
+        # 设置默认样式
+        f = QFile(':/qss/switch_button.qss')
         f.open(QFile.ReadOnly)
         self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
         f.close()
+
+        # 信号连接到槽
+        self.indicator.checkedChanged.connect(self.checkedChanged)
 
     def isChecked(self):
         return self.indicator.isChecked()
 
     def setChecked(self, isChecked: bool):
         """ 设置选中状态 """
+        self.adjustSize()
         self.indicator.setChecked(isChecked)
 
     def toggleChecked(self):
