@@ -82,7 +82,7 @@ class SongTabSongCard(BasicSongCard):
         super().resizeEvent(e)
         # 再次调整时长标签的位置
         self.durationLabel.move(self.width() - 45, 20)
-        self.getAniTargetX_list()
+        self._getAniTargetX()
 
 
 class AlbumInterfaceSongCard(BasicSongCard):
@@ -136,7 +136,7 @@ class AlbumInterfaceSongCard(BasicSongCard):
         super().resizeEvent(e)
         # 再次调整时长标签的位置
         self.durationLabel.move(self.width() - 45, 20)
-        self.getAniTargetX_list()
+        self._getAniTargetX()
 
 
 class PlaylistInterfaceSongCard(BasicSongCard):
@@ -215,7 +215,7 @@ class PlaylistInterfaceSongCard(BasicSongCard):
         super().resizeEvent(e)
         # 再次调整时长标签的位置
         self.durationLabel.move(self.width() - 45, 20)
-        self.getAniTargetX_list()
+        self._getAniTargetX()
 
 
 class NoCheckBoxSongCard(BasicSongCard):
@@ -291,7 +291,7 @@ class NoCheckBoxSongCard(BasicSongCard):
         super().resizeEvent(e)
         # 再次调整时长标签的位置
         self.durationLabel.move(self.width() - 45, 20)
-        self.getAniTargetX_list()
+        self._getAniTargetX()
 
 
 class OnlineSongCard(BasicSongCard):
@@ -353,7 +353,7 @@ class OnlineSongCard(BasicSongCard):
         super().resizeEvent(e)
         # 再次调整时长标签的位置
         self.durationLabel.move(self.width() - 45, 20)
-        self.getAniTargetX_list()
+        self._getAniTargetX()
 
     def __showDownloadMenu(self):
         """ 显示下载音乐菜单 """
@@ -366,3 +366,35 @@ class OnlineSongCard(BasicSongCard):
         menu.downloadSig.connect(
             lambda quality: self.downloadSig.emit(self.songInfo, quality))
         menu.exec(QPoint(x, y))
+
+
+class SongCardFactory:
+    """ 歌曲卡工厂 """
+
+    @staticmethod
+    def create(songCardType: SongCardType, songInfo: dict, parent=None):
+        """ 创建一个指定类型的歌曲名字卡
+
+        Parameters
+        ----------
+        songCardType: SongCardType
+            歌曲卡类型
+
+        songInfo: dict
+            歌曲信息
+
+        parent:
+            父级窗口
+        """
+        songCard_dict = {
+            SongCardType.SONG_TAB_SONG_CARD: SongTabSongCard,
+            SongCardType.ALBUM_INTERFACE_SONG_CARD: AlbumInterfaceSongCard,
+            SongCardType.PLAYLIST_INTERFACE_SONG_CARD: PlaylistInterfaceSongCard,
+            SongCardType.NO_CHECKBOX_SONG_CARD: NoCheckBoxSongCard,
+            SongCardType.ONLINE_SONG_CARD: OnlineSongCard
+        }
+
+        if songCardType not in songCard_dict:
+            raise ValueError("歌曲卡类型非法")
+
+        return songCard_dict[songCardType](songInfo, parent)

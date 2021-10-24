@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="zh">
+<!DOCTYPE TS><TS version="2.0" language="zh" sourcelanguage="">
 <context>
     <name>@default</name>
     <message>
@@ -323,22 +322,22 @@
 <context>
     <name>DownloadStateTooltip</name>
     <message>
-        <location filename="../../View/search_result_interface/search_result_interface.py" line="423"/>
+        <location filename="../../View/search_result_interface/search_result_interface.py" line="439"/>
         <source>There are</source>
         <translation>还剩</translation>
     </message>
     <message>
-        <location filename="../../View/search_result_interface/search_result_interface.py" line="424"/>
+        <location filename="../../View/search_result_interface/search_result_interface.py" line="440"/>
         <source>left. Please wait patiently</source>
         <translation>首，要耐心等待哦</translation>
     </message>
     <message>
-        <location filename="../../View/search_result_interface/search_result_interface.py" line="417"/>
+        <location filename="../../View/search_result_interface/search_result_interface.py" line="433"/>
         <source>Download completed, please check</source>
         <translation>下载完成啦，请查收</translation>
     </message>
     <message>
-        <location filename="../../View/search_result_interface/search_result_interface.py" line="416"/>
+        <location filename="../../View/search_result_interface/search_result_interface.py" line="432"/>
         <source>Download complete</source>
         <translation>下载完成</translation>
     </message>
@@ -975,7 +974,7 @@
         <translation>请检查拼写情况，或搜索其他内容</translation>
     </message>
     <message>
-        <location filename="../../View/search_result_interface/search_result_interface.py" line="250"/>
+        <location filename="../../View/search_result_interface/search_result_interface.py" line="251"/>
         <source>Search Result</source>
         <translation>的搜索结果</translation>
     </message>
@@ -995,12 +994,12 @@
         <translation>首，要耐心等待哦</translation>
     </message>
     <message>
-        <location filename="../../View/search_result_interface/search_result_interface.py" line="315"/>
+        <location filename="../../View/search_result_interface/search_result_interface.py" line="316"/>
         <source>Load more</source>
         <translation>加载更多</translation>
     </message>
     <message>
-        <location filename="../../View/search_result_interface/search_result_interface.py" line="319"/>
+        <location filename="../../View/search_result_interface/search_result_interface.py" line="320"/>
         <source>No more results</source>
         <translation>已经到底啦~</translation>
     </message>
@@ -1106,7 +1105,7 @@
         <translation>应用</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="59"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="67"/>
         <source>Media Info</source>
         <translation>媒体信息</translation>
     </message>
@@ -1131,7 +1130,7 @@
         <translation>关</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="60"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="68"/>
         <source>Automatically retrieve and update missing album art and metadata</source>
         <translation>自动检索并更新缺失的专辑封面和元数据</translation>
     </message>
@@ -1201,12 +1200,12 @@
         <translation>正在爬取歌曲信息</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="66"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="59"/>
         <source>Acrylic Background</source>
         <translation>亚克力背景</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="68"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="61"/>
         <source>Use the acrylic background effect</source>
         <translation>使用亚克力背景效果</translation>
     </message>

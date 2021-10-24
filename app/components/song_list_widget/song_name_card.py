@@ -3,6 +3,8 @@ from PyQt5.QtCore import QSize, Qt, QEvent
 from PyQt5.QtGui import QIcon, QPixmap, QFontMetrics, QFont
 from PyQt5.QtWidgets import QCheckBox, QLabel, QToolButton, QWidget, QApplication
 
+from .song_card_type import SongCardType
+
 
 class ToolButton(QToolButton):
     """ 按钮 """
@@ -345,3 +347,42 @@ class OnlineSongNameCard(SongNameCard):
         self.songNameLabel.move(x, self.songNameLabel.y())
         # 更新按钮位置
         self._moveButtonGroup()
+
+
+class SongNameCardFactory:
+    """ 歌曲名字卡工厂 """
+
+    @staticmethod
+    def create(songCardType: SongCardType, songName: str, trackNum=None, parent=None):
+        """ 创建一个指定类型的歌曲名字卡
+
+        Parameters
+        ----------
+        songCardType: SongCardType
+            歌曲卡类型
+
+        songName: str
+            歌曲名
+
+        trackNum: str
+            曲目，只在歌曲卡类型为 `SongCardType.ALBUM_INTERFACE_SONG_CARD` 时需要指定
+
+        parent:
+            父级窗口
+        """
+        songNameCard_dict = {
+            SongCardType.SONG_TAB_SONG_CARD: SongNameCard,
+            SongCardType.ALBUM_INTERFACE_SONG_CARD: TrackNumSongNameCard,
+            SongCardType.PLAYLIST_INTERFACE_SONG_CARD: PlaylistSongNameCard,
+            SongCardType.NO_CHECKBOX_SONG_CARD: NoCheckBoxSongNameCard,
+            SongCardType.ONLINE_SONG_CARD: OnlineSongNameCard
+        }
+
+        if songCardType not in songNameCard_dict:
+            raise ValueError("歌曲名字卡类型非法")
+
+        SongNameCard_ = songNameCard_dict[songCardType]
+        if songCardType != SongCardType.ALBUM_INTERFACE_SONG_CARD:
+            return SongNameCard_(songName, parent)
+
+        return SongNameCard_(songName, trackNum, parent)

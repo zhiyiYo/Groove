@@ -7,11 +7,9 @@ from components.dialog_box.song_property_dialog import SongPropertyDialog
 from components.list_widget import ListWidget
 from PyQt5.QtCore import QMargins, QSize, Qt, pyqtSignal
 from PyQt5.QtGui import QResizeEvent
-from PyQt5.QtWidgets import QApplication, QLabel, QListWidgetItem, QWidget
+from PyQt5.QtWidgets import QApplication, QListWidgetItem, QWidget
 
-from .song_card import (AlbumInterfaceSongCard, NoCheckBoxSongCard,
-                        OnlineSongCard, PlaylistInterfaceSongCard,
-                        SongTabSongCard)
+from .song_card import SongCardFactory
 from .song_card_type import SongCardType
 
 
@@ -52,9 +50,6 @@ class BasicSongListWidget(ListWidget):
         super().__init__(parent)
         self.__songCardType = songCardType
         self.paddingBottomHeight = paddingBottomHeight
-        # 使用指定的歌曲卡类创建歌曲卡对象
-        self.__SongCard = [SongTabSongCard, AlbumInterfaceSongCard,
-                           PlaylistInterfaceSongCard, NoCheckBoxSongCard, OnlineSongCard][songCardType.value]
         self.songInfo_list = songInfo_list if songInfo_list else []  # type:List[dict]
         self.currentIndex = 0
         self.playingIndex = 0  # 正在播放的歌曲卡下标
@@ -89,7 +84,7 @@ class BasicSongListWidget(ListWidget):
             歌曲信息字典
         """
         item = QListWidgetItem()
-        songCard = self.__SongCard(songInfo)
+        songCard = SongCardFactory.create(self.songCardType, songInfo)
         songCard.itemIndex = len(self.songCard_list)
         songCard.resize(1150, 60)
         item.setSizeHint(QSize(songCard.width(), 60))

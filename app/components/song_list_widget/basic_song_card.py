@@ -1,5 +1,4 @@
 # coding:utf-8
-
 import os
 
 from components.menu import AddToMenu
@@ -9,11 +8,8 @@ from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
 from PyQt5.QtGui import QFont, QFontMetrics, QMouseEvent
 from PyQt5.QtWidgets import QApplication, QWidget
 
-from .song_card_sub_unit import (NoCheckBoxSongNameCard, OnlineSongNameCard,
-                                 PlaylistSongNameCard)
-from .song_card_sub_unit import SongNameCard as SongTabSongNameCard
-from .song_card_sub_unit import TrackNumSongNameCard
 from .song_card_type import SongCardType
+from .song_name_card import SongNameCardFactory
 
 
 class BasicSongCard(QWidget):
@@ -46,9 +42,7 @@ class BasicSongCard(QWidget):
         self.setSongInfo(songInfo)
         self.__resizeTime = 0
         self.__songCardType = songCardType
-        # 歌曲卡类型
-        self.__SongNameCard = [SongTabSongNameCard, TrackNumSongNameCard,
-                               PlaylistSongNameCard, NoCheckBoxSongNameCard, OnlineSongNameCard][songCardType.value]
+
         # 初始化各标志位
         self.isSongExist = True
         self.isPlaying = False
@@ -56,15 +50,13 @@ class BasicSongCard(QWidget):
         self.isChecked = False
         self.isInSelectionMode = False
         self.isDoubleClicked = False
+
         # 记录songCard对应的item的下标
         self.itemIndex = None
 
         # 创建歌曲名字卡
-        if self.__songCardType == SongCardType.ALBUM_INTERFACE_SONG_CARD:
-            self.songNameCard = self.__SongNameCard(
-                self.songName, self.tracknumber, self)
-        else:
-            self.songNameCard = self.__SongNameCard(self.songName, self)
+        self.songNameCard = SongNameCardFactory.create(
+            songCardType, self.songName, self.tracknumber, self)
 
         self.__referenceWidgets()
 
@@ -125,12 +117,15 @@ class BasicSongCard(QWidget):
             return
         self.__checkIsLengthEqual(
             scaleableWidget_list, scalebaleWidgetWidth_list)
+
         # 必须先将所有标签添加到列表中后才能调用这个函数
         if not self.__label_list:
             raise Exception("必须先调用addLabels函数将标签添加到窗口中")
+
         # 歌名卡默认可拉伸
         self.__scaleableWidget_list = scaleableWidget_list
         self.__scaleableWidgetMaxWidth_list = scalebaleWidgetWidth_list
+        
         # 计算初始宽度
         initWidth = sum(self.__scaleableWidgetMaxWidth_list) + \
             sum(self.__labelSpacing_list) + fixedWidth
@@ -153,9 +148,6 @@ class BasicSongCard(QWidget):
         self.__label_list = label_list
         self.__labelSpacing_list = labelSpacing_list
         self.__widget_list = [self.songNameCard] + self.__label_list
-        # 移动小部件
-        for i in range(len(label_list)):
-            label_list[i]
 
     def setDynamicStyleLabels(self, label_list: list):
         """ 设置需要动态更新样式的标签列表 """
@@ -201,6 +193,7 @@ class BasicSongCard(QWidget):
         else:
             self.setCheckBoxBtLabelState("notSelected-notPlay")
             self.setWidgetState("notSelected-leave")
+
         self.songNameCard.setPlay(isPlay, self.isSongExist)
         self.setStyle(QApplication.style())
 
@@ -249,20 +242,22 @@ class BasicSongCard(QWidget):
         self.__checkIsLengthEqual(aniWidget_list, deltaX_list)
         self.__aniWidget_list = aniWidget_list
         self.__deltaX_list = deltaX_list
+
         # 清空动画组的内容
         self.ani_list.clear()
         self.aniGroup.clear()
-        self.__ani_list = [
-            QPropertyAnimation(widget, b"geometry") for widget in self.__aniWidget_list
-        ]
+        self.__ani_list = [QPropertyAnimation(
+            widget, b"geometry") for widget in self.__aniWidget_list]
+
         # 初始化动画
         for ani in self.__ani_list:
             ani.setDuration(400)
             ani.setEasingCurve(QEasingCurve.OutQuad)
             self.aniGroup.addAnimation(ani)
-        self.getAniTargetX_list()
 
-    def getAniTargetX_list(self):
+        self._getAniTargetX()
+
+    def _getAniTargetX(self):
         """ 计算动画的初始值 """
         self.__aniTargetX_list = []
         for deltaX, widget in zip(self.__deltaX_list, self.__aniWidget_list):
@@ -277,27 +272,33 @@ class BasicSongCard(QWidget):
                 state = "selected-enter" if self.isSelected else "notSelected-enter"
                 self.setWidgetState(state)
                 self.setStyle(QApplication.style())
+
             elif e.type() == QEvent.Leave:
                 # 不处于选择模式下时，如果歌曲卡没被选中而鼠标离开窗口就隐藏复选框和按钮组窗口
                 if not self.isSelected:
                     self.songNameCard.buttonGroup.hide()
                     self.songNameCard.checkBox.setHidden(
                         not self.isInSelectionMode)
+
                 state = "selected-leave" if self.isSelected else "notSelected-leave"
                 self.setWidgetState(state)
                 self.setStyle(QApplication.style())
+
             elif e.type() == QEvent.MouseButtonPress:
                 state = "selected-pressed" if self.isSelected else "notSelected-pressed"
                 if e.button() == Qt.LeftButton:
                     self.isSelected = True
                 self.setWidgetState(state)
                 self.setStyle(QApplication.style())
+
             elif e.type() == QEvent.MouseButtonRelease and e.button() == Qt.LeftButton:
                 self.setWidgetState("selected-leave")
                 self.setCheckBoxBtLabelState("selected")  # 鼠标松开时将设置标签为白色
                 self.setStyle(QApplication.style())
+
             elif e.type() == QEvent.MouseButtonDblClick:
                 self.isDoubleClicked = True
+
         return super().eventFilter(obj, e)
 
     def mousePressEvent(self, e):
@@ -321,8 +322,10 @@ class BasicSongCard(QWidget):
             ani.setEndValue(
                 QRect(widget.x() - deltaX, widget.y(), widget.width(), widget.height()))
         self.aniGroup.start()
+
         if e.button() == Qt.LeftButton:
             self.clicked.emit(self.itemIndex)
+
         # 左键点击时才发送信号
         if self.isDoubleClicked and e.button() == Qt.LeftButton:
             self.isDoubleClicked = False
@@ -355,9 +358,11 @@ class BasicSongCard(QWidget):
         """ 复选框选中状态改变对应的槽函数 """
         self.isChecked = self.checkBox.isChecked()
         self.setSelected(self.isChecked)
+
         # 只要点击了复选框就进入选择模式，由父级控制退出选择模式
         self.checkBox.show()
         self.setSelectionModeOpen(True)
+
         # 发出选中状态改变信号
         self.checkedStateChanged.emit(self.itemIndex, self.isChecked)
 
@@ -365,8 +370,9 @@ class BasicSongCard(QWidget):
         """ 设置是否进入选择模式, 处于选择模式下复选框一直可见，按钮不管是否处于选择模式都不可见 """
         if self.isInSelectionMode == isOpenSelectionMode:
             return
-        # 更新标志位
+
         self.isInSelectionMode = isOpenSelectionMode
+
         # 设置按钮和复选框的可见性
         self.checkBox.setHidden(not isOpenSelectionMode)
         self.buttonGroup.setHidden(True)
@@ -400,8 +406,10 @@ class BasicSongCard(QWidget):
             ]
         else:
             self.__originalWidth = self.width()
+
         # 调整小部件宽度
         self.adjustWidgetWidth()
+
         # 移动标签
         x = self.songNameCard.width()
         for label, spacing in zip(self.__label_list, self.__labelSpacing_list):
@@ -413,8 +421,9 @@ class BasicSongCard(QWidget):
                 width = label.width()
             label.move(x + spacing, 20)
             x = width + label.x()
+
         # 更新动画目标移动位置
-        self.getAniTargetX_list()
+        self._getAniTargetX()
 
     def adjustWidgetWidth(self):
         """ 调整小部件宽度 """
