@@ -3,6 +3,7 @@ import json
 import os
 from urllib import parse
 from copy import deepcopy
+from pprint import pprint
 
 import requests
 from common.os_utils import adjustName
@@ -233,6 +234,18 @@ class KuWoMusicCrawler:
         os.makedirs(save_dir, exist_ok=True)
         with open(os.path.join(save_dir, singer+'.jpg'), 'wb') as f:
             f.write(response.content)
+
+    @exceptionHandler()
+    def getLyric(self, rid: str):
+        """ 获取歌词 """
+        url = f"https://m.kuwo.cn/newh5/singles/songinfoandlrc?musicId={rid}"
+        response = requests.get(url)
+        response.raise_for_status()
+
+        # 歌词可能为 null，此时返回 None
+        lyric = json.loads(response.text)['data']['lrclist']  # type:list
+        
+        return lyric
 
 
 if __name__ == '__main__':
