@@ -137,10 +137,10 @@ class KuWoMusicCrawler:
         headers.pop('csrf')
 
         # 请求歌曲播放地址
-        url = f'http://www.kuwo.cn/url?rid={rid}&type=convert_url3&br={br}mp3'
+        url = f'http://www.kuwo.cn/api/v1/www/music/playUrl?mid={rid}&type=convert_url3&br={br}mp3'
         response = requests.get(url, headers=headers)
         response.raise_for_status()
-        play_url = json.loads(response.text)['url']
+        play_url = json.loads(response.text)['data']['url']
 
         return play_url
 
@@ -244,7 +244,7 @@ class KuWoMusicCrawler:
 
         # 歌词可能为 null，此时返回 None
         lyric = json.loads(response.text)['data']['lrclist']  # type:list
-        
+
         return lyric
 
 

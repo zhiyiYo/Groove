@@ -97,25 +97,31 @@ def writeAlbumCover(songPath: str, coverPath: str, picData=None) -> bool:
         picSuffix = imghdr.what(None, picData)
     except:
         picSuffix = 'jpeg'
+        
     mimeType = 'image/' + picSuffix
 
     # 开始写入封面
     if isinstance(id_card, MP3):
         keyName = 'APIC:'
         keyName_list = []
+
         # 获取可能已经存在的封面键名
         for key in id_card.tags.keys():
             if key.startswith('APIC'):
                 keyName = key
                 keyName_list.append(key)
+
         # 弹出所有旧标签才能写入新数据
         for key in keyName_list:
             id_card.pop(key)
-        id_card[keyName] = APIC(encoding=0,
-                                mime=mimeType,
-                                type=3,
-                                desc='',
-                                data=picData)
+
+        id_card[keyName] = APIC(
+            encoding=0,
+            mime=mimeType,
+            type=3,
+            desc='',
+            data=picData
+        )
 
     elif isinstance(id_card, FLAC):
         # 创建Picture实例
@@ -140,4 +146,3 @@ def writeAlbumCover(songPath: str, coverPath: str, picData=None) -> bool:
         return True
     except:
         return False
-
