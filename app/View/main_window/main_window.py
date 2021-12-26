@@ -186,29 +186,35 @@ class MainWindow(FramelessWindow):
         self.subStackWidget.addWidget(self.searchResultInterface, 0, 120)
         self.totalStackWidget.addWidget(self.subMainWindow)
         self.totalStackWidget.addWidget(self.playingInterface)
+
         # 设置右边子窗口的位置
         self.adjustWidgetGeometry()
+
         # 引用小部件
         self.referenceWidgets()
+
         # 设置层叠样式
-        self.setObjectName("mainWindow")
-        self.subMainWindow.setObjectName("subMainWindow")
-        self.subStackWidget.setObjectName("subStackWidget")
-        self.playingInterface.setObjectName("playingInterface")
         self.setQss()
+
         # 设置定时器溢出时间
         self.rescanSongInfoTimer.setInterval(180000)
+
         # 初始化播放列表
         self.initPlaylist()
-        # todo:设置全局热键
+
+        # TODO:设置全局热键
         # self.setHotKey()
+
         # 将信号连接到槽函数
         self.connectSignalToSlot()
+
         # 初始化播放栏
         self.initPlayBar()
+
         # 设置播放按钮可用性
         self.setPlayButtonEnabled(
             len(self.songTabSongListWidget.songInfo_list) > 0)
+
         # 安装事件过滤器
         self.navigationInterface.navigationMenu.installEventFilter(self)
         self.rescanSongInfoTimer.start()
@@ -640,6 +646,11 @@ class MainWindow(FramelessWindow):
 
     def setQss(self):
         """ 设置层叠样式 """
+        self.setObjectName("mainWindow")
+        self.subMainWindow.setObjectName("subMainWindow")
+        self.subStackWidget.setObjectName("subStackWidget")
+        self.playingInterface.setObjectName("playingInterface")
+
         f = QFile(":/qss/main_window.qss")
         f.open(QFile.ReadOnly)
         self.setStyleSheet(str(f.readAll(), encoding='utf-8'))

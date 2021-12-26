@@ -116,6 +116,7 @@ class SongInfoGetter(QObject):
         genre = tag.genre if tag.genre else self.tr("Unknown genre")
         duration = f"{int(tag.duration//60)}:{int(tag.duration%60):02}"
         coverName = adjustName(singer+'_'+album)
+        disc = tag.disc if tag.disc else "1"
 
         # 调整曲目序号
         tracknumber = self.__adjustTrackNumber(tracknumber)
@@ -145,6 +146,7 @@ class SongInfoGetter(QObject):
             "coverName": coverName,  # 保存下来的封面名字
             "genre": genre,
             "year": year,
+            "disc": disc,
             "tracknumber": tracknumber,
             "duration": duration,
             "suffix": suffix,

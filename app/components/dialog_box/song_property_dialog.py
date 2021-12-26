@@ -2,7 +2,7 @@
 from common.auto_wrap import autoWrap
 from components.buttons.perspective_button import PerspectivePushButton
 from PyQt5.QtCore import QFile, Qt
-from PyQt5.QtWidgets import QLabel
+from PyQt5.QtWidgets import QLabel, QVBoxLayout, QGridLayout, QHBoxLayout
 
 from .mask_dialog_base import MaskDialogBase
 
@@ -13,176 +13,162 @@ class SongPropertyDialog(MaskDialogBase):
     def __init__(self, songInfo: dict, parent=None):
         super().__init__(parent)
         self.songInfo = songInfo
-        self.createWidgets(songInfo)
-        self.initWidget()
 
-    def createWidgets(self, songInfo: dict):
-        """ 实例化标签 """
-        # 标题
-        self.yearLabel = QLabel(self.tr("Year"), self.widget)
-        self.diskLabel = QLabel(self.tr("Disc"), self.widget)
-        self.genreLabel = QLabel(self.tr("Genre"), self.widget)
-        self.durationLabel = QLabel(self.tr("Length"), self.widget)
-        self.propertyLabel = QLabel(self.tr("Properties"), self.widget)
-        self.singerLabel = QLabel(self.tr("Song artist"), self.widget)
-        self.songNameLabel = QLabel(self.tr("Song title"), self.widget)
-        self.trackNumberLabel = QLabel(self.tr("Track"), self.widget)
-        self.songPathLabel = QLabel(self.tr("File location"), self.widget)
-        self.albumNameLabel = QLabel(self.tr("Album title"), self.widget)
-        self.albumSongerLabel = QLabel(self.tr("Album artist"), self.widget)
-        # 内容
-        self.disk = QLabel("1", self.widget)
-        self.year = QLabel(
-            songInfo.get("year", self.tr('Unknown year')), self.widget)
-        self.genre = QLabel(
-            songInfo.get("genre", self.tr('Unknown genre')), self.widget)
-        self.singer = QLabel(
-            songInfo.get("singer", self.tr("Unknown artist")), self.widget)
-        self.albumName = QLabel(
-            songInfo.get("album", self.tr('Unknown album')), self.widget)
-        self.duration = QLabel(
-            songInfo.get("duration", "0:00"), self.widget)
-        self.songName = QLabel(
-            songInfo.get("songName", self.tr("Unknown song")), self.widget)
-        self.albumSonger = QLabel(
-            songInfo.get("singer", self.tr('Unknown artist')), self.widget)
-        self.trackNumber = QLabel(
-            songInfo.get("tracknumber", ''), self.widget)
-        self.songPath = QLabel(
-            songInfo.get("songPath", '').replace("\\", "/"), self.widget)
-        # 实例化关闭按钮
+        # 标题标签
+        self.yearTitleLabel = QLabel(self.tr("Year"), self.widget)
+        self.discTitleLabel = QLabel(self.tr("Disc"), self.widget)
+        self.genreTitleLabel = QLabel(self.tr("Genre"), self.widget)
+        self.durationTitleLabel = QLabel(self.tr("Length"), self.widget)
+        self.propertyTitleLabel = QLabel(self.tr("Properties"), self.widget)
+        self.singerTitleLabel = QLabel(self.tr("Song artist"), self.widget)
+        self.songNameTitleLabel = QLabel(self.tr("Song title"), self.widget)
+        self.trackNumberTitleLabel = QLabel(self.tr("Track"), self.widget)
+        self.songPathTitleLabel = QLabel(self.tr("File location"), self.widget)
+        self.albumNameTitleLabel = QLabel(self.tr("Album title"), self.widget)
+        self.albumSingerTitleLabel = QLabel(
+            self.tr("Album artist"), self.widget)
+
+        # 内容标签
+        self.discLabel = QLabel(songInfo.get(
+            'disc', "1"), self.widget, textInteractionFlags=Qt.TextSelectableByMouse)
+        self.yearLabel = QLabel(songInfo.get("year", self.tr(
+            'Unknown year')), self.widget, textInteractionFlags=Qt.TextSelectableByMouse)
+        self.genreLabel = QLabel(songInfo.get("genre", self.tr(
+            'Unknown genre')), self.widget, textInteractionFlags=Qt.TextSelectableByMouse)
+        self.singerLabel = QLabel(songInfo.get("singer", self.tr(
+            "Unknown artist")), self.widget, textInteractionFlags=Qt.TextSelectableByMouse)
+        self.albumNameLabel = QLabel(songInfo.get("album", self.tr(
+            'Unknown album')), self.widget, textInteractionFlags=Qt.TextSelectableByMouse)
+        self.durationLabel = QLabel(songInfo.get(
+            "duration", "0:00"), self.widget, textInteractionFlags=Qt.TextSelectableByMouse)
+        self.songNameLabel = QLabel(songInfo.get("songName", self.tr(
+            "Unknown song")), self.widget, textInteractionFlags=Qt.TextSelectableByMouse)
+        self.albumSingerLabel = QLabel(songInfo.get("singer", self.tr(
+            'Unknown artist')), self.widget, textInteractionFlags=Qt.TextSelectableByMouse)
+        self.trackNumberLabel = QLabel(songInfo.get(
+            "tracknumber", ''), self.widget, textInteractionFlags=Qt.TextSelectableByMouse)
+        self.songPathLabel = QLabel(songInfo.get("songPath", '').replace(
+            "\\", "/"), self.widget, textInteractionFlags=Qt.TextSelectableByMouse)
+
+        # 关闭按钮
         self.closeButton = PerspectivePushButton(self.tr("Close"), self.widget)
-        # 创建小部件列表
-        self.label_list_1 = [
-            self.albumName,
-            self.songName,
-            self.songPath,
-            self.singer,
-            self.albumSonger,
-        ]
-        self.label_list_2 = [
-            self.trackNumberLabel,
-            self.trackNumber,
-            self.diskLabel,
-            self.disk,
-            self.albumNameLabel,
-            self.albumName,
-            self.albumSongerLabel,
-            self.albumSonger,
-            self.genreLabel,
-            self.genre,
-            self.durationLabel,
-            self.duration,
-            self.yearLabel,
-            self.year,
-            self.songPathLabel,
-            self.songPath,
-            self.closeButton,
-        ]
-        self.label_list_3 = [
-            self.disk,
-            self.year,
-            self.genre,
-            self.singer,
-            self.albumName,
-            self.duration,
-            self.songName,
-            self.albumSonger,
-            self.songPath,
-            self.trackNumber,
-        ]
 
-    def initWidget(self):
+        self.__initWidget()
+
+    def __initWidget(self):
         """ 初始化小部件的属性 """
-        self.setQss()
+        self.__setQss()
+        self.widget.setFixedWidth(942)
 
-        self.widget.setFixedSize(942, 590)
+        # 设置宽度
+        self.songNameLabel.setFixedWidth(523)
+        self.trackNumberLabel.setFixedWidth(523)
+        self.albumNameLabel.setFixedWidth(523)
+        self.genreLabel.setFixedWidth(523)
+        self.songPathLabel.setFixedWidth(847)
+        self.durationLabel.setFixedWidth(43)
 
-        # 初始化抬头的位置
-        self.genreLabel.move(28, 330)
-        self.diskLabel.move(584, 168)
-        self.yearLabel.move(652, 330)
-        self.singerLabel.move(584, 90)
-        self.propertyLabel.move(28, 27)
-        self.songNameLabel.move(28, 90)
-        self.songPathLabel.move(28, 408)
-        self.albumNameLabel.move(28, 252)
-        self.durationLabel.move(584, 330)
-        self.trackNumberLabel.move(28, 168)
-        self.albumSongerLabel.move(584, 252)
-
-        # 初始化内容的位置
-        self.genre.move(28, 362)
-        self.year.move(652, 362)
-        self.disk.move(584, 202)
-        self.singer.move(584, 122)
-        self.songName.move(28, 122)
-        self.songPath.move(28, 442)
-        self.albumName.move(28, 282)
-        self.duration.move(584, 362)
-        self.trackNumber.move(28, 202)
-        self.albumSonger.move(584, 282)
+        # 调整高度
+        self.__adjustText()
+        self.__initLayout()
 
         # 将关闭信号连接到槽函数
         self.closeButton.clicked.connect(self.close)
-        # 设置宽度
-        for label in self.label_list_1:
-            if label in [self.singer, self.albumSonger]:
-                label.setFixedWidth(291)
-            elif label in [self.albumName, self.songName]:
-                label.setFixedWidth(500)
-            elif label == self.songPath:
-                label.setFixedWidth(847)
 
-        # 调整高度
-        self.adjustHeight()
-        # 允许鼠标选中
-        for label in self.label_list_3:
-            label.setTextInteractionFlags(Qt.TextSelectableByMouse)
+    def __initLayout(self):
+        """ 初始化布局 """
+        vBoxLayout = QVBoxLayout(self.widget)
+        vBoxLayout.setSizeConstraint(QVBoxLayout.SetFixedSize)
+        vBoxLayout.setAlignment(Qt.AlignTop)
+        vBoxLayout.setContentsMargins(30, 30, 30, 15)
+        vBoxLayout.addWidget(self.propertyTitleLabel, 0, Qt.AlignTop)
+        vBoxLayout.addSpacing(30)
 
-    def adjustHeight(self):
+        gridLayout_1 = QGridLayout()
+        gridLayout_2 = QGridLayout()
+        gridLayout_3 = QGridLayout()
+        gridLayout_4 = QGridLayout()
+
+        for layout in [gridLayout_1, gridLayout_2, gridLayout_3, gridLayout_4]:
+            layout.setContentsMargins(0, 0, 0, 0)
+            layout.setVerticalSpacing(8)
+            layout.setHorizontalSpacing(30)
+            vBoxLayout.addLayout(layout)
+            vBoxLayout.addSpacing(14)
+
+        # 歌曲名和歌曲歌手
+        gridLayout_1.addWidget(self.songNameTitleLabel, 0, 0, Qt.AlignTop)
+        gridLayout_1.addWidget(self.songNameLabel, 1, 0, Qt.AlignTop)
+        gridLayout_1.addWidget(self.singerTitleLabel, 0, 1, Qt.AlignTop)
+        gridLayout_1.addWidget(self.singerLabel, 1, 1, Qt.AlignTop)
+
+        # 曲目和光盘
+        gridLayout_2.addWidget(self.trackNumberTitleLabel, 0, 0, Qt.AlignTop)
+        gridLayout_2.addWidget(self.trackNumberLabel, 1, 0, Qt.AlignTop)
+        gridLayout_2.addWidget(self.discTitleLabel, 0, 1, Qt.AlignTop)
+        gridLayout_2.addWidget(self.discLabel, 1, 1, Qt.AlignTop)
+
+        # 专辑标题和专辑歌手
+        gridLayout_3.addWidget(self.albumNameTitleLabel, 0, 0, Qt.AlignTop)
+        gridLayout_3.addWidget(self.albumNameLabel, 1, 0, Qt.AlignTop)
+        gridLayout_3.addWidget(self.albumSingerTitleLabel, 0, 1, Qt.AlignTop)
+        gridLayout_3.addWidget(self.albumSingerLabel, 1, 1, Qt.AlignTop)
+
+        # 类型、时长和年份
+        gridLayout_4.addWidget(self.genreTitleLabel, 0, 0, Qt.AlignTop)
+        gridLayout_4.addWidget(self.genreLabel, 1, 0, Qt.AlignTop)
+        gridLayout_4.addWidget(self.durationTitleLabel, 0, 1, Qt.AlignTop)
+        gridLayout_4.addWidget(self.durationLabel, 1, 1, Qt.AlignTop)
+        gridLayout_4.addWidget(self.yearTitleLabel, 0, 2, Qt.AlignTop)
+        gridLayout_4.addWidget(self.yearLabel, 1, 2, Qt.AlignTop)
+
+        # 文件路径
+        vBoxLayout.addWidget(self.songPathTitleLabel, 0, Qt.AlignTop)
+        vBoxLayout.addSpacing(0)
+        vBoxLayout.addWidget(self.songPathLabel, 0, Qt.AlignTop)
+        vBoxLayout.addSpacing(80)
+
+        # 按钮
+        hBoxLayout = QHBoxLayout()
+        hBoxLayout.setContentsMargins(0, 0, 0, 0)
+        hBoxLayout.addStretch(1)
+        hBoxLayout.addWidget(self.closeButton)
+        vBoxLayout.addLayout(hBoxLayout)
+
+    def __adjustText(self):
         """ 如果有换行的发生就调整高度 """
-        newSongName, isSongNameWrap = autoWrap(self.songName.text(), 57)
-        newSonger, isSongerWrap = autoWrap(self.singer.text(), 33)
-        newAlbumName, isAlbumNameWrap = autoWrap(self.albumName.text(), 57)
-        newAlbumSonger, isAlbumSongerWrap = autoWrap(
-            self.albumSonger.text(), 33)
-        newSongPath, isSongPathWrap = autoWrap(self.songPath.text(), 110)
+        songName, isSongNameWrap = autoWrap(self.songNameLabel.text(), 57)
+        singer, isSingerWrap = autoWrap(self.singerLabel.text(), 33)
+        albumName, isAlbumNameWrap = autoWrap(
+            self.albumNameLabel.text(), 57)
+        albumSinger, isAlbumSingerWrap = autoWrap(
+            self.albumSingerLabel.text(), 33)
+        songPath, isSongPathWrap = autoWrap(self.songPathLabel.text(), 110)
 
-        if isSongNameWrap or isSongerWrap:
-            self.songName.setText(newSongName)
-            self.singer.setText(newSonger)
-            # 后面的所有标签向下平移25px
-            for label in self.label_list_2:
-                label.move(label.geometry().x(), label.geometry().y() + 25)
-            self.widget.setFixedSize(
-                self.widget.width(), self.widget.height() + 25)
+        if isSongNameWrap or isSingerWrap:
+            self.songNameLabel.setText(songName)
+            self.singerLabel.setText(singer)
 
-        if isAlbumNameWrap or isAlbumSongerWrap:
-            self.albumName.setText(newAlbumName)
-            self.albumSonger.setText(newAlbumSonger)
-            # 后面的所有标签向下平移25px
-            for label in self.label_list_2[8:]:
-                label.move(label.geometry().x(), label.geometry().y() + 25)
-            self.widget.setFixedSize(
-                self.widget.width(), self.widget.height() + 25)
+        if isAlbumNameWrap or isAlbumSingerWrap:
+            self.albumNameLabel.setText(albumName)
+            self.albumSingerLabel.setText(albumSinger)
 
         if isSongPathWrap:
-            self.songPath.setText(newSongPath)
-            self.widget.setFixedSize(
-                self.widget.width(), self.widget.height() + 25)
+            self.songPathLabel.setText(songPath)
 
-        self.closeButton.move(self.widget.width()-self.closeButton.width()-30,
-                              self.widget.height()-self.closeButton.height()-30)
-
-    def setQss(self):
+    def __setQss(self):
         """ 设置层叠样式表 """
-        self.year.setObjectName("singer")
-        self.singer.setObjectName("singer")
-        self.duration.setObjectName("singer")
-        self.songPath.setObjectName("songPath")
-        self.albumSonger.setObjectName("singer")
-        self.propertyLabel.setObjectName("propertyLabel")
+        self.songNameLabel.setObjectName('valueLabel')
+        self.singerLabel.setObjectName("valueLabel")
+        self.trackNumberLabel.setObjectName('valueLabel')
+        self.discLabel.setObjectName('valueLabel')
+        self.albumNameLabel.setObjectName('valueLabel')
+        self.albumSingerLabel.setObjectName("valueLabel")
+        self.genreLabel.setObjectName('valueLabel')
+        self.yearLabel.setObjectName("valueLabel")
+        self.durationLabel.setObjectName("valueLabel")
+        self.songPathLabel.setObjectName("valueLabel")
+        self.propertyTitleLabel.setObjectName("propertyTitleLabel")
 
         f = QFile(":/qss/song_property_dialog.qss")
         f.open(QFile.ReadOnly)
@@ -190,3 +176,5 @@ class SongPropertyDialog(MaskDialogBase):
         f.close()
 
         self.closeButton.adjustSize()
+        for label in self.findChildren(QLabel):
+            label.adjustSize()

@@ -12,7 +12,7 @@ SOURCES += app/View/main_window/main_window.py \
         app/View/playlist_card_interface/playlist_card_interface.py \
         app/View/playlist_card_interface/selection_mode_bar.py \
         app/components/playlist_card/playlist_card.py \
-        app/components/menu.py \
+        app/components/widgets/menu.py \
         app/View/playlist_interface/playlist_info_bar.py \
         app/View/playlist_interface/playlist_interface.py \
         app/View/playlist_interface/song_list_widget.py \

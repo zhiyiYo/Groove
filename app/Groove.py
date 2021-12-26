@@ -20,4 +20,4 @@ app.installTranslator(translator)
 groove = MainWindow()
 groove.show()
 
-sys.exit(app.exec_())
+app.exec_()

@@ -91,17 +91,17 @@
         <translation>这里没有可显示的内容。请尝试其他筛选器。</translation>
     </message>
     <message>
-        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="684"/>
+        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="692"/>
         <source>Are you sure you want to delete this?</source>
         <translation>是否确定要删除此项？</translation>
     </message>
     <message>
-        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="685"/>
+        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="693"/>
         <source>If you delete</source>
         <translation>如果删除</translation>
     </message>
     <message>
-        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="686"/>
+        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="694"/>
         <source>it won&apos;t be on be this device anymore.</source>
         <translation>，它将不再位于此设备上。</translation>
     </message>
@@ -213,22 +213,22 @@
 <context>
     <name>AlbumInterface</name>
     <message>
-        <location filename="../../View/album_interface/album_interface.py" line="73"/>
+        <location filename="../../View/album_interface/album_interface.py" line="74"/>
         <source>Unknown album</source>
         <translation>未知专辑</translation>
     </message>
     <message>
-        <location filename="../../View/album_interface/album_interface.py" line="74"/>
+        <location filename="../../View/album_interface/album_interface.py" line="75"/>
         <source>Unknown artist</source>
         <translation>未知歌手</translation>
     </message>
     <message>
-        <location filename="../../View/album_interface/album_interface.py" line="77"/>
+        <location filename="../../View/album_interface/album_interface.py" line="78"/>
         <source>Unknown year</source>
         <translation>未知年份</translation>
     </message>
     <message>
-        <location filename="../../View/album_interface/album_interface.py" line="76"/>
+        <location filename="../../View/album_interface/album_interface.py" line="77"/>
         <source>Unknown genre</source>
         <translation>未知流派</translation>
     </message>
@@ -303,6 +303,24 @@
     </message>
 </context>
 <context>
+    <name>DownloadMenu</name>
+    <message>
+        <location filename="../../components/widgets/menu.py" line="155"/>
+        <source>Standard</source>
+        <translation>流畅</translation>
+    </message>
+    <message>
+        <location filename="../../components/widgets/menu.py" line="156"/>
+        <source>HQ</source>
+        <translation>高品</translation>
+    </message>
+    <message>
+        <location filename="../../components/widgets/menu.py" line="157"/>
+        <source>SQ</source>
+        <translation>超品</translation>
+    </message>
+</context>
+<context>
     <name>DownloadStateTooltip</name>
     <message>
         <location filename="../../View/search_result_interface/search_result_interface.py" line="439"/>
@@ -370,6 +388,34 @@
     </message>
 </context>
 <context>
+    <name>LineEditMenu</name>
+    <message>
+        <location filename="../../components/widgets/menu.py" line="182"/>
+        <source>Cut</source>
+        <translation>剪切</translation>
+    </message>
+    <message>
+        <location filename="../../components/widgets/menu.py" line="189"/>
+        <source>Copy</source>
+        <translation>复制</translation>
+    </message>
+    <message>
+        <location filename="../../components/widgets/menu.py" line="196"/>
+        <source>Paste</source>
+        <translation>粘贴</translation>
+    </message>
+    <message>
+        <location filename="../../components/widgets/menu.py" line="203"/>
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <location filename="../../components/widgets/menu.py" line="210"/>
+        <source>Select all</source>
+        <translation>全选</translation>
+    </message>
+</context>
+<context>
     <name>LocalSongListContextMenu</name>
     <message>
         <location filename="../../View/search_result_interface/song_group_box.py" line="273"/>
@@ -428,47 +474,47 @@
         <translation>Groove 音乐</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1078"/>
+        <location filename="../../View/main_window/main_window.py" line="1089"/>
         <source>This song is already in your playlist. Do you want to add?</source>
         <translation>此歌已在你的播放列表中。是否要添加？</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1081"/>
+        <location filename="../../View/main_window/main_window.py" line="1092"/>
         <source>Some songs are already in your playlist. Do you want to add?</source>
         <translation>部分歌曲已在你的播放列表中。是否要添加？</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1084"/>
+        <location filename="../../View/main_window/main_window.py" line="1095"/>
         <source>All these songs are already in your playlist. Do you want to add?</source>
         <translation>所有这些歌曲都已在你的播放列表中。是否要添加？</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1087"/>
+        <location filename="../../View/main_window/main_window.py" line="1098"/>
         <source>Song duplication</source>
         <translation>歌曲重复</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1155"/>
+        <location filename="../../View/main_window/main_window.py" line="1166"/>
         <source>Updating song list</source>
         <translation>正在更新歌曲列表</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1155"/>
+        <location filename="../../View/main_window/main_window.py" line="1166"/>
         <source>Please wait patiently</source>
         <translation>请耐心等待</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="380"/>
+        <location filename="../../View/main_window/main_window.py" line="386"/>
         <source>Can&apos;t play this song</source>
         <translation>无法播放此歌曲</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="382"/>
+        <location filename="../../View/main_window/main_window.py" line="388"/>
         <source>Close</source>
         <translation>关闭</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="380"/>
+        <location filename="../../View/main_window/main_window.py" line="386"/>
         <source>It&apos;s not on this device or somewhere we can stream from.</source>
         <translation>它不在这台设备上，也不在我们可以从中流式传输的某个位置。</translation>
     </message>
@@ -860,32 +906,32 @@
 <context>
     <name>PlaylistInterface</name>
     <message>
-        <location filename="../../View/playlist_interface/playlist_interface.py" line="57"/>
+        <location filename="../../View/playlist_interface/playlist_interface.py" line="58"/>
         <source>No music in playlist?</source>
         <translation>播放列表中没有音乐？</translation>
     </message>
     <message>
-        <location filename="../../View/playlist_interface/playlist_interface.py" line="58"/>
+        <location filename="../../View/playlist_interface/playlist_interface.py" line="59"/>
         <source> Add songs from my collection</source>
         <translation> 从我的集锦中添加歌曲</translation>
     </message>
     <message>
-        <location filename="../../View/playlist_interface/playlist_interface.py" line="148"/>
+        <location filename="../../View/playlist_interface/playlist_interface.py" line="149"/>
         <source>Unknown playlist</source>
         <translation>未知播放列表</translation>
     </message>
     <message>
-        <location filename="../../View/playlist_interface/playlist_interface.py" line="246"/>
+        <location filename="../../View/playlist_interface/playlist_interface.py" line="247"/>
         <source>Are you sure you want to delete this?</source>
         <translation>是否确定要删除此项？</translation>
     </message>
     <message>
-        <location filename="../../View/playlist_interface/playlist_interface.py" line="247"/>
+        <location filename="../../View/playlist_interface/playlist_interface.py" line="248"/>
         <source>If you delete</source>
         <translation>如果删除</translation>
     </message>
     <message>
-        <location filename="../../View/playlist_interface/playlist_interface.py" line="248"/>
+        <location filename="../../View/playlist_interface/playlist_interface.py" line="249"/>
         <source>it won&apos;t be on be this device anymore.</source>
         <translation>，它将不再位于此设备上。</translation>
     </message>
@@ -1341,122 +1387,122 @@
 <context>
     <name>SongInfoEditDialog</name>
     <message>
-        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="41"/>
+        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="42"/>
         <source>Save</source>
         <translation>保存</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="42"/>
+        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="43"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="48"/>
+        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="49"/>
         <source>Year</source>
         <translation>年</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="49"/>
+        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="50"/>
         <source>Genre</source>
         <translation>类型</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="50"/>
+        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="51"/>
         <source>Disk</source>
         <translation>光盘</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="51"/>
+        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="52"/>
         <source>Track</source>
         <translation>曲目</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="52"/>
+        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="53"/>
         <source>Song title</source>
         <translation>歌曲名</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="53"/>
+        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="54"/>
         <source>File location</source>
         <translation>文件位置</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="54"/>
+        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="55"/>
         <source>Album title</source>
         <translation>专辑标题</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="55"/>
+        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="56"/>
         <source>Song artist</source>
         <translation>歌曲歌手</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="56"/>
+        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="57"/>
         <source>Album artist</source>
         <translation>专辑歌手</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="57"/>
+        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="58"/>
         <source>Edit Song Info</source>
         <translation>编辑歌曲信息</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="248"/>
+        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="249"/>
         <source>Unknown year</source>
         <translation>未知年份</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="258"/>
+        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="260"/>
         <source>An unknown error was encountered. Please try again later</source>
         <translation>遇到未知错误，请稍后再试</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="274"/>
+        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="276"/>
         <source>The track must be a number below 1000</source>
         <translation>The track must be a number below 1000</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="335"/>
+        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="337"/>
         <source>Off</source>
         <translation>关</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="60"/>
+        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="61"/>
         <source>Automatically retrieve metadata</source>
         <translation>自动检索元数据</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="294"/>
+        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="296"/>
         <source>On</source>
         <translation>开</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="300"/>
+        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="302"/>
         <source>Retrieve metadata...</source>
         <translation>正在获取元数据</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="300"/>
+        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="302"/>
         <source>Please wait patiently</source>
         <translation>请耐心等待</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="314"/>
+        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="316"/>
         <source>Successfully retrieved metadata</source>
         <translation>成功获取元数据</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="316"/>
+        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="318"/>
         <source>Please check metadata</source>
         <translation>请查收</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="328"/>
+        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="330"/>
         <source>Failed to retrieve metadata</source>
         <translation>获取元数据失败</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="330"/>
+        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="332"/>
         <source>Don&apos;t mind</source>
         <translation>假如生活欺骗了你</translation>
     </message>
@@ -1533,82 +1579,82 @@
 <context>
     <name>SongPropertyDialog</name>
     <message>
-        <location filename="../../components/dialog_box/song_property_dialog.py" line="22"/>
+        <location filename="../../components/dialog_box/song_property_dialog.py" line="18"/>
         <source>Year</source>
         <translation>年</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_property_dialog.py" line="23"/>
+        <location filename="../../components/dialog_box/song_property_dialog.py" line="19"/>
         <source>Disc</source>
         <translation>光盘</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_property_dialog.py" line="24"/>
+        <location filename="../../components/dialog_box/song_property_dialog.py" line="20"/>
         <source>Genre</source>
         <translation>类型</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_property_dialog.py" line="25"/>
+        <location filename="../../components/dialog_box/song_property_dialog.py" line="21"/>
         <source>Length</source>
         <translation>时长</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_property_dialog.py" line="26"/>
+        <location filename="../../components/dialog_box/song_property_dialog.py" line="22"/>
         <source>Properties</source>
         <translation>属性</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_property_dialog.py" line="27"/>
+        <location filename="../../components/dialog_box/song_property_dialog.py" line="23"/>
         <source>Song artist</source>
         <translation>歌曲歌手</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_property_dialog.py" line="28"/>
+        <location filename="../../components/dialog_box/song_property_dialog.py" line="24"/>
         <source>Song title</source>
         <translation>歌曲名</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_property_dialog.py" line="29"/>
+        <location filename="../../components/dialog_box/song_property_dialog.py" line="25"/>
         <source>Track</source>
         <translation>曲目</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_property_dialog.py" line="30"/>
+        <location filename="../../components/dialog_box/song_property_dialog.py" line="26"/>
         <source>File location</source>
         <translation>文件位置</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_property_dialog.py" line="31"/>
+        <location filename="../../components/dialog_box/song_property_dialog.py" line="27"/>
         <source>Album title</source>
         <translation>专辑标题</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_property_dialog.py" line="32"/>
+        <location filename="../../components/dialog_box/song_property_dialog.py" line="28"/>
         <source>Album artist</source>
         <translation>专辑歌手</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_property_dialog.py" line="35"/>
+        <location filename="../../components/dialog_box/song_property_dialog.py" line="34"/>
         <source>Unknown year</source>
         <translation>未知年份</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_property_dialog.py" line="37"/>
+        <location filename="../../components/dialog_box/song_property_dialog.py" line="36"/>
         <source>Unknown genre</source>
         <translation>未知流派</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_property_dialog.py" line="47"/>
+        <location filename="../../components/dialog_box/song_property_dialog.py" line="46"/>
         <source>Unknown artist</source>
         <translation>未知歌手</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_property_dialog.py" line="41"/>
+        <location filename="../../components/dialog_box/song_property_dialog.py" line="40"/>
         <source>Unknown album</source>
         <translation>未知专辑</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_property_dialog.py" line="45"/>
+        <location filename="../../components/dialog_box/song_property_dialog.py" line="44"/>
         <source>Unknown song</source>
         <translation>未知歌曲</translation>
     </message>
