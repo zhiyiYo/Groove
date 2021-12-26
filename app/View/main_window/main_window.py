@@ -13,9 +13,8 @@ from components.dialog_box.message_dialog import MessageDialog
 from components.frameless_window import FramelessWindow
 from components.label_navigation_interface import LabelNavigationInterface
 from components.media_player import MediaPlaylist, PlaylistType
-from components.opacity_ani_stacked_widget import OpacityAniStackedWidget
-from components.pop_up_ani_stacked_widget import PopUpAniStackedWidget
-from components.state_tooltip import StateTooltip
+from components.widgets.stacked_widget import OpacityAniStackedWidget, PopUpAniStackedWidget
+from components.widgets.state_tooltip import StateTooltip
 from components.thumbnail_tool_bar import ThumbnailToolBar
 from components.title_bar import TitleBar
 from PyQt5.QtCore import QEasingCurve, QEvent, QFile, Qt, QTimer

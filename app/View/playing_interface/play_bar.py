@@ -1,6 +1,6 @@
 # coding:utf-8
 from components.buttons.circle_button import CircleButton
-from components.slider import Slider, HollowHandleStyle
+from components.widgets.slider import Slider, HollowHandleStyle
 from PyQt5.QtCore import QPoint, Qt, pyqtSignal
 from PyQt5.QtWidgets import QLabel, QWidget
 from View.play_bar import MoreActionsMenu

@@ -1,11 +1,12 @@
 # coding:utf-8
 from copy import deepcopy
 
+from common.os_utils import getCoverPath
 from components.buttons.three_state_button import ThreeStatePushButton
 from components.dialog_box.message_dialog import MessageDialog
 from components.dialog_box.rename_playlist_dialog import RenamePlaylistDialog
-from components.menu import AddToMenu
-from components.scroll_area import ScrollArea
+from components.widgets.menu import AddToMenu
+from components.widgets.scroll_area import ScrollArea
 from PyQt5.QtCore import QFile, QPoint, Qt, pyqtSignal
 from PyQt5.QtWidgets import QLabel, QVBoxLayout, QWidget
 
@@ -274,6 +275,22 @@ class PlaylistInterface(ScrollArea):
         self.addMusicButton.setVisible(isEmpty)
         self.noMusicLabel.setVisible(isEmpty)
 
+    def __onEditSongInfo(self, oldSongInfo: dict, newSongInfo: dict):
+        """ 编辑歌曲信息槽函数 """
+        self.playlist['songInfo_list'] = deepcopy(
+            self.songListWidget.songInfo_list)
+        self.songInfo_list = self.playlist['songInfo_list']
+        index = self.songInfo_list.index(newSongInfo)
+
+        # 更新封面
+        if newSongInfo.get('coverPath'):
+            coverPath = getCoverPath(newSongInfo['coverName'], 'playlist_big')
+            oldCoverPath = self.playlistInfoBar.coverPath
+            if index == 0 and oldCoverPath != coverPath:
+                self.playlistInfoBar.updateWindow(self.playlist)
+
+        self.editSongInfoSignal.emit(oldSongInfo, newSongInfo)
+
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
         self.addMusicButton.clicked.connect(self.switchToAlbumCardInterfaceSig)
@@ -296,7 +313,7 @@ class PlaylistInterface(ScrollArea):
         # 歌曲列表信号
         self.songListWidget.playSignal.connect(self.songCardPlaySig)
         self.songListWidget.playOneSongSig.connect(self.playOneSongCardSig)
-        self.songListWidget.editSongInfoSignal.connect(self.editSongInfoSignal)
+        self.songListWidget.editSongInfoSignal.connect(self.__onEditSongInfo)
         self.songListWidget.nextToPlayOneSongSig.connect(
             self.nextToPlayOneSongSig)
         self.songListWidget.addSongToPlayingSignal.connect(

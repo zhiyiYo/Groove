@@ -7,7 +7,7 @@ from components.buttons.three_state_button import ThreeStatePushButton
 from components.dialog_box.message_dialog import MessageDialog
 from components.dialog_box.rename_playlist_dialog import RenamePlaylistDialog
 from components.layout.h_box_layout import HBoxLayout
-from components.menu import AddToMenu, DWMMenu
+from components.widgets.menu import AddToMenu, DWMMenu
 from components.playlist_card import BlurBackground
 from components.playlist_card import PlaylistCard as PlaylistCardBase
 from PyQt5.QtCore import (QEasingCurve, QFile, QParallelAnimationGroup, QPoint,

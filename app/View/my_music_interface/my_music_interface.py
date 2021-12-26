@@ -4,9 +4,9 @@ from copy import deepcopy
 from common.meta_data_getter import *
 from common.thread.get_info_thread import GetInfoThread
 from components.dialog_box.message_dialog import MessageDialog
-from components.menu import AddToMenu
-from components.pop_up_ani_stacked_widget import PopUpAniStackedWidget
-from components.state_tooltip import StateTooltip
+from components.widgets.menu import AddToMenu
+from components.widgets.stacked_widget import PopUpAniStackedWidget
+from components.widgets.state_tooltip import StateTooltip
 from View.my_music_interface.album_tab_interface import AlbumCardInterface
 from View.my_music_interface.album_tab_interface.selection_mode_bar import \
     SelectionModeBar as AlbumTabSelectionBar

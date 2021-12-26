@@ -3,9 +3,9 @@ from common.auto_wrap import autoWrap
 from common.image_process_utils import DominantColor
 from common.os_utils import getCoverPath
 from components.buttons.blur_button import BlurButton
-from components.check_box import CheckBox
-from components.menu import AddToMenu, DWMMenu
-from components.perspective_widget import PerspectiveWidget
+from components.widgets.check_box import CheckBox
+from components.widgets.menu import AddToMenu, DWMMenu
+from components.widgets.perspective_widget import PerspectiveWidget
 from PIL import Image
 from PIL.ImageFilter import GaussianBlur
 from PyQt5.QtCore import QPoint, Qt, pyqtSignal

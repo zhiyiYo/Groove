@@ -1,5 +1,5 @@
 # coding:utf-8
-from components.label import ClickableLabel
+from components.widgets.label import ClickableLabel
 from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
                           QParallelAnimationGroup, QPropertyAnimation, QRect,
                           Qt, pyqtSignal, QSize, QPoint)

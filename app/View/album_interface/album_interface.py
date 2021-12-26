@@ -1,10 +1,11 @@
 # coding:utf-8
 from copy import deepcopy
 
+from common.os_utils import getCoverPath
 from common.thread.save_album_info_thread import SaveAlbumInfoThread
 from components.dialog_box.album_info_edit_dialog import AlbumInfoEditDialog
-from components.menu import AddToMenu
-from components.scroll_area import ScrollArea
+from components.widgets.menu import AddToMenu
+from components.widgets.scroll_area import ScrollArea
 from PyQt5.QtCore import QFile, QPoint, Qt, pyqtSignal
 from PyQt5.QtWidgets import QApplication, QVBoxLayout, QWidget
 
@@ -165,6 +166,22 @@ class AlbumInterface(ScrollArea):
 
     def __onEditSongInfo(self, oldSongInfo: dict, newSongInfo: dict):
         self.__sortSongCardsByTrackNum()
+        index = self.songInfo_list.index(newSongInfo)
+
+        # 更新封面
+        if newSongInfo.get('coverPath'):
+            coverPath = getCoverPath(newSongInfo['coverName'], 'album_big')
+            oldCoverPath = self.albumInfoBar.coverPath
+            if oldCoverPath.startswith(':') or (index == 0 and oldCoverPath != coverPath):
+                self.albumInfo['coverPath'] = coverPath
+
+        # 更新专辑信息
+        for i, songInfo in enumerate(self.albumInfo["songInfo_list"]):
+            if songInfo['songPath'] == newSongInfo['songPath']:
+                self.albumInfo["songInfo_list"][i] = newSongInfo.copy()
+                self.albumInfo["genre"] = self.albumInfo["songInfo_list"][0]["genre"]
+
+        self.albumInfoBar.updateWindow(self.albumInfo)
         self.editSongInfoSignal.emit(oldSongInfo, newSongInfo)
 
     def __onSaveAlbumInfoFinished(self, oldAlbumInfo: dict, newAlbumInfo: dict, coverPath: str):

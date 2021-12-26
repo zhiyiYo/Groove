@@ -2,11 +2,15 @@
 from copy import deepcopy
 
 from common.auto_wrap import autoWrap
-from common.meta_data_writer import writeSongInfo
+from common.meta_data_getter import AlbumCoverGetter
+from common.meta_data_writer import writeSongInfo, writeAlbumCover
 from common.os_utils import adjustName
+from common.thread.get_meta_data_thread import GetSongMetaDataThread
+from components.widgets.state_tooltip import StateTooltip
 from components.buttons.perspective_button import PerspectivePushButton
-from components.label import ErrorIcon
-from components.line_edit import LineEdit
+from components.buttons.switch_button import SwitchButton
+from components.widgets.label import ErrorIcon
+from components.widgets.line_edit import LineEdit
 from PyQt5.QtCore import QFile, QRegExp, Qt, pyqtSignal
 from PyQt5.QtGui import QRegExpValidator
 from PyQt5.QtWidgets import (QApplication, QCompleter, QGridLayout, QLabel,
@@ -24,18 +28,24 @@ class SongInfoEditDialog(MaskDialogBase):
         super().__init__(parent)
         self.songInfo = deepcopy(songInfo)
         self.oldSongInfo = songInfo
+
         # 实例化小部件
         self.__createWidgets()
+
         # 初始化小部件
         self.__initWidget()
         self.__initLayout()
 
     def __createWidgets(self):
         """ 实例化小部件 """
-        # 实例化按钮
+        # 按钮
         self.saveButton = PerspectivePushButton(self.tr("Save"), self.widget)
-        self.cancelButton = PerspectivePushButton(self.tr("Cancel"), self.widget)
-        # 实例化标签
+        self.cancelButton = PerspectivePushButton(
+            self.tr("Cancel"), self.widget)
+        self.getMetaDataSwitchButton = SwitchButton(
+            self.tr('Off'), self.widget)
+
+        # 标签
         self.yearLabel = QLabel(self.tr("Year"), self.widget)
         self.genreLabel = QLabel(self.tr("Genre"), self.widget)
         self.diskLabel = QLabel(self.tr("Disk"), self.widget)
@@ -48,10 +58,13 @@ class SongInfoEditDialog(MaskDialogBase):
         self.editInfoLabel = QLabel(self.tr("Edit Song Info"), self.widget)
         self.songPath = QLabel(
             self.songInfo["songPath"].replace('\\', '/'), self.widget)
+        self.getMetaDataLabel = QLabel(
+            self.tr('Automatically retrieve metadata'), self.widget)
         self.emptyTrackErrorIcon = ErrorIcon(self.widget)
         self.bottomErrorIcon = ErrorIcon(self.widget)
         self.bottomErrorLabel = QLabel(self.widget)
-        # 实例化单行输入框
+
+        # 单行输入框
         self.diskLineEdit = LineEdit("1", self.widget)
         self.genreLineEdit = LineEdit(self.songInfo["genre"], self.widget)
         self.yearLineEdit = LineEdit(self.songInfo["year"], self.widget)
@@ -60,10 +73,14 @@ class SongInfoEditDialog(MaskDialogBase):
             self.songInfo["songName"], self.widget)
         self.singerNameLineEdit = LineEdit(
             self.songInfo["singer"], self.widget)
-        self.albumSongerLineEdit = LineEdit(
+        self.albumSingerLineEdit = LineEdit(
             self.songInfo["singer"], self.widget)
         self.trackNumLineEdit = LineEdit(
             self.songInfo["tracknumber"], self.widget)
+
+        # 进度提示条
+        self.stateToolTip = None
+
         # 流派补全
         genres = [
             "Pop",
@@ -91,7 +108,7 @@ class SongInfoEditDialog(MaskDialogBase):
 
     def __initWidget(self):
         """ 初始化小部件的属性 """
-        self.widget.setFixedSize(932, 652)
+        self.widget.setFixedSize(932, 740)
         for child in self.widget.findChildren(LineEdit):
             child.setFixedSize(408, 40)
 
@@ -112,6 +129,8 @@ class SongInfoEditDialog(MaskDialogBase):
         # 将曲目输入框数字改变的信号连接到槽函数
         self.trackNumLineEdit.textChanged.connect(
             self.__onTrackNumLineEditTextChanged)
+        self.getMetaDataSwitchButton.checkedChanged.connect(
+            self.__onGetMetaDataCheckedChanged)
 
         # 将按钮点击信号连接到槽函数
         self.saveButton.clicked.connect(self.__saveInfo)
@@ -120,8 +139,10 @@ class SongInfoEditDialog(MaskDialogBase):
     def __initLayout(self):
         """ 初始化布局 """
         self.editInfoLabel.move(30, 30)
-        self.songPathLabel.move(30, 470)
-        self.songPath.move(30, 502)
+        self.getMetaDataLabel.move(30, 465)
+        self.getMetaDataSwitchButton.move(30, 498)
+        self.songPathLabel.move(30, 560)
+        self.songPath.move(30, 590)
 
         # 设置对话框和标签位置
         self.gridLayout_1 = QGridLayout()
@@ -152,7 +173,7 @@ class SongInfoEditDialog(MaskDialogBase):
         self.gridLayout_3.addWidget(self.albumNameLabel, 0, 0)
         self.gridLayout_3.addWidget(self.albumSongerLabel, 0, 1)
         self.gridLayout_3.addWidget(self.albumNameLineEdit, 1, 0)
-        self.gridLayout_3.addWidget(self.albumSongerLineEdit, 1, 1)
+        self.gridLayout_3.addWidget(self.albumSingerLineEdit, 1, 1)
 
         self.gridLayout_4.addWidget(self.genreLabel, 0, 0)
         self.gridLayout_4.addWidget(self.yearLabel, 0, 1)
@@ -175,7 +196,7 @@ class SongInfoEditDialog(MaskDialogBase):
             self.cancelButton.y())
 
         # 设置提示标签的位置
-        self.bottomErrorIcon.move(30, self.widget.height() - 110)
+        self.bottomErrorIcon.move(30, self.widget.height() - 108)
         self.bottomErrorLabel.move(55, self.widget.height() - 112)
         self.vBoxLayout.setContentsMargins(
             30, 87, 30, self.widget.height()-87-335)
@@ -196,7 +217,7 @@ class SongInfoEditDialog(MaskDialogBase):
         """ 设置层叠样式表 """
         self.editInfoLabel.setObjectName("editSongInfo")
         self.singerNameLineEdit.setObjectName("singer")
-        self.albumSongerLineEdit.setObjectName("singer")
+        self.albumSingerLineEdit.setObjectName("singer")
         self.songPath.setObjectName("songPath")
         self.bottomErrorLabel.setObjectName("bottomErrorLabel")
 
@@ -209,6 +230,7 @@ class SongInfoEditDialog(MaskDialogBase):
         self.cancelButton.adjustSize()
         self.songPath.adjustSize()
         self.editInfoLabel.adjustSize()
+        self.getMetaDataLabel.adjustSize()
 
     def __saveInfo(self):
         """ 保存标签卡信息 """
@@ -217,6 +239,7 @@ class SongInfoEditDialog(MaskDialogBase):
         self.songInfo["album"] = self.albumNameLineEdit.text()
         self.songInfo["coverName"] = adjustName(
             self.songInfo["singer"]+'_'+self.songInfo["album"])
+
         # 根据后缀名选择曲目标签的写入方式
         self.songInfo["tracknumber"] = self.trackNumLineEdit.text()
         self.songInfo["genre"] = self.genreLineEdit.text()
@@ -225,7 +248,15 @@ class SongInfoEditDialog(MaskDialogBase):
         else:
             self.songInfo["year"] = self.tr("Unknown year")
 
-        if not writeSongInfo(self.songInfo):
+        # 写入专辑封面
+        isOk = True
+        if self.songInfo.get('coverPath'):
+            isOk = writeAlbumCover(self.songInfo['songPath'],
+                                   self.songInfo['coverPath'])
+            AlbumCoverGetter.getOneAlbumCover(self.songInfo)
+
+        # 写入其他元数据
+        if not (isOk and writeSongInfo(self.songInfo)):
             self.bottomErrorLabel.setText(
                 self.tr("An unknown error was encountered. Please try again later"))
             self.bottomErrorLabel.adjustSize()
@@ -256,3 +287,61 @@ class SongInfoEditDialog(MaskDialogBase):
         self.trackNumLineEdit.setProperty(
             'hasText', 'false' if isEmpty else 'true')
         self.trackNumLineEdit.setStyle(QApplication.style())
+
+    def __onGetMetaDataCheckedChanged(self, isChecked: bool):
+        """ 获取元数据开关按钮选中状态改变槽函数 """
+        if not isChecked:
+            return
+
+        self.getMetaDataSwitchButton.setText(self.tr('On'))
+        self.getMetaDataSwitchButton.setEnabled(False)
+        self.saveButton.setEnabled(False)
+        self.cancelButton.setEnabled(False)
+
+        # 创建进度条
+        self.stateToolTip = StateTooltip(self.tr('Retrieve metadata...'),
+                                         self.tr('Please wait patiently'), self)
+        self.stateToolTip.move(self.width()-self.stateToolTip.width()-30, 63)
+        self.stateToolTip.show()
+
+        # 创建爬虫线程
+        crawler = GetSongMetaDataThread(self.songInfo['songPath'], self)
+        crawler.crawlFinished.connect(self.__onCrawlFinished)
+        crawler.finished.connect(self.__onCrawlThreadFinished)
+        crawler.start()
+
+    def __onCrawlFinished(self, success: bool, songInfo: dict):
+        """ 爬取完成槽函数 """
+        if success:
+            self.stateToolTip.setTitle(
+                self.tr('Successfully retrieved metadata'))
+            self.stateToolTip.setContent(self.tr('Please check metadata'))
+
+            # 更新编辑框
+            self.songNameLineEdit.setText(songInfo['songName'])
+            self.singerNameLineEdit.setText(songInfo['singer'])
+            self.albumSingerLineEdit.setText(songInfo['singer'])
+            self.trackNumLineEdit.setText(songInfo['tracknumber'])
+            self.yearLineEdit.setText(songInfo['year'])
+            self.genreLineEdit.setText(songInfo['genre'])
+            self.albumNameLineEdit.setText(songInfo['album'])
+            self.songInfo['coverPath'] = songInfo.get('coverPath')
+        else:
+            self.stateToolTip.setTitle(
+                self.tr('Failed to retrieve metadata'))
+            self.stateToolTip.setContent(self.tr("Don't mind"))
+
+        self.stateToolTip.setState(True)
+        self.stateToolTip = None
+
+        self.getMetaDataSwitchButton.setText(self.tr('Off'))
+        self.getMetaDataSwitchButton.setChecked(False)
+        self.getMetaDataSwitchButton.setEnabled(True)
+        self.saveButton.setEnabled(True)
+        self.cancelButton.setEnabled(True)
+
+    def __onCrawlThreadFinished(self):
+        """ 爬虫线程结束 """
+        self.sender().quit()
+        self.sender().wait()
+        self.sender().deleteLater()

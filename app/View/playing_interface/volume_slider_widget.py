@@ -1,6 +1,6 @@
 # coding:utf-8
 from components.buttons.circle_button import CircleButton
-from components.slider import Slider
+from components.widgets.slider import Slider
 from PyQt5.QtCore import QEvent, QFile, Qt, pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QPainter, QPen, QPixmap
 from PyQt5.QtWidgets import QWidget

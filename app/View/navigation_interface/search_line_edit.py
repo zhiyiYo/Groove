@@ -1,6 +1,6 @@
 # coding:utf-8
 from components.buttons.three_state_button import ThreeStateButton
-from components.menu import LineEditMenu
+from components.widgets.menu import LineEditMenu
 from PyQt5.QtCore import QEvent, Qt
 from PyQt5.QtGui import QIcon, QKeyEvent
 from PyQt5.QtWidgets import QLineEdit

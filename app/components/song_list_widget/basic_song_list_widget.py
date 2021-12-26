@@ -4,7 +4,7 @@ from typing import List
 
 from components.dialog_box.song_info_edit_dialog import SongInfoEditDialog
 from components.dialog_box.song_property_dialog import SongPropertyDialog
-from components.list_widget import ListWidget
+from components.widgets.list_widget import ListWidget
 from PyQt5.QtCore import QMargins, QSize, Qt, pyqtSignal
 from PyQt5.QtGui import QResizeEvent
 from PyQt5.QtWidgets import QApplication, QListWidgetItem, QWidget

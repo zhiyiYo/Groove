@@ -1,7 +1,7 @@
 # coding:utf-8
 import os
 
-from components.menu import AddToMenu
+from components.widgets.menu import AddToMenu
 from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
                           QParallelAnimationGroup, QPoint, QPropertyAnimation,
                           QRect, Qt, pyqtSignal)
@@ -125,7 +125,7 @@ class BasicSongCard(QWidget):
         # 歌名卡默认可拉伸
         self.__scaleableWidget_list = scaleableWidget_list
         self.__scaleableWidgetMaxWidth_list = scalebaleWidgetWidth_list
-        
+
         # 计算初始宽度
         initWidth = sum(self.__scaleableWidgetMaxWidth_list) + \
             sum(self.__labelSpacing_list) + fixedWidth

@@ -4,8 +4,8 @@ import os
 
 from components.buttons.three_state_button import ThreeStateButton
 from components.dialog_box.mask_dialog_base import MaskDialogBase
-from components.label import ClickableLabel
-from components.menu import LineEditMenu
+from components.widgets.label import ClickableLabel
+from components.widgets.menu import LineEditMenu
 from PyQt5.QtCore import QDateTime, QEvent, Qt, pyqtSignal, QFile
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QLabel, QLineEdit, QPushButton, QVBoxLayout

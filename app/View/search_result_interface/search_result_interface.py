@@ -7,8 +7,8 @@ from common import resource
 from common.crawler.kuwo_music_crawler import KuWoMusicCrawler
 from common.thread.download_song_thread import DownloadSongThread
 from common.thread.get_online_song_url_thread import GetOnlineSongUrlThread
-from components.scroll_area import ScrollArea
-from components.state_tooltip import StateTooltip
+from components.widgets.scroll_area import ScrollArea
+from components.widgets.state_tooltip import StateTooltip
 from PyQt5.QtCore import QFile, QObject, Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget

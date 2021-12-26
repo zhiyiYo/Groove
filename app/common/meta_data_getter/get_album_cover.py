@@ -117,11 +117,8 @@ class AlbumCoverGetter:
     @staticmethod
     def __savePic(subAlbumFolder: str, songInfo: dict, pic_data):
         """ 储存提取到的专辑封面 """
-        # 获取后缀名
         suffix = getPicSuffix(pic_data)
-        # 封面路径
-        pic_path = os.path.join(subAlbumFolder,
-                                songInfo['coverName']+suffix)
-        # 写入封面
+        pic_path = os.path.join(subAlbumFolder, songInfo['coverName']+suffix)
+        
         with open(pic_path, "wb") as f:
             f.write(pic_data)

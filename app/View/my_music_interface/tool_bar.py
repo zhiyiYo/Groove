@@ -1,7 +1,7 @@
 # coding:utf-8
 from common.get_pressed_pos import getPressedPos
 from components.buttons.three_state_button import ThreeStatePushButton
-from components.menu import AeroMenu
+from components.widgets.menu import AeroMenu
 from PyQt5.QtCore import QFile, QPoint, Qt, pyqtSignal
 from PyQt5.QtGui import (QBrush, QColor, QFont, QFontMetrics, QPainter, QPen,
                          QPolygon)

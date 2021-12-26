@@ -2,7 +2,7 @@
 from typing import List
 
 from components.dialog_box.song_property_dialog import SongPropertyDialog
-from components.list_widget import ListWidget
+from components.widgets.list_widget import ListWidget
 from PyQt5.QtCore import QFile, QSize, Qt, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent
 from PyQt5.QtWidgets import QApplication, QListWidgetItem

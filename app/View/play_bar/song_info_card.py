@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QLabel, QWidget
 
 from common.os_utils import getCoverPath
 
-from components.perspective_widget import PerspectiveWidget
+from components.widgets.perspective_widget import PerspectiveWidget
 
 
 class SongInfoCard(PerspectiveWidget):

@@ -3,13 +3,13 @@ import os
 import json
 
 from common.os_utils import checkDirExists
-from common.thread.get_meta_data_thread import GetMetaDataThread
+from common.thread.get_meta_data_thread import GetFolderMetaDataThread
 from components.buttons.switch_button import SwitchButton
 from components.dialog_box.folder_list_dialog import FolderListDialog
-from components.label import ClickableLabel
-from components.scroll_area import ScrollArea
-from components.slider import Slider
-from components.state_tooltip import StateTooltip
+from components.widgets.label import ClickableLabel
+from components.widgets.scroll_area import ScrollArea
+from components.widgets.slider import Slider
+from components.widgets.state_tooltip import StateTooltip
 from PyQt5.QtCore import QEvent, QFile, Qt, QUrl, pyqtSignal
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import (QFileDialog, QLabel, QLineEdit, QPushButton,
@@ -211,7 +211,8 @@ class SettingInterface(ScrollArea):
     def __crawlMetaData(self):
         """ 爬取歌曲元数据 """
         # 创建爬虫线程
-        crawler = GetMetaDataThread(self.config["selected-folders"], self)
+        crawler = GetFolderMetaDataThread(
+            self.config["selected-folders"], self)
 
         # 创建状态提示条
         stateToolTip = StateTooltip(

@@ -1,5 +1,5 @@
 # coding:utf-8
-from components.menu import AddToMenu, DWMMenu
+from components.widgets.menu import AddToMenu, DWMMenu
 from components.song_list_widget import NoScrollSongListWidget, SongCardType
 from PyQt5.QtCore import pyqtSignal, QFile
 from PyQt5.QtGui import QContextMenuEvent

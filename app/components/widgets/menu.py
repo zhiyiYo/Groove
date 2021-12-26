@@ -3,7 +3,7 @@ import os
 
 from common.window_effect import WindowEffect
 from PyQt5.QtCore import (QEasingCurve, QEvent, QFile, QPropertyAnimation,
-                          QRect, Qt, pyqtSignal, QObject)
+                          QRect, Qt, pyqtSignal)
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction, QApplication, QMenu
 

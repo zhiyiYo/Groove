@@ -1,6 +1,6 @@
 # coding:utf-8
 from common.os_utils import getCoverPath
-from components.label import ClickableLabel
+from components.widgets.label import ClickableLabel
 from PyQt5.QtCore import QEvent, QFile, Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QFont, QFontMetrics, QPixmap
 from PyQt5.QtWidgets import QApplication, QLabel, QWidget

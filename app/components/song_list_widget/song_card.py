@@ -1,6 +1,6 @@
 # coding:utf-8
-from components.menu import DownloadMenu
-from components.label import ClickableLabel
+from components.widgets.menu import DownloadMenu
+from components.widgets.label import ClickableLabel
 from PyQt5.QtCore import Qt, pyqtSignal, QPoint
 from PyQt5.QtWidgets import QLabel
 

@@ -1,7 +1,7 @@
 # coding:utf-8
 import os
 
-from components.menu import AddToMenu
+from components.widgets.menu import AddToMenu
 from common.image_process_utils import getBlurPixmap
 from components.app_bar import AppBarButton, CollapsingAppBarBase, MoreActionsMenu
 from PyQt5.QtCore import Qt, pyqtSignal, QPoint, QObject

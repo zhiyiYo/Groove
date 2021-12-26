@@ -1,5 +1,4 @@
 # coding:utf-8
-
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QMouseEvent, QPixmap, QPainter, QBrush
 from PyQt5.QtWidgets import QLabel
@@ -34,7 +33,7 @@ class ErrorIcon(QLabel):
         # 设置提示条
         self.customToolTip = None
         self.setPixmap(
-            QPixmap(":/images/song_tab_interface/info_red.png"))
+            QPixmap(":/images/song_tab_interface/Info_red.png"))
         self.setFixedSize(19, 19)
 
 

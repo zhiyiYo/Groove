@@ -1,7 +1,7 @@
 # coding:utf-8
 import os
 
-from components.scroll_area import ScrollArea
+from components.widgets.scroll_area import ScrollArea
 from PyQt5.QtCore import Qt, pyqtSignal, QObject
 from PyQt5.QtGui import QColor, QPainter, QPen
 from PyQt5.QtWidgets import QWidget

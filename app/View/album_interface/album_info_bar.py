@@ -1,5 +1,5 @@
 # coding:utf-8
-from components.menu import AddToMenu
+from components.widgets.menu import AddToMenu
 from components.app_bar import (AppBarButton, CollapsingAppBarBase,
                                 MoreActionsMenu)
 from PyQt5.QtCore import QPoint, Qt, pyqtSignal, QObject

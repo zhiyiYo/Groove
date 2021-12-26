@@ -3,8 +3,8 @@
 from typing import List
 
 import pinyin
-from components.label import ClickableLabel
-from components.scroll_area import ScrollArea
+from components.widgets.label import ClickableLabel
+from components.widgets.scroll_area import ScrollArea
 from components.layout.v_box_layout import VBoxLayout
 from PyQt5.QtCore import Qt, pyqtSignal, QFile
 from PyQt5.QtWidgets import QGridLayout, QStackedWidget, QWidget

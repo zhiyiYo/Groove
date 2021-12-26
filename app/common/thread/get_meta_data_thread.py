@@ -1,13 +1,14 @@
 # coding:utf-8
 import os
+from pathlib import Path
 
 from common.meta_data_writer import writeAlbumCover, writeSongInfo
 from common.crawler.qq_music_crawler import QQMusicCrawler
 from PyQt5.QtCore import pyqtSignal, QThread
 
 
-class GetMetaDataThread(QThread):
-    """ 获取歌曲元数据线程 """
+class GetFolderMetaDataThread(QThread):
+    """ 获取文件夹中所有歌曲元数据的线程 """
 
     crawlSignal = pyqtSignal(str)
 
@@ -28,6 +29,7 @@ class GetMetaDataThread(QThread):
         for i, (songPath, fileName) in enumerate(zip(songPaths, fileNames)):
             if self.__isStopped:
                 break
+
             songInfo = self.crawler.getSongInfo(fileName)
             if songInfo:
                 # 修改歌曲信息
@@ -82,3 +84,45 @@ class GetMetaDataThread(QThread):
                     fileNames.append(os.path.splitext(file)[0])
 
         return songPaths, fileNames
+
+
+class GetSongMetaDataThread(QThread):
+    """ 获取一首歌曲元数据的线程 """
+
+    crawlFinished = pyqtSignal(bool, dict)
+
+    def __init__(self, songPath: str, parent=None):
+        """
+        Parameters
+        ----------
+        songPath: str
+            歌曲路径
+
+        parent:
+            父级
+        """
+        super().__init__(parent=parent)
+        self.songPath = songPath
+        self.crawler = QQMusicCrawler()
+
+    def run(self):
+        """ 爬取歌曲信息 """
+        os.makedirs("crawl_album_covers", exist_ok=True)
+
+        songInfo = self.crawler.getSongInfo(Path(self.songPath).stem, 70)
+
+        # 发送信号
+        if not songInfo:
+            self.crawlFinished.emit(False, {})
+        else:
+            songInfo['songPath'] = self.songPath
+
+            # 获取专辑封面
+            key = songInfo["singer"] + '_' + songInfo['album']
+            coverPath = f'crawl_album_covers/{key}.jpg'
+            url = self.crawler.getAlbumCoverURL(
+                songInfo['albummid'], coverPath)
+            if url:
+                songInfo['coverPath'] = coverPath
+
+            self.crawlFinished.emit(True, songInfo)

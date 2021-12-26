@@ -9,9 +9,9 @@ from components.buttons.three_state_button import ThreeStatePushButton
 from components.dialog_box.message_dialog import MessageDialog
 from components.dialog_box.rename_playlist_dialog import RenamePlaylistDialog
 from components.layout.grid_layout import GridLayout
-from components.menu import AddToMenu, AeroMenu
+from components.widgets.menu import AddToMenu, AeroMenu
 from components.playlist_card import BlurBackground, PlaylistCard
-from components.scroll_area import ScrollArea
+from components.widgets.scroll_area import ScrollArea
 from PyQt5.QtCore import (QDateTime, QFile, QParallelAnimationGroup, QPoint,
                           QPropertyAnimation, Qt, pyqtSignal)
 from PyQt5.QtWidgets import QAction, QLabel, QPushButton, QWidget

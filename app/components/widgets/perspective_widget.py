@@ -1,5 +1,4 @@
 # coding:utf-8
-
 from common.get_pressed_pos import getPressedPos
 from common.image_process_utils import PixmapPerspectiveTransform
 from PyQt5.QtCore import QPoint, Qt
@@ -30,25 +29,32 @@ class PerspectiveWidget(QWidget):
         # 多次点击时不响应，防止小部件的再次隐藏
         if self.__pressedPos:
             return
+
         self.grabMouse()
         pixmap = self.grab()
         self.__perspectiveTrans.setPixmap(pixmap)
+
         # 根据鼠标点击位置的不同设置背景封面的透视变换
         self.__setDstPointsByPressedPos(getPressedPos(self, e))
+
         # 获取透视变换后的QPixmap
         self.__pressedPix = self.__getTransformPixmap()
+
         # 对桌面上的窗口进行截图
         if self.__isTransScreenshot:
             self.__adjustTransformPix()
+
         # 隐藏本来看得见的小部件
         self.__visibleChildren = [
             child
             for child in self.children()
             if hasattr(child, "isVisible") and child.isVisible()
         ]
+
         for child in self.__visibleChildren:
             if hasattr(child, "hide"):
                 child.hide()
+
         self.update()
 
     def mouseReleaseEvent(self, e):
@@ -57,6 +63,7 @@ class PerspectiveWidget(QWidget):
         self.releaseMouse()
         self.__pressedPos = None
         self.update()
+
         # 显示小部件
         for child in self.__visibleChildren:
             if hasattr(child, "show"):
@@ -72,6 +79,7 @@ class PerspectiveWidget(QWidget):
             | QPainter.SmoothPixmapTransform
         )
         painter.setPen(Qt.NoPen)
+        
         # 绘制背景图片
         if self.__pressedPos:
             painter.drawPixmap(self.rect(), self.__pressedPix)

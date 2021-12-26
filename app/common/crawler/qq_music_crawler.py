@@ -26,13 +26,16 @@ class QQMusicCrawler:
                         'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'}
 
     @exceptionHandler
-    def getSongInfo(self, key_word: str):
+    def getSongInfo(self, key_word: str, match_thresh=70):
         """ 搜索指定关键词的歌曲信息
 
         Parameters
         ----------
         key_word: str
             搜索关键词
+
+        match_thresh: int
+            匹配度阈值，只返回匹配度大于此阈值的歌曲信息
 
         Returns
         -------
@@ -50,7 +53,7 @@ class QQMusicCrawler:
         info = infos[0]
         match_ratio = fuzz.token_set_ratio(
             f"{info['singer'][0]['name']} - {info['name']}", key_word)
-        if match_ratio < 70:
+        if match_ratio < match_thresh:
             return
 
         song_info = {}

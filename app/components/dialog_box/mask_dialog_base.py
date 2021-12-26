@@ -11,11 +11,13 @@ class MaskDialogBase(QDialog):
         super().__init__(parent=parent)
         self.hBoxLayout = QHBoxLayout(self)
         self.windowMask = QWidget(self)
+
         # 蒙版中间的对话框，所有小部件以他为父级窗口
         self.widget = QWidget(self, objectName='centerWidget')
-        self.setWindowFlags(Qt.FramelessWindowHint|Qt.Window)
+        self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
-        self.setGeometry(self.parent().geometry())
+        self.setGeometry(0, 0, parent.width(), parent.height())
+
         self.windowMask.resize(self.size())
         self.windowMask.setStyleSheet('background:rgba(255, 255, 255, 0.6)')
         self.hBoxLayout.addWidget(self.widget)

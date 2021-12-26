@@ -5,10 +5,10 @@ from copy import deepcopy
 from common.image_process_utils import getPicSuffix
 from common.os_utils import adjustName
 from components.buttons.perspective_button import PerspectivePushButton
-from components.label import ErrorIcon
-from components.line_edit import LineEdit
-from components.perspective_widget import PerspectiveWidget
-from components.scroll_area import ScrollArea
+from components.widgets.label import ErrorIcon
+from components.widgets.line_edit import LineEdit
+from components.widgets.perspective_widget import PerspectiveWidget
+from components.widgets.scroll_area import ScrollArea
 from PyQt5.QtCore import QFile, QRegExp, Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import (QBrush, QColor, QLinearGradient, QPainter, QPixmap,
                          QRegExpValidator)

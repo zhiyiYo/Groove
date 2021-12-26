@@ -1,7 +1,7 @@
 # coding:utf-8
 from components.dialog_box.message_dialog import MessageDialog
-from components.label import ClickableLabel
-from components.menu import AddToMenu, DWMMenu, DownloadMenu
+from components.widgets.label import ClickableLabel
+from components.widgets.menu import AddToMenu, DWMMenu, DownloadMenu
 from components.song_list_widget import NoScrollSongListWidget, SongCardType
 from PyQt5.QtCore import QMargins, Qt, pyqtSignal, QFile
 from PyQt5.QtWidgets import QAction, QWidget, QPushButton

@@ -9,9 +9,9 @@ from common.thread.save_album_info_thread import SaveAlbumInfoThread
 from components.album_card import AlbumBlurBackground, AlbumCard
 from components.dialog_box.album_info_edit_dialog import AlbumInfoEditDialog
 from components.dialog_box.message_dialog import MessageDialog
-from components.group_box import GroupBox
+from components.widgets.group_box import GroupBox
 from components.layout.grid_layout import GridLayout
-from components.scroll_area import ScrollArea
+from components.widgets.scroll_area import ScrollArea
 from PyQt5.QtCore import (QFile, QParallelAnimationGroup, QPoint,
                           QPropertyAnimation, Qt, pyqtSignal)
 from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget
@@ -526,6 +526,14 @@ class AlbumCardInterface(ScrollArea):
                         albumInfo["genre"] = albumInfo["songInfo_list"][0]["genre"]
                         self.__sortOneAlbum(albumInfo)
                         break
+
+                # 更新封面
+                if newSongInfo.get('coverPath'):
+                    coverPath = getCoverPath(newSongInfo['coverName'], 'album_big')
+                    oldCoverPath = albumInfo['coverPath']
+                    if oldCoverPath.startswith(':') or (
+                            len(albumInfo['songInfo_list']) == 1 and oldCoverPath != coverPath):
+                        albumInfo['coverPath'] = coverPath
 
             # 删除旧专辑中的一首歌，并在某张专辑中添加一首歌
             else:

@@ -7,7 +7,7 @@ from components.album_card import AlbumCard as AlbumCardBase
 from components.buttons.three_state_button import ThreeStatePushButton
 from components.dialog_box.message_dialog import MessageDialog
 from components.layout.h_box_layout import HBoxLayout
-from components.menu import AddToMenu, DWMMenu
+from components.widgets.menu import AddToMenu, DWMMenu
 from PyQt5.QtCore import (QEasingCurve, QFile, QParallelAnimationGroup, QPoint,
                           QPropertyAnimation, QSize, Qt, pyqtSignal)
 from PyQt5.QtGui import QContextMenuEvent, QIcon

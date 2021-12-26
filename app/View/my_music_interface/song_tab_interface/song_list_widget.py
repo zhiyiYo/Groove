@@ -1,6 +1,6 @@
 # coding:utf-8
 from components.dialog_box.message_dialog import MessageDialog
-from components.menu import AddToMenu, DWMMenu
+from components.widgets.menu import AddToMenu, DWMMenu
 from components.song_list_widget import BasicSongListWidget, SongCardType
 from PyQt5.QtCore import QFile, QMargins, Qt, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent

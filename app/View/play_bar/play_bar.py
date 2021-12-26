@@ -1,7 +1,7 @@
 # coding:utf-8
 from common.image_process_utils import DominantColor
-from components.menu import AeroMenu
-from components.slider import Slider, HollowHandleStyle
+from components.widgets.menu import AeroMenu
+from components.widgets.slider import Slider, HollowHandleStyle
 from PyQt5.QtCore import (QEasingCurve, QFile, QPoint, QPropertyAnimation,
                           QRect, Qt, pyqtProperty, pyqtSignal)
 from PyQt5.QtGui import QColor, QIcon, QPalette

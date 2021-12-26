@@ -1,8 +1,8 @@
 # coding:utf-8
 
-from components.selection_mode_bar_base import (BasicButton,
-                                                SelectionModeBarBase,
-                                                CheckAllButton)
+from components.widgets.selection_mode_bar_base import (BasicButton,
+                                                        SelectionModeBarBase,
+                                                        CheckAllButton)
 
 
 class SelectionModeBar(SelectionModeBarBase):

@@ -1,10 +1,10 @@
 # coding:utf-8
 from common.auto_wrap import autoWrap
 from components.buttons.blur_button import BlurButton
-from components.check_box import CheckBox
-from components.label import ClickableLabel
-from components.menu import AddToMenu, DWMMenu
-from components.perspective_widget import PerspectiveWidget
+from components.widgets.check_box import CheckBox
+from components.widgets.label import ClickableLabel
+from components.widgets.menu import AddToMenu, DWMMenu
+from components.widgets.perspective_widget import PerspectiveWidget
 from PyQt5.QtCore import QPoint, Qt, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent, QFont, QFontMetrics, QPixmap
 from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsOpacityEffect,
