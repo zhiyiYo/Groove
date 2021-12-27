@@ -1407,11 +1407,6 @@
         <translation>类型</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="51"/>
-        <source>Disk</source>
-        <translation>光盘</translation>
-    </message>
-    <message>
         <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="52"/>
         <source>Track</source>
         <translation>曲目</translation>
@@ -1506,6 +1501,11 @@
         <source>Don&apos;t mind</source>
         <translation>假如生活欺骗了你</translation>
     </message>
+    <message>
+        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="51"/>
+        <source>Disc</source>
+        <translation>光盘</translation>
+    </message>
 </context>
 <context>
     <name>SongInfoGetter</name>
@@ -1520,7 +1520,7 @@
         <translation>未知专辑</translation>
     </message>
     <message>
-        <location filename="../../common/meta_data_getter/get_song_info.py" line="116"/>
+        <location filename="../../common/meta_data_getter/get_song_info.py" line="117"/>
         <source>Unknown genre</source>
         <translation>未知流派</translation>
     </message>

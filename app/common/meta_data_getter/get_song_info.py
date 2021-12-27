@@ -113,10 +113,12 @@ class SongInfoGetter(QObject):
         singer = tag.artist if tag.artist and tag.artist.strip() else self.tr("Unknown artist")
         album = tag.album if tag.album and tag.album.strip() else self.tr("Unknown album")
         tracknumber = str(tag.track) if tag.track else "0"
+        trackTotal = str(tag.track_total) if tag.track_total else '1'
         genre = tag.genre if tag.genre else self.tr("Unknown genre")
         duration = f"{int(tag.duration//60)}:{int(tag.duration%60):02}"
-        coverName = adjustName(singer+'_'+album)
-        disc = tag.disc if tag.disc else "1"
+        coverName = adjustName(singer + '_' + album)
+        disc = str(tag.disc) if tag.disc else "1"
+        discTotal = str(tag.disc_total) if tag.disc_total else "1"
 
         # 调整曲目序号
         tracknumber = self.__adjustTrackNumber(tracknumber)
@@ -147,7 +149,9 @@ class SongInfoGetter(QObject):
             "genre": genre,
             "year": year,
             "disc": disc,
+            "discTotal": discTotal,
             "tracknumber": tracknumber,
+            "trackTotal": trackTotal,
             "duration": duration,
             "suffix": suffix,
             "createTime": createTime,

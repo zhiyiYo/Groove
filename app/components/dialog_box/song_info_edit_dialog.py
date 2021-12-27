@@ -48,7 +48,7 @@ class SongInfoEditDialog(MaskDialogBase):
         # 标签
         self.yearLabel = QLabel(self.tr("Year"), self.widget)
         self.genreLabel = QLabel(self.tr("Genre"), self.widget)
-        self.diskLabel = QLabel(self.tr("Disk"), self.widget)
+        self.discLabel = QLabel(self.tr("Disc"), self.widget)
         self.trackNumLabel = QLabel(self.tr("Track"), self.widget)
         self.songNameLabel = QLabel(self.tr("Song title"), self.widget)
         self.songPathLabel = QLabel(self.tr("File location"), self.widget)
@@ -65,7 +65,7 @@ class SongInfoEditDialog(MaskDialogBase):
         self.bottomErrorLabel = QLabel(self.widget)
 
         # 单行输入框
-        self.diskLineEdit = LineEdit("1", self.widget)
+        self.discLineEdit = LineEdit(self.songInfo['disc'], self.widget)
         self.genreLineEdit = LineEdit(self.songInfo["genre"], self.widget)
         self.yearLineEdit = LineEdit(self.songInfo["year"], self.widget)
         self.albumNameLineEdit = LineEdit(self.songInfo["album"], self.widget)
@@ -166,9 +166,9 @@ class SongInfoEditDialog(MaskDialogBase):
         self.gridLayout_1.addWidget(self.singerNameLineEdit, 1, 1)
 
         self.gridLayout_2.addWidget(self.trackNumLabel, 0, 0)
-        self.gridLayout_2.addWidget(self.diskLabel, 0, 1)
+        self.gridLayout_2.addWidget(self.discLabel, 0, 1)
         self.gridLayout_2.addWidget(self.trackNumLineEdit, 1, 0)
-        self.gridLayout_2.addWidget(self.diskLineEdit, 1, 1)
+        self.gridLayout_2.addWidget(self.discLineEdit, 1, 1)
 
         self.gridLayout_3.addWidget(self.albumNameLabel, 0, 0)
         self.gridLayout_3.addWidget(self.albumSongerLabel, 0, 1)
@@ -207,10 +207,10 @@ class SongInfoEditDialog(MaskDialogBase):
         rex_year = QRegExp(r"\d{4}")
         validator_tracknum = QRegExpValidator(
             rex_trackNum, self.trackNumLineEdit)
-        validator_disk = QRegExpValidator(rex_trackNum, self.diskLineEdit)
+        validator_disk = QRegExpValidator(rex_trackNum, self.discLineEdit)
         validator_year = QRegExpValidator(rex_year, self.yearLineEdit)
         self.trackNumLineEdit.setValidator(validator_tracknum)
-        self.diskLineEdit.setValidator(validator_disk)
+        self.discLineEdit.setValidator(validator_disk)
         self.yearLineEdit.setValidator(validator_year)
 
     def __setQss(self):
@@ -237,10 +237,10 @@ class SongInfoEditDialog(MaskDialogBase):
         self.songInfo["songName"] = self.songNameLineEdit.text()
         self.songInfo["singer"] = self.singerNameLineEdit.text()
         self.songInfo["album"] = self.albumNameLineEdit.text()
+        self.songInfo['disc'] = self.discLineEdit.text()
         self.songInfo["coverName"] = adjustName(
             self.songInfo["singer"]+'_'+self.songInfo["album"])
 
-        # 根据后缀名选择曲目标签的写入方式
         self.songInfo["tracknumber"] = self.trackNumLineEdit.text()
         self.songInfo["genre"] = self.genreLineEdit.text()
         if self.yearLineEdit.text() != self.tr("Unknown year"):

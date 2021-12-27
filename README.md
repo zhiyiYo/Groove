@@ -75,3 +75,9 @@
   * Uncheck the check box of **Advanced system settings --> Performance --> Show window contents when dragging**.
   * Turn off the option to enable acrylic background in the setting interface.
 
+* **What formats of audio files are supported?**
+  
+  Currently, the following audio files are supported:
+  * mp3
+  * flac
+  * mp4/m4a

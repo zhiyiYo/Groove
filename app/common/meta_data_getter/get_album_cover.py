@@ -10,7 +10,7 @@ from mutagen.flac import FLAC
 
 from common.image_process_utils import getPicSuffix
 
-
+# TODO:重构代码
 class AlbumCoverGetter:
     """ 获取专辑封面的类 """
 
@@ -45,7 +45,7 @@ class AlbumCoverGetter:
         if isPicExist:
             return
 
-        id_card = File(songInfo["songPath"])
+        id_card = File(songInfo["songPath"], options=[MP3, FLAC, MP4])
 
         if isinstance(id_card, MP3):
             cls.__getMp3AlbumCover(id_card, songInfo, subAlbumFolder)
@@ -119,6 +119,6 @@ class AlbumCoverGetter:
         """ 储存提取到的专辑封面 """
         suffix = getPicSuffix(pic_data)
         pic_path = os.path.join(subAlbumFolder, songInfo['coverName']+suffix)
-        
+
         with open(pic_path, "wb") as f:
             f.write(pic_data)

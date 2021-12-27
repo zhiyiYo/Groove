@@ -4,10 +4,172 @@ import os
 
 from mutagen import File, MutagenError
 from mutagen.flac import FLAC, Picture
-from mutagen.id3 import APIC, TALB, TCON, TDRC, TIT2, TPE1, TPE2, TRCK
+from mutagen.id3 import APIC, TALB, TCON, TDRC, TIT2, TPE1, TPE2, TRCK, TPOS
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
-from tinytag import TinyTag
+
+
+class MetaDataWriter:
+    """ 元数据写入器基类 """
+
+    def __init__(self, songPath: str):
+        """
+        Parameters
+        ----------
+        songPath: str
+            音频文件路径
+        """
+        self.audio = None
+
+    def writeSongInfo(self, songInfo: dict):
+        """ 写入歌曲信息
+
+        Parameters
+        ----------
+        songInfo: dict
+            歌曲信息字典
+
+        Returns
+        -------
+        success: bool
+            写入是否成功
+        """
+        raise NotImplementedError("该方法必须被子类实现")
+
+    def writeAlbumCover(self, picData, mimeType: str):
+        """ 写入专辑封面
+
+        Parameters
+        ----------
+        picData:
+            封面二进制数据
+
+        mimeData: str
+            图片数据类型，比如 `image/jpeg`、`image/png`
+
+        Returns
+        -------
+        success: bool
+            写入是否成功
+        """
+        raise NotImplementedError("该方法必须被子类实现")
+
+
+def saveExceptionHandler(func):
+
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except MutagenError:
+            return False
+
+    return wrapper
+
+
+class MP3Writer(MetaDataWriter):
+    """ MP3 元数据写入器 """
+
+    def __init__(self, songPath: str):
+        self.audio = MP3(songPath)
+
+    @saveExceptionHandler
+    def writeSongInfo(self, songInfo: dict):
+        self.audio['TRCK'] = TRCK(encoding=3, text=songInfo['tracknumber'])
+        self.audio['TIT2'] = TIT2(encoding=3, text=songInfo['songName'])
+        self.audio['TDRC'] = TDRC(encoding=3, text=songInfo['year'][:4])
+        self.audio['TPE1'] = TPE1(encoding=3, text=songInfo['singer'])
+        self.audio['TPE2'] = TPE2(encoding=3, text=songInfo['singer'])
+        self.audio['TALB'] = TALB(encoding=3, text=songInfo['album'])
+        self.audio['TCON'] = TCON(encoding=3, text=songInfo['genre'])
+        self.audio['TPOS'] = TPOS(encoding=3, text=songInfo['disc'])
+        self.audio.save()
+        return True
+
+    @saveExceptionHandler
+    def writeAlbumCover(self, picData, mimeType: str):
+        keyName = 'APIC:'
+        keyNames = []
+
+        # 获取可能已经存在的封面键名
+        for key in self.audio.tags.keys():
+            if key.startswith('APIC'):
+                keyName = key
+                keyNames.append(key)
+
+        # 弹出所有旧标签才能写入新数据
+        for key in keyNames:
+            self.audio.pop(key)
+
+        self.audio[keyName] = APIC(
+            encoding=0, mime=mimeType, type=3, desc='', data=picData)
+
+        self.audio.save()
+        return True
+
+
+class FLACWriter(MetaDataWriter):
+    """ FLAC 元数据写入器 """
+
+    def __init__(self, songPath: str):
+        self.audio = FLAC(songPath)
+
+    @saveExceptionHandler
+    def writeSongInfo(self, songInfo: dict):
+        self.audio['tracknumber'] = songInfo['tracknumber']
+        self.audio['title'] = songInfo['songName']
+        self.audio['year'] = songInfo['year'][:4]
+        self.audio['artist'] = songInfo['singer']
+        self.audio['album'] = songInfo['album']
+        self.audio['genre'] = songInfo['genre']
+        self.audio.save()
+        return True
+
+    @saveExceptionHandler
+    def writeAlbumCover(self, picData, mimeType: str):
+        picture = Picture()
+        picture.mime = mimeType
+        picture.data = picData
+        picture.type = 0
+        self.audio.clear_pictures()
+        self.audio.add_picture(picture)
+        self.audio.save()
+        return True
+
+
+class MP4Writer(MetaDataWriter):
+    """ MP4/M4A 元数据写入器 """
+
+    def __init__(self, songPath: str):
+        self.audio = MP4(songPath)
+
+    @saveExceptionHandler
+    def writeSongInfo(self, songInfo: dict):
+        # 写入曲目
+        trackNum = int(songInfo['tracknumber'])
+        trackTotal = int(songInfo['trackTotal'])
+        trackTotal = max(trackNum, trackTotal)
+        self.audio['trkn'] = [(trackNum, trackTotal)]
+
+        # 写入光盘
+        disc = int(songInfo['disc'])
+        discTotal = int(songInfo['discTotal'])
+        discTotal = max(disc, discTotal)
+        self.audio['disk'] = [(disc, discTotal)]
+
+        self.audio['©nam'] = songInfo['songName']
+        self.audio['©day'] = songInfo['year'][:4]
+        self.audio['©ART'] = songInfo['singer']
+        self.audio['aART'] = songInfo['singer']
+        self.audio['©alb'] = songInfo['album']
+        self.audio['©gen'] = songInfo['genre']
+        self.audio.save()
+        return True
+
+    @saveExceptionHandler
+    def writeAlbumCover(self, picData, mimeType: str):
+        self.audio['covr'] = [picData]
+        self.audio.save()
+        return True
 
 
 def writeSongInfo(songInfo: dict) -> bool:
@@ -20,47 +182,21 @@ def writeSongInfo(songInfo: dict) -> bool:
 
     Returns
     -------
-    isWriteOk: bool
+    success: bool
         是否成功写入
     """
-    id_card = File(songInfo['songPath'])
-
-    if isinstance(id_card, MP3):
-        id_card['TRCK'] = TRCK(encoding=3, text=songInfo['tracknumber'])
-        id_card['TIT2'] = TIT2(encoding=3, text=songInfo['songName'])
-        id_card['TDRC'] = TDRC(encoding=3, text=songInfo['year'][:4])
-        id_card['TPE1'] = TPE1(encoding=3, text=songInfo['singer'])
-        id_card['TPE2'] = TPE2(encoding=3, text=songInfo['singer'])
-        id_card['TALB'] = TALB(encoding=3, text=songInfo['album'])
-        id_card['TCON'] = TCON(encoding=3, text=songInfo['genre'])
-
-    elif isinstance(id_card, FLAC):
-        id_card['tracknumber'] = songInfo['tracknumber']
-        id_card['title'] = songInfo['songName']
-        id_card['year'] = songInfo['year'][:4]
-        id_card['artist'] = songInfo['singer']
-        id_card['album'] = songInfo['album']
-        id_card['genre'] = songInfo['genre']
-
-    elif isinstance(id_card, MP4):
-        # m4a写入曲目时还需要指定总曲目数
-        tag = TinyTag.get(id_card.filename)
-        trackNum = int(songInfo['tracknumber'])
-        trackTotal = 1 if not tag.track_total else int(tag.track_total)
-        trackTotal = max(trackNum, trackTotal)
-        id_card['trkn'] = [(trackNum, trackTotal)]
-        id_card['©nam'] = songInfo['songName']
-        id_card['©day'] = songInfo['year'][:4]
-        id_card['©ART'] = songInfo['singer']
-        id_card['aART'] = songInfo['singer']
-        id_card['©alb'] = songInfo['album']
-        id_card['©gen'] = songInfo['genre']
-
-    try:
-        id_card.save()
-        return True
-    except MutagenError:
+    fileType = type(File(songInfo['songPath'], options=[MP3, FLAC, MP4]))
+    writerMap = {
+        MP3: MP3Writer,
+        FLAC: FLACWriter,
+        MP4: MP4Writer
+    }
+    if fileType not in writerMap:
+        print(f'{songInfo["songPath"]} 文件格式不支持')
         return False
+
+    writer = writerMap[fileType](songInfo['songPath'])  # type:MetaDataWriter
+    return writer.writeSongInfo(songInfo)
 
 
 def writeAlbumCover(songPath: str, coverPath: str, picData=None) -> bool:
@@ -79,70 +215,32 @@ def writeAlbumCover(songPath: str, coverPath: str, picData=None) -> bool:
 
     Returns
     -------
-    isWriteOk: bool
+    success: bool
         是否成功写入
     """
     if not os.path.exists(coverPath) and not picData:
-        return
+        return False
 
     # 读取封面数据
     if not picData:
         with open(coverPath, 'rb') as f:
             picData = f.read()
 
-    id_card = File(songPath)
-
-    # 获取图片数据后缀名
+    # 获取图片数据类型
     try:
-        picSuffix = imghdr.what(None, picData)
+        mimeType = "image/" + imghdr.what(None, picData)
     except:
-        picSuffix = 'jpeg'
-        
-    mimeType = 'image/' + picSuffix
+        mimeType = "image/jpeg"
 
-    # 开始写入封面
-    if isinstance(id_card, MP3):
-        keyName = 'APIC:'
-        keyName_list = []
-
-        # 获取可能已经存在的封面键名
-        for key in id_card.tags.keys():
-            if key.startswith('APIC'):
-                keyName = key
-                keyName_list.append(key)
-
-        # 弹出所有旧标签才能写入新数据
-        for key in keyName_list:
-            id_card.pop(key)
-
-        id_card[keyName] = APIC(
-            encoding=0,
-            mime=mimeType,
-            type=3,
-            desc='',
-            data=picData
-        )
-
-    elif isinstance(id_card, FLAC):
-        # 创建Picture实例
-        picture = Picture()
-        # 设置属性值
-        picture.mime = mimeType
-        picture.data = picData
-        picture.type = 0
-        # 清除原来的图片数据
-        id_card.clear_pictures()
-        # 添加图片
-        id_card.add_picture(picture)
-
-    elif isinstance(id_card, MP4):
-        try:
-            id_card['covr'][0] = picData
-        except:
-            id_card['covr'] = [picData]  # 没有键时需要创建一个
-
-    try:
-        id_card.save()
-        return True
-    except:
+    fileType = type(File(songPath, options=[MP3, FLAC, MP4]))
+    writerMap = {
+        MP3: MP3Writer,
+        FLAC: FLACWriter,
+        MP4: MP4Writer
+    }
+    if fileType not in writerMap:
+        print(f'{songPath} 文件格式不支持')
         return False
+
+    writer = writerMap[fileType](songPath)  # type:MetaDataWriter
+    return writer.writeAlbumCover(picData, mimeType)
