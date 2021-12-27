@@ -67,7 +67,7 @@ class LineEdit(QLineEdit):
 
     def textChangedEvent(self):
         """ 如果输入框中文本改变且此时清空按钮不可见，就显示清空按钮 """
-        if self.text() and not self.clearButton.isVisible() and self.isNeedClearBt:
+        if self.text() and not self.clearButton.isVisible() and self.isNeedClearBt and self.hasFocus():
             self.clearButton.show()
 
     def resizeEvent(self, e):
