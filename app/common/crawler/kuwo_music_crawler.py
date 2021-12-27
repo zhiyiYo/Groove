@@ -3,7 +3,6 @@ import json
 import os
 from urllib import parse
 from copy import deepcopy
-from pprint import pprint
 
 import requests
 from common.os_utils import adjustName
@@ -100,10 +99,13 @@ class KuWoMusicCrawler:
             song_info['album'] = info['album']
             song_info['year'] = info['releaseDate'].split('-')[0]
             song_info['tracknumber'] = str(info['track'])
+            song_info['trackTotal'] = str(info['track'])
             song_info['coverPath'] = info.get('albumpic', '')
             song_info['coverName'] = adjustName(
                 info['artist']+'_'+info['album'])
             song_info['genre'] = ''
+            song_info['disc'] = '1'
+            song_info['discTotal'] = '1'
 
             # 格式化时长
             d = info["duration"]
@@ -246,10 +248,3 @@ class KuWoMusicCrawler:
         lyric = json.loads(response.text)['data']['lrclist']  # type:list
 
         return lyric
-
-
-if __name__ == '__main__':
-    crawler = KuWoMusicCrawler()
-    song_info_list = crawler.search('aiko 微熱')
-    if song_info_list:
-        crawler.downloadSong(song_info_list[0], './')

@@ -307,17 +307,17 @@
     <message>
         <location filename="../../components/widgets/menu.py" line="155"/>
         <source>Standard</source>
-        <translation>流畅</translation>
+        <translation>标准音质</translation>
     </message>
     <message>
         <location filename="../../components/widgets/menu.py" line="156"/>
         <source>HQ</source>
-        <translation>高品</translation>
+        <translation>高品音质</translation>
     </message>
     <message>
         <location filename="../../components/widgets/menu.py" line="157"/>
         <source>SQ</source>
-        <translation>超品</translation>
+        <translation>超品音质</translation>
     </message>
 </context>
 <context>

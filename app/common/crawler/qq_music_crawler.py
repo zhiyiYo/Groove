@@ -62,6 +62,9 @@ class QQMusicCrawler:
         song_info["year"] = info["time_public"].split('-')[0]
         song_info["singer"] = info["singer"][0]["name"]
         song_info["tracknumber"] = str(info["index_album"])
+        song_info["trackTotal"] = str(info["index_album"])
+        song_info['disc'] = str(info['index_cd'] + 1)
+        song_info['discTotal'] = str(info['index_cd'] + 1)
         song_info["albummid"] = info['album']['mid']
 
         # 流派信息
