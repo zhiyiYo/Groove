@@ -91,17 +91,17 @@
         <translation>这里没有可显示的内容。请尝试其他筛选器。</translation>
     </message>
     <message>
-        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="692"/>
+        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="693"/>
         <source>Are you sure you want to delete this?</source>
         <translation>是否确定要删除此项？</translation>
     </message>
     <message>
-        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="693"/>
+        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="694"/>
         <source>If you delete</source>
         <translation>如果删除</translation>
     </message>
     <message>
-        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="694"/>
+        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="695"/>
         <source>it won&apos;t be on be this device anymore.</source>
         <translation>，它将不再位于此设备上。</translation>
     </message>
@@ -578,27 +578,27 @@
 <context>
     <name>MoreActionsMenu</name>
     <message>
-        <location filename="../../View/play_bar/play_bar.py" line="386"/>
+        <location filename="../../View/play_bar/play_bar.py" line="362"/>
         <source>Save as a playlist</source>
         <translation>保存为播放列表</translation>
     </message>
     <message>
-        <location filename="../../View/play_bar/play_bar.py" line="388"/>
+        <location filename="../../View/play_bar/play_bar.py" line="364"/>
         <source>Clear now playing</source>
         <translation>清空&quot;正在播放&quot;</translation>
     </message>
     <message>
-        <location filename="../../View/play_bar/play_bar.py" line="392"/>
+        <location filename="../../View/play_bar/play_bar.py" line="368"/>
         <source>Show now playing list</source>
         <translation>显示正在播放列表</translation>
     </message>
     <message>
-        <location filename="../../View/play_bar/play_bar.py" line="394"/>
+        <location filename="../../View/play_bar/play_bar.py" line="370"/>
         <source>Go full screen</source>
         <translation>转到全屏</translation>
     </message>
     <message>
-        <location filename="../../View/play_bar/play_bar.py" line="399"/>
+        <location filename="../../View/play_bar/play_bar.py" line="375"/>
         <source>Show artist cover</source>
         <translation>显示歌手封面</translation>
     </message>
@@ -1505,24 +1505,6 @@
         <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="51"/>
         <source>Disc</source>
         <translation>光盘</translation>
-    </message>
-</context>
-<context>
-    <name>SongInfoReader</name>
-    <message>
-        <location filename="../../common/meta_data_getter/song_info_reader.py" line="113"/>
-        <source>Unknown artist</source>
-        <translation>未知歌手</translation>
-    </message>
-    <message>
-        <location filename="../../common/meta_data_getter/song_info_reader.py" line="114"/>
-        <source>Unknown album</source>
-        <translation>未知专辑</translation>
-    </message>
-    <message>
-        <location filename="../../common/meta_data_getter/song_info_reader.py" line="117"/>
-        <source>Unknown genre</source>
-        <translation>未知流派</translation>
     </message>
 </context>
 <context>

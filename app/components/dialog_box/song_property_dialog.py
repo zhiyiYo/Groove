@@ -29,26 +29,26 @@ class SongPropertyDialog(MaskDialogBase):
             self.tr("Album artist"), self.widget)
 
         # 内容标签
-        self.discLabel = QLabel(songInfo.get(
-            'disc', "1"), self.widget, textInteractionFlags=Qt.TextSelectableByMouse)
-        self.yearLabel = QLabel(songInfo.get("year", self.tr(
-            'Unknown year')), self.widget, textInteractionFlags=Qt.TextSelectableByMouse)
-        self.genreLabel = QLabel(songInfo.get("genre", self.tr(
-            'Unknown genre')), self.widget, textInteractionFlags=Qt.TextSelectableByMouse)
-        self.singerLabel = QLabel(songInfo.get("singer", self.tr(
-            "Unknown artist")), self.widget, textInteractionFlags=Qt.TextSelectableByMouse)
-        self.albumNameLabel = QLabel(songInfo.get("album", self.tr(
-            'Unknown album')), self.widget, textInteractionFlags=Qt.TextSelectableByMouse)
-        self.durationLabel = QLabel(songInfo.get(
-            "duration", "0:00"), self.widget, textInteractionFlags=Qt.TextSelectableByMouse)
-        self.songNameLabel = QLabel(songInfo.get("songName", self.tr(
-            "Unknown song")), self.widget, textInteractionFlags=Qt.TextSelectableByMouse)
-        self.albumSingerLabel = QLabel(songInfo.get("singer", self.tr(
-            'Unknown artist')), self.widget, textInteractionFlags=Qt.TextSelectableByMouse)
-        self.trackNumberLabel = QLabel(songInfo.get(
-            "tracknumber", ''), self.widget, textInteractionFlags=Qt.TextSelectableByMouse)
-        self.songPathLabel = QLabel(songInfo.get("songPath", '').replace(
-            "\\", "/"), self.widget, textInteractionFlags=Qt.TextSelectableByMouse)
+        self.discLabel = SelectableLabel(
+            songInfo.get('disc', "1"), self.widget)
+        self.yearLabel = SelectableLabel(songInfo.get(
+            "year", self.tr('Unknown year')), self.widget)
+        self.genreLabel = SelectableLabel(songInfo.get(
+            "genre", self.tr('Unknown genre')), self.widget)
+        self.singerLabel = SelectableLabel(songInfo.get(
+            "singer", self.tr("Unknown artist")), self.widget)
+        self.albumNameLabel = SelectableLabel(songInfo.get(
+            "album", self.tr('Unknown album')), self.widget)
+        self.durationLabel = SelectableLabel(
+            songInfo.get("duration", "0:00"), self.widget)
+        self.songNameLabel = SelectableLabel(songInfo.get(
+            "songName", self.tr("Unknown song")), self.widget)
+        self.albumSingerLabel = SelectableLabel(songInfo.get(
+            "singer", self.tr('Unknown artist')), self.widget)
+        self.trackNumberLabel = SelectableLabel(
+            songInfo.get("tracknumber", ''), self.widget)
+        self.songPathLabel = SelectableLabel(songInfo.get(
+            "songPath", '').replace("\\", "/"), self.widget)
 
         # 关闭按钮
         self.closeButton = PerspectivePushButton(self.tr("Close"), self.widget)
@@ -178,3 +178,14 @@ class SongPropertyDialog(MaskDialogBase):
         self.closeButton.adjustSize()
         for label in self.findChildren(QLabel):
             label.adjustSize()
+
+
+class SelectableLabel(QLabel):
+    """ 可用鼠标选中的标签 """
+
+    def __init__(self, text: str, parent=None):
+        super().__init__(text, parent)
+        self.setTextInteractionFlags(Qt.TextSelectableByMouse)
+
+    def contextMenuEvent(self, e):
+        return

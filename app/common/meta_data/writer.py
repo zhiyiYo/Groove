@@ -116,6 +116,7 @@ class FLACWriter(MetaDataWriter):
     @saveExceptionHandler
     def writeSongInfo(self, songInfo: dict):
         self.audio['tracknumber'] = songInfo['tracknumber']
+        self.audio['discnumber'] = songInfo['disc']
         self.audio['title'] = songInfo['songName']
         self.audio['year'] = songInfo['year'][:4]
         self.audio['artist'] = songInfo['singer']

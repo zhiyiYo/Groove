@@ -3,6 +3,9 @@ import os
 import json
 
 from mutagen import File
+from mutagen.mp3 import MP3
+from mutagen.mp4 import MP4
+from mutagen.flac import FLAC
 from tinytag import TinyTag
 
 from common.os_utils import checkDirExists
@@ -107,12 +110,11 @@ class SongInfoReader(QObject):
         tag = TinyTag.get(songPath)
         fileInfo = QFileInfo(songPath)
 
-        # 获取标签信息
+        # 标签信息
         suffix = "." + fileInfo.suffix()
         songName = tag.title if tag.title and tag.title.strip() else fileInfo.baseName()
         singer = tag.artist if tag.artist and tag.artist.strip() else self.tr("Unknown artist")
         album = tag.album if tag.album and tag.album.strip() else self.tr("Unknown album")
-        tracknumber = str(tag.track) if tag.track else "0"
         trackTotal = str(tag.track_total) if tag.track_total else '1'
         genre = tag.genre if tag.genre else self.tr("Unknown genre")
         duration = f"{int(tag.duration//60)}:{int(tag.duration%60):02}"
@@ -120,20 +122,22 @@ class SongInfoReader(QObject):
         disc = str(tag.disc) if tag.disc else "1"
         discTotal = str(tag.disc_total) if tag.disc_total else "1"
 
-        # 调整曲目序号
+        # 曲目
+        tracknumber = str(tag.track) if tag.track else "0"
         tracknumber = self.__adjustTrackNumber(tracknumber)
 
-        # 获取年份
+        # 年份
         if tag.year and tag.year[0] != "0":
             year = tag.year[:4]
         else:
-            tag = File(songPath)
-            key_dict = {".m4a": "©day", ".mp3": "TDRC", ".flac": "year"}
-            year = (
-                str(tag.get(key_dict[suffix])[0])[:4]
-                if tag.get(key_dict[suffix])
-                else ''
-            )
+            audio = File(songPath, [MP3, FLAC, MP4])
+            keyMap = {
+                ".m4a": "©day",
+                ".mp4": "©day",
+                ".mp3": "TDRC",
+                ".flac": "year"
+            }
+            year = str(audio.get(keyMap[suffix], [''])[0])[:4]
 
         # 获取时间戳
         createTime = fileInfo.birthTime().toString(Qt.ISODate)
@@ -204,7 +208,7 @@ class SongInfoReader(QObject):
         for folderPath in self.folderPaths:
             files = os.listdir(folderPath)
             for file in files:
-                if file.endswith(('.mp3', '.flac', '.m4a')):
+                if file.lower().endswith(('.mp3', '.flac', '.m4a', '.mp4')):
                     songPaths.append(os.path.join(
                         folderPath, file).replace('\\', '/'))
 
