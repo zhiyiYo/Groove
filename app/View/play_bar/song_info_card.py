@@ -9,7 +9,7 @@ from common.os_utils import getCoverPath
 
 from components.widgets.perspective_widget import PerspectiveWidget
 
-
+# TODO：重构代码
 class SongInfoCard(PerspectiveWidget):
     """ 播放栏左侧歌曲信息卡 """
 

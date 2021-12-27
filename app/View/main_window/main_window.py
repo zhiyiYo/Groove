@@ -913,13 +913,13 @@ class MainWindow(FramelessWindow):
         if self.sender() is self.albumInterface:
             self.albumCardInterface.updateOneAlbumInfo(
                 oldAlbumInfo, newAlbumInfo, coverPath)
-            self.myMusicInterface.singerInfoGetter.updateSingerInfos(
+            self.myMusicInterface.singerInfoReader.updateSingerInfos(
                 self.albumCardInterface.albumInfo_list)
             if not self.albumInterface.songInfo_list:
                 self.titleBar.returnButton.click()
 
         elif self.sender() is self.albumCardInterface:
-            self.myMusicInterface.singerInfoGetter.updateSingerInfos(
+            self.myMusicInterface.singerInfoReader.updateSingerInfos(
                 self.albumCardInterface.albumInfo_list)
             if oldAlbumInfo == self.albumInterface.albumInfo:
                 self.albumInterface.albumInfoBar.updateWindow(newAlbumInfo)
@@ -927,14 +927,14 @@ class MainWindow(FramelessWindow):
         elif self.sender() is self.singerInterface:
             self.albumCardInterface.updateOneAlbumInfo(
                 oldAlbumInfo, newAlbumInfo, coverPath)
-            self.myMusicInterface.singerInfoGetter.updateSingerInfos(
+            self.myMusicInterface.singerInfoReader.updateSingerInfos(
                 self.albumCardInterface.albumInfo_list)
             self.singerInterface.updateWindow(
                 self.myMusicInterface.findSingerInfo(newAlbumInfo['singer']))
 
-        self.myMusicInterface.songInfoGetter.songInfo_list = deepcopy(
+        self.myMusicInterface.songInfoReader.songInfo_list = deepcopy(
             self.songTabSongListWidget.songInfo_list)
-        self.myMusicInterface.albumInfoGetter.albumInfo_list = deepcopy(
+        self.myMusicInterface.albumInfoReader.albumInfo_list = deepcopy(
             self.albumCardInterface.albumInfo_list)
 
     def showSmallestPlayInterface(self):

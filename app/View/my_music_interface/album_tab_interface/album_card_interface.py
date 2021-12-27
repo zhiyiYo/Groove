@@ -3,7 +3,7 @@ from copy import deepcopy
 from typing import Dict, List
 
 import pinyin
-from common.meta_data_getter import AlbumCoverGetter
+from common.meta_data import AlbumCoverReader
 from common.os_utils import getCoverPath
 from common.thread.save_album_info_thread import SaveAlbumInfoThread
 from components.album_card import AlbumBlurBackground, AlbumCard
@@ -529,7 +529,8 @@ class AlbumCardInterface(ScrollArea):
 
                 # 更新封面
                 if newSongInfo.get('coverPath'):
-                    coverPath = getCoverPath(newSongInfo['coverName'], 'album_big')
+                    coverPath = getCoverPath(
+                        newSongInfo['coverName'], 'album_big')
                     oldCoverPath = albumInfo['coverPath']
                     if oldCoverPath.startswith(':') or (
                             len(albumInfo['songInfo_list']) == 1 and oldCoverPath != coverPath):
@@ -755,7 +756,7 @@ class AlbumCardInterface(ScrollArea):
         album = songInfo["album"]
         singer = songInfo["singer"]
         coverName = songInfo["coverName"]
-        AlbumCoverGetter.getOneAlbumCover(songInfo)
+        AlbumCoverReader.getOneAlbumCover(songInfo)
         coverPath = getCoverPath(coverName, 'album_big')
         albumInfo = {
             "album": album,

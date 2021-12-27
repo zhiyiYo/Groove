@@ -1,7 +1,7 @@
 # coding:utf-8
 from copy import deepcopy
 
-from common.meta_data_getter import *
+from common.meta_data import *
 from common.thread.get_info_thread import GetInfoThread
 from components.dialog_box.message_dialog import MessageDialog
 from components.widgets.menu import AddToMenu
@@ -57,18 +57,18 @@ class MyMusicInterface(QWidget):
         self.stackedWidget = PopUpAniStackedWidget(self)
 
         # 扫描文件夹列表下的音频文件信息，顺序不能改动
-        self.songInfoGetter = SongInfoGetter(self.folderPaths)
-        self.albumCoverGetter = AlbumCoverGetter(
-            self.songInfoGetter.songInfo_list)
-        self.albumInfoGetter = AlbumInfoGetter(
-            self.songInfoGetter.songInfo_list)
-        self.singerInfoGetter = SingerInfoGetter(
-            self.albumInfoGetter.albumInfo_list)
+        self.songInfoReader = SongInfoReader(self.folderPaths)
+        self.albumCoverReader = AlbumCoverReader(
+            self.songInfoReader.songInfo_list)
+        self.albumInfoReader = AlbumInfoReader(
+            self.songInfoReader.songInfo_list)
+        self.singerInfoReader = SingerInfoReader(
+            self.albumInfoReader.albumInfo_list)
 
         self.songListWidget = SongListWidget(
-            self.songInfoGetter.songInfo_list, self)
+            self.songInfoReader.songInfo_list, self)
         self.albumCardInterface = AlbumCardInterface(
-            self.albumInfoGetter.albumInfo_list, self)
+            self.albumInfoReader.albumInfo_list, self)
 
         # 创建工具栏
         self.toolBar = ToolBar(self)
@@ -258,7 +258,7 @@ class MyMusicInterface(QWidget):
     def __deleteSongs(self, songPaths):
         """ 删除指定的歌曲并发送删除信号 """
         self.albumCardInterface.deleteSongs(songPaths)
-        self.singerInfoGetter.updateSingerInfos(
+        self.singerInfoReader.updateSingerInfos(
             self.albumCardInterface.albumInfo_list)
         self.removeSongSig.emit(songPaths)
 
@@ -266,7 +266,7 @@ class MyMusicInterface(QWidget):
         """ 删除歌曲 """
         self.songListWidget.removeSongCards(songPaths)
         self.albumCardInterface.deleteSongs(songPaths)
-        self.singerInfoGetter.updateSingerInfos(
+        self.singerInfoReader.updateSingerInfos(
             self.albumCardInterface.albumInfo_list)
 
     def __showDeleteAlbumsDialog(self):
@@ -300,7 +300,7 @@ class MyMusicInterface(QWidget):
     def __deleteAlbums(self, songPaths: list):
         """ 删除指定的专辑并发送删除信号 """
         self.songListWidget.removeSongCards(songPaths)
-        self.singerInfoGetter.updateSingerInfos(
+        self.singerInfoReader.updateSingerInfos(
             self.albumCardInterface.albumInfo_list)
         self.removeSongSig.emit(songPaths)
 
@@ -344,7 +344,7 @@ class MyMusicInterface(QWidget):
     def scanTargetPathSongInfo(self, folderPaths: list):
         """ 重新扫描指定的歌曲文件夹列表中的歌曲信息并更新标签界面 """
         self.folderPaths = folderPaths
-        self.songInfoGetter.folderPaths = folderPaths
+        self.songInfoReader.folderPaths = folderPaths
 
         # 创建线程来扫描信息
         thread = GetInfoThread(folderPaths, self)
@@ -371,40 +371,40 @@ class MyMusicInterface(QWidget):
         # 更新界面
         self.songListWidget.updateAllSongCards(songInfo_list)
         self.albumCardInterface.updateAllAlbumCards(albumInfo_list)
-        self.singerInfoGetter.singerInfos = singerInfos
-        self.songInfoGetter.songInfo_list = deepcopy(songInfo_list)
-        self.albumInfoGetter.albumInfo_list = deepcopy(albumInfo_list)
+        self.singerInfoReader.singerInfos = singerInfos
+        self.songInfoReader.songInfo_list = deepcopy(songInfo_list)
+        self.albumInfoReader.albumInfo_list = deepcopy(albumInfo_list)
 
     def rescanSongInfo(self):
         """ 重新扫描当前的歌曲文件夹的歌曲信息 """
-        if not self.songInfoGetter.rescanSongInfo():
+        if not self.songInfoReader.rescanSongInfo():
             return
 
-        self.albumCoverGetter.updateAlbumCover(
-            self.songInfoGetter.songInfo_list)
-        self.albumInfoGetter.updateAlbumInfo(
-            self.songInfoGetter.songInfo_list)
-        self.singerInfoGetter.updateSingerInfos(
-            self.albumInfoGetter.albumInfo_list)
+        self.albumCoverReader.updateAlbumCovers(
+            self.songInfoReader.songInfo_list)
+        self.albumInfoReader.updateAlbumInfo(
+            self.songInfoReader.songInfo_list)
+        self.singerInfoReader.updateSingerInfos(
+            self.albumInfoReader.albumInfo_list)
 
         # 更新界面
         self.songListWidget.updateAllSongCards(
-            self.songInfoGetter.songInfo_list)
+            self.songInfoReader.songInfo_list)
         self.albumCardInterface.updateAllAlbumCards(
-            self.albumInfoGetter.albumInfo_list)
+            self.albumInfoReader.albumInfo_list)
 
     def hasSongModified(self):
-        return self.songInfoGetter.hasSongModified()
+        return self.songInfoReader.hasSongModified()
 
     def updateOneSongInfo(self, oldSongInfo: dict, newSongInfo: dict):
         """ 更新一首歌的信息 """
         self.songListWidget.updateOneSongCard(newSongInfo)
         self.albumCardInterface.updateOneSongInfo(oldSongInfo, newSongInfo)
-        self.singerInfoGetter.updateSingerInfos(
+        self.singerInfoReader.updateSingerInfos(
             self.albumCardInterface.albumInfo_list)
-        self.songInfoGetter.songInfo_list = deepcopy(
+        self.songInfoReader.songInfo_list = deepcopy(
             self.songListWidget.songInfo_list)
-        self.albumInfoGetter.albumInfo_list = deepcopy(
+        self.albumInfoReader.albumInfo_list = deepcopy(
             self.albumCardInterface.albumInfo_list)
 
     def __showSortModeMenu(self):
@@ -486,7 +486,7 @@ class MyMusicInterface(QWidget):
 
     def findSingerInfo(self, singerName: str):
         """ 获取歌手信息 """
-        return self.singerInfoGetter.singerInfos.get(singerName, {})
+        return self.singerInfoReader.singerInfos.get(singerName, {})
 
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """

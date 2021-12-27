@@ -62,6 +62,7 @@ def getCoverPath(name: str, coverType: str) -> str:
     coverPath = cover_path_dict[coverType]
     coverFolder = f"Album_Cover/{name}"
     pic_list = os.listdir(coverFolder) if os.path.exists(coverFolder) else []
+    
     # 如果目录下有封面就用这个封面作为albumCard的背景
     if pic_list and os.path.isfile(os.path.join(coverFolder, pic_list[0])):
         coverPath = os.path.join(coverFolder, pic_list[0])

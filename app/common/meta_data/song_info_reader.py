@@ -10,7 +10,7 @@ from common.os_utils import adjustName
 from PyQt5.QtCore import QFileInfo, Qt, QObject
 
 
-class SongInfoGetter(QObject):
+class SongInfoReader(QObject):
     """ 创建一个获取和保存歌曲信息的类 """
 
     def __init__(self, folderPaths: list):

@@ -2,7 +2,7 @@
 import os
 from pathlib import Path
 
-from common.meta_data_writer import writeAlbumCover, writeSongInfo
+from common.meta_data.writer import writeAlbumCover, writeSongInfo
 from common.crawler.qq_music_crawler import QQMusicCrawler
 from PyQt5.QtCore import pyqtSignal, QThread
 

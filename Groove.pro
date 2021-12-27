@@ -48,6 +48,6 @@ SOURCES += app/View/main_window/main_window.py \
         app/View/search_result_interface/song_group_box.py \
         app/View/search_result_interface/playlist_group_box.py \
         app/View/search_result_interface/album_group_box.py \
-        app/common/meta_data_getter/get_song_info.py \
+        app/common/meta_data_getter/song_info_reader.py \
 
 TRANSLATIONS += app/resource/i18n/Groove_zh.ts

@@ -7,7 +7,7 @@ from pprint import pprint
 
 import requests
 from common.os_utils import adjustName
-from common.meta_data_writer import writeAlbumCover, writeSongInfo
+from common.meta_data.writer import writeAlbumCover, writeSongInfo
 
 
 def exceptionHandler(*default):

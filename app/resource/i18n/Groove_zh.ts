@@ -1508,19 +1508,19 @@
     </message>
 </context>
 <context>
-    <name>SongInfoGetter</name>
+    <name>SongInfoReader</name>
     <message>
-        <location filename="../../common/meta_data_getter/get_song_info.py" line="113"/>
+        <location filename="../../common/meta_data_getter/song_info_reader.py" line="113"/>
         <source>Unknown artist</source>
         <translation>未知歌手</translation>
     </message>
     <message>
-        <location filename="../../common/meta_data_getter/get_song_info.py" line="114"/>
+        <location filename="../../common/meta_data_getter/song_info_reader.py" line="114"/>
         <source>Unknown album</source>
         <translation>未知专辑</translation>
     </message>
     <message>
-        <location filename="../../common/meta_data_getter/get_song_info.py" line="117"/>
+        <location filename="../../common/meta_data_getter/song_info_reader.py" line="117"/>
         <source>Unknown genre</source>
         <translation>未知流派</translation>
     </message>

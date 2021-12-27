@@ -3,7 +3,7 @@ from copy import deepcopy
 from typing import List, Dict
 
 
-class SingerInfoGetter:
+class SingerInfoReader:
     """ 获取歌手信息的类 """
 
     def __init__(self, albumInfo_list: list) -> None:

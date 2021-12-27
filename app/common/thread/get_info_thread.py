@@ -1,5 +1,5 @@
 # coding:utf-8
-from common.meta_data_getter import *
+from common.meta_data import *
 from PyQt5.QtCore import Qt, pyqtSignal, QThread
 
 
@@ -14,10 +14,10 @@ class GetInfoThread(QThread):
 
     def run(self):
         """ 获取信息 """
-        songInfoGetter = SongInfoGetter(self.folderPaths)
-        albumCoverGetter = AlbumCoverGetter(songInfoGetter.songInfo_list)
-        albumInfoGetter = AlbumInfoGetter(songInfoGetter.songInfo_list)
-        singerInfoGetter = SingerInfoGetter(albumInfoGetter.albumInfo_list)
+        songInfoReader = SongInfoReader(self.folderPaths)
+        albumCoverReader = AlbumCoverReader(songInfoReader.songInfo_list)
+        albumInfoReader = AlbumInfoReader(songInfoReader.songInfo_list)
+        singerInfoReader = SingerInfoReader(albumInfoReader.albumInfo_list)
 
-        self.scanFinished.emit(songInfoGetter.songInfo_list,
-                               albumInfoGetter.albumInfo_list, singerInfoGetter.singerInfos)
+        self.scanFinished.emit(songInfoReader.songInfo_list,
+                               albumInfoReader.albumInfo_list, singerInfoReader.singerInfos)

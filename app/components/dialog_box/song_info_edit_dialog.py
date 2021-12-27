@@ -2,8 +2,8 @@
 from copy import deepcopy
 
 from common.auto_wrap import autoWrap
-from common.meta_data_getter import AlbumCoverGetter
-from common.meta_data_writer import writeSongInfo, writeAlbumCover
+from common.meta_data import AlbumCoverReader
+from common.meta_data.writer import writeSongInfo, writeAlbumCover
 from common.os_utils import adjustName
 from common.thread.get_meta_data_thread import GetSongMetaDataThread
 from components.widgets.state_tooltip import StateTooltip
@@ -253,7 +253,7 @@ class SongInfoEditDialog(MaskDialogBase):
         if self.songInfo.get('coverPath'):
             isOk = writeAlbumCover(self.songInfo['songPath'],
                                    self.songInfo['coverPath'])
-            AlbumCoverGetter.getOneAlbumCover(self.songInfo)
+            AlbumCoverReader.getOneAlbumCover(self.songInfo)
 
         # 写入其他元数据
         if not (isOk and writeSongInfo(self.songInfo)):
