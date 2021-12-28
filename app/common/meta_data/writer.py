@@ -1,6 +1,8 @@
 # coding:utf-8
 import imghdr
 import os
+from typing import Union
+from pathlib import Path
 
 from mutagen import File, MutagenError
 from mutagen.flac import FLAC, Picture
@@ -12,11 +14,11 @@ from mutagen.mp4 import MP4
 class MetaDataWriter:
     """ 元数据写入器基类 """
 
-    def __init__(self, songPath: str):
+    def __init__(self, songPath: Union[str, Path]):
         """
         Parameters
         ----------
-        songPath: str
+        songPath: str or Path
             音频文件路径
         """
         self.audio = None
@@ -69,7 +71,7 @@ def saveExceptionHandler(func):
 class MP3Writer(MetaDataWriter):
     """ MP3 元数据写入器 """
 
-    def __init__(self, songPath: str):
+    def __init__(self, songPath: Union[str, Path]):
         self.audio = MP3(songPath)
 
     @saveExceptionHandler
@@ -110,7 +112,7 @@ class MP3Writer(MetaDataWriter):
 class FLACWriter(MetaDataWriter):
     """ FLAC 元数据写入器 """
 
-    def __init__(self, songPath: str):
+    def __init__(self, songPath: Union[str, Path]):
         self.audio = FLAC(songPath)
 
     @saveExceptionHandler
@@ -140,7 +142,7 @@ class FLACWriter(MetaDataWriter):
 class MP4Writer(MetaDataWriter):
     """ MP4/M4A 元数据写入器 """
 
-    def __init__(self, songPath: str):
+    def __init__(self, songPath: Union[str, Path]):
         self.audio = MP4(songPath)
 
     @saveExceptionHandler
@@ -200,12 +202,12 @@ def writeSongInfo(songInfo: dict) -> bool:
     return writer.writeSongInfo(songInfo)
 
 
-def writeAlbumCover(songPath: str, coverPath: str, picData: bytes = None) -> bool:
+def writeAlbumCover(songPath: Union[str, Path], coverPath: str, picData: bytes = None) -> bool:
     """ 给音频文件写入封面
 
     Parameters
     ----------
-    songPath : str
+    songPath : str or Path
         音频文件路径
 
     coverPath : str

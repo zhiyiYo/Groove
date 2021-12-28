@@ -358,7 +358,7 @@ class SingerInterface(ScrollArea):
 
     def __getSingerAvatar(self, singer: str):
         """ 获取歌手头像 """
-        path = f'singer_avatar/{singer}.jpg'
+        path = f'cache/singer_avatar/{singer}.jpg'
         if not os.path.exists(path):
             self.singerInfoBar.coverLabel.hide()
             self.getAvatarThread.singer = singer

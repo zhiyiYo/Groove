@@ -191,7 +191,7 @@ class PlaylistGroupBox(QScrollArea):
 
         # 删除播放列表卡和播放列表文件
         playlistCard.deleteLater()
-        moveToTrash(f'Playlists/{playlistName}.json')
+        moveToTrash(f'cache/Playlists/{playlistName}.json')
 
     def deleteSongs(self, songPaths: list):
         """ 从各个播放列表中删除歌曲 """

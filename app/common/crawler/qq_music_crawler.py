@@ -1,6 +1,8 @@
 # coding:utf-8
 import json
 from pprint import pprint
+from typing import Union
+from pathlib import Path
 
 import requests
 from fuzzywuzzy import fuzz
@@ -89,7 +91,7 @@ class QQMusicCrawler:
         return song_info
 
     @exceptionHandler
-    def getAlbumCoverURL(self, albummid: str, save_path: str):
+    def getAlbumCoverURL(self, albummid: str, save_path: Union[str, Path]):
         """ 获取专辑封面并保存到本地
 
         Parameters
@@ -97,7 +99,7 @@ class QQMusicCrawler:
         albummid: str
             专辑 ID，对应 `crawler.getSongInfo(key_word)["albummid"]`
 
-        save_path: str
+        save_path: str or Path
             本地保存路径
 
         Returns

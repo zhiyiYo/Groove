@@ -1,0 +1,1 @@
+from .parser import KuWoLyricParser, parse_lyric

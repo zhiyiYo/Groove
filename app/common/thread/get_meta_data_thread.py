@@ -1,5 +1,4 @@
 # coding:utf-8
-import os
 from pathlib import Path
 
 from common.meta_data.writer import writeAlbumCover, writeSongInfo
@@ -11,6 +10,7 @@ class GetFolderMetaDataThread(QThread):
     """ 获取文件夹中所有歌曲元数据的线程 """
 
     crawlSignal = pyqtSignal(str)
+    cacheFolder = Path('cache/crawl_album_covers')
 
     def __init__(self, folderPaths: list, parent=None):
         super().__init__(parent=parent)
@@ -20,9 +20,7 @@ class GetFolderMetaDataThread(QThread):
 
     def run(self):
         """ 获取歌曲元数据 """
-        # 创建一个本地专辑封面缓存文件夹
-        cover_folder = 'crawl_album_covers'
-        os.makedirs(cover_folder, exist_ok=True)
+        self.cacheFolder.mkdir(exist_ok=True, parents=True)
         albumCovers = {}
 
         songPaths, fileNames = self.__getAudioFiles()
@@ -35,11 +33,11 @@ class GetFolderMetaDataThread(QThread):
                 # 修改歌曲信息
                 songInfo["songPath"] = songPath
                 writeSongInfo(songInfo)
-                key = songInfo["singer"]+'_'+songInfo['album']
+                key = songInfo["singer"] + '_' + songInfo['album']
 
                 # 从网上或者本地缓存文件夹获取专辑封面
                 if key not in albumCovers:
-                    coverPath = f'{cover_folder}/{key}.jpg'
+                    coverPath = str(self.cacheFolder/(key+'.jpg'))
                     url = self.crawler.getAlbumCoverURL(
                         songInfo["albummid"], coverPath)
                     if url:
@@ -75,13 +73,11 @@ class GetFolderMetaDataThread(QThread):
         """
         songPaths = []
         fileNames = []
-        for folderPath in self.folderPaths:
-            files = os.listdir(folderPath)
-            for file in files:
-                if file.endswith(('.mp3', '.flac', '.m4a')):
-                    songPaths.append(os.path.join(
-                        folderPath, file).replace('\\', '/'))
-                    fileNames.append(os.path.splitext(file)[0])
+        for folder in self.folderPaths:
+            for file in Path(folder).glob('*'):
+                if file.suffix.lower() in ('.mp3', '.flac', '.m4a', '.mp4'):
+                    songPaths.append(str(file).replace('\\', '/'))
+                    fileNames.append(file.stem)
 
         return songPaths, fileNames
 
@@ -90,6 +86,7 @@ class GetSongMetaDataThread(QThread):
     """ 获取一首歌曲元数据的线程 """
 
     crawlFinished = pyqtSignal(bool, dict)
+    cacheFolder = Path('cache/crawl_album_covers')
 
     def __init__(self, songPath: str, parent=None):
         """
@@ -107,7 +104,7 @@ class GetSongMetaDataThread(QThread):
 
     def run(self):
         """ 爬取歌曲信息 """
-        os.makedirs("crawl_album_covers", exist_ok=True)
+        self.cacheFolder.mkdir(exist_ok=True, parents=True)
 
         songInfo = self.crawler.getSongInfo(Path(self.songPath).stem, 70)
 
@@ -119,10 +116,10 @@ class GetSongMetaDataThread(QThread):
 
             # 获取专辑封面
             key = songInfo["singer"] + '_' + songInfo['album']
-            coverPath = f'crawl_album_covers/{key}.jpg'
+            coverPath = self.cacheFolder / (key+'.jpg')
             url = self.crawler.getAlbumCoverURL(
                 songInfo['albummid'], coverPath)
             if url:
-                songInfo['coverPath'] = coverPath
+                songInfo['coverPath'] = str(coverPath)
 
             self.crawlFinished.emit(True, songInfo)

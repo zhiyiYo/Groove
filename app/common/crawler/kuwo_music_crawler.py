@@ -3,6 +3,7 @@ import json
 import os
 from urllib import parse
 from copy import deepcopy
+from pathlib import Path
 
 import requests
 from common.os_utils import adjustName
@@ -239,7 +240,18 @@ class KuWoMusicCrawler:
 
     @exceptionHandler()
     def getLyric(self, rid: str):
-        """ 获取歌词 """
+        """ 获取歌词
+
+        Parameters
+        ----------
+        rid: str
+            歌曲 rid
+
+        Returns
+        -------
+        lyric: list
+            歌词列表，如果没找到则返回 `None`
+        """
         url = f"https://m.kuwo.cn/newh5/singles/songinfoandlrc?musicId={rid}"
         response = requests.get(url)
         response.raise_for_status()

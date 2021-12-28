@@ -1,7 +1,9 @@
 # coding:utf-8
+import json
 from copy import deepcopy
 from json import dump
 from typing import Dict, List
+from pathlib import Path
 
 import pinyin
 from common.os_utils import moveToTrash
@@ -33,17 +35,13 @@ class PlaylistCardInterface(ScrollArea):
     addSongsToNewCustomPlaylistSig = pyqtSignal(list)    # 添加歌曲到新的自定义的播放列表中
     addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 添加歌曲到自定义的播放列表中
 
-    def __init__(self, playlists: dict, parent=None):
-        """
-        Parameters
-        ----------
-        playlists: dict
-            播放列表字典
-        """
+    playlistFolder = Path('cache/Playlists')
+
+    def __init__(self, parent=None):
         super().__init__(parent)
         self.columnNum = 1
         self.sortMode = "modifiedTime"
-        self.playlists = playlists
+        self.playlists = self.readCustomPlaylists()
         self.playlistCard_list = []      # type:List[PlaylistCard]
         self.playlistCardInfo_list = []  # type:List[dict]
         self.playlistName2Card_dict = {}   # type:Dict[str, PlaylistCard]
@@ -413,7 +411,7 @@ class PlaylistCardInterface(ScrollArea):
 
         # 删除播放列表卡和播放列表文件
         playlistCard.deleteLater()
-        moveToTrash(f'Playlists/{playlistName}.json')
+        moveToTrash(str(self.playlistFolder/(playlistName+'.json')))
 
         # 调整高度
         self.scrollWidget.resize(
@@ -597,9 +595,23 @@ class PlaylistCardInterface(ScrollArea):
         self.createPlaylistButton.clicked.connect(self.createPlaylistSig)
         self.hideCheckBoxAniGroup.finished.connect(self.__hideAllCheckBox)
 
-    @staticmethod
-    def savePlaylist(playlist: dict):
+    def savePlaylist(self, playlist: dict):
         """ 保存播放列表 """
-        name = playlist["playlistName"]
-        with open(f"Playlists/{name}.json", "w", encoding="utf-8") as f:
+        path = self.playlistFolder/(playlist["playlistName"]+'.json')
+        with open(path, "w", encoding="utf-8") as f:
             dump(playlist, f)
+
+    def readCustomPlaylists(self):
+        """ 读取自定义播放列表 """
+        self.playlistFolder.mkdir(exist_ok=True, parents=True)
+
+        playlists = {}  # type:Dict[str, dict]
+        
+        for file in self.playlistFolder.glob('*.json'):
+            with open(file, encoding="utf-8") as f:
+                playlist = json.load(f)  # type:dict
+                name = playlist.get("playlistName", file.stem)
+                playlist["playlistName"] = name
+                playlists[name] = playlist
+
+        return playlists

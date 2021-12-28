@@ -1,5 +1,5 @@
 # coding:utf-8
-import os
+from pathlib import Path
 
 from PyQt5.QtCore import QFile, Qt, pyqtSignal
 from PyQt5.QtGui import QIcon
@@ -53,40 +53,43 @@ class AddToMenu(QMenu):
     """ 添加到菜单 """
 
     addSongsToPlaylistSig = pyqtSignal(str)  # 将歌曲添加到已存在的自定义播放列表
+    playlistFolder = Path('cache/Playlists')
 
     def __init__(self, title='Add to', parent=None):
         super().__init__(title, parent)
+
         # 创建动作
         self.playingAct = QAction(
             QIcon(':/images/playing_interface/Playing_white.png'), self.tr('Now playing'), self)
         self.newPlaylistAct = QAction(
             QIcon(':/images/playing_interface/Add_20_20.png'), self.tr('New playlist'), self)
         playlists = self.__getPlaylistNames()
-        self.playlistAct_list = [QAction(QIcon(
+        self.playlistActs = [QAction(QIcon(
             ":/images/playing_interface/Album.png"), i, self) for i in playlists]
+
         self.addAction(self.playingAct)
         self.addSeparator()
-        self.addActions([self.newPlaylistAct]+self.playlistAct_list)
+        self.addActions([self.newPlaylistAct]+self.playlistActs)
         self.action_list = [self.playingAct,
-                            self.newPlaylistAct] + self.playlistAct_list
+                            self.newPlaylistAct] + self.playlistActs
         # 取消阴影
         self.setWindowFlags(
             Qt.FramelessWindowHint | Qt.Popup | Qt.NoDropShadowWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
+
         # 将添加到播放列表的信号连接到槽函数
-        for name, act in zip(playlists, self.playlistAct_list):
+        for name, act in zip(playlists, self.playlistActs):
             act.triggered.connect(
                 lambda checked, playlistName=name: self.addSongsToPlaylistSig.emit(playlistName))
+
         # 设置层叠样式
         self.__setQss()
 
     def __getPlaylistNames(self):
         """ 扫描播放列表文件夹下的播放列表名字 """
-        # 扫描播放列表文件夹下的播放列表名字
-        os.makedirs('Playlists', exist_ok=True)
-        playlistName_list = [
-            i[:-5] for i in os.listdir("Playlists") if i.endswith(".json")]
-        return playlistName_list
+        self.playlistFolder.mkdir(parents=True, exist_ok=True)
+        playlists = [i.stem for i in self.playlistFolder.glob('*.json')]
+        return playlists
 
     def actionCount(self):
         """ 返回菜单中的动作数 """

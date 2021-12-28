@@ -34,6 +34,7 @@
         <file>qss/state_tooltip.qss</file>
         <file>qss/switch_button.qss</file>
         <file>qss/volume_slider_widget.qss</file>
+        <file>qss/lyric_widget.qss</file>
 
         <file>images/logo.png</file>
         <file>images/splash_screen_logo.png</file>

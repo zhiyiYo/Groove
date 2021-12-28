@@ -1,6 +1,7 @@
 # coding:utf-8
 import os
 import json
+from pathlib import Path
 
 from mutagen import File
 from mutagen.mp3 import MP3
@@ -16,6 +17,8 @@ from PyQt5.QtCore import QFileInfo, Qt, QObject
 class SongInfoReader(QObject):
     """ 创建一个获取和保存歌曲信息的类 """
 
+    cachePath = Path("cache/song_info/songInfo.json")
+
     def __init__(self, folderPaths: list):
         super().__init__()
         self.folderPaths = folderPaths
@@ -25,12 +28,14 @@ class SongInfoReader(QObject):
         self.songInfo_list = []
         self.getInfo(folderPaths)
 
-    @checkDirExists('data')
+    @checkDirExists('cache/song_info')
     def scanTargetFolderSongInfo(self, folderPaths: list):
         """ 扫描指定文件夹的歌曲信息并更新歌曲信息 """
         self.folderPaths = folderPaths
-        with open("data/songInfo.json", "w", encoding="utf-8") as f:
+
+        with open(self.cachePath, "w", encoding="utf-8") as f:
             json.dump([{}], f)
+
         self.songInfo_list = []
         self.getInfo(folderPaths)
 
@@ -39,7 +44,7 @@ class SongInfoReader(QObject):
         hasSongModified = False
 
         # 如果歌曲信息被删除了，就重新扫描一遍
-        if not os.path.exists("data/songInfo.json"):
+        if not self.cachePath.exists():
             self.scanTargetFolderSongInfo(self.folderPaths)
             return True
 
@@ -51,9 +56,11 @@ class SongInfoReader(QObject):
         # 处理旧的歌曲信息
         for songInfo in self.songInfo_list.copy():
             songPath = songInfo["songPath"]
+
             if os.path.exists(songPath):
                 t1 = songInfo["modifiedTime"]
                 t2 = QFileInfo(songPath).lastModified().toString(Qt.ISODate)
+
                 # 歌曲发生修改则重新扫描该歌曲的信息
                 if t1 != t2:
                     hasSongModified = True
@@ -73,7 +80,7 @@ class SongInfoReader(QObject):
         self.save()
         return hasSongModified
 
-    @checkDirExists('data')
+    @checkDirExists('cache/song_info')
     def getInfo(self, folderPaths: list):
         """ 从指定的目录读取符合匹配规则的歌曲的标签卡信息 """
         self.folderPaths = folderPaths
@@ -190,34 +197,32 @@ class SongInfoReader(QObject):
     def __readSongInfoFromJson(self) -> list:
         """ 从 json 文件中读取歌曲信息 """
         try:
-            with open("data/songInfo.json", "r", encoding="utf-8") as f:
+            with open(self.cachePath, "r", encoding="utf-8") as f:
                 songInfo_list = json.load(f)
         except:
             songInfo_list = [{}]
         return songInfo_list
 
-    @checkDirExists('data')
+    @checkDirExists('cache/song_info')
     def save(self):
         """ 保存歌曲信息 """
-        with open("data/songInfo.json", "w", encoding="utf-8") as f:
+        with open(self.cachePath, "w", encoding="utf-8") as f:
             json.dump(self.songInfo_list, f)
 
     def __getSongFilePaths(self):
         """ 获取指定歌曲文件夹下的歌曲文件 """
         songPaths = []
-        for folderPath in self.folderPaths:
-            files = os.listdir(folderPath)
-            for file in files:
-                if file.lower().endswith(('.mp3', '.flac', '.m4a', '.mp4')):
-                    songPaths.append(os.path.join(
-                        folderPath, file).replace('\\', '/'))
+        for folder in self.folderPaths:
+            for file in Path(folder).glob('*'):
+                if file.suffix.lower() in ('.mp3', '.flac', '.m4a', '.mp4'):
+                    songPaths.append(str(file).replace('\\', '/'))
 
         return songPaths
 
     def hasSongModified(self):
         """ 检测是否有歌曲被修改 """
         # 如果歌曲信息被删除了，就重新扫描一遍
-        if not os.path.exists("data/songInfo.json"):
+        if not self.cachePath.exists():
             return True
 
         # 利用当前的歌曲信息进行更新
@@ -228,6 +233,7 @@ class SongInfoReader(QObject):
         # 处理旧的歌曲信息
         for songInfo in songInfo_list:
             songPath = songInfo["songPath"]
+
             if os.path.exists(songPath):
                 t1 = songInfo["modifiedTime"]
                 t2 = QFileInfo(songPath).lastModified().toString(Qt.ISODate)

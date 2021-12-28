@@ -248,6 +248,7 @@ class AlbumInfoEditDialog(MaskDialogBase):
             # 复制图片到封面文件夹下
             if os.path.abspath(self.coverPath) == path:
                 return
+
             # 暂存图片地址并刷新图片
             self.newAlbumCoverPath = path
             self.albumCover.setAlbumCover(path)
@@ -265,10 +266,12 @@ class AlbumInfoEditDialog(MaskDialogBase):
 
             # 判断文件格式后修改后缀名
             newSuffix = getPicSuffix(picData)
+
             # 如果封面路径是默认专辑封面，就修改封面路径
             if self.coverPath == ":/images/default_covers/album_200_200.png":
-                self.coverPath = "Album_Cover/{0}/{0}{1}".format(
+                self.coverPath = "cache/Album_Cover/{0}/{0}{1}".format(
                     self.albumInfo["coverName"], newSuffix)
+
             with open(self.coverPath, "wb") as f:
                 f.write(picData)
 

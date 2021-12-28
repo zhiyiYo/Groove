@@ -1,6 +1,7 @@
 # coding:utf-8
 import os
 import re
+from pathlib import Path
 
 from win32com.shell import shell, shellcon
 
@@ -59,12 +60,12 @@ def getCoverPath(name: str, coverType: str) -> str:
     if coverType not in cover_path_dict:
         raise ValueError(f"{coverType} 非法")
 
-    coverPath = cover_path_dict[coverType]
-    coverFolder = f"Album_Cover/{name}"
-    pic_list = os.listdir(coverFolder) if os.path.exists(coverFolder) else []
-    
-    # 如果目录下有封面就用这个封面作为albumCard的背景
-    if pic_list and os.path.isfile(os.path.join(coverFolder, pic_list[0])):
-        coverPath = os.path.join(coverFolder, pic_list[0])
+    cover = cover_path_dict[coverType]
+    folder = Path(f"cache/Album_Cover/{name}")
+    files = list(folder.glob('*')) if folder.exists() else []
 
-    return coverPath
+    # 如果目录下有封面就用这个封面作为albumCard的背景
+    if files and files[0].suffix.lower() in (".png", ".jpg", ".jpeg", ".jiff", ".gif"):
+        cover = str(files[0])
+
+    return cover

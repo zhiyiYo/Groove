@@ -93,8 +93,7 @@ class PlayBar(QWidget):
         if not self.volumeSliderWidget.isVisible():
             pos = self.mapToGlobal(self.volumeButton.pos())
             x = pos.x() + int(
-                self.volumeButton.width() / 2 - self.volumeSliderWidget.width() / 2
-            )
+                self.volumeButton.width() / 2 - self.volumeSliderWidget.width() / 2)
             y = self.y() + 15
             self.volumeSliderWidget.move(x, y)
             self.volumeSliderWidget.show()

@@ -157,21 +157,21 @@ class MediaPlaylist(QMediaPlaylist):
         self.addMedias(songInfo_list)
         self.setCurrentIndex(index)
 
-    @checkDirExists('data')
+    @checkDirExists('cache/song_info')
     def save(self):
         """ 保存播放列表到json文件中 """
         playlistInfo = {
             "lastPlaylist": self.playlist,
             "lastSongInfo": self.getCurrentSong(),
         }
-        with open("data/lastPlaylistInfo.json", "w", encoding="utf-8") as f:
+        with open("cache/song_info/lastPlaylistInfo.json", "w", encoding="utf-8") as f:
             dump(playlistInfo, f)
 
-    @checkDirExists('data')
+    @checkDirExists('cache/song_info')
     def __readLastPlaylist(self):
         """ 从json文件中读取播放列表 """
         try:
-            with open("data/lastPlaylistInfo.json", encoding="utf-8") as f:
+            with open("cache/song_info/lastPlaylistInfo.json", encoding="utf-8") as f:
                 playlistInfo = load(f)  # type:dict
                 self.playlist = playlistInfo.get(
                     "lastPlaylist", [])  # type:list

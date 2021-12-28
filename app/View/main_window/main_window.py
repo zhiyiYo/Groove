@@ -1,5 +1,4 @@
 # coding:utf-8
-import json
 import os
 from copy import deepcopy
 from pathlib import Path
@@ -121,8 +120,7 @@ class MainWindow(FramelessWindow):
 
         # 创建播放列表卡界面和播放列表界面
         self.playlistInterface = PlaylistInterface({}, self.subMainWindow)
-        self.playlistCardInterface = PlaylistCardInterface(
-            self.readCustomPlaylists(), self)
+        self.playlistCardInterface = PlaylistCardInterface(self.subMainWindow)
 
         # 创建导航界面
         self.navigationInterface = NavigationInterface(self.subMainWindow)
@@ -1019,22 +1017,6 @@ class MainWindow(FramelessWindow):
         self.playlistInterface.exitSelectionMode()
         self.playingInterface.exitSelectionMode()
         self.singerInterface.exitSelectionMode()
-
-    @staticmethod
-    def readCustomPlaylists():
-        """ 读取自定义播放列表 """
-        path = "Playlists"
-        os.makedirs(path, exist_ok=True)
-
-        customPlaylists = {}  # type:Dict[str, dict]
-        playlistFiles = os.listdir(path)
-        for playlistFile in playlistFiles:
-            with open(os.path.join(path, playlistFile), encoding="utf-8") as f:
-                playlist = json.load(f)  # type:dict
-                name = playlist.get("playlistName", playlistFile[:-5])
-                playlist["playlistName"] = name
-                customPlaylists[name] = playlist
-        return customPlaylists
 
     def showCreatePlaylistDialog(self, songInfo_list: list = None):
         """ 显示创建播放列表面板 """

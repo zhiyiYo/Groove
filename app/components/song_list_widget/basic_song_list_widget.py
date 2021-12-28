@@ -217,7 +217,7 @@ class BasicSongListWidget(ListWidget):
 
         if isNeedWriteToFile:
             # 将修改的信息存入json文件
-            with open("data/songInfo.json", "w", encoding="utf-8") as f:
+            with open("cache/song_info/songInfo.json", "w", encoding="utf-8") as f:
                 dump(self.songInfo_list, f)
 
     def updateMultiSongCards(self, newSongInfo_list: list):
@@ -226,7 +226,7 @@ class BasicSongListWidget(ListWidget):
             self.updateOneSongCard(newSongInfo, False)
 
         # 将修改的信息存入json文件
-        with open("data/songInfo.json", "w", encoding="utf-8") as f:
+        with open("cache/song_info/songInfo.json", "w", encoding="utf-8") as f:
             dump(self.songInfo_list, f)
 
     def resizeEvent(self, e):

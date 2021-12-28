@@ -1,5 +1,5 @@
 # coding:utf-8
-import os
+from pathlib import Path
 
 from components.widgets.scroll_area import ScrollArea
 from PyQt5.QtCore import Qt, pyqtSignal, QObject
@@ -16,6 +16,7 @@ class NavigationWidget(NavigationWidgetBase):
 
     searchSig = pyqtSignal(str)
     switchToPlaylistInterfaceSig = pyqtSignal(str)
+    playlistFolder = Path('cache/Playlists')
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -107,13 +108,10 @@ class NavigationWidget(NavigationWidgetBase):
         painter.drawLine(15, self.settingButton.y()-1,
                          self.width()-15, self.settingButton.y()-1)
 
-    @staticmethod
-    def getPlaylistNames():
+    def getPlaylistNames(self):
         """ 扫描播放列表名字 """
-        os.makedirs('Playlists', exist_ok=True)
-        playlists = [
-            i[:-5] for i in os.listdir("Playlists") if i.endswith(".json")
-        ]
+        self.playlistFolder.mkdir(exist_ok=True, parents=True)
+        playlists = [i.stem for i in self.playlistFolder.glob('*.json')]
         return playlists
 
     def __addPlaylistNameButtonsToScrollWidget(self):

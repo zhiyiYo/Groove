@@ -47,20 +47,20 @@ class GetOnlineSongUrlThread(QThread):
         self.quality = quality
         self.songInfo_list = songInfo_list
 
-    @checkDirExists('Album_Cover')
+    @checkDirExists('cache/Album_Cover')
     def run(self):
-        """ 根据歌曲哈希值爬取播放地址并下载封面 """
+        """ 根据歌曲 rid 爬取播放地址并下载封面 """
         for i, songInfo in enumerate(self.songInfo_list):
             # 爬取播放地址
             playUrl = self.crawler.getSongUrl(songInfo['rid'], self.quality)
 
             # 下载封面
             name = songInfo['coverName']
-            save_path = f'Album_Cover/{name}/{name}.jpg'
+            save_path = f'cache/Album_Cover/{name}/{name}.jpg'
 
             # 如果本地不存在封面并且获取到了服务器上的封面 url 就下载
             if not os.path.exists(save_path) and songInfo['coverPath']:
-                os.makedirs(f'Album_Cover/{name}', exist_ok=True)
+                os.makedirs(f'cache/Album_Cover/{name}', exist_ok=True)
 
                 response = requests.get(
                     songInfo['coverPath'], headers=self.headers)

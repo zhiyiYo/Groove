@@ -5,25 +5,12 @@
 # 忽略工作区文件
 *.code-workspace
 
-# 忽略数据文件夹
-data
-Data
-
 # 忽略配置文件夹
 config
 
-# 忽略播放列表文件夹
-Playlists
+# 忽略缓存
+cache
 
-# 忽略专辑封面文件夹
-Album_Cover
-crawl_album_covers
-
-# 忽略歌手头像文件夹
-singer_avatar
-
-# 忽略json文件
-*.json
 
 # 忽略python缓存文件
 */__pycache__

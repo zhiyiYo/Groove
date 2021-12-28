@@ -1,6 +1,5 @@
 # coding: utf-8
 import json
-import os
 import re
 from time import time
 from hashlib import md5

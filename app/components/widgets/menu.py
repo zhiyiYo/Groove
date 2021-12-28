@@ -1,5 +1,5 @@
 # coding:utf-8
-import os
+from pathlib import Path
 
 from common.window_effect import WindowEffect
 from PyQt5.QtCore import (QEasingCurve, QEvent, QFile, QPropertyAnimation,
@@ -101,6 +101,7 @@ class AddToMenu(DWMMenu):
     """ 添加到菜单 """
 
     addSongsToPlaylistSig = pyqtSignal(str)  # 将歌曲添加到已存在的自定义播放列表
+    playlistFolder = Path('cache/Playlists')
 
     def __init__(self, title="Add to", parent=None):
         super().__init__(title, parent)
@@ -115,30 +116,30 @@ class AddToMenu(DWMMenu):
             QIcon(":/images/menu/Playing.png"), self.tr("Now playing"), self)
         self.newPlaylistAct = QAction(
             QIcon(":/images/menu/Add.png"), self.tr("New playlist"), self)
+
         # 根据播放列表创建动作
-        playlistName_list = self.__getPlaylistNames()
-        self.playlistNameAct_list = [
+        playlistNames = self.__getPlaylistNames()
+        self.playlistNameActs = [
             QAction(QIcon(":/images/menu/Album.png"), name, self)
-            for name in playlistName_list
+            for name in playlistNames
         ]
         self.action_list = [self.playingAct,
-                            self.newPlaylistAct] + self.playlistNameAct_list
+                            self.newPlaylistAct] + self.playlistNameActs
         self.addAction(self.playingAct)
         self.addSeparator()
-        self.addActions([self.newPlaylistAct] + self.playlistNameAct_list)
+        self.addActions([self.newPlaylistAct] + self.playlistNameActs)
+
         # 将添加到播放列表的信号连接到槽函数
-        for name, act in zip(playlistName_list, self.playlistNameAct_list):
+        for name, act in zip(playlistNames, self.playlistNameActs):
             # lambda表达式只有在执行的时候才回去寻找变量name，所以需要将name固定下来
             act.triggered.connect(
                 lambda checked, playlistName=name: self.addSongsToPlaylistSig.emit(playlistName))
 
     def __getPlaylistNames(self):
         """ 扫描播放列表文件夹下的播放列表名字 """
-        # 扫描播放列表文件夹下的播放列表名字
-        os.makedirs('Playlists', exist_ok=True)
-        playlistName_list = [
-            i[:-5] for i in os.listdir("Playlists") if i.endswith(".json")]
-        return playlistName_list
+        self.playlistFolder.mkdir(parents=True, exist_ok=True)
+        playlists = [i.stem for i in self.playlistFolder.glob('*.json')]
+        return playlists
 
     def actionCount(self):
         """ 返回菜单中的动作数 """

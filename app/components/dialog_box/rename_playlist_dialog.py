@@ -1,6 +1,6 @@
 # coding:utf-8
 import json
-import os
+from pathlib import Path
 
 from components.buttons.three_state_button import ThreeStateButton
 from components.dialog_box.mask_dialog_base import MaskDialogBase
@@ -16,6 +16,7 @@ class RenamePlaylistDialog(MaskDialogBase):
     """ 创建播放列表对话框 """
 
     renamePlaylistSig = pyqtSignal(dict, dict)
+    playlistFolder = Path('cache/Playlists')
 
     def __init__(self, oldPlaylist: dict, parent=None):
         super().__init__(parent=parent)
@@ -71,13 +72,12 @@ class RenamePlaylistDialog(MaskDialogBase):
         self.vBoxLayout.setAlignment(Qt.AlignTop)
 
     def __isPlaylistExist(self, playlistName: str) -> bool:
-        """ 检测播放列表是否已经存在，如果已存在就显示提示标签 """
-        os.makedirs('Playlists', exist_ok=True)
+        """ 检测播放列表是否已经存在 """
+        self.playlistFolder.mkdir(exist_ok=True, parents=True)
 
         # 扫描播放列表文件夹下的播放列表名字
-        playlistNames = [os.path.splitext(i)[0]
-                         for i in os.listdir("Playlists")]
-        isExist = playlistName in playlistNames
+        playlists = [i.stem for i in self.playlistFolder.glob('*.json')]
+        isExist = playlistName in playlists
 
         return isExist
 
@@ -94,10 +94,11 @@ class RenamePlaylistDialog(MaskDialogBase):
             "modifiedTime": QDateTime.currentDateTime().toString(Qt.ISODate),
         }
 
-        with open(f"Playlists/{self.oldPlaylistName}.json", "w", encoding="utf-8") as f:
+        oldPath = self.playlistFolder / (self.oldPlaylistName + '.json')
+        with open(oldPath, "w", encoding="utf-8") as f:
             json.dump(newPlaylist, f)
-        os.rename(f"Playlists/{self.oldPlaylistName}.json",
-                  f"Playlists/{playlistName}.json")
+
+        oldPath.rename(self.playlistFolder/(playlistName+'.json'))
 
         # 发送信号
         self.renamePlaylistSig.emit(self.oldPlaylist, newPlaylist)
@@ -106,6 +107,7 @@ class RenamePlaylistDialog(MaskDialogBase):
     def __onLineEditTextChanged(self, playlistName: str):
         """ 单行输入框中的播放列表名字改变对应的槽函数 """
         playlistName = playlistName.strip()
+
         # 如果播放列表名字存在或者没变就禁用按钮
         isExist = self.__isPlaylistExist(playlistName)
         isDisabled = playlistName in ["", self.oldPlaylistName]

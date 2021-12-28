@@ -1,6 +1,6 @@
 # coding:utf-8
 import json
-import os
+from pathlib import Path
 
 from components.buttons.three_state_button import ThreeStateButton
 from components.dialog_box.mask_dialog_base import MaskDialogBase
@@ -15,6 +15,7 @@ class CreatePlaylistDialog(MaskDialogBase):
     """ 创建播放列表对话框 """
 
     createPlaylistSig = pyqtSignal(str, dict)
+    playlistFolder = Path('cache/Playlists')
 
     def __init__(self, songInfo_list: list = None, parent=None):
         super().__init__(parent=parent)
@@ -74,16 +75,16 @@ class CreatePlaylistDialog(MaskDialogBase):
 
     def __isPlaylistExist(self, playlistName: str) -> bool:
         """ 检测播放列表是否已经存在，如果已存在就显示提示标签 """
-        os.makedirs('Playlists', exist_ok=True)
+        self.playlistFolder.mkdir(parents=True, exist_ok=True)
 
         # 扫描播放列表文件夹下的播放列表名字
-        playlistNames = [
-            os.path.splitext(i)[0] for i in os.listdir("Playlists")]
-        isExist = playlistName in playlistNames
+        playlists = [i.stem for i in self.playlistFolder.glob('*.json')]
+        isExist = playlistName in playlists
 
         # 如果播放列表名字已存在显示提示标签
         self.playlistExistedLabel.setVisible(isExist)
         self.createPlaylistButton.setEnabled(not isExist)
+
         return isExist
 
     def __onCreatePlaylistButtonClicked(self):
@@ -102,7 +103,7 @@ class CreatePlaylistDialog(MaskDialogBase):
             "songInfo_list": songInfo_list,
             "modifiedTime": QDateTime.currentDateTime().toString(Qt.ISODate),
         }
-        with open(f"Playlists/{playlistName}.json", "w", encoding="utf-8") as f:
+        with open(self.playlistFolder/(playlistName+'.json'), "w", encoding="utf-8") as f:
             json.dump(playlist, f)
 
         self.createPlaylistSig.emit(playlistName, playlist)

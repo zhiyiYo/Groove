@@ -1,10 +1,8 @@
 # coding:utf-8
-import os
 from shutil import rmtree
 from pathlib import Path
 
 from mutagen import File, FileType
-from mutagen.m4a import M4A
 from mutagen.mp4 import MP4
 from mutagen.mp3 import MP3
 from mutagen.flac import FLAC
@@ -67,7 +65,7 @@ class MP4AlbumCoverReader(AlbumCoverReaderBase):
 class AlbumCoverReader:
     """ 读取并保存专辑封面类 """
 
-    coverFolder = Path("Album_Cover")
+    coverFolder = Path("cache/Album_Cover")
 
     def __init__(self, songInfo_list: list):
         """
@@ -87,13 +85,15 @@ class AlbumCoverReader:
     @classmethod
     def getAlbumCovers(cls, songInfo_list: list):
         """ 获取多张专辑封面 """
-        os.makedirs(cls.coverFolder, exist_ok=True)
+        cls.coverFolder.mkdir(exist_ok=True, parents=True)
         for songInfo in songInfo_list:
             cls.getOneAlbumCover(songInfo)
 
     @classmethod
     def getOneAlbumCover(cls, songInfo: dict):
         """ 获取一张专辑封面 """
+        cls.coverFolder.mkdir(exist_ok=True, parents=True)
+
         isExists = cls.__isCoverExists(songInfo['coverName'])
         if isExists:
             return
@@ -155,7 +155,7 @@ class AlbumCoverReader:
             封面二进制数据
         """
         folder = cls.coverFolder / coverName
-        folder.mkdir(exist_ok=True)
+        folder.mkdir(exist_ok=True, parents=True)
 
         suffix = getPicSuffix(picData)
         with open(folder/(coverName + suffix), "wb") as f:
