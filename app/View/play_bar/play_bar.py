@@ -2,11 +2,11 @@
 from common.image_process_utils import DominantColor
 from components.widgets.menu import PlayBarMoreActionsMenu
 from components.widgets.slider import HollowHandleStyle, Slider
-from PyQt5.QtCore import (QEasingCurve, QFile, QPoint, QPropertyAnimation,
-                          QRect, Qt, pyqtProperty, pyqtSignal)
-from PyQt5.QtGui import QColor, QIcon, QPalette, QResizeEvent
+from PyQt5.QtCore import (QEasingCurve, QPoint, QPropertyAnimation, Qt,
+                          pyqtProperty, pyqtSignal)
+from PyQt5.QtGui import QColor, QPalette, QResizeEvent
 from PyQt5.QtMultimedia import QMediaPlaylist
-from PyQt5.QtWidgets import QAction, QHBoxLayout, QLabel, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
 from View.play_bar.song_info_card import SongInfoCard
 
 from .play_bar_buttons import (BasicButton, LoopModeButton, PlayButton,
@@ -30,6 +30,7 @@ class PlayBar(QWidget):
     showPlayingInterfaceSig = pyqtSignal()
     showSmallestPlayInterfaceSig = pyqtSignal()
     loopModeChanged = pyqtSignal(QMediaPlaylist.PlaybackMode)
+    colorChanged = pyqtSignal(QColor)
 
     def __init__(self, songInfo: dict, color: QColor, parent=None):
         super().__init__(parent)
@@ -164,6 +165,7 @@ class PlayBar(QWidget):
     def __updateDominantColor(self, albumPath: str):
         """ 更新主色调 """
         r, g, b = DominantColor.getDominantColor(albumPath)
+        self.colorChanged.emit(QColor(r, g, b))
         self.colorAni.setStartValue(self.getColor())
         self.colorAni.setEndValue(QColor(r, g, b))
         self.colorAni.setEasingCurve(QEasingCurve.OutQuart)
@@ -329,6 +331,3 @@ class PlayProgressBar(QWidget):
         """ 改变宽度时调整滑动条的宽度 """
         self.progressSlider.setFixedWidth(self.width() - 100)
         super().resizeEvent(e)
-
-
-

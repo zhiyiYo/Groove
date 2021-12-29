@@ -13,37 +13,32 @@ class BlurCoverThread(QThread):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        # 设置磨砂标志位
-        self.albumCoverPath = ""
+        self.coverPath = ""
         self.blurPixmap = None
         self.blurRadius = 7
-        self.bluredPicMaxSize = (450, 450)
-
-    def __blurAlbumCover(self):
-        """ 得到磨砂后的pixmap """
-        self.blurPixmap = getBlurPixmap(
-            self.albumCoverPath, self.blurRadius, 0.85, self.bluredPicMaxSize)
+        self.maxSize = (450, 450)
 
     def run(self):
         """ 开始磨砂 """
-        if self.albumCoverPath:
-            self.__blurAlbumCover()
+        if self.coverPath:
+            self.blurPixmap = getBlurPixmap(
+                self.coverPath, self.blurRadius, 0.85, self.maxSize)
             self.blurFinished.emit(self.blurPixmap)
 
-    def setTargetCover(self, albumCoverPath: str, blurRadius=6, bluredPicMaxSize: tuple = (450, 450)):
+    def setCover(self, coverPath: str, blurRadius=6, maxSize: tuple = (450, 450)):
         """ 设置磨砂的目标图片
 
         Parameters
         ----------
-        albumCoverPath: str
+        coverPath: str
             专辑封面路径
 
         blurRadius: int
             磨砂半径
 
-        blurPicMaxSize: tuple
+        maxSize: tuple
             图片的最大尺寸，如果实际图片超过这个尺寸将被缩放以加快运算速度
         """
-        self.albumCoverPath = albumCoverPath
+        self.coverPath = coverPath
         self.blurRadius = blurRadius
-        self.bluredPicMaxSize = bluredPicMaxSize
+        self.maxSize = maxSize

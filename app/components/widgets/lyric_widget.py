@@ -48,7 +48,8 @@ class LyricWidget(ScrollArea):
         self.lyric = lyric
         self.times = list(self.lyric.keys())
         self.currentIndex = -1
-        self.isPause = False
+        self.scrollAni.stop()
+        self.verticalScrollBar().setValue(0)
 
         # 刷新歌词
         N = len(self.lyricLabels)
@@ -184,7 +185,7 @@ class LyricLabel(QLabel):
             父级窗口
         """
         super().__init__(parent=parent)
-        self.maxCharacters = 40
+        self.maxCharacters = 50
         self.setAlignment(Qt.AlignCenter)
         self.setLyric(lyric)
 

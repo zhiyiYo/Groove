@@ -600,6 +600,8 @@ class MainWindow(FramelessWindow):
             self.playBar.updateSongInfoCard(
                 self.mediaPlaylist.getCurrentSong())
 
+        self.onPlayBarColorChanged(self.playBar.color)
+
     def showPlayingInterface(self):
         """ 显示正在播放界面 """
         if self.playingInterface.isVisible():
@@ -1210,6 +1212,11 @@ class MainWindow(FramelessWindow):
             return
         self.setPlayButtonState(False)
 
+    def onPlayBarColorChanged(self, color: QColor):
+        """ 播放栏颜色改变槽函数 """
+        self.playingInterface.albumCoverLabel.setForegroundColor(color)
+        self.smallestPlayInterface.albumCoverLabel.setForegroundColor(color)
+
     def connectSignalToSlot(self):
         """ 将信号连接到槽 """
 
@@ -1274,6 +1281,7 @@ class MainWindow(FramelessWindow):
         self.playBar.fullScreenSig.connect(lambda: self.setFullScreen(True))
         self.playBar.showPlaylistSig.connect(self.showPlaylist)
         self.playBar.clearPlaylistSig.connect(self.clearPlaylist)
+        self.playBar.colorChanged.connect(self.onPlayBarColorChanged)
         self.playBar.showSmallestPlayInterfaceSig.connect(
             self.showSmallestPlayInterface)
         self.playBar.savePlaylistSig.connect(

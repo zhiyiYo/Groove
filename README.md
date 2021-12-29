@@ -15,15 +15,15 @@
   </a>
 
   <a style="text-decoration:none">
-    <img src="https://img.shields.io/badge/PyQt-5.13.2-blue?color=00B16A" alt="PyQt 5.13.2"/>
+    <img src="https://img.shields.io/badge/PyQt-5.15.2-blue?color=00B16A" alt="PyQt 5.15.2"/>
   </a>
 
   <a style="text-decoration:none">
-    <img src="https://img.shields.io/badge/LAV%20Filters-0.74.1-blue?color=00B16A" alt="OS Win10 | Windows11"/>
+    <img src="https://img.shields.io/badge/LAV%20Filters-0.74.1-blue?color=00B16A" alt="LAV Filters 0.74.1"/>
   </a>
 
   <a style="text-decoration:none">
-    <img src="https://img.shields.io/badge/OS-Win%2010%20|%20Win%2011-blue?color=00B16A" alt="OS Win10 | Windows11"/>
+    <img src="https://img.shields.io/badge/OS-Win%2010%20|%20Win%2011-blue?color=00B16A" alt="OS Win10 | Win11"/>
   </a>
 </p>
 
@@ -76,7 +76,7 @@
   * Turn off the option to enable acrylic background in the setting interface.
 
 * **What formats of audio files are supported?**
-  
+
   Currently, the following audio files are supported:
   * mp3
   * flac

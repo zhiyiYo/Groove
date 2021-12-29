@@ -1,9 +1,8 @@
 # coding:utf-8
 from typing import List
-from queue import Queue
 
 from PyQt5.QtCore import (QDateTime, QEasingCurve, QParallelAnimationGroup,
-                          QPropertyAnimation, QRect, Qt, pyqtSignal)
+                          QPoint, QPropertyAnimation, Qt, pyqtSignal)
 from PyQt5.QtGui import QMouseEvent
 from PyQt5.QtWidgets import QWidget
 
@@ -48,7 +47,7 @@ class SongInfoCardChute(QWidget):
         for i in range(3):
             card = SongInfoCard(parent=self)
             self.cards.append(card)
-            ani = QPropertyAnimation(card, b'geometry', self)
+            ani = QPropertyAnimation(card, b'pos', self)
             self.scrollAnis.append(ani)
             self.aniGroup.addAnimation(ani)
             card.setVisible(0 <= i-1 <= len(self.playlist)-1)
@@ -135,6 +134,7 @@ class SongInfoCardChute(QWidget):
         self.loopMode = self.CYCLE_RIGHT_SHIFT
         for i, (card, ani) in enumerate(zip(self.cards, self.scrollAnis)):
             self.__setAnimation(ani, card, i*self.width())
+
         self.aniGroup.start()
 
         # 发送更新背景信号
@@ -145,9 +145,8 @@ class SongInfoCardChute(QWidget):
         ani.setDuration(500)
         ani.setTargetObject(card)
         ani.setEasingCurve(QEasingCurve.OutQuart)
-        ani.setStartValue(
-            QRect(card.x(), card.y(), card.width(), card.height()))
-        ani.setEndValue(QRect(endX, card.y(), card.width(), card.height()))
+        ani.setStartValue(card.pos())
+        ani.setEndValue(QPoint(endX, card.y()))
 
     def __onScrollAniFinished(self):
         """ 滚动完成槽函数 """

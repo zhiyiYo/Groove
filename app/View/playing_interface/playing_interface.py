@@ -5,6 +5,7 @@ from typing import Dict, List
 from common.thread.blur_cover_thread import BlurCoverThread
 from common.thread.get_lyric_thread import GetLyricThread
 from components.buttons.three_state_button import ThreeStatePushButton
+from components.widgets.label import BlurCoverLabel
 from components.widgets.lyric_widget import LyricWidget
 from components.widgets.menu import AddToMenu
 from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QFile,
@@ -30,7 +31,6 @@ def handleSelectionMode(func):
     return wrapper
 
 
-# TODO:给封面加半透明前景色
 class PlayingInterface(QWidget):
     """ 正在播放界面 """
 
@@ -65,11 +65,10 @@ class PlayingInterface(QWidget):
         self.blurPixmap = None
 
         # 创建线程
-        self.blurCoverThread = BlurCoverThread(self)
         self.getLyricThread = GetLyricThread(self)
 
         # 创建小部件
-        self.albumCoverLabel = QLabel(self)
+        self.albumCoverLabel = BlurCoverLabel(15, (450, 450), self)
         self.songInfoCardChute = SongInfoCardChute(self.playlist, self)
         self.lyricWidget = LyricWidget(self.songInfoCardChute)
         self.parallelAniGroup = QParallelAnimationGroup(self)
@@ -124,7 +123,7 @@ class PlayingInterface(QWidget):
 
         # 开启磨砂线程
         if self.playlist:
-            self.__blurBackground(
+            self.albumCoverLabel.setCover(
                 self.songInfoCardChute.cards[1].albumCoverPath)
 
         # 将信号连接到槽
@@ -154,28 +153,11 @@ class PlayingInterface(QWidget):
         self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
         f.close()
 
-    def __onBlurFinished(self, blurPixmap):
-        """ 设置磨砂封面 """
-        self.blurPixmap = blurPixmap
-        self.__resizeBlurPixmap()
-
-    def __resizeBlurPixmap(self):
-        """ 调整背景图尺寸 """
-        w = max(self.width(), self.height())
-        if self.blurPixmap:
-            self.albumCoverLabel.setPixmap(self.blurPixmap.scaled(
-                w, w, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
-
-    def __blurBackground(self, albumCoverPath: str):
-        """ 开启磨砂线程 """
-        self.blurCoverThread.setTargetCover(albumCoverPath, 15)
-        self.blurCoverThread.start()
-
     def resizeEvent(self, e):
         """ 改变尺寸时也改变小部件的大小 """
         super().resizeEvent(e)
-        self.__resizeBlurPixmap()
         self.albumCoverLabel.setFixedSize(self.size())
+        self.albumCoverLabel.adjustCover()
         self.songInfoCardChute.resize(self.size())
         self.lyricWidget.resize(
             self.width(), self.height()-258-self.lyricWidget.y())
@@ -321,7 +303,7 @@ class PlayingInterface(QWidget):
         self.currentIndex = index if isResetIndex else self.currentIndex
         self.songInfoCardChute.setPlaylist(self.playlist, isResetIndex, index)
         self.songListWidget.updateSongCards(self.playlist, isResetIndex, index)
-        self.__blurBackground(self.songInfoCardChute.cards[1].albumCoverPath)
+        self.albumCoverLabel.setCover(self.songInfoCardChute.cards[1].albumCoverPath)
 
         if self.playlist:
             self.__getLyric()
@@ -538,7 +520,6 @@ class PlayingInterface(QWidget):
 
     def __connectSignalToSlot(self):
         """ 将信号连接到槽 """
-        self.blurCoverThread.blurFinished.connect(self.__onBlurFinished)
         self.getLyricThread.crawlFinished.connect(self.__onCrawlLyricFinished)
         self.randomPlayAllButton.clicked.connect(self.randomPlayAllSig)
 
@@ -546,7 +527,7 @@ class PlayingInterface(QWidget):
         self.songInfoCardChute.currentIndexChanged[int].connect(
             self.currentIndexChanged)
         self.songInfoCardChute.currentIndexChanged[str].connect(
-            self.__blurBackground)
+            self.albumCoverLabel.setCover)
         self.songInfoCardChute.switchToAlbumInterfaceSig.connect(
             self.switchToAlbumInterfaceSig)
         self.songInfoCardChute.showPlayBarSignal.connect(self.showPlayBar)
