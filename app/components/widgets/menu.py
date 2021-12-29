@@ -263,3 +263,85 @@ class LineEditMenu(DWMMenu):
         # 开始动画
         self.animation.start()
         super().exec_(pos)
+
+
+class MoreActionsMenu(AeroMenu):
+    """ 更多操作菜单 """
+
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self.action_list = []
+        self.animation = QPropertyAnimation(self, b"geometry")
+        self._createActions()
+        self.__initWidget()
+
+    def __initWidget(self):
+        """ 初始化小部件 """
+        self.setObjectName("moreActionsMenu")
+        self.animation.setDuration(300)
+        self.animation.setEasingCurve(QEasingCurve.OutQuad)
+
+    def _createActions(self):
+        """ 创建动作"""
+        raise NotImplementedError("该方法必须被子类实现")
+
+    def exec(self, pos):
+        h = len(self.action_list) * 38
+        w = max(self.fontMetrics().width(i.text())
+                for i in self.action_list) + 65
+        self.animation.setStartValue(QRect(pos.x(), pos.y(), 1, h))
+        self.animation.setEndValue(QRect(pos.x(), pos.y(), w, h))
+        # 开始动画
+        self.animation.start()
+        super().exec(pos)
+
+
+class PlayBarMoreActionsMenu(MoreActionsMenu):
+    """ 播放栏更多操作菜单 """
+
+    def _createActions(self):
+        self.savePlayListAct = QAction(
+            QIcon(":/images/menu/Add.png"), self.tr("Save as a playlist"), self)
+        self.clearPlayListAct = QAction(
+            QIcon(":/images/menu/Clear.png"), self.tr('Clear now playing'), self)
+        self.showPlayListAct = QAction(
+            QIcon(":/images/menu/Playlist.png"), self.tr("Show now playing list"), self)
+        self.fullScreenAct = QAction(
+            QIcon(":/images/menu/FullScreen.png"), self.tr("Go full screen"), self)
+        self.action_list = [self.showPlayListAct, self.fullScreenAct,
+                            self.savePlayListAct, self.clearPlayListAct]
+        self.addActions(self.action_list)
+
+
+class PlayingInterfaceMoreActionsMenu(MoreActionsMenu):
+    """ 正在播放界面更多操作菜单 """
+
+    lyricVisibleChanged = pyqtSignal(bool)
+
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self.lyricAct.setProperty('showLyric', True)
+        self.lyricAct.triggered.connect(self.__onLyricActionTrigger)
+        self.adjustSize()
+
+    def __onLyricActionTrigger(self):
+        """ 歌词动作槽函数 """
+        isVisible = self.lyricAct.property('showLyric')
+        self.lyricAct.setProperty('showLyric', not isVisible)
+        self.lyricAct.setText(
+            self.tr('Show lyric') if isVisible else self.tr('Hide lyric'))
+
+        self.lyricVisibleChanged.emit(not isVisible)
+
+    def _createActions(self):
+        self.savePlayListAct = QAction(
+            QIcon(":/images/menu/Add.png"), self.tr("Save as a playlist"), self)
+        self.clearPlayListAct = QAction(
+            QIcon(":/images/menu/Clear.png"), self.tr('Clear now playing'), self)
+        self.showSingerAct = QAction(
+            QIcon(":/images/menu/Contact.png"), self.tr("Show artist cover"), self)
+        self.lyricAct = QAction(
+            QIcon(':/images/menu/Lyric.png'), self.tr('Hide lyric'), self)
+        self.action_list = [
+            self.savePlayListAct, self.clearPlayListAct, self.showSingerAct, self.lyricAct]
+        self.addActions(self.action_list)

@@ -231,13 +231,12 @@ class PlayButton(TwoStateButton):
             ":/images/playing_interface/Play_47_47.png",
         ]
         super().__init__(self.iconPath_list, parent)
-        # 设置暂停标志位
-        self.__isPaused = True
+        self.isPlay = False
 
     def setPlay(self, isPlay: bool):
         """ 设置按钮状态 """
-        self.__isPaused = not isPlay
-        self.setState(self.__isPaused)
+        self.isPlay = isPlay
+        self.setState(not isPlay)
         self.update()
 
 

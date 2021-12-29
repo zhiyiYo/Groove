@@ -9,7 +9,7 @@ from common.image_process_utils import getBlurPixmap
 class BlurCoverThread(QThread):
     """ 磨砂专辑封面线程 """
 
-    blurDone = pyqtSignal(QPixmap)
+    blurFinished = pyqtSignal(QPixmap)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -28,7 +28,7 @@ class BlurCoverThread(QThread):
         """ 开始磨砂 """
         if self.albumCoverPath:
             self.__blurAlbumCover()
-            self.blurDone.emit(self.blurPixmap)
+            self.blurFinished.emit(self.blurPixmap)
 
     def setTargetCover(self, albumCoverPath: str, blurRadius=6, bluredPicMaxSize: tuple = (450, 450)):
         """ 设置磨砂的目标图片

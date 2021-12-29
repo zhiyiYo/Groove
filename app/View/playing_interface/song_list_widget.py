@@ -70,7 +70,6 @@ class SongListWidget(ListWidget):
 
     def __emitCurrentChangedSignal(self, index):
         """ 发送当前播放的歌曲卡下标变化信号，同时更新样式和歌曲信息卡 """
-        # 发送下标更新信号
         self.currentIndexChanged.emit(index)
         self.setCurrentIndex(index)
 
@@ -119,10 +118,13 @@ class SongListWidget(ListWidget):
         """ 设置当前播放歌曲下标，同时更新样式 """
         if not self.songCard_list or index == self.currentIndex:
             return
+
         # 将之前播放的歌曲卡的播放状态设置为False
         self.songCard_list[self.currentIndex].setPlay(False)
+
         # 更新当前播放歌曲下标
         self.currentIndex = index
+
         # 更新当前播放歌曲卡样式
         self.songCard_list[index].setPlay(True)
 

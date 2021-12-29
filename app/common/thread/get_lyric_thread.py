@@ -36,17 +36,23 @@ class GetLyricThread(QThread):
         songInfo_list, _ = self.crawler.getSongInfoList(keyWord, page_size=1)
 
         if not songInfo_list:
-            return parse_lyric(None)
+            self.crawlFinished.emit(parse_lyric(None))
+            return
 
         # 搜索歌词
         lyric = self.crawler.getLyric(songInfo_list[0]['rid'])
-        isEmpty = bool(lyric)
+        notEmpty = bool(lyric)
 
         lyric = parse_lyric(lyric)
 
         # 保存歌词文件
-        if not isEmpty:
+        if notEmpty:
             with open(lyricPath, 'w', encoding='utf-8') as f:
                 json.dump(lyric, f)
 
         self.crawlFinished.emit(lyric)
+
+    def setSongInfo(self, songInfo: dict):
+        """ 设置歌曲信息 """
+        self.singer = songInfo['singer']
+        self.songName = songInfo['songName']

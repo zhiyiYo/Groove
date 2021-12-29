@@ -1,9 +1,9 @@
 # coding:utf-8
 from components.buttons.circle_button import CircleButton
 from components.widgets.slider import Slider, HollowHandleStyle
+from components.widgets.menu import PlayingInterfaceMoreActionsMenu
 from PyQt5.QtCore import QPoint, Qt, pyqtSignal
 from PyQt5.QtWidgets import QLabel, QWidget
-from View.play_bar import MoreActionsMenu
 
 from .play_bar_buttons import (FullScreenButton, LoopModeButton, PlayButton,
                                PullUpArrow, RandomPlayButton, VolumeButton)
@@ -26,7 +26,7 @@ class PlayBar(QWidget):
 
     def __createWidget(self):
         """ 创建小部件 """
-        self.moreActionsMenu = MoreActionsMenu(self, 0)
+        self.moreActionsMenu = PlayingInterfaceMoreActionsMenu(self)
         self.playButton = PlayButton(self)
         self.volumeButton = VolumeButton(self)
         self.volumeSliderWidget = VolumeSliderWidget(self.window())
@@ -131,9 +131,9 @@ class PlayBar(QWidget):
 
     def __showMoreActionsMenu(self):
         """ 显示更多操作菜单 """
-        globalPos = self.mapToGlobal(self.moreActionsButton.pos())
-        x = globalPos.x() + self.moreActionsButton.width() + 10
-        y = globalPos.y() + self.moreActionsButton.height()//2 - 114/2
+        pos = self.mapToGlobal(self.moreActionsButton.pos())
+        x = pos.x() + self.moreActionsButton.width() + 10
+        y = pos.y() + self.moreActionsButton.height()//2 - self.moreActionsMenu.height()/2
         self.moreActionsMenu.exec(QPoint(x, y))
 
     def __connectSignalToSlot(self):

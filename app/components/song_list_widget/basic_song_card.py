@@ -238,7 +238,8 @@ class BasicSongCard(QWidget):
             需要设置动画的小部件列表
 
         deltaX_list: list
-            和 `aniWidget_list` 相对应的动画位置偏移量列表 """
+            和 `aniWidget_list` 相对应的动画位置偏移量列表
+        """
         self.__checkIsLengthEqual(aniWidget_list, deltaX_list)
         self.__aniWidget_list = aniWidget_list
         self.__deltaX_list = deltaX_list
@@ -402,8 +403,7 @@ class BasicSongCard(QWidget):
             self.__originalWidth = self.width()
             equalWidth = int(deltaWidth / len(self.__scaleableWidget_list))
             self.__scaleableWidgetMaxWidth_list = [
-                i + equalWidth for i in self.__scaleableWidgetMaxWidth_list
-            ]
+                i + equalWidth for i in self.__scaleableWidgetMaxWidth_list]
         else:
             self.__originalWidth = self.width()
 

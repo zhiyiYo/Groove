@@ -49,7 +49,7 @@ class MainWindow(FramelessWindow):
         # 初始化导航历史
         self.navigationHistories = [("myMusicInterfaceStackWidget", 0)]
         # 初始化界面
-        self.__initWidget()
+        self.initWidget()
 
     def createWidgets(self):
         """ 创建小部件 """
@@ -161,7 +161,7 @@ class MainWindow(FramelessWindow):
             ]
         )
 
-    def __initWidget(self):
+    def initWidget(self):
         """ 初始化小部件 """
         self.resize(1240, 970)
         self.setMinimumSize(1030, 800)
@@ -196,6 +196,9 @@ class MainWindow(FramelessWindow):
 
         # 设置定时器溢出时间
         self.rescanSongInfoTimer.setInterval(180000)
+
+        # 设置播放器发送播放位置改变的信号的间隔
+        self.player.setNotifyInterval(100)
 
         # 初始化播放列表
         self.initPlaylist()
@@ -421,7 +424,7 @@ class MainWindow(FramelessWindow):
         """ 播放器的播放进度改变时更新当前播放进度标签和进度条的值 """
         self.playBar.setCurrentTime(position)
         self.playBar.progressSlider.setValue(position)
-        self.playingInterface.playBar.setCurrentTime(position)
+        self.playingInterface.setCurrentTime(position)
         self.playingInterface.playBar.progressSlider.setValue(position)
         self.smallestPlayInterface.progressBar.setValue(position)
 
@@ -431,6 +434,7 @@ class MainWindow(FramelessWindow):
         duration = self.player.duration()
         if duration < 1:
             return
+
         self.playBar.setTotalTime(duration)
         self.playBar.progressSlider.setRange(0, duration)
         self.playingInterface.playBar.setTotalTime(duration)
@@ -515,8 +519,8 @@ class MainWindow(FramelessWindow):
             self.setPlayButtonState(False)
             self.setPlayButtonEnabled(False)
             return
-        else:
-            self.setPlayButtonEnabled(True)
+
+        self.setPlayButtonEnabled(True)
 
         # 处理歌曲不存在的情况
         if index < 0:
@@ -669,6 +673,7 @@ class MainWindow(FramelessWindow):
         """ 设置全屏 """
         if isFullScreen == self.isFullScreen():
             return
+
         if not isFullScreen:
             self.exitFullScreen()
         else:
@@ -691,6 +696,7 @@ class MainWindow(FramelessWindow):
         """ 退出全屏 """
         if not self.isFullScreen():
             return
+
         self.showNormal()
         # 更新最大化按钮图标
         self.titleBar.maxBt.setMaxState(False)
@@ -797,6 +803,7 @@ class MainWindow(FramelessWindow):
         """ 切换到专辑界面 """
         if self.isInSelectionMode:
             return
+
         if self.isFullScreen():
             self.exitFullScreen()
 

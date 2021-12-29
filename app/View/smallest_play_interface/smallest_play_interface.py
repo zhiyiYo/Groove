@@ -74,7 +74,8 @@ class SmallestPlayInterface(FramelessWindow):
         self.playButton.clicked.connect(self.togglePlayStateSig)
         self.exitSmallestModeButton.clicked.connect(
             self.exitSmallestPlayInterfaceSig)
-        self.blurCoverThread.blurDone.connect(self.albumCoverLabel.setPixmap)
+        self.blurCoverThread.blurFinished.connect(
+            self.albumCoverLabel.setPixmap)
 
     def __createSongInfoCards(self):
         """ 创建歌曲信息卡 """
@@ -104,7 +105,7 @@ class SmallestPlayInterface(FramelessWindow):
             if len(self.playlist) >= 2:
                 self.nextSongInfoCard.updateCard(self.playlist[1])
 
-    def startBlurThread(self, albumCoverPath: str):
+    def __blurBackground(self, albumCoverPath: str):
         """ 开启磨砂线程 """
         self.blurCoverThread.setTargetCover(albumCoverPath, 40, (350, 350))
         self.blurCoverThread.start()
@@ -290,7 +291,7 @@ class SmallestPlayInterface(FramelessWindow):
         if self.aniGroup.state() != QAbstractAnimation.Running:
             songInfo = self.playlist[index]  # type:dict
             name = songInfo.get('coverName', '未知歌手_未知专辑')
-            self.startBlurThread(getCoverPath(name, "album_big"))
+            self.__blurBackground(getCoverPath(name, "album_big"))
             self.__completeShift(index)
         else:
             self.__unCompleteShift_list.append(index)

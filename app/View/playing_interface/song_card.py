@@ -191,9 +191,9 @@ class SongCard(QWidget):
 
     def __onAniFinished(self):
         """ 动画完成时更新样式 """
-        # 如果不处于选择模式，发出点击信号
         if not self.isInSelectionMode:
             self.clicked.emit(self.itemIndex)
+
         # 动画完成后需要断开连接，为下一次样式更新做准备
         self.aniGroup.disconnect()
 

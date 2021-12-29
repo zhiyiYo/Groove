@@ -1,6 +1,6 @@
 # coding:utf-8
 from common.image_process_utils import DominantColor
-from components.widgets.menu import AeroMenu
+from components.widgets.menu import PlayBarMoreActionsMenu
 from components.widgets.slider import HollowHandleStyle, Slider
 from PyQt5.QtCore import (QEasingCurve, QFile, QPoint, QPropertyAnimation,
                           QRect, Qt, pyqtProperty, pyqtSignal)
@@ -43,7 +43,7 @@ class PlayBar(QWidget):
         self.songInfoCard = SongInfoCard(songInfo, self)
         self.centralButtonGroup = CentralButtonGroup(self)
         self.rightWidgetGroup = RightWidgetGroup(self)
-        self.moreActionsMenu = MoreActionsMenu(self)
+        self.moreActionsMenu = PlayBarMoreActionsMenu(self)
 
         # 初始化小部件
         self.__initWidget()
@@ -331,60 +331,4 @@ class PlayProgressBar(QWidget):
         super().resizeEvent(e)
 
 
-class MoreActionsMenu(AeroMenu):
-    """ 更多操作菜单 """
 
-    def __init__(self, parent=None, actionFlag=1):
-        """
-        Parameters
-        ----------
-        parent:
-            父级窗口
-
-        actionFlag: int
-            1 有四个动作，0 有三个动作 """
-        super().__init__(parent=parent)
-        self.actionFlag = actionFlag
-        # 创建动作和动画
-        self.createActions()
-        self.animation = QPropertyAnimation(self, b"geometry")
-        # 初始化界面
-        self.initWidget()
-
-    def initWidget(self):
-        """ 初始化小部件 """
-        self.setObjectName("moreActionsMenu")
-        self.animation.setDuration(300)
-        self.animation.setEasingCurve(QEasingCurve.OutQuad)
-
-    def createActions(self):
-        """ 创建动作"""
-        self.savePlayListAct = QAction(
-            QIcon(":/images/menu/Add.png"), self.tr("Save as a playlist"), self)
-        self.clearPlayListAct = QAction(
-            QIcon(":/images/menu/Clear.png"), self.tr('Clear now playing'), self)
-
-        if self.actionFlag:
-            self.showPlayListAct = QAction(
-                QIcon(":/images/menu/Playlist.png"), self.tr("Show now playing list"), self)
-            self.fullScreenAct = QAction(
-                QIcon(":/images/menu/FullScreen.png"), self.tr("Go full screen"), self)
-            self.action_list = [self.showPlayListAct, self.fullScreenAct,
-                                self.savePlayListAct, self.clearPlayListAct]
-        else:
-            self.showSongerCover = QAction(
-                QIcon(":/images/menu/Contact.png"), self.tr("Show artist cover"), self)
-            self.action_list = [self.savePlayListAct,
-                                self.showSongerCover, self.clearPlayListAct]
-
-        self.addActions(self.action_list)
-
-    def exec(self, pos):
-        h = len(self.action_list) * 38
-        w = max(self.fontMetrics().width(i.text())
-                for i in self.action_list) + 65
-        self.animation.setStartValue(QRect(pos.x(), pos.y(), 1, h))
-        self.animation.setEndValue(QRect(pos.x(), pos.y(), w, h))
-        # 开始动画
-        self.animation.start()
-        super().exec(pos)

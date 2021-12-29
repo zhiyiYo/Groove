@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import QApplication, QListWidgetItem, QWidget
 from .song_card import SongCardFactory
 from .song_card_type import SongCardType
 
-
+# TODO: 更新歌曲卡后布局问题
 class BasicSongListWidget(ListWidget):
     """ 基本歌曲列表控件 """
 
