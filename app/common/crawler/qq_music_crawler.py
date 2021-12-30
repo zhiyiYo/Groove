@@ -1,23 +1,12 @@
 # coding:utf-8
 import json
-from pprint import pprint
 from typing import Union
 from pathlib import Path
 
 import requests
 from fuzzywuzzy import fuzz
+from .exception_handler import exceptionHandler
 
-
-def exceptionHandler(func):
-    """ 异常处理装饰器 """
-
-    def wrapper(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except:
-            return None
-
-    return wrapper
 
 
 class QQMusicCrawler:
@@ -27,7 +16,7 @@ class QQMusicCrawler:
         self.headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                         'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'}
 
-    @exceptionHandler
+    @exceptionHandler()
     def getSongInfo(self, key_word: str, match_thresh=70):
         """ 搜索指定关键词的歌曲信息
 
@@ -90,7 +79,7 @@ class QQMusicCrawler:
 
         return song_info
 
-    @exceptionHandler
+    @exceptionHandler()
     def getAlbumCoverURL(self, albummid: str, save_path: Union[str, Path]):
         """ 获取专辑封面并保存到本地
 
@@ -118,11 +107,3 @@ class QQMusicCrawler:
         return url
 
 
-if __name__ == '__main__':
-    crawler = QQMusicCrawler()
-    song_info = crawler.getSongInfo("taylor - Red")
-    if song_info:
-        song_info["coverPath"] = crawler.getAlbumCoverURL(
-            song_info["albummid"], 'red.jpg')
-
-    pprint(song_info)

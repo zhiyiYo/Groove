@@ -1,26 +1,14 @@
 # coding: utf-8
 import json
 import re
-from time import time
 from hashlib import md5
+from time import time
 from urllib import parse
 from pprint import pprint
 
-from common.os_utils import adjustName
 import requests
-
-
-def exceptionHandler(func):
-    """ 处理请求异常装饰器 """
-
-    def wrapper(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except:
-            print('发生异常')
-            return []
-
-    return wrapper
+from common.os_utils import adjustName
+from .exception_handler import exceptionHandler
 
 
 class KuGouMusicCrawler:
@@ -37,7 +25,7 @@ class KuGouMusicCrawler:
             'Hm_lpvt_aedee6983d4cfc62f509129360d6bb3d': '1618924198'
         }
 
-    @exceptionHandler
+    @exceptionHandler()
     def search(self, key_word: str, page_size: int = 10, quality='normal'):
         """ 搜索音乐
 
@@ -51,6 +39,11 @@ class KuGouMusicCrawler:
 
         quality: str
             音频文件音质，可以是 `normal`、`highQuality` 或者 `superQuality`
+
+        Returns
+        -------
+        song_info_list: list
+            歌曲信息列表，获取失败则返回 `None`
         """
         if quality not in ['normal', 'HQ', 'SQ']:
             raise ValueError("音质非法")
@@ -69,16 +62,31 @@ class KuGouMusicCrawler:
         # 获取每一首歌的播放地址和封面地址
         for song_info in song_info_list:
             file_hash = song_info[hash_keys[quality]]
-            play_url, cover_url = self.getSongDetails(
+            data = self.getSongDetails(
                 file_hash, song_info["albumID"])
-            song_info["songPath"] = play_url
-            song_info["coverPath"] = cover_url
+
+            song_info["songPath"] = data.get('play_yrl')
+            song_info["coverPath"] = data.get('img')
 
         return song_info_list
 
-    @exceptionHandler
-    def getSongInfoList(self, key_word, page_size):
-        """ 搜索并获取歌曲信息列表 """
+    @exceptionHandler()
+    def getSongInfoList(self, key_word, page_size=10):
+        """ 搜索并获取歌曲信息
+
+        Parameters
+        ----------
+        key_word: str
+            搜索关键词
+
+        page_size: int
+            最多返回歌曲下载地址数
+
+        Returns
+        -------
+        song_info_list: list
+            歌曲信息列表，获取失败则返回 `None`
+        """
         k = int(round(time()*1000))
         infos = ["NVPh5oo715z5DIWAeQlhMDsWXXQV4hwt", "bitrate=0", "callback=callback123",
                  f"clienttime={k}", "clientver=2000", "dfid=-", "inputtype=0",
@@ -87,11 +95,13 @@ class KuGouMusicCrawler:
                  "srcappid=2919", "tag=em", "userid=-1", f"uuid={k}", "NVPh5oo715z5DIWAeQlhMDsWXXQV4hwt"]
 
         # 计算签名参数
-        signature = md5(''.join(infos).encode('utf-8')).hexdigest().upper()
+        params = {i.split('=')[0]: i.split('=')[1] for i in infos[1:-1]}
+        params['signature'] = md5(
+            ''.join(infos).encode('utf-8')).hexdigest().upper()
 
         # 请求 URL 获取歌曲信息列表
-        url = f'https://complexsearch.kugou.com/v2/search/song?callback=callback123&keyword={parse.quote(key_word)}&page=1&pagesize={page_size}&bitrate=0&isfuzzy=0&tag=em&inputtype=0&platform=WebFilter&userid=-1&clientver=2000&iscorrection=1&privilege_filter=0&srcappid=2919&clienttime={k}&mid={k}&uuid={k}&dfid=-&signature={signature}'
-        response = requests.get(url, headers=self.headers)
+        url = 'https://complexsearch.kugou.com/v2/search/song'
+        response = requests.get(url, headers=self.headers, params=params)
         response.raise_for_status()
 
         # 解析返回的 json 数据
@@ -122,7 +132,8 @@ class KuGouMusicCrawler:
 
         return song_info_list
 
-    def getSongDetails(self, file_hash: str, album_id: str):
+    @exceptionHandler({})
+    def getSongDetails(self, file_hash: str, album_id: str) -> dict:
         """ 获取歌曲详细信息
 
         Parameters
@@ -135,25 +146,37 @@ class KuGouMusicCrawler:
 
         Returns
         -------
-        play_url: str
-            歌曲播放地址，请求失败时为空字符串
-
-        cover_url: str
-            专辑封面地址，请求失败时为空字符串
+        data: dict
+            详细信息
         """
         url = f'https://wwwapi.kugou.com/yy/index.php?r=play/getdata&hash={file_hash}&mid=68aa6f0242d4192a2a9e2b91e44c226d&album_id={album_id}'
 
-        try:
-            response = requests.get(url, headers=self.headers)
-            response.raise_for_status()
-        except:
-            print('发生异常')
-            return '', ''
-        else:
-            data = json.loads(response.text)["data"]
-            return data["play_url"], data["img"]
+        response = requests.get(url, headers=self.headers)
+        response.raise_for_status()
 
+        data = json.loads(response.text)["data"]
+        return data
 
-if __name__ == '__main__':
-    crawler = KuGouMusicCrawler()
-    pprint(crawler.search('aiko - 恋をしたのは'))
+    def getLyric(self, key_word: str):
+        """ 获取歌词
+
+        Parameters
+        ----------
+        key_word: str
+            关键词
+
+        Returns
+        -------
+        lyric: list
+            歌词列表，如果没找到则返回 `None`
+        """
+        song_info_list = self.getSongInfoList(key_word, 1)
+
+        if not song_info_list:
+            return None
+
+        song_info = song_info_list[0]
+        lyric = self.getSongDetails(
+            song_info['fileHash'], song_info['albumID']).get('lyrics')
+
+        return lyric

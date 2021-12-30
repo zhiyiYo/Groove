@@ -5,13 +5,15 @@ from typing import List, Dict
 class LyricParserBase:
     """ 歌词解析器基类 """
 
+    default_lyric = {'0.0': ['暂无歌词']}
+
     @staticmethod
     def can_parse(lyric) -> bool:
         """ 能否解析歌词 """
         raise NotImplementedError("该方法必须被子类实现")
 
-    @staticmethod
-    def parse(lyric) -> Dict[str, List[str]]:
+    @classmethod
+    def parse(cls, lyric) -> Dict[str, List[str]]:
         """ 解析歌词 """
         raise NotImplementedError("该方法必须被子类实现")
 
@@ -33,10 +35,10 @@ class KuWoLyricParser(LyricParserBase):
 
         return False
 
-    @staticmethod
-    def parse(lyric: List[Dict[str, str]]) -> Dict[str, List[str]]:
+    @classmethod
+    def parse(cls, lyric: List[Dict[str, str]]) -> Dict[str, List[str]]:
         if not lyric:
-            return {'0.0': ['暂无歌词']}
+            return cls.default_lyric
 
         times = [i['time'] for i in lyric]
 
@@ -61,9 +63,47 @@ class KuWoLyricParser(LyricParserBase):
         return lyrics
 
 
+class KuGouLyricParser(LyricParserBase):
+    """ 酷狗音乐歌词解析器 """
+
+    @staticmethod
+    def can_parse(lyric) -> bool:
+        if lyric is None:
+            return True
+
+        if isinstance(lyric, str):
+            if not lyric:
+                return True
+
+            return lyric.startswith('\ufeff[id:$00000000]\r\n')
+
+        return False
+
+    @classmethod
+    def parse(cls, lyric: str) -> Dict[str, List[str]]:
+        if not lyric:
+            return cls.default_lyric
+
+        lyric = lyric.split('\r\n')  # type:list
+        lyric = lyric[lyric.index('[offset:0]')+1:-1]
+
+        # 制作歌词
+        lyrics = {}
+        for line in lyric:
+            time, text = line.split(']')
+
+            time = time[1:]
+            minutes, seconds = time.split(':')
+            time = str(float(minutes)*60 + float(seconds))
+
+            lyrics[time] = [text]
+
+        return lyrics
+
+
 def parse_lyric(lyric) -> Dict[str, List[str]]:
     """ 解析歌词 """
-    parsers = [KuWoLyricParser]
+    parsers = [KuWoLyricParser, KuGouLyricParser]
     available_parsers = [i for i in parsers if i.can_parse(lyric)]
 
     if not available_parsers:

@@ -3,7 +3,7 @@ import os
 from copy import deepcopy
 from typing import Dict, List
 
-from common.crawler.kuwo_music_crawler import KuWoMusicCrawler
+from common.crawler import KuWoMusicCrawler
 from common.thread.get_singer_avatar_thread import GetSingerAvatarThread
 from common.thread.save_album_info_thread import SaveAlbumInfoThread
 from components.album_card import AlbumBlurBackground

@@ -2,7 +2,7 @@
 import json
 from pathlib import Path
 
-from common.crawler.kuwo_music_crawler import KuWoMusicCrawler
+from common.crawler import KuWoMusicCrawler, KuGouMusicCrawler
 from common.lyric_parser import parse_lyric
 from common.os_utils import adjustName
 from PyQt5.QtCore import QThread, pyqtSignal
@@ -17,7 +17,7 @@ class GetLyricThread(QThread):
         super().__init__(parent=parent)
         self.singer = ''
         self.songName = ''
-        self.crawler = KuWoMusicCrawler()
+        self.crawlers = [KuWoMusicCrawler(), KuGouMusicCrawler()]
 
     def run(self):
         """ 搜索歌词 """
@@ -31,17 +31,15 @@ class GetLyricThread(QThread):
                 self.crawlFinished.emit(json.load(f))
                 return
 
-        # 搜索歌曲信息
-        keyWord = self.singer + ' ' + self.songName
-        songInfo_list, _ = self.crawler.getSongInfoList(keyWord, page_size=1)
-
-        if not songInfo_list:
-            self.crawlFinished.emit(parse_lyric(None))
-            return
-
         # 搜索歌词
-        lyric = self.crawler.getLyric(songInfo_list[0]['rid'])
-        notEmpty = bool(lyric)
+        notEmpty = False
+        keyWord = self.singer + ' ' + self.songName
+
+        for crawler in self.crawlers:
+            lyric = crawler.getLyric(keyWord)
+            notEmpty = bool(lyric)
+            if notEmpty:
+                break
 
         lyric = parse_lyric(lyric)
 

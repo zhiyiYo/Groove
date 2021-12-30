@@ -1,0 +1,3 @@
+from .kugou_music_crawler import KuGouMusicCrawler
+from .kuwo_music_crawler import KuWoMusicCrawler
+from .qq_music_crawler import QQMusicCrawler

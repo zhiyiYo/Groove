@@ -1,5 +1,5 @@
 # coding:utf-8
-from common.crawler.kuwo_music_crawler import KuWoMusicCrawler
+from common.crawler import KuWoMusicCrawler
 from PyQt5.QtCore import pyqtSignal, QThread
 
 

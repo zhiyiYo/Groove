@@ -4,7 +4,7 @@ from copy import deepcopy
 from math import ceil
 
 from common import resource
-from common.crawler.kuwo_music_crawler import KuWoMusicCrawler
+from common.crawler import KuWoMusicCrawler
 from common.thread.download_song_thread import DownloadSongThread
 from common.thread.get_online_song_url_thread import GetOnlineSongUrlThread
 from components.widgets.scroll_area import ScrollArea

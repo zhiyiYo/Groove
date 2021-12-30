@@ -2,41 +2,12 @@
 import json
 import os
 from urllib import parse
-from copy import deepcopy
-from pathlib import Path
 
 import requests
-from common.os_utils import adjustName
 from common.meta_data.writer import writeAlbumCover, writeSongInfo
+from common.os_utils import adjustName
 
-
-def exceptionHandler(*default):
-    """ 请求异常处理装饰器
-
-    Parameters
-    ----------
-    *default:
-        发生异常时返回的默认值
-    """
-
-    def outer(func):
-
-        def inner(*args, **kwargs):
-            try:
-                return func(*args, **kwargs)
-            except:
-                print('发生异常')
-                value = deepcopy(default)
-                if len(value) == 0:
-                    return None
-                elif len(value) == 1:
-                    return value[0]
-                else:
-                    return value
-
-        return inner
-
-    return outer
+from .exception_handler import exceptionHandler
 
 
 class KuWoMusicCrawler:
@@ -239,24 +210,28 @@ class KuWoMusicCrawler:
             f.write(response.content)
 
     @exceptionHandler()
-    def getLyric(self, rid: str):
+    def getLyric(self, key_word: str):
         """ 获取歌词
 
         Parameters
         ----------
-        rid: str
-            歌曲 rid
+        key_word: str
+            关键词
 
         Returns
         -------
         lyric: list
             歌词列表，如果没找到则返回 `None`
         """
-        url = f"https://m.kuwo.cn/newh5/singles/songinfoandlrc?musicId={rid}"
+        songInfo_list, _ = self.getSongInfoList(key_word, page_size=1)
+
+        if not songInfo_list:
+            return None
+
+        url = f"https://m.kuwo.cn/newh5/singles/songinfoandlrc?musicId={songInfo_list[0]['rid']}"
         response = requests.get(url)
         response.raise_for_status()
 
         # 歌词可能为 null，此时返回 None
         lyric = json.loads(response.text)['data']['lrclist']  # type:list
-
         return lyric
