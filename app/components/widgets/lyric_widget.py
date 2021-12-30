@@ -48,8 +48,12 @@ class LyricWidget(ScrollArea):
         self.lyric = lyric
         self.times = list(self.lyric.keys())
         self.currentIndex = -1
+
         self.scrollAni.stop()
-        self.verticalScrollBar().setValue(0)
+        self.scrollAni.setDuration(200)
+        self.scrollAni.setStartValue(self.verticalScrollBar().value())
+        self.scrollAni.setEndValue(0)
+        self.scrollAni.state()
 
         # 刷新歌词
         N = len(self.lyricLabels)
@@ -78,6 +82,7 @@ class LyricWidget(ScrollArea):
             label.setLyric(self.lyric[t])
 
         self.setStyle(QApplication.style())
+        QApplication.processEvents()
         self.scrollWidget.adjustSize()
         self.__adjustTextColor()
 

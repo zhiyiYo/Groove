@@ -33,7 +33,7 @@ class SmallestPlayInterface(FramelessWindow):
         self.shiftRightTime = 0
         self.songInfoCard_list = []
         self.__unCompleteShift_list = []
-        self.albumCoverLabel = BlurCoverLabel(40, (350, 350), self)
+        self.albumCoverLabel = BlurCoverLabel(35, (350, 350), self)
 
         # 创建小部件
         self.playButton = PlayButton(
