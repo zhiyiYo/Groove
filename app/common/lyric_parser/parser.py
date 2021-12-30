@@ -6,6 +6,7 @@ class LyricParserBase:
     """ 歌词解析器基类 """
 
     default_lyric = {'0.0': ['暂无歌词']}
+    error_lyric = {'0.0': ['无法解析歌词']}
 
     @staticmethod
     def can_parse(lyric) -> bool:
@@ -75,7 +76,9 @@ class KuGouLyricParser(LyricParserBase):
             if not lyric:
                 return True
 
-            return lyric.startswith('\ufeff[id:$00000000]\r\n')
+            for i in ['[id:$', '[ti:', '[ar:', '[al:', '[by:', '[offset:']:
+                if i in lyric:
+                    return True
 
         return False
 
@@ -84,19 +87,17 @@ class KuGouLyricParser(LyricParserBase):
         if not lyric:
             return cls.default_lyric
 
-        lyric = lyric.split('\r\n')  # type:list
-        lyric = lyric[lyric.index('[offset:0]')+1:-1]
+        lyric = lyric.split('\r\n')[:-1]  # type:list
 
         # 制作歌词
         lyrics = {}
         for line in lyric:
             time, text = line.split(']')
-
             time = time[1:]
             minutes, seconds = time.split(':')
-            time = str(float(minutes)*60 + float(seconds))
-
-            lyrics[time] = [text]
+            if minutes.isnumeric():
+                time = str(float(minutes)*60 + float(seconds))
+                lyrics[time] = [text]
 
         return lyrics
 
@@ -107,7 +108,7 @@ def parse_lyric(lyric) -> Dict[str, List[str]]:
     available_parsers = [i for i in parsers if i.can_parse(lyric)]
 
     if not available_parsers:
-        raise ValueError('没有可用于解析该歌词的解析器')
+        return LyricParserBase.error_lyric
 
     parser = available_parsers[0]
     return parser.parse(lyric)
