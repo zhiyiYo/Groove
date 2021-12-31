@@ -5,7 +5,7 @@ from typing import List, Dict
 class LyricParserBase:
     """ 歌词解析器基类 """
 
-    default_lyric = {'0.0': ['暂无歌词']}
+    none_lyric = {'0.0': ['暂无歌词']}
     error_lyric = {'0.0': ['无法解析歌词']}
 
     @staticmethod
@@ -39,7 +39,7 @@ class KuWoLyricParser(LyricParserBase):
     @classmethod
     def parse(cls, lyric: List[Dict[str, str]]) -> Dict[str, List[str]]:
         if not lyric:
-            return cls.default_lyric
+            return cls.none_lyric
 
         times = [i['time'] for i in lyric]
 
@@ -85,7 +85,7 @@ class KuGouLyricParser(LyricParserBase):
     @classmethod
     def parse(cls, lyric: str) -> Dict[str, List[str]]:
         if not lyric:
-            return cls.default_lyric
+            return cls.none_lyric
 
         lyric = lyric.split('\r\n')[:-1]  # type:list
 

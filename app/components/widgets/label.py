@@ -1,8 +1,8 @@
 # coding:utf-8
 from common.thread.blur_cover_thread import BlurCoverThread
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import (QBrush, QColor, QMouseEvent, QPainter, QPalette,
-                         QPixmap)
+from PyQt5.QtGui import (QBrush, QColor, QImage, QMouseEvent, QPainter,
+                         QPalette, QPixmap)
 from PyQt5.QtWidgets import QLabel
 
 
@@ -62,6 +62,64 @@ class AvatarLabel(QLabel):
         painter.drawRoundedRect(self.rect(), w//2, w//2)
 
 
+class AcrylicTextureLabel(QLabel):
+    """ 亚克力纹理标签 """
+
+    def __init__(self, tintColor: QColor, luminosityColor: QColor = Qt.white, tintOpacity=0.7,
+                 noiseOpacity=0.03, parent=None):
+        """
+        Parameters
+        ----------
+        tintColor: QColor
+            RGB 主色调
+
+        luminosityColor: QColor
+            亮度层颜色
+
+        tintOpacity: float
+            主色调层透明度
+
+        noiseOpacity: float
+            噪声层透明度
+
+        parent:
+            父级窗口
+        """
+        super().__init__(parent=parent)
+        self.tintColor = QColor(tintColor)
+        self.luminosityColor = QColor(luminosityColor)
+        self.tintOpacity = tintOpacity
+        self.noiseOpacity = noiseOpacity
+        self.noiseImage = QImage(':/images/acrylic/noise.png')
+        self.setAttribute(Qt.WA_TranslucentBackground)
+        self.luminosityColor.setAlpha(50)
+
+    def setTintColor(self, color: QColor):
+        """ 设置主色调 """
+        self.tintColor = color
+        self.update()
+
+    def paintEvent(self, e):
+        """ 绘制亚克力纹理 """
+        acrylicTexture = QImage(64, 64, QImage.Format_ARGB32_Premultiplied)
+
+        # 绘制亮度层
+        acrylicTexture.fill(self.luminosityColor)
+
+        # 绘制主色调
+        painter = QPainter(acrylicTexture)
+        painter.setOpacity(self.tintOpacity)
+        painter.fillRect(acrylicTexture.rect(), self.tintColor)
+
+        # 绘制噪声
+        painter.setOpacity(self.noiseOpacity)
+        painter.drawImage(acrylicTexture.rect(), self.noiseImage)
+
+        acrylicBrush = QBrush(acrylicTexture)
+        painter = QPainter(self)
+        painter.fillRect(self.rect(), acrylicBrush)
+
+
 class BlurCoverLabel(QLabel):
     """ 磨砂封面标签 """
 
@@ -82,11 +140,10 @@ class BlurCoverLabel(QLabel):
         self.blurRadius = blurRadius
         self.maxBlurSize = maxBlurSize
         self.coverPath = ''
-        self.foregroundLabel = QLabel(self)
+        self.acrylicTextureLabel = AcrylicTextureLabel(
+            Qt.black, tintOpacity=0.3, parent=self)
         self.blurPixmap = QPixmap()
         self.blurThread = BlurCoverThread(self)
-
-        self.foregroundLabel.setScaledContents(True)
         self.blurThread.blurFinished.connect(self.__onBlurFinished)
 
     def __onBlurFinished(self, blurPixmap: QPixmap):
@@ -115,11 +172,8 @@ class BlurCoverLabel(QLabel):
 
     def setForegroundColor(self, color: QColor):
         """ 设置前景色 """
-        color.setAlpha(50)
-        pixmap = QPixmap(self.size())
-        pixmap.fill(color)
-        self.foregroundLabel.setPixmap(pixmap)
+        self.acrylicTextureLabel.setTintColor(color)
 
     def resizeEvent(self, e):
         super().resizeEvent(e)
-        self.foregroundLabel.resize(self.size())
+        self.acrylicTextureLabel.resize(self.size())

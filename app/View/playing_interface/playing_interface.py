@@ -68,7 +68,7 @@ class PlayingInterface(QWidget):
         self.getLyricThread = GetLyricThread(self)
 
         # 创建小部件
-        self.albumCoverLabel = BlurCoverLabel(15, (450, 450), self)
+        self.albumCoverLabel = BlurCoverLabel(12, (450, 450), self)
         self.songInfoCardChute = SongInfoCardChute(self.playlist, self)
         self.lyricWidget = LyricWidget(self.songInfoCardChute)
         self.parallelAniGroup = QParallelAnimationGroup(self)
