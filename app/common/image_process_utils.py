@@ -10,7 +10,7 @@ from PyQt5.QtGui import QImage, QPixmap
 from scipy.ndimage.filters import gaussian_filter
 
 
-def gaussianBlur(imagePath: str, savePath='', blurRadius=18, brightnessFactor=1, blurPicSize: tuple = None) -> np.ndarray:
+def gaussianBlur(imagePath: str, blurRadius=18, brightFactor=1, blurPicSize: tuple = None) -> np.ndarray:
     """ 对图片进行高斯模糊处理
 
     Parameters
@@ -18,13 +18,10 @@ def gaussianBlur(imagePath: str, savePath='', blurRadius=18, brightnessFactor=1,
     imagePath: str
         图片路径
 
-    savePath: str
-        保存路径
-
     blurRadius: int
         模糊半径
 
-    brightnessFactor：float
+    brightFactor：float
         亮度缩放因子
 
     blurPicSize: tuple
@@ -32,8 +29,8 @@ def gaussianBlur(imagePath: str, savePath='', blurRadius=18, brightnessFactor=1,
 
     Returns
     -------
-    blurImageArray: `~np.ndarray`
-        高斯模糊后的图像数组
+    image: `~np.ndarray` of shape `(w, h, c)`
+        高斯模糊后的图像
     """
     if not imagePath.startswith(':'):
         image = Image.open(imagePath)
@@ -41,40 +38,29 @@ def gaussianBlur(imagePath: str, savePath='', blurRadius=18, brightnessFactor=1,
         image = Image.fromqpixmap(QPixmap(imagePath))
 
     if blurPicSize:
-        # 调整图片尺寸，减小计算量，还能增加额外的模糊(手动滑稽)
-        oldWidth, oldHeight = image.size
-        ratio = min(blurPicSize[0] / oldWidth, blurPicSize[1] / oldHeight)
-        newWidth, newHeight = oldWidth * ratio, oldHeight * ratio
+        # 调整图片尺寸，减小计算量，还能增加额外的模糊
+        w, h = image.size
+        ratio = min(blurPicSize[0] / w, blurPicSize[1] / h)
+        w_, h_ = w * ratio, h * ratio
 
-        # 如果新的尺寸小于旧尺寸才 resize
-        if newWidth < oldWidth:
-            imageArray = np.array(image.resize(
-                (int(newWidth), int(newHeight)), Image.ANTIALIAS))
-        else:
-            imageArray = np.array(image)
-    else:
-        imageArray = np.array(image)
+        if w_ < w:
+            image = image.resize((int(w_), int(h_)), Image.ANTIALIAS)
+
+    image = np.array(image)
 
     # 处理图像是灰度图的情况
-    if len(imageArray.shape) == 2:
-        imageArray = np.stack([imageArray, imageArray, imageArray], axis=-1)
-
-    blurImageArray = imageArray
+    if len(image.shape) == 2:
+        image = np.stack([image, image, image], axis=-1)
 
     # 对每一个颜色通道分别磨砂
-    for i in range(imageArray.shape[-1]):
-        blurImageArray[:, :, i] = gaussian_filter(
-            imageArray[:, :, i], blurRadius) * brightnessFactor
+    for i in range(3):
+        image[:, :, i] = gaussian_filter(
+            image[:, :, i], blurRadius) * brightFactor
 
-    # 将ndarray转换为Image对象
-    if savePath:
-        blurImage = Image.fromarray(blurImageArray)
-        blurImage.save(savePath)
-        
-    return blurImageArray
+    return image
 
 
-def getBlurPixmap(imagePath, blurRadius=30, brightnessFactor=1, blurPicSize: tuple = None) -> QPixmap:
+def getBlurPixmap(imagePath: str, blurRadius=30, brightFactor=1, blurPicSize: tuple = None) -> QPixmap:
     """ 对原图进行高斯模糊处理
 
     Parameters
@@ -96,22 +82,8 @@ def getBlurPixmap(imagePath, blurRadius=30, brightnessFactor=1, blurPicSize: tup
     blurPixmap: QPixmap
         高斯模糊后的图像
     """
-    blurArray = gaussianBlur(
-        imagePath, blurRadius=blurRadius, brightnessFactor=brightnessFactor, blurPicSize=blurPicSize)
-    height, width, bytesPerComponent = blurArray.shape
-    bytesPerLine = bytesPerComponent * width  # 每行的字节数
-
-    # 设置转换格式
-    if blurArray.shape[-1] == 4:
-        imageFormat = QImage.Format_RGBA8888
-    else:
-        imageFormat = QImage.Format_RGB888
-
-    # 将ndarray转换为QPixmap
-    blurPixmap = QPixmap.fromImage(
-        QImage(blurArray.data, width, height, bytesPerLine, imageFormat))
-
-    return blurPixmap
+    image = gaussianBlur(imagePath, blurRadius, brightFactor, blurPicSize)
+    return Image.fromarray(image).toqpixmap()
 
 
 class DominantColor:
@@ -298,9 +270,11 @@ class PixmapPerspectiveTransform:
         channels_count = 4
         image = pixmap.toImage()  # type:QImage
         s = image.bits().asstring(height * width * channels_count)
+
         # 得到BGRA格式数组
         array = np.fromstring(s, np.uint8).reshape(
             (height, width, channels_count))
+
         return array
 
     def transNdarrayToQPixmap(self, array: np.ndarray):
