@@ -16,8 +16,8 @@ def exceptionHandler(*default):
         def inner(*args, **kwargs):
             try:
                 return func(*args, **kwargs)
-            except:
-                print('发生异常')
+            except BaseException as e:
+                print(e)
                 value = deepcopy(default)
                 if len(value) == 0:
                     return None

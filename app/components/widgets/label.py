@@ -92,7 +92,7 @@ class AcrylicTextureLabel(QLabel):
         self.noiseOpacity = noiseOpacity
         self.noiseImage = QImage(':/images/acrylic/noise.png')
         self.setAttribute(Qt.WA_TranslucentBackground)
-        self.luminosityColor.setAlpha(50)
+        self.luminosityColor.setAlpha(0)
 
     def setTintColor(self, color: QColor):
         """ 设置主色调 """
@@ -141,7 +141,7 @@ class BlurCoverLabel(QLabel):
         self.maxBlurSize = maxBlurSize
         self.coverPath = ''
         self.acrylicTextureLabel = AcrylicTextureLabel(
-            Qt.black, tintOpacity=0.3, parent=self)
+            Qt.black, tintOpacity=0.4, parent=self)
         self.blurPixmap = QPixmap()
         self.blurThread = BlurCoverThread(self)
         self.blurThread.blurFinished.connect(self.__onBlurFinished)

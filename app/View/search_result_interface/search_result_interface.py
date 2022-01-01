@@ -330,6 +330,7 @@ class SearchResultInterface(ScrollArea):
             return
 
         # 获取在线音乐
+        self.currentPage += 1
         songInfo_list, _ = self.crawler.getSongInfoList(
             self.keyWord, self.currentPage, self.onlineMusicPageSize)
 
@@ -343,7 +344,6 @@ class SearchResultInterface(ScrollArea):
             songInfo_list, offset, self.onlinePlayQuality)
         self.getOnlineSongUrlThread.start()
 
-        self.currentPage += 1
         self.__updateLoadMoreLabel()
         self.__adjustHeight()
 

@@ -1,97 +1,62 @@
 # coding: utf-8
 import json
 import re
+import os
 from hashlib import md5
 from time import time
+from typing import List, Tuple
 from urllib import parse
-from pprint import pprint
 
 import requests
+from common.meta_data.writer import writeAlbumCover, writeSongInfo
 from common.os_utils import adjustName
+
+from .crawler_base import CrawlerBase, QualityException
 from .exception_handler import exceptionHandler
 
 
-class KuGouMusicCrawler:
+class KuGouMusicCrawler(CrawlerBase):
     """ 酷狗音乐爬虫 """
 
     def __init__(self):
+        super().__init__()
         self.headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                                       'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'}
-        self.cookies = {
-            'kg_mid': '68aa6f0242d4192a2a9e2b91e44c226d',
-            'kg_dfid': '4DoTYZ0DYq9M3ctVHp0cBghm',
-            'kg_dfid_collect': 'd41d8cd98f00b204e9800998ecf8427e',
-            'Hm_lvt_aedee6983d4cfc62f509129360d6bb3d': '1618922741,1618923483',
-            'Hm_lpvt_aedee6983d4cfc62f509129360d6bb3d': '1618924198'
+        self.quality_hash_map = {
+            "Standard quality": "fileHash",
+            "High quality": "HQFileHash",
+            "Super quality": "SQFileHash",
         }
 
-    @exceptionHandler()
-    def search(self, key_word: str, page_size: int = 10, quality='normal'):
-        """ 搜索音乐
-
-        Parameters
-        ----------
-        key_word: str
-            搜索关键词
-
-        page_size: int
-            最多返回歌曲下载地址数
-
-        quality: str
-            音频文件音质，可以是 `normal`、`highQuality` 或者 `superQuality`
-
-        Returns
-        -------
-        song_info_list: list
-            歌曲信息列表，获取失败则返回 `None`
-        """
-        if quality not in ['normal', 'HQ', 'SQ']:
-            raise ValueError("音质非法")
-
-        hash_keys = {
-            "normal": "fileHash",
-            "highQuality": "HQFileHash",
-            "superQuality": "SQFileHash",
-        }
+    def search(self, key_word: str, page_num=1, page_size=10, quality: str = 'Standard quality') -> Tuple[List[dict], int]:
+        if quality not in self.qualities:
+            raise QualityException(
+                f'音质 `{quality}` 不在支持的音质列表 {self.qualities} 中')
 
         # 根据关键词搜索歌曲
-        song_info_list = self.getSongInfoList(key_word, page_size)
+        song_info_list, total = self.getSongInfoList(
+            key_word, page_num, page_size)
         if not song_info_list:
-            return None
+            return [], 0
 
         # 获取每一首歌的播放地址和封面地址
         for song_info in song_info_list:
-            file_hash = song_info[hash_keys[quality]]
+            file_hash = song_info[self.quality_hash_map[quality]]
             data = self.getSongDetails(
                 file_hash, song_info["albumID"])
 
-            song_info["songPath"] = data.get('play_yrl')
-            song_info["coverPath"] = data.get('img')
+            song_info["songPath"] = data.get('play_url', '')
+            song_info["coverPath"] = data.get('img', '')
 
-        return song_info_list
+        return song_info_list, total
 
     @exceptionHandler()
-    def getSongInfoList(self, key_word, page_size=10):
-        """ 搜索并获取歌曲信息
-
-        Parameters
-        ----------
-        key_word: str
-            搜索关键词
-
-        page_size: int
-            最多返回歌曲下载地址数
-
-        Returns
-        -------
-        song_info_list: list
-            歌曲信息列表，获取失败则返回 `None`
-        """
+    def getSongInfoList(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[dict], int]:
         k = int(round(time()*1000))
         infos = ["NVPh5oo715z5DIWAeQlhMDsWXXQV4hwt", "bitrate=0", "callback=callback123",
                  f"clienttime={k}", "clientver=2000", "dfid=-", "inputtype=0",
                  "iscorrection=1", "isfuzzy=0", f"keyword={key_word}", f"mid={k}",
-                 "page=1", f"pagesize={page_size}", "platform=WebFilter", "privilege_filter=0",
+                 f"page={page_num}", f"pagesize={page_size}", "platform=WebFilter", "privilege_filter=0",
                  "srcappid=2919", "tag=em", "userid=-1", f"uuid={k}", "NVPh5oo715z5DIWAeQlhMDsWXXQV4hwt"]
 
         # 计算签名参数
@@ -105,9 +70,9 @@ class KuGouMusicCrawler:
         response.raise_for_status()
 
         # 解析返回的 json 数据
-        info_list = json.loads(response.text[12:-2])["data"]["lists"]
+        data = json.loads(response.text[12:-2])["data"]
         song_info_list = []
-        for info in info_list:
+        for info in data["lists"]:
             song_info = {}
             pattern = r'(<em>)|(</em>)'
             song_info["songName"] = re.sub(pattern, '', info["SongName"])
@@ -130,7 +95,7 @@ class KuGouMusicCrawler:
 
             song_info_list.append(song_info)
 
-        return song_info_list
+        return song_info_list, data['total']
 
     @exceptionHandler({})
     def getSongDetails(self, file_hash: str, album_id: str) -> dict:
@@ -157,7 +122,39 @@ class KuGouMusicCrawler:
         data = json.loads(response.text)["data"]
         return data
 
-    def getLyric(self, key_word: str):
+    def getSongUrl(self, song_info: dict, quality: str = 'Standard quality') -> str:
+        if quality not in self.qualities:
+            raise QualityException(
+                f'音质 `{quality}` 不在支持的音质列表 {self.qualities} 中')
+
+        data = self.getSongDetails(
+            song_info[self.quality_hash_map[quality]], song_info["albumID"])
+
+        return data.get('play_url', '')
+
+    def downloadSong(self, song_info: dict, save_dir: str, quality: str = 'Standard quality') -> str:
+        # 获取下载地址
+        url = self.getSongUrl(song_info, quality)
+        if not url:
+            return ''
+
+        response = requests.get(url, headers=self.headers)
+
+        # 保存歌曲文件
+        song_path = os.path.join(
+            save_dir, f"{song_info['singer']} - {song_info['songName']}.mp3")
+        with open(song_path, 'wb') as f:
+            f.write(response.content)
+
+        # 修改歌曲元数据
+        song_info_ = song_info.copy()
+        song_info_['songPath'] = song_path
+        writeSongInfo(song_info_)
+        writeAlbumCover(song_path, song_info["coverPath"])
+
+        return song_path
+
+    def getLyric(self, key_word: str) -> str:
         """ 获取歌词
 
         Parameters
@@ -167,10 +164,10 @@ class KuGouMusicCrawler:
 
         Returns
         -------
-        lyric: list
+        lyric: str
             歌词列表，如果没找到则返回 `None`
         """
-        song_info_list = self.getSongInfoList(key_word, 1)
+        song_info_list, _ = self.getSongInfoList(key_word, page_size=1)
 
         if not song_info_list:
             return None

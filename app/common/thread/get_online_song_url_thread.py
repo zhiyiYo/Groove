@@ -52,7 +52,7 @@ class GetOnlineSongUrlThread(QThread):
         """ 根据歌曲 rid 爬取播放地址并下载封面 """
         for i, songInfo in enumerate(self.songInfo_list):
             # 爬取播放地址
-            playUrl = self.crawler.getSongUrl(songInfo['rid'], self.quality)
+            playUrl = self.crawler.getSongUrl(songInfo, self.quality)
 
             # 下载封面
             name = songInfo['coverName']

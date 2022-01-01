@@ -2,18 +2,21 @@
 import json
 import os
 from urllib import parse
+from typing import List, Tuple
 
 import requests
 from common.meta_data.writer import writeAlbumCover, writeSongInfo
 from common.os_utils import adjustName
 
 from .exception_handler import exceptionHandler
+from .crawler_base import CrawlerBase, QualityException
 
 
-class KuWoMusicCrawler:
+class KuWoMusicCrawler(CrawlerBase):
     """ 酷我音乐爬虫 """
 
     def __init__(self):
+        super().__init__()
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                           'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
@@ -26,28 +29,7 @@ class KuWoMusicCrawler:
         }
 
     @exceptionHandler([], 0)
-    def getSongInfoList(self, key_word: str, page_num=1, page_size=10):
-        """ 获取歌曲列表
-
-        Parameters
-        ----------
-        key_word: str
-            搜索关键词
-
-        page_num: int
-            当前页码
-
-        page_size: int
-            每一页最多显示的条目数量
-
-        Returns
-        -------
-        song_info_list: List[dict]
-            歌曲信息列表
-
-        total: int
-            数据库中符合搜索条件的歌曲总数
-        """
+    def getSongInfoList(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[dict], int]:
         key_word = parse.quote(key_word)
 
         # 配置请求头
@@ -88,17 +70,12 @@ class KuWoMusicCrawler:
         return song_info_list, int(data['total'])
 
     @exceptionHandler('')
-    def getSongUrl(self, rid: str, quality='Standard quality'):
-        """ 获取歌曲播放地址
+    def getSongUrl(self, song_info: dict, quality='Standard quality') -> str:
+        if quality not in self.qualities:
+            raise QualityException(
+                f'音质 `{quality}` 不在支持的音质列表 {self.qualities} 中')
 
-        Parameters
-        ----------
-        rid: str
-            歌曲 rid
-
-        quality: str
-            歌曲音质，有 `Standard quality`、`High quality` 和 `Super quality` 三种
-        """
+        rid = song_info['rid']
         br = {
             'Standard quality': '128k',
             'High quality': '192k',
@@ -118,11 +95,9 @@ class KuWoMusicCrawler:
 
         return play_url
 
-    @exceptionHandler('')
-    def downloadSong(self, song_info: dict, save_dir: str, quality='Standard quality'):
-        """ 下载歌曲 """
+    def downloadSong(self, song_info: dict, save_dir: str, quality='Standard quality') -> str:
         # 获取下载地址
-        url = self.getSongUrl(song_info['rid'], quality)
+        url = self.getSongUrl(song_info, quality)
         if not url:
             return ''
 
@@ -148,42 +123,17 @@ class KuWoMusicCrawler:
         return song_path
 
     @exceptionHandler([], 0)
-    def searchSong(self, key_word: str, quality='Standard quality', page_num=1, page_size=10):
-        """ 搜索音乐
-
-        Parameters
-        ----------
-        key_word: str
-            搜索关键词
-
-        quality: str
-            歌曲音质，有 `Standard quality`、`High quality` 和 `Super quality` 三种
-
-        page_num: int
-            当前页码
-
-        page_size: int
-            最多返回歌曲下载地址数
-
-        Returns
-        -------
-        song_info_list: List[dict]
-            歌曲信息列表
-
-        total: int
-            数据库中符合搜索条件的歌曲总数
-        """
+    def search(self, key_word: str, page_num=1, page_size=10, quality: str = 'Standard quality') -> Tuple[List[dict], int]:
         song_info_list, total = self.getSongInfoList(
             key_word, page_num, page_size)
 
         for song_info in song_info_list:
-            song_info['songPath'] = self.getSongUrl(song_info['rid'], quality)
+            song_info['songPath'] = self.getSongUrl(song_info, quality)
 
         return song_info_list, total
 
-    @exceptionHandler()
-    def getSingerAvatar(self, singer: str, save_dir: str):
-        """ 获取歌手头像 """
+    @exceptionHandler('')
+    def getSingerAvatar(self, singer: str, save_dir: str) -> str:
         singer_ = parse.quote(singer)
 
         # 配置请求头
@@ -206,11 +156,14 @@ class KuWoMusicCrawler:
 
         # 保存头像
         os.makedirs(save_dir, exist_ok=True)
-        with open(os.path.join(save_dir, singer+'.jpg'), 'wb') as f:
+        save_path = os.path.join(save_dir, singer+'.jpg')
+        with open(save_path, 'wb') as f:
             f.write(response.content)
 
+        return save_path
+
     @exceptionHandler()
-    def getLyric(self, key_word: str):
+    def getLyric(self, key_word: str) -> list:
         """ 获取歌词
 
         Parameters
