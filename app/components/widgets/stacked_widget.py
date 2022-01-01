@@ -70,7 +70,6 @@ class PopUpAniStackedWidget(QStackedWidget):
         # 创建一个存小部件及其对应的动画字典的列表
         self.__widgetAni_list = []
         self.__nextIndex = None
-        self.__sequentAniGroup = None
         self.__currentAniGroup = None
         self.__previousWidget = None
         self.__previousIndex = 0
@@ -97,12 +96,14 @@ class PopUpAniStackedWidget(QStackedWidget):
         popUpAni = QPropertyAnimation(widget, b'pos')
         aniGroup = QParallelAnimationGroup(self)
         aniGroup.addAnimation(popUpAni)
-        self.__widgetAni_list.append({'widget': widget,
-                                      'deltaX': deltaX,
-                                      'deltaY': deltaY,
-                                      'aniGroup': aniGroup,
-                                      'popUpAni': popUpAni,
-                                      'isNeedOpacityAni': isNeedOpacityAni})
+        self.__widgetAni_list.append({
+            'widget': widget,
+            'deltaX': deltaX,
+            'deltaY': deltaY,
+            'aniGroup': aniGroup,
+            'popUpAni': popUpAni,
+            'isNeedOpacityAni': isNeedOpacityAni
+        })
 
     def setCurrentIndex(self, index: int, isNeedPopOut: bool = False, isShowNextWidgetDirectly: bool = True,
                         duration: int = 250, easingCurve=QEasingCurve.OutQuad):

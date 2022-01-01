@@ -2,7 +2,7 @@
 from copy import deepcopy
 
 from common.auto_wrap import autoWrap
-from common.meta_data import AlbumCoverReader
+from common.meta_data import AlbumCoverReader, GENRES
 from common.meta_data.writer import writeSongInfo, writeAlbumCover
 from common.os_utils import adjustName
 from common.thread.get_meta_data_thread import GetSongMetaDataThread
@@ -82,25 +82,7 @@ class SongInfoEditDialog(MaskDialogBase):
         self.stateToolTip = None
 
         # 流派补全
-        genres = [
-            "Pop",
-            "Blues",
-            "Soundtrack",
-            "Japanese Pop & Rock",
-            "Rock",
-            "J-Pop",
-            "RAP/HIP HOP",
-            "Classical",
-            "Country",
-            "R&B",
-            "Anime",
-            "Dance",
-            "Jazz",
-            "New Age",
-            "Folk",
-            "Easy Listening"
-        ]
-        self.genreCompleter = QCompleter(genres, self.widget)
+        self.genreCompleter = QCompleter(GENRES, self.widget)
         self.genreCompleter.setCompletionMode(QCompleter.InlineCompletion)
         self.genreCompleter.setCaseSensitivity(Qt.CaseInsensitive)
         self.genreLineEdit.setCompleter(self.genreCompleter)
