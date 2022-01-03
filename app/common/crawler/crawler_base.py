@@ -1,4 +1,5 @@
 # coding:utf-8
+from copy import deepcopy
 from typing import List, Tuple
 
 
@@ -7,6 +8,10 @@ class CrawlerBase:
 
     def __init__(self):
         self.qualities = ['Standard quality', 'High quality', 'Super quality']
+        self.headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                          'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'
+        }
 
     def getSongInfoList(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[dict], int]:
         """ 获取歌曲列表
@@ -152,3 +157,32 @@ class QualityException(Exception):
 
     def __init__(self, *args: object):
         super().__init__(*args)
+
+
+def exceptionHandler(*default):
+    """ 请求异常处理装饰器
+
+    Parameters
+    ----------
+    *default:
+        发生异常时返回的默认值
+    """
+
+    def outer(func):
+
+        def inner(*args, **kwargs):
+            try:
+                return func(*args, **kwargs)
+            except BaseException as e:
+                print(e)
+                value = deepcopy(default)
+                if len(value) == 0:
+                    return None
+                elif len(value) == 1:
+                    return value[0]
+                else:
+                    return value
+
+        return inner
+
+    return outer

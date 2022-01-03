@@ -102,9 +102,59 @@ class KuGouLyricParser(LyricParserBase):
         return lyrics
 
 
+class WanYiLyricParser(LyricParserBase):
+    """ 网易云歌词解析器 """
+
+    @staticmethod
+    def can_parse(lyric) -> bool:
+        if lyric is None:
+            return True
+
+        if isinstance(lyric, dict):
+            if not lyric:
+                return True
+
+            return list(lyric.keys()) == ['lyric', 'tlyric']
+
+        return False
+
+    @classmethod
+    def parse(cls, lyric: dict) -> Dict[str, List[str]]:
+        if not lyric:
+            return cls.none_lyric
+
+        lyrics_ = {}
+
+        # 原始歌词
+        for line in lyric['lyric'].split('\n'):
+            if ']' not in line:
+                continue
+
+            time, text = line.split(']')
+            if text and time[1:]:
+                lyrics_[time[1:]] = [text]
+
+        # 翻译歌词
+        for line in lyric['tlyric'].split('\n'):
+            if ']' not in line:
+                continue
+
+            time, text = line.split(']')
+            if time[1:] in lyrics_:
+                lyrics_[time[1:]].append(text)
+
+        lyrics = {}
+        for time, v in lyrics_.items():
+            minutes, seconds = time.split(':')
+            time = str(float(minutes)*60 + float(seconds))
+            lyrics[time] = v
+
+        return lyrics
+
+
 def parse_lyric(lyric) -> Dict[str, List[str]]:
     """ 解析歌词 """
-    parsers = [KuWoLyricParser, KuGouLyricParser]
+    parsers = [KuWoLyricParser, WanYiLyricParser, KuGouLyricParser]
     available_parsers = [i for i in parsers if i.can_parse(lyric)]
 
     if not available_parsers:

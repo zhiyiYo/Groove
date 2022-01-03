@@ -8,8 +8,7 @@ import requests
 from common.meta_data.writer import writeAlbumCover, writeSongInfo
 from common.os_utils import adjustName
 
-from .exception_handler import exceptionHandler
-from .crawler_base import CrawlerBase, QualityException
+from .crawler_base import CrawlerBase, QualityException, exceptionHandler
 
 
 class KuWoMusicCrawler(CrawlerBase):
@@ -56,7 +55,7 @@ class KuWoMusicCrawler(CrawlerBase):
             song_info['trackTotal'] = str(info['track'])
             song_info['coverPath'] = info.get('albumpic', '')
             song_info['coverName'] = adjustName(
-                info['artist']+'_'+info['album'])
+                info['artist'] + '_' + info['album'])
             song_info['genre'] = ''
             song_info['disc'] = '1'
             song_info['discTotal'] = '1'
@@ -169,19 +168,27 @@ class KuWoMusicCrawler(CrawlerBase):
         Parameters
         ----------
         key_word: str
-            关键词
+            关键词，默认形式为 `歌手 歌曲名`
 
         Returns
         -------
         lyric: list
             歌词列表，如果没找到则返回 `None`
         """
-        songInfo_list, _ = self.getSongInfoList(key_word, page_size=1)
+        song_info_list, _ = self.getSongInfoList(key_word, page_size=1)
 
-        if not songInfo_list:
+        if not song_info_list:
             return None
 
-        url = f"https://m.kuwo.cn/newh5/singles/songinfoandlrc?musicId={songInfo_list[0]['rid']}"
+        # 匹配度小于阈值则返回
+        matches = [key_word == i['singer']+' '+i['songName']
+                   for i in song_info_list]
+        if not any(matches):
+            return
+
+        # 发送请求
+        rid = song_info_list[matches.index(True)]['rid']
+        url = f"https://m.kuwo.cn/newh5/singles/songinfoandlrc?musicId={rid}"
         response = requests.get(url)
         response.raise_for_status()
 

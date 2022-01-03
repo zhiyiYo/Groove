@@ -1,6 +1,6 @@
 # coding:utf-8
 from unittest import TestCase
-from app.common.lyric_parser import KuWoLyricParser, KuGouLyricParser
+from app.common.lyric_parser import KuWoLyricParser, KuGouLyricParser, WanYiLyricParser
 
 
 class TestLyricParser(TestCase):
@@ -120,3 +120,26 @@ class TestLyricParser(TestCase):
         self.assertEqual(KuGouLyricParser.parse(lyric1), lyric1_res)
         self.assertEqual(KuGouLyricParser.parse(None), KuGouLyricParser.none_lyric)
         self.assertEqual(KuGouLyricParser.parse(''), KuGouLyricParser.none_lyric)
+
+    def test_wanyi_lyric_parser(self):
+        """ 测试网易云歌词解析器 """
+        lyric1 = {
+            'lyric': '[00:20.71]隣で眠ってるあなたの口が開く\u3000そして笑った\n[00:31.71]どんな夢見てるの?氣になる...',
+            'tlyric': '[by:小xiao小]\n[00:20.71]睡在一旁的你突然张开嘴 然后笑了起来\n[00:31.71]是梦见了什么吗？好在意啊'
+        }
+        lyric1_res = {
+            '20.71': ['隣で眠ってるあなたの口が開く\u3000そして笑った', '睡在一旁的你突然张开嘴 然后笑了起来'],
+            '31.71': ['どんな夢見てるの?氣になる...', '是梦见了什么吗？好在意啊']
+        }
+        lyric2 = {
+            'lyric': '[00:20.71]隣で眠ってるあなたの口が開く\u3000そして笑った\n[00:31.71]どんな夢見てるの?氣になる...',
+            'tlyric': ''
+        }
+        lyric2_res = {
+            '20.71': ['隣で眠ってるあなたの口が開く\u3000そして笑った'],
+            '31.71': ['どんな夢見てるの?氣になる...']
+        }
+
+        self.assertEqual(WanYiLyricParser.parse(lyric1), lyric1_res)
+        self.assertEqual(WanYiLyricParser.parse(lyric2), lyric2_res)
+        self.assertEqual(WanYiLyricParser.parse(None), WanYiLyricParser.none_lyric)

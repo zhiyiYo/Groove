@@ -5,7 +5,7 @@ from pathlib import Path
 
 import requests
 from fuzzywuzzy import fuzz
-from .exception_handler import exceptionHandler
+from .crawler_base import exceptionHandler
 
 
 

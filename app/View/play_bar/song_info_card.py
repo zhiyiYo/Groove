@@ -77,8 +77,7 @@ class SongInfoCard(PerspectiveWidget):
 
     def __setAlbumCover(self):
         """ 设置封面 """
-        # 如果专辑信息为空就直接隐藏
-        if not self.songInfo.get("album"):
+        if self.songInfo.get("album") is None:
             self.hide()
             return
 

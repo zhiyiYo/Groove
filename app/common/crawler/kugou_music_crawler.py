@@ -1,7 +1,7 @@
 # coding: utf-8
 import json
-import re
 import os
+import re
 from hashlib import md5
 from time import time
 from typing import List, Tuple
@@ -11,8 +11,7 @@ import requests
 from common.meta_data.writer import writeAlbumCover, writeSongInfo
 from common.os_utils import adjustName
 
-from .crawler_base import CrawlerBase, QualityException
-from .exception_handler import exceptionHandler
+from .crawler_base import CrawlerBase, QualityException, exceptionHandler
 
 
 class KuGouMusicCrawler(CrawlerBase):
@@ -20,8 +19,6 @@ class KuGouMusicCrawler(CrawlerBase):
 
     def __init__(self):
         super().__init__()
-        self.headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-                                      'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'}
         self.quality_hash_map = {
             "Standard quality": "fileHash",
             "High quality": "HQFileHash",
@@ -172,7 +169,13 @@ class KuGouMusicCrawler(CrawlerBase):
         if not song_info_list:
             return None
 
-        song_info = song_info_list[0]
+        # 匹配度小于阈值则返回
+        matches = [key_word == i['singer']+' '+i['songName']
+                   for i in song_info_list]
+        if not any(matches):
+            return
+
+        song_info = song_info_list[matches.index(True)]
         lyric = self.getSongDetails(
             song_info['fileHash'], song_info['albumID']).get('lyrics')
 

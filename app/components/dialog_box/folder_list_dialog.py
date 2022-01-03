@@ -2,10 +2,12 @@
 import os
 
 from components.buttons.perspective_button import PerspectivePushButton
-from PyQt5.QtCore import Qt, pyqtSignal, QFile
+from components.widgets.scroll_area import ScrollArea
+from PyQt5.QtCore import QFile, Qt, pyqtSignal
 from PyQt5.QtGui import (QBrush, QColor, QFont, QFontMetrics, QMouseEvent,
                          QPainter, QPen, QPixmap)
-from PyQt5.QtWidgets import QApplication, QFileDialog, QLabel, QWidget
+from PyQt5.QtWidgets import (QApplication, QFileDialog, QHBoxLayout, QLabel,
+                             QVBoxLayout, QWidget, QScrollBar)
 
 from .dialog import Dialog
 from .mask_dialog_base import MaskDialogBase
@@ -22,12 +24,16 @@ class FolderListDialog(MaskDialogBase):
         self.content = content
         self.__original_paths = folderPaths
         self.folderPaths = folderPaths.copy()
+
+        self.vBoxLayout = QVBoxLayout(self.widget)
         self.titleLabel = QLabel(title, self.widget)
         self.contentLabel = QLabel(content, self.widget)
+        self.scrollArea = ScrollArea(self.widget)
+        self.scrollWidget = QWidget(self.scrollArea)
         self.completeButton = PerspectivePushButton(
             self.tr('Done'), self.widget)
-        self.addFolderCard = AddFolderCard(self.widget)
-        self.folderCards = [FolderCard(i, self.widget)
+        self.addFolderCard = AddFolderCard(self.scrollWidget)
+        self.folderCards = [FolderCard(i, self.scrollWidget)
                             for i in folderPaths]
         self.__initWidget()
 
@@ -36,7 +42,15 @@ class FolderListDialog(MaskDialogBase):
         self.__setQss()
 
         w = max(self.titleLabel.width()+60, self.contentLabel.width()+60, 440)
-        self.widget.setFixedSize(w, 324 + 100*len(self.folderPaths))
+        self.widget.setFixedWidth(w)
+        self.scrollArea.resize(368, 90)
+        self.scrollWidget.resize(365, 90)
+        self.scrollArea.setFixedWidth(368)
+        self.scrollWidget.setFixedWidth(365)
+        self.scrollArea.setMaximumHeight(500)
+        self.scrollArea.setViewportMargins(0, 0, 0, 0)
+        self.scrollArea.setWidget(self.scrollWidget)
+        self.scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.__initLayout()
 
         # 信号连接到槽
@@ -47,34 +61,63 @@ class FolderListDialog(MaskDialogBase):
 
     def __initLayout(self):
         """ 初始化布局 """
-        self.titleLabel.move(30, 30)
-        self.contentLabel.move(30, 79)
-        self.completeButton.move(
-            self.widget.width()-30-self.completeButton.width(), self.widget.height() - 71)
+        self.vBoxLayout.setContentsMargins(30, 30, 30, 30)
+        self.vBoxLayout.setSizeConstraint(QVBoxLayout.SetFixedSize)
+        self.vBoxLayout.setAlignment(Qt.AlignTop)
+        self.vBoxLayout.setSpacing(0)
 
-        x = self.widget.width()//2-self.addFolderCard.width()//2
-        self.addFolderCard.move(x, 120)
-        for i, card in enumerate(self.folderCards):
-            card.move(x, 220 + i*100)
+        # 标签
+        layout_1 = QVBoxLayout()
+        layout_1.setContentsMargins(0, 0, 0, 0)
+        layout_1.setSpacing(7)
+        layout_1.addWidget(self.titleLabel, 0, Qt.AlignTop)
+        layout_1.addWidget(self.contentLabel, 0, Qt.AlignTop)
+        self.vBoxLayout.addLayout(layout_1, 0)
+        self.vBoxLayout.addSpacing(15)
+
+        # 卡片
+        layout_2 = QHBoxLayout()
+        layout_2.setAlignment(Qt.AlignCenter)
+        layout_2.setContentsMargins(5, 0, 5, 0)
+        layout_2.addWidget(self.scrollArea, 0, Qt.AlignCenter)
+        self.vBoxLayout.addLayout(layout_2, 1)
+        self.vBoxLayout.addSpacing(30)
+
+        self.scrollLayout = QVBoxLayout(self.scrollWidget)
+        self.scrollLayout.setAlignment(Qt.AlignTop)
+        self.scrollLayout.setContentsMargins(0, 0, 0, 0)
+        self.scrollLayout.setSpacing(10)
+        self.scrollLayout.addWidget(self.addFolderCard, 0, Qt.AlignTop)
+        for card in self.folderCards:
+            self.scrollLayout.addWidget(card, 0, Qt.AlignTop)
+
+        # 按钮
+        layout_3 = QHBoxLayout()
+        layout_3.setContentsMargins(0, 0, 0, 0)
+        layout_3.addStretch(1)
+        layout_3.addWidget(self.completeButton)
+        self.vBoxLayout.addLayout(layout_3, 0)
+
+        self.__adjustWidgetSize()
 
     def __showFileDialog(self):
         """ 显示文件对话框 """
         path = QFileDialog.getExistingDirectory(
             self, self.tr("Choose folder"), "./")
-        if path and path not in self.folderPaths:
-            self.widget.setFixedHeight(self.widget.height() + 100)
 
-            # 创建文件路径卡
-            card = FolderCard(path, self.widget)
-            card.move(self.widget.width()//2 - card.width() //
-                      2, self.widget.height() - 206)
-            card.clicked.connect(self.__showDeleteFolderCardDialog)
-            card.show()
+        if not path or path in self.folderPaths:
+            return
 
-            self.folderPaths.append(path)
-            self.folderCards.append(card)
-            self.completeButton.move(
-                self.completeButton.x(), self.widget.height() - 71)
+        # 创建文件路径卡
+        card = FolderCard(path, self.scrollWidget)
+        self.scrollLayout.addWidget(card, 0, Qt.AlignTop)
+        card.clicked.connect(self.__showDeleteFolderCardDialog)
+        card.show()
+
+        self.folderPaths.append(path)
+        self.folderCards.append(card)
+
+        self.__adjustWidgetSize()
 
     def __showDeleteFolderCardDialog(self):
         """ 显示删除文件夹卡片对话框 """
@@ -89,31 +132,28 @@ class FolderListDialog(MaskDialogBase):
 
     def __deleteFolderCard(self, folderCard):
         """ 删除选中的文件卡 """
-        # 获取下标
+        self.scrollLayout.removeWidget(folderCard)
         index = self.folderCards.index(folderCard)
         self.folderCards.pop(index)
         self.folderPaths.pop(index)
         folderCard.deleteLater()
 
-        # 将下面的卡片上移
-        for card in self.folderCards[index:]:
-            card.move(card.x(), card.y() - 100)
-
         # 更新高度
-        self.widget.setFixedHeight(self.widget.height() - 100)
-        self.completeButton.move(223, self.widget.height() - 71)
+        self.__adjustWidgetSize()
 
     def __setQss(self):
         """ 设置层叠样式 """
         self.titleLabel.setObjectName('titleLabel')
         self.contentLabel.setObjectName('contentLabel')
         self.completeButton.setObjectName('completeButton')
+        self.scrollWidget.setObjectName('scrollWidget')
 
         f = QFile(":/qss/folder_list_dialog.qss")
         f.open(QFile.ReadOnly)
         self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
         f.close()
 
+        self.setStyle(QApplication.style())
         self.titleLabel.adjustSize()
         self.contentLabel.adjustSize()
         self.completeButton.adjustSize()
@@ -124,7 +164,14 @@ class FolderListDialog(MaskDialogBase):
             self.setEnabled(False)
             QApplication.processEvents()
             self.folderChanged.emit(self.folderPaths)
+
         self.close()
+
+    def __adjustWidgetSize(self):
+        N = len(self.folderCards)
+        h = 90*(N+1) + 10*N
+        self.scrollArea.setFixedHeight(min(h, 500))
+        self.scrollWidget.setFixedHeight(h)
 
 
 class ClickableWindow(QWidget):
@@ -136,8 +183,7 @@ class ClickableWindow(QWidget):
         super().__init__(parent)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setWindowFlags(Qt.FramelessWindowHint)
-        self.resize(365, 90)
-        # 设置标志位
+        self.setFixedSize(365, 90)
         self._isPressed = None
         self._isEnter = False
 
@@ -200,8 +246,8 @@ class FolderCard(ClickableWindow):
         super().paintEvent(e)
         painter = QPainter(self)
         painter.setRenderHints(
-            QPainter.TextAntialiasing | QPainter.SmoothPixmapTransform
-        )
+            QPainter.TextAntialiasing | QPainter.SmoothPixmapTransform)
+
         # 绘制文字和图标
         if self._isPressed:
             self.__drawText(painter, 15, 10, 15, 9)
@@ -220,6 +266,7 @@ class FolderCard(ClickableWindow):
         name = QFontMetrics(font).elidedText(
             self.folderName, Qt.ElideRight, self.width()-60)
         painter.drawText(x1, 37, name)
+
         # 绘制路径
         font = QFont("Microsoft YaHei", fontSize2)
         painter.setFont(font)

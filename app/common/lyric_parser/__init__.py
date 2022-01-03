@@ -1,1 +1,1 @@
-from .parser import KuWoLyricParser, KuGouLyricParser, parse_lyric
+from .parser import KuWoLyricParser, KuGouLyricParser, WanYiLyricParser, parse_lyric
