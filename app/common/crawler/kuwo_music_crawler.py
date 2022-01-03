@@ -175,7 +175,7 @@ class KuWoMusicCrawler(CrawlerBase):
         lyric: list
             歌词列表，如果没找到则返回 `None`
         """
-        song_info_list, _ = self.getSongInfoList(key_word, page_size=1)
+        song_info_list, _ = self.getSongInfoList(key_word, page_size=10)
 
         if not song_info_list:
             return None
