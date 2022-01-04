@@ -26,6 +26,10 @@ class FramelessWindow(QWidget):
         # 添加阴影和窗口动画
         self.windowEffect.addShadowEffect(self.winId())
         self.windowEffect.addWindowAnimation(self.winId())
+        
+        # 修复多屏不同 dpi 的显示问题
+        self.windowHandle().screenChanged.connect(self.__onScreenChanged)
+
         self.resize(500, 500)
 
     def nativeEvent(self, eventType, message):
@@ -109,3 +113,8 @@ class FramelessWindow(QWidget):
         params.rgrc[0].top = self.__monitorInfo['Work'][1]
         params.rgrc[0].right = self.__monitorInfo['Work'][2]
         params.rgrc[0].bottom = self.__monitorInfo['Work'][3]
+
+    def __onScreenChanged(self):
+        hWnd = int(self.windowHandle().winId())
+        win32gui.SetWindowPos(hWnd, None, 0, 0, 0, 0, win32con.SWP_NOMOVE |
+                              win32con.SWP_NOSIZE | win32con.SWP_FRAMECHANGED)
