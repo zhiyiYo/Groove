@@ -36,8 +36,9 @@
         <file>qss/volume_slider_widget.qss</file>
         <file>qss/lyric_widget.qss</file>
 
-        <file>images/logo.png</file>
-        <file>images/splash_screen_logo.png</file>
+        <file>images/logo/logo.png</file>
+        <file>images/logo/logo_small.png</file>
+        <file>images/logo/splash_screen_logo.png</file>
         <file>images/acrylic/noise.png</file>
         <file>images/title_bar/关闭按钮_hover_57_40.png</file>
         <file>images/title_bar/关闭按钮_pressed_57_40.png</file>
@@ -237,6 +238,13 @@
         <file>images/song_tab_interface/Play_black.png</file>
         <file>images/song_tab_interface/Play_green.png</file>
         <file>images/song_tab_interface/Play_white.png</file>
+        <file>images/system_tray/Music.png</file>
+        <file>images/system_tray/Previous.png</file>
+        <file>images/system_tray/Next.png</file>
+        <file>images/system_tray/Play.png</file>
+        <file>images/system_tray/Pause.png</file>
+        <file>images/system_tray/Settings.png</file>
+        <file>images/system_tray/SignOut.png</file>
         <file>i18n/Groove_zh.qm</file>
     </qresource>
 </RCC>

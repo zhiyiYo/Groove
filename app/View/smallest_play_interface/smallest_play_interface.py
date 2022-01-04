@@ -73,6 +73,7 @@ class SmallestPlayInterface(FramelessWindow):
         self.lastSongButton.clicked.connect(self.lastSongSig)
         self.nextSongButton.clicked.connect(self.nextSongSig)
         self.playButton.clicked.connect(self.togglePlayStateSig)
+        self.titleBar.closeButton.clicked.connect(self.hide)
         self.exitSmallestModeButton.clicked.connect(
             self.exitSmallestPlayInterfaceSig)
 

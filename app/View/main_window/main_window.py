@@ -3,7 +3,6 @@ import os
 from copy import deepcopy
 from pathlib import Path
 from random import shuffle
-from typing import Dict
 
 from common import resource
 from common.os_utils import moveToTrash
@@ -12,14 +11,17 @@ from components.dialog_box.message_dialog import MessageDialog
 from components.frameless_window import FramelessWindow
 from components.label_navigation_interface import LabelNavigationInterface
 from components.media_player import MediaPlaylist, PlaylistType
-from components.widgets.stacked_widget import OpacityAniStackedWidget, PopUpAniStackedWidget
-from components.widgets.state_tooltip import StateTooltip
+from components.system_tray_icon import SystemTrayIcon
 from components.thumbnail_tool_bar import ThumbnailToolBar
 from components.title_bar import TitleBar
+from components.widgets.stacked_widget import (OpacityAniStackedWidget,
+                                               PopUpAniStackedWidget)
+from components.widgets.state_tooltip import StateTooltip
 from PyQt5.QtCore import QEasingCurve, QEvent, QFile, Qt, QTimer
 from PyQt5.QtGui import QCloseEvent, QColor, QIcon, QPixmap
-from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer, QMediaPlaylist
-from PyQt5.QtWidgets import QAction, QApplication, QHBoxLayout, QLabel, QWidget
+from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist
+from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
+                             QWidget, qApp)
 from PyQt5.QtWinExtras import QtWin
 from system_hotkey import SystemHotkey
 from View.album_interface import AlbumInterface
@@ -68,7 +70,7 @@ class MainWindow(FramelessWindow):
 
         self.resize(1240, 970)
         self.setWindowTitle(self.tr("Groove Music"))
-        self.setWindowIcon(QIcon(":/images/logo.png"))
+        self.setWindowIcon(QIcon(":/images/logo/logo_small.png"))
 
         # 在去除任务栏的显示区域居中显示
         QtWin.enableBlurBehindWindow(self)
@@ -133,6 +135,9 @@ class MainWindow(FramelessWindow):
         self.smallestPlayInterface = SmallestPlayInterface(
             self.mediaPlaylist.playlist, parent=self)
 
+        # 创建系统托盘图标
+        self.systemTrayIcon = SystemTrayIcon(self)
+
         # 创建搜索结果界面
         pageSize = self.settingInterface.config['online-music-page-size']
         quality = self.settingInterface.config['online-play-quality']
@@ -165,6 +170,9 @@ class MainWindow(FramelessWindow):
         """ 初始化小部件 """
         self.resize(1240, 970)
         self.setMinimumSize(1030, 800)
+
+        # 关闭最后一个窗口后不退出
+        QApplication.setQuitOnLastWindowClosed(False)
 
         # 在去除任务栏的显示区域居中显示
         desktop = QApplication.desktop().availableGeometry()
@@ -227,6 +235,7 @@ class MainWindow(FramelessWindow):
         self.subStackWidget.show()
         self.navigationInterface.show()
         self.playBar.show()
+        self.systemTrayIcon.show()
         self.setWindowEffect(
             self.settingInterface.config["enable-acrylic-background"])
 
@@ -347,6 +356,8 @@ class MainWindow(FramelessWindow):
             self.mediaPlaylist.setPlaylist(songInfo_list)
             self.mediaPlaylist.playlistType = PlaylistType.ALL_SONG_PLAYLIST
             self.songTabSongListWidget.setPlay(0)
+            if songInfo_list:
+                self.systemTrayIcon.updateWindow(songInfo_list[0])
 
         # 将当前歌曲设置为上次关闭前播放的歌曲
         if self.mediaPlaylist.lastSongInfo in self.mediaPlaylist.playlist:
@@ -355,6 +366,8 @@ class MainWindow(FramelessWindow):
             self.mediaPlaylist.setCurrentIndex(index)
             self.playingInterface.setCurrentIndex(index)
             self.smallestPlayInterface.setCurrentIndex(index)
+            self.systemTrayIcon.updateWindow(self.mediaPlaylist.lastSongInfo)
+
             index = self.songTabSongListWidget.index(
                 self.mediaPlaylist.lastSongInfo)
             if index is not None:
@@ -393,6 +406,7 @@ class MainWindow(FramelessWindow):
     def setPlayButtonState(self, isPlay: bool):
         """ 设置播放按钮状态 """
         self.playBar.setPlay(isPlay)
+        self.systemTrayIcon.setPlay(isPlay)
         self.playingInterface.setPlay(isPlay)
         self.thumbnailToolBar.setPlay(isPlay)
         self.smallestPlayInterface.setPlay(isPlay)
@@ -411,6 +425,10 @@ class MainWindow(FramelessWindow):
         self.smallestPlayInterface.playButton.setEnabled(isEnabled)
         self.smallestPlayInterface.lastSongButton.setEnabled(isEnabled)
         self.smallestPlayInterface.nextSongButton.setEnabled(isEnabled)
+        self.systemTrayIcon.menu.songAct.setEnabled(isEnabled)
+        self.systemTrayIcon.menu.playAct.setEnabled(isEnabled)
+        self.systemTrayIcon.menu.lastSongAct.setEnabled(isEnabled)
+        self.systemTrayIcon.menu.nextSongAct.setEnabled(isEnabled)
 
     def onVolumeChanged(self, volume: int):
         """ 音量滑动条数值改变时更换图标并设置音量 """
@@ -531,6 +549,7 @@ class MainWindow(FramelessWindow):
         # 更新正在播放界面、播放栏、专辑界面、播放列表界面、搜索界面和最小播放界面
         self.playBar.updateSongInfoCard(songInfo)
         self.playingInterface.setCurrentIndex(index)
+        self.systemTrayIcon.updateWindow(songInfo)
 
         if self.smallestPlayInterface.isVisible():
             self.smallestPlayInterface.setCurrentIndex(index)
@@ -604,6 +623,8 @@ class MainWindow(FramelessWindow):
 
     def showPlayingInterface(self):
         """ 显示正在播放界面 """
+        self.show()
+
         if self.playingInterface.isVisible():
             return
 
@@ -974,8 +995,18 @@ class MainWindow(FramelessWindow):
         self.smallestPlayInterface.setPlaylist(playlist)
         self.play()
 
+    def showEvent(self, e):
+        if hasattr(self, 'smallestPlayInterface'):
+            self.smallestPlayInterface.hide()
+        super().showEvent(e)
+
     def switchToSettingInterface(self):
         """ 切换到设置界面 """
+        self.show()
+
+        if self.playingInterface.isVisible():
+            self.titleBar.returnButton.click()
+
         # 先退出选择模式再切换界面
         self.exitSelectionMode()
         self.subStackWidget.setCurrentWidget(
@@ -1512,6 +1543,17 @@ class MainWindow(FramelessWindow):
         self.singerInterface.selectionModeStateChanged.connect(
             self.onSelectionModeStateChanged)
 
+        # 将系统托盘图标信号连接到槽函数
+        self.systemTrayIcon.togglePlayStateSig.connect(self.togglePlayState)
+        self.systemTrayIcon.lastSongSig.connect(self.mediaPlaylist.previous)
+        self.systemTrayIcon.nextSongSig.connect(self.mediaPlaylist.next)
+        self.systemTrayIcon.exitSignal.connect(qApp.quit)
+        qApp.aboutToQuit.connect(self.systemTrayIcon.hide)
+        self.systemTrayIcon.switchToSettingInterfaceSig.connect(
+            self.switchToSettingInterface)
+        self.systemTrayIcon.showPlayingInterfaceSig.connect(
+            self.showPlayingInterface)
+
 
 class SplashScreen(QWidget):
     """ 启动界面 """
@@ -1520,7 +1562,7 @@ class SplashScreen(QWidget):
         super().__init__(parent=parent)
         self.hBoxLayout = QHBoxLayout(self)
         self.logo = QLabel(self)
-        self.logo.setPixmap(QPixmap(":/images/splash_screen_logo.png"))
+        self.logo.setPixmap(QPixmap(":/images/logo/splash_screen_logo.png"))
         self.hBoxLayout.addWidget(self.logo, 0, Qt.AlignCenter)
         self.setAttribute(Qt.WA_StyledBackground)
         self.setStyleSheet('background:white')

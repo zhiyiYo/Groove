@@ -171,7 +171,7 @@ QMenu#blackAddToMenu::separator {
     background-color: rgb(120, 120, 120);
 }
 
-QMenu#playingInterfaceMenu::item{
+QMenu#playingInterfaceMenu::item {
     padding-right: 42px;
 }
 
@@ -300,4 +300,28 @@ QMenu#albumInterfaceAddToMenu::item {
 
 QMenu#onlineSongListContextMenu::item {
     padding-right: 35px;
+}
+
+
+/* 系统托盘菜单 */
+QMenu#systemTrayMenu {
+    background-color: white;
+    width: 300px;
+}
+
+QMenu#systemTrayMenu::separator {
+    height: 1px;
+    background: rgb(237, 237, 239);
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+QMenu#systemTrayMenu::icon {
+    padding: 0px 0px 0px 27px;
+}
+
+QMenu#systemTrayMenu::item {
+    padding: 7px 20px 7px 25px;
 }
