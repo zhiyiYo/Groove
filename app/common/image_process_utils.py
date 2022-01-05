@@ -211,6 +211,7 @@ def getPicSuffix(pic_data) -> str:
             suffix = '.jpg'
     except:
         suffix = '.jpg'
+        
     return suffix
 
 

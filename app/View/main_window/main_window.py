@@ -1544,6 +1544,7 @@ class MainWindow(FramelessWindow):
             self.onSelectionModeStateChanged)
 
         # 将系统托盘图标信号连接到槽函数
+        self.systemTrayIcon.showMainWindowSig.connect(self.show)
         self.systemTrayIcon.togglePlayStateSig.connect(self.togglePlayState)
         self.systemTrayIcon.lastSongSig.connect(self.mediaPlaylist.previous)
         self.systemTrayIcon.nextSongSig.connect(self.mediaPlaylist.next)

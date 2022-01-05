@@ -1,5 +1,5 @@
 # coding:utf-8
-from common.crawler import KuWoMusicCrawler
+from common.crawler import KuWoMusicCrawler, WanYiMusicCrawler
 from PyQt5.QtCore import pyqtSignal, QThread
 
 
@@ -12,9 +12,16 @@ class GetSingerAvatarThread(QThread):
         super().__init__(parent=parent)
         self.singer = ''
         self.saveDir = 'cache/singer_avatar'
-        self.crawler = KuWoMusicCrawler()
+        self.crawlers = [
+            WanYiMusicCrawler(),
+            KuWoMusicCrawler()
+        ]
 
     def run(self):
         """ 获取头像 """
-        self.crawler.getSingerAvatar(self.singer, self.saveDir)
-        self.downloadFinished.emit(f'{self.saveDir}/{self.singer}.jpg')
+        for crawler in self.crawlers:
+            save_path = crawler.getSingerAvatar(self.singer, self.saveDir)
+            if save_path:
+                break
+
+        self.downloadFinished.emit(save_path)

@@ -150,7 +150,8 @@ class WanYiMusicCrawler(CrawlerBase):
             return
 
         # 匹配度小于阈值则返回
-        matches = [key_word==i['singer']+' '+i['songName'] for i in song_info_list]
+        matches = [key_word == i['singer']+' '+i['songName']
+                   for i in song_info_list]
         if not any(matches):
             return
 
@@ -170,6 +171,29 @@ class WanYiMusicCrawler(CrawlerBase):
             "tlyric": data['tlyric']['lyric']   # 翻译
         }
         return lyrics
+
+    @exceptionHandler('')
+    def getSingerAvatar(self, singer: str, save_dir: str):
+        # 发送搜索歌手的请求
+        url = "https://music.163.com/weapi/cloudsearch/get/web"
+        form_data = {
+            "s": singer,
+            "type": self.types['singer']
+        }
+        text = self.send(url, form_data)
+
+        # 解析歌手信息
+        data = json.loads(text)['result']['artists']
+        if not data or fuzz.token_set_ratio(data[0]['name'], singer) < 98:
+            return ''
+
+        # 获取头像
+        response = requests.get(data[0]['img1v1Url'], headers=self.headers)
+        response.raise_for_status()
+
+        # 保存头像
+        save_path = self.saveSingerAvatar(singer, save_dir, response.content)
+        return save_path
 
     def send(self, url: str, form_data: dict) -> str:
         """ 发送 post 请求

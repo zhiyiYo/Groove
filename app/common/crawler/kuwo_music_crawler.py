@@ -5,6 +5,7 @@ from urllib import parse
 from typing import List, Tuple
 
 import requests
+from fuzzywuzzy import fuzz
 from common.meta_data.writer import writeAlbumCover, writeSongInfo
 from common.os_utils import adjustName
 
@@ -154,11 +155,7 @@ class KuWoMusicCrawler(CrawlerBase):
         response.raise_for_status()
 
         # 保存头像
-        os.makedirs(save_dir, exist_ok=True)
-        save_path = os.path.join(save_dir, singer+'.jpg')
-        with open(save_path, 'wb') as f:
-            f.write(response.content)
-
+        save_path = self.saveSingerAvatar(singer, save_dir, response.content)
         return save_path
 
     @exceptionHandler()
@@ -181,13 +178,14 @@ class KuWoMusicCrawler(CrawlerBase):
             return None
 
         # 匹配度小于阈值则返回
-        matches = [key_word == i['singer']+' '+i['songName']
-                   for i in song_info_list]
-        if not any(matches):
+        matches = [fuzz.token_set_ratio(
+            key_word, i['singer']+' '+i['songName']) for i in song_info_list]
+        best_match = max(matches)
+        if best_match < 90:
             return
 
         # 发送请求
-        rid = song_info_list[matches.index(True)]['rid']
+        rid = song_info_list[matches.index(best_match)]['rid']
         url = f"https://m.kuwo.cn/newh5/singles/songinfoandlrc?musicId={rid}"
         response = requests.get(url)
         response.raise_for_status()

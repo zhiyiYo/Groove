@@ -1,6 +1,38 @@
 # coding:utf-8
+import os
+
+from common.image_process_utils import getPicSuffix
 from copy import deepcopy
 from typing import List, Tuple
+
+
+def exceptionHandler(*default):
+    """ 请求异常处理装饰器
+
+    Parameters
+    ----------
+    *default:
+        发生异常时返回的默认值
+    """
+
+    def outer(func):
+
+        def inner(*args, **kwargs):
+            try:
+                return func(*args, **kwargs)
+            except BaseException as e:
+                print(e)
+                value = deepcopy(default)
+                if len(value) == 0:
+                    return None
+                elif len(value) == 1:
+                    return value[0]
+                else:
+                    return value
+
+        return inner
+
+    return outer
 
 
 class CrawlerBase:
@@ -151,38 +183,35 @@ class CrawlerBase:
         """
         raise NotImplementedError("该方法必须被子类实现")
 
+    def saveSingerAvatar(self, singer: str, save_dir: str, data: bytes):
+        """ 保存歌手图像
+
+        Parameters
+        ----------
+        singer: str
+            歌手名
+
+        save_dir: str
+            保存文件夹
+
+        data: bytes
+            歌手头像图片数据
+
+        Returns
+        -------
+        save_path: str
+            保存路径
+        """
+        os.makedirs(save_dir, exist_ok=True)
+        save_path = os.path.join(save_dir, singer+getPicSuffix(data))
+        with open(save_path, 'wb') as f:
+            f.write(data)
+
+        return save_path
+
 
 class QualityException(Exception):
     """ 音质异常 """
 
     def __init__(self, *args: object):
         super().__init__(*args)
-
-
-def exceptionHandler(*default):
-    """ 请求异常处理装饰器
-
-    Parameters
-    ----------
-    *default:
-        发生异常时返回的默认值
-    """
-
-    def outer(func):
-
-        def inner(*args, **kwargs):
-            try:
-                return func(*args, **kwargs)
-            except BaseException as e:
-                print(e)
-                value = deepcopy(default)
-                if len(value) == 0:
-                    return None
-                elif len(value) == 1:
-                    return value[0]
-                else:
-                    return value
-
-        return inner
-
-    return outer

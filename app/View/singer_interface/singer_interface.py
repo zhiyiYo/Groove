@@ -1,5 +1,6 @@
 # coding:utf-8
 import os
+from pathlib import Path
 from copy import deepcopy
 from typing import Dict, List
 
@@ -358,8 +359,8 @@ class SingerInterface(ScrollArea):
 
     def __getSingerAvatar(self, singer: str):
         """ 获取歌手头像 """
-        path = f'cache/singer_avatar/{singer}.jpg'
-        if not os.path.exists(path):
+        avatars = [i.stem for i in Path('cache/singer_avatar').glob('*')]
+        if singer not in avatars:
             self.singerInfoBar.coverLabel.hide()
             self.getAvatarThread.singer = singer
             self.getAvatarThread.start()
@@ -374,6 +375,7 @@ class SingerInterface(ScrollArea):
         """ 更新窗口 """
         if self.singerInfo == singerInfo:
             return
+
         self.__getSingerAvatar(singerInfo.get(
             'singer', self.tr('Unknown artist')))
         self.__updateAllAlbumCards(singerInfo.get('albumInfo_list', []))

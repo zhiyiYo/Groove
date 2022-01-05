@@ -11,6 +11,7 @@ class SystemTrayIcon(QSystemTrayIcon):
     exitSignal = pyqtSignal()
     lastSongSig = pyqtSignal()
     nextSongSig = pyqtSignal()
+    showMainWindowSig = pyqtSignal()
     togglePlayStateSig = pyqtSignal()
     showPlayingInterfaceSig = pyqtSignal()
     switchToSettingInterfaceSig = pyqtSignal()
@@ -25,6 +26,7 @@ class SystemTrayIcon(QSystemTrayIcon):
 
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
+        self.activated.connect(self.__onActivated)
         self.menu.exitAct.triggered.connect(self.exitSignal)
         self.menu.lastSongAct.triggered.connect(self.lastSongSig)
         self.menu.nextSongAct.triggered.connect(self.nextSongSig)
@@ -32,6 +34,11 @@ class SystemTrayIcon(QSystemTrayIcon):
         self.menu.playAct.triggered.connect(self.__onPlayActionTriggered)
         self.menu.settingsAct.triggered.connect(
             self.switchToSettingInterfaceSig)
+
+    def __onActivated(self, reason: QSystemTrayIcon.ActivationReason):
+        """ 激活槽函数 """
+        if reason == self.Trigger:
+            self.showMainWindowSig.emit()
 
     def setPlay(self, isPlay: bool):
         """ 设置播放状态 """

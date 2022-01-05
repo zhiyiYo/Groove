@@ -1,5 +1,6 @@
 # coding:utf-8
 import os
+from pathlib import Path
 
 from components.widgets.menu import AddToMenu
 from common.image_process_utils import getBlurPixmap
@@ -49,10 +50,11 @@ class SingerInfoBar(CollapsingAppBarBase):
         obj = QObject()
         self.singer = singerInfo.get('singer', obj.tr('Unknown artist'))
         self.genre = singerInfo.get('genre', obj.tr('Unknown genre'))
-        self.coverPath = singerInfo.get('coverPath', "")
         self.albumInfo_list = singerInfo.get('albumInfo_list', [])
-        if not os.path.exists(self.coverPath):
-            self.coverPath = self.defaultCoverPath
+
+        # 获取歌手头像
+        avatars = {i.stem: i for i in Path('cache/singer_avatar').glob('*')}
+        self.coverPath = str(avatars.get(self.singer, self.defaultCoverPath))
 
     def setBackgroundColor(self):
         """ 根据封面背景颜色 """
@@ -125,4 +127,4 @@ class BlurLabel(QLabel):
         """ 更新磨砂图片 """
         self.imagePath = imagePath
         self.blurRadius = blurRadius
-        self.setPixmap(getBlurPixmap(imagePath, blurRadius, 0.85))
+        self.setPixmap(getBlurPixmap(imagePath, blurRadius, 0.85, (450, 450)))

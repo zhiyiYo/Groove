@@ -27,7 +27,6 @@ class SingerInfoReader:
                     "singer": singer,
                     "genre": genre,
                     "albumInfo_list": [],
-                    "coverPath": f'cache/singer_avatar/{singer}.jpg'
                 }
 
             singerInfos[singer]["albumInfo_list"].append(albumInfo)
