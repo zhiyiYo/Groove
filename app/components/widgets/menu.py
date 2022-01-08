@@ -338,10 +338,14 @@ class PlayingInterfaceMoreActionsMenu(MoreActionsMenu):
             QIcon(":/images/menu/Add.png"), self.tr("Save as a playlist"), self)
         self.clearPlayListAct = QAction(
             QIcon(":/images/menu/Clear.png"), self.tr('Clear now playing'), self)
-        self.showSingerAct = QAction(
-            QIcon(":/images/menu/Contact.png"), self.tr("Show artist cover"), self)
         self.lyricAct = QAction(
             QIcon(':/images/menu/Lyric.png'), self.tr('Hide lyric'), self)
+        self.movieAct = QAction(
+            QIcon(':/images/menu/Movie.png'), self.tr('Watch MV'), self)
         self.action_list = [
-            self.savePlayListAct, self.clearPlayListAct, self.showSingerAct, self.lyricAct]
+            self.savePlayListAct,
+            self.clearPlayListAct,
+            self.lyricAct,
+            self.movieAct
+        ]
         self.addActions(self.action_list)

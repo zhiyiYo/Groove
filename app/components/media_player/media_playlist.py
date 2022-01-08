@@ -26,63 +26,51 @@ class MediaPlaylist(QMediaPlaylist):
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        # 创建一个用于存储顺序播放列表的列表
         self.playlist = []
-        # 保存当前的歌曲在随机播放列表中的下标
-        self.currentRandomPlayIndex = 0
-        # 初始化播放列表种类
         self.playlistType = PlaylistType(PlaylistType.LAST_PLAYLIST)
-        # 初始化播放列表
-        self.__initPlaylist()
 
-    def __initPlaylist(self):
-        """ 初始化播放列表 """
-        # 设置播放模式为列表顺序播放
         self.setPlaybackMode(QMediaPlaylist.Sequential)
-        # 记录下随机播放前的循环模式
         self.prePlayMode = self.playbackMode()
-        # 初始化随机播放按钮按下状态
         self.randPlayBtPressed = False
-        # 读入上次的播放列表
         self.__readLastPlaylist()
+
         if self.playlist:
-            for songInfo_dict in self.playlist:
-                super().addMedia(
-                    QMediaContent(QUrl(songInfo_dict["songPath"])))
+            for songInfo in self.playlist:
+                super().addMedia(QMediaContent(QUrl(songInfo["songPath"])))
 
-    def addMedia(self, songInfo_dict: dict):
-        """ 重载addMedia,一次向尾部添加一首歌 """
-        if not songInfo_dict:
+    def addSong(self, songInfo: dict):
+        """ 向播放列表末尾添加一首歌 """
+        if not songInfo:
             return
-        self.playlist.append(songInfo_dict)
-        super().addMedia(QMediaContent(
-            QUrl(songInfo_dict["songPath"])))
 
-    def addMedias(self, songInfo_list: list):
-        """ 向尾部添加要播放的音频文件列表 """
+        self.playlist.append(songInfo)
+        super().addMedia(QMediaContent(
+            QUrl(songInfo["songPath"])))
+
+    def addSongs(self, songInfo_list: list):
+        """ 向播放列表尾部添加多首歌 """
         if not songInfo_list:
             return
-        self.playlist.extend(songInfo_list)
-        for songInfo_dict in songInfo_list:
-            super().addMedia(
-                QMediaContent(QUrl(songInfo_dict["songPath"])))
 
-    def insertMedia(self, index, songInfo_dict: dict):
+        self.playlist.extend(songInfo_list)
+        for songInfo in songInfo_list:
+            super().addMedia(QMediaContent(QUrl(songInfo["songPath"])))
+
+    def insertMedia(self, index: int, songInfo: dict):
         """ 在指定位置插入要播放的歌曲 """
         super().insertMedia(
-            index, QMediaContent(QUrl(songInfo_dict["songPath"])))
-        self.playlist.insert(index, songInfo_dict)
+            index, QMediaContent(QUrl(songInfo["songPath"])))
+        self.playlist.insert(index, songInfo)
 
     def insertMedias(self, index: int, songInfo_list: list):
         """ 插入播放列表 """
         if not songInfo_list:
             return
+
         self.playlist = self.playlist[:index] + \
             songInfo_list + self.playlist[index:]
         mediaContent_list = [
-            QMediaContent(QUrl(songInfo_dict["songPath"]))
-            for songInfo_dict in songInfo_list
-        ]
+            QMediaContent(QUrl(i["songPath"])) for i in songInfo_list]
         super().insertMedia(index, mediaContent_list)
 
     def clear(self):
@@ -121,14 +109,15 @@ class MediaPlaylist(QMediaPlaylist):
         """ 获取当前播放的歌曲信息 """
         if self.currentIndex() >= 0:
             return self.playlist[self.currentIndex()]
+
         return {}
 
-    def setCurrentSong(self, songInfo_dict: dict):
+    def setCurrentSong(self, songInfo: dict):
         """ 按下歌曲卡的播放按钮或者双击歌曲卡时立即在当前的播放列表中播放这首歌 """
-        if not songInfo_dict:
+        if not songInfo:
             return
-        # 设置当前播放歌曲
-        self.setCurrentIndex(self.playlist.index(songInfo_dict))
+
+        self.setCurrentIndex(self.playlist.index(songInfo))
 
     def playAlbum(self, songInfo_list: list, index=0):
         """ 播放专辑中的歌曲 """
@@ -150,11 +139,12 @@ class MediaPlaylist(QMediaPlaylist):
             self.setPlaybackMode(self.prePlayMode)
 
     def setPlaylist(self, songInfo_list: list, index=0):
-        """ 重置播放列表 """
+        """ 设置歌曲播放列表 """
         if songInfo_list == self.playlist:
             return
+
         self.clear()
-        self.addMedias(songInfo_list)
+        self.addSongs(songInfo_list)
         self.setCurrentIndex(index)
 
     @checkDirExists('cache/song_info')

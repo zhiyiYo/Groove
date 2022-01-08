@@ -1,6 +1,7 @@
 # coding:utf-8
 import json
 import os
+import re
 from urllib import parse
 from typing import List, Tuple
 
@@ -20,9 +21,7 @@ class KuWoMusicCrawler(CrawlerBase):
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                           'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
-            'Cookie': '_ga=GA1.2.136730414.1610802835; _gid=GA1.2.80092114.1621072767; Hm_lvt_cdb524f'
-                      '42f0ce19b169a8071123a4797=1621072767; Hm_lpvt_cdb524f42f0ce19b169a8071123a4797'
-                      '=1621073279; _gat=1; kw_token=C713RK6IJ8J',
+            'Cookie': 'kw_token=C713RK6IJ8J',
             'csrf': 'C713RK6IJ8J',
             'Host': 'www.kuwo.cn',
             'Referer': ''
@@ -193,3 +192,49 @@ class KuWoMusicCrawler(CrawlerBase):
         # 歌词可能为 null，此时返回 None
         lyric = json.loads(response.text)['data']['lrclist']  # type:list
         return lyric
+
+    @exceptionHandler([], 0)
+    def getMvInfoList(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[dict], int]:
+        key_word = parse.quote(key_word)
+
+        # 配置请求头
+        headers = self.headers.copy()
+        headers['csrf'] = '1RTQ5LGVIRZ'
+        headers['Cookie'] = 'kw_token=1RTQ5LGVIRZ'
+        headers['Referer'] = 'http://www.kuwo.cn/search/mv?'+key_word
+
+        # 搜索 MV 信息
+        url = f'http://www.kuwo.cn/api/www/search/searchMvBykeyWord?key={key_word}&pn={page_num}&rn={page_size}&reqId=ba2f7511-6e89-11ec-aa1e-9520a8bfa7a5'
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+
+        # 解析信息
+        mv_info_list = []
+        data = json.loads(response.text)['data']
+        for info in data['mvlist']:
+            mv_info = {}
+            mv_info['id'] = info['id']
+            mv_info['name'] = info['name']
+            mv_info['singer'] = info['artist']
+            mv_info['coverPath'] = info['pic']
+            d = info["duration"]
+            mv_info["duration"] = f"{int(d//60)}:{int(d%60):02}"
+            mv_info_list.append(mv_info)
+
+        return mv_info_list, data['total']
+
+    @exceptionHandler('')
+    def getMvUrl(self, mv_info: dict) -> str:
+        # 配置请求头
+        headers = self.headers.copy()
+        headers.pop('Referer')
+        headers.pop('csrf')
+
+        # 获取 HTML 页面
+        url = f"http://www.kuwo.cn/mvplay/{mv_info['id']}"
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+
+        # 寻找 mp4 链接
+        match = re.search(r'src:"(.+\.mp4)"', response.text)
+        return match.group(1).replace(r'\u002F', '/')

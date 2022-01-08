@@ -183,6 +183,45 @@ class CrawlerBase:
         """
         raise NotImplementedError("该方法必须被子类实现")
 
+    def getMvInfoList(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[dict], int]:
+        """ 获取歌曲 MV 信息列表
+
+        Parameters
+        ----------
+        key_word: str
+            搜索关键词
+
+        page_num: int
+            当前页码
+
+        page_size: int
+            每一页最多显示的条目数量
+
+        Returns
+        -------
+        mv_info_list: List[dict]
+            MV 信息列表，没找到则返回空列表
+
+        total: int
+            数据库中符合搜索条件的 MV 总数
+        """
+        raise NotImplementedError("该方法必须被子类实现")
+
+    def getMvUrl(self, mv_info: dict) -> str:
+        """ 获取 MV 播放地址
+
+        Parameters
+        ----------
+        mv_info: dict
+            MV 信息
+
+        Returns
+        -------
+        url: str
+            播放地址，没找到时返回空字符串
+        """
+        raise NotImplementedError("该方法必须被子类实现")
+
     def saveSingerAvatar(self, singer: str, save_dir: str, data: bytes):
         """ 保存歌手图像
 

@@ -296,6 +296,7 @@ class VolumeButton(CircleButton):
 
     def setVolumeLevel(self, volume: int):
         """ 根据音量来设置音量等级 """
+        print(volume)
         if volume == 0:
             self.updateIcon(0)
         elif 0 < volume <= 32 and self.__volumeLevel != 1:

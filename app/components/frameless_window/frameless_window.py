@@ -23,10 +23,11 @@ class FramelessWindow(QWidget):
         # 取消边框
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowSystemMenuHint |
                             Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint)
+
         # 添加阴影和窗口动画
         self.windowEffect.addShadowEffect(self.winId())
         self.windowEffect.addWindowAnimation(self.winId())
-        
+
         # 修复多屏不同 dpi 的显示问题
         self.windowHandle().screenChanged.connect(self.__onScreenChanged)
 

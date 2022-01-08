@@ -2,9 +2,10 @@
 from copy import deepcopy
 from typing import Dict, List
 
-from common.thread.blur_cover_thread import BlurCoverThread
 from common.thread.get_lyric_thread import GetLyricThread
+from common.thread.get_mv_url_thread import GetMvUrlThread
 from components.buttons.three_state_button import ThreeStatePushButton
+from components.dialog_box.message_dialog import MessageDialog
 from components.widgets.label import BlurCoverLabel
 from components.widgets.lyric_widget import LyricWidget
 from components.widgets.menu import AddToMenu
@@ -50,6 +51,7 @@ class PlayingInterface(QWidget):
     selectionModeStateChanged = pyqtSignal(bool)         # 进入/退出选择模式
     switchToSingerInterfaceSig = pyqtSignal(str)         # 切换到歌手界面
     switchToAlbumInterfaceSig = pyqtSignal(str, str)     # 切换到专辑界面
+    switchToVideoInterfaceSig = pyqtSignal(str)          # 切换到视频界面
     showSmallestPlayInterfaceSig = pyqtSignal()          # 进入最小播放模式
     addSongsToNewCustomPlaylistSig = pyqtSignal(list)    # 将歌曲添加到新的自定义播放列表
     addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 将歌曲添加到已存在的自定义播放列表
@@ -66,6 +68,7 @@ class PlayingInterface(QWidget):
 
         # 创建线程
         self.getLyricThread = GetLyricThread(self)
+        self.getMvUrlThread = GetMvUrlThread(self)
 
         # 创建小部件
         self.albumCoverLabel = BlurCoverLabel(12, (450, 450), self)
@@ -303,7 +306,8 @@ class PlayingInterface(QWidget):
         self.currentIndex = index if isResetIndex else self.currentIndex
         self.songInfoCardChute.setPlaylist(self.playlist, isResetIndex, index)
         self.songListWidget.updateSongCards(self.playlist, isResetIndex, index)
-        self.albumCoverLabel.setCover(self.songInfoCardChute.cards[1].albumCoverPath)
+        self.albumCoverLabel.setCover(
+            self.songInfoCardChute.cards[1].albumCoverPath)
 
         if self.playlist:
             self.__getLyric()
@@ -518,9 +522,32 @@ class PlayingInterface(QWidget):
         self.lyricWidget.setVisible(isVisible)
         self.isLyricVisible = isVisible
 
+    def __searchMV(self):
+        """ 搜索 MV """
+        if not self.playlist:
+            return
+
+        songInfo = self.playlist[self.currentIndex]
+        self.getMvUrlThread.key_word = songInfo['singer'] + \
+            ' ' + songInfo['songName']
+        self.getMvUrlThread.start()
+
+    def __onCrawlMvUrlFinished(self, url: str):
+        """ 获取 MV 播放地址完成槽函数 """
+        if not url:
+            w = MessageDialog(self.tr('Unable to find the corresponding MV'), self.tr(
+                'Sorry, there are no MVs available for the current song'), self.window())
+            w.yesButton.hide()
+            w.exec_()
+            return
+
+        # 显示播放界面
+        self.switchToVideoInterfaceSig.emit(url)
+
     def __connectSignalToSlot(self):
         """ 将信号连接到槽 """
         self.getLyricThread.crawlFinished.connect(self.__onCrawlLyricFinished)
+        self.getMvUrlThread.crawlFinished.connect(self.__onCrawlMvUrlFinished)
         self.randomPlayAllButton.clicked.connect(self.randomPlayAllSig)
 
         # 歌曲信息卡滑动槽信号连接到槽
@@ -564,6 +591,8 @@ class PlayingInterface(QWidget):
             self.savePlaylistSig)
         self.playBar.moreActionsMenu.lyricVisibleChanged.connect(
             self.__onLyricVisibleChanged)
+        self.playBar.moreActionsMenu.movieAct.triggered.connect(
+            self.__searchMV)
 
         # 将歌曲列表的信号连接到槽函数
         self.songListWidget.currentIndexChanged.connect(

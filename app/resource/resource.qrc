@@ -117,6 +117,7 @@
         <file>images/menu/Playing.png</file>
         <file>images/menu/Playlist.png</file>
         <file>images/menu/Lyric.png</file>
+        <file>images/menu/Movie.png</file>
         <file>images/navigation_interface/Add.png</file>
         <file>images/navigation_interface/Album.png</file>
         <file>images/navigation_interface/clear_hover.png</file>
@@ -245,6 +246,14 @@
         <file>images/system_tray/Pause.png</file>
         <file>images/system_tray/Settings.png</file>
         <file>images/system_tray/SignOut.png</file>
+        <file>images/video_window/Volume0.png</file>
+        <file>images/video_window/Volume1.png</file>
+        <file>images/video_window/Volume2.png</file>
+        <file>images/video_window/Volume3.png</file>
+        <file>images/video_window/Volumex.png</file>
+        <file>images/video_window/SkipBack.png</file>
+        <file>images/video_window/SkipForward.png</file>
+
         <file>i18n/Groove_zh.qm</file>
     </qresource>
 </RCC>

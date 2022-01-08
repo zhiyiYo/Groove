@@ -2,6 +2,11 @@ VolumeSliderWidget{
     background-color: rgb(217,217,217);
 }
 
+QLabel{
+    font: 14px 'Microsoft YaHei';
+    color: white;
+}
+
 /*音量滑动条*/
 QSlider#volumeSlider:horizontal {
     height: 26px;
@@ -37,10 +42,12 @@ QSlider#volumeSlider::sub-page:horizontal {
     background: rgb(0, 153, 187);
     margin-top: 11px;
     margin-bottom: 11px;
+    border-radius: 2px;
 }
 
 QSlider#volumeSlider::add-page:horizontal {
     background-color: rgb(130, 131, 134);
     margin-top: 11px;
     margin-bottom: 11px;
+    border-radius: 2px;
 }

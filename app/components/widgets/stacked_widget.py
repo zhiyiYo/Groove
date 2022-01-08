@@ -1,4 +1,6 @@
 # coding:utf-8
+from typing import List
+
 from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve,
                           QParallelAnimationGroup, QPoint, QPropertyAnimation,
                           pyqtSignal)
@@ -11,57 +13,54 @@ class OpacityAniStackedWidget(QStackedWidget):
     """ 带淡入淡出动画效果的堆叠窗口类 """
 
     def __init__(self, parent=None):
-        super().__init__(parent)
-        # 记录动画完成后需要切换到的窗口下标
+        super().__init__(parent=parent)
         self.__nextIndex = 0
-        # 给第二个窗口添加的淡入淡出动画
-        self.__opacityEffect = QGraphicsOpacityEffect(self)
-        self.__opacityAni = QPropertyAnimation(
-            self.__opacityEffect, b'opacity')
-        # 初始化动画
-        self.__opacityEffect.setOpacity(0)
-        self.__opacityAni.setDuration(220)
-        self.__opacityAni.finished.connect(self.__aniFinishedSlot)
+        self.__effects = []  # type:List[QPropertyAnimation]
+        self.__anis = []     # type:List[QPropertyAnimation]
 
-    def addWidget(self, widget):
-        """ 向窗口中添加堆叠窗口 """
-        if self.count() == 2:
-            raise Exception('最多只能有两个堆叠窗口')
-        super().addWidget(widget)
-        # 给第二个窗口设置淡入淡出效果
-        if self.count() == 2:
-            self.widget(1).setGraphicsEffect(self.__opacityEffect)
+    def addWidget(self, w: QWidget):
+        super().addWidget(w)
+
+        # 创建透明特效和动画
+        effect = QGraphicsOpacityEffect(self)
+        effect.setOpacity(1)
+        ani = QPropertyAnimation(effect, b'opacity', self)
+        ani.setDuration(220)
+        ani.finished.connect(self.__onAniFinished)
+        self.__anis.append(ani)
+        self.__effects.append(effect)
+        w.setGraphicsEffect(effect)
 
     def setCurrentIndex(self, index: int):
-        """ 切换当前堆叠窗口 """
-        # 如果当前下标等于目标下标就直接返回
-        if index == self.currentIndex():
+        index_ = self.currentIndex()
+        if index == index_:
             return
-        if index == 1:
-            self.__opacityAni.setStartValue(0)
-            self.__opacityAni.setEndValue(1)
-            super().setCurrentIndex(1)
-        elif index == 0:
-            self.__opacityAni.setStartValue(1)
-            self.__opacityAni.setEndValue(0)
+
+        if index > index_:
+            ani = self.__anis[index]
+            ani.setStartValue(0)
+            ani.setEndValue(1)
+            super().setCurrentIndex(index)
         else:
-            raise Exception('下标不能超过1')
-        # 强行显示被隐藏的 widget(0)
-        self.widget(0).show()
+            ani = self.__anis[index_]
+            ani.setStartValue(1)
+            ani.setEndValue(0)
+
+        self.widget(index_).show()
         self.__nextIndex = index
-        self.__opacityAni.start()
+        ani.start()
 
-    def setCurrentWidget(self, widget):
-        """ 切换当前堆叠窗口 """
-        self.setCurrentIndex(self.indexOf(widget))
+    def setCurrentWidget(self, w: QWidget):
+        self.setCurrentIndex(self.indexOf(w))
 
-    def __aniFinishedSlot(self):
+    def __onAniFinished(self):
         """ 动画完成后切换当前窗口 """
         super().setCurrentIndex(self.__nextIndex)
 
 
 class PopUpAniStackedWidget(QStackedWidget):
     """ 带弹出式切换窗口动画和淡入淡出动画的堆叠窗口类 """
+
     aniFinished = pyqtSignal()
     aniStart = pyqtSignal()
 
