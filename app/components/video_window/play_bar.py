@@ -31,9 +31,7 @@ class PlayBar(QWidget):
         self.moreActionsButton = CircleButton(
             ":/images/playing_interface/More.png", self)
         self.volumeSliderWidget = VolumeSliderWidget(self.window())
-        self.opacityEffect = QGraphicsOpacityEffect(self)
-        self.opacityAni = QPropertyAnimation(
-            self.opacityEffect, b'opacity', self)
+
         self.timer = QTimer(self)
         self.__initWidget()
 
@@ -42,8 +40,6 @@ class PlayBar(QWidget):
         self.__setQss()
         self.resize(600, 250)
         self.setAttribute(Qt.WA_TranslucentBackground)
-        self.setGraphicsEffect(self.opacityEffect)
-        self.opacityEffect.setOpacity(1)
         self.timer.setSingleShot(True)
         self.setMouseTracking(True)
 
@@ -148,13 +144,6 @@ class PlayBar(QWidget):
         else:
             self.volumeSliderWidget.hide()
 
-    def __onAniFinished(self):
-        """ 淡入淡出动画结束槽函数 """
-        if self.__showAni:
-            self.timer.start(1000)
-        else:
-            super().hide()
-
     def leaveEvent(self, e):
         """ 离开窗口时打开计时器 """
         self.timer.start(1000)
@@ -167,24 +156,9 @@ class PlayBar(QWidget):
         """ 鼠标移动时停止计时器 """
         self.timer.stop()
 
-    def show(self):
-        """ 显示播放栏 """
-        self.timer.stop()
-        self.__showAni = True
-        self.opacityEffect.setOpacity(0)
-        super().show()
-        self.opacityAni.setStartValue(0)
-        self.opacityAni.setEndValue(1)
-        self.opacityAni.setDuration(300)
-        self.opacityAni.start()
-
-    def hide(self):
-        """ 隐藏播放栏 """
-        self.__showAni = False
-        self.opacityAni.setStartValue(1)
-        self.opacityAni.setEndValue(0)
-        self.opacityAni.setDuration(300)
-        self.opacityAni.start()
+    def showEvent(self, e):
+        super().showEvent(e)
+        self.timer.start(1000)
 
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
@@ -192,7 +166,6 @@ class PlayBar(QWidget):
         self.progressSlider.clicked.connect(self.progressSliderMoved)
         self.progressSlider.sliderMoved.connect(self.progressSliderMoved)
         self.volumeButton.clicked.connect(self.__toggleVolumeWidget)
-        self.opacityAni.finished.connect(self.__onAniFinished)
         self.volumeSliderWidget.volumeLevelChanged.connect(
             self.volumeButton.updateIcon)
         self.volumeSliderWidget.muteStateChanged.connect(

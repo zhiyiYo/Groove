@@ -197,6 +197,7 @@ class MainWindow(FramelessWindow):
         self.subStackWidget.addWidget(self.searchResultInterface, 0, 120)
         self.totalStackWidget.addWidget(self.subMainWindow)
         self.totalStackWidget.addWidget(self.playingInterface)
+        self.totalStackWidget.addWidget(self.videoWindow)
 
         # 设置右边子窗口的位置
         self.adjustWidgetGeometry()
@@ -650,6 +651,15 @@ class MainWindow(FramelessWindow):
         self.playingInterface.setMute(isMute)
         self.playBar.setMute(isMute)
 
+    def setVideoFullScreen(self, isFullScreen: bool):
+        """ 设置视频界面全屏 """
+        self.titleBar.setVisible(not isFullScreen)
+        self.titleBar.maxButton.setMaxState(isFullScreen)
+        if isFullScreen:
+            self.showFullScreen()
+        else:
+            self.showNormal()
+
     def setFullScreen(self, isFullScreen: bool):
         """ 设置全屏 """
         if isFullScreen == self.isFullScreen():
@@ -921,7 +931,8 @@ class MainWindow(FramelessWindow):
         self.player.pause()
         self.setPlayButtonState(False)
         self.videoWindow.setVideo(url)
-        self.videoWindow.show()
+        self.totalStackWidget.setCurrentIndex(2)
+        self.navigationHistories.append(("totalStackWidget", 2))
 
     def onAlbumInterfaceSongCardPlay(self, index):
         """ 专辑界面歌曲卡播放按钮按下时 """
@@ -953,7 +964,11 @@ class MainWindow(FramelessWindow):
 
         # 隐藏音量条
         self.playingInterface.playBar.volumeSliderWidget.hide()
-        self.navigationHistories.pop()
+
+        history = self.navigationHistories.pop()
+        if history == ("totalStackWidget", 2):
+            self.totalStackWidget.setCurrentIndex(1)
+            return
 
         # 如果上一个界面还是正在播放界面就直接将其弹出，因为不应该回退到正在播放界面
         if self.navigationHistories[-1] == ("totalStackWidget", 1):
@@ -1538,6 +1553,9 @@ class MainWindow(FramelessWindow):
             self.switchToSettingInterface)
         self.systemTrayIcon.showPlayingInterfaceSig.connect(
             self.showPlayingInterface)
+
+        # 将视频界面信号连接到槽函数
+        self.videoWindow.fullScreenChanged.connect(self.setVideoFullScreen)
 
 
 class SplashScreen(QWidget):

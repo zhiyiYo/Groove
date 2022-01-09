@@ -474,57 +474,57 @@
         <translation>Groove 音乐</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1129"/>
+        <location filename="../../View/main_window/main_window.py" line="1131"/>
         <source>This song is already in your playlist. Do you want to add?</source>
         <translation>此歌已在你的播放列表中。是否要添加？</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1132"/>
+        <location filename="../../View/main_window/main_window.py" line="1134"/>
         <source>Some songs are already in your playlist. Do you want to add?</source>
         <translation>部分歌曲已在你的播放列表中。是否要添加？</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1135"/>
+        <location filename="../../View/main_window/main_window.py" line="1137"/>
         <source>All these songs are already in your playlist. Do you want to add?</source>
         <translation>所有这些歌曲都已在你的播放列表中。是否要添加？</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1138"/>
+        <location filename="../../View/main_window/main_window.py" line="1140"/>
         <source>Song duplication</source>
         <translation>歌曲重复</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1159"/>
+        <location filename="../../View/main_window/main_window.py" line="1161"/>
         <source>Updating song list</source>
         <translation>正在更新歌曲列表</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1159"/>
+        <location filename="../../View/main_window/main_window.py" line="1161"/>
         <source>Please wait patiently</source>
         <translation>请耐心等待</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="406"/>
+        <location filename="../../View/main_window/main_window.py" line="407"/>
         <source>Can&apos;t play this song</source>
         <translation>无法播放此歌曲</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="408"/>
+        <location filename="../../View/main_window/main_window.py" line="409"/>
         <source>Close</source>
         <translation>关闭</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="406"/>
+        <location filename="../../View/main_window/main_window.py" line="407"/>
         <source>It&apos;s not on this device or somewhere we can stream from.</source>
         <translation>它不在这台设备上，也不在我们可以从中流式传输的某个位置。</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="336"/>
+        <location filename="../../View/main_window/main_window.py" line="337"/>
         <source>Minimize to system tray</source>
         <translation>最小化到系统托盘</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="337"/>
+        <location filename="../../View/main_window/main_window.py" line="338"/>
         <source>Groove Music will continue to run in the background.</source>
         <translation>Groove 音乐将在后台继续运行。</translation>
     </message>
@@ -1797,6 +1797,36 @@
         <location filename="../../components/video_window/video_window.py" line="34"/>
         <source>Groove Music</source>
         <translation>Groove 音乐</translation>
+    </message>
+    <message>
+        <location filename="../../components/video_window/video_window.py" line="170"/>
+        <source>The media resource couldn&apos;t be resolved.</source>
+        <translation>无效视频源。</translation>
+    </message>
+    <message>
+        <location filename="../../components/video_window/video_window.py" line="172"/>
+        <source>The format of a media resource isn&apos;t supported.</source>
+        <translation>暂不支持播放该格式的视频。</translation>
+    </message>
+    <message>
+        <location filename="../../components/video_window/video_window.py" line="174"/>
+        <source>A network error occurred.</source>
+        <translation>发生了网络错误。</translation>
+    </message>
+    <message>
+        <location filename="../../components/video_window/video_window.py" line="175"/>
+        <source>There are not the appropriate permissions to play the media resource.</source>
+        <translation>没有权限播放该视频。</translation>
+    </message>
+    <message>
+        <location filename="../../components/video_window/video_window.py" line="180"/>
+        <source>An error occurred</source>
+        <translation>发生了错误</translation>
+    </message>
+    <message>
+        <location filename="../../components/video_window/video_window.py" line="177"/>
+        <source>A valid playback service was not found, playback cannot proceed.</source>
+        <translation>视频服务不存在，无法继续播放。</translation>
     </message>
 </context>
 <context>

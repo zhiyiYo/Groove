@@ -1,9 +1,9 @@
 # coding:utf-8
-from components.frameless_window import FramelessWindow
-from PyQt5.QtMultimediaWidgets import QGraphicsVideoItem
+from components.dialog_box.message_dialog import MessageDialog
+from PyQt5.QtMultimediaWidgets import QGraphicsVideoItem, QVideoWidget
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtCore import Qt, pyqtSignal, QFile, QUrl, QSizeF
-from PyQt5.QtGui import QPixmap, QPainter
+from PyQt5.QtGui import QPainter
 from PyQt5.QtWidgets import QWidget, QGraphicsView, QGraphicsScene, QAction
 
 from .play_bar import PlayBar
@@ -12,16 +12,16 @@ from .play_bar import PlayBar
 class VideoWindow(QGraphicsView):
     """ 视频界面 """
 
+    fullScreenChanged = pyqtSignal(bool) # 进入/退出全屏
+
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.graphicsScene = QGraphicsScene(self)
-        self.videoItem = QGraphicsVideoItem()
+        self.videoItem = GraphicsVideoItem()
         self.player = QMediaPlayer(self)
         self.playBar = PlayBar(self)
         self.toggleFullScreenAct = QAction(
-            self, shortcut=Qt.Key_F11, triggered=self.toggleFullScreen)
-        self.exitFullScreenAct = QAction(
-            self, shortcut=Qt.Key_Escape, triggered=self.exitFullScreen)
+            self, shortcut=Qt.Key_F11, triggered=self.__toggleFullScreen)
         self.__initWidget()
 
     def __initWidget(self):
@@ -29,8 +29,7 @@ class VideoWindow(QGraphicsView):
         self.resize(800, 800)
         self.setMouseTracking(True)
         self.setScene(self.graphicsScene)
-        self.addActions([self.toggleFullScreenAct, self.exitFullScreenAct])
-        self.setWindowFlags(self.windowFlags() | Qt.Window)
+        self.addActions([self.toggleFullScreenAct])
         self.setWindowTitle(self.tr('Groove Music'))
 
         # 设置视频播放窗口
@@ -82,6 +81,7 @@ class VideoWindow(QGraphicsView):
         self.player.play()
         self.playBar.playButton.setPlay(True)
         self.videoItem.setSize(QSizeF(self.size()))
+        self.fitInView(self.videoItem)
 
     def pause(self):
         """ 播放视频 """
@@ -115,34 +115,24 @@ class VideoWindow(QGraphicsView):
 
     def __togglePlayBar(self):
         """ 切换播放栏可见性 """
-        if self.playBar.isVisible():
-            self.playBar.hide()
-        else:
-            self.playBar.show()
+        self.playBar.setVisible(not self.playBar.isVisible())
 
-    def __onFullScreenChanged(self, isFullScreen: bool):
-        """ 全屏按钮点击槽函数 """
-        if isFullScreen:
-            self.showFullScreen()
-        else:
-            self.showNormal()
-
-    def enterFullScreen(self):
+    def __enterFullScreen(self):
         """ 进入全屏 """
-        self.showFullScreen()
         self.playBar.fullScreenButton.setFullScreen(True)
+        self.fullScreenChanged.emit(True)
 
-    def exitFullScreen(self):
+    def __exitFullScreen(self):
         """ 退出全屏 """
-        self.showNormal()
         self.playBar.fullScreenButton.setFullScreen(False)
+        self.fullScreenChanged.emit(False)
 
-    def toggleFullScreen(self):
+    def __toggleFullScreen(self):
         """ 切换全屏状态 """
-        if self.isFullScreen():
-            self.exitFullScreen()
+        if self.window().isFullScreen():
+            self.__exitFullScreen()
         else:
-            self.enterFullScreen()
+            self.__enterFullScreen()
 
     def __onMediaStatusChanged(self, status: QMediaPlayer.MediaStatus):
         """ 媒体状态改变槽函数 """
@@ -161,8 +151,30 @@ class VideoWindow(QGraphicsView):
         pos = self.player.position()
         self.player.setPosition(pos+10000)
 
+    def __onPlayerError(self, error: QMediaPlayer.Error):
+        """ 播放器错误槽函数 """
+        if error == QMediaPlayer.NoError:
+            return
+
+        messageMap = {
+            QMediaPlayer.ResourceError: self.tr(
+                "The media resource couldn't be resolved."),
+            QMediaPlayer.FormatError: self.tr(
+                "The format of a media resource isn't supported."),
+            QMediaPlayer.NetworkError: self.tr("A network error occurred."),
+            QMediaPlayer.AccessDeniedError: self.tr(
+                "There are not the appropriate permissions to play the media resource."),
+            QMediaPlayer.ServiceMissingError: self.tr(
+                "A valid playback service was not found, playback cannot proceed.")
+        }
+        w = MessageDialog(self.tr('An error occurred'),
+                          messageMap[error], self.window())
+        w.yesButton.hide()
+        w.exec()
+
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
+        self.player.error.connect(self.__onPlayerError)
         self.player.durationChanged.connect(self.__onDurationChanged)
         self.player.positionChanged.connect(self.playBar.setCurrentTime)
         self.player.mediaStatusChanged.connect(self.__onMediaStatusChanged)
@@ -176,4 +188,13 @@ class VideoWindow(QGraphicsView):
         self.playBar.volumeSliderWidget.volumeSlider.valueChanged.connect(
             self.player.setVolume)
         self.playBar.fullScreenButton.fullScreenChanged.connect(
-            self.__onFullScreenChanged)
+            self.fullScreenChanged)
+
+
+
+class GraphicsVideoItem(QGraphicsVideoItem):
+    """ 视频图元 """
+
+    def paint(self, painter: QPainter, option, widget):
+        painter.setCompositionMode(QPainter.CompositionMode_Difference)
+        super().paint(painter, option, widget)

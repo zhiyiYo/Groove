@@ -34,9 +34,7 @@ class WindowEffect:
         # 初始化结构体
         self.accentPolicy = ACCENT_POLICY()
         self.winCompAttrData = WINDOWCOMPOSITIONATTRIBDATA()
-        self.winCompAttrData.Attribute = WINDOWCOMPOSITIONATTRIB.WCA_ACCENT_POLICY.value[
-            0
-        ]
+        self.winCompAttrData.Attribute = WINDOWCOMPOSITIONATTRIB.WCA_ACCENT_POLICY.value
         self.winCompAttrData.SizeOfData = sizeof(self.accentPolicy)
         self.winCompAttrData.Data = pointer(self.accentPolicy)
 
@@ -70,9 +68,7 @@ class WindowEffect:
         # 窗口阴影
         accentFlags = DWORD(0x20 | 0x40 | 0x80 |
                             0x100) if isEnableShadow else DWORD(0)
-        self.accentPolicy.AccentState = ACCENT_STATE.ACCENT_ENABLE_ACRYLICBLURBEHIND.value[
-            0
-        ]
+        self.accentPolicy.AccentState = ACCENT_STATE.ACCENT_ENABLE_ACRYLICBLURBEHIND.value
         self.accentPolicy.GradientColor = gradientColor
         self.accentPolicy.AccentFlags = accentFlags
         self.accentPolicy.AnimationId = animationId
@@ -87,18 +83,18 @@ class WindowEffect:
         hWnd: int or `sip.voidptr`
             窗口句柄
         """
-        self.accentPolicy.AccentState = ACCENT_STATE.ACCENT_ENABLE_BLURBEHIND.value[0]
+        self.accentPolicy.AccentState = ACCENT_STATE.ACCENT_ENABLE_BLURBEHIND.value
         # 开启Aero
         self.SetWindowCompositionAttribute(hWnd, pointer(self.winCompAttrData))
 
     def setTransparentEffect(self, hWnd):
         """ 设置窗口透明效果 """
-        self.accentPolicy.AccentState = ACCENT_STATE.ACCENT_ENABLE_TRANSPARENTGRADIENT.value[0]
+        self.accentPolicy.AccentState = ACCENT_STATE.ACCENT_ENABLE_TRANSPARENTGRADIENT.value
         self.SetWindowCompositionAttribute(hWnd, pointer(self.winCompAttrData))
 
     def removeBackgroundEffect(self, hWnd):
         """ 移除背景特效效果 """
-        self.accentPolicy.AccentState = ACCENT_STATE.ACCENT_DISABLED.value[0]
+        self.accentPolicy.AccentState = ACCENT_STATE.ACCENT_DISABLED.value
         self.SetWindowCompositionAttribute(hWnd, pointer(self.winCompAttrData))
 
     def moveWindow(self, hWnd):
