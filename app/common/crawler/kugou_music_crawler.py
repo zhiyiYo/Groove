@@ -11,7 +11,7 @@ import requests
 from common.meta_data.writer import writeAlbumCover, writeSongInfo
 from common.os_utils import adjustName
 
-from .crawler_base import CrawlerBase, QualityException, exceptionHandler
+from .crawler_base import CrawlerBase, AudioQualityError, exceptionHandler
 
 
 class KuGouMusicCrawler(CrawlerBase):
@@ -27,7 +27,7 @@ class KuGouMusicCrawler(CrawlerBase):
 
     def search(self, key_word: str, page_num=1, page_size=10, quality: str = 'Standard quality') -> Tuple[List[dict], int]:
         if quality not in self.qualities:
-            raise QualityException(
+            raise AudioQualityError(
                 f'音质 `{quality}` 不在支持的音质列表 {self.qualities} 中')
 
         # 根据关键词搜索歌曲
@@ -121,7 +121,7 @@ class KuGouMusicCrawler(CrawlerBase):
 
     def getSongUrl(self, song_info: dict, quality: str = 'Standard quality') -> str:
         if quality not in self.qualities:
-            raise QualityException(
+            raise AudioQualityError(
                 f'音质 `{quality}` 不在支持的音质列表 {self.qualities} 中')
 
         data = self.getSongDetails(

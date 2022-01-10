@@ -1,10 +1,11 @@
 # coding:utf-8
 from components.dialog_box.message_dialog import MessageDialog
-from PyQt5.QtMultimediaWidgets import QGraphicsVideoItem, QVideoWidget
-from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
-from PyQt5.QtCore import Qt, pyqtSignal, QFile, QUrl, QSizeF
+from PyQt5.QtCore import QSizeF, Qt, QUrl, pyqtSignal, QSize
 from PyQt5.QtGui import QPainter
-from PyQt5.QtWidgets import QWidget, QGraphicsView, QGraphicsScene, QAction
+from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
+from PyQt5.QtMultimediaWidgets import QGraphicsVideoItem
+from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsScene,
+                             QGraphicsView)
 
 from .play_bar import PlayBar
 
@@ -59,6 +60,7 @@ class VideoWindow(QGraphicsView):
         """ 设置视频 """
         self.player.setMedia(QMediaContent(QUrl(url)))
         self.play()
+        self.videoItem.setSize(QSizeF(self.size()))
 
     def togglePlayState(self):
         """ 切换播放状态 """
@@ -80,11 +82,9 @@ class VideoWindow(QGraphicsView):
         """ 播放视频 """
         self.player.play()
         self.playBar.playButton.setPlay(True)
-        self.videoItem.setSize(QSizeF(self.size()))
-        self.fitInView(self.videoItem)
 
     def pause(self):
-        """ 播放视频 """
+        """ 暂停视频 """
         self.player.pause()
         self.playBar.playButton.setPlay(False)
 

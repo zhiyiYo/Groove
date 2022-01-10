@@ -102,7 +102,7 @@ class CrawlerBase:
 
         Raises
         ------
-        QualityException:
+        AudioQualityError:
             当音质非法时引发的异常
         """
         raise NotImplementedError("该方法必须被子类实现")
@@ -128,7 +128,7 @@ class CrawlerBase:
 
         Raises
         ------
-        QualityException:
+        AudioQualityError:
             当音质非法时引发的异常
         """
         raise NotImplementedError("该方法必须被子类实现")
@@ -178,7 +178,7 @@ class CrawlerBase:
 
         Raises
         ------
-        QualityException:
+        AudioQualityError:
             当音质非法时引发的异常
         """
         raise NotImplementedError("该方法必须被子类实现")
@@ -207,7 +207,7 @@ class CrawlerBase:
         """
         raise NotImplementedError("该方法必须被子类实现")
 
-    def getMvUrl(self, mv_info: dict) -> str:
+    def getMvUrl(self, mv_info: dict, quality: str = 'SD') -> str:
         """ 获取 MV 播放地址
 
         Parameters
@@ -215,10 +215,18 @@ class CrawlerBase:
         mv_info: dict
             MV 信息
 
+        quality: str
+            视频画质
+
         Returns
         -------
-        url: str
+        play_url: str
             播放地址，没找到时返回空字符串
+
+        Raises
+        ------
+        VideoQualityError:
+            视频画质错误
         """
         raise NotImplementedError("该方法必须被子类实现")
 
@@ -249,8 +257,15 @@ class CrawlerBase:
         return save_path
 
 
-class QualityException(Exception):
-    """ 音质异常 """
+class AudioQualityError(Exception):
+    """ 音质错误 """
+
+    def __init__(self, *args: object):
+        super().__init__(*args)
+
+
+class VideoQualityError(Exception):
+    """ 视频画质错误 """
 
     def __init__(self, *args: object):
         super().__init__(*args)

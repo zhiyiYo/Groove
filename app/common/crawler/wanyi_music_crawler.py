@@ -1,10 +1,10 @@
 # coding:utf-8
 import base64
 import json
-import os
 import random
 from datetime import datetime
 from typing import List, Tuple
+from pprint import pprint
 
 import requests
 from fuzzywuzzy import fuzz
@@ -12,7 +12,7 @@ from common.os_utils import adjustName
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
 
-from .crawler_base import CrawlerBase, QualityException, exceptionHandler
+from .crawler_base import CrawlerBase, AudioQualityError, exceptionHandler, VideoQualityError
 
 
 class WanYiMusicCrawler(CrawlerBase):
@@ -24,11 +24,18 @@ class WanYiMusicCrawler(CrawlerBase):
             "song": "1",
             "singer": "100",
             "album": "10",
-            "lyric": "1006"
+            "lyric": "1006",
+            "video": "1014"
         }
         self.encryptor = Encryptor()
         self.qualities = ['Standard quality', 'High quality',
                           'Super quality', 'Lossless quality']
+        self.video_qualities = {
+            "Full HD": 1080,
+            "HD": 720,
+            "SD": 480,
+            "Fluent": 240
+        }
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                           'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
@@ -46,6 +53,7 @@ class WanYiMusicCrawler(CrawlerBase):
             "offset": str((page_num-1)*page_size),
             "total": "true",
             "limit": str(page_size),
+            "more": "true"
         }
         text = self.send(url, form_data)
 
@@ -104,11 +112,11 @@ class WanYiMusicCrawler(CrawlerBase):
 
         Raises
         ------
-        QualityException:
+        AudioQualityError:
             当音质非法时引发的异常
         """
         if quality not in self.qualities:
-            raise QualityException(
+            raise AudioQualityError(
                 f'音质 `{quality}` 不在支持的音质列表 {self.qualities} 中')
 
         qualities = ['standard', 'higher', 'exhigh', 'lossless']
@@ -195,7 +203,116 @@ class WanYiMusicCrawler(CrawlerBase):
         save_path = self.saveSingerAvatar(singer, save_dir, response.content)
         return save_path
 
-    def send(self, url: str, form_data: dict) -> str:
+    @exceptionHandler([], 0)
+    def getMvInfoList(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[dict], int]:
+        # 发送搜索歌手的请求
+        url = "https://music.163.com/weapi/cloudsearch/get/web"
+        form_data = {
+            "s": key_word,
+            "type": self.types['video'],
+            "offset": str((page_num-1)*page_size),
+            "total": "true",
+            "limit": str(page_size),
+        }
+        text = self.send(url, form_data)
+
+        # 解析数据
+        data = json.loads(text)['result']
+        mv_info_list = []
+        for info in data['videos']:
+            mv_info = {}
+            mv_info['vid'] = info['vid']
+            mv_info['name'] = info['title']
+            mv_info['singer'] = info['creator'][0]['userName']
+            mv_info['coverPath'] = info['coverUrl']
+            mv_info['type'] = info['type']
+            d = info["durationms"]/1000
+            mv_info["duration"] = f"{int(d//60)}:{int(d%60):02}"
+            mv_info_list.append(mv_info)
+
+        return mv_info_list, data['videoCount']
+
+    @exceptionHandler('')
+    def getMvUrl(self, mv_info: dict, quality: str = 'SD') -> str:
+        """ 获取 MV 播放地址
+
+        Parameters
+        ----------
+        mv_info: dict
+            MV 信息
+
+        quality: str
+            视频画质，可用的有 `Full HD`、`HD`、`SD` 和 `Fluent`
+
+        Returns
+        -------
+        play_url: str
+            播放地址，没找到时返回空字符串
+
+        Raises
+        ------
+        VideoQualityError:
+            视频画质错误
+        """
+        if quality not in self.video_qualities:
+            raise VideoQualityError(
+                f"画质 `{quality}` 不在支持的画质列表 {self.qualities} 中")
+
+        mv_type = mv_info['type']
+        mv_url_func_map = {
+            0: self.__getType0MvUrl,
+            1: self.__getType1MvUrl
+        }
+
+        play_url = mv_url_func_map[mv_type](mv_info, quality)
+        return play_url
+
+    def __getType0MvUrl(self, mv_info: dict, quality: str = 'SD'):
+        """ 获取类型为 0 的 MV 的播放地址 """
+        # 获取可用的清晰度
+        form_data = {"id": mv_info['vid']}
+        url = "https://music.163.com/weapi/v1/mv/detail"
+        data = json.loads(self.send(url, form_data))['data']
+        resolutions = sorted([i['br'] for i in data['brs']], reverse=True)
+
+        # 如果清晰度不可用就选取一个可用的
+        resolution = self.video_qualities[quality]
+        if resolution not in resolutions:
+            resolution = resolutions[0]
+
+        # 获取播放地址
+        url = "https://music.163.com/weapi/song/enhance/play/mv/url"
+        form_data = {
+            "id": mv_info['vid'],
+            "r": resolution
+        }
+        play_url = json.loads(self.send(url, form_data))['data']['url']
+        return play_url
+
+    def __getType1MvUrl(self, mv_info: dict, quality: str = 'SD'):
+        """ 获取类型为 1 的 MV 播放地址 """
+        # 获取可用的清晰度
+        form_data = {"id": mv_info['vid']}
+        url = "https://music.163.com/weapi/cloudvideo/v1/video/detail"
+        data = json.loads(self.send(url, form_data))['data']
+        resolutions = sorted([i['resolution'] for i in data['resolutions']])
+
+        # 如果清晰度不可用就选取一个可用的
+        resolution = self.video_qualities[quality]
+        if resolution not in resolutions:
+            resolution = resolutions[-1]
+
+        # 获取播放地址
+        url = 'https://music.163.com/weapi/cloudvideo/playurl'
+        form_data = {
+            "ids": str([mv_info['vid']]),
+            "resolution": resolution
+        }
+        text = self.send(url, form_data)
+        play_url = [i['url'] for i in json.loads(text)['urls']][0]
+        return play_url
+
+    def send(self, url: str, form_data: dict, headers=None) -> str:
         """ 发送 post 请求
 
         Parameters
@@ -206,13 +323,17 @@ class WanYiMusicCrawler(CrawlerBase):
         form_data: dict
             未加密的请求数据
 
+        headers: dict
+            请求头，如果为空则使用默认请求头
+
         Returns
         -------
         text: str
             请求获取到的文本数据
         """
+        headers = headers or self.headers
         form_data = self.encryptor.encrypt(str(form_data))
-        response = requests.post(url, form_data, headers=self.headers)
+        response = requests.post(url, form_data, headers=headers)
         response.raise_for_status()
         return response.text
 

@@ -18,9 +18,9 @@ from components.widgets.stacked_widget import (OpacityAniStackedWidget,
                                                PopUpAniStackedWidget)
 from components.widgets.state_tooltip import StateTooltip
 from components.video_window import VideoWindow
-from PyQt5.QtCore import QEasingCurve, QEvent, QFile, Qt, QTimer, QUrl
+from PyQt5.QtCore import QEasingCurve, QEvent, QFile, Qt, QTimer
 from PyQt5.QtGui import QCloseEvent, QColor, QIcon, QPixmap
-from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist, QMediaContent
+from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist
 from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
                              QWidget, qApp)
 from PyQt5.QtWinExtras import QtWin
@@ -655,6 +655,7 @@ class MainWindow(FramelessWindow):
         """ 设置视频界面全屏 """
         self.titleBar.setVisible(not isFullScreen)
         self.titleBar.maxButton.setMaxState(isFullScreen)
+        self.titleBar.returnButton.show()
         if isFullScreen:
             self.showFullScreen()
         else:
@@ -682,6 +683,7 @@ class MainWindow(FramelessWindow):
         self.navigationHistories.append(("totalStackWidget", 1))
 
         self.showFullScreen()
+        self.videoWindow.playBar.fullScreenButton.setFullScreen(True)
         self.playingInterface.setFullScreen(True)
         if self.playingInterface.isPlaylistVisible:
             self.playingInterface.songInfoCardChute.move(
@@ -699,7 +701,8 @@ class MainWindow(FramelessWindow):
         self.titleBar.returnButton.show()
         self.titleBar.show()
 
-        self.playingInterface.playBar.FullScreenButton.setFullScreen(False)
+        self.videoWindow.playBar.fullScreenButton.setFullScreen(False)
+        self.playingInterface.setFullScreen(False)
         if self.playingInterface.isPlaylistVisible:
             self.playingInterface.songInfoCardChute.move(
                 0, 258 - self.height())
@@ -820,6 +823,9 @@ class MainWindow(FramelessWindow):
         """ 切换到设置界面 """
         self.show()
 
+        if self.videoWindow.isVisible():
+            self.titleBar.returnButton.click()
+
         if self.playingInterface.isVisible():
             self.titleBar.returnButton.click()
 
@@ -933,6 +939,7 @@ class MainWindow(FramelessWindow):
         self.videoWindow.setVideo(url)
         self.totalStackWidget.setCurrentIndex(2)
         self.navigationHistories.append(("totalStackWidget", 2))
+        self.titleBar.returnButton.show()
 
     def onAlbumInterfaceSongCardPlay(self, index):
         """ 专辑界面歌曲卡播放按钮按下时 """
@@ -967,6 +974,7 @@ class MainWindow(FramelessWindow):
 
         history = self.navigationHistories.pop()
         if history == ("totalStackWidget", 2):
+            self.videoWindow.pause()
             self.totalStackWidget.setCurrentIndex(1)
             return
 

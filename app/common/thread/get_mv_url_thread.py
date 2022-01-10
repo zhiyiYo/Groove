@@ -1,6 +1,6 @@
 # coding:utf-8
 from fuzzywuzzy import fuzz
-from common.crawler import KuWoMusicCrawler
+from common.crawler import KuWoMusicCrawler, WanYiMusicCrawler
 from PyQt5.QtCore import pyqtSignal, QThread
 
 
@@ -12,13 +12,23 @@ class GetMvUrlThread(QThread):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.key_word = ''
-        self.crawler = KuWoMusicCrawler()
+        self.crawlers = [WanYiMusicCrawler(), KuWoMusicCrawler()]
 
     def run(self):
-        mvInfo_list, _ = self.crawler.getMvInfoList(self.key_word, page_size=1)
-        if not mvInfo_list or fuzz.token_set_ratio(mvInfo_list[0]['singer']+' '+mvInfo_list[0]['name'], self.key_word) < 90:
-            self.crawlFinished.emit('')
-            return
+        url = ''
+        for crawler in self.crawlers:
+            mvInfo_list, _ = crawler.getMvInfoList(self.key_word, page_size=10)
+            if not mvInfo_list:
+                continue
 
-        url = self.crawler.getMvUrl(mvInfo_list[0])
+            matches = [fuzz.token_set_ratio(
+                i['singer']+' '+i['name'], self.key_word) for i in mvInfo_list]
+            best_match = max(matches)
+            if best_match < 90:
+                continue
+
+            url = crawler.getMvUrl(mvInfo_list[matches.index(best_match)], 'Full HD')
+            if url:
+                break
+
         self.crawlFinished.emit(url)

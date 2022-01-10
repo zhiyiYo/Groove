@@ -10,7 +10,7 @@ from fuzzywuzzy import fuzz
 from common.meta_data.writer import writeAlbumCover, writeSongInfo
 from common.os_utils import adjustName
 
-from .crawler_base import CrawlerBase, QualityException, exceptionHandler
+from .crawler_base import CrawlerBase, AudioQualityError, exceptionHandler
 
 
 class KuWoMusicCrawler(CrawlerBase):
@@ -71,7 +71,7 @@ class KuWoMusicCrawler(CrawlerBase):
     @exceptionHandler('')
     def getSongUrl(self, song_info: dict, quality='Standard quality') -> str:
         if quality not in self.qualities:
-            raise QualityException(
+            raise AudioQualityError(
                 f'音质 `{quality}` 不在支持的音质列表 {self.qualities} 中')
 
         rid = song_info['rid']
@@ -224,7 +224,7 @@ class KuWoMusicCrawler(CrawlerBase):
         return mv_info_list, data['total']
 
     @exceptionHandler('')
-    def getMvUrl(self, mv_info: dict) -> str:
+    def getMvUrl(self, mv_info: dict, quality: str = 'SD') -> str:
         # 配置请求头
         headers = self.headers.copy()
         headers.pop('Referer')

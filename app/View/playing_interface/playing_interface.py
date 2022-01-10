@@ -432,7 +432,7 @@ class PlayingInterface(QWidget):
 
     def setFullScreen(self, isFullScreen: int):
         """ 更新全屏按钮图标 """
-        self.playBar.FullScreenButton.setFullScreen(isFullScreen)
+        self.playBar.fullScreenButton.setFullScreen(isFullScreen)
 
     def setLoopMode(self, loopMode: QMediaPlaylist.PlaybackMode):
         """ 设置循环模式 """
@@ -567,7 +567,7 @@ class PlayingInterface(QWidget):
             self.muteStateChanged)
         self.playBar.volumeSliderWidget.volumeSlider.valueChanged.connect(
             self.volumeChanged)
-        self.playBar.FullScreenButton.fullScreenChanged.connect(
+        self.playBar.fullScreenButton.fullScreenChanged.connect(
             self.fullScreenChanged)
         self.playBar.progressSlider.sliderMoved.connect(
             self.progressSliderMoved)

@@ -30,7 +30,7 @@ class PlayBar(QWidget):
         self.playButton = PlayButton(self)
         self.volumeButton = VolumeButton(self)
         self.volumeSliderWidget = VolumeSliderWidget(self.window())
-        self.FullScreenButton = FullScreenButton(self)
+        self.fullScreenButton = FullScreenButton(self)
         self.playProgressBar = PlayProgressBar("3:10", parent=self)
         self.pullUpArrowButton = PullUpArrow(
             ":/images/playing_interface/ChevronUp.png", self)
@@ -56,7 +56,7 @@ class PlayBar(QWidget):
         # 创建小部件列表
         self.__widget_list = [
             self.playButton,
-            self.FullScreenButton,
+            self.fullScreenButton,
             self.playProgressBar.progressSlider,
             self.pullUpArrowButton,
             self.lastSongButton,
@@ -105,7 +105,7 @@ class PlayBar(QWidget):
         """ 移动按钮 """
         self.pullUpArrowButton.move(
             self.width()//2 - self.pullUpArrowButton.width()//2, 165)
-        self.FullScreenButton.move(self.width() - 64, 85)
+        self.fullScreenButton.move(self.width() - 64, 85)
         self.smallPlayModeButton.move(self.width() - 124, 85)
         self.showPlaylistButton.move(self.width() - 184, 85)
 
