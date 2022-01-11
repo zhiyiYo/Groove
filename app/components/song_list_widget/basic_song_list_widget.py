@@ -6,13 +6,12 @@ from components.dialog_box.song_info_edit_dialog import SongInfoEditDialog
 from components.dialog_box.song_property_dialog import SongPropertyDialog
 from components.widgets.list_widget import ListWidget
 from PyQt5.QtCore import QMargins, QSize, Qt, pyqtSignal
-from PyQt5.QtGui import QResizeEvent
-from PyQt5.QtWidgets import QApplication, QListWidgetItem, QWidget
+from PyQt5.QtWidgets import QListWidgetItem, QWidget
 
 from .song_card import SongCardFactory
 from .song_card_type import SongCardType
 
-# TODO: 更新歌曲卡后布局问题
+
 class BasicSongListWidget(ListWidget):
     """ 基本歌曲列表控件 """
 
@@ -86,7 +85,7 @@ class BasicSongListWidget(ListWidget):
         item = QListWidgetItem()
         songCard = SongCardFactory.create(self.songCardType, songInfo)
         songCard.itemIndex = len(self.songCard_list)
-        songCard.resize(1150, 60)
+        songCard.resize(self.viewport().width(), 60)
         item.setSizeHint(QSize(songCard.width(), 60))
         self.addItem(item)
         self.setItemWidget(item, songCard)
@@ -112,10 +111,6 @@ class BasicSongListWidget(ListWidget):
             self.appendOneSongCard(songInfo)
 
         self.__createPaddingBottomItem()
-
-        # 手动触发一次事件
-        e = QResizeEvent(QSize(self.size()), QSize(self.size()))
-        QApplication.sendEvent(self, e)
 
     def setCurrentIndex(self, index):
         """ 设置当前下标 """
@@ -323,7 +318,7 @@ class BasicSongListWidget(ListWidget):
             # 添加item
             for songInfo in songInfo_list[oldSongNum:]:
                 self.appendOneSongCard(songInfo)
-                # QApplication.processEvents()
+
         elif newSongNum < oldSongNum:
             # 删除多余的item
             for i in range(oldSongNum - 1, newSongNum - 1, -1):
@@ -338,7 +333,7 @@ class BasicSongListWidget(ListWidget):
 
         # 更新部分歌曲卡
         self.songInfo_list = songInfo_list if songInfo_list else []
-        n = oldSongNum if newSongNum > oldSongNum else newSongNum
+        n = min(oldSongNum, newSongNum)
         for songInfo, songCard in zip(songInfo_list[:n], self.songCard_list[:n]):
             songCard.updateSongCard(songInfo)
 
@@ -351,10 +346,6 @@ class BasicSongListWidget(ListWidget):
 
         # 创建新占位行
         self.__createPaddingBottomItem()
-
-        # 手动触发一次事件
-        e = QResizeEvent(QSize(self.size()), QSize(self.size()))
-        QApplication.sendEvent(self, e)
 
         # 发出歌曲卡数量改变信号
         if oldSongNum != newSongNum:
