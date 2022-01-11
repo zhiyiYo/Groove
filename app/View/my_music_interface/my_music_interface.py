@@ -356,7 +356,7 @@ class MyMusicInterface(QWidget):
             content = self.tr("Please wait patiently")
             w = StateTooltip(title, content, self.window())
             thread.scanFinished.connect(lambda: w.setState(True))
-            w.move(self.window().width() - w.width() - 30, 63)
+            w.move(w.getSuitablePos())
             w.show()
 
         thread.start()

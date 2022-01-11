@@ -13,7 +13,7 @@ from components.widgets.state_tooltip import StateTooltip
 from PyQt5.QtCore import QEvent, QFile, Qt, QUrl, pyqtSignal
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import (QFileDialog, QLabel, QLineEdit, QPushButton,
-                             QRadioButton, QWidget)
+                             QRadioButton, QWidget, QButtonGroup)
 
 
 class SettingInterface(ScrollArea):
@@ -21,6 +21,7 @@ class SettingInterface(ScrollArea):
 
     crawlComplete = pyqtSignal()
     pageSizeChanged = pyqtSignal(int)
+    mvQualityChanged = pyqtSignal(str)
     acrylicEnableChanged = pyqtSignal(bool)
     downloadFolderChanged = pyqtSignal(str)
     onlinePlayQualityChanged = pyqtSignal(str)
@@ -32,6 +33,7 @@ class SettingInterface(ScrollArea):
         # 默认配置
         self.config = {
             "selected-folders": [],
+            "mv-quality": "Full HD",
             "online-play-quality": "Standard quality",
             "online-music-page-size": 20,
             "enable-acrylic-background": False,
@@ -78,6 +80,7 @@ class SettingInterface(ScrollArea):
             self.tr('Set the number of online music displayed'), self.scrollwidget)
 
         # 在线音乐音质
+        self.onlinePlayQualityGroup = QButtonGroup(self)
         self.onlinePlayQualityLabel = QLabel(
             self.tr('Online Playing Quality'), self.scrollwidget)
         self.standardQualityButton = QRadioButton(
@@ -86,6 +89,14 @@ class SettingInterface(ScrollArea):
             self.tr('High quality'), self.scrollwidget)
         self.superQualityButton = QRadioButton(
             self.tr('Super quality'), self.scrollwidget)
+
+        # MV 画质
+        self.mvQualityGroup = QButtonGroup(self)
+        self.mvQualityLabel = QLabel(self.tr('MV Quality'), self.scrollwidget)
+        self.fullHDButton = QRadioButton(self.tr('Full HD'), self.scrollwidget)
+        self.hDButton = QRadioButton(self.tr('HD'), self.scrollwidget)
+        self.sDButton = QRadioButton(self.tr('SD'), self.scrollwidget)
+        self.lDButton = QRadioButton(self.tr('LD'), self.scrollwidget)
 
         # 下载目录
         self.downloadFolderHintLabel = QLabel('')
@@ -110,7 +121,7 @@ class SettingInterface(ScrollArea):
         self.downloadFolderLineEdit.resize(313, 42)
         self.downloadFolderLineEdit.setReadOnly(True)
         self.downloadFolderLineEdit.setCursorPosition(0)
-        self.scrollwidget.resize(self.width(), 1000)
+        self.scrollwidget.resize(self.width(), 1200)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setViewportMargins(0, 120, 0, 0)
         self.setWidget(self.scrollwidget)
@@ -127,10 +138,24 @@ class SettingInterface(ScrollArea):
         self.issueLabel.setCursor(Qt.PointingHandCursor)
 
         # 设置播放音质
+        self.onlinePlayQualityGroup.addButton(self.standardQualityButton)
+        self.onlinePlayQualityGroup.addButton(self.highQualityButton)
+        self.onlinePlayQualityGroup.addButton(self.superQualityButton)
         self.standardQualityButton.setProperty('quality', 'Standard quality')
         self.highQualityButton.setProperty('quality', 'High quality')
         self.superQualityButton.setProperty('quality', 'Super quality')
-        self.__setCheckedRadioButton()
+        self.__setCheckedOnlineMusicQualityRadioButton()
+
+        # 设置 MV 画质
+        self.mvQualityGroup.addButton(self.fullHDButton)
+        self.mvQualityGroup.addButton(self.hDButton)
+        self.mvQualityGroup.addButton(self.sDButton)
+        self.mvQualityGroup.addButton(self.lDButton)
+        self.fullHDButton.setProperty('quality', 'Full HD')
+        self.hDButton.setProperty('quality', 'HD')
+        self.sDButton.setProperty('quality', 'SD')
+        self.lDButton.setProperty('quality', 'LD')
+        self.__setCheckedMvQualityRadioButton()
 
         # 设置滑动条
         pageSize = self.config['online-music-page-size']
@@ -181,10 +206,16 @@ class SettingInterface(ScrollArea):
         self.standardQualityButton.move(30, 598)
         self.highQualityButton.move(30, 638)
         self.superQualityButton.move(30, 678)
+        # MV 画质
+        self.mvQualityLabel.move(30, 740)
+        self.fullHDButton.move(30, 790)
+        self.hDButton.move(30, 830)
+        self.sDButton.move(30, 870)
+        self.lDButton.move(30, 910)
         # 下载目录
-        self.downloadFolderLabel.move(30, 740)
-        self.downloadFolderLineEdit.move(30, 790)
-        self.downloadFolderButton.move(350, 790)
+        self.downloadFolderLabel.move(30, 972)
+        self.downloadFolderLineEdit.move(30, 1022)
+        self.downloadFolderButton.move(350, 1022)
         # 应用
         self.appLabel.move(self.width() - 400, 18)
         self.helpLabel.move(self.width() - 400, 64)
@@ -217,7 +248,7 @@ class SettingInterface(ScrollArea):
         # 创建状态提示条
         stateToolTip = StateTooltip(
             self.tr("Crawling metadata"), self.tr("Current progress: ")+f"{0:>3.0%}", self.window())
-        stateToolTip.move(self.window().width()-stateToolTip.width() - 30, 63)
+        stateToolTip.move(stateToolTip.getSuitablePos())
         stateToolTip.show()
 
         # 信号连接到槽
@@ -246,6 +277,7 @@ class SettingInterface(ScrollArea):
         self.mediaInfoLabel.setObjectName("titleLabel")
         self.acrylicLabel.setObjectName("titleLabel")
         self.searchLabel.setObjectName('titleLabel')
+        self.mvQualityLabel.setObjectName('titleLabel')
         self.helpLabel.setObjectName("clickableLabel")
         self.issueLabel.setObjectName("clickableLabel")
         self.onlinePlayQualityLabel.setObjectName('titleLabel')
@@ -342,8 +374,8 @@ class SettingInterface(ScrollArea):
         with open("config/config.json", "w", encoding="utf-8") as f:
             json.dump(self.config, f)
 
-    def __setCheckedRadioButton(self):
-        """ 设置选中的单选按钮 """
+    def __setCheckedOnlineMusicQualityRadioButton(self):
+        """ 设置选中的在线音乐音质单选按钮 """
         quality = self.config['online-play-quality']
         if quality == 'Standard quality':
             self.standardQualityButton.setChecked(True)
@@ -351,6 +383,18 @@ class SettingInterface(ScrollArea):
             self.highQualityButton.setChecked(True)
         else:
             self.superQualityButton.setChecked(True)
+
+    def __setCheckedMvQualityRadioButton(self):
+        """ 设置选中的 MV 音质单选按钮 """
+        quality = self.config['mv-quality']
+        if quality == 'Full HD':
+            self.fullHDButton.setChecked(True)
+        elif quality == 'HD':
+            self.hDButton.setChecked(True)
+        elif quality == 'SD':
+            self.sDButton.setChecked(True)
+        else:
+            self.lDButton.setChecked(True)
 
     def __onPageSliderValueChanged(self, value: int):
         """ 滑动条数值改变槽函数 """
@@ -367,6 +411,16 @@ class SettingInterface(ScrollArea):
             return
         self.config['online-play-quality'] = quality
         self.onlinePlayQualityChanged.emit(quality)
+        self.saveConfig()
+
+    def __onMvQualityChanged(self):
+        """ 在线播放音质改变槽函数 """
+        quality = self.sender().property('quality')
+        if self.config['mv-quality'] == quality:
+            return
+
+        self.config['mv-quality'] = quality
+        self.mvQualityChanged.emit(quality)
         self.saveConfig()
 
     def __onDownloadFolderButtonClicked(self):
@@ -386,6 +440,10 @@ class SettingInterface(ScrollArea):
 
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
+        self.hDButton.clicked.connect(self.__onMvQualityChanged)
+        self.sDButton.clicked.connect(self.__onMvQualityChanged)
+        self.lDButton.clicked.connect(self.__onMvQualityChanged)
+        self.fullHDButton.clicked.connect(self.__onMvQualityChanged)
         self.getMetaDataSwitchButton.checkedChanged.connect(
             self.__onCheckBoxStatedChanged)
         self.selectMusicFolderLabel.clicked.connect(

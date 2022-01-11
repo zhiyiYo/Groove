@@ -1,6 +1,6 @@
 # coding:utf-8
 from PyQt5.QtCore import (QEasingCurve, QPropertyAnimation, Qt, QTimer,
-                          pyqtSignal, QFile)
+                          pyqtSignal, QFile, QPoint)
 from PyQt5.QtGui import QPainter, QPixmap
 from PyQt5.QtWidgets import QLabel, QToolButton, QWidget
 
@@ -49,7 +49,8 @@ class StateTooltip(QWidget):
         self.closeTimer.setInterval(1000)
         self.contentLabel.setMinimumWidth(200)
         # 将信号连接到槽函数
-        self.closeButton.clicked.connect(self.__onCloseButtonClicked)  # 点击关闭按钮只是隐藏了提示条
+        self.closeButton.clicked.connect(
+            self.__onCloseButtonClicked)  # 点击关闭按钮只是隐藏了提示条
         self.rotateTimer.timeout.connect(self.__rotateTimerFlowSlot)
         self.closeTimer.timeout.connect(self.__slowlyClose)
         self.__setQss()
@@ -119,6 +120,19 @@ class StateTooltip(QWidget):
         self.rotateAngle = (self.rotateAngle + self.deltaAngle) % 360
         self.update()
 
+    def getSuitablePos(self):
+        """ 在主界面中获取合适的显示位置 """
+        for i in range(10):
+            dy = i*(self.height() + 20)
+            pos = QPoint(self.window().width() - self.width() - 30, 63+dy)
+            widget = self.window().childAt(pos + QPoint(2, 2))
+            if isinstance(widget, StateTooltip):
+                pos += QPoint(0, self.height() + 20)
+            else:
+                break
+
+        return pos
+
     def paintEvent(self, e):
         """ 绘制背景 """
         super().paintEvent(e)
@@ -137,3 +151,30 @@ class StateTooltip(QWidget):
         else:
             painter.drawPixmap(14, 13, self.doneImage.width(),
                                self.doneImage.height(), self.doneImage)
+
+
+class DownloadStateTooltip(StateTooltip):
+    """ 下载状态提示条 """
+
+    def __init__(self, title, content, downloadTaskNum=1, parent=None):
+        super().__init__(title=title, content=content, parent=parent)
+        self.downloadTaskNum = downloadTaskNum
+
+    def completeOneDownloadTask(self):
+        """ 完成 1 个下载任务 """
+        self.downloadTaskNum -= 1
+        if self.downloadTaskNum > 0:
+            content = self.tr('There are') + f' {self.downloadTaskNum} ' + \
+                self.tr('left. Please wait patiently')
+            self.setContent(content)
+        else:
+            self.setTitle(self.tr('Download complete'))
+            self.setContent(self.tr('Download completed, please check'))
+            self.setState(True)
+
+    def appendOneDownloadTask(self):
+        """ 添加 1 个下载任务 """
+        self.downloadTaskNum += 1
+        content = self.tr('There are') + f' {self.downloadTaskNum} ' + \
+            self.tr('left. Please wait patiently')
+        self.setContent(content)

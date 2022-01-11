@@ -9,6 +9,7 @@ from PyQt5.QtCore import QThread, pyqtSignal
 
 
 class GetLyricThread(QThread):
+    """ 获取歌词线程 """
 
     crawlFinished = pyqtSignal(dict)
     cacheFolder = Path('cache/lyric')

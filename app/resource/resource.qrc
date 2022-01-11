@@ -253,6 +253,7 @@
         <file>images/video_window/Volumex.png</file>
         <file>images/video_window/SkipBack.png</file>
         <file>images/video_window/SkipForward.png</file>
+        <file>images/video_window/Download.png</file>
 
         <file>i18n/Groove_zh.qm</file>
     </qresource>

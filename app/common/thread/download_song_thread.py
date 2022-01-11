@@ -7,8 +7,9 @@ from PyQt5.QtCore import QThread, pyqtSignal
 
 
 class DownloadSongThread(QThread):
+    """ 下载在线歌曲线程 """
 
-    downloadOneSongCompleteSig = pyqtSignal()
+    downloadOneSongFinished = pyqtSignal()
 
     def __init__(self, downloadFolder: str, parent=None):
         super().__init__(parent=parent)
@@ -27,7 +28,7 @@ class DownloadSongThread(QThread):
             self.crawler.downloadSong(songInfo, self.downloadFolder, quality)
 
             # 发送完成一首歌下载信号
-            self.downloadOneSongCompleteSig.emit()
+            self.downloadOneSongFinished.emit()
 
     def appendDownloadTask(self, songInfo: dict, quality='Standard quality'):
         """ 添加下载任务 """

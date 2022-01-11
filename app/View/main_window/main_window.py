@@ -198,6 +198,7 @@ class MainWindow(FramelessWindow):
         self.totalStackWidget.addWidget(self.subMainWindow)
         self.totalStackWidget.addWidget(self.playingInterface)
         self.totalStackWidget.addWidget(self.videoWindow)
+        self.subMainWindow.setGraphicsEffect(None)
 
         # 设置右边子窗口的位置
         self.adjustWidgetGeometry()
@@ -210,6 +211,10 @@ class MainWindow(FramelessWindow):
 
         # 设置播放器发送播放位置改变的信号的间隔和视频输出窗口
         self.player.setNotifyInterval(100)
+
+        # 设置 MV 画质
+        self.playingInterface.getMvUrlThread.setVideoQuality(
+            self.settingInterface.config['mv-quality'])
 
         # 初始化播放列表
         self.initPlaylist()
@@ -382,6 +387,10 @@ class MainWindow(FramelessWindow):
 
     def togglePlayState(self):
         """ 播放按钮按下时根据播放器的状态来决定是暂停还是播放 """
+        if self.totalStackWidget.currentWidget() is self.videoWindow:
+            self.videoWindow.togglePlayState()
+            return
+
         if self.player.state() == QMediaPlayer.PlayingState:
             self.player.pause()
             self.setPlayButtonState(False)
@@ -824,7 +833,8 @@ class MainWindow(FramelessWindow):
         self.show()
 
         if self.videoWindow.isVisible():
-            self.titleBar.returnButton.click()
+            # TODO: 从视频界面直接切换回设置界面
+            return
 
         if self.playingInterface.isVisible():
             self.titleBar.returnButton.click()
@@ -936,8 +946,12 @@ class MainWindow(FramelessWindow):
         """ 显示视频界面 """
         self.player.pause()
         self.setPlayButtonState(False)
-        self.videoWindow.setVideo(url)
+
+        songInfo = self.mediaPlaylist.getCurrentSong()
+        self.videoWindow.setVideo(
+            url, songInfo['singer']+' - '+songInfo['songName'])
         self.totalStackWidget.setCurrentIndex(2)
+
         self.navigationHistories.append(("totalStackWidget", 2))
         self.titleBar.returnButton.show()
 
@@ -1181,7 +1195,7 @@ class MainWindow(FramelessWindow):
 
         w = StateTooltip(self.tr("Updating song list"),
                          self.tr("Please wait patiently"), self)
-        w.move(self.width()-w.width()-30, 63)
+        w.move(w.getSuitablePos())
         w.show()
         self.myMusicInterface.rescanSongInfo()
         self.songTabSongListWidget.setPlayBySongInfo(
@@ -1277,6 +1291,8 @@ class MainWindow(FramelessWindow):
             self.searchResultInterface.setOnlinePlayQuality)
         self.settingInterface.pageSizeChanged.connect(
             self.searchResultInterface.setOnlineMusicPageSize)
+        self.settingInterface.mvQualityChanged.connect(
+            self.playingInterface.getMvUrlThread.setVideoQuality)
 
         # 将标题栏返回按钮点击信号连接到槽函数
         self.titleBar.returnButton.clicked.connect(self.onReturnButtonClicked)

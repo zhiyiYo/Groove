@@ -8,7 +8,7 @@ from common.crawler import KuWoMusicCrawler
 from common.thread.download_song_thread import DownloadSongThread
 from common.thread.get_online_song_url_thread import GetOnlineSongUrlThread
 from components.widgets.scroll_area import ScrollArea
-from components.widgets.state_tooltip import StateTooltip
+from components.widgets.state_tooltip import DownloadStateTooltip
 from PyQt5.QtCore import QFile, QObject, Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget
@@ -181,26 +181,26 @@ class SearchResultInterface(ScrollArea):
     def __downloadSong(self, songInfo: dict, quality: str):
         """ 下载歌曲 """
         self.downloadSongThread.appendDownloadTask(songInfo, quality)
-
-        if not self.downloadSongThread.isRunning():
-            # 在 DownloadStateTooltip 的构造函数里使用 QObject().tr() 不起作用
-            title = self.tr('Downloading songs')
-            content = self.tr('There are') + f' {1} ' + \
-                self.tr('left. Please wait patiently')
-            self.downloadStateTooltip = DownloadStateTooltip(
-                title, content, 1, self.window())
-            self.downloadSongThread.downloadOneSongCompleteSig.connect(
-                self.downloadStateTooltip.completeOneDownloadTask)
-            self.downloadStateTooltip.move(
-                self.window().width() - self.downloadStateTooltip.width() - 30, 63)
-            self.downloadStateTooltip.show()
-            self.downloadSongThread.start()
-        else:
+        if self.downloadSongThread.isRunning():
             self.downloadStateTooltip.appendOneDownloadTask()
+            return
+
+        # 在 DownloadStateTooltip 的构造函数里使用 QObject().tr() 不起作用
+        title = self.tr('Downloading songs')
+        content = self.tr('There are') + f' {1} ' + \
+            self.tr('left. Please wait patiently')
+        self.downloadStateTooltip = DownloadStateTooltip(
+            title, content, 1, self.window())
+        self.downloadSongThread.downloadOneSongFinished.connect(
+            self.downloadStateTooltip.completeOneDownloadTask)
+
+        pos = self.downloadStateTooltip.getSuitablePos()
+        self.downloadStateTooltip.move(pos)
+        self.downloadStateTooltip.show()
+        self.downloadSongThread.start()
 
     def __onDownloadAllComplete(self):
         """ 全部下载完成槽函数 """
-        self.downloadSongThread.disconnect()
         self.downloadStateTooltip = None
         self.downloadFinished.emit(self.downloadFolder)
 
@@ -296,6 +296,7 @@ class SearchResultInterface(ScrollArea):
             raise ValueError(f'下载目录 `{folder}` 不存在')
 
         self.downloadSongThread.downloadFolder = folder
+        self.downloadFolder = folder
 
     def setOnlinePlayQuality(self, quality: str):
         """ 设置下载文件夹 """
@@ -412,30 +413,3 @@ class SearchResultInterface(ScrollArea):
         self.downloadSongThread.finished.connect(self.__onDownloadAllComplete)
         self.getOnlineSongUrlThread.getUrlSignal.connect(
             self.__updateOnlineSongInfo)
-
-
-class DownloadStateTooltip(StateTooltip):
-    """ 下载状态提示条 """
-
-    def __init__(self, title, content, downloadTaskNum=1, parent=None):
-        super().__init__(title=title, content=content, parent=parent)
-        self.downloadTaskNum = downloadTaskNum
-
-    def completeOneDownloadTask(self):
-        """ 完成 1 个下载任务 """
-        self.downloadTaskNum -= 1
-        if self.downloadTaskNum > 0:
-            content = self.tr('There are') + f' {self.downloadTaskNum} ' + \
-                self.tr('left. Please wait patiently')
-            self.setContent(content)
-        else:
-            self.setTitle(self.tr('Download complete'))
-            self.setContent(self.tr('Download completed, please check'))
-            self.setState(True)
-
-    def appendOneDownloadTask(self):
-        """ 添加 1 个下载任务 """
-        self.downloadTaskNum += 1
-        content = self.tr('There are') + f' {self.downloadTaskNum} ' + \
-            self.tr('left. Please wait patiently')
-        self.setContent(content)

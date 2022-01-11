@@ -235,6 +235,9 @@ class PlayButton(TwoStateButton):
 
     def setPlay(self, isPlay: bool):
         """ 设置按钮状态 """
+        if self.isPlay == isPlay:
+            return
+
         self.isPlay = isPlay
         self.setState(not isPlay)
         self.update()
@@ -251,7 +254,6 @@ class FullScreenButton(TwoStateButton):
             ":/images/playing_interface/BackToWindow.png",
         ]
         super().__init__(self.iconPath_list, parent, False)
-        # 设置全屏标志位
         self.__isFullScreen = False
 
     def setFullScreen(self, isFullScreen: bool):
@@ -281,7 +283,6 @@ class VolumeButton(CircleButton):
         ]
         self.pixmap_list = [QPixmap(i) for i in self.__iconPath_list]
         super().__init__(self.__iconPath_list[0], parent)
-        # 初始化标志位
         self.isMute = False
         self.__volumeLevel = 0
 

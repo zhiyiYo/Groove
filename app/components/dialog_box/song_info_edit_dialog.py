@@ -283,7 +283,7 @@ class SongInfoEditDialog(MaskDialogBase):
         # 创建进度条
         self.stateToolTip = StateTooltip(self.tr('Retrieve metadata...'),
                                          self.tr('Please wait patiently'), self)
-        self.stateToolTip.move(self.width()-self.stateToolTip.width()-30, 63)
+        self.stateToolTip.move(self.stateToolTip.getSuitablePos())
         self.stateToolTip.show()
 
         # 创建爬虫线程

@@ -51,5 +51,6 @@ SOURCES += app/View/main_window/main_window.py \
         app/common/meta_data_getter/song_info_reader.py \
         app/components/system_tray_icon/system_tray_icon.py \
         app/components/video_window/video_window.py \
+        app/components/widgets/state_tooltip.py \
 
 TRANSLATIONS += app/resource/i18n/Groove_zh.ts

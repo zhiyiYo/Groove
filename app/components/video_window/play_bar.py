@@ -17,7 +17,6 @@ class PlayBar(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self.__showAni = True
         self.progressSlider = Slider(Qt.Horizontal, self)
         self.currentTimeLabel = QLabel('0:00', self)
         self.totalTimeLabel = QLabel('0:00', self)
@@ -28,8 +27,8 @@ class PlayBar(QWidget):
             ":/images/video_window/SkipBack.png", self)
         self.skipForwardButton = CircleButton(
             ":/images/video_window/SkipForward.png", self)
-        self.moreActionsButton = CircleButton(
-            ":/images/playing_interface/More.png", self)
+        self.downloadButton = CircleButton(
+            ":/images/video_window/Download.png", self)
         self.volumeSliderWidget = VolumeSliderWidget(self.window())
 
         self.timer = QTimer(self)
@@ -101,10 +100,10 @@ class PlayBar(QWidget):
             self.playButton.x()-self.skipBackButton.width()-10, 170)
         self.skipForwardButton.move(
             self.playButton.x()+self.skipForwardButton.width()+10, 170)
-        self.moreActionsButton.move(
-            self.width()-self.moreActionsButton.width()-30, 170)
+        self.downloadButton.move(
+            self.width()-self.downloadButton.width()-30, 170)
         self.fullScreenButton.move(
-            self.moreActionsButton.x()-self.fullScreenButton.width()-10, 170)
+            self.downloadButton.x()-self.fullScreenButton.width()-10, 170)
 
     def setCurrentTime(self, currentTime: int):
         """ 更新当前时间标签，currentTime的单位为ms """

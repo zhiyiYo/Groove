@@ -34,7 +34,7 @@ class WanYiMusicCrawler(CrawlerBase):
             "Full HD": 1080,
             "HD": 720,
             "SD": 480,
-            "Fluent": 240
+            "LD": 240
         }
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
@@ -242,7 +242,7 @@ class WanYiMusicCrawler(CrawlerBase):
             MV 信息
 
         quality: str
-            视频画质，可用的有 `Full HD`、`HD`、`SD` 和 `Fluent`
+            视频画质，可用的有 `Full HD`、`HD`、`SD` 和 `LD`
 
         Returns
         -------

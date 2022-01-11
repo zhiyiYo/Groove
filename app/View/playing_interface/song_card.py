@@ -101,6 +101,7 @@ class SongCard(QWidget):
         labelState = f'notChecked-{playState}-{enterState}' if not isChecked else 'checked'
         checkBoxState = f'notChecked-{playState}' if not isChecked else 'checked'
         self.setProperty('state', bgState)
+        self.buttonGroup.setProperty('state', bgState)
         self.checkBox.setProperty('state', checkBoxState)
         self.songNameCard.playingLabel.setProperty('state', checkedState)
         for label in self.label_list:

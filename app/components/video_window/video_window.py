@@ -1,11 +1,15 @@
 # coding:utf-8
+from pathlib import Path
+
+from common.thread.download_mv_thread import DownloadMvThread
 from components.dialog_box.message_dialog import MessageDialog
-from PyQt5.QtCore import QSizeF, Qt, QUrl, pyqtSignal, QSize
+from components.widgets.state_tooltip import DownloadStateTooltip, StateTooltip
+from PyQt5.QtCore import QSizeF, Qt, QUrl, pyqtSignal, QSize, QPoint
 from PyQt5.QtGui import QPainter
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QGraphicsVideoItem
 from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsScene,
-                             QGraphicsView)
+                             QGraphicsView, QFileDialog)
 
 from .play_bar import PlayBar
 
@@ -13,10 +17,15 @@ from .play_bar import PlayBar
 class VideoWindow(QGraphicsView):
     """ 视频界面 """
 
-    fullScreenChanged = pyqtSignal(bool) # 进入/退出全屏
+    downloadSignal = pyqtSignal(str, str)  # 下载 MV
+    fullScreenChanged = pyqtSignal(bool)   # 进入/退出全屏
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
+        self.url = ''
+        self.videoName = ''
+        self.downloadStateTooltip = None
+        self.downloadMvThread = DownloadMvThread(self)
         self.graphicsScene = QGraphicsScene(self)
         self.videoItem = GraphicsVideoItem()
         self.player = QMediaPlayer(self)
@@ -56,16 +65,19 @@ class VideoWindow(QGraphicsView):
         self.playBar.move(0, self.height()-self.playBar.height())
         self.playBar.setFixedSize(self.width(), self.playBar.height())
 
-    def setVideo(self, url: str):
+    def setVideo(self, url: str, videoName: str):
         """ 设置视频 """
+        self.url = url
+        self.videoName = videoName
+        self.resetTransform()
         self.player.setMedia(QMediaContent(QUrl(url)))
-        self.play()
         self.videoItem.setSize(QSizeF(self.size()))
+        self.play()
 
     def togglePlayState(self):
         """ 切换播放状态 """
         if self.player.state() == QMediaPlayer.PlayingState:
-            self.player.pause()
+            self.pause()
         else:
             self.play()
 
@@ -172,6 +184,32 @@ class VideoWindow(QGraphicsView):
         w.yesButton.hide()
         w.exec()
 
+    def __onDownloadButtonClicked(self):
+        """ 下载按钮点击槽函数 """
+        path, _ = QFileDialog.getSaveFileName(
+            self, self.tr('save as'), f'./{self.videoName}', 'MP4 (*.mp4)')
+        if not path:
+            return
+
+        self.downloadMvThread.appendDownloadTask(self.url, path)
+
+        if self.downloadMvThread.isRunning():
+            self.downloadStateTooltip.appendOneDownloadTask()
+            return
+
+        title = self.tr('Downloading MVs')
+        content = self.tr('There are') + \
+            f' {1} ' + self.tr('left. Please wait patiently')
+        self.downloadStateTooltip = DownloadStateTooltip(
+            title, content, 1, self.window())
+        self.downloadMvThread.downloadOneMvFinished.connect(
+            self.downloadStateTooltip.completeOneDownloadTask)
+
+        pos = self.downloadStateTooltip.getSuitablePos()
+        self.downloadStateTooltip.move(pos)
+        self.downloadStateTooltip.show()
+        self.downloadMvThread.start()
+
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
         self.player.error.connect(self.__onPlayerError)
@@ -189,7 +227,8 @@ class VideoWindow(QGraphicsView):
             self.player.setVolume)
         self.playBar.fullScreenButton.fullScreenChanged.connect(
             self.fullScreenChanged)
-
+        self.playBar.downloadButton.clicked.connect(
+            self.__onDownloadButtonClicked)
 
 
 class GraphicsVideoItem(QGraphicsVideoItem):

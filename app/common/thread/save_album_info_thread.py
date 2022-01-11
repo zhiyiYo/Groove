@@ -4,6 +4,7 @@ from PyQt5.QtCore import QThread, pyqtSignal
 
 
 class SaveAlbumInfoThread(QThread):
+    """ 保存专辑信息线程 """
 
     saveFinishedSignal = pyqtSignal(dict, dict, str)
 
