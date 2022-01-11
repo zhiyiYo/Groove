@@ -42,10 +42,10 @@
 ![创建播放列表](docs/screenshot/创建播放列表.gif)
 
 * View and edit information
-![编辑歌曲和专辑信息](docs/screenshot/编辑歌曲和专辑信息.gif)
+![编辑歌曲信息](docs/screenshot/编辑歌曲信息.gif)
 
-* Automatically retrieve and update missing metadata
-![爬虫](docs/screenshot/爬取歌曲信息.gif)
+* Watch and download MV
+![观看MV](docs/screenshot/观看MV.gif)
 
 ## Quick start
 1. Create virtual environment:
