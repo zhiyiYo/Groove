@@ -64,7 +64,7 @@ class SmallestPlayInterface(FramelessWindow):
         self.resize(350, 350)
         self.setMinimumSize(206, 197)
         self.setWindowFlags(self.windowFlags() | Qt.Window)
-        self.windowEffect.addShadowEffect(int(self.winId()))
+        self.windowEffect.addMenuShadowEffect(int(self.winId()))
         self.albumCoverLabel.setScaledContents(True)
         self.progressBar.installEventFilter(self)
         self.__setQss()

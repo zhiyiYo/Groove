@@ -29,7 +29,7 @@ class AeroMenu(QMenu):
     def setMenuEffect(self):
         """ 开启特效 """
         self.windowEffect.setAeroEffect(self.winId())
-        self.windowEffect.addShadowEffect(self.winId())
+        self.windowEffect.addMenuShadowEffect(self.winId())
 
     def setQss(self):
         """ 设置层叠样式 """
@@ -86,7 +86,7 @@ class DWMMenu(QMenu):
 
     def event(self, e: QEvent):
         if e.type() == QEvent.WinIdChange:
-            self.windowEffect.addShadowEffect(self.winId())
+            self.windowEffect.addMenuShadowEffect(self.winId())
         return QMenu.event(self, e)
 
     def setQss(self):

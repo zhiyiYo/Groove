@@ -65,8 +65,7 @@ class KuGouMusicCrawler(CrawlerBase):
 
     def __getMvUrlParams(self, mv_hash: str):
         """ 返回请求 MV 播放地址所需的参数 """
-        #k = int(round(time()*1000))
-        k = 1641900413730
+        k = int(round(time()*1000))
         infos = ["NVPh5oo715z5DIWAeQlhMDsWXXQV4hwt", "appid=1014", f"clienttime={k}",
                  "clientver=20000", "cmd=123", "dfid=-", "ext=mp4", f"hash={mv_hash}",
                  "ismp3=0", "key=kugoumvcloud", f"mid={k}", "pid=6", "srcappid=2919",

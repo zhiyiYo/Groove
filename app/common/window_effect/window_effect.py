@@ -119,6 +119,18 @@ class WindowEffect:
             窗口句柄
         """
         hWnd = int(hWnd)
+        margins = MARGINS(-1, -1, -1, -1)
+        self.DwmExtendFrameIntoClientArea(hWnd, byref(margins))
+
+    def addMenuShadowEffect(self, hWnd):
+        """ 给菜单添加阴影
+
+        Parameter
+        ----------
+        hWnd: int or `sip.voidptr`
+            窗口句柄
+        """
+        hWnd = int(hWnd)
         self.DwmSetWindowAttribute(
             hWnd,
             DWMWINDOWATTRIBUTE.DWMWA_NCRENDERING_POLICY.value,

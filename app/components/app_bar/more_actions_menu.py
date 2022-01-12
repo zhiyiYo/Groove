@@ -31,7 +31,7 @@ class MoreActionsMenu(QMenu):
 
     def event(self, e: QEvent):
         if e.type() == QEvent.WinIdChange:
-            self.windowEffect.addShadowEffect(self.winId())
+            self.windowEffect.addMenuShadowEffect(self.winId())
         return QMenu.event(self, e)
 
     def __setQss(self):
