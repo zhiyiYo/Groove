@@ -97,6 +97,11 @@ class DominantColor:
         ----------
         imagePath: str
             图片路径
+
+        Returns
+        -------
+        r, g, b: int
+            主题色各个通道的灰度值
         """
         if imagePath.startswith(':'):
             return (24, 24, 24)
@@ -211,7 +216,7 @@ def getPicSuffix(pic_data) -> str:
             suffix = '.jpg'
     except:
         suffix = '.jpg'
-        
+
     return suffix
 
 

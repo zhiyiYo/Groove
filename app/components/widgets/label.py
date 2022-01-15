@@ -198,9 +198,10 @@ class BlurCoverLabel(QLabel):
         self.blurThread = BlurCoverThread(self)
         self.blurThread.blurFinished.connect(self.__onBlurFinished)
 
-    def __onBlurFinished(self, blurPixmap: QPixmap):
+    def __onBlurFinished(self, blurPixmap: QPixmap, color: QColor):
         """ 磨砂完成槽函数 """
         self.maskLabel.fadeOut()
+        self.acrylicTextureLabel.setTintColor(color)
         self.blurPixmap = blurPixmap
         self.adjustCover()
 

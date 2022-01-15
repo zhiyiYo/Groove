@@ -1,15 +1,15 @@
 # coding:utf-8
 
 from PyQt5.QtCore import QThread, pyqtSignal
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QColor
 
-from common.image_process_utils import getBlurPixmap
+from common.image_process_utils import getBlurPixmap, DominantColor
 
 
 class BlurCoverThread(QThread):
     """ 磨砂专辑封面线程 """
 
-    blurFinished = pyqtSignal(QPixmap)
+    blurFinished = pyqtSignal(QPixmap, QColor)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -20,10 +20,13 @@ class BlurCoverThread(QThread):
 
     def run(self):
         """ 开始磨砂 """
-        if self.coverPath:
-            self.blurPixmap = getBlurPixmap(
-                self.coverPath, self.blurRadius, 0.85, self.maxSize)
-            self.blurFinished.emit(self.blurPixmap)
+        if not self.coverPath:
+            return
+
+        color = DominantColor.getDominantColor(self.coverPath)
+        self.blurPixmap = getBlurPixmap(
+            self.coverPath, self.blurRadius, 0.85, self.maxSize)
+        self.blurFinished.emit(self.blurPixmap, QColor(*color))
 
     def setCover(self, coverPath: str, blurRadius=6, maxSize: tuple = (450, 450)):
         """ 设置磨砂的目标图片
