@@ -2,8 +2,8 @@
 from common.image_process_utils import DominantColor
 from components.widgets.menu import PlayBarMoreActionsMenu
 from components.widgets.slider import HollowHandleStyle, Slider
-from PyQt5.QtCore import (QEasingCurve, QPoint, QPropertyAnimation, Qt,
-                          pyqtProperty, pyqtSignal)
+from PyQt5.QtCore import (QEasingCurve, QParallelAnimationGroup, QPoint,
+                          QPropertyAnimation, Qt, pyqtProperty, pyqtSignal)
 from PyQt5.QtGui import QColor, QPalette, QResizeEvent
 from PyQt5.QtMultimedia import QMediaPlaylist
 from PyQt5.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
@@ -36,6 +36,7 @@ class PlayBar(QWidget):
         super().__init__(parent)
         self.oldWidth = 1280
         self.__color = color
+        self.aniGroup = QParallelAnimationGroup(self)
         self.colorAni = QPropertyAnimation(self, b'color', self)
 
         # 创建小部件
@@ -53,6 +54,10 @@ class PlayBar(QWidget):
         """ 初始化小部件 """
         self.resize(1312, 115)
         self.setFixedHeight(115)
+
+        # 将动画添加到动画组中
+        self.aniGroup.addAnimation(self.colorAni)
+        self.aniGroup.addAnimation(self.songInfoCard.albumCoverLabel.ani)
 
         # 设置背景色
         self.setAutoFillBackground(True)
@@ -145,7 +150,7 @@ class PlayBar(QWidget):
         self.volumeSlider.valueChanged.connect(self.volumeChanged)
         self.progressSlider.clicked.connect(self.progressSliderMoved)
         self.songInfoCard.clicked.connect(self.showPlayingInterfaceSig)
-        self.songInfoCard.albumChanged.connect(self.__updateDominantColor)
+        self.songInfoCard.albumChanged.connect(self.__onAlbumChanged)
         self.moreActionsButton.clicked.connect(self.__showMoreActionsMenu)
         self.progressSlider.sliderMoved.connect(self.progressSliderMoved)
         self.volumeButton.muteStateChanged.connect(self.muteStateChanged)
@@ -162,15 +167,22 @@ class PlayBar(QWidget):
         self.moreActionsMenu.clearPlayListAct.triggered.connect(
             self.clearPlaylistSig)
 
-    def __updateDominantColor(self, albumPath: str):
-        """ 更新主色调 """
+    def __onAlbumChanged(self, albumPath: str):
+        """ 更新专辑槽函数 """
         r, g, b = DominantColor.getDominantColor(albumPath)
         self.colorChanged.emit(QColor(r, g, b))
+
         self.colorAni.setStartValue(self.getColor())
         self.colorAni.setEndValue(QColor(r, g, b))
         self.colorAni.setEasingCurve(QEasingCurve.OutQuart)
-        self.colorAni.setDuration(100)
-        self.colorAni.start()
+        self.colorAni.setDuration(400)
+
+        self.songInfoCard.albumCoverLabel.ani.setStartValue(0)
+        self.songInfoCard.albumCoverLabel.ani.setEndValue(1)
+        self.songInfoCard.albumCoverLabel.ani.setEasingCurve(
+            QEasingCurve.OutQuad)
+
+        self.aniGroup.start()
 
     def setColor(self, color: QColor):
         """ 设置背景颜色 """

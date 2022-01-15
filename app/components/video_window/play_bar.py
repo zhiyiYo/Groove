@@ -31,7 +31,6 @@ class PlayBar(QWidget):
             ":/images/video_window/Download.png", self)
         self.volumeSliderWidget = VolumeSliderWidget(self.window())
 
-        self.timer = QTimer(self)
         self.__initWidget()
 
     def __initWidget(self):
@@ -39,7 +38,6 @@ class PlayBar(QWidget):
         self.__setQss()
         self.resize(600, 250)
         self.setAttribute(Qt.WA_TranslucentBackground)
-        self.timer.setSingleShot(True)
         self.setMouseTracking(True)
 
         # 设置滑动条样式
@@ -48,12 +46,12 @@ class PlayBar(QWidget):
             "sub-page.color": QColor(72, 210, 242),
             "add-page.color": QColor(255, 255, 255, 50),
             "handle.color": QColor(72, 210, 242),
-            "handle.ring-width": 3,
-            "handle.hollow-radius": 9,
+            "handle.ring-width": 2,
+            "handle.hollow-radius": 10,
             "handle.margin": 0
         })
         self.progressSlider.setStyle(style)
-        self.progressSlider.setFixedHeight(24)
+        self.progressSlider.setFixedHeight(25)
 
         self.__initLayout()
         self.__connectSignalToSlot()
@@ -91,7 +89,8 @@ class PlayBar(QWidget):
 
     def resizeEvent(self, e):
         super().resizeEvent(e)
-        self.progressSlider.resize(self.width()-60, 24)
+        self.progressSlider.resize(
+            self.width()-60, self.progressSlider.height())
         self.progressSlider.move(30, self.progressSlider.y())
         self.totalTimeLabel.move(
             self.width()-30-self.totalTimeLabel.width(), 124)
@@ -143,25 +142,8 @@ class PlayBar(QWidget):
         else:
             self.volumeSliderWidget.hide()
 
-    def leaveEvent(self, e):
-        """ 离开窗口时打开计时器 """
-        self.timer.start(1000)
-
-    def enterEvent(self, e):
-        """ 进入窗口时停止计时器 """
-        self.timer.stop()
-
-    def mouseMoveEvent(self, e):
-        """ 鼠标移动时停止计时器 """
-        self.timer.stop()
-
-    def showEvent(self, e):
-        super().showEvent(e)
-        self.timer.start(1000)
-
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
-        self.timer.timeout.connect(self.hide)
         self.progressSlider.clicked.connect(self.progressSliderMoved)
         self.progressSlider.sliderMoved.connect(self.progressSliderMoved)
         self.volumeButton.clicked.connect(self.__toggleVolumeWidget)

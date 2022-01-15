@@ -46,7 +46,7 @@ class KuWoMusicCrawler(CrawlerBase):
         for info in data['list']:
             song_info = {}
             song_info['rid'] = info['rid']
-            song_info['songPath'] = ''
+            song_info['songPath'] = self.song_url_mark  # 标记还未获得播放地址
             song_info['songName'] = info['name']
             song_info['singer'] = info['artist']
             song_info['album'] = info['album']

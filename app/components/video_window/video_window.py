@@ -114,19 +114,10 @@ class VideoWindow(QGraphicsView):
 
     def mouseMoveEvent(self, e):
         """ 鼠标移动时显示播放栏 """
-        self.__showPlayBar()
+        self.playBar.show()
 
     def mousePressEvent(self, e):
         """ 鼠标点击时切换播放栏可见性 """
-        self.__togglePlayBar()
-
-    def __showPlayBar(self):
-        """ 显示播放栏 """
-        if not self.playBar.isVisible():
-            self.playBar.show()
-
-    def __togglePlayBar(self):
-        """ 切换播放栏可见性 """
         self.playBar.setVisible(not self.playBar.isVisible())
 
     def __enterFullScreen(self):

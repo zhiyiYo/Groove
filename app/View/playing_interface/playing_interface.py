@@ -2,6 +2,7 @@
 from copy import deepcopy
 from typing import Dict, List
 
+from common.os_utils import getCoverPath
 from common.thread.get_lyric_thread import GetLyricThread
 from common.thread.get_mv_url_thread import GetMvUrlThread
 from components.buttons.three_state_button import ThreeStatePushButton
@@ -41,7 +42,7 @@ class PlayingInterface(QWidget):
     volumeChanged = pyqtSignal(int)                      # 改变音量
     randomPlayAllSig = pyqtSignal()                      # 创建新的无序播放列表
     randomPlayChanged = pyqtSignal(bool)                 # 随机播放当前播放列表
-    removeMediaSignal = pyqtSignal(int)                  # 从播放列表移除歌曲
+    removeSongSignal = pyqtSignal(int)                  # 从播放列表移除歌曲
     muteStateChanged = pyqtSignal(bool)                  # 静音/取消静音
     progressSliderMoved = pyqtSignal(int)                # 歌曲进度条滑动
     fullScreenChanged = pyqtSignal(bool)                 # 进入/退出全屏
@@ -64,7 +65,6 @@ class PlayingInterface(QWidget):
         self.isPlaylistVisible = False
         self.isInSelectionMode = True
         self.isLyricVisible = True
-        self.blurPixmap = None
 
         # 创建线程
         self.getLyricThread = GetLyricThread(self)
@@ -334,6 +334,7 @@ class PlayingInterface(QWidget):
 
     def __removeSongFromPlaylist(self, index):
         """ 从播放列表中移除选中的歌曲 """
+        n = len(self.playlist)
 
         if self.currentIndex > index:
             self.currentIndex -= 1
@@ -342,9 +343,13 @@ class PlayingInterface(QWidget):
         elif self.currentIndex == index:
             self.currentIndex -= 1
             self.songInfoCardChute.currentIndex -= 1
+            if n > 0:
+                name = self.playlist[self.currentIndex].get(
+                    'coverName', '未知歌手_未知专辑')
+                self.albumCoverLabel.setCover(getCoverPath(name, "album_big"))
+                self.__getLyric()
 
         # 强制更新当前歌曲的信息
-        n = len(self.playlist)
         if n > 0:
             self.songInfoCardChute.cards[1].updateCard(
                 self.playlist[self.currentIndex])
@@ -361,7 +366,7 @@ class PlayingInterface(QWidget):
                 self.songInfoCardChute.cards[0].updateCard(
                     self.playlist[self.currentIndex-1])
 
-        self.removeMediaSignal.emit(index)
+        self.removeSongSignal.emit(index)
 
         # 如果播放列表为空，隐藏小部件
         if len(self.playlist) == 0:

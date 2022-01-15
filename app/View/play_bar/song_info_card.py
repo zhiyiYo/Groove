@@ -2,10 +2,11 @@
 import re
 
 from common.os_utils import getCoverPath
+from components.widgets.label import FadeInLabel
 from components.widgets.perspective_widget import PerspectiveWidget
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QFont, QFontMetrics, QPainter, QPixmap
-from PyQt5.QtWidgets import QLabel, QWidget
+from PyQt5.QtWidgets import QWidget
 
 
 class SongInfoCard(PerspectiveWidget):
@@ -21,7 +22,7 @@ class SongInfoCard(PerspectiveWidget):
         self.coverPath = ""
 
         # 创建小部件
-        self.albumPic = QLabel(self)
+        self.albumCoverLabel = FadeInLabel(self)
         self.windowMask = WindowMask(self, (0, 0, 0, 25))
         self.textWindow = ScrollTextWindow(songInfo, self)
 
@@ -33,7 +34,7 @@ class SongInfoCard(PerspectiveWidget):
         self.resize(115 + 15 + self.textWindow.width() + 25, 115)
         self.setAttribute(Qt.WA_StyledBackground | Qt.WA_TranslucentBackground)
         self.textWindow.move(130, 0)
-        self.albumPic.resize(115, 115)
+        self.albumCoverLabel.resize(115, 115)
 
         self.__setAlbumCover()
 
@@ -88,7 +89,7 @@ class SongInfoCard(PerspectiveWidget):
         if newCoverPath != self.coverPath:
             self.albumChanged.emit(newCoverPath)
             self.coverPath = newCoverPath
-            self.albumPic.setPixmap(QPixmap(newCoverPath).scaled(
+            self.albumCoverLabel.setPixmap(QPixmap(newCoverPath).scaled(
                 115, 115, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
 
 

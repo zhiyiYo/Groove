@@ -117,7 +117,7 @@ class KuGouMusicCrawler(CrawlerBase):
             song_info["singer"] = re.sub(pattern, '', info["SingerName"])
             song_info["album"] = info["AlbumName"]
             song_info["albumID"] = info["AlbumID"]
-            song_info['songPath'] = ''
+            song_info['songPath'] = self.song_url_mark
             song_info["coverPath"] = ''
             song_info["coverName"] = adjustName(
                 info["SingerName"] + '_' + info["AlbumName"])

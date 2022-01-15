@@ -63,7 +63,7 @@ class WanYiMusicCrawler(CrawlerBase):
         for info in data['songs']:
             song_info = {}
             song_info['id'] = info['id']
-            song_info['songPath'] = ''
+            song_info['songPath'] = self.song_url_mark
             song_info['songName'] = info['name']
             song_info['singer'] = info['ar'][0]['name']
             song_info['album'] = info['al']['name']

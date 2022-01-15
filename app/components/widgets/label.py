@@ -1,6 +1,6 @@
 # coding:utf-8
 from common.thread.blur_cover_thread import BlurCoverThread
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal, QPropertyAnimation, pyqtProperty
 from PyQt5.QtGui import (QBrush, QColor, QImage, QMouseEvent, QPainter,
                          QPalette, QPixmap)
 from PyQt5.QtWidgets import QLabel
@@ -60,6 +60,57 @@ class AvatarLabel(QLabel):
         painter.setBrush(QBrush(self.__pixmap.scaled(
             w, w, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)))
         painter.drawRoundedRect(self.rect(), w//2, w//2)
+
+
+class FadeInLabel(QLabel):
+    """ 淡入标签 """
+
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self.__opacity = 0
+        self.__pixmap = None
+        self.setAttribute(Qt.WA_TranslucentBackground)
+        self.ani = QPropertyAnimation(self, b'opacity', self)
+        self.ani.setDuration(400)
+
+    def getOpacity(self):
+        return self.__opacity
+
+    def setOpacity(self, opacity: float):
+        self.__opacity = opacity
+        self.update()
+
+    def setPixmap(self, pixmap: QPixmap):
+        self.__opacity = 0
+        self.__pixmap = pixmap
+        self.update()
+
+    def paintEvent(self, e):
+        """ 绘制图像 """
+        painter = QPainter(self)
+        painter.setOpacity(self.__opacity)
+        painter.drawPixmap(0, 0, self.__pixmap)
+
+    opacity = pyqtProperty(float, getOpacity, setOpacity)
+
+
+class FadeOutMaskLabel(FadeInLabel):
+    """ 淡出遮罩 """
+
+    def fadeOut(self):
+        """ 显示并淡出遮罩 """
+        if self.ani.state() == self.ani.Running:
+            return
+
+        self.ani.setStartValue(1)
+        self.ani.setEndValue(0)
+        self.ani.setDuration(300)
+        self.ani.start()
+
+    def resizeEvent(self, e):
+        pixmap = QPixmap(self.size())
+        pixmap.fill(Qt.black)
+        self.setPixmap(pixmap)
 
 
 class AcrylicTextureLabel(QLabel):
@@ -143,11 +194,13 @@ class BlurCoverLabel(QLabel):
         self.acrylicTextureLabel = AcrylicTextureLabel(
             Qt.black, tintOpacity=0.4, parent=self)
         self.blurPixmap = QPixmap()
+        self.maskLabel = FadeOutMaskLabel(self)
         self.blurThread = BlurCoverThread(self)
         self.blurThread.blurFinished.connect(self.__onBlurFinished)
 
     def __onBlurFinished(self, blurPixmap: QPixmap):
         """ 磨砂完成槽函数 """
+        self.maskLabel.fadeOut()
         self.blurPixmap = blurPixmap
         self.adjustCover()
 
@@ -172,8 +225,10 @@ class BlurCoverLabel(QLabel):
 
     def setForegroundColor(self, color: QColor):
         """ 设置前景色 """
+        self.maskLabel.fadeOut()
         self.acrylicTextureLabel.setTintColor(color)
 
     def resizeEvent(self, e):
         super().resizeEvent(e)
         self.acrylicTextureLabel.resize(self.size())
+        self.maskLabel.resize(self.size())

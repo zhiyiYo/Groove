@@ -14,10 +14,10 @@ from components.media_player import MediaPlaylist, PlaylistType
 from components.system_tray_icon import SystemTrayIcon
 from components.thumbnail_tool_bar import ThumbnailToolBar
 from components.title_bar import TitleBar
+from components.video_window import VideoWindow
 from components.widgets.stacked_widget import (OpacityAniStackedWidget,
                                                PopUpAniStackedWidget)
 from components.widgets.state_tooltip import StateTooltip
-from components.video_window import VideoWindow
 from PyQt5.QtCore import QEasingCurve, QEvent, QFile, Qt, QTimer
 from PyQt5.QtGui import QCloseEvent, QColor, QIcon, QPixmap
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist
@@ -495,7 +495,7 @@ class MainWindow(FramelessWindow):
         self.smallestPlayInterface.setPlaylist(newPlaylist, False)
         self.playingInterface.setCurrentIndex(
             self.mediaPlaylist.currentIndex())
-        self.mediaPlaylist.insertMedia(
+        self.mediaPlaylist.insertSong(
             self.mediaPlaylist.currentIndex() + 1, songInfo)
 
     def onSongTabSongCardPlay(self, songInfo: dict):
@@ -601,7 +601,7 @@ class MainWindow(FramelessWindow):
         self.playingInterface.setCurrentIndex(
             self.mediaPlaylist.currentIndex())
         # insertMedia的时候自动更新playlist列表，所以不必手动更新列表
-        self.mediaPlaylist.insertMedias(
+        self.mediaPlaylist.insertSongs(
             self.mediaPlaylist.currentIndex() + 1, songInfo_list)
 
     def disorderPlayAll(self):
@@ -634,6 +634,7 @@ class MainWindow(FramelessWindow):
         if self.mediaPlaylist.playlist:
             self.playBar.updateSongInfoCard(
                 self.mediaPlaylist.getCurrentSong())
+            self.playBar.songInfoCard.albumCoverLabel.setOpacity(1)
 
         self.onPlayBarColorChanged(self.playBar.color)
 
@@ -1351,8 +1352,8 @@ class MainWindow(FramelessWindow):
         self.playingInterface.fullScreenChanged.connect(self.setFullScreen)
         self.playingInterface.loopModeChanged.connect(self.switchLoopMode)
         self.playingInterface.clearPlaylistSig.connect(self.clearPlaylist)
-        self.playingInterface.removeMediaSignal.connect(
-            self.mediaPlaylist.removeMedia)
+        self.playingInterface.removeSongSignal.connect(
+            self.mediaPlaylist.removeSong)
         self.playingInterface.randomPlayAllSig.connect(self.disorderPlayAll)
         self.playingInterface.progressSliderMoved.connect(
             self.onprogressSliderMoved)
@@ -1567,12 +1568,12 @@ class MainWindow(FramelessWindow):
             self.onSelectionModeStateChanged)
 
         # 将系统托盘图标信号连接到槽函数
+        qApp.aboutToQuit.connect(self.systemTrayIcon.hide)
         self.systemTrayIcon.exitSignal.connect(self.onExit)
         self.systemTrayIcon.showMainWindowSig.connect(self.show)
         self.systemTrayIcon.togglePlayStateSig.connect(self.togglePlayState)
         self.systemTrayIcon.lastSongSig.connect(self.mediaPlaylist.previous)
         self.systemTrayIcon.nextSongSig.connect(self.mediaPlaylist.next)
-        qApp.aboutToQuit.connect(self.systemTrayIcon.hide)
         self.systemTrayIcon.switchToSettingInterfaceSig.connect(
             self.switchToSettingInterface)
         self.systemTrayIcon.showPlayingInterfaceSig.connect(

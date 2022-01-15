@@ -20,9 +20,6 @@ class GetOnlineSongUrlThread(QThread):
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                           'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
-            'Cookie': '_ga=GA1.2.136730414.1610802835; _gid=GA1.2.80092114.1621072767; Hm_lvt_cdb524f'
-                      '42f0ce19b169a8071123a4797=1621072767; Hm_lpvt_cdb524f42f0ce19b169a8071123a4797'
-                      '=1621073279; _gat=1; kw_token=C713RK6IJ8J'
         }
         self.crawler = KuWoMusicCrawler()
 

@@ -38,6 +38,8 @@ def exceptionHandler(*default):
 class CrawlerBase:
     """ 爬虫抽象类 """
 
+    song_url_mark = 'http'  # 还未取得歌曲播放地址时的标记
+
     def __init__(self):
         self.qualities = ['Standard quality', 'High quality', 'Super quality']
         self.headers = {

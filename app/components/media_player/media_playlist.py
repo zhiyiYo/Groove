@@ -56,13 +56,13 @@ class MediaPlaylist(QMediaPlaylist):
         for songInfo in songInfo_list:
             super().addMedia(QMediaContent(QUrl(songInfo["songPath"])))
 
-    def insertMedia(self, index: int, songInfo: dict):
+    def insertSong(self, index: int, songInfo: dict):
         """ 在指定位置插入要播放的歌曲 """
         super().insertMedia(
             index, QMediaContent(QUrl(songInfo["songPath"])))
         self.playlist.insert(index, songInfo)
 
-    def insertMedias(self, index: int, songInfo_list: list):
+    def insertSongs(self, index: int, songInfo_list: list):
         """ 插入播放列表 """
         if not songInfo_list:
             return
@@ -179,15 +179,15 @@ class MediaPlaylist(QMediaPlaylist):
                 if not os.path.exists(songInfo.get("songPath", "")):
                     self.playlist.remove(songInfo)
 
-    def removeMedia(self, index):
+    def removeSong(self, index):
         """ 在播放列表中移除歌曲 """
         currentIndex = self.currentIndex()
         if currentIndex >= index:
             currentIndex -= 1
+
         self.playlist.pop(index)
         super().removeMedia(index)
         self.setCurrentIndex(currentIndex)
-        self.currentIndexChanged.emit(currentIndex)
 
     def updateOneSongInfo(self, newSongInfo: dict):
         """ 更新播放列表中一首歌曲的信息 """
