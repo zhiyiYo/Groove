@@ -85,12 +85,14 @@ class BasicSongListWidget(ListWidget):
         item = QListWidgetItem()
         songCard = SongCardFactory.create(self.songCardType, songInfo)
         songCard.itemIndex = len(self.songCard_list)
-        songCard.resize(self.viewport().width(), 60)
+
+        # 调整宽度
+        margin = self.viewportMargins()
+        songCard.resize(self.width()-margin.left()-margin.right(), 60)
         item.setSizeHint(QSize(songCard.width(), 60))
+
         self.addItem(item)
         self.setItemWidget(item, songCard)
-
-        # 将项目添加到项目列表中
         self.songCard_list.append(songCard)
         self.item_list.append(item)
 

@@ -29,6 +29,7 @@ class NoScrollSongListWidget(BasicSongListWidget):
             列表视图底部留白
         """
         super().__init__(songInfo_list, songCardType, parent, viewportMargins, 0)
+        self.resize(1150, 758)
         self.__paddingBottomHeight = paddingBottomHeight
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)

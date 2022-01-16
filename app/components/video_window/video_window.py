@@ -3,8 +3,8 @@ from pathlib import Path
 
 from common.thread.download_mv_thread import DownloadMvThread
 from components.dialog_box.message_dialog import MessageDialog
-from components.widgets.state_tooltip import DownloadStateTooltip, StateTooltip
-from PyQt5.QtCore import QSizeF, Qt, QUrl, pyqtSignal, QSize, QPoint
+from components.widgets.state_tooltip import DownloadStateTooltip
+from PyQt5.QtCore import QSizeF, Qt, QUrl, pyqtSignal, QTimer
 from PyQt5.QtGui import QPainter
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QGraphicsVideoItem
@@ -30,6 +30,7 @@ class VideoWindow(QGraphicsView):
         self.videoItem = GraphicsVideoItem()
         self.player = QMediaPlayer(self)
         self.playBar = PlayBar(self)
+        self.hidePlayBarTimer = QTimer(self)
         self.toggleFullScreenAct = QAction(
             self, shortcut=Qt.Key_F11, triggered=self.__toggleFullScreen)
         self.__initWidget()
@@ -40,7 +41,7 @@ class VideoWindow(QGraphicsView):
         self.setMouseTracking(True)
         self.setScene(self.graphicsScene)
         self.addActions([self.toggleFullScreenAct])
-        self.setWindowTitle(self.tr('Groove Music'))
+        self.hidePlayBarTimer.setSingleShot(True)
 
         # 设置视频播放窗口
         self.graphicsScene.addItem(self.videoItem)
@@ -114,11 +115,15 @@ class VideoWindow(QGraphicsView):
 
     def mouseMoveEvent(self, e):
         """ 鼠标移动时显示播放栏 """
+        self.hidePlayBarTimer.stop()
         self.playBar.show()
+        self.hidePlayBarTimer.start(1500)
 
     def mousePressEvent(self, e):
         """ 鼠标点击时切换播放栏可见性 """
         self.playBar.setVisible(not self.playBar.isVisible())
+        if self.playBar.isVisible():
+            self.hidePlayBarTimer.start(1500)
 
     def __enterFullScreen(self):
         """ 进入全屏 """
@@ -220,6 +225,8 @@ class VideoWindow(QGraphicsView):
             self.fullScreenChanged)
         self.playBar.downloadButton.clicked.connect(
             self.__onDownloadButtonClicked)
+
+        self.hidePlayBarTimer.timeout.connect(self.playBar.hide)
 
 
 class GraphicsVideoItem(QGraphicsVideoItem):
