@@ -94,6 +94,7 @@ class KuWoMusicCrawler(CrawlerBase):
 
         return play_url
 
+    @exceptionHandler('')
     def downloadSong(self, song_info: dict, save_dir: str, quality='Standard quality') -> str:
         # 获取下载地址
         url = self.getSongUrl(song_info, quality)
@@ -106,20 +107,10 @@ class KuWoMusicCrawler(CrawlerBase):
         headers.pop('csrf')
         headers.pop('Host')
         response = requests.get(url, headers=headers)
+        response.raise_for_status()
 
         # 保存歌曲文件
-        song_path = os.path.join(
-            save_dir, f"{song_info['singer']} - {song_info['songName']}.mp3")
-        with open(song_path, 'wb') as f:
-            f.write(response.content)
-
-        # 修改歌曲元数据
-        song_info_ = song_info.copy()
-        song_info_['songPath'] = song_path
-        writeSongInfo(song_info_)
-        writeAlbumCover(song_path, song_info["coverPath"])
-
-        return song_path
+        return self.saveSong(song_info, save_dir, '.mp3', response.content)
 
     @exceptionHandler([], 0)
     def search(self, key_word: str, page_num=1, page_size=10, quality: str = 'Standard quality') -> Tuple[List[dict], int]:

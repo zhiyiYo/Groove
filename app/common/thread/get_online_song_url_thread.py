@@ -2,7 +2,7 @@
 import requests
 import os
 
-from common.os_utils import checkDirExists
+from common.meta_data import AlbumCoverReader
 from common.crawler import KuWoMusicCrawler
 from PyQt5.QtCore import Qt, pyqtSignal, QThread
 
@@ -10,12 +10,13 @@ from PyQt5.QtCore import Qt, pyqtSignal, QThread
 class GetOnlineSongUrlThread(QThread):
     """ 爬取歌曲播放地址线程 """
 
-    getUrlSignal = pyqtSignal(int, str, str)  # 发送歌曲索引，播放地址和本地封面地址
+    crawlFinished = pyqtSignal(str, str)
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self.offset = 0
-        self.songInfo_list = []
+        self.playUrl = None
+        self.coverPath = None
+        self.songInfo = None
         self.quality = 'Standard quality'
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
@@ -23,48 +24,34 @@ class GetOnlineSongUrlThread(QThread):
         }
         self.crawler = KuWoMusicCrawler()
 
-    def setSongInfoList(self, songInfo_list: list, offset=0, quality='Standard quality'):
-        """ 设置歌曲信息列表
+    def setSongInfo(self, songInfo: dict, quality='Standard quality'):
+        """ 设置歌曲信息
 
         Parameters
         ----------
-        songInfo_list: list
-            歌曲信息列表，由 `kugouCrawler.getSongInfoList(key_word)` 返回
-
-        offset: int
-            发送的信号的第一个参数(序号)的偏移量
+        songInfo: dict
+            歌曲信息
 
         quality: str
-            歌曲音质，可以是 `Standard quality`、`High quality` 或者 `Super quality`
+            歌曲音质
         """
-        if quality not in ['Standard quality', 'High quality', 'Super quality']:
-            raise ValueError("音质非法")
-
-        self.offset = offset if offset >= 0 else 0
         self.quality = quality
-        self.songInfo_list = songInfo_list
+        self.songInfo = songInfo
 
-    @checkDirExists('cache/Album_Cover')
     def run(self):
         """ 根据歌曲 rid 爬取播放地址并下载封面 """
-        for i, songInfo in enumerate(self.songInfo_list):
-            # 爬取播放地址
-            playUrl = self.crawler.getSongUrl(songInfo, self.quality)
+        AlbumCoverReader.coverFolder.mkdir(exist_ok=True, parents=True)
 
-            # 下载封面
-            name = songInfo['coverName']
-            save_path = f'cache/Album_Cover/{name}/{name}.jpg'
+        # 爬取播放地址
+        self.playUrl = self.crawler.getSongUrl(self.songInfo, self.quality)
 
-            # 如果本地不存在封面并且获取到了服务器上的封面 url 就下载
-            if not os.path.exists(save_path) and songInfo['coverPath']:
-                os.makedirs(f'cache/Album_Cover/{name}', exist_ok=True)
+        # 下载封面
+        coverPath = ''
+        folder = AlbumCoverReader.coverFolder/self.songInfo['coverName']
+        names = [i.stem for i in folder.glob('*')]
+        if self.songInfo['coverName'] not in names:
+            coverPath = self.crawler.downloadAlbumCover(
+                self.songInfo['coverPath'], self.songInfo['coverName'])
 
-                response = requests.get(
-                    songInfo['coverPath'], headers=self.headers)
-                with open(save_path, 'wb') as f:
-                    f.write(response.content)
-
-            # 发送信号
-            self.getUrlSignal.emit(i+self.offset, playUrl, save_path)
-
-        self.finished.emit()
+        self.coverPath = coverPath
+        self.crawlFinished.emit(self.playUrl, coverPath)

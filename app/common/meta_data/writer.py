@@ -62,7 +62,8 @@ def saveExceptionHandler(func):
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
-        except MutagenError:
+        except MutagenError as e:
+            print(e)
             return False
 
     return wrapper

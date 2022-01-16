@@ -189,6 +189,11 @@ class MediaPlaylist(QMediaPlaylist):
         super().removeMedia(index)
         self.setCurrentIndex(currentIndex)
 
+    def removeOnlineSong(self, index: int):
+        """ 移除在线歌曲 """
+        self.playlist.pop(index)
+        super().removeMedia(index)
+
     def updateOneSongInfo(self, newSongInfo: dict):
         """ 更新播放列表中一首歌曲的信息 """
         for i, songInfo in enumerate(self.playlist):

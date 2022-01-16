@@ -1,9 +1,12 @@
 # coding:utf-8
 import os
-
-from common.image_process_utils import getPicSuffix
 from copy import deepcopy
 from typing import List, Tuple
+
+import requests
+from common.image_process_utils import getPicSuffix
+from common.meta_data import AlbumCoverReader
+from common.meta_data.writer import writeAlbumCover, writeSongInfo
 
 
 def exceptionHandler(*default):
@@ -232,7 +235,49 @@ class CrawlerBase:
         """
         raise NotImplementedError("该方法必须被子类实现")
 
-    def saveSingerAvatar(self, singer: str, save_dir: str, data: bytes):
+    def saveSong(self, song_info: dict, save_dir: str, suffix: str, data: bytes) -> str:
+        """ 保存歌曲文件
+
+        Parameters
+        ----------
+        song_info: dict
+            歌曲信息
+
+        save_dir: str
+            保存歌曲文件的目录
+
+        suffix: str
+            歌曲文件后缀名，比如 `.mp3`
+
+        data: bytes
+            歌曲二进制数据
+
+        Returns
+        -------
+        save_path: str
+            保存路径
+        """
+        # 保存歌曲文件
+        song_path = os.path.join(
+            save_dir, f"{song_info['singer']} - {song_info['songName']}{suffix}")
+        with open(song_path, 'wb') as f:
+            f.write(data)
+
+        # 下载封面
+        cover_path = song_info['coverPath']
+        if cover_path.startswith('http'):
+            cover_path = self.downloadAlbumCover(
+                cover_path, song_info['coverName'])
+
+        # 修改歌曲元数据
+        song_info_ = song_info.copy()
+        song_info_['songPath'] = song_path
+        writeSongInfo(song_info_)
+        writeAlbumCover(song_path, cover_path)
+
+        return song_path
+
+    def saveSingerAvatar(self, singer: str, save_dir: str, data: bytes) -> str:
         """ 保存歌手图像
 
         Parameters
@@ -257,6 +302,44 @@ class CrawlerBase:
             f.write(data)
 
         return save_path
+
+    @exceptionHandler('')
+    def downloadAlbumCover(self, url: str, cover_name: str) -> str:
+        """ 下载在线专辑封面
+
+        Parameters
+        ----------
+        url: str
+            在线专辑封面路径
+
+        cover_name: str
+            封面名字
+
+        Returns
+        -------
+        save_path: str
+            封面保存路径
+        """
+        if not url.startswith('http'):
+            return ''
+
+        # 请求数据
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                          'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'
+        }
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        pic_data = response.content
+
+        # 保存图片
+        folder = AlbumCoverReader.coverFolder / cover_name
+        folder.mkdir(exist_ok=True, parents=True)
+        save_path = folder / (cover_name + getPicSuffix(pic_data))
+        with open(save_path, 'wb') as f:
+            f.write(pic_data)
+
+        return str(save_path)
 
 
 class AudioQualityError(Exception):

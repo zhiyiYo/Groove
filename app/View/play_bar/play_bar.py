@@ -175,12 +175,13 @@ class PlayBar(QWidget):
         self.colorAni.setStartValue(self.getColor())
         self.colorAni.setEndValue(QColor(r, g, b))
         self.colorAni.setEasingCurve(QEasingCurve.OutQuart)
-        self.colorAni.setDuration(400)
+        self.colorAni.setDuration(300)
 
         self.songInfoCard.albumCoverLabel.ani.setStartValue(0)
         self.songInfoCard.albumCoverLabel.ani.setEndValue(1)
         self.songInfoCard.albumCoverLabel.ani.setEasingCurve(
             QEasingCurve.OutQuad)
+        self.songInfoCard.albumCoverLabel.ani.setDuration(300)
 
         self.aniGroup.start()
 

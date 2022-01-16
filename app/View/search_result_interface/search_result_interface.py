@@ -3,13 +3,11 @@ import os
 from copy import deepcopy
 from math import ceil
 
-from common import resource
 from common.crawler import KuWoMusicCrawler
 from common.thread.download_song_thread import DownloadSongThread
-from common.thread.get_online_song_url_thread import GetOnlineSongUrlThread
 from components.widgets.scroll_area import ScrollArea
 from components.widgets.state_tooltip import DownloadStateTooltip
-from PyQt5.QtCore import QFile, QObject, Qt, pyqtSignal
+from PyQt5.QtCore import QFile, Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget
 
@@ -83,7 +81,6 @@ class SearchResultInterface(ScrollArea):
         self.downloadFolder = downloadFolder            # 在线音乐的下载目录
         self.onlinePlayQuality = onlinePlayQuality      # 在线音乐播放音质
         self.onlineMusicPageSize = onlineMusicPageSize  # 每页最多显示的在线音乐数量
-        self.getOnlineSongUrlThread = GetOnlineSongUrlThread(self)
         self.downloadSongThread = DownloadSongThread(self.downloadFolder, self)
         self.downloadStateTooltip = None
         self.__initWidget()
@@ -170,14 +167,6 @@ class SearchResultInterface(ScrollArea):
         self.__updateWidgetsVisible()
         self.deleteSongSig.emit(songPath)
 
-    def __updateOnlineSongInfo(self, index: int, playUrl: str, coverPath: str):
-        """ 更新在线音乐的播放地址和封面路径 """
-        songInfo = self.onlineSongListWidget.songInfo_list[index]
-        songCard = self.onlineSongListWidget.songCard_list[index]
-        songInfo["songPath"] = playUrl
-        songInfo["coverPath"] = coverPath
-        songCard.setSongInfo(songInfo)
-
     def __downloadSong(self, songInfo: dict, quality: str):
         """ 下载歌曲 """
         self.downloadSongThread.appendDownloadTask(songInfo, quality)
@@ -235,11 +224,7 @@ class SearchResultInterface(ScrollArea):
         # 根据页面数更新加载更多标签
         self.__updateLoadMoreLabel()
 
-        # 获取在线歌曲的播放地址，必须在获取之前就将歌曲卡创建出来
         self.onlineSongGroupBox.updateWindow(self.onlineSongInfo_list)
-        self.getOnlineSongUrlThread.setSongInfoList(
-            self.onlineSongInfo_list, 0, self.onlinePlayQuality)
-        self.getOnlineSongUrlThread.start()
 
         # 对播放列表进行匹配
         self.playlists = {}
@@ -340,11 +325,6 @@ class SearchResultInterface(ScrollArea):
         self.onlineSongGroupBox.loadMoreOnlineMusic(songInfo_list)
         self.onlineSongInfo_list = self.onlineSongListWidget.songInfo_list
 
-        # 再去获取这些歌曲的 URL
-        self.getOnlineSongUrlThread.setSongInfoList(
-            songInfo_list, offset, self.onlinePlayQuality)
-        self.getOnlineSongUrlThread.start()
-
         self.__updateLoadMoreLabel()
         self.__adjustHeight()
 
@@ -411,5 +391,3 @@ class SearchResultInterface(ScrollArea):
 
         # 线程信号连接到槽函数
         self.downloadSongThread.finished.connect(self.__onDownloadAllComplete)
-        self.getOnlineSongUrlThread.getUrlSignal.connect(
-            self.__updateOnlineSongInfo)

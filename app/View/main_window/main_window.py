@@ -5,7 +5,9 @@ from pathlib import Path
 from random import shuffle
 
 from common import resource
+from common.crawler import CrawlerBase
 from common.os_utils import moveToTrash
+from common.thread.get_online_song_url_thread import GetOnlineSongUrlThread
 from components.dialog_box.create_playlist_dialog import CreatePlaylistDialog
 from components.dialog_box.message_dialog import MessageDialog
 from components.frameless_window import FramelessWindow
@@ -18,9 +20,10 @@ from components.video_window import VideoWindow
 from components.widgets.stacked_widget import (OpacityAniStackedWidget,
                                                PopUpAniStackedWidget)
 from components.widgets.state_tooltip import StateTooltip
-from PyQt5.QtCore import QEasingCurve, QEvent, QFile, Qt, QTimer
+from PyQt5.QtCore import (QEasingCurve, QEvent, QEventLoop, QFile, Qt, QTimer,
+                          QUrl)
 from PyQt5.QtGui import QCloseEvent, QColor, QIcon, QPixmap
-from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist
+from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer, QMediaPlaylist
 from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
                              QWidget, qApp)
 from PyQt5.QtWinExtras import QtWin
@@ -147,6 +150,9 @@ class MainWindow(FramelessWindow):
         folder = self.settingInterface.config['download-folder']
         self.searchResultInterface = SearchResultInterface(
             pageSize, quality, folder, self.subMainWindow)
+
+        # 创建线程
+        self.getOnlineSongUrlThread = GetOnlineSongUrlThread(self)
 
         # 创建快捷键
         self.togglePlayPauseAct_1 = QAction(
@@ -1091,8 +1097,8 @@ class MainWindow(FramelessWindow):
     def setPlaylist(self, playlist: list, index=0):
         """ 设置播放列表 """
         self.playingInterface.setPlaylist(playlist, index=index)
-        self.mediaPlaylist.setPlaylist(playlist, index)
         self.smallestPlayInterface.setPlaylist(playlist)
+        self.mediaPlaylist.setPlaylist(playlist, index)
         self.play()
 
     def showEvent(self, e):
@@ -1261,6 +1267,37 @@ class MainWindow(FramelessWindow):
         self.mediaPlaylist.save()
         qApp.exit()
 
+    def getOnlineSongUrl(self, index: int):
+        """ 获取在线音乐播放地址 """
+        if index < 0 or not self.mediaPlaylist.playlist:
+            return
+
+        songInfo = self.mediaPlaylist.playlist[index]
+        if songInfo['songPath'] != CrawlerBase.song_url_mark:
+            return
+
+        i = self.searchResultInterface.onlineSongInfo_list.index(songInfo)
+        songCard = self.searchResultInterface.onlineSongListWidget.songCard_list[i]
+
+        # 获取封面和播放地址
+        eventLoop = QEventLoop(self)
+        self.getOnlineSongUrlThread.finished.connect(eventLoop.quit)
+        self.getOnlineSongUrlThread.setSongInfo(
+            songInfo, self.searchResultInterface.onlinePlayQuality)
+        self.getOnlineSongUrlThread.start()
+        eventLoop.exec()
+
+        # TODO：更优雅地更新在线媒体
+        songInfo['songPath'] = self.getOnlineSongUrlThread.playUrl
+        songInfo['coverPath'] = self.getOnlineSongUrlThread.coverPath
+        songCard.setSongInfo(songInfo)
+        self.mediaPlaylist.insertSong(index, songInfo)
+        self.playingInterface.playlist[index] = songInfo
+        self.smallestPlayInterface.playlist[index] = songInfo
+        self.searchResultInterface.onlineSongInfo_list[i] = songInfo
+        self.mediaPlaylist.removeOnlineSong(index+1)
+        self.mediaPlaylist.setCurrentIndex(index)
+
     def connectSignalToSlot(self):
         """ 将信号连接到槽 """
 
@@ -1270,6 +1307,7 @@ class MainWindow(FramelessWindow):
         self.player.mediaStatusChanged.connect(self.onMediaStatusChanged)
 
         # 将播放列表的信号连接到槽函数
+        self.mediaPlaylist.currentIndexChanged.connect(self.getOnlineSongUrl)
         self.mediaPlaylist.currentIndexChanged.connect(self.updateWindow)
 
         # 将设置界面信号连接到槽函数
