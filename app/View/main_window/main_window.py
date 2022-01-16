@@ -47,14 +47,9 @@ class MainWindow(FramelessWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("mainWindow")
-
-        # 实例化小部件
         self.createWidgets()
-        # 初始化标志位
         self.isInSelectionMode = False
-        # 初始化导航历史
         self.navigationHistories = [("myMusicInterfaceStackWidget", 0)]
-        # 初始化界面
         self.initWidget()
 
     def createWidgets(self):
@@ -183,7 +178,8 @@ class MainWindow(FramelessWindow):
         self.videoWindow.hide()
 
         # 关闭最后一个窗口后不退出
-        QApplication.setQuitOnLastWindowClosed(False)
+        QApplication.setQuitOnLastWindowClosed(
+            not self.settingInterface.config['minimize-to-tray'])
 
         # 在去除任务栏的显示区域居中显示
         desktop = QApplication.desktop().availableGeometry()
@@ -345,11 +341,12 @@ class MainWindow(FramelessWindow):
         self.mediaPlaylist.save()
 
         # 显示通知
-        title = self.tr('Minimize to system tray')
-        content = self.tr(
-            'Groove Music will continue to run in the background.')
-        self.systemTrayIcon.showMessage(
-            title, content, SystemTrayIcon.Information)
+        if self.settingInterface.config['minimize-to-tray']:
+            title = self.tr('Minimize to system tray')
+            content = self.tr(
+                'Groove Music will continue to run in the background.')
+            self.systemTrayIcon.showMessage(
+                title, content, SystemTrayIcon.Information)
 
         e.accept()
 
@@ -1014,13 +1011,18 @@ class MainWindow(FramelessWindow):
             self.subStackWidget.setCurrentIndex(
                 index, True, isShowNextWidgetDirectly, 200, QEasingCurve.InCubic)
             self.navigationInterface.setCurrentIndex(index)
+            # 更新标题栏图标颜色
+            whiteIndexes = [self.subStackWidget.indexOf(
+                i) for i in [self.playlistInterface, self.albumInterface, self.singerInterface]]
+            self.titleBar.setWhiteIcon(index in whiteIndexes)
+            self.titleBar.returnButton.setWhiteIcon(False)
 
         self.hidePlayingInterface()
 
         if len(self.navigationHistories) == 1:
             self.titleBar.returnButton.hide()
 
-    def onMyMucicInterfaceStackWidgetIndexChanged(self, index):
+    def onMyMusicInterfaceStackWidgetIndexChanged(self, index):
         """ 堆叠窗口下标改变时的槽函数 """
         self.navigationHistories.append(("myMusicInterfaceStackWidget", index))
         self.titleBar.returnButton.show()
@@ -1298,6 +1300,10 @@ class MainWindow(FramelessWindow):
         self.mediaPlaylist.removeOnlineSong(index+1)
         self.mediaPlaylist.setCurrentIndex(index)
 
+    def onMinimizeToTrayChanged(self, isMinimize: bool):
+        """ 最小化到托盘改变槽函数 """
+        QApplication.setQuitOnLastWindowClosed(not isMinimize)
+
     def connectSignalToSlot(self):
         """ 将信号连接到槽 """
 
@@ -1325,6 +1331,8 @@ class MainWindow(FramelessWindow):
             self.searchResultInterface.setOnlineMusicPageSize)
         self.settingInterface.mvQualityChanged.connect(
             self.playingInterface.getMvUrlThread.setVideoQuality)
+        self.settingInterface.minimizeToTrayChanged.connect(
+            self.onMinimizeToTrayChanged)
 
         # 将标题栏返回按钮点击信号连接到槽函数
         self.titleBar.returnButton.clicked.connect(self.onReturnButtonClicked)
@@ -1436,7 +1444,7 @@ class MainWindow(FramelessWindow):
         self.myMusicInterface.playCheckedCardsSig.connect(
             self.playCheckedCards)
         self.myMusicInterface.currentIndexChanged.connect(
-            self.onMyMucicInterfaceStackWidgetIndexChanged)
+            self.onMyMusicInterfaceStackWidgetIndexChanged)
         self.myMusicInterface.nextToPlayCheckedCardsSig.connect(
             self.onMultiSongsNextPlay)
         self.myMusicInterface.selectionModeStateChanged.connect(

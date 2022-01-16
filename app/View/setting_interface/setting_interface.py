@@ -24,6 +24,7 @@ class SettingInterface(ScrollArea):
     mvQualityChanged = pyqtSignal(str)
     acrylicEnableChanged = pyqtSignal(bool)
     downloadFolderChanged = pyqtSignal(str)
+    minimizeToTrayChanged = pyqtSignal(bool)
     onlinePlayQualityChanged = pyqtSignal(str)
     selectedMusicFoldersChanged = pyqtSignal(list)
 
@@ -37,6 +38,7 @@ class SettingInterface(ScrollArea):
             "online-play-quality": "Standard quality",
             "online-music-page-size": 20,
             "enable-acrylic-background": False,
+            "minimize-to-tray": True,
             "volume": 30,
             "playBar-color": [34, 92, 127],
             'download-folder': os.path.abspath('download').replace("\\", '/')
@@ -98,6 +100,15 @@ class SettingInterface(ScrollArea):
         self.sDButton = QRadioButton(self.tr('SD'), self.scrollwidget)
         self.lDButton = QRadioButton(self.tr('LD'), self.scrollwidget)
 
+        # 关闭主界面
+        self.closeWindowGroup = QButtonGroup(self)
+        self.closeWindowLabel = QLabel(
+            self.tr('Close Main Window'), self.scrollwidget)
+        self.minimizeToTrayButton = QRadioButton(
+            self.tr('Minimize to system tray'), self.scrollwidget)
+        self.quitGrooveMusicButton = QRadioButton(
+            self.tr('Quit Groove Music'), self.scrollwidget)
+
         # 下载目录
         self.downloadFolderHintLabel = QLabel('')
         self.downloadFolderButton = QPushButton(
@@ -121,7 +132,7 @@ class SettingInterface(ScrollArea):
         self.downloadFolderLineEdit.resize(313, 42)
         self.downloadFolderLineEdit.setReadOnly(True)
         self.downloadFolderLineEdit.setCursorPosition(0)
-        self.scrollwidget.resize(self.width(), 1200)
+        self.scrollwidget.resize(self.width(), 1360)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setViewportMargins(0, 120, 0, 0)
         self.setWidget(self.scrollwidget)
@@ -156,6 +167,13 @@ class SettingInterface(ScrollArea):
         self.sDButton.setProperty('quality', 'SD')
         self.lDButton.setProperty('quality', 'LD')
         self.__setCheckedMvQualityRadioButton()
+
+        # 设置关闭主面板
+        self.closeWindowGroup.addButton(self.minimizeToTrayButton)
+        self.closeWindowGroup.addButton(self.quitGrooveMusicButton)
+        self.minimizeToTrayButton.setProperty('minimize-to-tray', True)
+        self.quitGrooveMusicButton.setProperty('minimize-to-tray', False)
+        self.__setCheckedCloseWindowRadioButton()
 
         # 设置滑动条
         pageSize = self.config['online-music-page-size']
@@ -212,10 +230,14 @@ class SettingInterface(ScrollArea):
         self.hDButton.move(30, 830)
         self.sDButton.move(30, 870)
         self.lDButton.move(30, 910)
+        # 关闭主界面
+        self.closeWindowLabel.move(30, 972)
+        self.minimizeToTrayButton.move(30, 1022)
+        self.quitGrooveMusicButton.move(30, 1062)
         # 下载目录
-        self.downloadFolderLabel.move(30, 972)
-        self.downloadFolderLineEdit.move(30, 1022)
-        self.downloadFolderButton.move(350, 1022)
+        self.downloadFolderLabel.move(30, 1124)
+        self.downloadFolderLineEdit.move(30, 1174)
+        self.downloadFolderButton.move(350, 1174)
         # 应用
         self.appLabel.move(self.width() - 400, 18)
         self.helpLabel.move(self.width() - 400, 64)
@@ -278,9 +300,10 @@ class SettingInterface(ScrollArea):
         self.acrylicLabel.setObjectName("titleLabel")
         self.searchLabel.setObjectName('titleLabel')
         self.mvQualityLabel.setObjectName('titleLabel')
+        self.onlinePlayQualityLabel.setObjectName('titleLabel')
+        self.closeWindowLabel.setObjectName('titleLabel')
         self.helpLabel.setObjectName("clickableLabel")
         self.issueLabel.setObjectName("clickableLabel")
-        self.onlinePlayQualityLabel.setObjectName('titleLabel')
         self.musicInThisPCLabel.setObjectName("titleLabel")
         self.selectMusicFolderLabel.setObjectName("clickableLabel")
         f = QFile(":/qss/setting_interface.qss")
@@ -396,6 +419,14 @@ class SettingInterface(ScrollArea):
         else:
             self.lDButton.setChecked(True)
 
+    def __setCheckedCloseWindowRadioButton(self):
+        """ 设置选中的关闭主界面单选按钮 """
+        minimize = self.config['minimize-to-tray']
+        if minimize:
+            self.minimizeToTrayButton.setChecked(True)
+        else:
+            self.quitGrooveMusicButton.setChecked(True)
+
     def __onPageSliderValueChanged(self, value: int):
         """ 滑动条数值改变槽函数 """
         self.pageSizeValueLabel.setNum(value)
@@ -421,6 +452,16 @@ class SettingInterface(ScrollArea):
 
         self.config['mv-quality'] = quality
         self.mvQualityChanged.emit(quality)
+        self.saveConfig()
+
+    def __onMinimizeToTrayChanged(self):
+        """ 最小化到托盘改变槽函数 """
+        minimize = self.sender().property('minimize-to-tray')
+        if self.config['minimize-to-tray'] == minimize:
+            return
+
+        self.config['minimize-to-tray'] = minimize
+        self.minimizeToTrayChanged.emit(minimize)
         self.saveConfig()
 
     def __onDownloadFolderButtonClicked(self):
@@ -458,5 +499,9 @@ class SettingInterface(ScrollArea):
             self.__onOnlinePlayQualityChanged)
         self.downloadFolderButton.clicked.connect(
             self.__onDownloadFolderButtonClicked)
+        self.minimizeToTrayButton.clicked.connect(
+            self.__onMinimizeToTrayChanged)
+        self.quitGrooveMusicButton.clicked.connect(
+            self.__onMinimizeToTrayChanged)
         self.acrylicSwitchButton.checkedChanged.connect(
             self.__onAcrylicCheckedChanged)

@@ -323,22 +323,22 @@
 <context>
     <name>DownloadStateTooltip</name>
     <message>
-        <location filename="../../components/widgets/state_tooltip.py" line="173"/>
+        <location filename="../../components/widgets/state_tooltip.py" line="178"/>
         <source>There are</source>
         <translation>还剩</translation>
     </message>
     <message>
-        <location filename="../../components/widgets/state_tooltip.py" line="174"/>
+        <location filename="../../components/widgets/state_tooltip.py" line="179"/>
         <source>left. Please wait patiently</source>
         <translation>首，要耐心等待哦~</translation>
     </message>
     <message>
-        <location filename="../../components/widgets/state_tooltip.py" line="166"/>
+        <location filename="../../components/widgets/state_tooltip.py" line="171"/>
         <source>Download complete</source>
         <translation>下载完成</translation>
     </message>
     <message>
-        <location filename="../../components/widgets/state_tooltip.py" line="167"/>
+        <location filename="../../components/widgets/state_tooltip.py" line="172"/>
         <source>Download completed, please check</source>
         <translation>下载完成啦，请查收~</translation>
     </message>
@@ -469,62 +469,62 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="73"/>
+        <location filename="../../View/main_window/main_window.py" line="71"/>
         <source>Groove Music</source>
         <translation>Groove 音乐</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1165"/>
+        <location filename="../../View/main_window/main_window.py" line="1172"/>
         <source>This song is already in your playlist. Do you want to add?</source>
         <translation>此歌已在你的播放列表中。是否要添加？</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1168"/>
+        <location filename="../../View/main_window/main_window.py" line="1175"/>
         <source>Some songs are already in your playlist. Do you want to add?</source>
         <translation>部分歌曲已在你的播放列表中。是否要添加？</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1171"/>
+        <location filename="../../View/main_window/main_window.py" line="1178"/>
         <source>All these songs are already in your playlist. Do you want to add?</source>
         <translation>所有这些歌曲都已在你的播放列表中。是否要添加？</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1174"/>
+        <location filename="../../View/main_window/main_window.py" line="1181"/>
         <source>Song duplication</source>
         <translation>歌曲重复</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1195"/>
+        <location filename="../../View/main_window/main_window.py" line="1202"/>
         <source>Updating song list</source>
         <translation>正在更新歌曲列表</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1195"/>
+        <location filename="../../View/main_window/main_window.py" line="1202"/>
         <source>Please wait patiently</source>
         <translation>请耐心等待</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="416"/>
+        <location filename="../../View/main_window/main_window.py" line="418"/>
         <source>Can&apos;t play this song</source>
         <translation>无法播放此歌曲</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="418"/>
+        <location filename="../../View/main_window/main_window.py" line="420"/>
         <source>Close</source>
         <translation>关闭</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="416"/>
+        <location filename="../../View/main_window/main_window.py" line="418"/>
         <source>It&apos;s not on this device or somewhere we can stream from.</source>
         <translation>它不在这台设备上，也不在我们可以从中流式传输的某个位置。</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="342"/>
+        <location filename="../../View/main_window/main_window.py" line="344"/>
         <source>Minimize to system tray</source>
         <translation>最小化到系统托盘</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="343"/>
+        <location filename="../../View/main_window/main_window.py" line="345"/>
         <source>Groove Music will continue to run in the background.</source>
         <translation>Groove 音乐将在后台继续运行。</translation>
     </message>
@@ -748,12 +748,12 @@
         <translation> 随机播放你收藏中的所有内容</translation>
     </message>
     <message>
-        <location filename="../../View/playing_interface/playing_interface.py" line="538"/>
+        <location filename="../../View/playing_interface/playing_interface.py" line="543"/>
         <source>Unable to find the corresponding MV</source>
         <translation>无法找到对应的 MV</translation>
     </message>
     <message>
-        <location filename="../../View/playing_interface/playing_interface.py" line="538"/>
+        <location filename="../../View/playing_interface/playing_interface.py" line="543"/>
         <source>Sorry, there are no MVs available for the current song</source>
         <translation>抱歉呢前辈，当前歌曲没有可供观看的 MV~</translation>
     </message>
@@ -1008,42 +1008,42 @@
 <context>
     <name>SearchResultInterface</name>
     <message>
-        <location filename="../../View/search_result_interface/search_result_interface.py" line="73"/>
+        <location filename="../../View/search_result_interface/search_result_interface.py" line="71"/>
         <source>Try searching for something else.</source>
         <translation>请尝试搜索其他内容。</translation>
     </message>
     <message>
-        <location filename="../../View/search_result_interface/search_result_interface.py" line="75"/>
+        <location filename="../../View/search_result_interface/search_result_interface.py" line="73"/>
         <source>Check your spelling, or search for something else</source>
         <translation>请检查拼写情况，或搜索其他内容</translation>
     </message>
     <message>
-        <location filename="../../View/search_result_interface/search_result_interface.py" line="252"/>
+        <location filename="../../View/search_result_interface/search_result_interface.py" line="236"/>
         <source>Search Result</source>
         <translation>的搜索结果</translation>
     </message>
     <message>
-        <location filename="../../View/search_result_interface/search_result_interface.py" line="189"/>
+        <location filename="../../View/search_result_interface/search_result_interface.py" line="178"/>
         <source>Downloading songs</source>
         <translation>正在下载歌曲中</translation>
     </message>
     <message>
-        <location filename="../../View/search_result_interface/search_result_interface.py" line="190"/>
+        <location filename="../../View/search_result_interface/search_result_interface.py" line="179"/>
         <source>There are</source>
         <translation>还剩</translation>
     </message>
     <message>
-        <location filename="../../View/search_result_interface/search_result_interface.py" line="191"/>
+        <location filename="../../View/search_result_interface/search_result_interface.py" line="180"/>
         <source>left. Please wait patiently</source>
         <translation>首，要耐心等待哦</translation>
     </message>
     <message>
-        <location filename="../../View/search_result_interface/search_result_interface.py" line="317"/>
+        <location filename="../../View/search_result_interface/search_result_interface.py" line="302"/>
         <source>Load more</source>
         <translation>加载更多</translation>
     </message>
     <message>
-        <location filename="../../View/search_result_interface/search_result_interface.py" line="321"/>
+        <location filename="../../View/search_result_interface/search_result_interface.py" line="306"/>
         <source>No more results</source>
         <translation>已经到底啦~</translation>
     </message>
@@ -1139,149 +1139,164 @@
 <context>
     <name>SettingInterface</name>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="52"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="54"/>
         <source>Settings</source>
         <translation>设置</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="111"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="122"/>
         <source>App</source>
         <translation>应用</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="69"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="71"/>
         <source>Media Info</source>
         <translation>媒体信息</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="112"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="123"/>
         <source>Help</source>
         <translation>帮助</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="113"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="124"/>
         <source>Feedback</source>
         <translation>反馈</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="55"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="57"/>
         <source>Music on this PC</source>
         <translation>此 PC 上的音乐</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="269"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="287"/>
         <source>Off</source>
         <translation>关</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="70"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="72"/>
         <source>Automatically retrieve and update missing album art and metadata</source>
         <translation>自动检索并更新缺失的专辑封面和元数据</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="84"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="86"/>
         <source>Online Playing Quality</source>
         <translation>在线播放音质</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="86"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="88"/>
         <source>Standard quality</source>
         <translation>流畅</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="88"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="90"/>
         <source>High quality</source>
         <translation>高品</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="90"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="92"/>
         <source>Super quality</source>
         <translation>超品</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="76"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="78"/>
         <source>Search</source>
         <translation>搜索</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="79"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="81"/>
         <source>Set the number of online music displayed</source>
         <translation>显示的在线音乐数量</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="57"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="59"/>
         <source>Choose where we look for music</source>
         <translation>选择查找音乐的位置</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="103"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="114"/>
         <source>Choose</source>
         <translation>浏览</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="234"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="252"/>
         <source>On</source>
         <translation>开</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="249"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="267"/>
         <source>Current progress: </source>
         <translation>当前进度: </translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="308"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="326"/>
         <source>Right now, we&apos;re watching these folders:</source>
         <translation>现在我们正在查看这些文件夹:</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="307"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="325"/>
         <source>Build your collection from your local music files</source>
         <translation>从本地曲库创建个人&quot;收藏&quot;</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="249"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="267"/>
         <source>Crawling metadata</source>
         <translation>正在爬取歌曲信息</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="61"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="63"/>
         <source>Acrylic Background</source>
         <translation>亚克力背景</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="63"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="65"/>
         <source>Use the acrylic background effect</source>
         <translation>使用亚克力背景效果</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="107"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="118"/>
         <source>Download Directory</source>
         <translation>下载目录</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="95"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="97"/>
         <source>MV Quality</source>
         <translation>MV 画质</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="96"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="98"/>
         <source>Full HD</source>
         <translation>超清</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="97"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="99"/>
         <source>HD</source>
         <translation>高清</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="98"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="100"/>
         <source>SD</source>
         <translation>标清</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="99"/>
+        <location filename="../../View/setting_interface/setting_interface.py" line="101"/>
         <source>LD</source>
         <translation>流畅</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="105"/>
+        <source>Close Main Window</source>
+        <translation>关闭主界面</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="107"/>
+        <source>Minimize to system tray</source>
+        <translation>最小化到系统托盘</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="109"/>
+        <source>Quit Groove Music</source>
+        <translation>退出 Groove 音乐</translation>
     </message>
 </context>
 <context>
@@ -1819,57 +1834,52 @@
 <context>
     <name>VideoWindow</name>
     <message>
-        <location filename="../../components/video_window/video_window.py" line="43"/>
-        <source>Groove Music</source>
-        <translation>Groove 音乐</translation>
-    </message>
-    <message>
-        <location filename="../../components/video_window/video_window.py" line="171"/>
+        <location filename="../../components/video_window/video_window.py" line="168"/>
         <source>The media resource couldn&apos;t be resolved.</source>
         <translation>无效视频源。</translation>
     </message>
     <message>
-        <location filename="../../components/video_window/video_window.py" line="173"/>
+        <location filename="../../components/video_window/video_window.py" line="170"/>
         <source>The format of a media resource isn&apos;t supported.</source>
         <translation>暂不支持播放该格式的视频。</translation>
     </message>
     <message>
-        <location filename="../../components/video_window/video_window.py" line="175"/>
+        <location filename="../../components/video_window/video_window.py" line="172"/>
         <source>A network error occurred.</source>
         <translation>发生了网络错误。</translation>
     </message>
     <message>
-        <location filename="../../components/video_window/video_window.py" line="176"/>
+        <location filename="../../components/video_window/video_window.py" line="173"/>
         <source>There are not the appropriate permissions to play the media resource.</source>
         <translation>没有权限播放该视频。</translation>
     </message>
     <message>
-        <location filename="../../components/video_window/video_window.py" line="181"/>
+        <location filename="../../components/video_window/video_window.py" line="178"/>
         <source>An error occurred</source>
         <translation>发生了错误</translation>
     </message>
     <message>
-        <location filename="../../components/video_window/video_window.py" line="178"/>
+        <location filename="../../components/video_window/video_window.py" line="175"/>
         <source>A valid playback service was not found, playback cannot proceed.</source>
         <translation>视频服务不存在，无法继续播放。</translation>
     </message>
     <message>
-        <location filename="../../components/video_window/video_window.py" line="199"/>
+        <location filename="../../components/video_window/video_window.py" line="196"/>
         <source>Downloading MVs</source>
         <translation>正在下载 MV</translation>
     </message>
     <message>
-        <location filename="../../components/video_window/video_window.py" line="200"/>
+        <location filename="../../components/video_window/video_window.py" line="197"/>
         <source>There are</source>
         <translation>还剩</translation>
     </message>
     <message>
-        <location filename="../../components/video_window/video_window.py" line="201"/>
+        <location filename="../../components/video_window/video_window.py" line="198"/>
         <source>left. Please wait patiently</source>
         <translation>首，要耐心等待哦</translation>
     </message>
     <message>
-        <location filename="../../components/video_window/video_window.py" line="188"/>
+        <location filename="../../components/video_window/video_window.py" line="185"/>
         <source>save as</source>
         <translation>另存为</translation>
     </message>
