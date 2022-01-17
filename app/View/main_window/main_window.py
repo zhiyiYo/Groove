@@ -736,7 +736,13 @@ class MainWindow(FramelessWindow):
         self.playBar.songInfoCard.hide()
         self.setPlayButtonState(False)
         self.setPlayButtonEnabled(False)
+
         self.songTabSongListWidget.cancelPlayState()
+        self.albumInterface.songListWidget.cancelPlayState()
+        self.playlistInterface.songListWidget.cancelPlayState()
+        self.searchResultInterface.localSongListWidget.cancelPlayState()
+        self.searchResultInterface.onlineSongListWidget.cancelPlayState()
+
         self.playBar.setTotalTime(0)
         self.playBar.progressSlider.setRange(0, 0)
 
