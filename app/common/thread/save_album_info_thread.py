@@ -1,5 +1,6 @@
 # coding:utf-8
 from common.meta_data.writer import writeSongInfo, writeAlbumCover
+from common.meta_data import SongInfoReader
 from PyQt5.QtCore import QThread, pyqtSignal
 
 
@@ -29,6 +30,10 @@ class SaveAlbumInfoThread(QThread):
             # 如果歌曲保存失败就重置歌曲信息
             if not writeSongInfo(songInfo):
                 self.newAlbumInfo["songInfo_list"][i] = self.oldAlbumInfo["songInfo_list"][i]
+
+            # 更新修改时间
+            songInfo['modifiedTime'] = SongInfoReader.getModifiedTime(
+                songInfo['songPath'])
 
         self.saveFinishedSignal.emit(
             self.oldAlbumInfo, self.newAlbumInfo, self.coverPath)

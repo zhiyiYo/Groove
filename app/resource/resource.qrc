@@ -35,6 +35,7 @@
         <file>qss/switch_button.qss</file>
         <file>qss/volume_slider_widget.qss</file>
         <file>qss/lyric_widget.qss</file>
+        <file>qss/tooltip.qss</file>
 
         <file>images/logo/logo.png</file>
         <file>images/logo/logo_small.png</file>

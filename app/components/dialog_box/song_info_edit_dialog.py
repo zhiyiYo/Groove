@@ -2,7 +2,7 @@
 from copy import deepcopy
 
 from common.auto_wrap import autoWrap
-from common.meta_data import AlbumCoverReader, GENRES
+from common.meta_data import AlbumCoverReader, GENRES, SongInfoReader
 from common.meta_data.writer import writeSongInfo, writeAlbumCover
 from common.os_utils import adjustName
 from common.thread.get_meta_data_thread import GetSongMetaDataThread
@@ -247,6 +247,8 @@ class SongInfoEditDialog(MaskDialogBase):
         else:
             self.setEnabled(False)
             QApplication.processEvents()
+            self.songInfo['modifiedTime'] = SongInfoReader.getModifiedTime(
+                self.songInfo['songPath'])
             self.saveInfoSig.emit(self.oldSongInfo, self.songInfo)
             self.close()
 

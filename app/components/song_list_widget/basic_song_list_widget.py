@@ -6,7 +6,7 @@ from components.dialog_box.song_info_edit_dialog import SongInfoEditDialog
 from components.dialog_box.song_property_dialog import SongPropertyDialog
 from components.widgets.list_widget import ListWidget
 from PyQt5.QtCore import QMargins, QSize, Qt, pyqtSignal
-from PyQt5.QtWidgets import QListWidgetItem, QWidget
+from PyQt5.QtWidgets import QApplication, QListWidgetItem, QWidget
 
 from .song_card import SongCardFactory
 from .song_card_type import SongCardType
@@ -320,6 +320,7 @@ class BasicSongListWidget(ListWidget):
             # 添加item
             for songInfo in songInfo_list[oldSongNum:]:
                 self.appendOneSongCard(songInfo)
+                QApplication.processEvents()
 
         elif newSongNum < oldSongNum:
             # 删除多余的item
@@ -328,6 +329,7 @@ class BasicSongListWidget(ListWidget):
                 songCard = self.songCard_list.pop()
                 songCard.deleteLater()
                 self.takeItem(i)
+                QApplication.processEvents()
 
         # 当两个列表是否为空的的布尔值不同时发送歌曲卡列表是否为空信号
         if not (bool(self.songInfo_list) and bool(songInfo_list)):

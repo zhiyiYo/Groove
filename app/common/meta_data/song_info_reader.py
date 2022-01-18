@@ -244,3 +244,9 @@ class SongInfoReader(QObject):
                 return True
 
         return bool(set(songPath_list)-oldSongs)
+
+    @staticmethod
+    def getModifiedTime(songPath: str):
+        """ 获取歌曲修改时间 """
+        fileInfo = QFileInfo(songPath)
+        return fileInfo.lastModified().toString(Qt.ISODate)

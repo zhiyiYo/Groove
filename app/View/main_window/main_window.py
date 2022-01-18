@@ -1201,7 +1201,7 @@ class MainWindow(FramelessWindow):
         # 弹出导航历史
         self.navigationHistories.pop()
 
-    def rescanSongInfoTimerSlot(self):
+    def onRescanSongInfoTimeOut(self):
         """ 重新扫描歌曲信息 """
         if self.isInSelectionMode or not self.myMusicInterface.hasSongModified():
             return
@@ -1465,7 +1465,7 @@ class MainWindow(FramelessWindow):
             self.showLabelNavigationInterface)
 
         # 将定时器信号连接到槽函数
-        self.rescanSongInfoTimer.timeout.connect(self.rescanSongInfoTimerSlot)
+        self.rescanSongInfoTimer.timeout.connect(self.onRescanSongInfoTimeOut)
 
         # 将专辑界面的信号连接到槽函数
         self.albumInterface.playAlbumSignal.connect(self.playAlbum)

@@ -636,6 +636,7 @@ class AlbumCardInterface(ScrollArea):
                 self.albumCardInfo_list.pop()
                 self.hideCheckBoxAniGroup.takeAnimation(i)
                 albumCard.deleteLater()
+                QApplication.processEvents()
         elif newCardNum > oldCardNum:
             # 新增部分专辑卡
             for albumInfo in albumInfo_list[oldCardNum:]:

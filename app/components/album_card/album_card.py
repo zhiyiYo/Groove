@@ -51,12 +51,14 @@ class AlbumCard(PerspectiveWidget):
             (30, 65),
             ":/images/album_tab_interface/Play.png",
             self.coverPath,
+            self.tr('Play')
         )
         self.addToButton = BlurButton(
             self,
             (100, 65),
             ":/images/album_tab_interface/Add.png",
             self.coverPath,
+            self.tr('Add to')
         )
         # 创建复选框
         self.checkBox = CheckBox(self, forwardTargetWidget=self.albumPic)

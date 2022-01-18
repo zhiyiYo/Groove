@@ -70,12 +70,14 @@ class LyricWidget(ScrollArea):
 
                 self.lyricLabels.append(label)
                 self.vBoxLayout.addWidget(label, 0, Qt.AlignHCenter)
+                QApplication.processEvents()
         elif N > N_:
             for i in range(N - N_):
                 label = self.lyricLabels.pop()
                 self.vBoxLayout.removeWidget(label)
                 self.__unusedlyricLabels.append(label)
                 label.hide()
+                QApplication.processEvents()
 
         n = min(N, N_)
         for label, t in zip(self.lyricLabels[:n], self.times[:n]):
