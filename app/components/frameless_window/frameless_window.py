@@ -21,7 +21,7 @@ class FramelessWindow(QWidget):
         self.__monitorInfo = None
         self.windowEffect = WindowEffect()
         # 取消边框
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowSystemMenuHint |
+        self.setWindowFlags(Qt.FramelessWindowHint |
                             Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint)
 
         # 添加阴影和窗口动画
