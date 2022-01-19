@@ -211,8 +211,6 @@ class CentralButtonGroup(QWidget):
         self.nextSongButton = BasicButton(':/images/play_bar/Next.png', self)
         self.playButton = PlayButton(self)
         self.loopModeButton = LoopModeButton(self)
-        self.button_list = [self.randomPlayButton, self.lastSongButton,
-                            self.playButton, self.nextSongButton, self.loopModeButton]
 
         # 创建布局
         self.vBoxLayout = QVBoxLayout(self)
@@ -239,6 +237,10 @@ class CentralButtonGroup(QWidget):
         self.vBoxLayout.setContentsMargins(0, 0, 0, 0)
         self.vBoxLayout.addLayout(hBoxLayout)
 
+        # 设置工具提示
+        self.lastSongButton.setToolTip(self.tr('Previous'))
+        self.nextSongButton.setToolTip(self.tr('Next'))
+
 
 class RightWidgetGroup(QWidget):
     """ 播放按钮组 """
@@ -264,6 +266,7 @@ class RightWidgetGroup(QWidget):
             {"sub-page.color": QColor(70, 23, 180)}))
         self.volumeSlider.setFixedHeight(28)
         self.volumeSlider.setValue(20)
+        self.smallPlayModeButton.setToolTip(self.tr('Smallest play mode'))
 
     def __initLayout(self):
         """ 初始化布局 """

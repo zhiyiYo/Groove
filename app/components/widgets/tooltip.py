@@ -1,7 +1,8 @@
 # coding:utf-8
 from PyQt5.QtCore import QFile, QPropertyAnimation
 from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QGraphicsDropShadowEffect, QHBoxLayout, QLabel, QFrame
+from PyQt5.QtWidgets import (QApplication, QFrame, QGraphicsDropShadowEffect,
+                             QHBoxLayout, QLabel)
 
 
 class Tooltip(QFrame):
@@ -24,6 +25,9 @@ class Tooltip(QFrame):
         self.shadowEffect.setOffset(0, 5)
         self.setGraphicsEffect(self.shadowEffect)
 
+        # 设置主题
+        self.setDarkTheme(False)
+
         # 设置层叠样式
         self.__setQss()
 
@@ -43,3 +47,10 @@ class Tooltip(QFrame):
 
         self.label.adjustSize()
         self.adjustSize()
+
+    def setDarkTheme(self, dark=False):
+        """ 设置深色主题 """
+        dark = 'true' if dark else 'false'
+        self.setProperty('dark', dark)
+        self.label.setProperty('dark', dark)
+        self.setStyle(QApplication.style())

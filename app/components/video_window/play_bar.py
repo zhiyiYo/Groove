@@ -53,6 +53,13 @@ class PlayBar(QWidget):
         self.progressSlider.setStyle(style)
         self.progressSlider.setFixedHeight(25)
 
+        self.skipBackButton.setToolTip(self.tr('Rewind'))
+        self.skipForwardButton.setToolTip(self.tr('Fast forward'))
+        self.downloadButton.setToolTip(self.tr('Download'))
+        self.fullScreenButton.setToolTip(self.tr('Show fullscreen'))
+        for button in self.findChildren(CircleButton):
+            button.setDarkToolTip(True)
+
         self.__initLayout()
         self.__connectSignalToSlot()
 

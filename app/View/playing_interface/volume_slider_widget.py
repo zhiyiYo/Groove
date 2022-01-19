@@ -77,7 +77,6 @@ class VolumeButton(CircleButton):
         ]
         self.pixmap_list = [QPixmap(i) for i in self.__iconPath_list]
         super().__init__(self.__iconPath_list[0], parent)
-        # 初始化标志位
         self.isMute = False
         self.__volumeLevel = 0
 

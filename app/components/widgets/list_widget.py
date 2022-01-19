@@ -4,7 +4,7 @@ from enum import Enum
 from math import cos, pi
 
 from PyQt5.QtCore import QDateTime, Qt, QTimer, QPoint
-from PyQt5.QtGui import QWheelEvent
+from PyQt5.QtGui import QWheelEvent, QCursor
 from PyQt5.QtWidgets import QApplication, QListWidget
 
 
@@ -27,6 +27,14 @@ class ListWidget(QListWidget):
         self.setDragEnabled(False)
         self.setVerticalScrollMode(self.ScrollPerPixel)
         self.setAttribute(Qt.WA_StyledBackground)
+        self.verticalScrollBar().valueChanged.connect(self.__fakeMoveMouse)
+
+    def __fakeMoveMouse(self):
+        """ 伪移动光标 """
+        pos = QCursor.pos()
+        QCursor.setPos(pos + QPoint(0, 1))
+        QApplication.processEvents()
+        QCursor.setPos(pos)
 
     def wheelEvent(self, e: QWheelEvent):
         """ 实现平滑滚动效果 """
@@ -75,14 +83,16 @@ class ListWidget(QListWidget):
             self.stepsLeftQueue.popleft()
 
         # 构造滚轮事件
-        e = QWheelEvent(self.lastWheelEvent.pos(),
-                        self.lastWheelEvent.globalPos(),
-                        QPoint(),
-                        QPoint(0, totalDelta),
-                        round(totalDelta),
-                        Qt.Vertical,
-                        self.lastWheelEvent.buttons(),
-                        Qt.NoModifier)
+        e = QWheelEvent(
+            self.lastWheelEvent.pos(),
+            self.lastWheelEvent.globalPos(),
+            QPoint(),
+            QPoint(0, totalDelta),
+            round(totalDelta),
+            Qt.Vertical,
+            self.lastWheelEvent.buttons(),
+            Qt.NoModifier
+        )
 
         # 将构造出来的滚轮事件发送给app处理
         QApplication.sendEvent(self.verticalScrollBar(), e)

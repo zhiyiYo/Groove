@@ -8,24 +8,26 @@
     随机播放的按钮没有按下时，根据循环模式按钮的状态决定播放方式
 """
 
+from components.buttons.tooltip_button import TooltipButton
 from PyQt5.QtCore import QEvent, Qt, pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QPainter, QPen, QPixmap
 from PyQt5.QtWidgets import QToolButton
 from PyQt5.QtMultimedia import QMediaPlaylist
 
 
-class PlayButton(QToolButton):
+class PlayButton(TooltipButton):
     """ 控制播放和暂停的按钮 """
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        # 设置标志位
         self.isPlaying = False
         self.isEnter = False
         self.isPressed = False
-        # 设置图标
-        self.iconPath_list = [
-            ':/images/play_bar/Play.png', ':/images/play_bar/Pause.png']
+        self.iconPixmaps = [
+            QPixmap(':/images/play_bar/Play.png'),
+            QPixmap(':/images/play_bar/Pause.png')
+        ]
+        self.setToolTip(self.tr('Play'))
         self.setFixedSize(65, 65)
         self.setStyleSheet(
             "QToolButton{border:none;margin:0;background:transparent}")
@@ -34,6 +36,7 @@ class PlayButton(QToolButton):
     def setPlay(self, play: bool = True):
         """ 根据播放状态设置按钮图标 """
         self.isPlaying = play
+        self.setToolTip(self.tr('Pause') if play else self.tr('Play'))
         self.update()
 
     def eventFilter(self, obj, e):
@@ -45,18 +48,22 @@ class PlayButton(QToolButton):
                 self.update()
                 return False
             if e.type() == QEvent.MouseButtonPress and e.button() == Qt.LeftButton:
+                self.hideToolTip()
                 self.isPressed = True
                 self.update()
                 return False
+
         return super().eventFilter(obj, e)
 
     def enterEvent(self, e):
         """ 鼠标进入时更新背景 """
+        super().enterEvent(e)
         self.isEnter = True
         self.update()
 
     def leaveEvent(self, e):
         """ 鼠标离开时更新背景 """
+        super().leaveEvent(e)
         self.isEnter = False
         self.update()
 
@@ -65,6 +72,7 @@ class PlayButton(QToolButton):
         painter = QPainter(self)
         painter.setRenderHints(QPainter.Antialiasing |
                                QPainter.SmoothPixmapTransform)
+
         if self.isPressed:
             painter.setPen(QPen(QColor(255, 255, 255, 120), 2))
             painter.drawEllipse(1, 1, 62, 62)
@@ -81,36 +89,41 @@ class PlayButton(QToolButton):
             # normal时绘制一个宽度为2，alpha=50的单色圆环
             painter.setPen(QPen(QColor(255, 255, 255, 50), 2))
             painter.drawEllipse(1, 1, 62, 62)
+
         # 绘制图标
         if not self.isPressed:
-            iconPix = QPixmap(self.iconPath_list[self.isPlaying])
+            iconPix = self.iconPixmaps[self.isPlaying]
             painter.drawPixmap(1, 1, 63, 63, iconPix)
         else:
-            iconPix = QPixmap(self.iconPath_list[self.isPlaying]).scaled(
+            iconPix = self.iconPixmaps[self.isPlaying].scaled(
                 58, 58, Qt.KeepAspectRatio, Qt.SmoothTransformation)
             painter.drawPixmap(3, 3, 59, 59, iconPix)
 
 
-class RandomPlayButton(QToolButton):
+class RandomPlayButton(TooltipButton):
     """ 随机播放按钮 """
 
     randomPlayChanged = pyqtSignal(bool)
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        # 设置标志位
         self.isSelected = False
         self.isPressed = False
         self.isEnter = False
         self.setFixedSize(47, 47)
         self.setStyleSheet(
             "QToolButton{border:none;margin:0;background:transparent}")
+        self.setToolTip(self.tr('Random play: off'))
         self.installEventFilter(self)
 
     def setRandomPlay(self, isRandomPlay: bool):
         """ 设置随机播放状态 """
         if isRandomPlay == self.isSelected:
             return
+
+        text = self.tr('Random play: on') if isRandomPlay else self.tr(
+            'Random play: off')
+        self.setToolTip(text)
         self.isSelected = isRandomPlay
         self.update()
 
@@ -119,23 +132,30 @@ class RandomPlayButton(QToolButton):
         if obj == self:
             if e.type() == QEvent.MouseButtonRelease and e.button() == Qt.LeftButton:
                 self.isSelected = not self.isSelected
+                text = self.tr('Random play: on') if self.isSelected else self.tr(
+                    'Random play: off')
+                self.setToolTip(text)
                 self.isPressed = False
                 self.update()
                 self.randomPlayChanged.emit(self.isSelected)
                 return False
             if e.type() == QEvent.MouseButtonPress and e.button() == Qt.LeftButton:
+                self.hideToolTip()
                 self.isPressed = True
                 self.update()
                 return False
+
         return super().eventFilter(obj, e)
 
     def enterEvent(self, e):
         """ 鼠标进入时更新背景 """
+        super().enterEvent(e)
         self.isEnter = True
         self.update()
 
     def leaveEvent(self, e):
         """ 鼠标离开时更新背景 """
+        super().leaveEvent(e)
         self.isEnter = False
         self.update()
 
@@ -146,6 +166,7 @@ class RandomPlayButton(QToolButton):
                                QPainter.SmoothPixmapTransform)
         painter.setPen(Qt.NoPen)
         self.image = QPixmap(':/images/play_bar/Shuffle.png')
+
         if self.isSelected:
             bgBrush = QBrush(QColor(0, 0, 0, 106))
             painter.setBrush(bgBrush)
@@ -164,36 +185,39 @@ class RandomPlayButton(QToolButton):
             bgBrush = QBrush(QColor(0, 0, 0, 26))
             painter.setBrush(bgBrush)
             painter.drawEllipse(1, 1, 44, 44)
+
         # 绘制图标
         if not self.isPressed:
             painter.setPen(Qt.NoPen)
             painter.drawPixmap(1, 1, 45, 45, self.image)
 
 
-class BasicButton(QToolButton):
+class BasicButton(TooltipButton):
     """ 基本圆形按钮 """
 
-    def __init__(self, icon_path, parent=None):
+    def __init__(self, iconPath: str, parent=None):
         super().__init__(parent)
-        # 设置标志位
         self.isEnter = False
         self.isPressed = False
-        self.icon_path = icon_path
+        self.iconPixmap = QPixmap(iconPath)
         self.setFixedSize(47, 47)
 
     def enterEvent(self, e):
         """ 鼠标进入时更新背景 """
+        super().enterEvent(e)
         self.isEnter = True
         self.update()
 
     def leaveEvent(self, e):
         """ 鼠标离开时更新背景 """
+        super().leaveEvent(e)
         self.isEnter = False
         self.update()
 
     def mousePressEvent(self, e):
         """ 鼠标按下更新背景 """
         super().mousePressEvent(e)
+        self.hideToolTip()
         self.isPressed = True
         self.update()
 
@@ -205,17 +229,17 @@ class BasicButton(QToolButton):
 
     def paintEvent(self, e):
         """ 绘制背景 """
-        image = QPixmap(self.icon_path)
+        image = self.iconPixmap
         painter = QPainter(self)
         painter.setRenderHints(QPainter.Antialiasing |
                                QPainter.SmoothPixmapTransform)
-        # 设置画笔
+
         painter.setPen(Qt.NoPen)
         if self.isPressed:
             bgBrush = QBrush(QColor(0, 0, 0, 45))
             painter.setBrush(bgBrush)
             painter.drawEllipse(2, 2, 42, 42)
-            image = image.scaled(
+            image = self.iconPixmap.scaled(
                 43, 43, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         elif self.isEnter:
             painter.setPen(QPen(QColor(0, 0, 0, 38)))
@@ -223,6 +247,7 @@ class BasicButton(QToolButton):
             painter.setBrush(bgBrush)
             painter.drawEllipse(1, 1, 44, 44)
         painter.setPen(Qt.NoPen)
+
         # 绘制背景图
         if not self.isPressed:
             painter.drawPixmap(1, 1, 45, 45, image)
@@ -230,33 +255,37 @@ class BasicButton(QToolButton):
             painter.drawPixmap(2, 2, 42, 42, image)
 
 
-class LoopModeButton(QToolButton):
+class LoopModeButton(TooltipButton):
     """ 循环播放模式按钮 """
 
     loopModeChanged = pyqtSignal(QMediaPlaylist.PlaybackMode)
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        # 设置标志位
         self.isEnter = False
         self.isPressed = False
-        # 设置点击次数以及对应的循环模式和的图标
         self.clickedTime = 0
         self.loopMode = QMediaPlaylist.Sequential
-        self.__loopMode_list = [QMediaPlaylist.Sequential,
-                                QMediaPlaylist.Loop, QMediaPlaylist.CurrentItemInLoop]
-
-        self.__iconPath_list = [':/images/play_bar/RepeatAll.png',
-                                ':/images/play_bar/RepeatAll.png',
-                                ':/images/play_bar/RepeatOne.png']
+        self.__loopMode_list = [
+            QMediaPlaylist.Sequential,
+            QMediaPlaylist.Loop,
+            QMediaPlaylist.CurrentItemInLoop
+        ]
+        self.iconPixmaps = [
+            QPixmap(':/images/play_bar/RepeatAll.png'),
+            QPixmap(':/images/play_bar/RepeatAll.png'),
+            QPixmap(':/images/play_bar/RepeatOne.png')
+        ]
         self.setFixedSize(47, 47)
         self.installEventFilter(self)
+        self.__updateToolTip()
 
     def setLoopMode(self, loopMode: QMediaPlaylist.PlaybackMode):
         """ 设置循环模式 """
         self.loopMode = loopMode
         self.clickedTime = self.__loopMode_list.index(loopMode)
         self.update()
+        self.__updateToolTip()
 
     def eventFilter(self, obj, e):
         """ 按钮按下时更换图标 """
@@ -264,24 +293,29 @@ class LoopModeButton(QToolButton):
             if e.type() == QEvent.MouseButtonRelease and e.button() == Qt.LeftButton:
                 self.clickedTime = (self.clickedTime + 1) % 3
                 self.loopMode = self.__loopMode_list[self.clickedTime]
+                self.__updateToolTip()
                 self.update()
                 self.loopModeChanged.emit(self.loopMode)
                 return False
+
         return super().eventFilter(obj, e)
 
     def enterEvent(self, e):
         """ 鼠标进入时更新背景 """
+        super().enterEvent(e)
         self.isEnter = True
         self.update()
 
     def leaveEvent(self, e):
         """ 鼠标离开时更新背景 """
+        super().leaveEvent(e)
         self.isEnter = False
         self.update()
 
     def mousePressEvent(self, e):
         """ 鼠标按下更新背景 """
         super().mousePressEvent(e)
+        self.hideToolTip()
         self.isPressed = True
         self.update()
 
@@ -293,11 +327,11 @@ class LoopModeButton(QToolButton):
 
     def paintEvent(self, e):
         """ 绘制背景 """
-        self.image = QPixmap(self.__iconPath_list[self.clickedTime])
+        iconPixmap = self.iconPixmaps[self.clickedTime]
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing, True)
-        # 设置画笔
         painter.setPen(Qt.NoPen)
+
         # 绘制背景色
         if self.clickedTime != 0:
             brush = QBrush(QColor(0, 0, 0, 106))
@@ -308,24 +342,34 @@ class LoopModeButton(QToolButton):
             bgBrush = QBrush(QColor(0, 0, 0, 45))
             painter.setBrush(bgBrush)
             painter.drawEllipse(1, 1, 44, 44)
-            self.image = self.image.scaled(
+            iconPixmap = iconPixmap.scaled(
                 44, 44, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            painter.drawPixmap(2, 2, 44, 44, self.image)
+            painter.drawPixmap(2, 2, 44, 44, iconPixmap)
         elif self.isEnter and self.clickedTime == 0:
             painter.setPen(QPen(QColor(0, 0, 0, 38)))
             bgBrush = QBrush(QColor(0, 0, 0, 26))
             painter.setBrush(bgBrush)
             painter.drawEllipse(1, 1, 44, 44)
 
-        # 绘制背景图
-        painter.setPen(Qt.NoPen)
         # 绘制图标
+        painter.setPen(Qt.NoPen)
         if not self.isPressed:
             painter.setPen(Qt.NoPen)
-            painter.drawPixmap(1, 1, 45, 45, self.image)
+            painter.drawPixmap(1, 1, 45, 45, iconPixmap)
+
+    def __updateToolTip(self):
+        """ 根据循环模式更新工具提示 """
+        if self.loopMode == QMediaPlaylist.Sequential:
+            text = self.tr('Loop playback: off')
+        elif self.loopMode == QMediaPlaylist.Loop:
+            text = self.tr('Loop: list loop')
+        else:
+            text = self.tr('Loop: single loop')
+
+        self.setToolTip(text)
 
 
-class VolumeButton(QToolButton):
+class VolumeButton(TooltipButton):
     """ 音量按钮 """
 
     muteStateChanged = pyqtSignal(bool)
@@ -336,21 +380,22 @@ class VolumeButton(QToolButton):
         self.isEnter = False
         self.isPressed = False
         self.isMute = False
-        # 当前音量等级及其各个图标地址
         self.currentVolumeLevel = 1
-        self.__iconPath_list = [
-            ':/images/play_bar/Volume0.png',
-            ':/images/play_bar/Volume1.png',
-            ':/images/play_bar/Volume2.png',
-            ':/images/play_bar/Volume3.png',
-            ':/images/play_bar/Volumex.png']
-        self.pixmap_list = [QPixmap(i) for i in self.__iconPath_list]
-        self.iconPixmap = self.pixmap_list[1]
+        self.iconPixmaps = [
+            QPixmap(':/images/play_bar/Volume0.png'),
+            QPixmap(':/images/play_bar/Volume1.png'),
+            QPixmap(':/images/play_bar/Volume2.png'),
+            QPixmap(':/images/play_bar/Volume3.png'),
+            QPixmap(':/images/play_bar/Volumex.png')
+        ]
+        self.iconPixmap = self.iconPixmaps[1]
         self.setFixedSize(47, 47)
+        self.setToolTip(self.tr('Mute: off'))
 
     def mousePressEvent(self, e):
         """ 鼠标按下更新背景 """
         super().mousePressEvent(e)
+        self.hideToolTip()
         self.isPressed = True
         self.update()
 
@@ -364,11 +409,13 @@ class VolumeButton(QToolButton):
 
     def enterEvent(self, e):
         """ 鼠标进入时更新背景 """
+        super().enterEvent(e)
         self.isEnter = True
         self.update()
 
     def leaveEvent(self, e):
         """ 鼠标离开时更新背景 """
+        super().leaveEvent(e)
         self.isEnter = False
         self.update()
 
@@ -377,6 +424,7 @@ class VolumeButton(QToolButton):
         painter = QPainter(self)
         painter.setRenderHints(QPainter.Antialiasing |
                                QPainter.SmoothPixmapTransform)
+
         # 设置画笔和背景图
         painter.setPen(Qt.NoPen)
         if self.isPressed:
@@ -392,6 +440,7 @@ class VolumeButton(QToolButton):
             bgBrush = QBrush(QColor(0, 0, 0, 26))
             painter.setBrush(bgBrush)
             painter.drawEllipse(1, 1, 44, 44)
+
         # 绘制背景图
         if not self.isPressed:
             painter.setPen(Qt.NoPen)
@@ -403,9 +452,13 @@ class VolumeButton(QToolButton):
         """ 设置静音状态 """
         if isMute == self.isMute:
             return
+
+        text = self.tr('Mute: on') if isMute else self.tr('Mute: off')
+        self.setToolTip(text)
+
         self.isMute = isMute
         index = -1 if isMute else self.currentVolumeLevel
-        self.iconPixmap = self.pixmap_list[index]
+        self.iconPixmap = self.iconPixmaps[index]
         self.update()
 
     def setVolumeLevel(self, volume):
@@ -423,5 +476,5 @@ class VolumeButton(QToolButton):
         """ 更新图标 """
         self.currentVolumeLevel = iconIndex
         if not self.isMute:
-            self.iconPixmap = self.pixmap_list[iconIndex]
+            self.iconPixmap = self.iconPixmaps[iconIndex]
             self.update()

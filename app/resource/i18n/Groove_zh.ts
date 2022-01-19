@@ -101,17 +101,17 @@
         <translation>这里没有可显示的内容。请尝试其他筛选器。</translation>
     </message>
     <message>
-        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="693"/>
+        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="694"/>
         <source>Are you sure you want to delete this?</source>
         <translation>是否确定要删除此项？</translation>
     </message>
     <message>
-        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="694"/>
+        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="695"/>
         <source>If you delete</source>
         <translation>如果删除</translation>
     </message>
     <message>
-        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="695"/>
+        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="696"/>
         <source>it won&apos;t be on be this device anymore.</source>
         <translation>，它将不再位于此设备上。</translation>
     </message>
@@ -269,6 +269,32 @@
         <location filename="../../components/song_list_widget/basic_song_card.py" line="98"/>
         <source>Unknown genre</source>
         <translation>未知流派</translation>
+    </message>
+</context>
+<context>
+    <name>ButtonGroup</name>
+    <message>
+        <location filename="../../components/song_list_widget/song_name_card.py" line="70"/>
+        <source>Add to</source>
+        <translation>添加到</translation>
+    </message>
+    <message>
+        <location filename="../../components/song_list_widget/song_name_card.py" line="71"/>
+        <source>Play</source>
+        <translation>播放</translation>
+    </message>
+</context>
+<context>
+    <name>CentralButtonGroup</name>
+    <message>
+        <location filename="../../View/play_bar/play_bar.py" line="241"/>
+        <source>Previous</source>
+        <translation>上一首</translation>
+    </message>
+    <message>
+        <location filename="../../View/play_bar/play_bar.py" line="242"/>
+        <source>Next</source>
+        <translation>下一首</translation>
     </message>
 </context>
 <context>
@@ -474,6 +500,32 @@
         <location filename="../../View/search_result_interface/song_group_box.py" line="158"/>
         <source>it won&apos;t be on be this device anymore.</source>
         <translation>，它将不再位于此设备上。</translation>
+    </message>
+</context>
+<context>
+    <name>LoopModeButton</name>
+    <message>
+        <location filename="../../View/playing_interface/play_bar_buttons.py" line="153"/>
+        <source>Loop playback: off</source>
+        <translation>循环播放: 关闭</translation>
+    </message>
+    <message>
+        <location filename="../../View/playing_interface/play_bar_buttons.py" line="155"/>
+        <source>Loop: list loop</source>
+        <translation>循环: 列表循环</translation>
+    </message>
+    <message>
+        <location filename="../../View/playing_interface/play_bar_buttons.py" line="157"/>
+        <source>Loop: single loop</source>
+        <translation>循环: 单曲循环</translation>
+    </message>
+</context>
+<context>
+    <name>LyricWidget</name>
+    <message>
+        <location filename="../../components/widgets/lyric_widget.py" line="26"/>
+        <source>Loading lyrics...</source>
+        <translation>正在加载歌词...</translation>
     </message>
 </context>
 <context>
@@ -700,6 +752,14 @@
     </message>
 </context>
 <context>
+    <name>OnlineSongCard</name>
+    <message>
+        <location filename="../../components/song_list_widget/song_card.py" line="335"/>
+        <source>Download</source>
+        <translation>下载</translation>
+    </message>
+</context>
+<context>
     <name>OnlineSongListContextMenu</name>
     <message>
         <location filename="../../View/search_result_interface/song_group_box.py" line="296"/>
@@ -720,6 +780,54 @@
         <location filename="../../View/search_result_interface/song_group_box.py" line="300"/>
         <source>Download</source>
         <translation>下载</translation>
+    </message>
+</context>
+<context>
+    <name>PlayBar</name>
+    <message>
+        <location filename="../../View/playing_interface/play_bar.py" line="84"/>
+        <source>Previous</source>
+        <translation>上一首</translation>
+    </message>
+    <message>
+        <location filename="../../View/playing_interface/play_bar.py" line="85"/>
+        <source>Next</source>
+        <translation>下一首</translation>
+    </message>
+    <message>
+        <location filename="../../View/playing_interface/play_bar.py" line="86"/>
+        <source>More actions</source>
+        <translation>更多操作</translation>
+    </message>
+    <message>
+        <location filename="../../View/playing_interface/play_bar.py" line="87"/>
+        <source>Show playlist</source>
+        <translation>显示播放列表</translation>
+    </message>
+    <message>
+        <location filename="../../View/playing_interface/play_bar.py" line="88"/>
+        <source>Smallest play mode</source>
+        <translation>以最小模式播放</translation>
+    </message>
+    <message>
+        <location filename="../../components/video_window/play_bar.py" line="56"/>
+        <source>Rewind</source>
+        <translation>快退</translation>
+    </message>
+    <message>
+        <location filename="../../components/video_window/play_bar.py" line="57"/>
+        <source>Fast forward</source>
+        <translation>快进</translation>
+    </message>
+    <message>
+        <location filename="../../components/video_window/play_bar.py" line="58"/>
+        <source>Download</source>
+        <translation>下载</translation>
+    </message>
+    <message>
+        <location filename="../../components/video_window/play_bar.py" line="59"/>
+        <source>Show fullscreen</source>
+        <translation>转到全屏</translation>
     </message>
 </context>
 <context>
@@ -746,6 +854,19 @@
     </message>
 </context>
 <context>
+    <name>PlayButton</name>
+    <message>
+        <location filename="../../View/playing_interface/play_bar_buttons.py" line="265"/>
+        <source>Play</source>
+        <translation>播放</translation>
+    </message>
+    <message>
+        <location filename="../../View/playing_interface/play_bar_buttons.py" line="265"/>
+        <source>Pause</source>
+        <translation>暂停</translation>
+    </message>
+</context>
+<context>
     <name>PlayingInterface</name>
     <message>
         <location filename="../../View/playing_interface/playing_interface.py" line="81"/>
@@ -758,14 +879,24 @@
         <translation> 随机播放你收藏中的所有内容</translation>
     </message>
     <message>
-        <location filename="../../View/playing_interface/playing_interface.py" line="543"/>
+        <location filename="../../View/playing_interface/playing_interface.py" line="551"/>
         <source>Unable to find the corresponding MV</source>
         <translation>无法找到对应的 MV</translation>
     </message>
     <message>
-        <location filename="../../View/playing_interface/playing_interface.py" line="543"/>
+        <location filename="../../View/playing_interface/playing_interface.py" line="551"/>
         <source>Sorry, there are no MVs available for the current song</source>
         <translation>抱歉呢前辈，当前歌曲没有可供观看的 MV~</translation>
+    </message>
+    <message>
+        <location filename="../../View/playing_interface/playing_interface.py" line="216"/>
+        <source>Hide playlist</source>
+        <translation>隐藏播放列表</translation>
+    </message>
+    <message>
+        <location filename="../../View/playing_interface/playing_interface.py" line="255"/>
+        <source>Show playlist</source>
+        <translation>显示播放列表</translation>
     </message>
 </context>
 <context>
@@ -1000,6 +1131,27 @@
     </message>
 </context>
 <context>
+    <name>PullUpArrow</name>
+    <message>
+        <location filename="../../View/playing_interface/play_bar_buttons.py" line="175"/>
+        <source>Show playlist</source>
+        <translation>显示播放列表</translation>
+    </message>
+</context>
+<context>
+    <name>RandomPlayButton</name>
+    <message>
+        <location filename="../../View/playing_interface/play_bar_buttons.py" line="96"/>
+        <source>Random play: on</source>
+        <translation>随机播放: 开启</translation>
+    </message>
+    <message>
+        <location filename="../../View/playing_interface/play_bar_buttons.py" line="96"/>
+        <source>Random play: off</source>
+        <translation>随机播放: 关闭</translation>
+    </message>
+</context>
+<context>
     <name>RenamePlaylistDialog</name>
     <message>
         <location filename="../../components/dialog_box/rename_playlist_dialog.py" line="28"/>
@@ -1015,6 +1167,14 @@
         <location filename="../../components/dialog_box/rename_playlist_dialog.py" line="30"/>
         <source>This name already exists. Please try a different name.</source>
         <translation>此名称已经存在。请尝试其他名称。</translation>
+    </message>
+</context>
+<context>
+    <name>RightWidgetGroup</name>
+    <message>
+        <location filename="../../View/play_bar/play_bar.py" line="269"/>
+        <source>Smallest play mode</source>
+        <translation>以最小模式播放</translation>
     </message>
 </context>
 <context>
@@ -1388,17 +1548,17 @@
 <context>
     <name>SongCard</name>
     <message>
-        <location filename="../../View/playing_interface/song_card.py" line="114"/>
+        <location filename="../../View/playing_interface/song_card.py" line="116"/>
         <source>Unknown artist</source>
         <translation>未知歌手</translation>
     </message>
     <message>
-        <location filename="../../View/playing_interface/song_card.py" line="115"/>
+        <location filename="../../View/playing_interface/song_card.py" line="117"/>
         <source>Unknown album</source>
         <translation>未知专辑</translation>
     </message>
     <message>
-        <location filename="../../View/playing_interface/song_card.py" line="117"/>
+        <location filename="../../View/playing_interface/song_card.py" line="119"/>
         <source>Unknown song</source>
         <translation>未知歌曲</translation>
     </message>
@@ -1854,54 +2014,82 @@
 <context>
     <name>VideoWindow</name>
     <message>
-        <location filename="../../components/video_window/video_window.py" line="168"/>
+        <location filename="../../components/video_window/video_window.py" line="170"/>
         <source>The media resource couldn&apos;t be resolved.</source>
         <translation>无效视频源。</translation>
     </message>
     <message>
-        <location filename="../../components/video_window/video_window.py" line="170"/>
+        <location filename="../../components/video_window/video_window.py" line="172"/>
         <source>The format of a media resource isn&apos;t supported.</source>
         <translation>暂不支持播放该格式的视频。</translation>
     </message>
     <message>
-        <location filename="../../components/video_window/video_window.py" line="172"/>
+        <location filename="../../components/video_window/video_window.py" line="174"/>
         <source>A network error occurred.</source>
         <translation>发生了网络错误。</translation>
     </message>
     <message>
-        <location filename="../../components/video_window/video_window.py" line="173"/>
+        <location filename="../../components/video_window/video_window.py" line="175"/>
         <source>There are not the appropriate permissions to play the media resource.</source>
         <translation>没有权限播放该视频。</translation>
     </message>
     <message>
-        <location filename="../../components/video_window/video_window.py" line="178"/>
+        <location filename="../../components/video_window/video_window.py" line="180"/>
         <source>An error occurred</source>
         <translation>发生了错误</translation>
     </message>
     <message>
-        <location filename="../../components/video_window/video_window.py" line="175"/>
+        <location filename="../../components/video_window/video_window.py" line="177"/>
         <source>A valid playback service was not found, playback cannot proceed.</source>
         <translation>视频服务不存在，无法继续播放。</translation>
     </message>
     <message>
-        <location filename="../../components/video_window/video_window.py" line="196"/>
+        <location filename="../../components/video_window/video_window.py" line="198"/>
         <source>Downloading MVs</source>
         <translation>正在下载 MV</translation>
     </message>
     <message>
-        <location filename="../../components/video_window/video_window.py" line="197"/>
+        <location filename="../../components/video_window/video_window.py" line="199"/>
         <source>There are</source>
         <translation>还剩</translation>
     </message>
     <message>
-        <location filename="../../components/video_window/video_window.py" line="198"/>
+        <location filename="../../components/video_window/video_window.py" line="200"/>
         <source>left. Please wait patiently</source>
         <translation>首，要耐心等待哦</translation>
     </message>
     <message>
-        <location filename="../../components/video_window/video_window.py" line="185"/>
+        <location filename="../../components/video_window/video_window.py" line="187"/>
         <source>save as</source>
         <translation>另存为</translation>
+    </message>
+    <message>
+        <location filename="../../components/video_window/video_window.py" line="213"/>
+        <source>Exit fullscreen</source>
+        <translation>退出全屏</translation>
+    </message>
+    <message>
+        <location filename="../../components/video_window/video_window.py" line="213"/>
+        <source>Show fullscreen</source>
+        <translation>转到全屏</translation>
+    </message>
+</context>
+<context>
+    <name>VolumeButton</name>
+    <message>
+        <location filename="../../View/play_bar/play_bar_buttons.py" line="456"/>
+        <source>Mute: off</source>
+        <translation>静音: 关闭</translation>
+    </message>
+    <message>
+        <location filename="../../View/play_bar/play_bar_buttons.py" line="456"/>
+        <source>Mute: on</source>
+        <translation>静音: 开启</translation>
+    </message>
+    <message>
+        <location filename="../../View/playing_interface/play_bar_buttons.py" line="313"/>
+        <source>Volume</source>
+        <translation>音量</translation>
     </message>
 </context>
 <context>

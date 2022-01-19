@@ -1,10 +1,12 @@
 # coding:utf-8
+from components.buttons.tooltip_button import TooltipButton
 from components.widgets.label import ClickableLabel
 from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
-                          QParallelAnimationGroup, QPropertyAnimation, QRect,
-                          Qt, pyqtSignal, QSize, QPoint)
-from PyQt5.QtGui import QFont, QFontMetrics, QMouseEvent, QIcon, QPixmap
-from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QCheckBox, QToolButton
+                          QParallelAnimationGroup, QPoint, QPropertyAnimation,
+                          QRect, QSize, Qt, pyqtSignal)
+from PyQt5.QtGui import QFont, QFontMetrics, QIcon, QMouseEvent, QPixmap
+from PyQt5.QtWidgets import (QApplication, QCheckBox, QLabel, QToolButton,
+                             QWidget)
 
 from .menu import AddToMenu
 
@@ -325,7 +327,7 @@ class SongCard(QWidget):
         self.addToButton.clicked.connect(self.__showAddToMenu)
 
 
-class ToolButton(QToolButton):
+class ToolButton(TooltipButton):
     """ 工具按钮 """
 
     def __init__(self, iconPath_list, parent=None):
@@ -337,6 +339,7 @@ class ToolButton(QToolButton):
         self.setIconSize(QSize(60, 60))
         self.setIcon(QIcon(self.iconPath_list[self.isPlaying]))
         self.setStyleSheet("QToolButton{border:none;margin:0}")
+        self.setDarkToolTip(True)
 
     def setPlay(self, isPlay: bool):
         """ 设置播放状态，更新按钮图标 """
@@ -364,12 +367,13 @@ class ButtonGroup(QWidget):
             ],
             self,
         )
-        # 初始化
         self.setAttribute(Qt.WA_StyledBackground)
         self.setFixedSize(140, 60)
-        # 设置按钮的绝对坐标
+
         self.addToButton.move(80, 0)
         self.playButton.move(20, 0)
+        self.addToButton.setToolTip(self.tr('Add to'))
+        self.playButton.setToolTip(self.tr('Play'))
 
     def setPlay(self, isPlay: bool):
         """ 根据播放状态更换按钮图标 """

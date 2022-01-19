@@ -128,11 +128,13 @@ class VideoWindow(QGraphicsView):
     def __enterFullScreen(self):
         """ 进入全屏 """
         self.playBar.fullScreenButton.setFullScreen(True)
+        self.playBar.fullScreenButton.setToolTip(self.tr('Exit fullscreen'))
         self.fullScreenChanged.emit(True)
 
     def __exitFullScreen(self):
         """ 退出全屏 """
         self.playBar.fullScreenButton.setFullScreen(False)
+        self.playBar.fullScreenButton.setToolTip(self.tr('Show fullscreen'))
         self.fullScreenChanged.emit(False)
 
     def __toggleFullScreen(self):
@@ -206,6 +208,13 @@ class VideoWindow(QGraphicsView):
         self.downloadStateTooltip.show()
         self.downloadMvThread.start()
 
+    def __onFullScreenChanged(self, isFullScreen: bool):
+        """ 全屏状态改变才函数 """
+        text = self.tr('Exit fullscreen') if isFullScreen else self.tr(
+            'Show fullscreen')
+        self.playBar.fullScreenButton.setToolTip(text)
+        self.fullScreenChanged.emit(isFullScreen)
+
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
         self.player.error.connect(self.__onPlayerError)
@@ -222,7 +231,7 @@ class VideoWindow(QGraphicsView):
         self.playBar.volumeSliderWidget.volumeSlider.valueChanged.connect(
             self.player.setVolume)
         self.playBar.fullScreenButton.fullScreenChanged.connect(
-            self.fullScreenChanged)
+            self.__onFullScreenChanged)
         self.playBar.downloadButton.clicked.connect(
             self.__onDownloadButtonClicked)
 

@@ -1,5 +1,5 @@
 # coding:utf-8
-from components.widgets.tooltip import Tooltip
+from .tooltip_button import TooltipButton
 from PIL import Image
 from PIL.ImageFilter import GaussianBlur
 from PyQt5.QtCore import QPoint, QPropertyAnimation, Qt, pyqtProperty
@@ -7,7 +7,7 @@ from PyQt5.QtGui import QBrush, QEnterEvent, QPainter, QPixmap
 from PyQt5.QtWidgets import QToolButton
 
 
-class BlurButton(QToolButton):
+class BlurButton(TooltipButton):
     """ 磨砂按钮 """
 
     def __init__(self, parent, cropPos: tuple, iconPath: str, blurPicPath: str,
@@ -50,9 +50,7 @@ class BlurButton(QToolButton):
         self.iconPix = QPixmap(iconPath).scaled(
             radius*2, radius*2, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         self.radiusAni = QPropertyAnimation(self, b'paintRadius', self)
-        self.__tooltip = Tooltip(text, self.window())
-        self.__tooltip.hide()
-
+        self.setToolTip(text)
 
     def showEvent(self, e):
         if not self.blurPix:
@@ -112,11 +110,7 @@ class BlurButton(QToolButton):
             self.radiusAni.stop()
 
         # 显示工具提示
-        pos = self.mapTo(self.window(), QPoint(0, 0))
-        x = pos.x() + self.radius - self.__tooltip.width()//2
-        y = pos.y() - 2 - self.__tooltip.height()
-        self.__tooltip.move(x, y)
-        self.__tooltip.show()
+        super().enterEvent(e)
 
         self.radiusAni.setStartValue(self.__paintRadius)
         self.radiusAni.setEndValue(self.radius)
@@ -128,15 +122,12 @@ class BlurButton(QToolButton):
         if self.radiusAni.state() == QPropertyAnimation.Running:
             self.radiusAni.stop()
 
-        self.__tooltip.hide()
+        super().leaveEvent(e)
+
         self.radiusAni.setStartValue(self.__paintRadius)
         self.radiusAni.setEndValue(self.radius-5)
         self.radiusAni.setDuration(100)
         self.radiusAni.start()
-
-    def hideEvent(self, e):
-        super().hideEvent(e)
-        self.__tooltip.hide()
 
     def setPaintRadius(self, radius: int):
         """ 设置绘制的半径 """

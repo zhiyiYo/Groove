@@ -1,18 +1,19 @@
 # coding:utf-8
-from PyQt5.QtCore import QSize, Qt, QEvent
-from PyQt5.QtGui import QIcon, QPixmap, QFontMetrics, QFont
-from PyQt5.QtWidgets import QCheckBox, QLabel, QToolButton, QWidget, QApplication
+from components.buttons.tooltip_button import TooltipButton
+from PyQt5.QtCore import QEvent, QSize, Qt
+from PyQt5.QtGui import QFont, QFontMetrics, QIcon, QPixmap
+from PyQt5.QtWidgets import (QApplication, QCheckBox, QLabel, QToolButton,
+                             QWidget)
 
 from .song_card_type import SongCardType
 
 
-class ToolButton(QToolButton):
+class ToolButton(TooltipButton):
     """ 按钮 """
 
     def __init__(self, iconPath_dict: dict, parent=None):
         super().__init__(parent)
         self.iconPath_dict = iconPath_dict
-        # 设置按钮状态标志位
         self.setFixedSize(60, 60)
         self.setIconSize(QSize(60, 60))
         self.setState("notSelected-notPlay")
@@ -63,12 +64,16 @@ class ButtonGroup(QWidget):
         """ 初始化小部件 """
         self.setAttribute(Qt.WA_StyledBackground)
         self.setFixedSize(140, 60)
-        # 设置按钮的绝对坐标
+
         self.addToButton.move(80, 0)
         self.playButton.move(20, 0)
+        self.addToButton.setToolTip(self.tr('Add to'))
+        self.playButton.setToolTip(self.tr('Play'))
+
         # 分配ID并设置属性
         self.setObjectName("buttonGroup")
         self.setProperty("state", "notSelected-leave")
+
         # 隐藏按钮
         # self.setButtonHidden(True)
         self.installEventFilter(self)
@@ -95,6 +100,7 @@ class ButtonGroup(QWidget):
                 e = QEvent(QEvent.Leave)
                 QApplication.sendEvent(self.playButton, e)
                 QApplication.sendEvent(self.addToButton, e)
+
         return super().eventFilter(obj, e)
 
 

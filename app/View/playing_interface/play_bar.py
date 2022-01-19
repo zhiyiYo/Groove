@@ -53,7 +53,7 @@ class PlayBar(QWidget):
             ":/images/playing_interface/Playlist_47_47.png", self)
         self.smallPlayModeButton = CircleButton(
             ":/images/playing_interface/SmallestPlayMode.png", self)
-        # 创建小部件列表
+
         self.__widget_list = [
             self.playButton,
             self.fullScreenButton,
@@ -81,10 +81,13 @@ class PlayBar(QWidget):
         self.moreActionsButton.move(387, 85)
         self.volumeSliderWidget.hide()
         self.playProgressBar.move(0, 45)
+        self.lastSongButton.setToolTip(self.tr('Previous'))
+        self.nextSongButton.setToolTip(self.tr('Next'))
+        self.moreActionsButton.setToolTip(self.tr('More actions'))
+        self.showPlaylistButton.setToolTip(self.tr('Show playlist'))
+        self.smallPlayModeButton.setToolTip(self.tr('Smallest play mode'))
         self.__moveButtons()
-        # 信号连接到槽
         self.__connectSignalToSlot()
-        # 引用小部件及其方法
         self.__referenceWidget()
 
     def __showVolumeSlider(self):

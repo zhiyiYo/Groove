@@ -86,11 +86,16 @@ class RandomPlayButton(SelectableButton):
 
     def __init__(self, iconPath_list: list, parent=None, iconSize=(47, 47), buttonSize=(47, 47)):
         super().__init__(iconPath_list, parent, iconSize, buttonSize)
+        self.setToolTip(self.tr('Random play: off'))
 
     def setRandomPlay(self, isRandomPlay: bool):
         """ 设置随机播放状态 """
         if self.isSelected == isRandomPlay:
             return
+
+        text = self.tr('Random play: on') if isRandomPlay else self.tr(
+            'Random play: off')
+        self.setToolTip(text)
         self.isSelected = isRandomPlay
         self.clickedTime = int(isRandomPlay)
         self.update()
@@ -105,9 +110,7 @@ class LoopModeButton(SelectableButton):
 
     loopModeChanged = pyqtSignal(QMediaPlaylist.PlaybackMode)
 
-    def __init__(
-        self, iconPath_list: list, parent=None, iconSize=(47, 47), buttonSize=(47, 47)
-    ):
+    def __init__(self, iconPath_list: list, parent=None, iconSize=(47, 47), buttonSize=(47, 47)):
         super().__init__(iconPath_list, parent, iconSize, buttonSize)
         self.loopMode = QMediaPlaylist.Sequential
         self.__loopMode_list = [
@@ -115,6 +118,7 @@ class LoopModeButton(SelectableButton):
             QMediaPlaylist.Loop,
             QMediaPlaylist.CurrentItemInLoop,
         ]
+        self.__updateToolTip()
 
     def mouseReleaseEvent(self, e):
         """ 更新循环模式 """
@@ -126,15 +130,33 @@ class LoopModeButton(SelectableButton):
         """ 设置循环模式 """
         if self.loopMode == loopMode:
             return
+
         self.loopMode = loopMode
         self.isSelected = self.loopMode in [
             QMediaPlaylist.Loop, QMediaPlaylist.CurrentItemInLoop]
         self.clickedTime = self.__loopMode_list.index(loopMode)
+
         if self.clickedTime == 2:
             self.iconPixmap = QPixmap(self.iconPath_list[1])
         else:
             self.iconPixmap = QPixmap(self.iconPath_list[0])
+
         self.update()
+
+    def update(self):
+        super().update()
+        self.__updateToolTip()
+
+    def __updateToolTip(self):
+        """ 根据循环模式更新工具提示 """
+        if self.loopMode == QMediaPlaylist.Sequential:
+            text = self.tr('Loop playback: off')
+        elif self.loopMode == QMediaPlaylist.Loop:
+            text = self.tr('Loop: list loop')
+        else:
+            text = self.tr('Loop: single loop')
+
+        self.setToolTip(text)
 
 
 class PullUpArrow(CircleButton):
@@ -150,6 +172,7 @@ class PullUpArrow(CircleButton):
         self.timer = QTimer(self)
         self.timer.setInterval(19)
         self.timer.timeout.connect(self.timerSlot)
+        self.setToolTip(self.tr('Show playlist'))
 
     def setArrowDirection(self, direction: str = "up"):
         """ 设置箭头方向，up朝上，down朝下 """
@@ -232,12 +255,14 @@ class PlayButton(TwoStateButton):
         ]
         super().__init__(self.iconPath_list, parent)
         self.isPlay = False
+        self.setToolTip(self.tr('Play'))
 
     def setPlay(self, isPlay: bool):
         """ 设置按钮状态 """
         if self.isPlay == isPlay:
             return
 
+        self.setToolTip(self.tr('Pause') if isPlay else self.tr('Play'))
         self.isPlay = isPlay
         self.setState(not isPlay)
         self.update()
@@ -285,11 +310,13 @@ class VolumeButton(CircleButton):
         super().__init__(self.__iconPath_list[0], parent)
         self.isMute = False
         self.__volumeLevel = 0
+        self.setToolTip(self.tr('Volume'))
 
     def setMute(self, isMute: bool):
         """ 设置静音 """
         if self.isMute == isMute:
             return
+
         self.isMute = isMute
         index = -1 if isMute else self.__volumeLevel
         self.iconPixmap = self.pixmap_list[index]
@@ -309,7 +336,6 @@ class VolumeButton(CircleButton):
     def updateIcon(self, iconIndex):
         """ 更新图标 """
         self.__volumeLevel = iconIndex
-        # 静音时不更新图标
         if not self.isMute:
             self.iconPixmap = self.pixmap_list[iconIndex]
             self.update()

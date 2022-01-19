@@ -332,6 +332,8 @@ class OnlineSongCard(BasicSongCard):
         self.setWidgetState("notSelected-leave")
         self.setCheckBoxBtLabelState("notSelected-notPlay")
 
+        self.addToButton.setToolTip(self.tr('Download'))
+
         # 信号连接到槽
         self.addToButton.clicked.connect(self.__showDownloadMenu)
 

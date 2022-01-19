@@ -23,6 +23,7 @@ class LyricWidget(ScrollArea):
             self.verticalScrollBar(), b'value', self)
         self.scrollWidget = QWidget(self)
         self.vBoxLayout = QVBoxLayout(self.scrollWidget)
+        self.loadingLabel = QLabel(self.tr('Loading lyrics...'), self)
 
         self.__initWidget()
 
@@ -36,6 +37,7 @@ class LyricWidget(ScrollArea):
         self.scrollWidget.resize(800, 800)
         self.vBoxLayout.setContentsMargins(0, 160, 0, 160)
         self.vBoxLayout.setSpacing(45)
+        self.loadingLabel.hide()
         self.__setQss()
 
         self.verticalScrollBar().valueChanged.connect(self.__adjustTextColor)
@@ -87,6 +89,7 @@ class LyricWidget(ScrollArea):
         QApplication.processEvents()
         self.scrollWidget.adjustSize()
         self.__adjustTextColor()
+        self.setLoadingState(False)
 
     def setCurrentTime(self, time: int):
         """ 设置当前时间
@@ -168,14 +171,27 @@ class LyricWidget(ScrollArea):
     def resizeEvent(self, e):
         """ 调整窗口大小 """
         self.scrollWidget.setFixedWidth(self.width())
+        self.loadingLabel.move(
+            self.width()//2-self.loadingLabel.width()//2, 160)
         self.__adjustTextColor()
 
     def __setQss(self):
         """ 设置层叠样式 """
+        self.loadingLabel.setObjectName('loadingLabel')
+
         f = QFile(":/qss/lyric_widget.qss")
         f.open(QFile.ReadOnly)
         self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
         f.close()
+
+        self.loadingLabel.adjustSize()
+        self.loadingLabel.move(
+            self.width()//2-self.loadingLabel.width()//2, 160)
+
+    def setLoadingState(self, isLoading: bool):
+        """ 设置加载歌词状态 """
+        self.loadingLabel.setVisible(isLoading)
+        self.scrollWidget.setVisible(not isLoading)
 
 
 class LyricLabel(QLabel):

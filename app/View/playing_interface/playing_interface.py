@@ -211,6 +211,10 @@ class PlayingInterface(QWidget):
         if self.songListWidgetAni.state() == QAbstractAnimation.Running:
             return
 
+        self.playBar.showPlaylistButton.setToolTip(
+            self.tr('Hide playlist'))
+        self.playBar.pullUpArrowButton.setToolTip(self.tr('Hide playlist'))
+
         self.songInfoCardChuteAni.setDuration(350)
         self.songInfoCardChuteAni.setEasingCurve(QEasingCurve.InOutQuad)
         self.songInfoCardChuteAni.setStartValue(self.songInfoCardChute.pos())
@@ -245,6 +249,10 @@ class PlayingInterface(QWidget):
         """ 隐藏播放列表 """
         if self.parallelAniGroup.state() == QAbstractAnimation.Running:
             return
+
+        self.playBar.showPlaylistButton.setToolTip(
+            self.tr('Show playlist'))
+        self.playBar.pullUpArrowButton.setToolTip(self.tr('Show playlist'))
 
         self.songInfoCardChuteAni.setDuration(350)
         self.songInfoCardChuteAni.setEasingCurve(QEasingCurve.InOutQuad)
@@ -510,7 +518,7 @@ class PlayingInterface(QWidget):
 
     def __getLyric(self):
         """ 获取歌词 """
-        self.lyricWidget.hide()
+        self.lyricWidget.setLoadingState(True)
         self.getLyricThread.setSongInfo(self.playlist[self.currentIndex])
         self.getLyricThread.start()
 
