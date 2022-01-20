@@ -267,6 +267,7 @@ class RightWidgetGroup(QWidget):
         self.volumeSlider.setFixedHeight(28)
         self.volumeSlider.setValue(20)
         self.smallPlayModeButton.setToolTip(self.tr('Smallest play mode'))
+        self.moreActionsButton.setToolTip(self.tr('More actions'))
 
     def __initLayout(self):
         """ 初始化布局 """

@@ -285,6 +285,7 @@ class FullScreenButton(TwoStateButton):
         """ 设置全屏 """
         if self.__isFullScreen == isFullScreen:
             return
+
         self.__isFullScreen = isFullScreen
         self.setState(self.__isFullScreen)
 
@@ -292,6 +293,12 @@ class FullScreenButton(TwoStateButton):
         super().mouseReleaseEvent(e)
         self.__isFullScreen = not self.__isFullScreen
         self.fullScreenChanged.emit(self.__isFullScreen)
+
+    def update(self):
+        super().update()
+        text = self.tr('Exit fullscreen') if self.__isFullScreen else self.tr(
+            'Show fullscreen')
+        self.setToolTip(text)
 
 
 class VolumeButton(CircleButton):

@@ -700,6 +700,8 @@ class MainWindow(FramelessWindow):
 
         self.showFullScreen()
         self.videoWindow.playBar.fullScreenButton.setFullScreen(True)
+        self.videoWindow.playBar.fullScreenButton.setToolTip(
+            self.tr('Exit fullscreen'))
         self.playingInterface.setFullScreen(True)
         if self.playingInterface.isPlaylistVisible:
             self.playingInterface.songInfoCardChute.move(

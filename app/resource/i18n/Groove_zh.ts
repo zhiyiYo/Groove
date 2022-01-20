@@ -408,6 +408,19 @@
     </message>
 </context>
 <context>
+    <name>FullScreenButton</name>
+    <message>
+        <location filename="../../View/playing_interface/play_bar_buttons.py" line="299"/>
+        <source>Show fullscreen</source>
+        <translation>转到全屏</translation>
+    </message>
+    <message>
+        <location filename="../../View/playing_interface/play_bar_buttons.py" line="299"/>
+        <source>Exit fullscreen</source>
+        <translation>退出全屏</translation>
+    </message>
+</context>
+<context>
     <name>GetFolderMetaDataThread</name>
     <message>
         <location filename="../../common/thread/get_meta_data_thread.py" line="51"/>
@@ -536,59 +549,64 @@
         <translation>Groove 音乐</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1179"/>
+        <location filename="../../View/main_window/main_window.py" line="1186"/>
         <source>This song is already in your playlist. Do you want to add?</source>
         <translation>此歌已在你的播放列表中。是否要添加？</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1182"/>
+        <location filename="../../View/main_window/main_window.py" line="1189"/>
         <source>Some songs are already in your playlist. Do you want to add?</source>
         <translation>部分歌曲已在你的播放列表中。是否要添加？</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1185"/>
+        <location filename="../../View/main_window/main_window.py" line="1192"/>
         <source>All these songs are already in your playlist. Do you want to add?</source>
         <translation>所有这些歌曲都已在你的播放列表中。是否要添加？</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1188"/>
+        <location filename="../../View/main_window/main_window.py" line="1195"/>
         <source>Song duplication</source>
         <translation>歌曲重复</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1209"/>
+        <location filename="../../View/main_window/main_window.py" line="1216"/>
         <source>Updating song list</source>
         <translation>正在更新歌曲列表</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="1209"/>
+        <location filename="../../View/main_window/main_window.py" line="1216"/>
         <source>Please wait patiently</source>
         <translation>请耐心等待</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="419"/>
+        <location filename="../../View/main_window/main_window.py" line="424"/>
         <source>Can&apos;t play this song</source>
         <translation>无法播放此歌曲</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="421"/>
+        <location filename="../../View/main_window/main_window.py" line="426"/>
         <source>Close</source>
         <translation>关闭</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="419"/>
+        <location filename="../../View/main_window/main_window.py" line="424"/>
         <source>It&apos;s not on this device or somewhere we can stream from.</source>
         <translation>它不在这台设备上，也不在我们可以从中流式传输的某个位置。</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="345"/>
+        <location filename="../../View/main_window/main_window.py" line="350"/>
         <source>Minimize to system tray</source>
         <translation>最小化到系统托盘</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="346"/>
+        <location filename="../../View/main_window/main_window.py" line="351"/>
         <source>Groove Music will continue to run in the background.</source>
         <translation>Groove 音乐将在后台继续运行。</translation>
+    </message>
+    <message>
+        <location filename="../../View/main_window/main_window.py" line="703"/>
+        <source>Exit fullscreen</source>
+        <translation>退出全屏</translation>
     </message>
 </context>
 <context>
@@ -879,12 +897,12 @@
         <translation> 随机播放你收藏中的所有内容</translation>
     </message>
     <message>
-        <location filename="../../View/playing_interface/playing_interface.py" line="551"/>
+        <location filename="../../View/playing_interface/playing_interface.py" line="550"/>
         <source>Unable to find the corresponding MV</source>
         <translation>无法找到对应的 MV</translation>
     </message>
     <message>
-        <location filename="../../View/playing_interface/playing_interface.py" line="551"/>
+        <location filename="../../View/playing_interface/playing_interface.py" line="550"/>
         <source>Sorry, there are no MVs available for the current song</source>
         <translation>抱歉呢前辈，当前歌曲没有可供观看的 MV~</translation>
     </message>
@@ -1175,6 +1193,11 @@
         <location filename="../../View/play_bar/play_bar.py" line="269"/>
         <source>Smallest play mode</source>
         <translation>以最小模式播放</translation>
+    </message>
+    <message>
+        <location filename="../../View/play_bar/play_bar.py" line="270"/>
+        <source>More actions</source>
+        <translation>更多操作</translation>
     </message>
 </context>
 <context>
@@ -1546,6 +1569,14 @@
     </message>
 </context>
 <context>
+    <name>SmallestPlayInterface</name>
+    <message>
+        <location filename="../../View/smallest_play_interface/smallest_play_interface.py" line="71"/>
+        <source>Exit smallest mode</source>
+        <translation>退出最小模式</translation>
+    </message>
+</context>
+<context>
     <name>SongCard</name>
     <message>
         <location filename="../../View/playing_interface/song_card.py" line="116"/>
@@ -1637,12 +1668,12 @@
         <translation>未知专辑</translation>
     </message>
     <message>
-        <location filename="../../View/smallest_play_interface/smallest_play_interface.py" line="360"/>
+        <location filename="../../View/smallest_play_interface/smallest_play_interface.py" line="362"/>
         <source>Unknown song</source>
         <translation>未知歌曲</translation>
     </message>
     <message>
-        <location filename="../../View/smallest_play_interface/smallest_play_interface.py" line="361"/>
+        <location filename="../../View/smallest_play_interface/smallest_play_interface.py" line="363"/>
         <source>Unknown artist</source>
         <translation>未知歌手</translation>
     </message>
@@ -2087,7 +2118,7 @@
         <translation>静音: 开启</translation>
     </message>
     <message>
-        <location filename="../../View/playing_interface/play_bar_buttons.py" line="313"/>
+        <location filename="../../View/playing_interface/play_bar_buttons.py" line="320"/>
         <source>Volume</source>
         <translation>音量</translation>
     </message>

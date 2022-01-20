@@ -68,6 +68,8 @@ class SmallestPlayInterface(FramelessWindow):
         self.albumCoverLabel.setScaledContents(True)
         self.progressBar.installEventFilter(self)
         self.__setQss()
+        self.exitSmallestModeButton.setToolTip(self.tr('Exit smallest mode'))
+
         # 信号连接到槽
         self.aniGroup.finished.connect(self.__switchSongInfoCard)
         self.lastSongButton.clicked.connect(self.lastSongSig)

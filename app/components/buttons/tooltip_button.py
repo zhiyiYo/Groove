@@ -37,6 +37,10 @@ class TooltipButton(QToolButton):
         pos = self.mapTo(self.window(), QPoint(0, 0))
         x = pos.x() + self.width()//2 - self.__tooltip.width()//2
         y = pos.y() - 2 - self.__tooltip.height()
+
+        # 调整坐标，防止工具提示出现在界面以外
+        x = min(max(5, x), self.window().width() - self.__tooltip.width() - 5)
+
         self.__tooltip.move(x, y)
         self.__tooltip.show()
 
