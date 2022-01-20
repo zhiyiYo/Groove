@@ -99,6 +99,9 @@ class MainWindow(FramelessWindow):
         # 创建定时扫描歌曲信息的定时器
         self.rescanSongInfoTimer = QTimer(self)
 
+        # 创建更新歌词位置的定时器
+        self.updateLyricPosTimer = QTimer(self)
+
         # 创建缩略图任务栏
         self.thumbnailToolBar = ThumbnailToolBar(self)
         self.thumbnailToolBar.setWindow(self.windowHandle())
@@ -210,9 +213,10 @@ class MainWindow(FramelessWindow):
 
         # 设置定时器溢出时间
         self.rescanSongInfoTimer.setInterval(180000)
+        self.updateLyricPosTimer.setInterval(100)
 
-        # 设置播放器发送播放位置改变的信号的间隔和视频输出窗口
-        self.player.setNotifyInterval(100)
+        # 设置播放器发送播放位置改变的信号的间隔
+        self.player.setNotifyInterval(1000)
 
         # 设置 MV 画质
         self.playingInterface.getMvUrlThread.setVideoQuality(
@@ -237,6 +241,7 @@ class MainWindow(FramelessWindow):
         # 安装事件过滤器
         self.navigationInterface.navigationMenu.installEventFilter(self)
         self.rescanSongInfoTimer.start()
+        self.updateLyricPosTimer.start()
         self.onInitFinished()
 
     def onInitFinished(self):
@@ -1310,6 +1315,14 @@ class MainWindow(FramelessWindow):
         """ 最小化到托盘改变槽函数 """
         QApplication.setQuitOnLastWindowClosed(not isMinimize)
 
+    def onUpdateLyricPosTimeOut(self):
+        """ 更新歌词位置 """
+        if self.player.state() != QMediaPlayer.PlayingState:
+            return
+
+        t = self.player.position()
+        self.playingInterface.lyricWidget.setCurrentTime(t)
+
     def connectSignalToSlot(self):
         """ 将信号连接到槽 """
 
@@ -1466,6 +1479,7 @@ class MainWindow(FramelessWindow):
 
         # 将定时器信号连接到槽函数
         self.rescanSongInfoTimer.timeout.connect(self.onRescanSongInfoTimeOut)
+        self.updateLyricPosTimer.timeout.connect(self.onUpdateLyricPosTimeOut)
 
         # 将专辑界面的信号连接到槽函数
         self.albumInterface.playAlbumSignal.connect(self.playAlbum)

@@ -4,7 +4,7 @@ import bisect
 
 from common.auto_wrap import autoWrap
 from components.widgets.scroll_area import ScrollArea
-from PyQt5.QtCore import Qt, QFile, QPropertyAnimation
+from PyQt5.QtCore import Qt, QFile, QPropertyAnimation, QEventLoop
 from PyQt5.QtGui import QColor, QLinearGradient, QPalette, QBrush
 from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget
 
@@ -72,14 +72,14 @@ class LyricWidget(ScrollArea):
 
                 self.lyricLabels.append(label)
                 self.vBoxLayout.addWidget(label, 0, Qt.AlignHCenter)
-                QApplication.processEvents()
+                QApplication.processEvents(QEventLoop.ExcludeUserInputEvents)
         elif N > N_:
             for i in range(N - N_):
                 label = self.lyricLabels.pop()
                 self.vBoxLayout.removeWidget(label)
                 self.__unusedlyricLabels.append(label)
                 label.hide()
-                QApplication.processEvents()
+                QApplication.processEvents(QEventLoop.ExcludeUserInputEvents)
 
         n = min(N, N_)
         for label, t in zip(self.lyricLabels[:n], self.times[:n]):

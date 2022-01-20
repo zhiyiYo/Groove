@@ -440,7 +440,6 @@ class PlayingInterface(QWidget):
 
     def setCurrentTime(self, currentTime: int):
         """ 设置当前进度条时间 """
-        self.lyricWidget.setCurrentTime(currentTime)
         self.playBar.setCurrentTime(currentTime)
 
     def setFullScreen(self, isFullScreen: int):
