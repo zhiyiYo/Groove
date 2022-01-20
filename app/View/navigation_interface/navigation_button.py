@@ -1,5 +1,5 @@
 # coding:utf-8
-
+from components.buttons.tooltip_button import TooltipPushButton
 from PyQt5.QtCore import QPoint, Qt
 from PyQt5.QtGui import QBrush, QColor, QPainter, QPen, QPolygon, QPixmap, QFont
 from PyQt5.QtWidgets import QPushButton
@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QPushButton
 from common.get_pressed_pos import getPressedPos
 
 
-class NavigationButton(QPushButton):
+class NavigationButton(TooltipPushButton):
     """ 侧边导航栏按钮 """
 
     def __init__(self, iconPath: str, text="", buttonSize: tuple = (60, 60), parent=None):
@@ -32,24 +32,26 @@ class NavigationButton(QPushButton):
         self.setFixedSize(*self.buttonSizeTuple)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setStyleSheet("QPushButton{font: 18px 'Segoe UI', 'Microsoft YaHei'}")
-        # 初始化标志位
         self.isEnter = False
         self.isSelected = False
         self.pressedPos = None
 
     def enterEvent(self, e):
         """ 鼠标进入时更新样式 """
+        super().enterEvent(e)
         self.isEnter = True
         self.update()
 
     def leaveEvent(self, e):
         """ 鼠标离开时更新样式 """
+        super().leaveEvent(e)
         self.isEnter = False
         self.update()
 
     def mousePressEvent(self, e):
         """ 鼠标点击时更新样式 """
         self.pressedPos = getPressedPos(self, e)
+        self.hideToolTip()
         self.update()
         super().mousePressEvent(e)
 
@@ -274,6 +276,7 @@ class CreatePlaylistButton(NavigationButton):
     def __init__(self, parent):
         self.iconPath = ":/images/navigation_interface/Add.png"
         super().__init__(self.iconPath, parent=parent)
+        self.setToolTip(self.tr('Create playlist'))
 
     def paintEvent(self, e):
         """ 绘制背景 """

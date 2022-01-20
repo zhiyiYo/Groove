@@ -43,9 +43,9 @@ class NavigationInterface(QWidget):
         self.resize(self.navigationBar.width(), 800)
         self.setCurrentIndex(0)
         self.navigationWidget.hide()
-        # 信号连接到槽
+        self.navigationWidget.showBarButton.setToolTip(
+            self.tr('Minimize navigation pane'))
         self.__connectSignalToSlot()
-        # 安装事件过滤器
         self.navigationMenu.installEventFilter(self)
 
     def __connectSignalToSlot(self):

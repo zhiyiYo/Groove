@@ -35,17 +35,21 @@ class NavigationBar(NavigationWidgetBase):
         self.createPlaylistButton = CreatePlaylistButton(self)
         self.settingButton = ToolButton(
             ':/images/navigation_interface/Settings.png', parent=self)
+
         # 初始化当前选中的按钮
         self.currentButton = self.myMusicButton
+
         # 创建一个按钮列表
         self.button_list = [
             self.showMenuButton, self.searchButton, self.myMusicButton,
             self.historyButton, self.playingButton, self.playlistButton,
             self.createPlaylistButton, self.settingButton
         ]
+
         # 可变样式的按钮列表
         self._selectableButtons = self.button_list[2:6] + [
             self.settingButton]
+
         # 创建按钮与下标对应的字典
         self._selectableButtonNames = [
             'myMusicButton', 'historyButton', 'playingButton',
@@ -56,10 +60,15 @@ class NavigationBar(NavigationWidgetBase):
         """ 初始化小部件 """
         self.setFixedWidth(60)
         self.setSelectedButton(self.myMusicButton.property('name'))
-        # 将部分按钮的点击信号连接到槽函数并设置属性
         self._connectButtonClickedSigToSlot()
-        # 初始化布局
         self.__initLayout()
+        self.showMenuButton.setToolTip(self.tr('Maximize navigation pane'))
+        self.myMusicButton.setToolTip(self.tr('My music'))
+        self.historyButton.setToolTip(self.tr('Recently played'))
+        self.playingButton.setToolTip(self.tr('Now playing'))
+        self.playlistButton.setToolTip(self.tr('Playlist'))
+        self.settingButton.setToolTip(self.tr('Settings'))
+        self.searchButton.setToolTip(self.tr('Search'))
 
     def __initLayout(self):
         """ 初始化布局 """
@@ -69,7 +78,9 @@ class NavigationBar(NavigationWidgetBase):
         self.v_layout.setContentsMargins(0, 0, 0, 0)
         for button in self.button_list[:-1]:
             self.v_layout.addWidget(button)
+
         self.v_layout.addWidget(self.settingButton, 0, Qt.AlignBottom)
+
         # 留出底部播放栏的位置
         self.v_layout.addSpacing(127)
         self.setLayout(self.v_layout)

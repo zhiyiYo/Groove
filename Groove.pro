@@ -6,6 +6,9 @@ SOURCES += app/View/main_window/main_window.py \
         app/View/navigation_interface/navigation_widget.py \
         app/View/navigation_interface/navigation_menu.py \
         app/View/navigation_interface/search_line_edit.py \
+        app/View/navigation_interface/navigation_button.py \
+        app/View/navigation_interface/navigation_bar.py \
+        app/View/navigation_interface/navigation_interface.py \
         app/components/dialog_box/create_playlist_dialog.py \
         app/components/dialog_box/rename_playlist_dialog.py \
         app/components/title_bar/title_bar.py \

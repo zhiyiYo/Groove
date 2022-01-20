@@ -92,7 +92,6 @@ class NavigationWidget(NavigationWidgetBase):
         self.createPlaylistButton.move(340, 186)
         self.settingButton.move(0, self.height() - 187)
         self.__addPlaylistNameButtonsToScrollWidget()
-        # 调整滚动区域的高度
         self.__adjustScrollWidgetHeight()
 
     def resizeEvent(self, e):

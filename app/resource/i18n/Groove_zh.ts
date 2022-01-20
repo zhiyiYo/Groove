@@ -298,6 +298,14 @@
     </message>
 </context>
 <context>
+    <name>CreatePlaylistButton</name>
+    <message>
+        <location filename="../../View/navigation_interface/navigation_button.py" line="279"/>
+        <source>Create playlist</source>
+        <translation>创建播放列表</translation>
+    </message>
+</context>
+<context>
     <name>CreatePlaylistDialog</name>
     <message>
         <location filename="../../components/dialog_box/create_playlist_dialog.py" line="26"/>
@@ -711,6 +719,52 @@
         <location filename="../../View/my_music_interface/my_music_interface.py" line="356"/>
         <source>Please wait patiently</source>
         <translation>请耐心等待</translation>
+    </message>
+</context>
+<context>
+    <name>NavigationBar</name>
+    <message>
+        <location filename="../../View/navigation_interface/navigation_bar.py" line="66"/>
+        <source>My music</source>
+        <translation>我的音乐</translation>
+    </message>
+    <message>
+        <location filename="../../View/navigation_interface/navigation_bar.py" line="67"/>
+        <source>Recently played</source>
+        <translation>最近播放</translation>
+    </message>
+    <message>
+        <location filename="../../View/navigation_interface/navigation_bar.py" line="69"/>
+        <source>Playlist</source>
+        <translation>播放列表</translation>
+    </message>
+    <message>
+        <location filename="../../View/navigation_interface/navigation_bar.py" line="70"/>
+        <source>Settings</source>
+        <translation>设置</translation>
+    </message>
+    <message>
+        <location filename="../../View/navigation_interface/navigation_bar.py" line="71"/>
+        <source>Search</source>
+        <translation>搜索</translation>
+    </message>
+    <message>
+        <location filename="../../View/navigation_interface/navigation_bar.py" line="68"/>
+        <source>Now playing</source>
+        <translation>正在播放</translation>
+    </message>
+    <message>
+        <location filename="../../View/navigation_interface/navigation_bar.py" line="65"/>
+        <source>Maximize navigation pane</source>
+        <translation>最大化导航窗格</translation>
+    </message>
+</context>
+<context>
+    <name>NavigationInterface</name>
+    <message>
+        <location filename="../../View/navigation_interface/navigation_interface.py" line="46"/>
+        <source>Minimize navigation pane</source>
+        <translation>最小化导航窗格</translation>
     </message>
 </context>
 <context>
