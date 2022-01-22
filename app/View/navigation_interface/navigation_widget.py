@@ -20,14 +20,10 @@ class NavigationWidget(NavigationWidgetBase):
 
     def __init__(self, parent):
         super().__init__(parent)
-        # 创建滚动区域
         self.scrollArea = ScrollArea(self)
         self.scrollWidget = ScrollWidget(self)
-        # 创建搜索框
         self.searchLineEdit = SearchLineEdit(self)
-        # 创建按钮
         self.__createButtons()
-        # 初始化界面
         self.__initWidget()
 
     def __createButtons(self):

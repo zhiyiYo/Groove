@@ -1,17 +1,15 @@
 # coding:utf-8
-import os
 import json
+import os
 from pathlib import Path
 
+from common.os_utils import adjustName, checkDirExists, isAudioFile
 from mutagen import File
+from mutagen.flac import FLAC
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
-from mutagen.flac import FLAC
+from PyQt5.QtCore import QFileInfo, QObject, Qt
 from tinytag import TinyTag
-
-from common.os_utils import checkDirExists
-from common.os_utils import adjustName
-from PyQt5.QtCore import QFileInfo, Qt, QObject
 
 
 class SongInfoReader(QObject):
@@ -214,7 +212,7 @@ class SongInfoReader(QObject):
         songPaths = []
         for folder in self.folderPaths:
             for file in Path(folder).glob('*'):
-                if file.suffix.lower() in ('.mp3', '.flac', '.m4a', '.mp4'):
+                if isAudioFile(file):
                     songPaths.append(str(file).replace('\\', '/'))
 
         return songPaths

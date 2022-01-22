@@ -11,11 +11,8 @@ class NavigationBar(NavigationWidgetBase):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        # 实例化按钮
         self.__createButtons()
-        # 实例化垂直布局
         self.v_layout = QVBoxLayout()
-        # 初始化界面
         self.__initWidget()
 
     def __createButtons(self):

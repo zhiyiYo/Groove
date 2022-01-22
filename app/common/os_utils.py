@@ -2,6 +2,7 @@
 import os
 import re
 from pathlib import Path
+from typing import Union
 
 from win32com.shell import shell, shellcon
 
@@ -69,3 +70,12 @@ def getCoverPath(name: str, coverType: str) -> str:
         cover = str(files[0])
 
     return cover
+
+
+def isAudioFile(path: Union[str, Path]):
+    """ 判断是否为音频文件 """
+    if not isinstance(path, Path):
+        path = Path(path)
+
+    available_formats = ['.mp3', '.flac', '.m4a', '.mp4']
+    return path.is_file() and path.suffix.lower() in available_formats

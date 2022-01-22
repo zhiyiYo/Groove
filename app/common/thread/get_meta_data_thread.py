@@ -1,6 +1,7 @@
 # coding:utf-8
 from pathlib import Path
 
+from common.os_utils import isAudioFile
 from common.meta_data.writer import writeAlbumCover, writeSongInfo
 from common.crawler.qq_music_crawler import QQMusicCrawler
 from PyQt5.QtCore import pyqtSignal, QThread
@@ -75,7 +76,7 @@ class GetFolderMetaDataThread(QThread):
         fileNames = []
         for folder in self.folderPaths:
             for file in Path(folder).glob('*'):
-                if file.suffix.lower() in ('.mp3', '.flac', '.m4a', '.mp4'):
+                if isAudioFile(file):
                     songPaths.append(str(file).replace('\\', '/'))
                     fileNames.append(file.stem)
 

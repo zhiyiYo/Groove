@@ -1,4 +1,7 @@
 # coding:utf-8
+import sys
+sys.path.append('./app')
+
 from unittest import TestCase
 from app.common.lyric_parser import KuWoLyricParser, KuGouLyricParser, WanYiLyricParser
 
