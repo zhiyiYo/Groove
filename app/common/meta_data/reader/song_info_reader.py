@@ -98,7 +98,7 @@ class SongInfoReader(QObject):
 
     def __getTrack(self, tag: TinyTag):
         """ 获取曲目 """
-        track = str(tag.track or self.year)
+        track = str(tag.track or self.track)
 
         # 处理 a/b
         track = track.split('/')[0]

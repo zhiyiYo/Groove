@@ -187,3 +187,7 @@ class DaoBase(Singleton):
             实体类对象
         """
         raise NotImplementedError
+
+    def adjustText(self, text: str):
+        """ 处理字符串中的单引号问题 """
+        return text.replace("'", "''")

@@ -36,7 +36,6 @@ class SongInfoController:
         newFiles = currentFiles - cacheFiles
         commonFiles = currentFiles & cacheFiles
         removedFiles = cacheFiles - currentFiles
-        print(len(cacheSongInfos))
 
         reader = SongInfoReader()
         songInfos = []          # type:List[SongInfo]

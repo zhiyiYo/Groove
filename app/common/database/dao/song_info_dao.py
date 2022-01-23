@@ -51,7 +51,7 @@ class SongInfoDao(DaoBase):
     def listBy(self, **condition) -> List[SongInfo]:
         self._prepareSelectBy(condition)
 
-        if not (self.query.exec() and self.query.first()):
+        if not (self.query.exec()):
             return []
 
         songInfos = []
@@ -67,7 +67,7 @@ class SongInfoDao(DaoBase):
 
     def listAll(self) -> List[SongInfo]:
         sql = f"SELECT * from {self.table}"
-        if not(self.query.exec(sql) and self.query.first()):
+        if not(self.query.exec(sql)):
             return []
 
         songInfos = []
@@ -121,12 +121,12 @@ class SongInfoDao(DaoBase):
         )
         """
         self.query.prepare(sql)
-        self.query.addBindValue(entity.file)
-        self.query.addBindValue(entity.title)
-        self.query.addBindValue(entity.singer)
-        self.query.addBindValue(entity.album)
+        self.query.addBindValue(self.adjustText(entity.file))
+        self.query.addBindValue(self.adjustText(entity.title))
+        self.query.addBindValue(self.adjustText(entity.singer))
+        self.query.addBindValue(self.adjustText(entity.album))
         self.query.addBindValue(entity.year)
-        self.query.addBindValue(entity.genre)
+        self.query.addBindValue(self.adjustText(entity.genre))
         self.query.addBindValue(entity.duration)
         self.query.addBindValue(entity.track)
         self.query.addBindValue(entity.trackTotal)
@@ -143,12 +143,12 @@ class SongInfoDao(DaoBase):
         values = []
         for songInfo in entities:
             value = f"""(
-                '{songInfo.file}',
-                '{songInfo.title}',
-                '{songInfo.singer}',
-                '{songInfo.album}',
+                '{self.adjustText(songInfo.file)}',
+                '{self.adjustText(songInfo.title)}',
+                '{self.adjustText(songInfo.singer)}',
+                '{self.adjustText(songInfo.album)}',
                 {songInfo.year},
-                '{songInfo.genre}',
+                '{self.adjustText(songInfo.genre)}',
                 {songInfo.duration},
                 {songInfo.track},
                 {songInfo.trackTotal},
@@ -186,6 +186,6 @@ class SongInfoDao(DaoBase):
 
         for i in range(record.count()):
             field = record.fieldName(i)
-            songInfo[field] = record.value(field)
+            songInfo[field] = record.value(i)
 
         return songInfo

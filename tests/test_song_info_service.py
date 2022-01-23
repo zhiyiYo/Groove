@@ -2,10 +2,10 @@
 import sys
 sys.path.append('app')
 
-from PyQt5.QtSql import QSqlDatabase
-from app.common.database.entity import SongInfo
-from app.common.database.service import SongInfoService
 from unittest import TestCase
+from app.common.database.service import SongInfoService
+from app.common.database.entity import SongInfo
+from PyQt5.QtSql import QSqlDatabase
 
 
 class TestSongInfoService(TestCase):
@@ -85,6 +85,16 @@ class TestSongInfoService(TestCase):
         """ 测试通过文件路径查找歌曲信息 """
         self.assertEqual(self.service.findByFile(
             self.songInfo.file), self.songInfo)
+
+    def test_list_all(self):
+        """ 测试查询所有歌曲信息 """
+        songInfos = self.service.listAll()
+        self.assertEqual(len(songInfos), 3)
+
+    def test_list_by_singer_album(self):
+        """ 测试通过歌手和专辑查询所有歌曲 """
+        songInfos = self.service.listBySingerAlbum('aiko', 'aikoの詩。')
+        self.assertEqual(len(songInfos), 2)
 
     def test_remove_by_id(self):
         """ 测试移除一条数据 """
