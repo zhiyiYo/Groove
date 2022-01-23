@@ -27,7 +27,7 @@ class SongGroupBox(QWidget):
             raise ValueError("歌曲类型必须是 'Online songs' 或 'Local songs'")
 
         self.songType = song_type
-        self.songInfo_list = []
+        self.songInfos = []
         if song_type == 'Local songs':
             self.songListWidget = LocalSongListWidget(self)
             self.titleButton = QPushButton(self.tr('Local songs'), self)
@@ -74,28 +74,28 @@ class SongGroupBox(QWidget):
         self.loadMoreLabel.move(self.loadMoreLabel.x(),
                                 57+self.songListWidget.height()+17)
 
-    def updateWindow(self, songInfo_list):
+    def updateWindow(self, songInfos):
         """ 更新窗口 """
-        if songInfo_list == self.songInfo_list:
+        if songInfos == self.songInfos:
             return
-        self.songInfo_list = songInfo_list
-        self.songListWidget.updateAllSongCards(self.songInfo_list)
+        self.songInfos = songInfos
+        self.songListWidget.updateAllSongCards(self.songInfos)
         self.__adjustHeight()
 
-    def loadMoreOnlineMusic(self, songInfo_list: list):
+    def loadMoreOnlineMusic(self, songInfos: list):
         """ 载入更多在线音乐
 
         Parameters
         ----------
-        songInfo_list: list
+        songInfos: list
             新添加的歌曲信息列表
         """
         if self.songType != 'Online songs':
             raise Exception('歌曲类型不是在线音乐，无法载入更多')
 
-        self.songInfo_list.extend(songInfo_list)
-        self.songListWidget.songInfo_list = self.songInfo_list
-        self.songListWidget.appendSongCards(songInfo_list)
+        self.songInfos.extend(songInfos)
+        self.songListWidget.songInfos = self.songInfos
+        self.songListWidget.appendSongCards(songInfos)
         self.__adjustHeight()
 
     def __onLoadMoreLabelClicked(self):
@@ -150,7 +150,7 @@ class LocalSongListWidget(NoScrollSongListWidget):
 
     def __showDeleteCardDialog(self):
         index = self.currentRow()
-        songInfo = self.songInfo_list[index]
+        songInfo = self.songInfos[index]
 
         name = songInfo['songName']
         title = self.tr("Are you sure you want to delete this?")
@@ -167,27 +167,27 @@ class LocalSongListWidget(NoScrollSongListWidget):
         """ 信号连接到槽 """
         menu.playAct.triggered.connect(
             lambda: self.playOneSongSig.emit(
-                self.songCard_list[self.currentRow()].songInfo))
+                self.songCards[self.currentRow()].songInfo))
         menu.nextSongAct.triggered.connect(
             lambda: self.nextToPlayOneSongSig.emit(
-                self.songCard_list[self.currentRow()].songInfo))
+                self.songCards[self.currentRow()].songInfo))
         menu.showPropertyAct.triggered.connect(
             self.showSongPropertyDialog)
         menu.showAlbumAct.triggered.connect(
             lambda: self.switchToAlbumInterfaceSig.emit(
-                self.songCard_list[self.currentRow()].album,
-                self.songCard_list[self.currentRow()].singer))
+                self.songCards[self.currentRow()].album,
+                self.songCards[self.currentRow()].singer))
         menu.deleteAct.triggered.connect(self.__showDeleteCardDialog)
 
         menu.addToMenu.playingAct.triggered.connect(
             lambda: self.addSongToPlayingSignal.emit(
-                self.songCard_list[self.currentRow()].songInfo))
+                self.songCards[self.currentRow()].songInfo))
         menu.addToMenu.addSongsToPlaylistSig.connect(
             lambda name: self.addSongsToCustomPlaylistSig.emit(
-                name, [self.songCard_list[self.currentRow()].songInfo]))
+                name, [self.songCards[self.currentRow()].songInfo]))
         menu.addToMenu.newPlaylistAct.triggered.connect(
             lambda: self.addSongsToNewCustomPlaylistSig.emit(
-                [self.songCard_list[self.currentRow()].songInfo]))
+                [self.songCards[self.currentRow()].songInfo]))
 
     def _connectSongCardSignalToSlot(self, songCard):
         """ 将歌曲卡信号连接到槽 """
@@ -257,11 +257,11 @@ class OnlineSongListWidget(NoScrollSongListWidget):
         menu.showPropertyAct.triggered.connect(
             self.showSongPropertyDialog)
         menu.playAct.triggered.connect(lambda: self.playOneSongSig.emit(
-            self.songCard_list[self.currentRow()].songInfo))
+            self.songCards[self.currentRow()].songInfo))
         menu.nextSongAct.triggered.connect(lambda: self.nextToPlayOneSongSig.emit(
-            self.songCard_list[self.currentRow()].songInfo))
+            self.songCards[self.currentRow()].songInfo))
         menu.downloadMenu.downloadSig.connect(lambda quality: self.downloadSig.emit(
-            self.songCard_list[self.currentRow()].songInfo, quality))
+            self.songCards[self.currentRow()].songInfo, quality))
 
 
 class LocalSongListContextMenu(DWMMenu):

@@ -15,23 +15,23 @@ class SongListWidget(NoScrollSongListWidget):
     nextToPlayOneSongSig = pyqtSignal(dict)         # 插入一首歌到播放列表中
     switchToSingerInterfaceSig = pyqtSignal(str)    # 切换到歌手界面
 
-    def __init__(self, songInfo_list: list, parent=None):
+    def __init__(self, songInfos: list, parent=None):
         """
         Parameters
         ----------
-        songInfo_list:list
+        songInfos:list
             歌曲信息列表
 
         parent:
             父级窗口
         """
-        super().__init__(songInfo_list, SongCardType.ALBUM_INTERFACE_SONG_CARD, parent)
+        super().__init__(songInfos, SongCardType.ALBUM_INTERFACE_SONG_CARD, parent)
         self.createSongCards()
         self.__setQss()
 
     def __showMaskDialog(self):
         index = self.currentRow()
-        name = self.songInfo_list[index]['songName']
+        name = self.songInfos[index]['songName']
         title = self.tr("Are you sure you want to delete this?")
         content = self.tr("If you delete") + f' "{name}" ' + \
             self.tr("it won't be on be this device anymore.")
@@ -50,8 +50,8 @@ class SongListWidget(NoScrollSongListWidget):
 
     def sortSongCardByTrackNum(self):
         """ 以曲序为基准排序歌曲卡 """
-        songInfo_list = self.sortSongInfo("tracknumber")
-        self.updateAllSongCards(songInfo_list)
+        songInfos = self.sortSongInfo("track")
+        self.updateAllSongCards(songInfos)
 
     def __playButtonSlot(self, index):
         """ 歌曲卡播放按钮槽函数 """
@@ -78,25 +78,25 @@ class SongListWidget(NoScrollSongListWidget):
         """ 右击菜单信号连接到槽 """
         contextMenu.playAct.triggered.connect(
             lambda: self.playOneSongSig.emit(
-                self.songCard_list[self.currentRow()].songInfo))
+                self.songCards[self.currentRow()].songInfo))
         contextMenu.nextSongAct.triggered.connect(
             lambda: self.nextToPlayOneSongSig.emit(
-                self.songCard_list[self.currentRow()].songInfo))
+                self.songCards[self.currentRow()].songInfo))
         contextMenu.editInfoAct.triggered.connect(self.showSongInfoEditDialog)
         contextMenu.showPropertyAct.triggered.connect(
             self.showSongPropertyDialog)
         contextMenu.deleteAct.triggered.connect(self.__showMaskDialog)
         contextMenu.addToMenu.playingAct.triggered.connect(
             lambda: self.addSongToPlayingSignal.emit(
-                self.songCard_list[self.currentRow()].songInfo))
+                self.songCards[self.currentRow()].songInfo))
         contextMenu.selectAct.triggered.connect(
-            lambda: self.songCard_list[self.currentRow()].setChecked(True))
+            lambda: self.songCards[self.currentRow()].setChecked(True))
         contextMenu.addToMenu.addSongsToPlaylistSig.connect(
             lambda name: self.addSongsToCustomPlaylistSig.emit(
-                name, self.songInfo_list))
+                name, self.songInfos))
         contextMenu.addToMenu.newPlaylistAct.triggered.connect(
             lambda: self.addSongsToNewCustomPlaylistSig.emit(
-                [self.songCard_list[self.currentRow()].songInfo]))
+                [self.songCards[self.currentRow()].songInfo]))
 
     def _connectSongCardSignalToSlot(self, songCard):
         """ 将歌曲卡信号连接到槽 """

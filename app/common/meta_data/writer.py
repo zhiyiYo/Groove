@@ -1,12 +1,13 @@
 # coding:utf-8
 import imghdr
 import os
-from typing import Union
 from pathlib import Path
+from typing import Union
 
+from common.database.entity import SongInfo
 from mutagen import File, MutagenError
 from mutagen.flac import FLAC, Picture
-from mutagen.id3 import APIC, TALB, TCON, TDRC, TIT2, TPE1, TPE2, TRCK, TPOS
+from mutagen.id3 import APIC, TALB, TCON, TDRC, TIT2, TPE1, TPE2, TPOS, TRCK
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
 
@@ -23,12 +24,12 @@ class MetaDataWriter:
         """
         self.audio = None
 
-    def writeSongInfo(self, songInfo: dict):
+    def writeSongInfo(self, songInfo: SongInfo):
         """ 写入歌曲信息
 
         Parameters
         ----------
-        songInfo: dict
+        songInfo: SongInfo
             歌曲信息字典
 
         Returns
@@ -36,7 +37,7 @@ class MetaDataWriter:
         success: bool
             写入是否成功
         """
-        raise NotImplementedError("该方法必须被子类实现")
+        raise NotImplementedError
 
     def writeAlbumCover(self, picData: bytes, mimeType: str):
         """ 写入专辑封面
@@ -54,7 +55,7 @@ class MetaDataWriter:
         success: bool
             写入是否成功
         """
-        raise NotImplementedError("该方法必须被子类实现")
+        raise NotImplementedError
 
 
 def saveExceptionHandler(func):
@@ -76,15 +77,17 @@ class MP3Writer(MetaDataWriter):
         self.audio = MP3(songPath)
 
     @saveExceptionHandler
-    def writeSongInfo(self, songInfo: dict):
-        self.audio['TRCK'] = TRCK(encoding=3, text=songInfo['tracknumber'])
-        self.audio['TIT2'] = TIT2(encoding=3, text=songInfo['songName'])
-        self.audio['TDRC'] = TDRC(encoding=3, text=songInfo['year'][:4])
-        self.audio['TPE1'] = TPE1(encoding=3, text=songInfo['singer'])
-        self.audio['TPE2'] = TPE2(encoding=3, text=songInfo['singer'])
-        self.audio['TALB'] = TALB(encoding=3, text=songInfo['album'])
-        self.audio['TCON'] = TCON(encoding=3, text=songInfo['genre'])
-        self.audio['TPOS'] = TPOS(encoding=3, text=songInfo['disc'])
+    def writeSongInfo(self, songInfo: SongInfo):
+        self.audio['TIT2'] = TIT2(encoding=3, text=songInfo.title)
+        self.audio['TPE1'] = TPE1(encoding=3, text=songInfo.singer)
+        self.audio['TPE2'] = TPE2(encoding=3, text=songInfo.singer)
+        self.audio['TALB'] = TALB(encoding=3, text=songInfo.album)
+        self.audio['TCON'] = TCON(encoding=3, text=songInfo.genre)
+        self.audio['TPOS'] = TPOS(encoding=3, text=str(songInfo.disc))
+        self.audio['TRCK'] = TRCK(encoding=3, text=str(songInfo.track))
+        if songInfo.year:
+            self.audio['TDRC'] = TDRC(encoding=3, text=str(songInfo.year))
+
         self.audio.save()
         return True
 
@@ -117,14 +120,16 @@ class FLACWriter(MetaDataWriter):
         self.audio = FLAC(songPath)
 
     @saveExceptionHandler
-    def writeSongInfo(self, songInfo: dict):
-        self.audio['tracknumber'] = songInfo['tracknumber']
-        self.audio['discnumber'] = songInfo['disc']
-        self.audio['title'] = songInfo['songName']
-        self.audio['year'] = songInfo['year'][:4]
-        self.audio['artist'] = songInfo['singer']
-        self.audio['album'] = songInfo['album']
-        self.audio['genre'] = songInfo['genre']
+    def writeSongInfo(self, songInfo: SongInfo):
+        self.audio['title'] = songInfo.title
+        self.audio['artist'] = songInfo.singer
+        self.audio['album'] = songInfo.album
+        self.audio['genre'] = songInfo.genre
+        self.audio['discnumber'] = str(songInfo.disc)
+        self.audio['tracknumber'] = str(songInfo.track)
+        if songInfo.year:
+            self.audio['year'] = str(songInfo.year)
+
         self.audio.save()
         return True
 
@@ -147,25 +152,23 @@ class MP4Writer(MetaDataWriter):
         self.audio = MP4(songPath)
 
     @saveExceptionHandler
-    def writeSongInfo(self, songInfo: dict):
+    def writeSongInfo(self, songInfo: SongInfo):
         # 写入曲目
-        trackNum = int(songInfo['tracknumber'])
-        trackTotal = int(songInfo['trackTotal'])
-        trackTotal = max(trackNum, trackTotal)
-        self.audio['trkn'] = [(trackNum, trackTotal)]
+        trackTotal = max(songInfo.track, songInfo.trackTotal)
+        self.audio['trkn'] = [(songInfo.track, trackTotal)]
 
         # 写入光盘
-        disc = int(songInfo['disc'])
-        discTotal = int(songInfo['discTotal'])
-        discTotal = max(disc, discTotal)
-        self.audio['disk'] = [(disc, discTotal)]
+        discTotal = max(songInfo.disc, songInfo.discTotal)
+        self.audio['disk'] = [(songInfo.disc, discTotal)]
 
-        self.audio['©nam'] = songInfo['songName']
-        self.audio['©day'] = songInfo['year'][:4]
-        self.audio['©ART'] = songInfo['singer']
-        self.audio['aART'] = songInfo['singer']
-        self.audio['©alb'] = songInfo['album']
-        self.audio['©gen'] = songInfo['genre']
+        self.audio['©nam'] = songInfo.title
+        self.audio['©ART'] = songInfo.singer
+        self.audio['aART'] = songInfo.singer
+        self.audio['©alb'] = songInfo.album
+        self.audio['©gen'] = songInfo.genre
+        if songInfo.year:
+            self.audio['©day'] = str(songInfo.year)
+
         self.audio.save()
         return True
 
@@ -176,12 +179,12 @@ class MP4Writer(MetaDataWriter):
         return True
 
 
-def writeSongInfo(songInfo: dict) -> bool:
+def writeSongInfo(songInfo: SongInfo) -> bool:
     """ 从字典中读取信息并写入歌曲的标签卡信息
 
     Parameters
     ----------
-    songInfo: dict
+    songInfo: SongInfo
         歌曲信息
 
     Returns
@@ -189,17 +192,17 @@ def writeSongInfo(songInfo: dict) -> bool:
     success: bool
         是否成功写入
     """
-    fileType = type(File(songInfo['songPath'], options=[MP3, FLAC, MP4]))
+    fileType = type(File(songInfo.file, options=[MP3, FLAC, MP4]))
     writerMap = {
         MP3: MP3Writer,
         FLAC: FLACWriter,
         MP4: MP4Writer
     }
     if fileType not in writerMap:
-        print(f'{songInfo["songPath"]} 文件格式不支持')
+        print(f'{songInfo.file} 文件格式不支持')
         return False
 
-    writer = writerMap[fileType](songInfo['songPath'])  # type:MetaDataWriter
+    writer = writerMap[fileType](songInfo.file)  # type:MetaDataWriter
     return writer.writeSongInfo(songInfo)
 
 

@@ -135,35 +135,35 @@ class SingerInterface(ScrollArea):
 
     def __playAllSongs(self):
         """ 播放歌手的所有歌曲 """
-        songInfo_list = []
+        songInfos = []
         for albumInfo in self.albumInfo_list:
-            songInfo_list.extend(albumInfo.get('songInfo_list', []))
+            songInfos.extend(albumInfo.get('songInfos', []))
 
-        self.playSig.emit(songInfo_list)
+        self.playSig.emit(songInfos)
 
     def __addSongsToPlayingPlaylist(self):
         """ 将歌曲添加到正在播放列表 """
-        songInfo_list = []
+        songInfos = []
         for albumInfo in self.albumInfo_list:
-            songInfo_list.extend(albumInfo.get('songInfo_list', []))
+            songInfos.extend(albumInfo.get('songInfos', []))
 
-        self.addSongsToPlayingPlaylistSig.emit(songInfo_list)
+        self.addSongsToPlayingPlaylistSig.emit(songInfos)
 
     def __addSongsToCustomPlaylist(self, playlistName: str):
         """ 将歌曲添加到正在播放列表 """
-        songInfo_list = []
+        songInfos = []
         for albumInfo in self.albumInfo_list:
-            songInfo_list.extend(albumInfo.get('songInfo_list', []))
+            songInfos.extend(albumInfo.get('songInfos', []))
 
-        self.addSongsToCustomPlaylistSig.emit(playlistName, songInfo_list)
+        self.addSongsToCustomPlaylistSig.emit(playlistName, songInfos)
 
     def __addSongsToNewCustomPlaylist(self):
         """ 将歌曲添加到正在播放列表 """
-        songInfo_list = []
+        songInfos = []
         for albumInfo in self.albumInfo_list:
-            songInfo_list.extend(albumInfo.get('songInfo_list', []))
+            songInfos.extend(albumInfo.get('songInfos', []))
 
-        self.addSongsToNewCustomPlaylistSig.emit(songInfo_list)
+        self.addSongsToNewCustomPlaylistSig.emit(songInfos)
 
     def __addAlbumCardsToLayout(self):
         """ 将专辑卡添加到布局中 """
@@ -233,7 +233,7 @@ class SingerInterface(ScrollArea):
         songPaths = []
         for albumCard in self.checkedAlbumCard_list.copy():
             albumNames.append(albumCard.albumName)
-            songPaths.extend([i["songPath"] for i in albumCard.songInfo_list])
+            songPaths.extend([i["songPath"] for i in albumCard.songInfos])
             albumCard.setChecked(False)
 
         self.deleteAlbums(albumNames)
@@ -241,7 +241,7 @@ class SingerInterface(ScrollArea):
 
     def __showDeleteOneCardDialog(self, albumName: str):
         """ 显示删除一个专辑卡的对话框 """
-        songPaths = [i["songPath"] for i in self.sender().songInfo_list]
+        songPaths = [i["songPath"] for i in self.sender().songInfos]
         title = self.tr("Are you sure you want to delete this?")
         content = self.tr("If you delete") + f' "{albumName}" ' + \
             self.tr("it won't be on be this device anymore.")
@@ -425,15 +425,15 @@ class SingerInterface(ScrollArea):
 
     def __onSelectionModeBarPlayButtonClicked(self):
         """ 选择模式栏播放/下一首播放按钮槽函数 """
-        songInfo_list = []
+        songInfos = []
         for albumCard in self.checkedAlbumCard_list:
-            songInfo_list.extend(albumCard.albumInfo["songInfo_list"])
+            songInfos.extend(albumCard.albumInfo["songInfos"])
         self.__unCheckAlbumCards()
 
         if self.sender() is self.selectionModeBar.playButton:
-            self.playSig.emit(songInfo_list)
+            self.playSig.emit(songInfos)
         elif self.sender() is self.selectionModeBar.nextToPlayButton:
-            self.nextToPlaySig.emit(songInfo_list)
+            self.nextToPlaySig.emit(songInfos)
 
     def __unCheckAlbumCards(self):
         """ 取消选中所有专辑卡 """
@@ -448,9 +448,9 @@ class SingerInterface(ScrollArea):
         addToButton = self.sender()
 
         # 获取选中的播放列表
-        songInfo_list = []
+        songInfos = []
         for albumCard in self.checkedAlbumCard_list:
-            songInfo_list.extend(albumCard.songInfo_list)
+            songInfos.extend(albumCard.songInfos)
 
         # 计算菜单弹出位置
         pos = self.selectionModeBar.mapToGlobal(addToButton.pos())
@@ -462,11 +462,11 @@ class SingerInterface(ScrollArea):
         for act in menu.action_list:
             act.triggered.connect(self.exitSelectionMode)
         menu.playingAct.triggered.connect(
-            lambda: self.addSongsToPlayingPlaylistSig.emit(songInfo_list))
+            lambda: self.addSongsToPlayingPlaylistSig.emit(songInfos))
         menu.newPlaylistAct.triggered.connect(
-            lambda: self.addSongsToNewCustomPlaylistSig.emit(songInfo_list))
+            lambda: self.addSongsToNewCustomPlaylistSig.emit(songInfos))
         menu.addSongsToPlaylistSig.connect(
-            lambda name: self.addSongsToCustomPlaylistSig.emit(name, songInfo_list))
+            lambda name: self.addSongsToCustomPlaylistSig.emit(name, songInfos))
         menu.exec(QPoint(x, y))
 
     def exitSelectionMode(self):
@@ -524,17 +524,17 @@ class AlbumCard(AlbumCardBase):
         """ 显示右击菜单 """
         menu = AlbumCardContextMenu(parent=self)
         menu.playAct.triggered.connect(
-            lambda: self.playSignal.emit(self.songInfo_list))
+            lambda: self.playSignal.emit(self.songInfos))
         menu.nextToPlayAct.triggered.connect(
-            lambda: self.nextPlaySignal.emit(self.songInfo_list))
+            lambda: self.nextPlaySignal.emit(self.songInfos))
         menu.addToMenu.playingAct.triggered.connect(
-            lambda: self.addToPlayingSignal.emit(self.songInfo_list))
+            lambda: self.addToPlayingSignal.emit(self.songInfos))
         menu.editInfoAct.triggered.connect(self.showAlbumInfoEditDialog)
         menu.selectAct.triggered.connect(self.__selectActSlot)
         menu.addToMenu.addSongsToPlaylistSig.connect(
-            lambda name: self.addAlbumToCustomPlaylistSig.emit(name, self.songInfo_list))
+            lambda name: self.addAlbumToCustomPlaylistSig.emit(name, self.songInfos))
         menu.addToMenu.newPlaylistAct.triggered.connect(
-            lambda: self.addAlbumToNewCustomPlaylistSig.emit(self.songInfo_list))
+            lambda: self.addAlbumToNewCustomPlaylistSig.emit(self.songInfos))
         menu.deleteAct.triggered.connect(
             lambda: self.deleteCardSig.emit(self.albumName))
         menu.exec(e.globalPos())

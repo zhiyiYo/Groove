@@ -150,7 +150,7 @@ class SearchResultInterface(ScrollArea):
         self.localSongListWidget.removeSongCards(songPaths)
         self.playlistGroupBox.deleteSongs(songPaths)
         self.localSongInfo_list = deepcopy(
-            self.localSongListWidget.songInfo_list)
+            self.localSongListWidget.songInfos)
         self.albumInfo_list = deepcopy(
             self.albumGroupBox.albumInfo_list)
         self.playlists = deepcopy(self.playlistGroupBox.playlists)
@@ -163,7 +163,7 @@ class SearchResultInterface(ScrollArea):
         self.albumInfo_list = deepcopy(
             self.albumGroupBox.albumInfo_list)
         self.localSongInfo_list = deepcopy(
-            self.localSongListWidget.songInfo_list)
+            self.localSongListWidget.songInfos)
         self.__updateWidgetsVisible()
         self.deleteSongSig.emit(songPath)
 
@@ -193,7 +193,7 @@ class SearchResultInterface(ScrollArea):
         self.downloadStateTooltip = None
         self.downloadFinished.emit(self.downloadFolder)
 
-    def search(self, keyWord: str, songInfo_list: list, albumInfo_list: list, playlists: dict):
+    def search(self, keyWord: str, songInfos: list, albumInfo_list: list, playlists: dict):
         """ 搜索与关键词相匹配的专辑、歌曲和播放列表 """
         keyWord_ = keyWord
         self.keyWord = keyWord = keyWord.lower()
@@ -208,7 +208,7 @@ class SearchResultInterface(ScrollArea):
 
         # 对本地歌曲进行匹配
         self.localSongInfo_list = []
-        for songInfo in songInfo_list:
+        for songInfo in songInfos:
             songName = songInfo["songName"].lower()
             singer = songInfo["singer"].lower()
             if songName.find(keyWord) >= 0 or singer.find(keyWord) >= 0:
@@ -317,13 +317,13 @@ class SearchResultInterface(ScrollArea):
 
         # 获取在线音乐
         self.currentPage += 1
-        songInfo_list, _ = self.crawler.getSongInfoList(
+        songInfos, _ = self.crawler.getSongInfoList(
             self.keyWord, self.currentPage, self.onlineMusicPageSize)
 
         # 更新在线音乐列表
-        offset = len(self.onlineSongListWidget.songInfo_list)
-        self.onlineSongGroupBox.loadMoreOnlineMusic(songInfo_list)
-        self.onlineSongInfo_list = self.onlineSongListWidget.songInfo_list
+        offset = len(self.onlineSongListWidget.songInfos)
+        self.onlineSongGroupBox.loadMoreOnlineMusic(songInfos)
+        self.onlineSongInfo_list = self.onlineSongListWidget.songInfos
 
         self.__updateLoadMoreLabel()
         self.__adjustHeight()

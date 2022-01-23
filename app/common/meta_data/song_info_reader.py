@@ -23,7 +23,7 @@ class SongInfoReader(QObject):
         if not folderPaths:
             self.folderPaths = []
 
-        self.songInfo_list = []
+        self.songInfos = []
         self.getInfo(folderPaths)
 
     @checkDirExists('cache/song_info')
@@ -34,7 +34,7 @@ class SongInfoReader(QObject):
         with open(self.cachePath, "w", encoding="utf-8") as f:
             json.dump([{}], f)
 
-        self.songInfo_list = []
+        self.songInfos = []
         self.getInfo(folderPaths)
 
     def rescanSongInfo(self):
@@ -47,12 +47,12 @@ class SongInfoReader(QObject):
             return True
 
         # 利用当前的歌曲信息进行更新
-        self.songInfo_list = self.__readSongInfoFromJson()
+        self.songInfos = self.__readSongInfoFromJson()
         self.songPath_list = self.__getSongFilePaths()
-        oldSongs = {info.get("songPath") for info in self.songInfo_list}
+        oldSongs = {info.get("songPath") for info in self.songInfos}
 
         # 处理旧的歌曲信息
-        for songInfo in self.songInfo_list.copy():
+        for songInfo in self.songInfos.copy():
             songPath = songInfo["songPath"]
 
             if os.path.exists(songPath):
@@ -62,16 +62,16 @@ class SongInfoReader(QObject):
                 # 歌曲发生修改则重新扫描该歌曲的信息
                 if t1 != t2:
                     hasSongModified = True
-                    self.songInfo_list.remove(songInfo)
-                    self.songInfo_list.append(self.getOneSongInfo(songPath))
+                    self.songInfos.remove(songInfo)
+                    self.songInfos.append(self.getOneSongInfo(songPath))
             else:
-                self.songInfo_list.remove(songInfo)  # 歌曲不存在则移除歌曲信息
+                self.songInfos.remove(songInfo)  # 歌曲不存在则移除歌曲信息
                 hasSongModified = True
 
         # 添加新的歌曲信息
         for songPath in set(self.songPath_list) - oldSongs:
             hasSongModified = True
-            self.songInfo_list.append(self.getOneSongInfo(songPath))
+            self.songInfos.append(self.getOneSongInfo(songPath))
 
         # 保存歌曲信息
         self.sortByCreateTime()
@@ -91,18 +91,18 @@ class SongInfoReader(QObject):
 
         # 如果文件路径完全相等就直接获取以前的文件信息并返回
         if newSongs == oldSongs:
-            self.songInfo_list = oldInfo.copy()
+            self.songInfos = oldInfo.copy()
             return
 
         # 根据文件路径并集获取部分文件信息字典
         commonSongs = newSongs & oldSongs
         if commonSongs:
-            self.songInfo_list = [
+            self.songInfos = [
                 info for info in oldInfo if info["songPath"] in commonSongs]
 
         # 如果有差集的存在就需要更新json文件
         for songPath in newSongs - oldSongs:
-            self.songInfo_list.append(self.getOneSongInfo(songPath))
+            self.songInfos.append(self.getOneSongInfo(songPath))
 
         # 排序歌曲
         self.sortByCreateTime()
@@ -170,16 +170,16 @@ class SongInfoReader(QObject):
 
     def sortByCreateTime(self):
         """ 依据文件创建日期排序文件信息列表 """
-        self.songInfo_list.sort(
+        self.songInfos.sort(
             key=lambda songInfo: songInfo["createTime"], reverse=True)
 
     def sortByDictOrder(self):
         """ 以字典序排序文件信息列表 """
-        self.songInfo_list.sort(key=lambda songInfo: songInfo["songName"])
+        self.songInfos.sort(key=lambda songInfo: songInfo["songName"])
 
     def sortBySonger(self):
         """ 以歌手名排序文件信息列表 """
-        self.songInfo_list.sort(key=lambda songInfo: songInfo["singer"])
+        self.songInfos.sort(key=lambda songInfo: songInfo["singer"])
 
     def __adjustTrackNumber(self, trackNum: str):
         """ 调整曲目编号 """
@@ -196,16 +196,16 @@ class SongInfoReader(QObject):
         """ 从 json 文件中读取歌曲信息 """
         try:
             with open(self.cachePath, "r", encoding="utf-8") as f:
-                songInfo_list = json.load(f)
+                songInfos = json.load(f)
         except:
-            songInfo_list = [{}]
-        return songInfo_list
+            songInfos = [{}]
+        return songInfos
 
     @checkDirExists('cache/song_info')
     def save(self):
         """ 保存歌曲信息 """
         with open(self.cachePath, "w", encoding="utf-8") as f:
-            json.dump(self.songInfo_list, f)
+            json.dump(self.songInfos, f)
 
     def __getSongFilePaths(self):
         """ 获取指定歌曲文件夹下的歌曲文件 """
@@ -224,12 +224,12 @@ class SongInfoReader(QObject):
             return True
 
         # 利用当前的歌曲信息进行更新
-        songInfo_list = self.__readSongInfoFromJson()
+        songInfos = self.__readSongInfoFromJson()
         songPath_list = self.__getSongFilePaths()
-        oldSongs = {info.get("songPath") for info in songInfo_list}
+        oldSongs = {info.get("songPath") for info in songInfos}
 
         # 处理旧的歌曲信息
-        for songInfo in songInfo_list:
+        for songInfo in songInfos:
             songPath = songInfo["songPath"]
 
             if os.path.exists(songPath):

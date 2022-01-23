@@ -1,10 +1,12 @@
 # coding:utf-8
 import sys
+
 sys.path.append('app')
 
 from unittest import TestCase
-from app.common.database.service import SongInfoService
+
 from app.common.database.entity import SongInfo
+from app.common.database.service import SongInfoService
 from PyQt5.QtSql import QSqlDatabase
 
 

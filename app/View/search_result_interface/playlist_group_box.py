@@ -196,12 +196,12 @@ class PlaylistGroupBox(QScrollArea):
     def deleteSongs(self, songPaths: list):
         """ 从各个播放列表中删除歌曲 """
         for name, playlist in self.playlists.items():
-            songInfo_list = playlist["songInfo_list"]
+            songInfos = playlist["songInfos"]
             playlistCard = self.playlistName2Card_dict[name]
 
-            for songInfo in songInfo_list.copy():
+            for songInfo in songInfos.copy():
                 if songInfo['songPath'] in songPaths:
-                    songInfo_list.remove(songInfo)
+                    songInfos.remove(songInfo)
 
             playlistCard.updateWindow(playlist)
             self.savePlaylist(playlist)
@@ -325,19 +325,19 @@ class PlaylistCard(PlaylistCardBase):
     def contextMenuEvent(self, e: QContextMenuEvent):
         menu = PlaylistCardContextMenu(self)
         menu.playAct.triggered.connect(
-            lambda: self.playSig.emit(self.songInfo_list))
+            lambda: self.playSig.emit(self.songInfos))
         menu.nextToPlayAct.triggered.connect(
-            lambda: self.nextToPlaySig.emit(self.songInfo_list))
+            lambda: self.nextToPlaySig.emit(self.songInfos))
         menu.deleteAct.triggered.connect(
             lambda: self.deleteCardSig.emit(self.playlistName))
         menu.renameAct.triggered.connect(
             lambda: self.renamePlaylistSig.emit(self.playlist))
         menu.addToMenu.playingAct.triggered.connect(
-            lambda: self.addSongsToPlayingPlaylistSig.emit(self.songInfo_list))
+            lambda: self.addSongsToPlayingPlaylistSig.emit(self.songInfos))
         menu.addToMenu.newPlaylistAct.triggered.connect(
-            lambda: self.addSongsToNewCustomPlaylistSig.emit(self.songInfo_list))
+            lambda: self.addSongsToNewCustomPlaylistSig.emit(self.songInfos))
         menu.addToMenu.addSongsToPlaylistSig.connect(
-            lambda name: self.addSongsToCustomPlaylistSig.emit(name, self.songInfo_list))
+            lambda name: self.addSongsToCustomPlaylistSig.emit(name, self.songInfos))
         menu.exec(e.globalPos())
 
 

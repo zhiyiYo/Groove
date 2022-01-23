@@ -1,4 +1,5 @@
 # coding:utf-8
+from common.database.entity import SongInfo
 from common.auto_wrap import autoWrap
 from components.buttons.perspective_button import PerspectivePushButton
 from PyQt5.QtCore import QFile, Qt
@@ -10,7 +11,7 @@ from .mask_dialog_base import MaskDialogBase
 class SongPropertyDialog(MaskDialogBase):
     """ 歌曲属性对话框 """
 
-    def __init__(self, songInfo: dict, parent=None):
+    def __init__(self, songInfo: SongInfo, parent=None):
         super().__init__(parent)
         self.songInfo = songInfo
 
@@ -29,26 +30,18 @@ class SongPropertyDialog(MaskDialogBase):
             self.tr("Album artist"), self.widget)
 
         # 内容标签
-        self.discLabel = SelectableLabel(
-            songInfo.get('disc', "1"), self.widget)
-        self.yearLabel = SelectableLabel(songInfo.get(
-            "year", self.tr('Unknown year')), self.widget)
-        self.genreLabel = SelectableLabel(songInfo.get(
-            "genre", self.tr('Unknown genre')), self.widget)
-        self.singerLabel = SelectableLabel(songInfo.get(
-            "singer", self.tr("Unknown artist")), self.widget)
-        self.albumNameLabel = SelectableLabel(songInfo.get(
-            "album", self.tr('Unknown album')), self.widget)
+        self.songNameLabel = SelectableLabel(songInfo.title, self.widget)
+        self.singerLabel = SelectableLabel(songInfo.singer, self.widget)
+        self.albumNameLabel = SelectableLabel(songInfo.album, self.widget)
+        self.albumSingerLabel = SelectableLabel(songInfo.singer, self.widget)
+        self.discLabel = SelectableLabel(str(songInfo.disc), self.widget)
+        self.genreLabel = SelectableLabel(songInfo.genre, self.widget)
+        self.trackLabel = SelectableLabel(str(songInfo.track), self.widget)
+        self.songPathLabel = SelectableLabel(songInfo.file, self.widget)
+        self.yearLabel = SelectableLabel(
+            str(songInfo.year if songInfo.year else ''), self.widget)
         self.durationLabel = SelectableLabel(
-            songInfo.get("duration", "0:00"), self.widget)
-        self.songNameLabel = SelectableLabel(songInfo.get(
-            "songName", self.tr("Unknown song")), self.widget)
-        self.albumSingerLabel = SelectableLabel(songInfo.get(
-            "singer", self.tr('Unknown artist')), self.widget)
-        self.trackNumberLabel = SelectableLabel(
-            songInfo.get("tracknumber", ''), self.widget)
-        self.songPathLabel = SelectableLabel(songInfo.get(
-            "songPath", '').replace("\\", "/"), self.widget)
+            f"{int(songInfo.duration//60)}:{int(songInfo.duration%60):02}", self.widget)
 
         # 关闭按钮
         self.closeButton = PerspectivePushButton(self.tr("Close"), self.widget)
@@ -62,7 +55,7 @@ class SongPropertyDialog(MaskDialogBase):
 
         # 设置宽度
         self.songNameLabel.setFixedWidth(523)
-        self.trackNumberLabel.setFixedWidth(523)
+        self.trackLabel.setFixedWidth(523)
         self.albumNameLabel.setFixedWidth(523)
         self.genreLabel.setFixedWidth(523)
         self.songPathLabel.setFixedWidth(847)
@@ -104,7 +97,7 @@ class SongPropertyDialog(MaskDialogBase):
 
         # 曲目和光盘
         gridLayout_2.addWidget(self.trackNumberTitleLabel, 0, 0, Qt.AlignTop)
-        gridLayout_2.addWidget(self.trackNumberLabel, 1, 0, Qt.AlignTop)
+        gridLayout_2.addWidget(self.trackLabel, 1, 0, Qt.AlignTop)
         gridLayout_2.addWidget(self.discTitleLabel, 0, 1, Qt.AlignTop)
         gridLayout_2.addWidget(self.discLabel, 1, 1, Qt.AlignTop)
 
@@ -160,7 +153,7 @@ class SongPropertyDialog(MaskDialogBase):
         """ 设置层叠样式表 """
         self.songNameLabel.setObjectName('valueLabel')
         self.singerLabel.setObjectName("valueLabel")
-        self.trackNumberLabel.setObjectName('valueLabel')
+        self.trackLabel.setObjectName('valueLabel')
         self.discLabel.setObjectName('valueLabel')
         self.albumNameLabel.setObjectName('valueLabel')
         self.albumSingerLabel.setObjectName("valueLabel")

@@ -1,10 +1,13 @@
 # coding:utf-8
 from pathlib import Path
+from typing import List
 
-from common.os_utils import isAudioFile
-from common.meta_data.writer import writeAlbumCover, writeSongInfo
 from common.crawler.qq_music_crawler import QQMusicCrawler
-from PyQt5.QtCore import pyqtSignal, QThread
+from common.database.entity import SongInfo
+from common.library import Directory
+from common.meta_data.writer import writeAlbumCover, writeSongInfo
+from common.os_utils import adjustName, isAudioFile
+from PyQt5.QtCore import QThread, pyqtSignal
 
 
 class GetFolderMetaDataThread(QThread):
@@ -13,10 +16,10 @@ class GetFolderMetaDataThread(QThread):
     crawlSignal = pyqtSignal(str)
     cacheFolder = Path('cache/crawl_album_covers')
 
-    def __init__(self, folderPaths: list, parent=None):
+    def __init__(self, diretories: list, parent=None):
         super().__init__(parent=parent)
         self.__isStopped = False
-        self.folderPaths = folderPaths
+        self.diretories = [Directory(i) for i in diretories]
         self.crawler = QQMusicCrawler()
 
     def run(self):
@@ -24,21 +27,24 @@ class GetFolderMetaDataThread(QThread):
         self.cacheFolder.mkdir(exist_ok=True, parents=True)
         albumCovers = {}
 
-        songPaths, fileNames = self.__getAudioFiles()
-        for i, (songPath, fileName) in enumerate(zip(songPaths, fileNames)):
+        songPaths = []  # type:List[Path]
+        for directory in self.diretories:
+            songPaths.extend(directory.glob())
+
+        for i, songPath in enumerate(songPaths):
             if self.__isStopped:
                 break
 
-            songInfo = self.crawler.getSongInfo(fileName)
+            songInfo = self.crawler.getSongInfo(songPath.stem)
             if songInfo:
                 # 修改歌曲信息
-                songInfo["songPath"] = songPath
+                songInfo.file = songPath
                 writeSongInfo(songInfo)
-                key = songInfo["singer"] + '_' + songInfo['album']
+                key = adjustName(songInfo["singer"] + '_' + songInfo['album'])
 
                 # 从网上或者本地缓存文件夹获取专辑封面
                 if key not in albumCovers:
-                    coverPath = str(self.cacheFolder/(key+'.jpg'))
+                    coverPath = str(self.cacheFolder / (key + '.jpg'))
                     url = self.crawler.getAlbumCoverURL(
                         songInfo["albummid"], coverPath)
                     if url:
@@ -56,37 +62,11 @@ class GetFolderMetaDataThread(QThread):
         """ 停止爬取歌曲信息 """
         self.__isStopped = True
 
-    def __getAudioFiles(self):
-        """ 获取音频文件路径和不包含后缀名的文件名
-
-        Parameters
-        ----------
-        folderPaths: list
-            文件夹列表
-
-        Returns
-        -------
-        songPaths: list
-            歌曲路径列表
-
-        fileNames: list
-            不含后缀名的歌曲文件名称列表
-        """
-        songPaths = []
-        fileNames = []
-        for folder in self.folderPaths:
-            for file in Path(folder).glob('*'):
-                if isAudioFile(file):
-                    songPaths.append(str(file).replace('\\', '/'))
-                    fileNames.append(file.stem)
-
-        return songPaths, fileNames
-
 
 class GetSongMetaDataThread(QThread):
     """ 获取一首歌曲元数据的线程 """
 
-    crawlFinished = pyqtSignal(bool, dict)
+    crawlFinished = pyqtSignal(bool, SongInfo)
     cacheFolder = Path('cache/crawl_album_covers')
 
     def __init__(self, songPath: str, parent=None):
@@ -111,13 +91,13 @@ class GetSongMetaDataThread(QThread):
 
         # 发送信号
         if not songInfo:
-            self.crawlFinished.emit(False, {})
+            self.crawlFinished.emit(False, SongInfo())
         else:
-            songInfo['songPath'] = self.songPath
+            songInfo.file = self.songPath
 
             # 获取专辑封面
-            key = songInfo["singer"] + '_' + songInfo['album']
-            coverPath = self.cacheFolder / (key+'.jpg')
+            key = adjustName(songInfo.singer + '_' + songInfo.album)
+            coverPath = self.cacheFolder / (key + '.jpg')
             url = self.crawler.getAlbumCoverURL(
                 songInfo['albummid'], coverPath)
             if url:

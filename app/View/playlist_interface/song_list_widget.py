@@ -15,17 +15,17 @@ class SongListWidget(NoScrollSongListWidget):
     switchToSingerInterfaceSig = pyqtSignal(str)        # 切换到歌手界面
     switchToAlbumInterfaceSig = pyqtSignal(str, str)    # 切换到专辑界面
 
-    def __init__(self, songInfo_list: list, parent):
+    def __init__(self, songInfos: list, parent):
         """
         Parameters
         ----------
-        songInfo_list:list
+        songInfos:list
             歌曲信息列表
 
         parent:
             父级窗口
         """
-        super().__init__(songInfo_list, SongCardType.PLAYLIST_INTERFACE_SONG_CARD, parent)
+        super().__init__(songInfos, SongCardType.PLAYLIST_INTERFACE_SONG_CARD, parent)
         self.resize(1150, 758)
         self.createSongCards()
         self.__setQss()
@@ -81,30 +81,30 @@ class SongListWidget(NoScrollSongListWidget):
         """ 右击菜单信号连接到槽 """
         menu.playAct.triggered.connect(
             lambda: self.playOneSongSig.emit(
-                self.songCard_list[self.currentRow()].songInfo))
+                self.songCards[self.currentRow()].songInfo))
         menu.nextSongAct.triggered.connect(
             lambda: self.nextToPlayOneSongSig.emit(
-                self.songCard_list[self.currentRow()].songInfo))
+                self.songCards[self.currentRow()].songInfo))
         menu.editInfoAct.triggered.connect(self.showSongInfoEditDialog)
         menu.showPropertyAct.triggered.connect(
             self.showSongPropertyDialog)
         menu.deleteAct.triggered.connect(lambda: self.__onRemoveButtonClicked(
-            self.currentRow(), self.songCard_list[self.currentRow()]))
+            self.currentRow(), self.songCards[self.currentRow()]))
         menu.selectAct.triggered.connect(
-            lambda: self.songCard_list[self.currentRow()].setChecked(True))
+            lambda: self.songCards[self.currentRow()].setChecked(True))
         menu.showAlbumAct.triggered.connect(lambda: self.switchToAlbumInterfaceSig.emit(
-            self.songCard_list[self.currentRow()].album,
-            self.songCard_list[self.currentRow()].singer))
+            self.songCards[self.currentRow()].album,
+            self.songCards[self.currentRow()].singer))
 
         menu.addToMenu.playingAct.triggered.connect(
             lambda: self.addSongToPlayingSignal.emit(
-                self.songCard_list[self.currentRow()].songInfo))
+                self.songCards[self.currentRow()].songInfo))
         menu.addToMenu.addSongsToPlaylistSig.connect(
             lambda name: self.addSongsToCustomPlaylistSig.emit(
-                name, self.songInfo_list))
+                name, self.songInfos))
         menu.addToMenu.newPlaylistAct.triggered.connect(
             lambda: self.addSongsToNewCustomPlaylistSig.emit(
-                [self.songCard_list[self.currentRow()].songInfo]))
+                [self.songCards[self.currentRow()].songInfo]))
 
 
 class SongCardListContextMenu(DWMMenu):

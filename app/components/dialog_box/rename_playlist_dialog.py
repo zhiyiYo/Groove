@@ -90,7 +90,7 @@ class RenamePlaylistDialog(MaskDialogBase):
         # 创建新播放列表并写入json文件
         newPlaylist = {
             "playlistName": playlistName,
-            "songInfo_list": self.oldPlaylist["songInfo_list"],
+            "songInfos": self.oldPlaylist["songInfos"],
             "modifiedTime": QDateTime.currentDateTime().toString(Qt.ISODate),
         }
 

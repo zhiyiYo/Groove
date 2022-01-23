@@ -165,7 +165,7 @@ class AlbumGroupBox(QScrollArea):
 
     def __showDeleteOneCardDialog(self, albumName: str):
         """ 显示删除一个专辑卡的对话框 """
-        songPaths = [i["songPath"] for i in self.sender().songInfo_list]
+        songPaths = [i["songPath"] for i in self.sender().songInfos]
 
         title = self.tr("Are you sure you want to delete this?")
         content = self.tr("If you delete") + f' "{albumName}" ' + \
@@ -243,14 +243,14 @@ class AlbumGroupBox(QScrollArea):
         """ 删除歌曲 """
         albumInfo_list = deepcopy(self.albumInfo_list)
         for albumInfo in albumInfo_list.copy():
-            songInfo_list = albumInfo["songInfo_list"]
+            songInfos = albumInfo["songInfos"]
 
-            for songInfo in songInfo_list.copy():
+            for songInfo in songInfos.copy():
                 if songInfo["songPath"] in songPaths:
-                    songInfo_list.remove(songInfo)
+                    songInfos.remove(songInfo)
 
             # 如果专辑变成空专辑，就将其从专辑列表中移除
-            if not songInfo_list:
+            if not songInfos:
                 albumInfo_list.remove(albumInfo)
 
         # 更新窗口
@@ -300,20 +300,20 @@ class AlbumCard(AlbumCardBase):
     def contextMenuEvent(self, event: QContextMenuEvent):
         menu = AlbumCardContextMenu(parent=self)
         menu.playAct.triggered.connect(
-            lambda: self.playSignal.emit(self.songInfo_list))
+            lambda: self.playSignal.emit(self.songInfos))
         menu.nextToPlayAct.triggered.connect(
-            lambda: self.nextPlaySignal.emit(self.songInfo_list))
+            lambda: self.nextPlaySignal.emit(self.songInfos))
         menu.showSingerAct.triggered.connect(
             lambda: self.switchToSingerInterfaceSig.emit(self.singerName))
         menu.deleteAct.triggered.connect(
             lambda: self.deleteCardSig.emit(self.albumName))
 
         menu.addToMenu.playingAct.triggered.connect(
-            lambda: self.addToPlayingSignal.emit(self.songInfo_list))
+            lambda: self.addToPlayingSignal.emit(self.songInfos))
         menu.addToMenu.addSongsToPlaylistSig.connect(
-            lambda name: self.addAlbumToCustomPlaylistSig.emit(name, self.songInfo_list))
+            lambda name: self.addAlbumToCustomPlaylistSig.emit(name, self.songInfos))
         menu.addToMenu.newPlaylistAct.triggered.connect(
-            lambda: self.addAlbumToNewCustomPlaylistSig.emit(self.songInfo_list))
+            lambda: self.addAlbumToNewCustomPlaylistSig.emit(self.songInfos))
         menu.exec(event.globalPos())
 
 

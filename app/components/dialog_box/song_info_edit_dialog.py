@@ -1,6 +1,7 @@
 # coding:utf-8
 from copy import deepcopy
 
+from common.database.entity import SongInfo
 from common.auto_wrap import autoWrap
 from common.meta_data import AlbumCoverReader, GENRES, SongInfoReader
 from common.meta_data.writer import writeSongInfo, writeAlbumCover
@@ -22,11 +23,11 @@ from .mask_dialog_base import MaskDialogBase
 class SongInfoEditDialog(MaskDialogBase):
     """ 歌曲信息编辑对话框 """
 
-    saveInfoSig = pyqtSignal(dict, dict)
+    saveInfoSig = pyqtSignal(SongInfo, SongInfo)
 
-    def __init__(self, songInfo: dict, parent):
+    def __init__(self, songInfo: SongInfo, parent):
         super().__init__(parent)
-        self.songInfo = deepcopy(songInfo)
+        self.songInfo = songInfo.copy()
         self.oldSongInfo = songInfo
 
         # 实例化小部件
@@ -49,15 +50,14 @@ class SongInfoEditDialog(MaskDialogBase):
         self.yearLabel = QLabel(self.tr("Year"), self.widget)
         self.genreLabel = QLabel(self.tr("Genre"), self.widget)
         self.discLabel = QLabel(self.tr("Disc"), self.widget)
-        self.trackNumLabel = QLabel(self.tr("Track"), self.widget)
+        self.trackLabel = QLabel(self.tr("Track"), self.widget)
         self.songNameLabel = QLabel(self.tr("Song title"), self.widget)
         self.songPathLabel = QLabel(self.tr("File location"), self.widget)
         self.albumNameLabel = QLabel(self.tr("Album title"), self.widget)
         self.singerNameLabel = QLabel(self.tr("Song artist"), self.widget)
         self.albumSongerLabel = QLabel(self.tr("Album artist"), self.widget)
         self.editInfoLabel = QLabel(self.tr("Edit Song Info"), self.widget)
-        self.songPath = QLabel(
-            self.songInfo["songPath"].replace('\\', '/'), self.widget)
+        self.songPath = QLabel(self.songInfo.file, self.widget)
         self.getMetaDataLabel = QLabel(
             self.tr('Automatically retrieve metadata'), self.widget)
         self.emptyTrackErrorIcon = ErrorIcon(self.widget)
@@ -65,18 +65,15 @@ class SongInfoEditDialog(MaskDialogBase):
         self.bottomErrorLabel = QLabel(self.widget)
 
         # 单行输入框
-        self.discLineEdit = LineEdit(self.songInfo['disc'], self.widget)
-        self.genreLineEdit = LineEdit(self.songInfo["genre"], self.widget)
-        self.yearLineEdit = LineEdit(self.songInfo["year"], self.widget)
-        self.albumNameLineEdit = LineEdit(self.songInfo["album"], self.widget)
-        self.songNameLineEdit = LineEdit(
-            self.songInfo["songName"], self.widget)
-        self.singerNameLineEdit = LineEdit(
-            self.songInfo["singer"], self.widget)
-        self.albumSingerLineEdit = LineEdit(
-            self.songInfo["singer"], self.widget)
-        self.trackNumLineEdit = LineEdit(
-            self.songInfo["tracknumber"], self.widget)
+        self.genreLineEdit = LineEdit(self.songInfo.genre, self.widget)
+        self.songNameLineEdit = LineEdit(self.songInfo.title, self.widget)
+        self.discLineEdit = LineEdit(str(self.songInfo.disc), self.widget)
+        self.albumNameLineEdit = LineEdit(self.songInfo.album, self.widget)
+        self.trackLineEdit = LineEdit(str(self.songInfo.track), self.widget)
+        self.singerNameLineEdit = LineEdit(self.songInfo.singer, self.widget)
+        self.albumSingerLineEdit = LineEdit(self.songInfo.singer, self.widget)
+        self.yearLineEdit = LineEdit(
+            str(self.songInfo.year if self.songInfo.year else ''), self.widget)
 
         # 进度提示条
         self.stateToolTip = None
@@ -109,7 +106,7 @@ class SongInfoEditDialog(MaskDialogBase):
         self.__installValidator()
 
         # 将曲目输入框数字改变的信号连接到槽函数
-        self.trackNumLineEdit.textChanged.connect(
+        self.trackLineEdit.textChanged.connect(
             self.__onTrackNumLineEditTextChanged)
         self.getMetaDataSwitchButton.checkedChanged.connect(
             self.__onGetMetaDataCheckedChanged)
@@ -147,9 +144,9 @@ class SongInfoEditDialog(MaskDialogBase):
         self.gridLayout_1.addWidget(self.songNameLineEdit, 1, 0)
         self.gridLayout_1.addWidget(self.singerNameLineEdit, 1, 1)
 
-        self.gridLayout_2.addWidget(self.trackNumLabel, 0, 0)
+        self.gridLayout_2.addWidget(self.trackLabel, 0, 0)
         self.gridLayout_2.addWidget(self.discLabel, 0, 1)
-        self.gridLayout_2.addWidget(self.trackNumLineEdit, 1, 0)
+        self.gridLayout_2.addWidget(self.trackLineEdit, 1, 0)
         self.gridLayout_2.addWidget(self.discLineEdit, 1, 1)
 
         self.gridLayout_3.addWidget(self.albumNameLabel, 0, 0)
@@ -185,15 +182,14 @@ class SongInfoEditDialog(MaskDialogBase):
 
     def __installValidator(self):
         """ 给输入框设置过滤器 """
-        rex_trackNum = QRegExp(r"(\d)|([1-9]\d{1,2})")
-        rex_year = QRegExp(r"\d{4}")
-        validator_tracknum = QRegExpValidator(
-            rex_trackNum, self.trackNumLineEdit)
-        validator_disk = QRegExpValidator(rex_trackNum, self.discLineEdit)
-        validator_year = QRegExpValidator(rex_year, self.yearLineEdit)
-        self.trackNumLineEdit.setValidator(validator_tracknum)
-        self.discLineEdit.setValidator(validator_disk)
-        self.yearLineEdit.setValidator(validator_year)
+        trackReg = QRegExp(r"(\d)|([1-9]\d{1,2})")
+        yearReg = QRegExp(r"\d{4}")
+        trackValidator = QRegExpValidator(trackReg, self.trackLineEdit)
+        disValidator = QRegExpValidator(trackReg, self.discLineEdit)
+        yearValidator = QRegExpValidator(yearReg, self.yearLineEdit)
+        self.trackLineEdit.setValidator(trackValidator)
+        self.discLineEdit.setValidator(disValidator)
+        self.yearLineEdit.setValidator(yearValidator)
 
     def __setQss(self):
         """ 设置层叠样式表 """
@@ -216,24 +212,18 @@ class SongInfoEditDialog(MaskDialogBase):
 
     def __saveInfo(self):
         """ 保存标签卡信息 """
-        self.songInfo["songName"] = self.songNameLineEdit.text()
-        self.songInfo["singer"] = self.singerNameLineEdit.text()
-        self.songInfo["album"] = self.albumNameLineEdit.text()
-        self.songInfo['disc'] = self.discLineEdit.text()
-        self.songInfo["coverName"] = adjustName(
-            self.songInfo["singer"]+'_'+self.songInfo["album"])
-
-        self.songInfo["tracknumber"] = self.trackNumLineEdit.text()
-        self.songInfo["genre"] = self.genreLineEdit.text()
-        if self.yearLineEdit.text() != self.tr("Unknown year"):
-            self.songInfo["year"] = self.yearLineEdit.text()
-        else:
-            self.songInfo["year"] = self.tr("Unknown year")
+        self.songInfo.genre = self.genreLineEdit.text()
+        self.songInfo.title = self.songNameLineEdit.text()
+        self.songInfo.year = int(self.yearLineEdit.text())
+        self.songInfo.disc = int(self.discLineEdit.text())
+        self.songInfo.album = self.albumNameLineEdit.text()
+        self.songInfo.track = int(self.trackLineEdit.text())
+        self.songInfo.singer = self.singerNameLineEdit.text()
 
         # 写入专辑封面
         isOk = True
         if self.songInfo.get('coverPath'):
-            isOk = writeAlbumCover(self.songInfo['songPath'],
+            isOk = writeAlbumCover(self.songInfo.file,
                                    self.songInfo['coverPath'])
             AlbumCoverReader.getOneAlbumCover(self.songInfo)
 
@@ -247,8 +237,8 @@ class SongInfoEditDialog(MaskDialogBase):
         else:
             self.setEnabled(False)
             QApplication.processEvents()
-            self.songInfo['modifiedTime'] = SongInfoReader.getModifiedTime(
-                self.songInfo['songPath'])
+            self.songInfo.modifiedTime = SongInfoReader.getModifiedTime(
+                self.songInfo.file)
             self.saveInfoSig.emit(self.oldSongInfo, self.songInfo)
             self.close()
 
@@ -268,9 +258,9 @@ class SongInfoEditDialog(MaskDialogBase):
         self.emptyTrackErrorIcon.setVisible(isEmpty)
 
         # 更新样式
-        self.trackNumLineEdit.setProperty(
+        self.trackLineEdit.setProperty(
             'hasText', 'false' if isEmpty else 'true')
-        self.trackNumLineEdit.setStyle(QApplication.style())
+        self.trackLineEdit.setStyle(QApplication.style())
 
     def __onGetMetaDataCheckedChanged(self, isChecked: bool):
         """ 获取元数据开关按钮选中状态改变槽函数 """
@@ -289,12 +279,12 @@ class SongInfoEditDialog(MaskDialogBase):
         self.stateToolTip.show()
 
         # 创建爬虫线程
-        crawler = GetSongMetaDataThread(self.songInfo['songPath'], self)
+        crawler = GetSongMetaDataThread(self.songInfo.file, self)
         crawler.crawlFinished.connect(self.__onCrawlFinished)
         crawler.finished.connect(self.__onCrawlThreadFinished)
         crawler.start()
 
-    def __onCrawlFinished(self, success: bool, songInfo: dict):
+    def __onCrawlFinished(self, success: bool, songInfo: SongInfo):
         """ 爬取完成槽函数 """
         if success:
             self.stateToolTip.setTitle(
@@ -302,13 +292,14 @@ class SongInfoEditDialog(MaskDialogBase):
             self.stateToolTip.setContent(self.tr('Please check metadata'))
 
             # 更新编辑框
-            self.songNameLineEdit.setText(songInfo['songName'])
-            self.singerNameLineEdit.setText(songInfo['singer'])
-            self.albumSingerLineEdit.setText(songInfo['singer'])
-            self.trackNumLineEdit.setText(songInfo['tracknumber'])
-            self.yearLineEdit.setText(songInfo['year'])
-            self.genreLineEdit.setText(songInfo['genre'])
-            self.albumNameLineEdit.setText(songInfo['album'])
+            self.songNameLineEdit.setText(songInfo.title)
+            self.singerNameLineEdit.setText(songInfo.singer)
+            self.albumSingerLineEdit.setText(songInfo.singer)
+            self.trackLineEdit.setText(str(songInfo.track))
+            self.yearLineEdit.setText(
+                str(songInfo.year if songInfo.year else ''))
+            self.genreLineEdit.setText(songInfo.genre)
+            self.albumNameLineEdit.setText(songInfo.album)
             self.songInfo['coverPath'] = songInfo.get('coverPath')
         else:
             self.stateToolTip.setTitle(

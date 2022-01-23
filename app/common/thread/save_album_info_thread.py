@@ -23,13 +23,13 @@ class SaveAlbumInfoThread(QThread):
 
     def run(self):
         """ 保存专辑信息 """
-        for i, songInfo in enumerate(self.newAlbumInfo["songInfo_list"]):
+        for i, songInfo in enumerate(self.newAlbumInfo["songInfos"]):
             # 修改封面数据
             writeAlbumCover(songInfo['songPath'], self.coverPath)
 
             # 如果歌曲保存失败就重置歌曲信息
             if not writeSongInfo(songInfo):
-                self.newAlbumInfo["songInfo_list"][i] = self.oldAlbumInfo["songInfo_list"][i]
+                self.newAlbumInfo["songInfos"][i] = self.oldAlbumInfo["songInfos"][i]
 
             # 更新修改时间
             songInfo['modifiedTime'] = SongInfoReader.getModifiedTime(

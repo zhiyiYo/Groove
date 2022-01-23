@@ -32,7 +32,7 @@ class AlbumInfoEditDialog(MaskDialogBase):
         self.singer = self.albumInfo["singer"]  # type:str
         self.albumName = self.albumInfo["album"]  # type:str
         self.coverPath = self.albumInfo["coverPath"]  # type:str
-        self.songInfo_list = self.albumInfo["songInfo_list"]  # type:list
+        self.songInfos = self.albumInfo["songInfos"]  # type:list
         self.newAlbumCoverPath = ''
         # 创建小部件
         self.__createWidgets()
@@ -61,7 +61,7 @@ class AlbumInfoEditDialog(MaskDialogBase):
 
         # 下半部分
         self.songInfoWidget_list = []
-        for songInfo in self.songInfo_list:
+        for songInfo in self.songInfos:
             songInfoWidget = SongInfoWidget(songInfo, self.scrollWidget)
             songInfoWidget.isTrackNumEmptySig.connect(self.__trackNumEmptySlot)
             self.songInfoWidget_list.append(songInfoWidget)
@@ -218,7 +218,7 @@ class AlbumInfoEditDialog(MaskDialogBase):
         coverName = adjustName(
             self.albumSongerLineEdit.text()+'_'+self.albumNameLineEdit.text())
 
-        for songInfo, songInfoWidget in zip(self.songInfo_list, self.songInfoWidget_list):
+        for songInfo, songInfoWidget in zip(self.songInfos, self.songInfoWidget_list):
             songInfo["album"] = self.albumNameLineEdit.text()
             songInfo["coverName"] = coverName
             songInfo["songName"] = songInfoWidget.songNameLineEdit.text()
@@ -297,7 +297,7 @@ class SongInfoWidget(QWidget):
         super().__init__(parent)
         self.songInfo = songInfo
         # 创建小部件
-        self.trackNumLabel = QLabel(self.tr("Track"), self)
+        self.trackLabel = QLabel(self.tr("Track"), self)
         self.songNameLabel = QLabel(self.tr("Song title"), self)
         self.singerLabel = QLabel(self.tr("Song artist"), self)
         self.trackNumLineEdit = LineEdit(songInfo["tracknumber"], self, False)
@@ -330,7 +330,7 @@ class SongInfoWidget(QWidget):
 
     def __initLayout(self):
         """ 初始化布局 """
-        self.trackNumLabel.move(30, 0)
+        self.trackLabel.move(30, 0)
         self.songNameLabel.move(135, 0)
         self.singerLabel.move(532, 0)
         self.trackNumLineEdit.move(30, 26)

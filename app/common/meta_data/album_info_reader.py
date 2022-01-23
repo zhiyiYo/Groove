@@ -5,16 +5,16 @@ from common.os_utils import getCoverPath, adjustName
 class AlbumInfoReader:
     """ 从歌曲信息列表中整理出专辑信息的类 """
 
-    def __init__(self, songInfo_list: list):
-        self.albumInfo_list = self.getAlbumInfo(songInfo_list)
+    def __init__(self, songInfos: list):
+        self.albumInfo_list = self.getAlbumInfo(songInfos)
         self.sortByModifiedTime()
 
-    def getAlbumInfo(self, songInfo_list: list):
+    def getAlbumInfo(self, songInfos: list):
         """ 从歌曲信息列表中来获取专辑信息 """
         albumInfo_list = []
         albumSonger_list = []
 
-        for songInfo in songInfo_list:
+        for songInfo in songInfos:
             album = songInfo["album"]  # type:str
             singer = songInfo["singer"]  # type:str
             coverName = songInfo["coverName"]  # type:str
@@ -26,7 +26,7 @@ class AlbumInfoReader:
                     {
                         "album": album,
                         "singer": singer,
-                        "songInfo_list": [songInfo],
+                        "songInfos": [songInfo],
                         "coverName": coverName,
                         "coverPath": coverPath,
                         "genre": songInfo["genre"],
@@ -37,19 +37,19 @@ class AlbumInfoReader:
             else:
                 index = albumSonger_list.index((album, singer))
                 albumInfo = albumInfo_list[index]
-                albumInfo["songInfo_list"].append(songInfo)
+                albumInfo["songInfos"].append(songInfo)
                 # 更新专辑的更新时间
                 if albumInfo["modifiedTime"] < songInfo["createTime"]:
                     albumInfo["modifiedTime"] = songInfo["createTime"]
 
         # 根据曲目序号排序每一个专辑
         for albumInfo in albumInfo_list:
-            albumInfo["songInfo_list"].sort(key=self.sortAlbum)
+            albumInfo["songInfos"].sort(key=self.sortAlbum)
         return albumInfo_list
 
-    def updateAlbumInfo(self, songInfo_list: list):
+    def updateAlbumInfo(self, songInfos: list):
         """ 更新专辑信息 """
-        self.albumInfo_list = self.getAlbumInfo(songInfo_list)
+        self.albumInfo_list = self.getAlbumInfo(songInfos)
 
     def sortAlbum(self, songInfo):
         trackNum = songInfo["tracknumber"]  # type:str
@@ -84,7 +84,7 @@ class AlbumInfoReader:
             "singer": singer,
             "genre": songInfo["genre"],
             "year": songInfo["year"],
-            "songInfo_list": [songInfo.copy()],
+            "songInfos": [songInfo.copy()],
             "modifiedTime": songInfo["createTime"],
             "coverPath": coverPath,
             "coverName": coverName,

@@ -18,7 +18,7 @@ class PlaylistInfoBar(CollapsingAppBarBase):
 
     def __init__(self, playlist: dict, parent=None):
         self.__getPlaylistInfo(playlist)
-        content = str(len(self.songInfo_list)) + \
+        content = str(len(self.songInfos)) + \
             QObject().tr(" songs")+f' • {self.duration}'
         super().__init__(self.playlistName, content,
                          self.playlistCoverPath, 'playlist', parent)
@@ -51,14 +51,14 @@ class PlaylistInfoBar(CollapsingAppBarBase):
         self.playlistName = playlist.get(
             "playlistName", obj.tr("Unknown playlist"))
 
-        self.songInfo_list = self.playlist.get("songInfo_list", [])
-        songInfo = self.songInfo_list[0] if self.songInfo_list else {}
+        self.songInfos = self.playlist.get("songInfos", [])
+        songInfo = self.songInfos[0] if self.songInfos else {}
         name = songInfo.get('coverName', '未知歌手_未知专辑')
         self.playlistCoverPath = getCoverPath(name, "playlist_big")
 
         # 统计时间
         seconds = 0
-        for songInfo in self.songInfo_list:
+        for songInfo in self.songInfos:
             m, s = map(int, songInfo.get("duration", "0:00").split(':'))
             seconds += m*60+s
         self.hours = seconds//3600
@@ -93,7 +93,7 @@ class PlaylistInfoBar(CollapsingAppBarBase):
     def updateWindow(self, playlist: dict):
         """ 更新窗口 """
         self.__getPlaylistInfo(playlist)
-        content = str(len(self.songInfo_list)) + \
+        content = str(len(self.songInfos)) + \
             self.tr(" songs")+f' • {self.duration}'
         super().updateWindow(self.playlistName, content, self.playlistCoverPath)
 

@@ -1,9 +1,11 @@
 # coding:utf-8
 import sys
+
 sys.path.append('app')
 
 from time import time
 from unittest import TestCase
+
 from app.common.database.controller import SongInfoController
 from app.common.database.entity import SongInfo
 from app.common.library import Directory

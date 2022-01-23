@@ -41,7 +41,7 @@ class KuWoMusicCrawler(CrawlerBase):
         response.raise_for_status()
 
         # 获取歌曲信息
-        song_info_list = []
+        song_infos = []
         data = json.loads(response.text)['data']
         for info in data['list']:
             song_info = {}
@@ -64,9 +64,9 @@ class KuWoMusicCrawler(CrawlerBase):
             d = info["duration"]
             song_info["duration"] = f"{int(d//60)}:{int(d%60):02}"
 
-            song_info_list.append(song_info)
+            song_infos.append(song_info)
 
-        return song_info_list, int(data['total'])
+        return song_infos, int(data['total'])
 
     @exceptionHandler('')
     def getSongUrl(self, song_info: dict, quality='Standard quality') -> str:
@@ -114,13 +114,13 @@ class KuWoMusicCrawler(CrawlerBase):
 
     @exceptionHandler([], 0)
     def search(self, key_word: str, page_num=1, page_size=10, quality: str = 'Standard quality') -> Tuple[List[dict], int]:
-        song_info_list, total = self.getSongInfoList(
+        song_infos, total = self.getSongInfoList(
             key_word, page_num, page_size)
 
-        for song_info in song_info_list:
+        for song_info in song_infos:
             song_info['songPath'] = self.getSongUrl(song_info, quality)
 
-        return song_info_list, total
+        return song_infos, total
 
     @exceptionHandler('')
     def getSingerAvatar(self, singer: str, save_dir: str) -> str:
@@ -162,20 +162,20 @@ class KuWoMusicCrawler(CrawlerBase):
         lyric: list
             歌词列表，如果没找到则返回 `None`
         """
-        song_info_list, _ = self.getSongInfoList(key_word, page_size=10)
+        song_infos, _ = self.getSongInfoList(key_word, page_size=10)
 
-        if not song_info_list:
+        if not song_infos:
             return None
 
         # 匹配度小于阈值则返回
         matches = [fuzz.token_set_ratio(
-            key_word, i['singer']+' '+i['songName']) for i in song_info_list]
+            key_word, i['singer']+' '+i['songName']) for i in song_infos]
         best_match = max(matches)
         if best_match < 90:
             return
 
         # 发送请求
-        rid = song_info_list[matches.index(best_match)]['rid']
+        rid = song_infos[matches.index(best_match)]['rid']
         url = f"https://m.kuwo.cn/newh5/singles/songinfoandlrc?musicId={rid}"
         response = requests.get(url)
         response.raise_for_status()

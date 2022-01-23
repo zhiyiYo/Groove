@@ -1,12 +1,13 @@
 # coding:utf-8
 import json
-from typing import Union
 from pathlib import Path
+from typing import Union
 
 import requests
+from common.database.entity import SongInfo
 from fuzzywuzzy import fuzz
-from .crawler_base import exceptionHandler
 
+from .crawler_base import exceptionHandler
 
 
 class QQMusicCrawler:
@@ -30,7 +31,7 @@ class QQMusicCrawler:
 
         Returns
         -------
-        song_info: dict
+        song_info: SongInfo
             歌曲信息，如果获取失败返回 `None`
         """
         search_url = f"https://c.y.qq.com/soso/fcgi-bin/client_search_cp?new_json=1&p=1&n=5&w={key_word}"
@@ -47,15 +48,15 @@ class QQMusicCrawler:
         if match_ratio < match_thresh:
             return
 
-        song_info = {}
-        song_info["songName"] = info["name"]
-        song_info["album"] = info["album"]["name"]
-        song_info["year"] = info["time_public"].split('-')[0]
-        song_info["singer"] = info["singer"][0]["name"]
-        song_info["tracknumber"] = str(info["index_album"])
-        song_info["trackTotal"] = str(info["index_album"])
-        song_info['disc'] = str(info['index_cd'] + 1)
-        song_info['discTotal'] = str(info['index_cd'] + 1)
+        song_info = SongInfo()
+        song_info.title = info["name"]
+        song_info.album = info["album"]["name"]
+        song_info.year = int(info["time_public"].split('-')[0])
+        song_info.singer = info["singer"][0]["name"]
+        song_info.track = info["index_album"]
+        song_info.trackTotal = info["index_album"]
+        song_info.disc= info['index_cd'] + 1
+        song_info.discTotal = info['index_cd'] + 1
         song_info["albummid"] = info['album']['mid']
 
         # 流派信息
@@ -75,7 +76,7 @@ class QQMusicCrawler:
             37: 'Soundtrack',
             39: 'World Music'
         }
-        song_info["genre"] = genres.get(info["genre"], 'Pop')
+        song_info.genre = genres.get(info["genre"], 'Pop')
 
         return song_info
 

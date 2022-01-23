@@ -11,24 +11,33 @@ from .song_card_type import SongCardType
 class ToolButton(TooltipButton):
     """ 按钮 """
 
-    def __init__(self, iconPath_dict: dict, parent=None):
+    def __init__(self, iconPaths: dict, parent=None):
         super().__init__(parent)
-        self.iconPath_dict = iconPath_dict
+        self.iconPaths = iconPaths
         self.setFixedSize(60, 60)
         self.setIconSize(QSize(60, 60))
         self.setState("notSelected-notPlay")
         self.setStyleSheet("QToolButton{border:none;margin:0}")
 
     def setState(self, state: str):
-        """ 设置按钮状态，更新按钮图标，状态有 notSelected-notPlay、notSelected-play、selected 这三种 """
+        """ 设置按钮状态
+
+        Parameters
+        ----------
+        state: str
+            状态有以下三种:
+            * notSelected-notPlay
+            * notSelected-play
+            * selected
+        """
         self.state = state
-        self.setIcon(QIcon(self.iconPath_dict[state]))
+        self.setIcon(QIcon(self.iconPaths[state]))
         self.setProperty("state", state)
 
-    def setIconPathDict(self, iconPath_dict: dict):
+    def setIconPaths(self, iconPaths: dict):
         """ 设置图标路径字典 """
-        self.iconPath_dict = iconPath_dict
-        self.setIcon(QIcon(iconPath_dict[self.state]))
+        self.iconPaths = iconPaths
+        self.setIcon(QIcon(iconPaths[self.state]))
 
 
 class ButtonGroup(QWidget):
@@ -40,7 +49,6 @@ class ButtonGroup(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        # 创建按钮
         self.playButton = ToolButton(
             {
                 "notSelected-notPlay": ":/images/song_tab_interface/Play_black.png",
@@ -57,7 +65,6 @@ class ButtonGroup(QWidget):
             },
             self,
         )
-        # 初始化
         self.__initWidget()
 
     def __initWidget(self):
@@ -84,12 +91,33 @@ class ButtonGroup(QWidget):
         self.addToButton.setHidden(isHidden)
 
     def setButtonState(self, state: str):
-        """ 根据状态更换按钮图标, 状态有notSelected-notPlay、notSelected-play、selected这三种 """
+        """ 根据状态更换按钮图标
+
+        Parameters
+        ----------
+        state: str
+            按钮状态，有以下三种：
+            * notSelected-notPlay
+            * notSelected-play
+            * selected
+        """
         self.playButton.setState(state)
         self.addToButton.setState(state)
 
     def setState(self, state: str):
-        """ 设置按钮组状态 """
+        """ 设置按钮组状态
+
+        Parameters
+        ----------
+        state: str
+            按钮组状态，有以下六种：
+            * notSelected-leave
+            * notSelected-enter
+            * notSelected-pressed
+            * selected-leave
+            * selected-enter
+            * selected-pressed
+        """
         self.setProperty("state", state)
 
     def eventFilter(self, obj, e: QEvent):
@@ -107,18 +135,16 @@ class ButtonGroup(QWidget):
 class SongNameCard(QWidget):
     """ 歌名卡 """
 
-    def __init__(self, songName, parent=None):
+    def __init__(self, songName: str, parent=None):
         super().__init__(parent)
         self.songName = songName
         self.isPlay = False
-        # 创建小部件
         self.checkBox = QCheckBox(self)  # type:QCheckBox
         self.playingLabel = QLabel(self)
         self.songNameLabel = QLabel(songName, self)
         self.buttonGroup = ButtonGroup(self)
         self.playButton = self.buttonGroup.playButton
         self.addToButton = self.buttonGroup.addToButton
-        # 初始化
         self.__initWidget()
 
     def __initWidget(self):
@@ -160,7 +186,6 @@ class SongNameCard(QWidget):
         """ 更新歌手名标签的文本并调整宽度 """
         self.songName = songName
         self.songNameLabel.setText(songName)
-        # 重新计算歌名宽度并移动按钮
         self.__getSongNameWidth()
         self._moveButtonGroup()
         self.songNameLabel.setFixedWidth(self.songNameWidth)
@@ -212,84 +237,70 @@ class SongNameCard(QWidget):
         # 歌曲不存在时仍需显示图标
         x = 83 if isPlay or (not isSongExist) else 57
         self.songNameLabel.move(x, self.songNameLabel.y())
-        # 更新按钮位置
         self._moveButtonGroup()
 
     def setSongName(self, songName: str):
         """ 更新歌手名标签的文本并调整宽度 """
         self.songName = songName
         self.songNameLabel.setText(songName)
-        # 重新计算歌名宽度并移动按钮
         self.__getSongNameWidth()
         self._moveButtonGroup()
         self.songNameLabel.setFixedWidth(self.songNameWidth)
 
 
-class TrackNumSongNameCard(SongNameCard):
+class TrackSongNameCard(SongNameCard):
     """ 带曲目序号的歌曲卡 """
 
-    def __init__(self, songName: str, trackNum: str, parent=None):
+    def __init__(self, songName: str, track: str, parent=None):
         super().__init__(songName, parent)
-        # 创建曲目序号标签
-        self.trackNumLabel = QLabel(self)
-        self.setTrackNum(trackNum)
-        # 初始化
+        self.trackLabel = QLabel(self)
+        self.setTrack(track)
         self.__initWidget()
 
     def __initWidget(self):
         """ 初始化 """
-        self.__adjustTrackNumLabelPos()
-        self.trackNumLabel.setFixedWidth(25)
-        self.trackNumLabel.setObjectName("trackNumLabel")
-        # 安装事件过滤器
+        self.__adjustTrackLabelPos()
+        self.trackLabel.setFixedWidth(25)
+        self.trackLabel.setObjectName("trackLabel")
         self.checkBox.installEventFilter(self)
 
     def setCheckBoxBtLabelState(self, state: str, isSongExist=True):
-        """ 设置复选框、按钮和标签的状态并更新样式,有notSelected-notPlay、notSelected-play、selected这3种状态 """
         super().setCheckBoxBtLabelState(state, isSongExist)
-        self.trackNumLabel.setProperty("state", state)
+        self.trackLabel.setProperty("state", state)
 
-    def updateSongNameCard(self, songName, trackNum: str):
+    def updateSongNameCard(self, songName: str, track: str):
         """ 设置卡片的信息 """
         super().updateSongNameCard(songName)
-        self.setTrackNum(trackNum)
-        self.__adjustTrackNumLabelPos()
+        self.setTrack(track)
+        self.__adjustTrackLabelPos()
 
-    def setTrackNum(self, trackNum: str):
+    def setTrack(self, track: str):
         """ 设置曲目序号 """
-        self.trackNum = trackNum
-        # 如果是M4a需要转化一下
-        if not trackNum[0].isnumeric():
-            self.trackNum = str(eval(trackNum)[0])
-        self.trackNumLabel.setText(self.trackNum + ".")
-        if self.trackNum == "0":
-            self.trackNumLabel.setText("")
+        self.track = track
+        self.trackLabel.setText(f"{track}." if int(track) > 0 else '')
 
     def setWidgetsHidden(self, isHidden: bool):
-        """ 显示/隐藏小部件 """
-        self.trackNumLabel.setHidden(not isHidden)
+        self.trackLabel.setHidden(not isHidden)
         super().setWidgetHidden(isHidden)
 
-    def __adjustTrackNumLabelPos(self):
+    def __adjustTrackLabelPos(self):
         """ 调整曲目序号标签位置 """
-        if len(self.trackNum) >= 2:
-            self.trackNumLabel.move(19, 18)
-        else:
-            self.trackNumLabel.move(28, 18)
+        x = 19 if int(self.track) >= 10 else 28
+        self.trackLabel.move(x, 18)
 
-    def setPlay(self, isPlay, isSongExist=True):
+    def setPlay(self, isPlay: bool, isSongExist=True):
         """ 设置播放状态 """
         super().setPlay(isPlay, isSongExist)
-        self.trackNumLabel.setHidden(isPlay)
+        self.trackLabel.setHidden(isPlay)
 
     def eventFilter(self, obj, e: QEvent):
         """ 过滤事件 """
         if obj == self.checkBox:
             if e.type() == QEvent.Show:
-                self.trackNumLabel.hide()
+                self.trackLabel.hide()
                 return False
             elif e.type() == QEvent.Hide:
-                self.trackNumLabel.show()
+                self.trackLabel.show()
                 return False
         return super().eventFilter(obj, e)
 
@@ -299,7 +310,7 @@ class PlaylistSongNameCard(SongNameCard):
 
     def __init__(self, songName, parent):
         super().__init__(songName, parent=parent)
-        self.addToButton.setIconPathDict({
+        self.addToButton.setIconPaths({
             "notSelected-notPlay": ":/images/playlist_interface/Delete_black.png",
             "notSelected-play": ":/images/playlist_interface/Delete_green.png",
             "selected": ":/images/playlist_interface/Delete_white.png",
@@ -321,10 +332,8 @@ class NoCheckBoxSongNameCard(SongNameCard):
         self.isPlay = isPlay
         self.playingLabel.setVisible(isPlay or (not isSongExist))
         self.setWidgetHidden(not isPlay)
-        # 歌曲不存在时仍需显示图标
         x = 41 if isPlay or (not isSongExist) else 15
         self.songNameLabel.move(x, self.songNameLabel.y())
-        # 更新按钮位置
         self._moveButtonGroup()
 
 
@@ -337,7 +346,7 @@ class OnlineSongNameCard(SongNameCard):
         self.playingLabel.move(15, 22)
         self.checkBox.setFixedWidth(0)
         self.checkBox.lower()
-        self.addToButton.setIconPathDict({
+        self.addToButton.setIconPaths({
             "notSelected-notPlay": ":/images/search_result_interface/Download_black.png",
             "notSelected-play": ":/images/search_result_interface/Download_green.png",
             "selected": ":/images/search_result_interface/Download_white.png",
@@ -348,10 +357,8 @@ class OnlineSongNameCard(SongNameCard):
         self.isPlay = isPlay
         self.playingLabel.setVisible(isPlay or (not isSongExist))
         self.setWidgetHidden(not isPlay)
-        # 歌曲不存在时仍需显示图标
         x = 41 if isPlay or (not isSongExist) else 15
         self.songNameLabel.move(x, self.songNameLabel.y())
-        # 更新按钮位置
         self._moveButtonGroup()
 
 
@@ -359,7 +366,7 @@ class SongNameCardFactory:
     """ 歌曲名字卡工厂 """
 
     @staticmethod
-    def create(songCardType: SongCardType, songName: str, trackNum=None, parent=None):
+    def create(songCardType: SongCardType, songName: str, track: int=None, parent=None):
         """ 创建一个指定类型的歌曲名字卡
 
         Parameters
@@ -370,7 +377,7 @@ class SongNameCardFactory:
         songName: str
             歌曲名
 
-        trackNum: str
+        track: int
             曲目，只在歌曲卡类型为 `SongCardType.ALBUM_INTERFACE_SONG_CARD` 时需要指定
 
         parent:
@@ -378,7 +385,7 @@ class SongNameCardFactory:
         """
         songNameCard_dict = {
             SongCardType.SONG_TAB_SONG_CARD: SongNameCard,
-            SongCardType.ALBUM_INTERFACE_SONG_CARD: TrackNumSongNameCard,
+            SongCardType.ALBUM_INTERFACE_SONG_CARD: TrackSongNameCard,
             SongCardType.PLAYLIST_INTERFACE_SONG_CARD: PlaylistSongNameCard,
             SongCardType.NO_CHECKBOX_SONG_CARD: NoCheckBoxSongNameCard,
             SongCardType.ONLINE_SONG_CARD: OnlineSongNameCard
@@ -391,4 +398,4 @@ class SongNameCardFactory:
         if songCardType != SongCardType.ALBUM_INTERFACE_SONG_CARD:
             return SongNameCard_(songName, parent)
 
-        return SongNameCard_(songName, trackNum, parent)
+        return SongNameCard_(songName, track, parent)

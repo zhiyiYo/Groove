@@ -54,7 +54,7 @@ class PlaylistCard(PerspectiveWidget):
         )
         self.playlistNameLabel = QLabel(self.playlistName, self)
         self.playlistLenLabel = QLabel(
-            str(len(self.songInfo_list))+self.tr(" songs"), self)
+            str(len(self.songInfos))+self.tr(" songs"), self)
         # 创建复选框
         self.checkBox = CheckBox(self, forwardTargetWidget=self.playlistCover)
         # 创建动画和窗口特效
@@ -108,8 +108,8 @@ class PlaylistCard(PerspectiveWidget):
         self.playlistName = playlist.get(
             "playlistName", self.tr("Unknown playlist"))
 
-        self.songInfo_list = playlist.get("songInfo_list", [])  # type:list
-        songInfo = self.songInfo_list[0] if self.songInfo_list else {}
+        self.songInfos = playlist.get("songInfos", [])  # type:list
+        songInfo = self.songInfos[0] if self.songInfos else {}
         name = songInfo.get('coverName', '未知歌手_未知专辑')
         self.playlistCoverPath = getCoverPath(name, 'playlist_small')
 
@@ -161,7 +161,7 @@ class PlaylistCard(PerspectiveWidget):
         self.playlistCover.setPlaylistCover(self.playlistCoverPath)
         self.playlistNameLabel.setText(self.playlistName)
         self.playlistLenLabel.setText(
-            str(len(self.songInfo_list))+self.tr(" songs"))
+            str(len(self.songInfos))+self.tr(" songs"))
         self.playButton.setBlurPic(self.playlistCoverPath, 40)
         self.addToButton.setBlurPic(self.playlistCoverPath, 40)
         self.__adjustLabel()
@@ -195,27 +195,27 @@ class PlaylistCard(PerspectiveWidget):
         """ 信号连接到槽 """
         self.checkBox.stateChanged.connect(self.__onCheckedStateChanged)
         self.playButton.clicked.connect(
-            lambda: self.playSig.emit(self.songInfo_list))
+            lambda: self.playSig.emit(self.songInfos))
         self.addToButton.clicked.connect(self.__showAddToMenu)
 
     def contextMenuEvent(self, e):
         """ 显示右击菜单 """
         menu = PlaylistCardContextMenu(parent=self)
         menu.playAct.triggered.connect(
-            lambda: self.playSig.emit(self.songInfo_list))
+            lambda: self.playSig.emit(self.songInfos))
         menu.nextToPlayAct.triggered.connect(
-            lambda: self.nextToPlaySig.emit(self.songInfo_list))
+            lambda: self.nextToPlaySig.emit(self.songInfos))
         menu.deleteAct.triggered.connect(
             lambda: self.deleteCardSig.emit(self.playlistName))
         menu.renameAct.triggered.connect(
             lambda: self.renamePlaylistSig.emit(self.playlist))
         menu.selectAct.triggered.connect(self.__onSelectActTriggered)
         menu.addToMenu.playingAct.triggered.connect(
-            lambda: self.addSongsToPlayingPlaylistSig.emit(self.songInfo_list))
+            lambda: self.addSongsToPlayingPlaylistSig.emit(self.songInfos))
         menu.addToMenu.newPlaylistAct.triggered.connect(
-            lambda: self.addSongsToNewCustomPlaylistSig.emit(self.songInfo_list))
+            lambda: self.addSongsToNewCustomPlaylistSig.emit(self.songInfos))
         menu.addToMenu.addSongsToPlaylistSig.connect(
-            lambda name: self.addSongsToCustomPlaylistSig.emit(name, self.songInfo_list))
+            lambda name: self.addSongsToCustomPlaylistSig.emit(name, self.songInfos))
         menu.exec(e.globalPos())
 
     def __showAddToMenu(self):
@@ -227,11 +227,11 @@ class PlaylistCard(PerspectiveWidget):
         y = pos.y() + int(
             self.addToButton.height() / 2 - (13 + 38 * menu.actionCount()) / 2)
         menu.playingAct.triggered.connect(
-            lambda: self.addSongsToPlayingPlaylistSig.emit(self.songInfo_list))
+            lambda: self.addSongsToPlayingPlaylistSig.emit(self.songInfos))
         menu.newPlaylistAct.triggered.connect(
-            lambda: self.addSongsToNewCustomPlaylistSig.emit(self.songInfo_list))
+            lambda: self.addSongsToNewCustomPlaylistSig.emit(self.songInfos))
         menu.addSongsToPlaylistSig.connect(
-            lambda name: self.addSongsToCustomPlaylistSig.emit(name, self.songInfo_list))
+            lambda name: self.addSongsToCustomPlaylistSig.emit(name, self.songInfos))
         menu.exec(QPoint(x, y))
 
     def __onSelectActTriggered(self):

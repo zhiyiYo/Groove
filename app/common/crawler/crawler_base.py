@@ -66,7 +66,7 @@ class CrawlerBase:
 
         Returns
         -------
-        song_info_list: List[dict]
+        song_infos: List[dict]
             歌曲信息列表，没找到任何歌曲时为空列表
 
         total: int
@@ -175,7 +175,7 @@ class CrawlerBase:
 
         Returns
         -------
-        song_info_list: List[dict]
+        song_infos: List[dict]
             歌曲信息列表，没找到任何歌曲时为空列表
 
         total: int

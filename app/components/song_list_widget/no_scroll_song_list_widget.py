@@ -8,12 +8,12 @@ from .song_card_type import SongCardType
 class NoScrollSongListWidget(BasicSongListWidget):
     """ 禁用了滚动的歌曲列表课件 """
 
-    def __init__(self, songInfo_list: list, songCardType: SongCardType, parent=None,
+    def __init__(self, songInfos: list, songCardType: SongCardType, parent=None,
                  viewportMargins=QMargins(30, 0, 30, 0), paddingBottomHeight=116):
         """
         Parameters
         ----------
-        songInfo_list: list
+        songInfos: list
             歌曲信息列表
 
         songCardType: SongCardType
@@ -28,7 +28,7 @@ class NoScrollSongListWidget(BasicSongListWidget):
         paddingBottomHeight: int
             列表视图底部留白
         """
-        super().__init__(songInfo_list, songCardType, parent, viewportMargins, 0)
+        super().__init__(songInfos, songCardType, parent, viewportMargins, 0)
         self.resize(1150, 758)
         self.__paddingBottomHeight = paddingBottomHeight
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -41,13 +41,13 @@ class NoScrollSongListWidget(BasicSongListWidget):
         super().appendOneSongCard(songInfo)
         self.__adjustHeight()
 
-    def appendSongCards(self, songInfo_list: list):
-        super().appendSongCards(songInfo_list)
+    def appendSongCards(self, songInfos: list):
+        super().appendSongCards(songInfos)
         self.__adjustHeight()
 
-    def updateAllSongCards(self, songInfo_list: list):
+    def updateAllSongCards(self, songInfos: list):
         """ 更新所有歌曲卡，根据给定的信息决定创建或者删除歌曲卡 """
-        super().updateAllSongCards(songInfo_list)
+        super().updateAllSongCards(songInfos)
         self.__adjustHeight()
 
     def removeSongCard(self, index):
@@ -60,5 +60,5 @@ class NoScrollSongListWidget(BasicSongListWidget):
 
     def __adjustHeight(self):
         """ 调整高度 """
-        self.resize(self.width(), 60*len(self.songCard_list) +
+        self.resize(self.width(), 60*len(self.songCards) +
                     self.__paddingBottomHeight)

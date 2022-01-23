@@ -47,13 +47,13 @@ class MediaPlaylist(QMediaPlaylist):
         super().addMedia(QMediaContent(
             QUrl(songInfo["songPath"])))
 
-    def addSongs(self, songInfo_list: list):
+    def addSongs(self, songInfos: list):
         """ 向播放列表尾部添加多首歌 """
-        if not songInfo_list:
+        if not songInfos:
             return
 
-        self.playlist.extend(songInfo_list)
-        for songInfo in songInfo_list:
+        self.playlist.extend(songInfos)
+        for songInfo in songInfos:
             super().addMedia(QMediaContent(QUrl(songInfo["songPath"])))
 
     def insertSong(self, index: int, songInfo: dict):
@@ -62,15 +62,15 @@ class MediaPlaylist(QMediaPlaylist):
             index, QMediaContent(QUrl(songInfo["songPath"])))
         self.playlist.insert(index, songInfo)
 
-    def insertSongs(self, index: int, songInfo_list: list):
+    def insertSongs(self, index: int, songInfos: list):
         """ 插入播放列表 """
-        if not songInfo_list:
+        if not songInfos:
             return
 
         self.playlist = self.playlist[:index] + \
-            songInfo_list + self.playlist[index:]
+            songInfos + self.playlist[index:]
         mediaContent_list = [
-            QMediaContent(QUrl(i["songPath"])) for i in songInfo_list]
+            QMediaContent(QUrl(i["songPath"])) for i in songInfos]
         super().insertMedia(index, mediaContent_list)
 
     def clear(self):
@@ -119,10 +119,10 @@ class MediaPlaylist(QMediaPlaylist):
 
         self.setCurrentIndex(self.playlist.index(songInfo))
 
-    def playAlbum(self, songInfo_list: list, index=0):
+    def playAlbum(self, songInfos: list, index=0):
         """ 播放专辑中的歌曲 """
         self.playlistType = PlaylistType.ALBUM_CARD_PLAYLIST
-        self.setPlaylist(songInfo_list, index)
+        self.setPlaylist(songInfos, index)
 
     def setRandomPlay(self, isRandomPlay=False):
         """ 按下随机播放按钮时根据循环模式决定是否设置随机播放模式 """
@@ -138,13 +138,13 @@ class MediaPlaylist(QMediaPlaylist):
             # 恢复之前的循环模式
             self.setPlaybackMode(self.prePlayMode)
 
-    def setPlaylist(self, songInfo_list: list, index=0):
+    def setPlaylist(self, songInfos: list, index=0):
         """ 设置歌曲播放列表 """
-        if songInfo_list == self.playlist:
+        if songInfos == self.playlist:
             return
 
         self.clear()
-        self.addSongs(songInfo_list)
+        self.addSongs(songInfos)
         self.setCurrentIndex(index)
 
     @checkDirExists('cache/song_info')

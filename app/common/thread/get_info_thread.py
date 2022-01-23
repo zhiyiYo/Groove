@@ -15,9 +15,9 @@ class GetInfoThread(QThread):
     def run(self):
         """ 获取信息 """
         songInfoReader = SongInfoReader(self.folderPaths)
-        albumCoverReader = AlbumCoverReader(songInfoReader.songInfo_list)
-        albumInfoReader = AlbumInfoReader(songInfoReader.songInfo_list)
+        albumCoverReader = AlbumCoverReader(songInfoReader.songInfos)
+        albumInfoReader = AlbumInfoReader(songInfoReader.songInfos)
         singerInfoReader = SingerInfoReader(albumInfoReader.albumInfo_list)
 
-        self.scanFinished.emit(songInfoReader.songInfo_list,
+        self.scanFinished.emit(songInfoReader.songInfos,
                                albumInfoReader.albumInfo_list, singerInfoReader.singerInfos)

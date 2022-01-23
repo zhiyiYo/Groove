@@ -423,12 +423,12 @@ class PlaylistCardInterface(ScrollArea):
     def deleteSongs(self, songPaths: list):
         """ 从各个播放列表中删除歌曲 """
         for name, playlist in self.playlists.items():
-            songInfo_list = playlist["songInfo_list"]
+            songInfos = playlist["songInfos"]
             playlistCard = self.playlistName2Card_dict[name]
 
-            for songInfo in songInfo_list.copy():
+            for songInfo in songInfos.copy():
                 if songInfo['songPath'] in songPaths:
-                    songInfo_list.remove(songInfo)
+                    songInfos.remove(songInfo)
 
             playlistCard.updateWindow(playlist)
             self.savePlaylist(playlist)
@@ -444,7 +444,7 @@ class PlaylistCardInterface(ScrollArea):
         # 发送播放列表
         playlist = []
         for playlistCard in self.checkedPlaylistCard_list:
-            playlist.extend(playlistCard.songInfo_list)
+            playlist.extend(playlistCard.songInfos)
         # 取消所有播放列表卡的选中
         self.__unCheckPlaylistCards()
         if self.sender() is self.selectionModeBar.playButton:
@@ -481,7 +481,7 @@ class PlaylistCardInterface(ScrollArea):
                 lambda: self.__deleteMultiPlaylistCards(playlistNames))
             w.exec()
 
-    def addSongsToPlaylist(self, playlistName: str, songInfo_list: list) -> dict:
+    def addSongsToPlaylist(self, playlistName: str, songInfos: list) -> dict:
         """ 将歌曲添加到播放列表
 
         Parameters
@@ -489,12 +489,12 @@ class PlaylistCardInterface(ScrollArea):
         playlistName: str
             播放列表名字
 
-        songInfo_list: list
+        songInfos: list
             新添加的歌曲列表
         """
         playlist = self.playlists[playlistName]
         playlistCard = self.playlistName2Card_dict[playlistName]
-        playlist["songInfo_list"] += deepcopy(songInfo_list)
+        playlist["songInfos"] += deepcopy(songInfos)
         playlist["modifiedTime"] = QDateTime.currentDateTime().toString(
             Qt.ISODate)
         playlistCard.updateWindow(playlist)
@@ -505,10 +505,10 @@ class PlaylistCardInterface(ScrollArea):
     def updateOneSongInfo(self, newSongInfo: dict):
         """ 更新一首歌曲信息 """
         for playlist in self.playlists.values():
-            for i, songInfo in enumerate(playlist["songInfo_list"]):
+            for i, songInfo in enumerate(playlist["songInfos"]):
                 # 一个播放列表中可能有好几首相同的歌曲，需要全部更新
                 if songInfo["songPath"] == newSongInfo["songPath"]:
-                    playlist["songInfo_list"][i] = newSongInfo
+                    playlist["songInfos"][i] = newSongInfo
                     name = playlist["playlistName"]
                     self.playlistName2Card_dict[name].updateWindow(playlist)
                     index = self.__getCardInfoIndex(name)
@@ -520,7 +520,7 @@ class PlaylistCardInterface(ScrollArea):
         for songInfo in newSongInfo_list:
             self.updateOneSongInfo(songInfo)
 
-    def updateOnePlaylist(self, playlistName: str, songInfo_list: list):
+    def updateOnePlaylist(self, playlistName: str, songInfos: list):
         """ 更新一个播放列表中的歌曲
 
         Parameters
@@ -528,11 +528,11 @@ class PlaylistCardInterface(ScrollArea):
         playlistName: str
             播放列表名字
 
-        songInfo_list: list
+        songInfos: list
             新的歌曲列表
         """
         playlist = self.playlists[playlistName]
-        playlist["songInfo_list"] = deepcopy(songInfo_list)
+        playlist["songInfos"] = deepcopy(songInfos)
         playlist["modifiedTime"] = QDateTime.currentDateTime().toString(
             Qt.ISODate)
         playlistCard = self.playlistName2Card_dict[playlistName]
@@ -564,16 +564,16 @@ class PlaylistCardInterface(ScrollArea):
         for act in menu.action_list:
             act.triggered.connect(self.exitSelectionMode)
 
-        songInfo_list = []
+        songInfos = []
         for playlistCard in self.checkedPlaylistCard_list:
-            songInfo_list.extend(playlistCard.songInfo_list)
+            songInfos.extend(playlistCard.songInfos)
 
         menu.playingAct.triggered.connect(
-            lambda: self.addSongsToPlayingPlaylistSig.emit(songInfo_list))
+            lambda: self.addSongsToPlayingPlaylistSig.emit(songInfos))
         menu.addSongsToPlaylistSig.connect(
-            lambda name: self.addSongsToCustomPlaylistSig.emit(name, songInfo_list))
+            lambda name: self.addSongsToCustomPlaylistSig.emit(name, songInfos))
         menu.newPlaylistAct.triggered.connect(
-            lambda: self.addSongsToNewCustomPlaylistSig.emit(songInfo_list))
+            lambda: self.addSongsToNewCustomPlaylistSig.emit(songInfos))
         menu.exec(QPoint(x, y))
 
     def __connectSignalToSlot(self):
@@ -606,7 +606,7 @@ class PlaylistCardInterface(ScrollArea):
         self.playlistFolder.mkdir(exist_ok=True, parents=True)
 
         playlists = {}  # type:Dict[str, dict]
-        
+
         for file in self.playlistFolder.glob('*.json'):
             with open(file, encoding="utf-8") as f:
                 playlist = json.load(f)  # type:dict

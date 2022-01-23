@@ -58,7 +58,7 @@ class WanYiMusicCrawler(CrawlerBase):
         text = self.send(url, form_data)
 
         # 获取歌曲信息
-        song_info_list = []
+        song_infos = []
         data = json.loads(text)['result']
         for info in data['songs']:
             song_info = {}
@@ -84,9 +84,9 @@ class WanYiMusicCrawler(CrawlerBase):
             d = info["dt"]/1000
             song_info["duration"] = f"{int(d//60)}:{int(d%60):02}"
 
-            song_info_list.append(song_info)
+            song_infos.append(song_info)
 
-        return song_info_list, data['songCount']
+        return song_infos, data['songCount']
 
     def getSongUrl(self, song_info: dict, quality: str = 'Standard quality') -> str:
         urls = self.getSongUrls([song_info], quality)
@@ -94,12 +94,12 @@ class WanYiMusicCrawler(CrawlerBase):
         return url
 
     @exceptionHandler([])
-    def getSongUrls(self, song_info_list: List[dict], quality: str = 'Standard quality') -> str:
+    def getSongUrls(self, song_infos: List[dict], quality: str = 'Standard quality') -> str:
         """ 获取多首歌曲下载链接
 
         Parameters
         ----------
-        song_info_list: List[dict]
+        song_infos: List[dict]
             歌曲信息
 
         quality: str
@@ -125,7 +125,7 @@ class WanYiMusicCrawler(CrawlerBase):
         # 发送请求
         url = 'https://music.163.com/weapi/song/enhance/player/url/v1'
         form_data = {
-            "ids": [i['id'] for i in song_info_list],
+            "ids": [i['id'] for i in song_infos],
             "level": "standard",
             "encodeType": "mp3",
         }
@@ -152,21 +152,21 @@ class WanYiMusicCrawler(CrawlerBase):
             歌词，如果没找到则返回 `None`
         """
         # 搜索歌曲
-        song_info_list, _ = self.getSongInfoList(key_word, page_size=20)
+        song_infos, _ = self.getSongInfoList(key_word, page_size=20)
 
-        if not song_info_list:
+        if not song_infos:
             return
 
         # 匹配度小于阈值则返回
         matches = [key_word == i['singer']+' '+i['songName']
-                   for i in song_info_list]
+                   for i in song_infos]
         if not any(matches):
             return
 
         # 发送获取歌词的请求
         url = 'https://music.163.com/weapi/song/lyric'
         form_data = {
-            "id": song_info_list[matches.index(True)]['id'],
+            "id": song_infos[matches.index(True)]['id'],
             "lv": -1,
             "tv": -1
         }

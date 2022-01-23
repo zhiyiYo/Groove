@@ -410,13 +410,13 @@ class PlayingInterface(QWidget):
     def updateOneSongCard(self, newSongInfo: dict):
         """ 更新一个歌曲卡 """
         self.songListWidget.updateOneSongCard(newSongInfo)
-        self.playlist = self.songListWidget.songInfo_list
+        self.playlist = self.songListWidget.songInfos
         self.songInfoCardChute.playlist = self.playlist
 
     def updateMultiSongCards(self, newSongInfo_list: list):
         """ 更新多个歌曲卡 """
         self.songListWidget.updateMultiSongCards(newSongInfo_list)
-        self.playlist = self.songListWidget.songInfo_list
+        self.playlist = self.songListWidget.songInfos
         self.songInfoCardChute.playlist = self.playlist
 
     @handleSelectionMode
@@ -471,25 +471,25 @@ class PlayingInterface(QWidget):
 
     def __onSelectionModeBarAlbumButtonClicked(self):
         """ 选择栏显示专辑按钮点击槽函数 """
-        songCard = self.songListWidget.checkedSongCard_list[0]
+        songCard = self.songListWidget.checkedSongCards[0]
         songCard.setChecked(False)
         self.switchToAlbumInterfaceSig.emit(songCard.album, songCard.singer)
 
     def __onSelectionModeBarDeleteButtonClicked(self):
         """ 选择栏播放按钮点击槽函数 """
-        for songCard in self.songListWidget.checkedSongCard_list.copy():
+        for songCard in self.songListWidget.checkedSongCards.copy():
             songCard.setChecked(False)
             self.songListWidget.removeSongCard(songCard.itemIndex)
 
     def __onSelectionModeBarPlayButtonClicked(self):
         """ 选择栏播放按钮点击槽函数 """
-        songCard = self.songListWidget.checkedSongCard_list[0]
+        songCard = self.songListWidget.checkedSongCards[0]
         songCard.setChecked(False)
         self.currentIndexChanged.emit(songCard.itemIndex)
 
     def __onSelectionModeBarPropertyButtonClicked(self):
         """ 选择栏播放按钮点击槽函数 """
-        songCard = self.songListWidget.checkedSongCard_list[0]
+        songCard = self.songListWidget.checkedSongCards[0]
         songCard.setChecked(False)
         self.songListWidget.showSongPropertyDialog(songCard)
 
@@ -500,15 +500,15 @@ class PlayingInterface(QWidget):
         pos = self.selectionModeBar.mapToGlobal(btn.pos())
         x = pos.x()+btn.width()+5
         y = pos.y()+btn.height()//2-(13+38*menu.actionCount())//2
-        songInfo_list = [
-            i.songInfo for i in self.songListWidget.checkedSongCard_list]
+        songInfos = [
+            i.songInfo for i in self.songListWidget.checkedSongCards]
         # 菜单信号连接到槽
         for act in menu.action_list:
             act.triggered.connect(self.exitSelectionMode)
         menu.newPlaylistAct.triggered.connect(
-            lambda: self.addSongsToNewCustomPlaylistSig.emit(songInfo_list))
+            lambda: self.addSongsToNewCustomPlaylistSig.emit(songInfos))
         menu.addSongsToPlaylistSig.connect(
-            lambda name: self.addSongsToCustomPlaylistSig.emit(name, songInfo_list))
+            lambda name: self.addSongsToCustomPlaylistSig.emit(name, songInfos))
         menu.exec(QPoint(x, y))
 
     def exitSelectionMode(self):

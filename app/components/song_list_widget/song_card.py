@@ -1,28 +1,48 @@
 # coding:utf-8
-from components.widgets.menu import DownloadMenu
+from common.database.entity import SongInfo
 from components.widgets.label import ClickableLabel
-from PyQt5.QtCore import Qt, pyqtSignal, QPoint
+from components.widgets.menu import DownloadMenu
+from PyQt5.QtCore import QPoint, Qt, pyqtSignal
 from PyQt5.QtWidgets import QLabel
 
 from .basic_song_card import BasicSongCard
 from .song_card_type import SongCardType
 
 
-class SongTabSongCard(BasicSongCard):
+class DurationSongCard(BasicSongCard):
+    """ 有时长标签的歌曲卡 """
+
+    def __init__(self, songInfo: SongInfo, songCardType, parent=None):
+        super().__init__(songInfo, songCardType, parent)
+        self.durationLabel = QLabel(self.duration, self)
+        self.setAttribute(Qt.WA_StyledBackground)
+        self.setWidgetState("notSelected-leave")
+        self.setCheckBoxBtLabelState("notSelected-notPlay")
+
+    def resizeEvent(self, e):
+        """ 窗口改变大小时调整小部件位置 """
+        super().resizeEvent(e)
+        self.durationLabel.move(self.width() - 45, 20)
+        self._getAniTargetX()
+
+    def updateSongCard(self, songInfo: SongInfo):
+        """ 更新歌曲卡信息 """
+        self.setSongInfo(songInfo)
+        self.durationLabel.setText(self.duration)
+
+
+class SongTabSongCard(DurationSongCard):
     """ 我的音乐歌曲界面的歌曲卡 """
 
     switchToAlbumInterfaceSig = pyqtSignal(str, str)    # 发送专辑名和歌手名
     switchToSingerInterfaceSig = pyqtSignal(str)        # 切换到歌手界面
 
-    def __init__(self, songInfo: dict, parent=None):
+    def __init__(self, songInfo: SongInfo, parent=None):
         super().__init__(songInfo, SongCardType.SONG_TAB_SONG_CARD, parent)
-        # 创建小部件
         self.singerLabel = ClickableLabel(self.singer, self, False)
         self.albumLabel = ClickableLabel(self.album, self, False)
         self.yearLabel = QLabel(self.year, self)
         self.genreLabel = QLabel(self.genre, self)
-        self.durationLabel = QLabel(self.duration, self)
-        # 初始化
         self.__initWidget()
 
     def __initWidget(self):
@@ -38,6 +58,7 @@ class SongTabSongCard(BasicSongCard):
             ],
             [30, 15, 27, 19, 70],
         )
+
         # 年份的宽度固定为60，时长固定距离窗口右边界45px
         self.setScalableWidgets(
             [self.songNameCard, self.singerLabel,
@@ -45,16 +66,15 @@ class SongTabSongCard(BasicSongCard):
             [326, 191, 191, 178],
             105,
         )
-        self.setDynamicStyleLabels(self.label_list)
+        self.setDynamicStyleLabels(self.labels)
+
         # 设置歌曲卡点击动画
-        self.setAnimation(self.widget_list, [13, 6, -3, -6, -8, -13])
-        self.setAttribute(Qt.WA_StyledBackground)
+        self.setAnimation(self.widgets, [13, 6, -3, -6, -8, -13])
+
         # 设置鼠标样式
         self.setClickableLabels([self.singerLabel, self.albumLabel])
         self.setClickableLabelCursor(Qt.PointingHandCursor)
-        # 分配ID和属性
-        self.setWidgetState("notSelected-leave")
-        self.setCheckBoxBtLabelState("notSelected-notPlay")
+
         # 信号连接到槽
         self.addToButton.clicked.connect(self._showAddToMenu)
         self.checkBox.stateChanged.connect(self._onCheckedStateChanged)
@@ -63,98 +83,76 @@ class SongTabSongCard(BasicSongCard):
         self.albumLabel.clicked.connect(
             lambda: self.switchToAlbumInterfaceSig.emit(self.album, self.singer))
 
-    def updateSongCard(self, songInfo: dict):
+    def updateSongCard(self, songInfo: SongInfo):
         """ 更新歌曲卡信息 """
         if self.songInfo == songInfo:
             return
-        self.setSongInfo(songInfo)
+
+        super().updateSongCard(songInfo)
         self.songNameCard.updateSongNameCard(self.songName)
         self.singerLabel.setText(self.singer)
         self.albumLabel.setText(self.album)
-        self.yearLabel.setText(self.year)
+        self.yearLabel.setText(str(self.year))
         self.genreLabel.setText(self.genre)
-        self.durationLabel.setText(self.duration)
-        # 调整小部件宽度
-        self.adjustWidgetWidth()
-
-    def resizeEvent(self, e):
-        """ 窗口改变大小时调整小部件位置 """
-        super().resizeEvent(e)
-        # 再次调整时长标签的位置
-        self.durationLabel.move(self.width() - 45, 20)
-        self._getAniTargetX()
+        self._adjustWidgetWidth()
 
 
-class AlbumInterfaceSongCard(BasicSongCard):
+class AlbumInterfaceSongCard(DurationSongCard):
     """ 专辑界面的歌曲卡 """
 
     switchToSingerInterfaceSig = pyqtSignal(str)  # 切换到歌手界面
 
-    def __init__(self, songInfo: dict, parent=None):
+    def __init__(self, songInfo: SongInfo, parent=None):
         super().__init__(songInfo, SongCardType.ALBUM_INTERFACE_SONG_CARD, parent)
-        # 创建小部件
-        self.singerLabel = ClickableLabel(songInfo["singer"], self, False)
-        self.durationLabel = QLabel(songInfo["duration"], self)
-        # 初始化
+        self.singerLabel = ClickableLabel(self.singer, self, False)
         self.__initWidget()
 
     def __initWidget(self):
         """ 初始化小部件 """
         self.addLabels([self.singerLabel, self.durationLabel], [16, 70])
+
         # 设置可伸缩的小部件及其初始化长度
         self.setScalableWidgets(
             [self.songNameCard, self.singerLabel], [554, 401], 45)
-        self.setDynamicStyleLabels(self.label_list)
+        self.setDynamicStyleLabels(self.labels)
+
         # 设置动画
-        self.setAnimation(self.widget_list, [13, -3, -13])
-        self.setAttribute(Qt.WA_StyledBackground)
+        self.setAnimation(self.widgets, [13, -3, -13])
+
         # 设置可点击标签列表
         self.setClickableLabels([self.singerLabel])
         self.setClickableLabelCursor(Qt.PointingHandCursor)
-        # 分配ID和属性
-        self.setWidgetState("notSelected-leave")
-        self.setCheckBoxBtLabelState("notSelected-notPlay")
+
         # 信号连接到槽
         self.singerLabel.clicked.connect(
             lambda: self.switchToSingerInterfaceSig.emit(self.singer))
         self.addToButton.clicked.connect(self._showAddToMenu)
         self.checkBox.stateChanged.connect(self._onCheckedStateChanged)
 
-    def updateSongCard(self, songInfo: dict):
+    def updateSongCard(self, songInfo: SongInfo):
         """ 更新歌曲卡信息 """
         if self.songInfo == songInfo:
             return
-        self.setSongInfo(songInfo)
-        self.songNameCard.updateSongNameCard(
-            songInfo["songName"], songInfo["tracknumber"])
-        self.singerLabel.setText(songInfo["singer"])
-        self.durationLabel.setText(songInfo["duration"])
-        # 调整宽度
-        self.adjustWidgetWidth()
 
-    def resizeEvent(self, e):
-        super().resizeEvent(e)
-        # 再次调整时长标签的位置
-        self.durationLabel.move(self.width() - 45, 20)
-        self._getAniTargetX()
+        super().updateSongCard(songInfo)
+        self.songNameCard.updateSongNameCard(self.songName, self.track)
+        self.singerLabel.setText(self.singer)
+        self._adjustWidgetWidth()
 
 
-class PlaylistInterfaceSongCard(BasicSongCard):
-    """ 我的音乐歌曲界面的歌曲卡 """
+class PlaylistInterfaceSongCard(DurationSongCard):
+    """ 播放列表界面的歌曲卡 """
 
     removeSongSignal = pyqtSignal(int)                # 移除歌曲
     switchToAlbumInterfaceSig = pyqtSignal(str, str)  # 切换到专辑界面
     switchToSingerInterfaceSig = pyqtSignal(str)      # 切换到歌手界面
 
-    def __init__(self, songInfo: dict, parent=None):
+    def __init__(self, songInfo: SongInfo, parent=None):
         super().__init__(songInfo, SongCardType.PLAYLIST_INTERFACE_SONG_CARD, parent)
-        # 创建小部件
         self.singerLabel = ClickableLabel(self.singer, self, False)
         self.albumLabel = ClickableLabel(self.album, self, False)
         self.yearLabel = QLabel(self.year, self)
         self.genreLabel = QLabel(self.genre, self)
-        self.durationLabel = QLabel(self.duration, self)
-        # 初始化
         self.__initWidget()
 
     def __initWidget(self):
@@ -170,6 +168,7 @@ class PlaylistInterfaceSongCard(BasicSongCard):
             ],
             [30, 15, 27, 19, 70],
         )
+
         # 年份的宽度固定为60，时长固定距离窗口右边界45px
         self.setScalableWidgets(
             [self.songNameCard, self.singerLabel,
@@ -177,16 +176,15 @@ class PlaylistInterfaceSongCard(BasicSongCard):
             [326, 191, 191, 178],
             105,
         )
-        self.setDynamicStyleLabels(self.label_list)
+        self.setDynamicStyleLabels(self.labels)
+
         # 设置歌曲卡点击动画
-        self.setAnimation(self.widget_list, [13, 6, -3, -6, -8, -13])
-        self.setAttribute(Qt.WA_StyledBackground)
+        self.setAnimation(self.widgets, [13, 6, -3, -6, -8, -13])
+
         # 设置鼠标样式
         self.setClickableLabels([self.singerLabel, self.albumLabel])
         self.setClickableLabelCursor(Qt.PointingHandCursor)
-        # 分配ID和属性
-        self.setWidgetState("notSelected-leave")
-        self.setCheckBoxBtLabelState("notSelected-notPlay")
+
         # 信号连接到槽
         self.singerLabel.clicked.connect(
             lambda: self.switchToSingerInterfaceSig.emit(self.singer))
@@ -196,43 +194,32 @@ class PlaylistInterfaceSongCard(BasicSongCard):
             lambda: self.removeSongSignal.emit(self.itemIndex))
         self.checkBox.stateChanged.connect(self._onCheckedStateChanged)
 
-    def updateSongCard(self, songInfo: dict):
+    def updateSongCard(self, songInfo: SongInfo):
         """ 更新歌曲卡信息 """
         if self.songInfo == songInfo:
             return
-        self.setSongInfo(songInfo)
+
+        super().updateSongCard(songInfo)
         self.songNameCard.updateSongNameCard(self.songName)
         self.singerLabel.setText(self.singer)
         self.albumLabel.setText(self.album)
         self.yearLabel.setText(self.year)
         self.genreLabel.setText(self.genre)
-        self.durationLabel.setText(self.duration)
-        # 调整小部件宽度
-        self.adjustWidgetWidth()
-
-    def resizeEvent(self, e):
-        """ 窗口改变大小时调整小部件位置 """
-        super().resizeEvent(e)
-        # 再次调整时长标签的位置
-        self.durationLabel.move(self.width() - 45, 20)
-        self._getAniTargetX()
+        self._adjustWidgetWidth()
 
 
-class NoCheckBoxSongCard(BasicSongCard):
+class NoCheckBoxSongCard(DurationSongCard):
     """ 没有复选框的歌曲卡 """
 
     switchToAlbumInterfaceSig = pyqtSignal(str, str)  # 发送专辑名和歌手名
     switchToSingerInterfaceSig = pyqtSignal(str)      # 切换到歌手界面
 
-    def __init__(self, songInfo: dict, parent=None):
+    def __init__(self, songInfo: SongInfo, parent=None):
         super().__init__(songInfo, SongCardType.NO_CHECKBOX_SONG_CARD, parent=parent)
-        # 创建小部件
         self.singerLabel = ClickableLabel(self.singer, self, False)
         self.albumLabel = ClickableLabel(self.album, self, False)
         self.yearLabel = QLabel(self.year, self)
         self.genreLabel = QLabel(self.genre, self)
-        self.durationLabel = QLabel(self.duration, self)
-        # 初始化
         self.__initWidget()
 
     def __initWidget(self):
@@ -248,6 +235,7 @@ class NoCheckBoxSongCard(BasicSongCard):
             ],
             [30, 15, 27, 19, 70],
         )
+
         # 年份的宽度固定为60，时长固定距离窗口右边界45px
         self.setScalableWidgets(
             [self.songNameCard, self.singerLabel,
@@ -255,16 +243,15 @@ class NoCheckBoxSongCard(BasicSongCard):
             [326, 191, 191, 178],
             105,
         )
-        self.setDynamicStyleLabels(self.label_list)
+        self.setDynamicStyleLabels(self.labels)
+
         # 设置歌曲卡点击动画
-        self.setAnimation(self.widget_list, [13, 6, -3, -6, -8, -13])
-        self.setAttribute(Qt.WA_StyledBackground)
+        self.setAnimation(self.widgets, [13, 6, -3, -6, -8, -13])
+
         # 设置鼠标样式
         self.setClickableLabels([self.singerLabel, self.albumLabel])
         self.setClickableLabelCursor(Qt.PointingHandCursor)
-        # 分配ID和属性
-        self.setWidgetState("notSelected-leave")
-        self.setCheckBoxBtLabelState("notSelected-notPlay")
+
         # 信号连接到槽
         self.singerLabel.clicked.connect(
             lambda: self.switchToSingerInterfaceSig.emit(self.singer))
@@ -272,41 +259,30 @@ class NoCheckBoxSongCard(BasicSongCard):
             lambda: self.switchToAlbumInterfaceSig.emit(self.album, self.singer))
         self.addToButton.clicked.connect(self._showAddToMenu)
 
-    def updateSongCard(self, songInfo: dict):
+    def updateSongCard(self, songInfo: SongInfo):
         """ 更新歌曲卡信息 """
         if self.songInfo == songInfo:
             return
-        self.setSongInfo(songInfo)
+
+        super().updateSongCard(songInfo)
         self.songNameCard.updateSongNameCard(self.songName)
         self.singerLabel.setText(self.singer)
         self.albumLabel.setText(self.album)
         self.yearLabel.setText(self.year)
         self.genreLabel.setText(self.genre)
-        self.durationLabel.setText(self.duration)
-        # 调整小部件宽度
-        self.adjustWidgetWidth()
-
-    def resizeEvent(self, e):
-        """ 窗口改变大小时调整小部件位置 """
-        super().resizeEvent(e)
-        # 再次调整时长标签的位置
-        self.durationLabel.move(self.width() - 45, 20)
-        self._getAniTargetX()
+        self._adjustWidgetWidth()
 
 
-class OnlineSongCard(BasicSongCard):
+class OnlineSongCard(DurationSongCard):
     """ 在线音乐歌曲卡 """
 
     downloadSig = pyqtSignal(dict, str)  # songInfo, quality
 
-    def __init__(self, songInfo: dict, parent=None):
+    def __init__(self, songInfo: SongInfo, parent=None):
         super().__init__(songInfo, SongCardType.ONLINE_SONG_CARD, parent=parent)
-        # 创建小部件
         self.singerLabel = QLabel(self.singer, self)
         self.albumLabel = QLabel(self.album, self)
         self.yearLabel = QLabel(self.year, self)
-        self.durationLabel = QLabel(self.duration, self)
-        # 初始化
         self.__initWidget()
 
     def __initWidget(self):
@@ -322,40 +298,27 @@ class OnlineSongCard(BasicSongCard):
             [326, 191, 191],
             105,
         )
-        self.setDynamicStyleLabels(self.label_list)
+        self.setDynamicStyleLabels(self.labels)
 
         # 设置歌曲卡点击动画
-        self.setAnimation(self.widget_list, [13, 6, -3, -6, -13])
-        self.setAttribute(Qt.WA_StyledBackground)
-
-        # 分配ID和属性
-        self.setWidgetState("notSelected-leave")
-        self.setCheckBoxBtLabelState("notSelected-notPlay")
+        self.setAnimation(self.widgets, [13, 6, -3, -6, -13])
 
         self.addToButton.setToolTip(self.tr('Download'))
 
         # 信号连接到槽
         self.addToButton.clicked.connect(self.__showDownloadMenu)
 
-    def updateSongCard(self, songInfo: dict):
+    def updateSongCard(self, songInfo: SongInfo):
         """ 更新歌曲卡信息 """
         if self.songInfo == songInfo:
             return
-        self.setSongInfo(songInfo)
+
+        super().updateSongCard(songInfo)
         self.songNameCard.updateSongNameCard(self.songName)
         self.singerLabel.setText(self.singer)
         self.albumLabel.setText(self.album)
         self.yearLabel.setText(self.year)
-        self.durationLabel.setText(self.duration)
-        # 调整小部件宽度
-        self.adjustWidgetWidth()
-
-    def resizeEvent(self, e):
-        """ 窗口改变大小时调整小部件位置 """
-        super().resizeEvent(e)
-        # 再次调整时长标签的位置
-        self.durationLabel.move(self.width() - 45, 20)
-        self._getAniTargetX()
+        self._adjustWidgetWidth()
 
     def __showDownloadMenu(self):
         """ 显示下载音乐菜单 """
@@ -374,7 +337,7 @@ class SongCardFactory:
     """ 歌曲卡工厂 """
 
     @staticmethod
-    def create(songCardType: SongCardType, songInfo: dict, parent=None):
+    def create(songCardType: SongCardType, songInfo: SongInfo, parent=None):
         """ 创建一个指定类型的歌曲名字卡
 
         Parameters
@@ -382,7 +345,7 @@ class SongCardFactory:
         songCardType: SongCardType
             歌曲卡类型
 
-        songInfo: dict
+        songInfo: SongInfo
             歌曲信息
 
         parent:

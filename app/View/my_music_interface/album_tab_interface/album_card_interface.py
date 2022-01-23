@@ -520,10 +520,10 @@ class AlbumCardInterface(ScrollArea):
 
             # 不增加/删除专辑，直接更新某张专辑的信息
             if oldKey == newKey:
-                for i, songInfo in enumerate(albumInfo["songInfo_list"]):
+                for i, songInfo in enumerate(albumInfo["songInfos"]):
                     if songInfo["songPath"] == newSongInfo["songPath"]:
-                        albumInfo["songInfo_list"][i] = newSongInfo.copy()
-                        albumInfo["genre"] = albumInfo["songInfo_list"][0]["genre"]
+                        albumInfo["songInfos"][i] = newSongInfo.copy()
+                        albumInfo["genre"] = albumInfo["songInfos"][0]["genre"]
                         self.__sortOneAlbum(albumInfo)
                         break
 
@@ -533,23 +533,23 @@ class AlbumCardInterface(ScrollArea):
                         newSongInfo['coverName'], 'album_big')
                     oldCoverPath = albumInfo['coverPath']
                     if oldCoverPath.startswith(':') or (
-                            len(albumInfo['songInfo_list']) == 1 and oldCoverPath != coverPath):
+                            len(albumInfo['songInfos']) == 1 and oldCoverPath != coverPath):
                         albumInfo['coverPath'] = coverPath
 
             # 删除旧专辑中的一首歌，并在某张专辑中添加一首歌
             else:
-                albumInfo_list[newIndex]["songInfo_list"].append(newSongInfo)
+                albumInfo_list[newIndex]["songInfos"].append(newSongInfo)
                 self.__sortOneAlbum(albumInfo_list[newIndex])
                 oldAlbumInfo = albumInfo_list[oldIndex]
-                oldAlbumInfo["songInfo_list"].remove(oldSongInfo)
-                if not oldAlbumInfo["songInfo_list"]:
+                oldAlbumInfo["songInfos"].remove(oldSongInfo)
+                if not oldAlbumInfo["songInfos"]:
                     albumInfo_list.remove(oldAlbumInfo)
 
         else:
             # 增加一张新专辑，如果旧专辑变成空的就将其移除
             oldAlbumInfo = albumInfo_list[oldIndex]
-            oldAlbumInfo["songInfo_list"].remove(oldSongInfo)
-            if not oldAlbumInfo["songInfo_list"]:
+            oldAlbumInfo["songInfos"].remove(oldSongInfo)
+            if not oldAlbumInfo["songInfos"]:
                 albumInfo_list.remove(oldAlbumInfo)
             albumInfo_list.insert(0, self.__getAlbumInfoByOneSong(newSongInfo))
 
@@ -557,8 +557,8 @@ class AlbumCardInterface(ScrollArea):
 
     def updateOneAlbumInfo(self, oldAlbumInfo: dict, newAlbumInfo: dict, coverPath: str):
         """ 更新一张专辑信息 """
-        oldSongInfo_list = oldAlbumInfo["songInfo_list"]
-        newSongInfo_list = newAlbumInfo["songInfo_list"]
+        oldSongInfo_list = oldAlbumInfo["songInfos"]
+        newSongInfo_list = newAlbumInfo["songInfos"]
         albumInfo_list = deepcopy(self.albumInfo_list)
         albumSinger2AlbumInfo_dict = deepcopy(self.albumSinger2AlbumInfo_dict)
 
@@ -577,10 +577,10 @@ class AlbumCardInterface(ScrollArea):
                 albumInfo = albumSinger2AlbumInfo_dict[newKey]
                 newIndex = albumInfo_list.index(albumInfo)
                 if oldKey == newKey:
-                    for i, songInfo in enumerate(albumInfo["songInfo_list"]):
+                    for i, songInfo in enumerate(albumInfo["songInfos"]):
                         if songInfo["songPath"] == newSongInfo["songPath"]:
-                            albumInfo["songInfo_list"][i] = newSongInfo.copy()
-                            albumInfo["genre"] = albumInfo["songInfo_list"][0]["genre"]
+                            albumInfo["songInfos"][i] = newSongInfo.copy()
+                            albumInfo["genre"] = albumInfo["songInfos"][0]["genre"]
                             self.__sortOneAlbum(albumInfo)
                             albumInfo_list[newIndex] = albumInfo
                             albumSinger2AlbumInfo_dict[newKey] = albumInfo
@@ -588,16 +588,16 @@ class AlbumCardInterface(ScrollArea):
 
                 # 删除旧专辑中的一首歌，并在某张专辑中添加一首歌
                 else:
-                    albumInfo_list[newIndex]["songInfo_list"].append(
+                    albumInfo_list[newIndex]["songInfos"].append(
                         newSongInfo)
                     self.__sortOneAlbum(albumInfo_list[newIndex])
                     albumSinger2AlbumInfo_dict[newKey] = albumInfo_list[newIndex]
 
                     index = albumInfo_list.index(oldAlbumInfo)
                     oldAlbumInfo = albumInfo_list[index]
-                    oldAlbumInfo["songInfo_list"].remove(oldSongInfo)
+                    oldAlbumInfo["songInfos"].remove(oldSongInfo)
                     albumSinger2AlbumInfo_dict[oldKey] = oldAlbumInfo
-                    if not oldAlbumInfo["songInfo_list"]:
+                    if not oldAlbumInfo["songInfos"]:
                         albumInfo_list.remove(oldAlbumInfo)
                         albumSinger2AlbumInfo_dict.pop(oldKey)
 
@@ -605,9 +605,9 @@ class AlbumCardInterface(ScrollArea):
                 # 增加一张新专辑，如果旧专辑变成空的就将其移除
                 index = albumInfo_list.index(oldAlbumInfo)
                 oldAlbumInfo = albumInfo_list[index]
-                oldAlbumInfo["songInfo_list"].remove(oldSongInfo)
+                oldAlbumInfo["songInfos"].remove(oldSongInfo)
                 albumSinger2AlbumInfo_dict[oldKey] = oldAlbumInfo
-                if not oldAlbumInfo["songInfo_list"]:
+                if not oldAlbumInfo["songInfos"]:
                     albumInfo_list.remove(oldAlbumInfo)
                     albumSinger2AlbumInfo_dict.pop(oldKey)
 
@@ -690,7 +690,7 @@ class AlbumCardInterface(ScrollArea):
 
     def __showDeleteOneCardDialog(self, albumName: str):
         """ 显示删除一个专辑卡的对话框 """
-        songPaths = [i["songPath"] for i in self.sender().songInfo_list]
+        songPaths = [i["songPath"] for i in self.sender().songInfos]
         title = self.tr("Are you sure you want to delete this?")
         content = self.tr("If you delete") + f' "{albumName}" ' + \
             self.tr("it won't be on be this device anymore.")
@@ -764,7 +764,7 @@ class AlbumCardInterface(ScrollArea):
             "singer": singer,
             "genre": songInfo["genre"],
             "year": songInfo["year"],
-            "songInfo_list": [songInfo.copy()],
+            "songInfos": [songInfo.copy()],
             "modifiedTime": songInfo["createTime"],
             "coverPath": coverPath,
             "coverName": coverName,
@@ -773,7 +773,7 @@ class AlbumCardInterface(ScrollArea):
 
     def __sortOneAlbum(self, albumInfo: dict):
         """ 根据曲序就地排序一张专辑中的歌曲列表 """
-        albumInfo["songInfo_list"].sort(key=self.__getTrackNum)
+        albumInfo["songInfos"].sort(key=self.__getTrackNum)
 
     def __getTrackNum(self, songInfo: dict) -> int:
         """ 根据歌曲信息获取曲目 """
@@ -787,14 +787,14 @@ class AlbumCardInterface(ScrollArea):
         """ 删除歌曲 """
         albumInfo_list = deepcopy(self.albumInfo_list)
         for albumInfo in albumInfo_list.copy():
-            songInfo_list = albumInfo["songInfo_list"]
+            songInfos = albumInfo["songInfos"]
 
-            for songInfo in songInfo_list.copy():
+            for songInfo in songInfos.copy():
                 if songInfo["songPath"] in songPaths:
-                    songInfo_list.remove(songInfo)
+                    songInfos.remove(songInfo)
 
             # 如果专辑变成空专辑，就将其从专辑列表中移除
-            if not songInfo_list:
+            if not songInfos:
                 albumInfo_list.remove(albumInfo)
 
         # 更新窗口

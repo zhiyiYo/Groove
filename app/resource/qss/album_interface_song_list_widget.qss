@@ -53,7 +53,7 @@ QLabel#songNameLabel {
     font-size: 16px;
 }
 
-QLabel#trackNumLabel {
+QLabel#trackLabel {
     font-size: 17px;
 }
 

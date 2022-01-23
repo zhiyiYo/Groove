@@ -94,7 +94,7 @@ class AlbumCard(PerspectiveWidget):
         self.contentLabel.setProperty("isChecked", "False")
         # 将信号连接到槽函数
         self.playButton.clicked.connect(
-            lambda: self.playSignal.emit(self.songInfo_list))
+            lambda: self.playSignal.emit(self.songInfos))
         self.contentLabel.clicked.connect(
             lambda: self.switchToSingerInterfaceSig.emit(self.singerName))
         self.addToButton.clicked.connect(self.__showAddToMenu)
@@ -134,9 +134,9 @@ class AlbumCard(PerspectiveWidget):
         """ 显示右击菜单 """
         menu = AlbumCardContextMenu(parent=self)
         menu.playAct.triggered.connect(
-            lambda: self.playSignal.emit(self.songInfo_list))
+            lambda: self.playSignal.emit(self.songInfos))
         menu.nextToPlayAct.triggered.connect(
-            lambda: self.nextPlaySignal.emit(self.songInfo_list))
+            lambda: self.nextPlaySignal.emit(self.songInfos))
         menu.deleteAct.triggered.connect(
             lambda: self.deleteCardSig.emit(self.albumName))
         menu.editInfoAct.triggered.connect(self.showAlbumInfoEditDialog)
@@ -145,11 +145,11 @@ class AlbumCard(PerspectiveWidget):
             lambda: self.switchToSingerInterfaceSig.emit(self.singerName))
 
         menu.addToMenu.playingAct.triggered.connect(
-            lambda: self.addToPlayingSignal.emit(self.songInfo_list))
+            lambda: self.addToPlayingSignal.emit(self.songInfos))
         menu.addToMenu.addSongsToPlaylistSig.connect(
-            lambda name: self.addAlbumToCustomPlaylistSig.emit(name, self.songInfo_list))
+            lambda name: self.addAlbumToCustomPlaylistSig.emit(name, self.songInfos))
         menu.addToMenu.newPlaylistAct.triggered.connect(
-            lambda: self.addAlbumToNewCustomPlaylistSig.emit(self.songInfo_list))
+            lambda: self.addAlbumToNewCustomPlaylistSig.emit(self.songInfos))
 
         menu.exec(event.globalPos())
 
@@ -200,7 +200,7 @@ class AlbumCard(PerspectiveWidget):
     def __getAlbumInfo(self, albumInfo: dict):
         """ 获取专辑信息 """
         self.albumInfo = albumInfo
-        self.songInfo_list = self.albumInfo.get("songInfo_list", [])
+        self.songInfos = self.albumInfo.get("songInfos", [])
         self.albumName = albumInfo.get("album", self.tr("Unknown album"))
         self.singerName = albumInfo.get("singer", self.tr("Unknown artist"))
         self.year = albumInfo.get('year', self.tr('Unknown year'))
@@ -259,11 +259,11 @@ class AlbumCard(PerspectiveWidget):
         y = pos.y() + int(
             self.addToButton.height() / 2 - (13 + 38 * menu.actionCount()) / 2)
         menu.playingAct.triggered.connect(
-            lambda: self.addToPlayingSignal.emit(self.songInfo_list))
+            lambda: self.addToPlayingSignal.emit(self.songInfos))
         menu.newPlaylistAct.triggered.connect(
-            lambda: self.addAlbumToNewCustomPlaylistSig.emit(self.songInfo_list))
+            lambda: self.addAlbumToNewCustomPlaylistSig.emit(self.songInfos))
         menu.addSongsToPlaylistSig.connect(
-            lambda name: self.addAlbumToCustomPlaylistSig.emit(name, self.songInfo_list))
+            lambda name: self.addAlbumToCustomPlaylistSig.emit(name, self.songInfos))
         menu.exec(QPoint(x, y))
 
 

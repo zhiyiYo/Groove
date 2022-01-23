@@ -17,9 +17,9 @@ class CreatePlaylistDialog(MaskDialogBase):
     createPlaylistSig = pyqtSignal(str, dict)
     playlistFolder = Path('cache/Playlists')
 
-    def __init__(self, songInfo_list: list = None, parent=None):
+    def __init__(self, songInfos: list = None, parent=None):
         super().__init__(parent=parent)
-        self.songInfo_list = songInfo_list
+        self.songInfos = songInfos
         self.vBoxLayout = QVBoxLayout(self.widget)
         self.iconLabel = QLabel(self.widget)
         self.lineEdit = LineEdit(parent=self.widget)
@@ -97,10 +97,10 @@ class CreatePlaylistDialog(MaskDialogBase):
             return
 
         # 创建播放列表
-        songInfo_list = self.songInfo_list if self.songInfo_list else []
+        songInfos = self.songInfos if self.songInfos else []
         playlist = {
             "playlistName": playlistName,
-            "songInfo_list": songInfo_list,
+            "songInfos": songInfos,
             "modifiedTime": QDateTime.currentDateTime().toString(Qt.ISODate),
         }
         with open(self.playlistFolder/(playlistName+'.json'), "w", encoding="utf-8") as f:

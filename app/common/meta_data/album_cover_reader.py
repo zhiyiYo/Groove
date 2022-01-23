@@ -67,26 +67,26 @@ class AlbumCoverReader:
 
     coverFolder = Path("cache/Album_Cover")
 
-    def __init__(self, songInfo_list: list):
+    def __init__(self, songInfos: list):
         """
         Parameters
         ----------
-        songInfo_list: list
+        songInfos: list
             歌曲文件夹路径列表
         """
-        self.songInfo_list = songInfo_list
-        self.getAlbumCovers(songInfo_list)
+        self.songInfos = songInfos
+        self.getAlbumCovers(songInfos)
 
-    def updateAlbumCovers(self, songInfo_list: list):
+    def updateAlbumCovers(self, songInfos: list):
         """ 重新扫描指定的文件下的音频文件的专辑封面 """
-        self.songInfo_list = songInfo_list
-        self.getAlbumCovers(songInfo_list)
+        self.songInfos = songInfos
+        self.getAlbumCovers(songInfos)
 
     @classmethod
-    def getAlbumCovers(cls, songInfo_list: list):
+    def getAlbumCovers(cls, songInfos: list):
         """ 获取多张专辑封面 """
         cls.coverFolder.mkdir(exist_ok=True, parents=True)
-        for songInfo in songInfo_list:
+        for songInfo in songInfos:
             cls.getOneAlbumCover(songInfo)
 
     @classmethod

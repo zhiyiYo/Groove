@@ -1,6 +1,7 @@
 # coding:utf-8
 import os
 
+from common.database.entity import SongInfo
 from components.widgets.menu import AddToMenu
 from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
                           QParallelAnimationGroup, QPoint, QPropertyAnimation,
@@ -18,17 +19,17 @@ class BasicSongCard(QWidget):
     clicked = pyqtSignal(int)
     doubleClicked = pyqtSignal(int)
     playButtonClicked = pyqtSignal(int)
-    addSongToPlayingSig = pyqtSignal(dict)
+    addSongToPlayingSig = pyqtSignal(SongInfo)
     checkedStateChanged = pyqtSignal(int, bool)
-    addSongToNewCustomPlaylistSig = pyqtSignal(dict)
+    addSongToNewCustomPlaylistSig = pyqtSignal(SongInfo)
     addSongsToCustomPlaylistSig = pyqtSignal(str, list)
 
-    def __init__(self, songInfo: dict, songCardType, parent=None):
+    def __init__(self, songInfo: SongInfo, songCardType, parent=None):
         """ 实例化歌曲卡
 
         Parameters
         ----------
-        songInfo: dict
+        songInfo: SongInfo
             歌曲信息字典
 
         songCardType: `~SongCardType`
@@ -56,25 +57,25 @@ class BasicSongCard(QWidget):
 
         # 创建歌曲名字卡
         self.songNameCard = SongNameCardFactory.create(
-            songCardType, self.songName, self.tracknumber, self)
+            songCardType, self.songName, self.track, self)
 
         self.__referenceWidgets()
 
         # 初始化小部件列表
-        self.__scaleableLabelTextWidth_list = []  # 可拉伸的标签的文本的宽度列表
-        self.__scaleableWidgetMaxWidth_list = []  # 可拉伸部件的最大宽度列表
-        self.__dynamicStyleLabel_list = []
-        self.__scaleableWidget_list = []
-        self.__clickableLabel_list = []
-        self.__labelSpacing_list = []
-        self.__label_list = []
-        self.__widget_list = []  # 存放所有的小部件
+        self.__scaleableLabelTextWidths = []  # 可拉伸的标签的文本的宽度列表
+        self.__scaleableWidgetMaxWidths = []  # 可拉伸部件的最大宽度列表
+        self.__dynamicStyleLabels = []
+        self.__scaleableWidgets = []
+        self.__clickableLabels = []
+        self.__labelSpacings = []
+        self.__labels = []
+        self.__widgets = []  # 存放所有的小部件
 
         # 创建动画组和动画列表
-        self.aniGroup = QParallelAnimationGroup(self)
-        self.__aniWidget_list = []
-        self.__deltaX_list = []
-        self.ani_list = []
+        self.__aniGroup = QParallelAnimationGroup(self)
+        self.__aniWidgets = []
+        self.__deltaXs = []
+        self.__anis = []
 
         # 安装事件过滤器
         self.installEventFilter(self)
@@ -83,87 +84,83 @@ class BasicSongCard(QWidget):
         self.playButton.clicked.connect(
             lambda: self.playButtonClicked.emit(self.itemIndex))
 
-    def setSongInfo(self, songInfo: dict):
-        """ 从歌曲信息字典中获取信息 """
+    def setSongInfo(self, songInfo: SongInfo):
+        """  """
         self.songInfo = songInfo
-        self.songPath = songInfo.get("songPath", "")  # type:str
-        self.songName = songInfo.get(
-            "songName", self.tr("Unknown song"))   # type:str
-        self.singer = songInfo.get("singer", self.tr(
-            "Unknown artist"))       # type:str
-        self.album = songInfo.get("album", self.tr(
-            "Unknown album"))         # type:str
-        self.year = songInfo.get("year", self.tr(
-            "Unknown year"))           # type:str
-        self.genre = songInfo.get("genre", self.tr(
-            "Unknown genre"))         # type:str
-        self.duration = songInfo.get("duration", "0:00")
-        self.tracknumber = songInfo.get("tracknumber", "0")
+        self.songPath = songInfo.file
+        self.songName = songInfo.title
+        self.singer = songInfo.singer
+        self.album = songInfo.album
+        self.year = str(songInfo.year)
+        self.genre = songInfo.genre
+        self.track = str(songInfo.track)
+        self.duration = f"{int(songInfo.duration//60)}:{int(songInfo.duration%60):02}"
 
-    def setScalableWidgets(self, scaleableWidget_list: list, scalebaleWidgetWidth_list: list, fixedWidth=0):
+    def setScalableWidgets(self, widgets: list, widths: list, fixedWidth=0):
         """ 设置可随着歌曲卡的伸缩而伸缩的标签
 
         Parameters
         ----------
-        scaleableWidget_list: list
+        widgets: list
             随着歌曲卡的伸缩而伸缩的小部件列表，要求第一个元素为歌名卡，后面的元素都是label
 
-        scaleableWidgetWidth_list: list
+        widths: list
             与可伸缩小部件相对应的小部件初始长度列表
 
         fixedWidth: int
             为其他不可拉伸的小部件保留的宽度 """
-        if self.__scaleableWidgetMaxWidth_list:
+        if self.__scaleableWidgetMaxWidths:
             return
-        self.__checkIsLengthEqual(
-            scaleableWidget_list, scalebaleWidgetWidth_list)
+
+        self.__checkIsLengthEqual(widgets, widths)
 
         # 必须先将所有标签添加到列表中后才能调用这个函数
-        if not self.__label_list:
-            raise Exception("必须先调用addLabels函数将标签添加到窗口中")
+        if not self.__labels:
+            raise Exception("必须先调用 addLabels() 将标签添加到窗口中")
 
         # 歌名卡默认可拉伸
-        self.__scaleableWidget_list = scaleableWidget_list
-        self.__scaleableWidgetMaxWidth_list = scalebaleWidgetWidth_list
+        self.__scaleableWidgets = widgets
+        self.__scaleableWidgetMaxWidths = widths
 
         # 计算初始宽度
-        initWidth = sum(self.__scaleableWidgetMaxWidth_list) + \
-            sum(self.__labelSpacing_list) + fixedWidth
+        initWidth = sum(self.__scaleableWidgetMaxWidths) + \
+            sum(self.__labelSpacings) + fixedWidth
         self.resize(initWidth, 60)
 
-    def addLabels(self, label_list: list, labelSpacing_list: list):
+    def addLabels(self, labels: list, spacings: list):
         """ 往歌曲卡中添加除了歌曲名卡之外的标签，只能初始化一次标签列表
 
         Paramerter
         ----------
-        label_list: list
+        labels: list
             歌名卡后的标签列表
 
-        labelSpacing_list: list
+        spacings: list
             每个标签的前置空白
         """
-        if self.__label_list:
+        if self.__labels:
             return
-        self.__checkIsLengthEqual(label_list, labelSpacing_list)
-        self.__label_list = label_list
-        self.__labelSpacing_list = labelSpacing_list
-        self.__widget_list = [self.songNameCard] + self.__label_list
 
-    def setDynamicStyleLabels(self, label_list: list):
+        self.__checkIsLengthEqual(labels, spacings)
+        self.__labels = labels
+        self.__labelSpacings = spacings
+        self.__widgets = [self.songNameCard] + self.__labels
+
+    def setDynamicStyleLabels(self, labels: list):
         """ 设置需要动态更新样式的标签列表 """
-        self.__dynamicStyleLabel_list = label_list
+        self.__dynamicStyleLabels = labels
 
-    def setClickableLabels(self, clickableLabel_list: list):
+    def setClickableLabels(self, labels: list):
         """ 设置可点击的标签列表 """
-        self.__clickableLabel_list = clickableLabel_list
-        # 分配ID
-        for label in self.__clickableLabel_list:
+        self.__clickableLabels = labels
+        for label in self.__clickableLabels:
             label.setObjectName("clickableLabel")
 
     def setSelected(self, isSelected: bool):
         """ 设置选中状态 """
         if self.isSelected == isSelected:
             return
+
         self.isSelected = isSelected
         if isSelected:
             self.setWidgetState("selected-leave")
@@ -173,6 +170,7 @@ class BasicSongCard(QWidget):
             self.setWidgetState("notSelected-leave")
             state = "notSelected-play" if self.isPlaying else "notSelected-notPlay"
             self.setCheckBoxBtLabelState(state)
+
         self.setStyle(QApplication.style())
 
     def setPlay(self, isPlay: bool):
@@ -209,7 +207,7 @@ class BasicSongCard(QWidget):
             * `selected`
         """
         self.songNameCard.setCheckBoxBtLabelState(state, self.isSongExist)
-        for label in self.__dynamicStyleLabel_list:
+        for label in self.__dynamicStyleLabels:
             label.setProperty("state", state)
 
     def setWidgetState(self, state: str):
@@ -229,40 +227,40 @@ class BasicSongCard(QWidget):
         self.songNameCard.setButtonGroupState(state)
         self.setProperty("state", state)
 
-    def setAnimation(self, aniWidget_list: list, deltaX_list: list):
+    def setAnimation(self, widgets: list, deltaXs: list):
         """ 设置小部件的动画
 
         Parameters
         ----------
-        aniWidget_list: list
+        widgets: list
             需要设置动画的小部件列表
 
-        deltaX_list: list
-            和 `aniWidget_list` 相对应的动画位置偏移量列表
+        deltaXs: list
+            和 `widgets` 相对应的动画位置偏移量列表
         """
-        self.__checkIsLengthEqual(aniWidget_list, deltaX_list)
-        self.__aniWidget_list = aniWidget_list
-        self.__deltaX_list = deltaX_list
+        self.__checkIsLengthEqual(widgets, deltaXs)
+        self.__aniWidgets = widgets
+        self.__deltaXs = deltaXs
 
         # 清空动画组的内容
-        self.ani_list.clear()
-        self.aniGroup.clear()
-        self.__ani_list = [QPropertyAnimation(
-            widget, b"geometry") for widget in self.__aniWidget_list]
+        self.__anis.clear()
+        self.__aniGroup.clear()
+        self.__anis = [QPropertyAnimation(
+            widget, b"geometry") for widget in self.__aniWidgets]
 
         # 初始化动画
-        for ani in self.__ani_list:
+        for ani in self.__anis:
             ani.setDuration(400)
             ani.setEasingCurve(QEasingCurve.OutQuad)
-            self.aniGroup.addAnimation(ani)
+            self.__aniGroup.addAnimation(ani)
 
         self._getAniTargetX()
 
     def _getAniTargetX(self):
         """ 计算动画的初始值 """
-        self.__aniTargetX_list = []
-        for deltaX, widget in zip(self.__deltaX_list, self.__aniWidget_list):
-            self.__aniTargetX_list.append(deltaX + widget.x())
+        self.__aniTargetXs = []
+        for deltaX, widget in zip(self.__deltaXs, self.__aniWidgets):
+            self.__aniTargetXs.append(deltaX + widget.x())
 
     def eventFilter(self, obj, e: QEvent):
         """ 安装监听 """
@@ -306,23 +304,23 @@ class BasicSongCard(QWidget):
         """ 鼠标按下时移动小部件 """
         super().mousePressEvent(e)
         # 移动小部件
-        if self.aniGroup.state() == QAbstractAnimation.Stopped:
-            for deltaX, widget in zip(self.__deltaX_list, self.__aniWidget_list):
+        if self.__aniGroup.state() == QAbstractAnimation.Stopped:
+            for deltaX, widget in zip(self.__deltaXs, self.__aniWidgets):
                 widget.move(widget.x() + deltaX, widget.y())
         else:
-            self.aniGroup.stop()  # 强制停止还未结束的动画
-            for targetX, widget in zip(self.__aniTargetX_list, self.__aniWidget_list):
+            self.__aniGroup.stop()  # 强制停止还未结束的动画
+            for targetX, widget in zip(self.__aniTargetXs, self.__aniWidgets):
                 widget.move(targetX, widget.y())
 
     def mouseReleaseEvent(self, e: QMouseEvent):
         """ 鼠标松开时开始动画 """
         for ani, widget, deltaX in zip(
-                self.__ani_list, self.__aniWidget_list, self.__deltaX_list):
+                self.__anis, self.__aniWidgets, self.__deltaXs):
             ani.setStartValue(
                 QRect(widget.x(), widget.y(), widget.width(), widget.height()))
             ani.setEndValue(
                 QRect(widget.x() - deltaX, widget.y(), widget.width(), widget.height()))
-        self.aniGroup.start()
+        self.__aniGroup.start()
 
         if e.button() == Qt.LeftButton:
             self.clicked.emit(self.itemIndex)
@@ -332,16 +330,16 @@ class BasicSongCard(QWidget):
             self.isDoubleClicked = False
             if not self.isPlaying:
                 # 发送点击信号
-                self.aniGroup.finished.connect(self.__aniFinishedSlot)
+                self.__aniGroup.finished.connect(self.__aniFinishedSlot)
 
     def __aniFinishedSlot(self):
         """ 动画完成时发出双击信号 """
         self.doubleClicked.emit(self.itemIndex)
-        self.aniGroup.disconnect()
+        self.__aniGroup.disconnect()
 
     def setClickableLabelCursor(self, cursor):
         """ 设置可点击标签的光标样式 """
-        for label in self.__clickableLabel_list:
+        for label in self.__clickableLabels:
             label.setCursor(cursor)
 
     def __referenceWidgets(self):
@@ -384,9 +382,8 @@ class BasicSongCard(QWidget):
             return
         self.checkBox.setChecked(isChecked)
 
-    def updateSongCard(self):
+    def updateSongCard(self, songInfo: SongInfo):
         """ 更新歌曲卡 """
-        # 必须被子类重写
         raise NotImplementedError
 
     def __checkIsLengthEqual(self, list_1: list, list_2: list):
@@ -401,22 +398,22 @@ class BasicSongCard(QWidget):
             # 分配多出来的宽度
             deltaWidth = self.width() - self.__originalWidth
             self.__originalWidth = self.width()
-            equalWidth = int(deltaWidth / len(self.__scaleableWidget_list))
-            self.__scaleableWidgetMaxWidth_list = [
-                i + equalWidth for i in self.__scaleableWidgetMaxWidth_list]
+            equalWidth = int(deltaWidth / len(self.__scaleableWidgets))
+            self.__scaleableWidgetMaxWidths = [
+                i + equalWidth for i in self.__scaleableWidgetMaxWidths]
         else:
             self.__originalWidth = self.width()
 
         # 调整小部件宽度
-        self.adjustWidgetWidth()
+        self._adjustWidgetWidth()
 
         # 移动标签
         x = self.songNameCard.width()
-        for label, spacing in zip(self.__label_list, self.__labelSpacing_list):
+        for label, spacing in zip(self.__labels, self.__labelSpacings):
             # 如果标签是可变长度的，就将width设置为其最大可变宽度
-            if label in self.__scaleableWidget_list:
-                index = self.__scaleableWidget_list.index(label)
-                width = self.__scaleableWidgetMaxWidth_list[index]
+            if label in self.__scaleableWidgets:
+                index = self.__scaleableWidgets.index(label)
+                width = self.__scaleableWidgetMaxWidths[index]
             else:
                 width = label.width()
             label.move(x + spacing, 20)
@@ -425,23 +422,22 @@ class BasicSongCard(QWidget):
         # 更新动画目标移动位置
         self._getAniTargetX()
 
-    def adjustWidgetWidth(self):
+    def _adjustWidgetWidth(self):
         """ 调整小部件宽度 """
-        # 计算标签的宽度
         self.__getScaleableLabelTextWidth()
-        self.songNameCard.resize(self.__scaleableWidgetMaxWidth_list[0], 60)
-        for i in range(1, len(self.__scaleableWidget_list)):
-            label = self.__scaleableWidget_list[i]
-            textWidth = self.__scaleableLabelTextWidth_list[i - 1]
-            maxLabelWidth = self.__scaleableWidgetMaxWidth_list[i]
+        self.songNameCard.resize(self.__scaleableWidgetMaxWidths[0], 60)
+        for i in range(1, len(self.__scaleableWidgets)):
+            label = self.__scaleableWidgets[i]
+            textWidth = self.__scaleableLabelTextWidths[i - 1]
+            maxLabelWidth = self.__scaleableWidgetMaxWidths[i]
             width = maxLabelWidth if textWidth > maxLabelWidth else textWidth
             label.setFixedWidth(width)
 
     def __getScaleableLabelTextWidth(self):
         """ 计算可拉伸的标签的文本宽度 """
         fontMetrics = QFontMetrics(QFont("Microsoft YaHei", 9))
-        self.__scaleableLabelTextWidth_list = [
-            fontMetrics.width(label.text()) for label in self.__scaleableWidget_list[1:]]
+        self.__scaleableLabelTextWidths = [
+            fontMetrics.width(label.text()) for label in self.__scaleableWidgets[1:]]
 
     def _showAddToMenu(self):
         """ 显示添加到菜单 """
@@ -460,11 +456,11 @@ class BasicSongCard(QWidget):
         menu.exec(QPoint(x, y))
 
     @property
-    def widget_list(self) -> list:
-        """ 返回窗口内的所有小部件组成的列表 """
-        return self.__widget_list
+    def widgets(self) -> list:
+        """ 返回窗口内的所有小部件"""
+        return self.__widgets
 
     @property
-    def label_list(self) -> list:
-        """ 返回窗口内所有标签组成的列表 """
-        return self.__label_list
+    def labels(self) -> list:
+        """ 返回窗口内所有标签 """
+        return self.__labels

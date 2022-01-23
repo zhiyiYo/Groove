@@ -83,13 +83,13 @@ class KuGouMusicCrawler(CrawlerBase):
                 f'音质 `{quality}` 不在支持的音质列表 {self.qualities} 中')
 
         # 根据关键词搜索歌曲
-        song_info_list, total = self.getSongInfoList(
+        song_infos, total = self.getSongInfoList(
             key_word, page_num, page_size)
-        if not song_info_list:
+        if not song_infos:
             return [], 0
 
         # 获取每一首歌的播放地址和封面地址
-        for song_info in song_info_list:
+        for song_info in song_infos:
             file_hash = song_info[self.quality_hash_map[quality]]
             data = self.getSongDetails(
                 file_hash, song_info["albumID"])
@@ -97,7 +97,7 @@ class KuGouMusicCrawler(CrawlerBase):
             song_info["songPath"] = data.get('play_url', '')
             song_info["coverPath"] = data.get('img', '')
 
-        return song_info_list, total
+        return song_infos, total
 
     @exceptionHandler()
     def getSongInfoList(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[dict], int]:
@@ -109,7 +109,7 @@ class KuGouMusicCrawler(CrawlerBase):
 
         # 解析返回的 json 数据
         data = json.loads(response.text[12:-2])["data"]
-        song_info_list = []
+        song_infos = []
         for info in data["lists"]:
             song_info = {}
             pattern = r'(<em>)|(</em>)'
@@ -131,9 +131,9 @@ class KuGouMusicCrawler(CrawlerBase):
             d = info["Duration"]
             song_info["duration"] = f"{int(d//60)}:{int(d%60):02}"
 
-            song_info_list.append(song_info)
+            song_infos.append(song_info)
 
-        return song_info_list, data['total']
+        return song_infos, data['total']
 
     @exceptionHandler({})
     def getSongDetails(self, file_hash: str, album_id: str) -> dict:
@@ -196,18 +196,18 @@ class KuGouMusicCrawler(CrawlerBase):
         lyric: str
             歌词列表，如果没找到则返回 `None`
         """
-        song_info_list, _ = self.getSongInfoList(key_word, page_size=10)
+        song_infos, _ = self.getSongInfoList(key_word, page_size=10)
 
-        if not song_info_list:
+        if not song_infos:
             return None
 
         # 匹配度小于阈值则返回
         matches = [key_word == i['singer']+' '+i['songName']
-                   for i in song_info_list]
+                   for i in song_infos]
         if not any(matches):
             return
 
-        song_info = song_info_list[matches.index(True)]
+        song_info = song_infos[matches.index(True)]
         lyric = self.getSongDetails(
             song_info['fileHash'], song_info['albumID']).get('lyrics')
 
