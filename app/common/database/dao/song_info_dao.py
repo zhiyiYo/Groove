@@ -36,46 +36,46 @@ class SongInfoDao(DaoBase):
         """)
         return success
 
-    def selectBy(self, **condition) -> SongInfo:
-        self._prepareSelectBy(condition)
-
-        if not (self.query.exec() and self.query.first()):
-            return None
-
-        return self.loadFromRecord(self.query.record())
-
-    def selectByFile(self, file: str):
+    def selectByFile(self, file: str) -> SongInfo:
         """ 通过文件路径查找 """
         return self.selectBy(file=file)
 
-    def listBy(self, **condition) -> List[SongInfo]:
-        self._prepareSelectBy(condition)
-
-        if not (self.query.exec()):
-            return []
-
-        songInfos = []
-        while self.query.next():
-            songInfo = self.loadFromRecord(self.query.record())
-            songInfos.append(songInfo)
-
-        return songInfos
-
-    def listBySingerAlbum(self, singer: str, album: str):
+    def listBySingerAlbum(self, singer: str, album: str) -> List[SongInfo]:
         """ 通过歌手和专辑查询 """
         return self.listBy(singer=singer, album=album)
 
-    def listAll(self) -> List[SongInfo]:
-        sql = f"SELECT * from {self.table}"
-        if not(self.query.exec(sql)):
+    def listBySongerAlbums(self, singers: List[str], albums: List[str]) -> List[SongInfo]:
+        """ 通过歌手和专辑列表查询 """
+        if len(singers) != len(albums):
+            raise ValueError('歌手和专辑列表的长度必须相同')
+
+        values = []
+        orders = []
+        for i, (singer, album) in enumerate(zip(singers, albums), 1):
+            value = f"('{self.adjustText(singer)}', '{self.adjustText(album)}')"
+            values.append(value)
+            orders.append(f'WHEN {value} THEN {i}')
+
+        sql = f"""SELECT * FROM {self.table} WHERE (singer, album) in (VALUES
+                    {','.join(values)}
+                )
+                ORDER BY
+                    CASE (singer, album)
+                    {' '.join(orders)}
+                    END
+                , track
+            """
+        if not self.query.exec(sql):
             return []
 
-        songInfos = []
-        while self.query.next():
-            songInfo = self.loadFromRecord(self.query.record())
-            songInfos.append(songInfo)
+        return self.iterRecords()
 
-        return songInfos
+    def update(self, id: str, field: str, value) -> bool:
+        sql = f"UPDATE {self.table} SET {field} = ? WHERE file = ?"
+        self.query.prepare(sql)
+        self.query.addBindValue(value)
+        self.query.addBindValue(id)
+        return self.query.exec()
 
     def updateById(self, entity: SongInfo) -> bool:
         sql = f"""UPDATE {self.table} SET
@@ -107,12 +107,6 @@ class SongInfoDao(DaoBase):
         self.query.addBindValue(entity.createTime)
         self.query.addBindValue(entity.modifiedTime)
         self.query.addBindValue(entity.file)
-        return self.query.exec()
-
-    def update(self, id: str, field: str, value) -> bool:
-        sql = f"UPDATE {self.table} SET {field} = ?"
-        self.query.prepare(sql)
-        self.query.addBindValue(value)
         return self.query.exec()
 
     def insert(self, entity: SongInfo) -> bool:

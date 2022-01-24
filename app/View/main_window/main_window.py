@@ -885,7 +885,7 @@ class MainWindow(FramelessWindow):
         self.searchResultInterface.search(
             keyWord,
             self.songTabSongListWidget.songInfos,
-            self.albumCardInterface.albumInfo_list,
+            self.albumCardInterface.albumInfos,
             self.playlistCardInterface.playlists
         )
 
@@ -1063,13 +1063,13 @@ class MainWindow(FramelessWindow):
             self.albumCardInterface.updateOneAlbumInfo(
                 oldAlbumInfo, newAlbumInfo, coverPath)
             self.myMusicInterface.singerInfoReader.updateSingerInfos(
-                self.albumCardInterface.albumInfo_list)
+                self.albumCardInterface.albumInfos)
             if not self.albumInterface.songInfos:
                 self.titleBar.returnButton.click()
 
         elif self.sender() is self.albumCardInterface:
             self.myMusicInterface.singerInfoReader.updateSingerInfos(
-                self.albumCardInterface.albumInfo_list)
+                self.albumCardInterface.albumInfos)
             if oldAlbumInfo == self.albumInterface.albumInfo:
                 self.albumInterface.albumInfoBar.updateWindow(newAlbumInfo)
 
@@ -1077,14 +1077,14 @@ class MainWindow(FramelessWindow):
             self.albumCardInterface.updateOneAlbumInfo(
                 oldAlbumInfo, newAlbumInfo, coverPath)
             self.myMusicInterface.singerInfoReader.updateSingerInfos(
-                self.albumCardInterface.albumInfo_list)
+                self.albumCardInterface.albumInfos)
             self.singerInterface.updateWindow(
                 self.myMusicInterface.findSingerInfo(newAlbumInfo['singer']))
 
         self.myMusicInterface.songInfoReader.songInfos = deepcopy(
             self.songTabSongListWidget.songInfos)
-        self.myMusicInterface.albumInfoReader.albumInfo_list = deepcopy(
-            self.albumCardInterface.albumInfo_list)
+        self.myMusicInterface.albumInfoReader.albumInfos = deepcopy(
+            self.albumCardInterface.albumInfos)
 
     def showSmallestPlayInterface(self):
         """ 切换到最小化播放模式 """
@@ -1227,7 +1227,7 @@ class MainWindow(FramelessWindow):
         self.playlistCardInterface.deleteSongs(songPaths)
         if self.sender() in [self.searchResultInterface, self.singerInterface]:
             self.myMusicInterface.deleteSongs(songPaths)
-            if self.sender() is self.singerInterface and not self.singerInterface.albumInfo_list:
+            if self.sender() is self.singerInterface and not self.singerInterface.albumInfos:
                 self.titleBar.returnButton.click()
 
         # 歌曲移动到回收站

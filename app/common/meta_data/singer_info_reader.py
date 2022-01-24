@@ -6,17 +6,17 @@ from typing import List, Dict
 class SingerInfoReader:
     """ 获取歌手信息的类 """
 
-    def __init__(self, albumInfo_list: list) -> None:
-        self.albumInfo_list = deepcopy(albumInfo_list)    # type:List[dict]
-        self.singerInfos = self.getSingerInfos(self.albumInfo_list)
+    def __init__(self, albumInfos: list) -> None:
+        self.albumInfos = deepcopy(albumInfos)    # type:List[dict]
+        self.singerInfos = self.getSingerInfos(self.albumInfos)
 
     @staticmethod
-    def getSingerInfos(albumInfo_list: list) -> Dict[str, dict]:
+    def getSingerInfos(albumInfos: list) -> Dict[str, dict]:
         """ 获取歌手信息 """
         singerInfos = {}
 
         year = '0'
-        for albumInfo in albumInfo_list:
+        for albumInfo in albumInfos:
             singer = albumInfo['singer']
             genre = albumInfo['genre']
             year_ = albumInfo.get('year', '0')
@@ -26,10 +26,10 @@ class SingerInfoReader:
                 singerInfos[singer] = {
                     "singer": singer,
                     "genre": genre,
-                    "albumInfo_list": [],
+                    "albumInfos": [],
                 }
 
-            singerInfos[singer]["albumInfo_list"].append(albumInfo)
+            singerInfos[singer]["albumInfos"].append(albumInfo)
 
             # 使用最新的专辑流派作为歌手的流派
             if year_ >= year:
@@ -38,12 +38,12 @@ class SingerInfoReader:
 
         # 排序专辑信息
         for singerInfo in singerInfos.values():
-            singerInfo["albumInfo_list"].sort(
+            singerInfo["albumInfos"].sort(
                 key=lambda i: i.get('year', '0'), reverse=True)
 
         return singerInfos
 
-    def updateSingerInfos(self, albumInfo_list: list):
+    def updateSingerInfos(self, albumInfos: list):
         """ 更新歌手信息 """
-        self.albumInfo_list = deepcopy(albumInfo_list)    # type:List[dict]
-        self.singerInfos = self.getSingerInfos(self.albumInfo_list)
+        self.albumInfos = deepcopy(albumInfos)    # type:List[dict]
+        self.singerInfos = self.getSingerInfos(self.albumInfos)

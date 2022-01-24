@@ -37,13 +37,16 @@ def adjustName(name: str):
     return name
 
 
-def getCoverPath(name: str, coverType: str) -> str:
+def getCoverPath(singer: str, album: str, coverType: str) -> str:
     """ 获取封面路径
 
     Parameters
     ----------
-    name: str
-        封面名字，格式为 `singer_modifiedAlbum`
+    singer: str
+        歌手
+
+    album: str
+        专辑
 
     coverType: str
         封面类型，有以下几种：
@@ -62,10 +65,10 @@ def getCoverPath(name: str, coverType: str) -> str:
         raise ValueError(f"{coverType} 非法")
 
     cover = cover_path_dict[coverType]
-    folder = Path(f"cache/Album_Cover/{name}")
+    folder = Path(f"cache/Album_Cover/{adjustName(singer+'_'+album)}")
     files = list(folder.glob('*')) if folder.exists() else []
 
-    # 如果目录下有封面就用这个封面作为albumCard的背景
+    # 如果目录下有封面就用这个
     if files and files[0].suffix.lower() in (".png", ".jpg", ".jpeg", ".jiff", ".gif"):
         cover = str(files[0])
 

@@ -3,6 +3,7 @@ from copy import deepcopy
 from typing import Dict, List
 
 import pinyin
+from common.database.entity import AlbumInfo, SongInfo
 from common.meta_data import AlbumCoverReader
 from common.os_utils import getCoverPath
 from common.thread.save_album_info_thread import SaveAlbumInfoThread
@@ -20,67 +21,71 @@ from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget
 class AlbumCardInterface(ScrollArea):
     """ 定义一个专辑卡视图 """
 
-    playSignal = pyqtSignal(list)                               # 播放专辑
-    deleteAlbumSig = pyqtSignal(list)                           # 删除(多张)专辑
-    nextPlaySignal = pyqtSignal(list)                           # 下一首播放专辑
+    playSignal = pyqtSignal(str, str)                           # 播放专辑
+    deleteAlbumSig = pyqtSignal(str, str)                       # 删除(多张)专辑
+    nextPlaySignal = pyqtSignal(str, str)                       # 下一首播放专辑
     albumNumChanged = pyqtSignal(int)                           # 专辑数改变
     isAllCheckedChanged = pyqtSignal(bool)                      # 专辑卡全部选中改变
-    addAlbumToPlayingSignal = pyqtSignal(list)                  # 将专辑添加到正在播放
+    addAlbumToPlayingSignal = pyqtSignal(str, str)              # 将专辑添加到正在播放
     selectionModeStateChanged = pyqtSignal(bool)                # 进入/退出 选择模式
     checkedAlbumCardNumChanged = pyqtSignal(int)                # 选中的专辑卡数量改变
     switchToSingerInterfaceSig = pyqtSignal(str)                # 切换到歌手界面
     switchToAlbumInterfaceSig = pyqtSignal(str, str)            # 切换到专辑界面
     editAlbumInfoSignal = pyqtSignal(dict, dict, str)           # 完成专辑信息编辑
-    addAlbumToNewCustomPlaylistSig = pyqtSignal(list)           # 将专辑添加到新建的播放列表
-    addAlbumToCustomPlaylistSig = pyqtSignal(str, list)         # 专辑添加到已存在的播放列表
+    addAlbumToNewCustomPlaylistSig = pyqtSignal(str, str)       # 将专辑添加到新建的播放列表
+    addAlbumToCustomPlaylistSig = pyqtSignal(str, str, str)     # 专辑添加到已存在的播放列表
     showLabelNavigationInterfaceSig = pyqtSignal(list, str)     # 显示标签导航界面
 
-    def __init__(self, albumInfo_list: list, parent=None):
+    def __init__(self, albumInfos: List[AlbumInfo], parent=None):
         super().__init__(parent)
-        self.albumInfo_list = albumInfo_list
+        self.albumInfos = albumInfos
+
         # 初始化网格的列数
         self.columnNum = 1
-        self.albumCard_list = []  # type:List[AlbumCard]
-        self.albumCardInfo_list = []
-        self.checkedAlbumCard_list = []  # type:List[AlbumCard]
-        self.currentGroupInfo_list = []
-        self.groupTitle_dict = {}  # 记录首字母或年份及其对应的第一个分组
+        self.albumCards = []  # type:List[AlbumCard]
+        self.checkedAlbumCards = []  # type:List[AlbumCard]
+        self.groupInfos = []
+        self.groupBoxMap = {}  # 记录首字母或年份及其对应的第一个分组框
+
         # 由键值对 "albumName.singer":albumCard组成的字典，albumInfo 是引用
-        self.albumSinger2AlbumCard_dict = {}  # type:Dict[str, AlbumCard]
-        self.albumSinger2AlbumInfo_dict = {}  # type:Dict[str, dict]
+        self.albumCardMap = {}  # type:Dict[str, AlbumCard]
+        # TODO:使用数据库移除这个字典
+        self.albumInfoMap = {}  # type:Dict[str, dict]
+
         # 初始化标志位
         self.isInSelectionMode = False
         self.isAllAlbumCardsChecked = False
-        # 设置当前排序方式
+
+        # 当前排序方式
         self.sortMode = "Date added"    # type:str
         self.__sortFunctions = {
             "Date added": self.sortByAddTime,
             "A to Z": self.sortByFirstLetter,
             "Release year": self.sortByYear,
-            "Artist": self.sortBySonger
+            "Artist": self.sortBySinger
         }
+
         # 分组标签列表
         self.groupTitle_list = []
+
         # 实例化滚动部件的竖直布局
         self.scrollWidgetVBoxLayout = QVBoxLayout()
+
         # 实例化滚动区域和滚动区域的窗口
         self.__createGuideLabel()
         self.scrollWidget = QWidget()
         self.albumBlurBackground = AlbumBlurBackground(self.scrollWidget)
+
         # 创建专辑卡并将其添加到布局中
         self.__createAlbumCards()
-        # 初始化小部件
         self.__initWidget()
 
     def __initWidget(self):
         """ 初始化小部件 """
         self.resize(1270, 760)
-        # 隐藏磨砂背景
         self.albumBlurBackground.hide()
-        # 设置导航标签的可见性
         self.guideLabel.raise_()
-        self.guideLabel.setHidden(bool(self.albumCard_list))
-        # 初始化滚动条
+        self.guideLabel.setHidden(bool(self.albumCards))
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scrollWidget.setObjectName("scrollWidget")
         self.__connectSignalToSlot()
@@ -98,61 +103,44 @@ class AlbumCardInterface(ScrollArea):
 
     def __createAlbumCards(self):
         """ 将专辑卡添加到窗口中 """
-        # 创建并行动画组
         self.hideCheckBoxAniGroup = QParallelAnimationGroup(self)
-        self.hideCheckBoxAni_list = []
-        for albumInfo in self.albumInfo_list:
+        self.hideCheckBoxAnis = []
+        for albumInfo in self.albumInfos:
             self.__createOneAlbumCard(albumInfo)
 
-    def __createOneAlbumCard(self, albumInfo: dict):
+    def __createOneAlbumCard(self, albumInfo: AlbumInfo):
         """ 创建一个专辑卡 """
-        # 实例化专辑卡和动画
-        albumCard = AlbumCard(albumInfo, self)
-        # 创建动画
+        card = AlbumCard(albumInfo, self)
         hideCheckBoxAni = QPropertyAnimation(
-            albumCard.checkBoxOpacityEffect, b"opacity")
+            card.checkBoxOpacityEffect, b"opacity")
         self.hideCheckBoxAniGroup.addAnimation(hideCheckBoxAni)
-        self.hideCheckBoxAni_list.append(hideCheckBoxAni)
+        self.hideCheckBoxAnis.append(hideCheckBoxAni)
+
         # 将含有专辑卡及其信息的字典插入列表
-        album = albumInfo["album"]
-        self.albumCard_list.append(albumCard)
-        self.albumCardInfo_list.append(
-            {
-                "albumCard": albumCard,
-                "albumName": album,
-                "year": albumInfo["year"][:4],
-                "singer": albumInfo["singer"],
-                "firstLetter": pinyin.get_initial(album[0])[0].upper(),
-            }
-        )
-        key = albumInfo["album"] + "." + albumInfo["singer"]
-        self.albumSinger2AlbumCard_dict[key] = albumCard
-        self.albumSinger2AlbumInfo_dict[key] = albumInfo
+        self.albumCards.append(card)
+        key = albumInfo.album + "." + albumInfo.singer
+        self.albumCardMap[key] = card
+        self.albumInfoMap[key] = albumInfo
+
         # 专辑卡信号连接到槽函数
-        albumCard.playSignal.connect(self.playSignal)
-        albumCard.nextPlaySignal.connect(self.nextPlaySignal)
-        albumCard.deleteCardSig.connect(self.__showDeleteOneCardDialog)
-        albumCard.addToPlayingSignal.connect(self.addAlbumToPlayingSignal)
-        albumCard.switchToAlbumInterfaceSig.connect(
-            self.switchToAlbumInterfaceSig)
-        albumCard.switchToSingerInterfaceSig.connect(
-            self.switchToSingerInterfaceSig)
-        albumCard.checkedStateChanged.connect(
-            self.__onAlbumCardCheckedStateChanged)
-        albumCard.showBlurAlbumBackgroundSig.connect(
-            self.__showBlurAlbumBackground)
-        albumCard.hideBlurAlbumBackgroundSig.connect(
-            self.albumBlurBackground.hide)
-        albumCard.addAlbumToCustomPlaylistSig.connect(
+        card.playSignal.connect(self.playSignal)
+        card.nextPlaySignal.connect(self.nextPlaySignal)
+        card.deleteCardSig.connect(self.__showDeleteOneCardDialog)
+        card.addToPlayingSignal.connect(self.addAlbumToPlayingSignal)
+        card.switchToAlbumInterfaceSig.connect(self.switchToAlbumInterfaceSig)
+        card.checkedStateChanged.connect(self.__onAlbumCardCheckedStateChanged)
+        card.showBlurAlbumBackgroundSig.connect(self.__showBlurAlbumBackground)
+        card.hideBlurAlbumBackgroundSig.connect(self.albumBlurBackground.hide)
+        card.showAlbumInfoEditDialogSig.connect(self.__showAlbumInfoEditDialog)
+        card.addAlbumToCustomPlaylistSig.connect(
             self.addAlbumToCustomPlaylistSig)
-        albumCard.addAlbumToNewCustomPlaylistSig.connect(
+        card.addAlbumToNewCustomPlaylistSig.connect(
             self.addAlbumToNewCustomPlaylistSig)
-        albumCard.showAlbumInfoEditDialogSig.connect(
-            self.__showAlbumInfoEditDialog)
+        card.switchToSingerInterfaceSig.connect(
+            self.switchToSingerInterfaceSig)
 
     def __connectSignalToSlot(self):
         """ 将信号连接到槽函数 """
-        # 动画完成隐藏复选框
         self.hideCheckBoxAniGroup.finished.connect(self.__hideAllCheckBox)
 
     def __initLayout(self):
@@ -160,6 +148,7 @@ class AlbumCardInterface(ScrollArea):
         # 按照添加时间分组
         self.sortByAddTime()
         self.scrollWidgetVBoxLayout.setSpacing(30)
+
         # 顶部留出工具栏的位置
         self.scrollWidgetVBoxLayout.setContentsMargins(10, 245, 0, 120)
         self.scrollWidget.setLayout(self.scrollWidgetVBoxLayout)
@@ -173,20 +162,16 @@ class AlbumCardInterface(ScrollArea):
             return
 
         self.columnNum = column
-        for currentGroup_dict in self.currentGroupInfo_list:
-            gridLayout = currentGroup_dict["gridLayout"]  # type:GridLayout
+        for groupInfo in self.groupInfos:
+            gridLayout = groupInfo["gridLayout"]  # type:GridLayout
             gridLayout.updateColumnNum(column, 210, 290)
+
         self.__adjustScrollWidgetSize()
 
     def __adjustScrollWidgetSize(self):
         """ 调整滚动部件的高度 """
-        rowCount = sum(
-            [
-                currentGroup_dict["gridLayout"].rowCount()
-                for currentGroup_dict in self.currentGroupInfo_list
-            ]
-        )
-        containerCount = len(self.currentGroupInfo_list)
+        rowCount = sum(i["gridLayout"].rowCount() for i in self.groupInfos)
+        containerCount = len(self.groupInfos)
         self.scrollWidget.resize(
             self.width(),
             310 * rowCount
@@ -197,54 +182,53 @@ class AlbumCardInterface(ScrollArea):
 
     def __removeContainerFromVBoxLayout(self):
         """ 从竖直布局中移除专辑卡容器 """
-        for currentGroup_dict in self.currentGroupInfo_list:
-            # 将专辑卡从每个网格布局中移除
-            currentGroup_dict["gridLayout"].removeAllWidgets()
+        for groupInfo in self.groupInfos:
+            groupInfo["gridLayout"].removeAllWidgets()
             self.scrollWidgetVBoxLayout.removeWidget(
-                currentGroup_dict["container"])
-            currentGroup_dict["container"].deleteLater()
-            currentGroup_dict["gridLayout"].deleteLater()
-        self.currentGroupInfo_list = []
+                groupInfo["container"])
+            groupInfo["container"].deleteLater()
+            groupInfo["gridLayout"].deleteLater()
+
+        self.groupInfos = []
 
     def __addContainterToVBoxLayout(self):
         """ 将当前的分组添加到箱式布局中 """
-        for currentGroup_dict in self.currentGroupInfo_list:
+        for groupInfo in self.groupInfos:
             self.scrollWidgetVBoxLayout.addWidget(
-                currentGroup_dict["container"], 0, Qt.AlignTop)
+                groupInfo["container"], 0, Qt.AlignTop)
 
     def __addAlbumCardToGridLayout(self):
         """ 将专辑卡添加到每一个网格布局中 """
-        for currentGroup_dict in self.currentGroupInfo_list:
-            for index, albumCard in enumerate(currentGroup_dict["albumCard_list"]):
+        for groupInfo in self.groupInfos:
+            for index, albumCard in enumerate(groupInfo["albumCards"]):
                 row = index // self.columnNum
                 column = index - row * self.columnNum
-                currentGroup_dict["gridLayout"].addWidget(
-                    albumCard, row, column)
-            currentGroup_dict["gridLayout"].setAlignment(Qt.AlignLeft)
+                groupInfo["gridLayout"].addWidget(albumCard, row, column)
+
+            groupInfo["gridLayout"].setAlignment(Qt.AlignLeft)
 
     def sortByAddTime(self):
         """ 按照添加时间分组 """
         self.sortMode = "Date added"
+
         # 创建一个包含所有歌曲卡的网格布局
         container = QWidget()
         gridLayout = GridLayout()
         gridLayout.setVerticalSpacing(20)
         gridLayout.setHorizontalSpacing(10)
         container.setLayout(gridLayout)
+
         # 清空分组标签列表
         self.groupTitle_list.clear()
         # 从竖直布局中移除小部件
         self.__removeContainerFromVBoxLayout()
         # 构造一个包含布局和小部件列表字典的列表
-        self.addTimeGroupInfo_list = [
-            {
-                "container": container,
-                "gridLayout": gridLayout,
-                "albumCard_list": self.albumCard_list,
-            }
-        ]
-        # 创建一个对当前分组列表引用的列表
-        self.currentGroupInfo_list = self.addTimeGroupInfo_list
+        self.groupInfos = [{
+            "container": container,
+            "gridLayout": gridLayout,
+            "albumCards": self.albumCards,
+        }]
+
         # 将专辑卡添加到布局中
         self.__addAlbumCardToGridLayout()
         self.__addContainterToVBoxLayout()
@@ -253,50 +237,47 @@ class AlbumCardInterface(ScrollArea):
     def sortByFirstLetter(self):
         """ 按照专辑名的首字母进行分组排序 """
         self.sortMode = "A to Z"
+
         # 将专辑卡从旧布局中移除
         self.__removeContainerFromVBoxLayout()
         self.groupTitle_list.clear()
+
         # 创建分组
-        firstLetter_list = []
-        self.firsetLetterGroupInfo_list = []
+        firstLetters = []
+
         # 将专辑卡添加到分组中
-        for albumCard_dict in self.albumCardInfo_list:
-            # 获取专辑卡的专辑名首字母(有可能不是字母)
-            firstLetter = albumCard_dict["firstLetter"]
-            firstLetter = firstLetter if 65 <= ord(
-                firstLetter) <= 90 else "..."
+        for card in self.albumCards:
+            letter = pinyin.get_initial(card.album[0])[0].upper()
+            letter = letter if 65 <= ord(letter) <= 90 else "..."
+
             # 如果首字母属于不在列表中就将创建分组(仅限于A-Z和...)
-            if firstLetter not in firstLetter_list:
-                # firstLetter_list的首字母顺序和firsetLetterGroupInfo_list保持一致
-                firstLetter_list.append(firstLetter)
-                group = GroupBox(firstLetter)
+            if letter not in firstLetters:
+                firstLetters.append(letter)
+                group = GroupBox(letter)
                 gridLayout = GridLayout()
                 group.setLayout(gridLayout)
                 gridLayout.setVerticalSpacing(20)
                 gridLayout.setHorizontalSpacing(10)
-                self.firsetLetterGroupInfo_list.append(
-                    {
-                        "container": group,
-                        "firstLetter": firstLetter,
-                        "gridLayout": gridLayout,
-                        "albumCard_list": [],
-                    }
-                )
+                self.groupInfos.append({
+                    "container": group,
+                    "firstLetter": letter,
+                    "gridLayout": gridLayout,
+                    "albumCards": [],
+                })
                 self.groupTitle_list.append(group.title())
+
             # 将专辑卡添加到分组中
-            index = firstLetter_list.index(firstLetter)
-            self.firsetLetterGroupInfo_list[index]["albumCard_list"].append(
-                albumCard_dict["albumCard"]
-            )
+            index = firstLetters.index(letter)
+            self.groupInfos[index]["albumCards"].append(card)
+
         # 排序列表
-        self.firsetLetterGroupInfo_list.sort(
-            key=lambda item: item["firstLetter"])
+        self.groupInfos.sort(key=lambda i: i["firstLetter"])
+
         # 将...分组移到最后
-        if "..." in firstLetter_list:
-            unique_group = self.firsetLetterGroupInfo_list.pop(0)
-            self.firsetLetterGroupInfo_list.append(unique_group)
-        # 将专辑加到分组的网格布局中
-        self.currentGroupInfo_list = self.firsetLetterGroupInfo_list
+        if "..." in firstLetters:
+            unique_group = self.groupInfos.pop(0)
+            self.groupInfos.append(unique_group)
+
         # 将专辑卡添加到网格布局中并将容器添加到竖直布局中
         self.__addAlbumCardToGridLayout()
         self.__addContainterToVBoxLayout()
@@ -308,20 +289,22 @@ class AlbumCardInterface(ScrollArea):
         """ 按照专辑的年份进行分组排序 """
         self.sortMode = "Release year"
         self.groupTitle_list.clear()
-        self.groupTitle_dict.clear()
+        self.groupBoxMap.clear()
+
         # 将专辑卡从旧布局中移除
         self.__removeContainerFromVBoxLayout()
+
         # 创建分组
-        year_list = []
-        self.yearGroupInfo_list = []
+        years = []
+
         # 将专辑加到分组中
-        for albumCard_dict in self.albumCardInfo_list:
-            year = albumCard_dict["year"]
+        for card in self.albumCards:
+            year = card.year
             year = self.tr("Unknown") if year == '' else year
 
             # 如果年份不在年份列表中就创建分组
-            if year not in year_list:
-                year_list.append(year)
+            if year not in years:
+                years.append(year)
 
                 # 实例化分组和网格布局
                 group = GroupBox(year)
@@ -329,77 +312,74 @@ class AlbumCardInterface(ScrollArea):
                 group.setLayout(gridLayout)
                 gridLayout.setVerticalSpacing(20)
                 gridLayout.setHorizontalSpacing(10)
-                self.yearGroupInfo_list.append(
-                    {
-                        "year": year,
-                        "container": group,
-                        "albumCard_list": [],
-                        "gridLayout": gridLayout,
-                    }
-                )
+                self.groupInfos.append({
+                    "year": year,
+                    "container": group,
+                    "albumCards": [],
+                    "gridLayout": gridLayout,
+                })
                 self.groupTitle_list.append(group.title())
-                self.groupTitle_dict[year] = group
+                self.groupBoxMap[year] = group
 
             # 将专辑卡添加到分组中
-            index = year_list.index(year)
-            self.yearGroupInfo_list[index]["albumCard_list"].append(
-                albumCard_dict["albumCard"])
+            index = years.index(year)
+            self.groupInfos[index]["albumCards"].append(card)
 
         # 按照年份从进到远排序
         self.groupTitle_list.sort(reverse=True)
-        self.yearGroupInfo_list.sort(
-            key=lambda item: item["year"], reverse=True)
+        self.groupInfos.sort(key=lambda i: i["year"], reverse=True)
 
         # 检测是否含有未知分组,有的话将其移到最后一个
-        if self.tr("Unknown") in year_list:
-            unique_group = self.yearGroupInfo_list.pop(0)
-            self.yearGroupInfo_list.append(unique_group)
+        if self.tr("Unknown") in years:
+            unique_group = self.groupInfos.pop(0)
+            self.groupInfos.append(unique_group)
 
         # 将专辑加到分组的网格布局中
-        self.currentGroupInfo_list = self.yearGroupInfo_list
         self.__addAlbumCardToGridLayout()
         self.__addContainterToVBoxLayout()
         self.__adjustScrollWidgetSize()
         self.__connectGroupBoxSigToSlot("listLayout")
 
-    def sortBySonger(self):
+    def sortBySinger(self):
         """ 按照专辑的专辑进行分组排序 """
         self.sortMode = "Artist"
+
         # 将专辑卡从旧布局中移除
         self.groupTitle_list.clear()
         self.__removeContainerFromVBoxLayout()
+
         # 创建列表
-        singer_list = []
-        self.singerGroupInfo_list = []
+        singers = []
+
         # 将专辑加到分组中
-        for albumCard_dict in self.albumCardInfo_list:
-            singer = albumCard_dict["singer"]
-            if singer not in singer_list:
-                singer_list.append(singer)
+        for card in self.albumCards:
+            singer = card.singer
+
+            if singer not in singers:
+                singers.append(singer)
                 group = GroupBox(singer)
                 gridLayout = GridLayout()
                 group.setLayout(gridLayout)
                 gridLayout.setVerticalSpacing(20)
                 gridLayout.setHorizontalSpacing(10)
-                self.singerGroupInfo_list.append(
-                    {
-                        "singer": singer,
-                        "container": group,
-                        "albumCard_list": [],
-                        "gridLayout": gridLayout,
-                    }
-                )
+                self.groupInfos.append({
+                    "singer": singer,
+                    "container": group,
+                    "albumCards": [],
+                    "gridLayout": gridLayout,
+                })
                 # 点击分组的标题时显示导航界面
                 self.groupTitle_list.append(group.title())
+
             # 将专辑卡添加到分组中
-            index = singer_list.index(singer)
-            self.singerGroupInfo_list[index]["albumCard_list"].append(
-                albumCard_dict["albumCard"])
+            index = singers.index(singer)
+            self.groupInfos[index]["albumCards"].append(card)
+
         # 排序列表
-        self.singerGroupInfo_list.sort(
-            key=lambda item: pinyin.get_initial(item["singer"])[0].lower())
+        self.groupInfos.sort(
+            key=lambda i: pinyin.get_initial(i["singer"])[0].lower())
+
         # 将专辑加到分组的网格布局中
-        self.currentGroupInfo_list = self.singerGroupInfo_list
         self.__addAlbumCardToGridLayout()
         self.__addContainterToVBoxLayout()
         self.__adjustScrollWidgetSize()
@@ -413,41 +393,41 @@ class AlbumCardInterface(ScrollArea):
         self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
         f.close()
 
-    def findAlbumCardByAlbumInfo(self, albumInfo: dict) -> AlbumCard:
+    def findAlbumCardByAlbumInfo(self, albumInfo: AlbumInfo) -> AlbumCard:
         """ 通过专辑信息查找专辑卡，没找到则返回 None """
-        album = albumInfo.get("album", "")
-        singer = albumInfo.get("singer")
+        album = albumInfo.album
+        singer = albumInfo.singer
         return self.findAlbumCardByName(album, singer)
 
     def findAlbumCardByName(self, albumName: str, singerName: str) -> AlbumCard:
         """ 通过专辑和歌手名字查找专辑卡，没找到则返回 None """
         key = f'{albumName}.{singerName}'
-        albumCard = self.albumSinger2AlbumCard_dict.get(key, None)
+        albumCard = self.albumCardMap.get(key, None)
         return albumCard
 
+    # TODO:移除寻找专辑信息的函数
     def findAlbumInfoByName(self, albumName: str, singerName: str) -> dict:
         """ 通过专辑和歌手名字查找专辑信息，没找到则返回 None """
         key = f'{albumName}.{singerName}'
-        albumInfo = self.albumSinger2AlbumInfo_dict.get(key, {})
+        albumInfo = self.albumInfoMap.get(key, {})
         return albumInfo
 
     def __onAlbumCardCheckedStateChanged(self, albumCard: AlbumCard, isChecked: bool):
         """ 专辑卡选中状态改变对应的槽函数 """
         # 如果专辑信息不在选中的专辑信息列表中且对应的专辑卡变为选中状态就将专辑信息添加到列表中
-        if albumCard not in self.checkedAlbumCard_list and isChecked:
-            self.checkedAlbumCard_list.append(albumCard)
+        if albumCard not in self.checkedAlbumCards and isChecked:
+            self.checkedAlbumCards.append(albumCard)
             self.checkedAlbumCardNumChanged.emit(
-                len(self.checkedAlbumCard_list))
+                len(self.checkedAlbumCards))
+
         # 如果专辑信息已经在列表中且该专辑卡变为非选中状态就弹出该专辑信息
-        elif albumCard in self.checkedAlbumCard_list and not isChecked:
-            self.checkedAlbumCard_list.pop(
-                self.checkedAlbumCard_list.index(albumCard))
-            self.checkedAlbumCardNumChanged.emit(
-                len(self.checkedAlbumCard_list))
+        elif albumCard in self.checkedAlbumCards and not isChecked:
+            self.checkedAlbumCards.pop(
+                self.checkedAlbumCards.index(albumCard))
+            self.checkedAlbumCardNumChanged.emit(len(self.checkedAlbumCards))
 
         # 检查是否全部专辑卡选中改变
-        isAllChecked = (len(self.checkedAlbumCard_list)
-                        == len(self.albumCard_list))
+        isAllChecked = len(self.checkedAlbumCards) == len(self.albumCards)
         if isAllChecked != self.isAllAlbumCardsChecked:
             self.isAllAlbumCardsChecked = isAllChecked
             self.isAllCheckedChanged.emit(isAllChecked)
@@ -457,73 +437,75 @@ class AlbumCardInterface(ScrollArea):
             self.__setAllAlbumCardSelectionModeOpen(True)
             self.selectionModeStateChanged.emit(True)
             self.isInSelectionMode = True
-        elif not self.checkedAlbumCard_list:
+        elif not self.checkedAlbumCards:
             self.__setAllAlbumCardSelectionModeOpen(False)
             self.selectionModeStateChanged.emit(False)
             self.isInSelectionMode = False
 
     def __setAllAlbumCardSelectionModeOpen(self, isOpen: bool):
         """ 设置所有专辑卡是否进入选择模式 """
-        for albumCard in self.albumCard_list:
+        for albumCard in self.albumCards:
             albumCard.setSelectionModeOpen(isOpen)
+
         # 退出选择模式时开启隐藏所有复选框的动画
         if not isOpen:
             self.__startHideCheckBoxAni()
 
     def __startHideCheckBoxAni(self):
         """ 开始隐藏复选框动画 """
-        for ani in self.hideCheckBoxAni_list:
+        for ani in self.hideCheckBoxAnis:
             ani.setStartValue(1)
             ani.setEndValue(0)
             ani.setDuration(140)
+
         self.hideCheckBoxAniGroup.start()
 
     def __hideAllCheckBox(self):
         """ 隐藏所有复选框 """
-        for albumCard in self.albumCard_list:
+        for albumCard in self.albumCards:
             albumCard.checkBox.hide()
 
     def unCheckAlbumCards(self):
         """ 取消所有已处于选中状态的专辑卡的选中状态 """
-        checkedAlbumCard_list_copy = self.checkedAlbumCard_list.copy()
-        for albumCard in checkedAlbumCard_list_copy:
+        for albumCard in self.checkedAlbumCards.copy():
             albumCard.setChecked(False)
 
     def setAllAlbumCardCheckedState(self, isAllChecked: bool):
         """ 设置所有的专辑卡checked状态 """
         if self.isAllAlbumCardsChecked == isAllChecked:
             return
+
         self.isAllAlbumCardsChecked = isAllChecked
-        for albumCard in self.albumCard_list:
+        for albumCard in self.albumCards:
             albumCard.setChecked(isAllChecked)
 
     def __showBlurAlbumBackground(self, pos: QPoint, picPath: str):
         """ 显示磨砂背景 """
-        # 将全局坐标转为窗口坐标
         pos = self.scrollWidget.mapFromGlobal(pos)
         self.albumBlurBackground.setBlurAlbum(picPath)
         self.albumBlurBackground.move(pos.x() - 28, pos.y() - 16)
         self.albumBlurBackground.show()
 
-    def updateOneSongInfo(self, oldSongInfo: dict, newSongInfo: dict):
+    # TODO:使用数据库来更新
+    def updateOneSongInfo(self, oldSongInfo: SongInfo, newSongInfo: SongInfo):
         """ 更新一首歌的信息 """
-        newKey = newSongInfo["album"] + "." + newSongInfo["singer"]
-        oldKey = oldSongInfo["album"] + "." + oldSongInfo["singer"]
-        albumInfo_list = deepcopy(self.albumInfo_list)
-        oldAlbumInfo = self.albumSinger2AlbumInfo_dict[oldKey]
-        oldIndex = albumInfo_list.index(oldAlbumInfo)
+        newKey = newSongInfo.album + "." + newSongInfo.singer
+        oldKey = oldSongInfo.album + "." + oldSongInfo.singer
+        albumInfos = deepcopy(self.albumInfos)
+        oldAlbumInfo = self.albumInfoMap[oldKey]
+        oldIndex = albumInfos.index(oldAlbumInfo)
 
-        if newKey in self.albumSinger2AlbumInfo_dict.keys():
-            albumInfo = self.albumSinger2AlbumInfo_dict[newKey]
-            newIndex = self.albumInfo_list.index(albumInfo)
-            albumInfo = albumInfo_list[newIndex]
+        if newKey in self.albumInfoMap.keys():
+            albumInfo = self.albumInfoMap[newKey]
+            newIndex = self.albumInfos.index(albumInfo)
+            albumInfo = albumInfos[newIndex]
 
             # 不增加/删除专辑，直接更新某张专辑的信息
             if oldKey == newKey:
-                for i, songInfo in enumerate(albumInfo["songInfos"]):
-                    if songInfo["songPath"] == newSongInfo["songPath"]:
-                        albumInfo["songInfos"][i] = newSongInfo.copy()
-                        albumInfo["genre"] = albumInfo["songInfos"][0]["genre"]
+                for i, songInfo in enumerate(albumInfo.songInfos):
+                    if songInfo.file == newSongInfo.file:
+                        albumInfo.songInfos[i] = newSongInfo.copy()
+                        albumInfo["genre"] = albumInfo.songInfos[0]["genre"]
                         self.__sortOneAlbum(albumInfo)
                         break
 
@@ -538,143 +520,135 @@ class AlbumCardInterface(ScrollArea):
 
             # 删除旧专辑中的一首歌，并在某张专辑中添加一首歌
             else:
-                albumInfo_list[newIndex]["songInfos"].append(newSongInfo)
-                self.__sortOneAlbum(albumInfo_list[newIndex])
-                oldAlbumInfo = albumInfo_list[oldIndex]
-                oldAlbumInfo["songInfos"].remove(oldSongInfo)
-                if not oldAlbumInfo["songInfos"]:
-                    albumInfo_list.remove(oldAlbumInfo)
+                albumInfos[newIndex].songInfos.append(newSongInfo)
+                self.__sortOneAlbum(albumInfos[newIndex])
+                oldAlbumInfo = albumInfos[oldIndex]
+                oldAlbumInfo.songInfos.remove(oldSongInfo)
+                if not oldAlbumInfo.songInfos:
+                    albumInfos.remove(oldAlbumInfo)
 
         else:
             # 增加一张新专辑，如果旧专辑变成空的就将其移除
-            oldAlbumInfo = albumInfo_list[oldIndex]
-            oldAlbumInfo["songInfos"].remove(oldSongInfo)
-            if not oldAlbumInfo["songInfos"]:
-                albumInfo_list.remove(oldAlbumInfo)
-            albumInfo_list.insert(0, self.__getAlbumInfoByOneSong(newSongInfo))
+            oldAlbumInfo = albumInfos[oldIndex]
+            oldAlbumInfo.songInfos.remove(oldSongInfo)
+            if not oldAlbumInfo.songInfos:
+                albumInfos.remove(oldAlbumInfo)
+            albumInfos.insert(0, self.__getAlbumInfoByOneSong(newSongInfo))
 
-        self.updateAllAlbumCards(albumInfo_list)
+        self.updateAllAlbumCards(albumInfos)
 
-    def updateOneAlbumInfo(self, oldAlbumInfo: dict, newAlbumInfo: dict, coverPath: str):
+    # TODO:使用数据库来更新
+    def updateOneAlbumInfo(self, oldAlbumInfo: AlbumInfo, newAlbumInfo: AlbumInfo, coverPath: str):
         """ 更新一张专辑信息 """
-        oldSongInfo_list = oldAlbumInfo["songInfos"]
-        newSongInfo_list = newAlbumInfo["songInfos"]
-        albumInfo_list = deepcopy(self.albumInfo_list)
-        albumSinger2AlbumInfo_dict = deepcopy(self.albumSinger2AlbumInfo_dict)
+        oldSongInfos = oldAlbumInfo.songInfos
+        newSongInfos = newAlbumInfo.songInfos
+        albumInfos = deepcopy(self.albumInfos)
+        albumInfoMap = deepcopy(self.albumInfoMap)
 
         # 更新当前专辑卡封面
         if coverPath:
-            key = oldAlbumInfo["album"]+'.'+oldAlbumInfo["singer"]
-            self.albumSinger2AlbumCard_dict[key].updateAlbumCover(coverPath)
+            key = oldAlbumInfo.album+'.'+oldAlbumInfo.singer
+            self.albumCardMap[key].updateAlbumCover(coverPath)
 
         # 更新所有专辑卡
-        for oldSongInfo, newSongInfo in zip(oldSongInfo_list, newSongInfo_list):
-            newKey = newSongInfo["album"] + "." + newSongInfo["singer"]
-            oldKey = oldSongInfo["album"] + "." + oldSongInfo["singer"]
+        for oldSongInfo, newSongInfo in zip(oldSongInfos, newSongInfos):
+            newKey = newSongInfo.album + "." + newSongInfo.singer
+            oldKey = oldSongInfo.album + "." + oldSongInfo.singer
 
-            if newKey in albumSinger2AlbumInfo_dict.keys():
+            if newKey in albumInfoMap.keys():
                 # 不增加/删除专辑，直接更新某张专辑的信息
-                albumInfo = albumSinger2AlbumInfo_dict[newKey]
-                newIndex = albumInfo_list.index(albumInfo)
+                albumInfo = albumInfoMap[newKey]
+                newIndex = albumInfos.index(albumInfo)
                 if oldKey == newKey:
-                    for i, songInfo in enumerate(albumInfo["songInfos"]):
-                        if songInfo["songPath"] == newSongInfo["songPath"]:
-                            albumInfo["songInfos"][i] = newSongInfo.copy()
-                            albumInfo["genre"] = albumInfo["songInfos"][0]["genre"]
+                    for i, songInfo in enumerate(albumInfo.songInfos):
+                        if songInfo.file == newSongInfo.file:
+                            albumInfo.songInfos[i] = newSongInfo.copy()
+                            albumInfo["genre"] = albumInfo.songInfos[0]["genre"]
                             self.__sortOneAlbum(albumInfo)
-                            albumInfo_list[newIndex] = albumInfo
-                            albumSinger2AlbumInfo_dict[newKey] = albumInfo
+                            albumInfos[newIndex] = albumInfo
+                            albumInfoMap[newKey] = albumInfo
                             break
 
                 # 删除旧专辑中的一首歌，并在某张专辑中添加一首歌
                 else:
-                    albumInfo_list[newIndex]["songInfos"].append(
+                    albumInfos[newIndex].songInfos.append(
                         newSongInfo)
-                    self.__sortOneAlbum(albumInfo_list[newIndex])
-                    albumSinger2AlbumInfo_dict[newKey] = albumInfo_list[newIndex]
+                    self.__sortOneAlbum(albumInfos[newIndex])
+                    albumInfoMap[newKey] = albumInfos[newIndex]
 
-                    index = albumInfo_list.index(oldAlbumInfo)
-                    oldAlbumInfo = albumInfo_list[index]
-                    oldAlbumInfo["songInfos"].remove(oldSongInfo)
-                    albumSinger2AlbumInfo_dict[oldKey] = oldAlbumInfo
-                    if not oldAlbumInfo["songInfos"]:
-                        albumInfo_list.remove(oldAlbumInfo)
-                        albumSinger2AlbumInfo_dict.pop(oldKey)
+                    index = albumInfos.index(oldAlbumInfo)
+                    oldAlbumInfo = albumInfos[index]
+                    oldAlbumInfo.songInfos.remove(oldSongInfo)
+                    albumInfoMap[oldKey] = oldAlbumInfo
+                    if not oldAlbumInfo.songInfos:
+                        albumInfos.remove(oldAlbumInfo)
+                        albumInfoMap.pop(oldKey)
 
             else:
                 # 增加一张新专辑，如果旧专辑变成空的就将其移除
-                index = albumInfo_list.index(oldAlbumInfo)
-                oldAlbumInfo = albumInfo_list[index]
-                oldAlbumInfo["songInfos"].remove(oldSongInfo)
-                albumSinger2AlbumInfo_dict[oldKey] = oldAlbumInfo
-                if not oldAlbumInfo["songInfos"]:
-                    albumInfo_list.remove(oldAlbumInfo)
-                    albumSinger2AlbumInfo_dict.pop(oldKey)
+                index = albumInfos.index(oldAlbumInfo)
+                oldAlbumInfo = albumInfos[index]
+                oldAlbumInfo.songInfos.remove(oldSongInfo)
+                albumInfoMap[oldKey] = oldAlbumInfo
+                if not oldAlbumInfo.songInfos:
+                    albumInfos.remove(oldAlbumInfo)
+                    albumInfoMap.pop(oldKey)
 
                 albumInfo = self.__getAlbumInfoByOneSong(newSongInfo)
-                albumSinger2AlbumInfo_dict[newKey] = albumInfo
-                albumInfo_list.insert(0, albumInfo)
+                albumInfoMap[newKey] = albumInfo
+                albumInfos.insert(0, albumInfo)
 
-        self.updateAllAlbumCards(albumInfo_list)
+        self.updateAllAlbumCards(albumInfos)
 
-    def updateAllAlbumCards(self, albumInfo_list: list):
+    def updateAllAlbumCards(self, albumInfos: List[AlbumInfo]):
         """ 更新所有专辑卡 """
-        if albumInfo_list == self.albumInfo_list:
+        if albumInfos == self.albumInfos:
             return
 
         # 将专辑卡从布局中移除
         self.__removeContainerFromVBoxLayout()
 
         # 根据具体情况增减专辑卡
-        newCardNum = len(albumInfo_list)
-        oldCardNum = len(self.albumCard_list)
-        if newCardNum < oldCardNum:
+        N = len(albumInfos)
+        N_ = len(self.albumCards)
+        if N < N_:
             # 删除部分专辑卡
-            for i in range(oldCardNum - 1, newCardNum - 1, -1):
-                albumCard = self.albumCard_list.pop()
-                self.hideCheckBoxAni_list.pop()
-                self.albumCardInfo_list.pop()
+            for i in range(N_ - 1, N - 1, -1):
+                albumCard = self.albumCards.pop()
+                self.hideCheckBoxAnis.pop()
                 self.hideCheckBoxAniGroup.takeAnimation(i)
                 albumCard.deleteLater()
                 QApplication.processEvents()
-        elif newCardNum > oldCardNum:
+        elif N > N_:
             # 新增部分专辑卡
-            for albumInfo in albumInfo_list[oldCardNum:]:
+            for albumInfo in albumInfos[N_:]:
                 self.__createOneAlbumCard(albumInfo)
                 QApplication.processEvents()
 
         # 更新部分专辑卡
-        self.albumInfo_list = albumInfo_list
-        n = oldCardNum if oldCardNum < newCardNum else newCardNum
+        self.albumInfos = albumInfos
+        n = min(N_, N)
         for i in range(n):
-            albumInfo = albumInfo_list[i]
-            album = albumInfo["album"]
-            self.albumCard_list[i].updateWindow(albumInfo)
+            albumInfo = albumInfos[i]
+            self.albumCards[i].updateWindow(albumInfo)
             QApplication.processEvents()
-            self.albumCardInfo_list[i] = {
-                "albumCard": self.albumCard_list[i],
-                "albumName": album,
-                "year": albumInfo["year"][:4],
-                "singer": albumInfo["singer"],
-                "firstLetter": pinyin.get_initial(album)[0].upper(),
-            }
 
         # 重新排序专辑卡
         self.__sortFunctions[self.sortMode]()
 
         # 根据当前专辑卡数决定是否显示导航标签
-        self.guideLabel.setHidden(bool(albumInfo_list))
+        self.guideLabel.setHidden(bool(albumInfos))
 
         # 更新 "专辑名.歌手名"：专辑卡 字典
-        self.albumSinger2AlbumCard_dict.clear()
-        self.albumSinger2AlbumInfo_dict.clear()
-        for albumCard, albumInfo in zip(self.albumCard_list, albumInfo_list):
+        self.albumCardMap.clear()
+        self.albumInfoMap.clear()
+        for albumCard, albumInfo in zip(self.albumCards, albumInfos):
             key = albumInfo["album"] + "." + albumInfo["singer"]
-            self.albumSinger2AlbumCard_dict[key] = albumCard
-            self.albumSinger2AlbumInfo_dict[key] = albumInfo
+            self.albumCardMap[key] = albumCard
+            self.albumInfoMap[key] = albumInfo
 
-        if oldCardNum != newCardNum:
-            self.albumNumChanged.emit(newCardNum)
+        if N_ != N:
+            self.albumNumChanged.emit(N)
 
     def setSortMode(self, sortMode: str):
         """ 排序专辑卡
@@ -686,45 +660,47 @@ class AlbumCardInterface(ScrollArea):
         """
         if self.sortMode == sortMode:
             return
+
+        self.albumBlurBackground.hide()
         self.__sortFunctions[sortMode]()
 
-    def __showDeleteOneCardDialog(self, albumName: str):
+    def __showDeleteOneCardDialog(self, singer: str, album: str):
         """ 显示删除一个专辑卡的对话框 """
-        songPaths = [i["songPath"] for i in self.sender().songInfos]
         title = self.tr("Are you sure you want to delete this?")
-        content = self.tr("If you delete") + f' "{albumName}" ' + \
+        content = self.tr("If you delete") + f' "{album}" ' + \
             self.tr("it won't be on be this device anymore.")
 
         w = MessageDialog(title, content, self.window())
-        w.yesSignal.connect(lambda: self.deleteAlbums([albumName]))
-        w.yesSignal.connect(lambda: self.deleteAlbumSig.emit(songPaths))
+        w.yesSignal.connect(lambda: self.deleteAlbumSig.emit(singer, album))
         w.exec_()
 
     def __connectGroupBoxSigToSlot(self, layout):
         """ 分组框信号连接到槽函数 """
-        for group_dict in self.currentGroupInfo_list:
-            group_dict["container"].titleClicked.connect(
+        for groupInfo in self.groupInfos:
+            groupInfo["container"].titleClicked.connect(
                 lambda: self.showLabelNavigationInterfaceSig.emit(self.groupTitle_list, layout))
 
     def scrollToLabel(self, label: str):
         """ 滚动到label指定的位置 """
-        group = self.groupTitle_dict[label]
+        group = self.groupBoxMap[label]
         self.verticalScrollBar().setValue(group.y() - 245)
 
     def __getFirstLetterFirstGroupBox(self):
         """ 获取首字母对应的第一个分组框 """
-        letter_list = []
-        self.groupTitle_dict.clear()
-        for group_dict in self.currentGroupInfo_list:
-            group = group_dict["container"]
+        letters = []
+        self.groupBoxMap.clear()
+        for groupInfo in self.groupInfos:
+            group = groupInfo["container"]
             letter = pinyin.get_initial(group.title())[0].upper()
             letter = "..." if not 65 <= ord(letter) <= 90 else letter
-            # 将字母对应的第一个分组框添加到字典中
-            if letter not in letter_list:
-                letter_list.append(letter)
-                self.groupTitle_dict[letter] = group
 
-    def __showAlbumInfoEditDialog(self, albumInfo: dict):
+            # 将字母对应的第一个分组框添加到字典中
+            if letter not in letters:
+                letters.append(letter)
+                self.groupBoxMap[letter] = group
+
+    # TODO:使用数据库
+    def __showAlbumInfoEditDialog(self, albumInfo: AlbumInfo):
         """ 显示专辑信息编辑界面信号 """
         # 创建线程和对话框
         thread = SaveAlbumInfoThread(self)
@@ -747,9 +723,9 @@ class AlbumCardInterface(ScrollArea):
         self.sender().wait()
         self.sender().deleteLater()
 
-        # 更新所有专辑卡并发送信号
+        # TODO:更新所有专辑卡并发送信号
         self.updateOneAlbumInfo(oldAlbumInfo, newAlbumInfo, coverPath)
-        self.editAlbumInfoSignal.emit(oldAlbumInfo, newAlbumInfo, coverPath)
+        # self.editAlbumInfoSignal.emit(oldAlbumInfo, newAlbumInfo, coverPath)
 
     @staticmethod
     def __getAlbumInfoByOneSong(songInfo: dict):
@@ -771,22 +747,15 @@ class AlbumCardInterface(ScrollArea):
         }
         return albumInfo
 
-    def __sortOneAlbum(self, albumInfo: dict):
+    def __sortOneAlbum(self, albumInfo: AlbumInfo):
         """ 根据曲序就地排序一张专辑中的歌曲列表 """
-        albumInfo["songInfos"].sort(key=self.__getTrackNum)
+        albumInfo.songInfos.sort(key=lambda i: i.track)
 
-    def __getTrackNum(self, songInfo: dict) -> int:
-        """ 根据歌曲信息获取曲目 """
-        trackNum = songInfo["tracknumber"]  # type:str
-        # 处理m4a
-        if not trackNum[0].isnumeric():
-            return eval(trackNum)[0]
-        return int(trackNum)
-
+    # TODO:使用数据库删除
     def deleteSongs(self, songPaths: list):
         """ 删除歌曲 """
-        albumInfo_list = deepcopy(self.albumInfo_list)
-        for albumInfo in albumInfo_list.copy():
+        albumInfos = deepcopy(self.albumInfos)
+        for albumInfo in albumInfos.copy():
             songInfos = albumInfo["songInfos"]
 
             for songInfo in songInfos.copy():
@@ -795,17 +764,17 @@ class AlbumCardInterface(ScrollArea):
 
             # 如果专辑变成空专辑，就将其从专辑列表中移除
             if not songInfos:
-                albumInfo_list.remove(albumInfo)
+                albumInfos.remove(albumInfo)
 
         # 更新窗口
-        self.updateAllAlbumCards(albumInfo_list)
+        self.updateAllAlbumCards(albumInfos)
 
-    def deleteAlbums(self, albumNames: list):
+    def deleteAlbums(self, albums: List[str]):
         """ 删除专辑 """
-        albumInfo_list = deepcopy(self.albumInfo_list)
+        albumInfos = deepcopy(self.albumInfos)
 
-        for albumInfo in albumInfo_list.copy():
-            if albumInfo["album"] in albumNames:
-                albumInfo_list.remove(albumInfo)
+        for albumInfo in albumInfos.copy():
+            if albumInfo.album in albums:
+                albumInfos.remove(albumInfo)
 
-        self.updateAllAlbumCards(albumInfo_list)
+        self.updateAllAlbumCards(albumInfos)

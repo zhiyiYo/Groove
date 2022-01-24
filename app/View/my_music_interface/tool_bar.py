@@ -50,12 +50,12 @@ class ToolBar(QWidget):
         self.albumSortByCratedTimeAct = QAction(self.tr("Date added"), self)
         self.albumSortByYearAct = QAction(self.tr("Release year"), self)
         self.albumSortBySongerAct = QAction(self.tr("Artist"), self)
-        self.songSortAction_list = [
+        self.songSortActions = [
             self.songSortByCratedTimeAct,
             self.songSortByDictOrderAct,
             self.songSortBySongerAct,
         ]
-        self.albumSortAction_list = [
+        self.albumSortActions = [
             self.albumSortByCratedTimeAct,
             self.albumSortByDictOrderAct,
             self.albumSortByYearAct,
@@ -71,8 +71,8 @@ class ToolBar(QWidget):
         # 隐藏专辑排序按钮
         self.albumSortModeButton.hide()
         # 将动作添加到菜单中
-        self.songSortModeMenu.addActions(self.songSortAction_list)
-        self.albumSortModeMenu.addActions(self.albumSortAction_list)
+        self.songSortModeMenu.addActions(self.songSortActions)
+        self.albumSortModeMenu.addActions(self.albumSortActions)
         # 设置属性
         self.songSortByCratedTimeAct.setProperty('mode', 'Date added')
         self.songSortByDictOrderAct.setProperty('mode', 'A to Z')
@@ -151,7 +151,8 @@ class TabButton(QPushButton):
         self.pressedPos = None
         self.tabIndex = tabIndex
 
-        self.setStyleSheet("QPushButton{font: 25px 'Segoe UI', 'Microsoft YaHei'}")
+        self.setStyleSheet(
+            "QPushButton{font: 25px 'Segoe UI', 'Microsoft YaHei'}")
         self.adjustSize()
         self.setFixedSize(self.fontMetrics().width(text), 40)
 

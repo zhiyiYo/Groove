@@ -12,8 +12,8 @@ from app.common.library import Directory
 from PyQt5.QtSql import QSqlDatabase
 
 
-class TestSongInfoService(TestCase):
-    """ 测试歌曲信息服务类 """
+class TestSongInfoController(TestCase):
+    """ 测试歌曲信息控制类 """
 
     def __init__(self, methodName: str = ...) -> None:
         super().__init__(methodName)
@@ -24,6 +24,10 @@ class TestSongInfoService(TestCase):
 
         self.controller = SongInfoController()
         self.directory = Directory('D:/hzz/音乐')
+
+    def test_singleton(self):
+        """ 测试歌曲信息控制是否为单例 """
+        self.assertTrue(self.controller is SongInfoController())
 
     def test_get_song_infos(self):
         """ 测试获取所有歌曲信息 """

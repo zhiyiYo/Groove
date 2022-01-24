@@ -50,7 +50,7 @@ class SingerInfoBar(CollapsingAppBarBase):
         obj = QObject()
         self.singer = singerInfo.get('singer', obj.tr('Unknown artist'))
         self.genre = singerInfo.get('genre', obj.tr('Unknown genre'))
-        self.albumInfo_list = singerInfo.get('albumInfo_list', [])
+        self.albumInfos = singerInfo.get('albumInfos', [])
 
         # 获取歌手头像
         avatars = {i.stem: i for i in Path('cache/singer_avatar').glob('*')}

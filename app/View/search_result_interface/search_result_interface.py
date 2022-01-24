@@ -56,7 +56,7 @@ class SearchResultInterface(ScrollArea):
         super().__init__(parent=parent)
         self.keyWord = ''                   # 搜索关键字
         self.playlists = {}                 # 匹配到的本地播放列表
-        self.albumInfo_list = []            # 匹配到的本地专辑列表
+        self.albumInfos = []            # 匹配到的本地专辑列表
         self.localSongInfo_list = []        # 匹配到的本地歌曲列表
         self.onlineSongInfo_list = []       # 匹配到的在线歌曲列表
         self.titleLabel = QLabel(self)
@@ -151,8 +151,8 @@ class SearchResultInterface(ScrollArea):
         self.playlistGroupBox.deleteSongs(songPaths)
         self.localSongInfo_list = deepcopy(
             self.localSongListWidget.songInfos)
-        self.albumInfo_list = deepcopy(
-            self.albumGroupBox.albumInfo_list)
+        self.albumInfos = deepcopy(
+            self.albumGroupBox.albumInfos)
         self.playlists = deepcopy(self.playlistGroupBox.playlists)
         self.__updateWidgetsVisible()
         self.deleteAlbumSig.emit(songPaths)
@@ -160,8 +160,8 @@ class SearchResultInterface(ScrollArea):
     def __onDeleteOneSong(self, songPath: str):
         """ 删除一首本地歌曲槽函数 """
         self.albumGroupBox.deleteSongs([songPath])
-        self.albumInfo_list = deepcopy(
-            self.albumGroupBox.albumInfo_list)
+        self.albumInfos = deepcopy(
+            self.albumGroupBox.albumInfos)
         self.localSongInfo_list = deepcopy(
             self.localSongListWidget.songInfos)
         self.__updateWidgetsVisible()
@@ -193,18 +193,18 @@ class SearchResultInterface(ScrollArea):
         self.downloadStateTooltip = None
         self.downloadFinished.emit(self.downloadFolder)
 
-    def search(self, keyWord: str, songInfos: list, albumInfo_list: list, playlists: dict):
+    def search(self, keyWord: str, songInfos: list, albumInfos: list, playlists: dict):
         """ 搜索与关键词相匹配的专辑、歌曲和播放列表 """
         keyWord_ = keyWord
         self.keyWord = keyWord = keyWord.lower()
 
         # 对专辑进行匹配
-        self.albumInfo_list = []
-        for albumInfo in albumInfo_list:
+        self.albumInfos = []
+        for albumInfo in albumInfos:
             album = albumInfo['album'].lower()
             singer = albumInfo["singer"].lower()
             if album.find(keyWord) >= 0 or singer.find(keyWord) >= 0:
-                self.albumInfo_list.append(albumInfo)
+                self.albumInfos.append(albumInfo)
 
         # 对本地歌曲进行匹配
         self.localSongInfo_list = []
@@ -235,7 +235,7 @@ class SearchResultInterface(ScrollArea):
         # 更新界面
         self.titleLabel.setText(f'"{keyWord_}"'+self.tr('Search Result'))
         self.titleLabel.adjustSize()
-        self.albumGroupBox.updateWindow(self.albumInfo_list)
+        self.albumGroupBox.updateWindow(self.albumInfos)
         self.playlistGroupBox.updateWindow(self.playlists)
         self.localSongGroupBox.updateWindow(self.localSongInfo_list)
 
@@ -247,7 +247,7 @@ class SearchResultInterface(ScrollArea):
     def __adjustHeight(self):
         """ 调整窗口长度 """
         # 调整窗口大小
-        isAlbumVisible = len(self.albumInfo_list) > 0
+        isAlbumVisible = len(self.albumInfos) > 0
         isPlaylistVisible = len(self.playlists) > 0
         isLocalSongVisible = len(self.localSongInfo_list) > 0
         isOnlineSongVisible = len(self.onlineSongInfo_list) > 0
@@ -267,7 +267,7 @@ class SearchResultInterface(ScrollArea):
 
     def __updateWidgetsVisible(self):
         """ 更新小部件的可见性 """
-        self.albumGroupBox.setVisible(bool(self.albumInfo_list))
+        self.albumGroupBox.setVisible(bool(self.albumInfos))
         self.playlistGroupBox.setVisible(bool(self.playlists))
         self.localSongGroupBox.setVisible(bool(self.localSongInfo_list))
         self.onlineSongGroupBox.setVisible(bool(self.onlineSongInfo_list))

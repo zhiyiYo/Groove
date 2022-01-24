@@ -1,1 +1,2 @@
 from .album_card_interface import AlbumCardInterface
+from .selection_mode_bar import SelectionModeBar as AlbumSelectionModeBar

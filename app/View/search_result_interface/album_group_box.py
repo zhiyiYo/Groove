@@ -29,8 +29,8 @@ class AlbumGroupBox(QScrollArea):
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self.albumCard_list = []  # type:List[AlbumCard]
-        self.albumInfo_list = []  # type:List[dict]
+        self.albumCards = []  # type:List[AlbumCard]
+        self.albumInfos = []  # type:List[dict]
         self.titleButton = QPushButton(self.tr('Albums'), self)
         self.scrollRightButton = QToolButton(self)
         self.scrollLeftButton = QToolButton(self)
@@ -135,7 +135,7 @@ class AlbumGroupBox(QScrollArea):
     def __createOneAlbumCard(self, albumInfo: dict):
         """ 创建一个专辑卡 """
         albumCard = AlbumCard(albumInfo, self.scrollWidget)
-        self.albumCard_list.append(albumCard)
+        self.albumCards.append(albumCard)
         self.hBox.addWidget(albumCard)
         # 专辑卡信号连接到槽函数
         albumCard.playSignal.connect(self.playSig)
@@ -231,18 +231,18 @@ class AlbumGroupBox(QScrollArea):
 
     def deleteAlbums(self, albumNames: list):
         """ 删除专辑 """
-        albumInfo_list = deepcopy(self.albumInfo_list)
+        albumInfos = deepcopy(self.albumInfos)
 
-        for albumInfo in albumInfo_list.copy():
+        for albumInfo in albumInfos.copy():
             if albumInfo["album"] in albumNames:
-                albumInfo_list.remove(albumInfo)
+                albumInfos.remove(albumInfo)
 
-        self.updateWindow(albumInfo_list)
+        self.updateWindow(albumInfos)
 
     def deleteSongs(self, songPaths: list):
         """ 删除歌曲 """
-        albumInfo_list = deepcopy(self.albumInfo_list)
-        for albumInfo in albumInfo_list.copy():
+        albumInfos = deepcopy(self.albumInfos)
+        for albumInfo in albumInfos.copy():
             songInfos = albumInfo["songInfos"]
 
             for songInfo in songInfos.copy():
@@ -251,14 +251,14 @@ class AlbumGroupBox(QScrollArea):
 
             # 如果专辑变成空专辑，就将其从专辑列表中移除
             if not songInfos:
-                albumInfo_list.remove(albumInfo)
+                albumInfos.remove(albumInfo)
 
         # 更新窗口
-        self.updateWindow(albumInfo_list)
+        self.updateWindow(albumInfos)
 
-    def updateWindow(self, albumInfo_list: list):
+    def updateWindow(self, albumInfos: list):
         """ 更新窗口 """
-        if albumInfo_list == self.albumInfo_list:
+        if albumInfos == self.albumInfos:
             return
 
         # 显示遮罩
@@ -267,28 +267,28 @@ class AlbumGroupBox(QScrollArea):
         self.rightMask.show()
 
         # 根据具体情况增减专辑卡
-        newCardNum = len(albumInfo_list)
-        oldCardNum = len(self.albumCard_list)
+        newCardNum = len(albumInfos)
+        oldCardNum = len(self.albumCards)
         if newCardNum < oldCardNum:
             # 删除部分专辑卡
             for i in range(oldCardNum - 1, newCardNum - 1, -1):
-                albumCard = self.albumCard_list.pop()
+                albumCard = self.albumCards.pop()
                 self.hBox.removeWidget(albumCard)
                 albumCard.deleteLater()
         elif newCardNum > oldCardNum:
             # 新增部分专辑卡
-            for albumInfo in albumInfo_list[oldCardNum:]:
+            for albumInfo in albumInfos[oldCardNum:]:
                 self.__createOneAlbumCard(albumInfo)
                 QApplication.processEvents()
 
         self.scrollWidget.adjustSize()
 
         # 更新部分专辑卡
-        self.albumInfo_list = deepcopy(albumInfo_list)
+        self.albumInfos = deepcopy(albumInfos)
         n = oldCardNum if oldCardNum < newCardNum else newCardNum
         for i in range(n):
-            albumInfo = albumInfo_list[i]
-            self.albumCard_list[i].updateWindow(albumInfo)
+            albumInfo = albumInfos[i]
+            self.albumCards[i].updateWindow(albumInfo)
             QApplication.processEvents()
 
         self.setStyle(QApplication.style())
@@ -304,9 +304,9 @@ class AlbumCard(AlbumCardBase):
         menu.nextToPlayAct.triggered.connect(
             lambda: self.nextPlaySignal.emit(self.songInfos))
         menu.showSingerAct.triggered.connect(
-            lambda: self.switchToSingerInterfaceSig.emit(self.singerName))
+            lambda: self.switchToSingerInterfaceSig.emit(self.singer))
         menu.deleteAct.triggered.connect(
-            lambda: self.deleteCardSig.emit(self.albumName))
+            lambda: self.deleteCardSig.emit(self.album))
 
         menu.addToMenu.playingAct.triggered.connect(
             lambda: self.addToPlayingSignal.emit(self.songInfos))

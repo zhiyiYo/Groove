@@ -35,7 +35,12 @@ class DaoBase(Singleton):
         entity: Entity
             实体类对象，没有查询到则为 None
         """
-        raise NotImplementedError
+        self._prepareSelectBy(condition)
+
+        if not (self.query.exec() and self.query.first()):
+            return None
+
+        return self.loadFromRecord(self.query.record())
 
     def listBy(self, **condition) -> List[Entity]:
         """ 查询所有符合条件的记录
@@ -50,7 +55,12 @@ class DaoBase(Singleton):
         entities: List[Entity]
             实体类对象列表，没有查询到则为空列表
         """
-        raise NotImplementedError
+        self._prepareSelectBy(condition)
+
+        if not (self.query.exec()):
+            return []
+
+        return self.iterRecords()
 
     def _prepareSelectBy(self, condition: dict):
         """ 通过条件预编译查询指令
@@ -74,7 +84,20 @@ class DaoBase(Singleton):
 
     def listAll(self) -> List[Entity]:
         """ 查询所有记录 """
-        raise NotImplementedError
+        sql = f"SELECT * from {self.table}"
+        if not(self.query.exec(sql)):
+            return []
+
+        return self.iterRecords()
+
+    def iterRecords(self) -> List[Entity]:
+        """ 迭代所有查询到的记录 """
+        entities = []
+        while self.query.next():
+            entity = self.loadFromRecord(self.query.record())
+            entities.append(entity)
+
+        return entities
 
     def update(self, id, field: str, value) -> bool:
         """ 更新一条记录中某个字段的值
@@ -127,7 +150,7 @@ class DaoBase(Singleton):
         """
         raise NotImplementedError
 
-    def insertBatch(self, entities: List[Entity])-> bool:
+    def insertBatch(self, entities: List[Entity]) -> bool:
         """ 插入多条记录
 
         Parameters
@@ -171,6 +194,10 @@ class DaoBase(Singleton):
             移除是否成功
         """
         raise NotImplementedError
+
+    def clearTable(self):
+        """ 清空表格数据 """
+        return self.query.exec(f"DELETE FROM {self.table}")
 
     @staticmethod
     def loadFromRecord(record: QSqlRecord) -> Entity:

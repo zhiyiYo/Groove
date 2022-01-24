@@ -6,12 +6,12 @@ class AlbumInfoReader:
     """ 从歌曲信息列表中整理出专辑信息的类 """
 
     def __init__(self, songInfos: list):
-        self.albumInfo_list = self.getAlbumInfo(songInfos)
+        self.albumInfos = self.getAlbumInfo(songInfos)
         self.sortByModifiedTime()
 
     def getAlbumInfo(self, songInfos: list):
         """ 从歌曲信息列表中来获取专辑信息 """
-        albumInfo_list = []
+        albumInfos = []
         albumSonger_list = []
 
         for songInfo in songInfos:
@@ -22,7 +22,7 @@ class AlbumInfoReader:
             if (album, singer) not in albumSonger_list:
                 albumSonger_list.append((album, singer))
                 coverPath = getCoverPath(coverName, 'album_big')
-                albumInfo_list.append(
+                albumInfos.append(
                     {
                         "album": album,
                         "singer": singer,
@@ -36,20 +36,20 @@ class AlbumInfoReader:
                 )
             else:
                 index = albumSonger_list.index((album, singer))
-                albumInfo = albumInfo_list[index]
+                albumInfo = albumInfos[index]
                 albumInfo["songInfos"].append(songInfo)
                 # 更新专辑的更新时间
                 if albumInfo["modifiedTime"] < songInfo["createTime"]:
                     albumInfo["modifiedTime"] = songInfo["createTime"]
 
         # 根据曲目序号排序每一个专辑
-        for albumInfo in albumInfo_list:
+        for albumInfo in albumInfos:
             albumInfo["songInfos"].sort(key=self.sortAlbum)
-        return albumInfo_list
+        return albumInfos
 
     def updateAlbumInfo(self, songInfos: list):
         """ 更新专辑信息 """
-        self.albumInfo_list = self.getAlbumInfo(songInfos)
+        self.albumInfos = self.getAlbumInfo(songInfos)
 
     def sortAlbum(self, songInfo):
         trackNum = songInfo["tracknumber"]  # type:str
@@ -60,16 +60,16 @@ class AlbumInfoReader:
 
     def sortByModifiedTime(self):
         """ 依据修改日期排序专辑信息列表 """
-        self.albumInfo_list.sort(
+        self.albumInfos.sort(
             key=lambda albumInfo: albumInfo["modifiedTime"], reverse=True)
 
     def sortByDictOrder(self):
         """ 以字典序排序专辑信息列表 """
-        self.albumInfo_list.sort(key=lambda albumInfo: albumInfo["songName"])
+        self.albumInfos.sort(key=lambda albumInfo: albumInfo["songName"])
 
     def sortBySonger(self):
         """ 以歌手名排序专辑信息列表 """
-        self.albumInfo_list.sort(key=lambda albumInfo: albumInfo["singer"])
+        self.albumInfos.sort(key=lambda albumInfo: albumInfo["singer"])
 
     @staticmethod
     def getAlbumInfoByOneSong(songInfo: dict):

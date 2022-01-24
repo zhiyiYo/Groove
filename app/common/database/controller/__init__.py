@@ -1,1 +1,2 @@
 from .song_info_controller import SongInfoController
+from .album_info_controller import AlbumInfoController

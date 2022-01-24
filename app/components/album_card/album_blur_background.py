@@ -25,7 +25,8 @@ class AlbumBlurBackground(QWidget):
             调整大小后的图片尺寸
 
         blurRadius: int
-            磨砂半径, 磨砂后的图片尺寸将等于磨砂半径*2加上宽和高 """
+            磨砂半径, 磨砂后的图片尺寸将等于磨砂半径*2加上宽和高
+        """
         super().__init__(parent)
         self.__blurImage = None
         self.setBlurAlbum(imagePath, imageSize, blurRadius)

@@ -1,5 +1,7 @@
 # coding:utf-8
 from common.auto_wrap import autoWrap
+from common.database.entity import AlbumInfo
+from common.os_utils import getCoverPath
 from components.buttons.blur_button import BlurButton
 from components.widgets.check_box import CheckBox
 from components.widgets.label import ClickableLabel
@@ -8,43 +10,38 @@ from components.widgets.perspective_widget import PerspectiveWidget
 from PyQt5.QtCore import QPoint, Qt, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent, QFont, QFontMetrics, QPixmap
 from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsOpacityEffect,
-                             QLabel, QWidget, QVBoxLayout)
+                             QLabel, QVBoxLayout, QWidget)
 
 
 class AlbumCard(PerspectiveWidget):
     """ 定义包含专辑歌手名的窗口 """
 
-    playSignal = pyqtSignal(list)                           # 播放专辑
-    deleteCardSig = pyqtSignal(str)                         # 删除专辑卡
-    nextPlaySignal = pyqtSignal(list)                       # 下一首播放
-    addToPlayingSignal = pyqtSignal(list)                   # 将专辑添加到正在播放
-    checkedStateChanged = pyqtSignal(QWidget, bool)         # 选中状态改变
-    switchToSingerInterfaceSig = pyqtSignal(str)            # 切换到歌手界面
-    switchToAlbumInterfaceSig = pyqtSignal(str, str)        # 切换到专辑界面
-    addAlbumToNewCustomPlaylistSig = pyqtSignal(list)       # 将专辑添加到新建的播放列表
-    addAlbumToCustomPlaylistSig = pyqtSignal(str, list)     # 将专辑添加到已存在的自定义播放列表
-    showAlbumInfoEditDialogSig = pyqtSignal(dict)           # 显示专辑信息面板信号
-    showBlurAlbumBackgroundSig = pyqtSignal(QPoint, str)    # 显示磨砂背景
-    hideBlurAlbumBackgroundSig = pyqtSignal()               # 隐藏磨砂背景
+    playSignal = pyqtSignal(str, str)                        # 播放专辑
+    deleteCardSig = pyqtSignal(str, str)                     # 删除专辑卡
+    nextPlaySignal = pyqtSignal(str, str)                    # 下一首播放
+    addToPlayingSignal = pyqtSignal(str, str)                # 将专辑添加到正在播放
+    checkedStateChanged = pyqtSignal(QWidget, bool)          # 选中状态改变
+    switchToSingerInterfaceSig = pyqtSignal(str)             # 切换到歌手界面
+    switchToAlbumInterfaceSig = pyqtSignal(str, str)         # 切换到专辑界面
+    addAlbumToNewCustomPlaylistSig = pyqtSignal(str, str)    # 将专辑添加到新建的播放列表
+    addAlbumToCustomPlaylistSig = pyqtSignal(str, str, str)  # 将专辑添加到自定义播放列表
+    showAlbumInfoEditDialogSig = pyqtSignal(str, str)        # 显示专辑信息面板信号
+    showBlurAlbumBackgroundSig = pyqtSignal(QPoint, str)     # 显示磨砂背景
+    hideBlurAlbumBackgroundSig = pyqtSignal()                # 隐藏磨砂背景
 
-    def __init__(self, albumInfo: dict, parent):
+    def __init__(self, albumInfo: AlbumInfo, parent):
         super().__init__(parent, True)
-        self.__getAlbumInfo(albumInfo)
-        # 初始化标志位
+        self.__setAlbumInfo(albumInfo)
         self.isChecked = False
         self.isInSelectionMode = False
-        # 创建小部件
         self.__createWidgets()
-        # 初始化
         self.__initWidget()
 
     def __createWidgets(self):
         """ 创建小部件 """
         self.vBoxLayout = QVBoxLayout(self)
-        # 实例化专辑名和歌手名
-        self.albumNameLabel = ClickableLabel(self.albumName, self)
-        self.contentLabel = ClickableLabel(self.singerName, self, False)
-        # 实例化封面和按钮
+        self.albumLabel = ClickableLabel(self.album, self)
+        self.contentLabel = ClickableLabel(self.singer, self, False)
         self.albumPic = QLabel(self)
         self.playButton = BlurButton(
             self,
@@ -60,9 +57,7 @@ class AlbumCard(PerspectiveWidget):
             self.coverPath,
             self.tr('Add to')
         )
-        # 创建复选框
         self.checkBox = CheckBox(self, forwardTargetWidget=self.albumPic)
-        # 创建动画和窗口特效
         self.checkBoxOpacityEffect = QGraphicsOpacityEffect(self)
 
     def __initWidget(self):
@@ -71,32 +66,38 @@ class AlbumCard(PerspectiveWidget):
         self.setAttribute(Qt.WA_StyledBackground)
         self.albumPic.setFixedSize(200, 200)
         self.contentLabel.setFixedWidth(210)
-        self.albumNameLabel.setFixedWidth(210)
+        self.albumLabel.setFixedWidth(210)
         self.playButton.move(35, 70)
         self.addToButton.move(105, 70)
         self.albumPic.setPixmap(QPixmap(self.coverPath).scaled(
             200, 200, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
+
         # 给小部件添加特效
         self.checkBox.setGraphicsEffect(self.checkBoxOpacityEffect)
+
         # 隐藏按钮
         self.playButton.hide()
         self.addToButton.hide()
+
         # 设置鼠标光标
         self.contentLabel.setCursor(Qt.PointingHandCursor)
+
         # 设置部件位置
         self.__initLayout()
+
         # 分配ID和属性
         self.setObjectName("albumCard")
-        self.albumNameLabel.setObjectName("albumNameLabel")
+        self.albumLabel.setObjectName("albumLabel")
         self.contentLabel.setObjectName("contentLabel")
         self.setProperty("isChecked", "False")
-        self.albumNameLabel.setProperty("isChecked", "False")
+        self.albumLabel.setProperty("isChecked", "False")
         self.contentLabel.setProperty("isChecked", "False")
+
         # 将信号连接到槽函数
         self.playButton.clicked.connect(
-            lambda: self.playSignal.emit(self.songInfos))
+            lambda: self.playSignal.emit(self.singer, self.album))
         self.contentLabel.clicked.connect(
-            lambda: self.switchToSingerInterfaceSig.emit(self.singerName))
+            lambda: self.switchToSingerInterfaceSig.emit(self.singer))
         self.addToButton.clicked.connect(self.__showAddToMenu)
         self.checkBox.stateChanged.connect(self.__checkedStateChangedSlot)
 
@@ -106,7 +107,7 @@ class AlbumCard(PerspectiveWidget):
         self.vBoxLayout.setSpacing(0)
         self.vBoxLayout.addWidget(self.albumPic)
         self.vBoxLayout.addSpacing(11)
-        self.vBoxLayout.addWidget(self.albumNameLabel)
+        self.vBoxLayout.addWidget(self.albumLabel)
         self.vBoxLayout.addSpacing(2)
         self.vBoxLayout.addWidget(self.contentLabel)
         self.vBoxLayout.setAlignment(Qt.AlignTop)
@@ -119,13 +120,13 @@ class AlbumCard(PerspectiveWidget):
         # 显示磨砂背景
         albumCardPos = self.mapToGlobal(QPoint(0, 0))  # type:QPoint
         self.showBlurAlbumBackgroundSig.emit(albumCardPos, self.coverPath)
+
         # 处于选择模式下按钮不可见
         self.playButton.setHidden(self.isInSelectionMode)
         self.addToButton.setHidden(self.isInSelectionMode)
 
     def leaveEvent(self, e):
         """ 鼠标离开时隐藏磨砂背景和按钮 """
-        # 隐藏磨砂背景
         self.hideBlurAlbumBackgroundSig.emit()
         self.addToButton.hide()
         self.playButton.hide()
@@ -134,28 +135,28 @@ class AlbumCard(PerspectiveWidget):
         """ 显示右击菜单 """
         menu = AlbumCardContextMenu(parent=self)
         menu.playAct.triggered.connect(
-            lambda: self.playSignal.emit(self.songInfos))
+            lambda: self.playSignal.emit(self.singer, self.album))
         menu.nextToPlayAct.triggered.connect(
-            lambda: self.nextPlaySignal.emit(self.songInfos))
+            lambda: self.nextPlaySignal.emit(self.singer, self.album))
         menu.deleteAct.triggered.connect(
-            lambda: self.deleteCardSig.emit(self.albumName))
+            lambda: self.deleteCardSig.emit(self.singer, self.album))
         menu.editInfoAct.triggered.connect(self.showAlbumInfoEditDialog)
         menu.selectAct.triggered.connect(self.__selectActSlot)
         menu.showSingerAct.triggered.connect(
-            lambda: self.switchToSingerInterfaceSig.emit(self.singerName))
+            lambda: self.switchToSingerInterfaceSig.emit(self.singer))
 
         menu.addToMenu.playingAct.triggered.connect(
-            lambda: self.addToPlayingSignal.emit(self.songInfos))
+            lambda: self.addToPlayingSignal.emit(self.singer, self.album))
         menu.addToMenu.addSongsToPlaylistSig.connect(
-            lambda name: self.addAlbumToCustomPlaylistSig.emit(name, self.songInfos))
+            lambda name: self.addAlbumToCustomPlaylistSig.emit(name, self.singer, self.album))
         menu.addToMenu.newPlaylistAct.triggered.connect(
-            lambda: self.addAlbumToNewCustomPlaylistSig.emit(self.songInfos))
+            lambda: self.addAlbumToNewCustomPlaylistSig.emit(self.singer, self.album))
 
         menu.exec(event.globalPos())
 
     def __adjustLabel(self):
         """ 根据专辑名的长度决定是否换行和添加省略号 """
-        newText, isWordWrap = autoWrap(self.albumNameLabel.text(), 22)
+        newText, isWordWrap = autoWrap(self.albumLabel.text(), 22)
         if isWordWrap:
             # 添加省略号
             index = newText.index("\n")
@@ -163,7 +164,7 @@ class AlbumCard(PerspectiveWidget):
             secondLineText = fontMetrics.elidedText(
                 newText[index + 1:], Qt.ElideRight, 200)
             newText = newText[: index + 1] + secondLineText
-            self.albumNameLabel.setText(newText)
+            self.albumLabel.setText(newText)
 
         # 给歌手名添加省略号
         fontMetrics = QFontMetrics(QFont("Microsoft YaHei", 10, 25))
@@ -171,7 +172,7 @@ class AlbumCard(PerspectiveWidget):
             self.contentLabel.text(), Qt.ElideRight, 200)
         self.contentLabel.setText(newSongerName)
         self.contentLabel.adjustSize()
-        self.albumNameLabel.adjustSize()
+        self.albumLabel.adjustSize()
 
     def mouseReleaseEvent(self, e):
         """ 鼠标松开发送切换到专辑界面信号或者取反选中状态 """
@@ -181,53 +182,49 @@ class AlbumCard(PerspectiveWidget):
                 self.setChecked(not self.isChecked)
             else:
                 # 不处于选择模式时且鼠标松开事件不是复选框发来的才发送切换到专辑界面的信号
-                self.switchToAlbumInterfaceSig.emit(
-                    self.albumName, self.singerName)
+                self.switchToAlbumInterfaceSig.emit(self.singer, self.album)
 
-    def updateWindow(self, newAlbumInfo: dict):
+    def updateWindow(self, albumInfo: AlbumInfo):
         """ 更新专辑卡窗口信息 """
-        if newAlbumInfo == self.albumInfo:
+        if albumInfo == self.albumInfo:
             return
-        self.__getAlbumInfo(newAlbumInfo)
+
+        self.__setAlbumInfo(albumInfo)
         self.albumPic.setPixmap(QPixmap(self.coverPath).scaled(
             200, 200, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
-        self.albumNameLabel.setText(self.albumName)
-        self.contentLabel.setText(self.singerName)
+        self.albumLabel.setText(self.album)
+        self.contentLabel.setText(self.singer)
         self.playButton.setBlurPic(self.coverPath, 40)
         self.addToButton.setBlurPic(self.coverPath, 40)
         self.__adjustLabel()
 
-    def __getAlbumInfo(self, albumInfo: dict):
+    def __setAlbumInfo(self, albumInfo: AlbumInfo):
         """ 获取专辑信息 """
         self.albumInfo = albumInfo
-        self.songInfos = self.albumInfo.get("songInfos", [])
-        self.albumName = albumInfo.get("album", self.tr("Unknown album"))
-        self.singerName = albumInfo.get("singer", self.tr("Unknown artist"))
-        self.year = albumInfo.get('year', self.tr('Unknown year'))
-        self.coverPath = albumInfo.get(
-            "coverPath", ":/images/default_covers/album_200_200.png")
+        self.album = albumInfo.album
+        self.singer = albumInfo.singer
+        self.year = str(albumInfo.year)
+        self.coverPath = getCoverPath(self.singer, self.album, 'album_big')
 
     def showAlbumInfoEditDialog(self):
         """ 显示专辑信息编辑面板 """
-        self.showAlbumInfoEditDialogSig.emit(self.albumInfo)
+        self.showAlbumInfoEditDialogSig.emit(self.singer, self.album)
 
     def updateAlbumCover(self, coverPath: str):
         """ 更新专辑封面 """
         self.coverPath = coverPath
-        self.albumPic.setPixmap(
-            QPixmap(self.coverPath).scaled(
-                200, 200, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
+        self.albumPic.setPixmap(QPixmap(self.coverPath).scaled(
+            200, 200, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
         self.playButton.setBlurPic(coverPath, 40)
         self.addToButton.setBlurPic(coverPath, 40)
 
     def __checkedStateChangedSlot(self):
         """ 复选框选中状态改变对应的槽函数 """
         self.isChecked = self.checkBox.isChecked()
-        # 发送信号
         self.checkedStateChanged.emit(self, self.isChecked)
         # 更新属性和背景色
         self.setProperty("isChecked", str(self.isChecked))
-        self.albumNameLabel.setProperty("isChecked", str(self.isChecked))
+        self.albumLabel.setProperty("isChecked", str(self.isChecked))
         self.contentLabel.setProperty("isChecked", str(self.isChecked))
         self.setStyle(QApplication.style())
 
@@ -235,15 +232,17 @@ class AlbumCard(PerspectiveWidget):
         """ 设置歌曲卡的选中状态 """
         self.checkBox.setChecked(isChecked)
 
-    def setSelectionModeOpen(self, isOpenSelectionMode: bool):
+    def setSelectionModeOpen(self, isOpen: bool):
         """ 设置是否进入选择模式, 处于选择模式下复选框一直可见，按钮不可见 """
-        if self.isInSelectionMode == isOpenSelectionMode:
+        if self.isInSelectionMode == isOpen:
             return
+
         # 进入选择模式时显示复选框
-        if isOpenSelectionMode:
+        if isOpen:
             self.checkBoxOpacityEffect.setOpacity(1)
             self.checkBox.show()
-        self.isInSelectionMode = isOpenSelectionMode
+
+        self.isInSelectionMode = isOpen
 
     def __selectActSlot(self):
         """ 右击菜单选择动作对应的槽函数 """
@@ -259,11 +258,11 @@ class AlbumCard(PerspectiveWidget):
         y = pos.y() + int(
             self.addToButton.height() / 2 - (13 + 38 * menu.actionCount()) / 2)
         menu.playingAct.triggered.connect(
-            lambda: self.addToPlayingSignal.emit(self.songInfos))
+            lambda: self.addToPlayingSignal.emit(self.singer, self.album))
         menu.newPlaylistAct.triggered.connect(
-            lambda: self.addAlbumToNewCustomPlaylistSig.emit(self.songInfos))
+            lambda: self.addAlbumToNewCustomPlaylistSig.emit(self.singer, self.album))
         menu.addSongsToPlaylistSig.connect(
-            lambda name: self.addAlbumToCustomPlaylistSig.emit(name, self.songInfos))
+            lambda name: self.addAlbumToCustomPlaylistSig.emit(name, self.singer, self.album))
         menu.exec(QPoint(x, y))
 
 
@@ -272,8 +271,6 @@ class AlbumCardContextMenu(DWMMenu):
 
     def __init__(self, parent):
         super().__init__("", parent)
-        # self.setFixedWidth(173)
-        # 创建动作
         self.__createActions()
         self.setObjectName("albumCardContextMenu")
         self.setQss()
@@ -292,15 +289,8 @@ class AlbumCardContextMenu(DWMMenu):
 
         # 添加动作到菜单
         self.addActions([self.playAct, self.nextToPlayAct])
-        # 将子菜单添加到主菜单
         self.addMenu(self.addToMenu)
         self.addActions(
-            [
-                self.showSingerAct,
-                self.pinToStartMenuAct,
-                self.editInfoAct,
-                self.deleteAct,
-            ]
-        )
+            [self.showSingerAct, self.pinToStartMenuAct, self.editInfoAct, self.deleteAct])
         self.addSeparator()
         self.addAction(self.selectAct)
