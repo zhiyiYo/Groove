@@ -1,4 +1,5 @@
 # coding:utf-8
+from common.database.entity import SongInfo
 from components.buttons.tooltip_button import TooltipButton
 from components.widgets.label import ClickableLabel
 from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
@@ -14,15 +15,15 @@ from .menu import AddToMenu
 class SongCard(QWidget):
     """ 歌曲卡 """
 
-    clicked = pyqtSignal(int)                           # 歌曲卡点击
-    aniStartSig = pyqtSignal()                          # 反弹动画开始
-    checkedStateChanged = pyqtSignal(int, bool)         # 歌曲卡选中状态改变
-    switchToSingerInterfaceSig = pyqtSignal(str)        # 切换到歌手界面
-    switchToAlbumInterfaceSig = pyqtSignal(str, str)    # 切换到专辑界面
-    addSongToNewCustomPlaylistSig = pyqtSignal(dict)    # 添加歌曲到新建的播放列表
-    addSongToCustomPlaylistSig = pyqtSignal(str, dict)  # 添加歌曲到已存在的播放列表
+    clicked = pyqtSignal(int)                               # 歌曲卡点击
+    aniStartSig = pyqtSignal()                              # 反弹动画开始
+    checkedStateChanged = pyqtSignal(int, bool)             # 歌曲卡选中状态改变
+    switchToSingerInterfaceSig = pyqtSignal(str)            # 切换到歌手界面
+    switchToAlbumInterfaceSig = pyqtSignal(str, str)        # 切换到专辑界面
+    addSongToNewCustomPlaylistSig = pyqtSignal(SongInfo)    # 添加歌曲到新建的播放列表
+    addSongToCustomPlaylistSig = pyqtSignal(str, SongInfo)  # 添加歌曲到已存在的播放列表
 
-    def __init__(self, songInfo: dict, parent=None):
+    def __init__(self, songInfo: SongInfo, parent=None):
         super().__init__(parent=parent)
         self.__getInfo(songInfo)
         self.__resizeTime = 0
@@ -30,12 +31,15 @@ class SongCard(QWidget):
         self.isPlaying = False
         self.isChecked = False
         self.isInSelectionMode = False
+
         # 处理每个小部件所占的最大宽度
         self.__maxSongNameCardWidth = 420
-        self.__maxSongerLabelWidth = 284
-        self.__maxAlbumLabelWidth = 284
+        self.__maxSingerWidth = 284
+        self.__maxAlbumWidth = 284
+
         # 对应的 item 的下标
         self.itemIndex = None
+
         # 创建小部件
         self.songNameCard = SongNameCard(self.songName, self)
         self.singerLabel = ClickableLabel(self.singer, self, False)
@@ -47,16 +51,11 @@ class SongCard(QWidget):
         self.playButton = self.songNameCard.playButton
         self.addToButton = self.songNameCard.addToButton
         self.checkBox = self.songNameCard.checkBox
-        self.label_list = [
-            self.songNameLabel,
-            self.singerLabel,
-            self.albumLabel,
-            self.yearLabel,
-            self.durationLabel
+        self.labels = [
+            self.songNameLabel, self.singerLabel,
+            self.albumLabel, self.yearLabel, self.durationLabel
         ]
-        # 创建动画
         self.__createAnimations()
-        # 初始化
         self.__initWidget()
 
     def __initWidget(self):
@@ -68,15 +67,16 @@ class SongCard(QWidget):
         self.albumLabel.setCursor(Qt.PointingHandCursor)
         self.singerLabel.setCursor(Qt.PointingHandCursor)
         self.setAttribute(Qt.WA_StyledBackground)
+
         # 分配ID和属性
         self.setObjectName("songCard")
         self.songNameLabel.setObjectName('songNameLabel')
         self.albumLabel.setObjectName("clickableLabel")
         self.singerLabel.setObjectName("clickableLabel")
         self.setState(False, False, False, False)
+
         # 安装事件过滤器
         self.installEventFilter(self)
-        # 信号连接到槽
         self.__connectSignalToSlot()
 
     def setState(self, isPlay: bool, isEnter: bool, isChecked: bool, isPressed: bool):
@@ -106,44 +106,45 @@ class SongCard(QWidget):
         self.buttonGroup.setProperty('state', bgState)
         self.checkBox.setProperty('state', checkBoxState)
         self.songNameCard.playingLabel.setProperty('state', checkedState)
-        for label in self.label_list:
+
+        for label in self.labels:
             label.setProperty('state', labelState)
+
         self.setStyle(QApplication.style())
 
-    def __getInfo(self, songInfo: dict):
+    def __getInfo(self, songInfo: SongInfo):
         """ 从歌曲信息中分离信息 """
         self.songInfo = songInfo
-        self.singer = songInfo.get("singer", self.tr("Unknown artist"))
-        self.album = songInfo.get("album", self.tr("Unknown album"))
-        self.duration = songInfo.get("duration", "0:00")
-        self.songName = songInfo.get("songName", self.tr("Unknown song"))
-        self.year = songInfo.get("year", "")
+        self.songName = songInfo.title
+        self.singer = songInfo.singer
+        self.album = songInfo.album
+        self.year = str(songInfo.year or '')
+        self.duration = f"{int(songInfo.duration//60)}:{int(songInfo.duration%60):02}"
 
     def __createAnimations(self):
         """ 创建动画 """
         self.aniGroup = QParallelAnimationGroup(self)
-        self.__deltaX_list = [13, 5, -3, -11, -13]
-        self.__aniWidget_list = [
-            self.songNameCard,
-            self.singerLabel,
-            self.albumLabel,
-            self.yearLabel,
-            self.durationLabel,
+        self.__deltaXs = [13, 5, -3, -11, -13]
+        self.__aniWidgets = [
+            self.songNameCard, self.singerLabel, self.albumLabel,
+            self.yearLabel, self.durationLabel,
         ]
-        self.__ani_list = [
-            QPropertyAnimation(widget, b"geometry") for widget in self.__aniWidget_list]
-        for ani in self.__ani_list:
+        self.__anis = [
+            QPropertyAnimation(w, b"pos") for w in self.__aniWidgets]
+
+        for ani in self.__anis:
             ani.setDuration(400)
             ani.setEasingCurve(QEasingCurve.OutQuad)
             self.aniGroup.addAnimation(ani)
-        # 记录下移动目标位置
-        self.__getAniTargetX_list()
 
-    def __getAniTargetX_list(self):
+        # 记录下移动目标位置
+        self.__getAniTargetXs()
+
+    def __getAniTargetXs(self):
         """ 计算动画的初始值 """
-        self.__aniTargetX_list = []
-        for deltaX, widget in zip(self.__deltaX_list, self.__aniWidget_list):
-            self.__aniTargetX_list.append(deltaX + widget.x())
+        self.__aniTargetXs = []
+        for deltaX, widget in zip(self.__deltaXs, self.__aniWidgets):
+            self.__aniTargetXs.append(deltaX + widget.x())
 
     def eventFilter(self, obj, e: QEvent):
         """ 更新样式 """
@@ -160,6 +161,7 @@ class SongCard(QWidget):
                 self.setState(self.isPlaying, False, self.isChecked, True)
             elif e.type() == QEvent.MouseButtonRelease:
                 self.setState(True, False, self.isChecked, False)
+
         return super().eventFilter(obj, e)
 
     def mousePressEvent(self, e):
@@ -167,22 +169,21 @@ class SongCard(QWidget):
         super().mousePressEvent(e)
         # 移动小部件
         if self.aniGroup.state() == QAbstractAnimation.Stopped:
-            for deltaX, widget in zip(self.__deltaX_list, self.__aniWidget_list):
-                widget.move(widget.x() + deltaX, widget.y())
+            for dx, w in zip(self.__deltaXs, self.__aniWidgets):
+                w.move(w.x() + dx, w.y())
         else:
             self.aniGroup.stop()
-            for targetX, widget in zip(self.__aniTargetX_list, self.__aniWidget_list):
-                widget.move(targetX, widget.y())
+            for x, w in zip(self.__aniTargetXs, self.__aniWidgets):
+                w.move(x, w.y())
 
     def mouseReleaseEvent(self, e: QMouseEvent):
         """ 鼠标松开时开始动画 """
-        for ani, widget, deltaX in zip(self.__ani_list, self.__aniWidget_list, self.__deltaX_list):
-            ani.setStartValue(
-                QRect(widget.x(), widget.y(), widget.width(), widget.height()))
-            ani.setEndValue(
-                QRect(widget.x() - deltaX, widget.y(), widget.width(), widget.height()))
+        for ani, w, dx in zip(self.__anis, self.__aniWidgets, self.__deltaXs):
+            ani.setStartValue(w.pos())
+            ani.setEndValue(QPoint(w.x() - dx, w.y()))
 
         self.checkBox.setVisible(self.isInSelectionMode)
+
         if e.button() == Qt.LeftButton:
             if not self.isInSelectionMode:
                 self.aniGroup.finished.connect(self.__onAniFinished)
@@ -190,6 +191,7 @@ class SongCard(QWidget):
                 self.setPlay(True)
             else:
                 self.setChecked(not self.isChecked)
+
         self.aniGroup.start()
 
     def __onAniFinished(self):
@@ -203,45 +205,47 @@ class SongCard(QWidget):
     def resizeEvent(self, e):
         """ 改变窗口大小时移动标签 """
         self.__resizeTime += 1
+
         if self.__resizeTime == 1:
             self.originalWidth = self.width()
             width = self.width() - 246
+
             # 计算各个标签所占的最大宽度
             self.__maxSongNameCardWidth = int(42 / 99 * width)
-            self.__maxSongerLabelWidth = int(
+            self.__maxSingerWidth = int(
                 (width - self.__maxSongNameCardWidth) / 2)
-            self.__maxAlbumLabelWidth = self.__maxSongerLabelWidth
+            self.__maxAlbumWidth = self.__maxSingerWidth
+
             # 如果实际尺寸大于可分配尺寸，就调整大小
             self.__adjustWidgetWidth()
+
         elif self.__resizeTime > 1:
             deltaWidth = self.width() - self.originalWidth
             self.originalWidth = self.width()
+
             # 分配多出来的宽度
             threeEqualWidth = int(deltaWidth / 3)
             self.__maxSongNameCardWidth += threeEqualWidth
-            self.__maxSongerLabelWidth += threeEqualWidth
-            self.__maxAlbumLabelWidth += deltaWidth - 2 * threeEqualWidth
+            self.__maxSingerWidth += threeEqualWidth
+            self.__maxAlbumWidth += deltaWidth - 2 * threeEqualWidth
             self.__adjustWidgetWidth()
+
         # 移动标签
         self.durationLabel.move(self.width() - 45, 20)
         self.yearLabel.move(self.width() - 190, 20)
         self.singerLabel.move(self.__maxSongNameCardWidth + 26, 20)
         self.albumLabel.move(self.singerLabel.x() +
-                             self.__maxSongerLabelWidth + 15, 20)
+                             self.__maxSingerWidth + 15, 20)
         # 更新动画目标移动位置
-        self.__getAniTargetX_list()
+        self.__getAniTargetXs()
 
     def __adjustWidgetWidth(self):
         """ 调整小部件宽度 """
         self.songNameCard.resize(self.__maxSongNameCardWidth, 60)
-        if self.singerWidth > self.__maxSongerLabelWidth:
-            self.singerLabel.setFixedWidth(self.__maxSongerLabelWidth)
-        else:
-            self.singerLabel.setFixedWidth(self.singerWidth)
-        if self.albumWidth > self.__maxAlbumLabelWidth:
-            self.albumLabel.setFixedWidth(self.__maxAlbumLabelWidth)
-        else:
-            self.albumLabel.setFixedWidth(self.albumWidth)
+        self.singerLabel.setFixedWidth(
+            min(self.singerWidth, self.__maxSingerWidth))
+        self.albumLabel.setFixedWidth(
+            min(self.albumWidth, self.__maxAlbumWidth))
 
     def __getLabelWidth(self):
         """ 计算标签的长度 """
@@ -249,7 +253,7 @@ class SongCard(QWidget):
         self.singerWidth = fontMetrics.width(self.singer)
         self.albumWidth = fontMetrics.width(self.album)
 
-    def updateSongCard(self, songInfo: dict):
+    def updateSongCard(self, songInfo: SongInfo):
         """ 更新歌曲卡信息 """
         self.resize(self.size())
         self.__getInfo(songInfo)
@@ -260,23 +264,13 @@ class SongCard(QWidget):
         self.durationLabel.setText(self.duration)
         # 调整宽度
         self.__getLabelWidth()
-        singerWidth = (
-            self.singerWidth
-            if self.singerWidth <= self.__maxSongerLabelWidth
-            else self.__maxSongerLabelWidth
-        )
-        albumWidth = (
-            self.albumWidth
-            if self.albumWidth <= self.__maxAlbumLabelWidth
-            else self.__maxAlbumLabelWidth
-        )
-        self.singerLabel.setFixedWidth(singerWidth)
-        self.albumLabel.setFixedWidth(albumWidth)
+        self.__adjustWidgetWidth()
 
     def setPlay(self, isPlay: bool):
         """ 设置歌曲卡播放状态 """
         if self.isPlaying == isPlay:
             return
+
         self.isPlaying = isPlay
         self.songNameCard.setPlay(isPlay)
         self.setState(isPlay, False, self.isChecked, False)
@@ -294,12 +288,13 @@ class SongCard(QWidget):
         self.setSelectionModeOpen(True)
         self.checkedStateChanged.emit(self.itemIndex, self.isChecked)
 
-    def setSelectionModeOpen(self, isOpenSelectionMode: bool):
+    def setSelectionModeOpen(self, isOpen: bool):
         """ 设置是否进入选择模式，选择模式下复选框一直可见，按钮不可见 """
-        if self.isInSelectionMode == isOpenSelectionMode:
+        if self.isInSelectionMode == isOpen:
             return
-        self.isInSelectionMode = isOpenSelectionMode
-        self.checkBox.setVisible(isOpenSelectionMode)
+
+        self.isInSelectionMode = isOpen
+        self.checkBox.setVisible(isOpen)
         self.buttonGroup.setHidden(True)
 
     def __showAddToMenu(self):
@@ -309,6 +304,7 @@ class SongCard(QWidget):
             QPoint(self.addToButton.x()+self.buttonGroup.x(), 0))
         x = pos.x()+self.addToButton.width()+5
         y = pos.y()+self.addToButton.height()//2-(13+38*menu.actionCount()//2)
+
         menu.newPlaylistAct.triggered.connect(
             lambda: self.addSongToNewCustomPlaylistSig.emit(self.songInfo))
         menu.addSongsToPlaylistSig.connect(
@@ -327,24 +323,23 @@ class SongCard(QWidget):
         self.addToButton.clicked.connect(self.__showAddToMenu)
 
 
-class ToolButton(TooltipButton):
+class ToolButton(QToolButton):
     """ 工具按钮 """
 
-    def __init__(self, iconPath_list, parent=None):
+    def __init__(self, iconPaths: dict, parent=None):
         super().__init__(parent)
-        self.iconPath_list = iconPath_list
-        # 设置正在播放标志位
+        self.iconPaths = iconPaths
         self.isPlaying = False
         self.setFixedSize(60, 60)
         self.setIconSize(QSize(60, 60))
-        self.setIcon(QIcon(self.iconPath_list[self.isPlaying]))
+        self.setIcon(QIcon(self.iconPaths[self.isPlaying]))
         self.setStyleSheet("QToolButton{border:none;margin:0}")
-        self.setDarkToolTip(True)
+        # self.setDarkToolTip(True)
 
     def setPlay(self, isPlay: bool):
         """ 设置播放状态，更新按钮图标 """
         self.isPlaying = isPlay
-        self.setIcon(QIcon(self.iconPath_list[self.isPlaying]))
+        self.setIcon(QIcon(self.iconPaths[self.isPlaying]))
 
 
 class ButtonGroup(QWidget):
@@ -372,8 +367,8 @@ class ButtonGroup(QWidget):
 
         self.addToButton.move(80, 0)
         self.playButton.move(20, 0)
-        self.addToButton.setToolTip(self.tr('Add to'))
-        self.playButton.setToolTip(self.tr('Play'))
+        # self.addToButton.setToolTip(self.tr('Add to'))
+        # self.playButton.setToolTip(self.tr('Play'))
 
     def setPlay(self, isPlay: bool):
         """ 根据播放状态更换按钮图标 """
@@ -384,17 +379,15 @@ class ButtonGroup(QWidget):
 class SongNameCard(QWidget):
     """ 歌名卡 """
 
-    def __init__(self, songName, parent=None):
+    def __init__(self, songName: str, parent=None):
         super().__init__(parent)
         self.songName = songName
-        # 创建小部件
         self.checkBox = QCheckBox(self)
         self.playingLabel = QLabel(self)
         self.songNameLabel = QLabel(songName, self)
         self.buttonGroup = ButtonGroup(self)
         self.playButton = self.buttonGroup.playButton
         self.addToButton = self.buttonGroup.addToButton
-        # 初始化
         self.__initWidget()
 
     def __initWidget(self):
@@ -405,10 +398,12 @@ class SongNameCard(QWidget):
         self.playingLabel.setPixmap(
             QPixmap(":/images/playing_interface/Playing_green.png"))
         self.playingLabel.setObjectName('playingLabel')
+
         # 隐藏小部件
         self.checkBox.hide()
         self.buttonGroup.hide()
         self.playingLabel.hide()
+
         # 计算歌名的长度
         self.__getSongNameWidth()
         self.__initLayout()
@@ -423,15 +418,13 @@ class SongNameCard(QWidget):
     def __getSongNameWidth(self):
         """ 计算歌名的长度 """
         fontMetrics = QFontMetrics(QFont("Microsoft YaHei", 9))
-        self.songNameWidth = sum([fontMetrics.width(i) for i in self.songName])
+        self.songNameWidth = fontMetrics.width(self.songName)
 
     def setPlay(self, isPlay: bool):
         """ 设置播放状态并移动小部件 """
         self.buttonGroup.setPlay(isPlay)
-        # 显示/隐藏正在播放图标并根据情况移动歌名标签
         self.playingLabel.setHidden(not isPlay)
         self.songNameLabel.move(68 if isPlay else 41, self.songNameLabel.y())
-        # 更新按钮位置
         self.__moveButtonGroup()
 
     def resizeEvent(self, e):
@@ -441,17 +434,17 @@ class SongNameCard(QWidget):
 
     def __moveButtonGroup(self):
         """ 移动按钮组 """
-        if self.songNameWidth + self.songNameLabel.x() >= self.width() - 140:
+        if self.songNameWidth+self.songNameLabel.x() >= self.width()-140:
             x = self.width() - 140
         else:
             x = self.songNameWidth + self.songNameLabel.x()
+
         self.buttonGroup.move(x, 0)
 
     def setSongName(self, songName: str):
         """ 更新歌手名标签的文本并调整宽度 """
         self.songName = songName
         self.songNameLabel.setText(songName)
-        # 重新计算歌名宽度并移动按钮
         self.__getSongNameWidth()
         self.__moveButtonGroup()
         self.songNameLabel.setFixedWidth(self.songNameWidth)

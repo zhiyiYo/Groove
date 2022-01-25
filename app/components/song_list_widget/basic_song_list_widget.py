@@ -213,7 +213,7 @@ class BasicSongListWidget(ListWidget):
     def updateOneSongCard(self, newSongInfo: SongInfo):
         """ 更新一个歌曲卡 """
         for i, songInfo in enumerate(self.songInfos):
-            if songInfo["songPath"] == newSongInfo["songPath"]:
+            if songInfo.file == newSongInfo.file:
                 self.songInfos[i] = newSongInfo
                 self.songCards[i].updateSongCard(newSongInfo)
 

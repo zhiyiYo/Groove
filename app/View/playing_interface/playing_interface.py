@@ -3,6 +3,7 @@ from copy import deepcopy
 from typing import Dict, List
 
 from common.os_utils import getCoverPath
+from common.database.entity import SongInfo
 from common.thread.get_lyric_thread import GetLyricThread
 from common.thread.get_mv_url_thread import GetMvUrlThread
 from components.buttons.three_state_button import ThreeStatePushButton
@@ -42,7 +43,7 @@ class PlayingInterface(QWidget):
     volumeChanged = pyqtSignal(int)                      # 改变音量
     randomPlayAllSig = pyqtSignal()                      # 创建新的无序播放列表
     randomPlayChanged = pyqtSignal(bool)                 # 随机播放当前播放列表
-    removeSongSignal = pyqtSignal(int)                  # 从播放列表移除歌曲
+    removeSongSignal = pyqtSignal(int)                   # 从播放列表移除歌曲
     muteStateChanged = pyqtSignal(bool)                  # 静音/取消静音
     progressSliderMoved = pyqtSignal(int)                # 歌曲进度条滑动
     fullScreenChanged = pyqtSignal(bool)                 # 进入/退出全屏
@@ -58,9 +59,9 @@ class PlayingInterface(QWidget):
     addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 将歌曲添加到已存在的自定义播放列表
     loopModeChanged = pyqtSignal(QMediaPlaylist.PlaybackMode)
 
-    def __init__(self, playlist: list = None, parent=None):
+    def __init__(self, playlist: List[SongInfo] = None, parent=None):
         super().__init__(parent)
-        self.playlist = deepcopy(playlist) if playlist else []
+        self.playlist = playlist if playlist else []
         self.currentIndex = 0
         self.isPlaylistVisible = False
         self.isInSelectionMode = True
@@ -127,7 +128,7 @@ class PlayingInterface(QWidget):
         # 开启磨砂线程
         if self.playlist:
             self.albumCoverLabel.setCover(
-                self.songInfoCardChute.cards[1].albumCoverPath)
+                self.songInfoCardChute.cards[1].coverPath)
 
         # 将信号连接到槽
         self.__connectSignalToSlot()
@@ -315,7 +316,7 @@ class PlayingInterface(QWidget):
         self.songInfoCardChute.setPlaylist(self.playlist, isResetIndex, index)
         self.songListWidget.updateSongCards(self.playlist, isResetIndex, index)
         self.albumCoverLabel.setCover(
-            self.songInfoCardChute.cards[1].albumCoverPath)
+            self.songInfoCardChute.cards[1].coverPath)
 
         if self.playlist:
             self.__getLyric()
@@ -337,7 +338,6 @@ class PlayingInterface(QWidget):
     def __startSongInfoCardTimer(self):
         """ 重新打开歌曲信息卡的定时器 """
         if not self.playBar.volumeSliderWidget.isVisible():
-            # 只有音量滑动条不可见才打开计时器
             self.songInfoCardChute.startSongInfoCardTimer()
 
     def __removeSongFromPlaylist(self, index):
@@ -385,7 +385,6 @@ class PlayingInterface(QWidget):
         """ 清空歌曲卡 """
         self.playlist.clear()
         self.songListWidget.clearSongCards()
-        # 显示随机播放所有按钮
         self.__setGuideLabelHidden(False)
         self.playBar.hide()
 
@@ -407,15 +406,15 @@ class PlayingInterface(QWidget):
         # 最后再显示歌曲信息卡
         self.songInfoCardChute.setHidden(not isHidden)
 
-    def updateOneSongCard(self, newSongInfo: dict):
+    def updateOneSongCard(self, newSongInfo: SongInfo):
         """ 更新一个歌曲卡 """
         self.songListWidget.updateOneSongCard(newSongInfo)
         self.playlist = self.songListWidget.songInfos
         self.songInfoCardChute.playlist = self.playlist
 
-    def updateMultiSongCards(self, newSongInfo_list: list):
+    def updateMultiSongCards(self, songInfos: List[SongInfo]):
         """ 更新多个歌曲卡 """
-        self.songListWidget.updateMultiSongCards(newSongInfo_list)
+        self.songListWidget.updateMultiSongCards(songInfos)
         self.playlist = self.songListWidget.songInfos
         self.songInfoCardChute.playlist = self.playlist
 
@@ -502,6 +501,7 @@ class PlayingInterface(QWidget):
         y = pos.y()+btn.height()//2-(13+38*menu.actionCount())//2
         songInfos = [
             i.songInfo for i in self.songListWidget.checkedSongCards]
+
         # 菜单信号连接到槽
         for act in menu.action_list:
             act.triggered.connect(self.exitSelectionMode)
@@ -540,8 +540,7 @@ class PlayingInterface(QWidget):
             return
 
         songInfo = self.playlist[self.currentIndex]
-        self.getMvUrlThread.key_word = songInfo['singer'] + \
-            ' ' + songInfo['songName']
+        self.getMvUrlThread.key_word = songInfo.singer + ' ' + songInfo.title
         self.getMvUrlThread.start()
 
     def __onCrawlMvUrlFinished(self, url: str):

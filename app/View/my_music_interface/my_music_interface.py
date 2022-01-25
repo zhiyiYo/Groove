@@ -19,11 +19,11 @@ class MyMusicInterface(QWidget):
     """ 我的音乐界面 """
 
     randomPlayAllSig = pyqtSignal()                          # 无序播放所有
+    nextToPlaySig = pyqtSignal(list)                         # 接下来播放选中的所有歌曲
     removeSongSig = pyqtSignal(list)                         # 删除部分歌曲 (移动到回收站)
     currentIndexChanged = pyqtSignal(int)                    # 当前播放的歌曲索引变化
     playCheckedCardsSig = pyqtSignal(list)                   # 播放所有选中的歌曲
     selectionModeStateChanged = pyqtSignal(bool)             # 进入/退出 选择模式
-    nextToPlayCheckedCardsSig = pyqtSignal(list)             # 接下来播放选中的所有歌曲
     addSongsToPlayingPlaylistSig = pyqtSignal(list)          # 将歌曲添加到正在播放列表
     addSongsToNewCustomPlaylistSig = pyqtSignal(list)        # 将歌曲添加到新建播放列表
     addSongsToCustomPlaylistSig = pyqtSignal(str, list)      # 将歌曲添加到自定义播放列表
@@ -141,7 +141,7 @@ class MyMusicInterface(QWidget):
         if self.sender() is self.songSelectionModeBar.playButton:
             self.playCheckedCardsSig.emit(playlist)
         elif self.sender() is self.songSelectionModeBar.nextToPlayButton:
-            self.nextToPlayCheckedCardsSig.emit(playlist)
+            self.nextToPlaySig.emit(playlist)
 
     def __emitAlbumTabPlaylist(self):
         """ 发送专辑界面选中的播放列表 """
@@ -151,7 +151,7 @@ class MyMusicInterface(QWidget):
         if self.sender() is self.albumSelectionModeBar.playButton:
             self.playCheckedCardsSig.emit(playlist)
         elif self.sender() is self.albumSelectionModeBar.nextToPlayButton:
-            self.nextToPlayCheckedCardsSig.emit(playlist)
+            self.nextToPlaySig.emit(playlist)
 
     def __onSwitchToAlbumInterfaceButtonClicked(self):
         """ 切换到专辑界面按钮点击槽函数 """
@@ -417,6 +417,8 @@ class MyMusicInterface(QWidget):
             self.__onCheckedCardNumChanged)
         self.albumCardInterface.showLabelNavigationInterfaceSig.connect(
             self.showLabelNavigationInterfaceSig)
+        self.albumCardInterface.nextPlaySignal.connect(
+            lambda s, a: self.nextToPlaySig.emit(self.__getAlbumSongInfos(s, a)))
         self.albumCardInterface.albumNumChanged.connect(
             lambda: self.__onCurrentTabChanged(self.stackedWidget.currentIndex()))
         self.albumCardInterface.isAllCheckedChanged.connect(

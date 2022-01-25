@@ -229,3 +229,31 @@ class BlurCoverLabel(QLabel):
     def resizeEvent(self, e):
         super().resizeEvent(e)
         self.acrylicTextureLabel.resize(self.size())
+
+
+class TimeLabel(QLabel):
+    """ 时间标签 """
+
+    def __init__(self, time: int, parent=None):
+        """
+        Parameters
+        ----------
+        time: int
+            时长，以秒为单位
+
+        parent:
+            父级窗口
+        """
+        super().__init__(self.__parseTime(time), parent)
+
+    def setTime(self, time: int):
+        """ 设置时间，以秒为单位 """
+        self.setText(self.__parseTime(time))
+
+    @staticmethod
+    def __parseTime(time: int):
+        """ 解析时长为字符串 """
+        minutes = time // 60
+        seconds = time % 60
+        t = f"{minutes}:{str(seconds).rjust(2,'0')}"
+        return t

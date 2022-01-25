@@ -276,7 +276,7 @@ class NoCheckBoxSongCard(DurationSongCard):
 class OnlineSongCard(DurationSongCard):
     """ 在线音乐歌曲卡 """
 
-    downloadSig = pyqtSignal(dict, str)  # songInfo, quality
+    downloadSig = pyqtSignal(SongInfo, str)  # songInfo, quality
 
     def __init__(self, songInfo: SongInfo, parent=None):
         super().__init__(songInfo, SongCardType.ONLINE_SONG_CARD, parent=parent)
@@ -303,7 +303,7 @@ class OnlineSongCard(DurationSongCard):
         # 设置歌曲卡点击动画
         self.setAnimation(self.widgets, [13, 6, -3, -6, -13])
 
-        self.addToButton.setToolTip(self.tr('Download'))
+        # self.addToButton.setToolTip(self.tr('Download'))
 
         # 信号连接到槽
         self.addToButton.clicked.connect(self.__showDownloadMenu)

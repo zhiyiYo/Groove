@@ -1,4 +1,5 @@
 # coding:utf-8
+from common.database.entity import SongInfo
 from components.widgets.menu import DWMMenu
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QFont, QFontMetrics, QIcon
@@ -58,10 +59,10 @@ class SystemTrayIcon(QSystemTrayIcon):
         self.setPlay(not self.isPlay)
         self.togglePlayStateSig.emit()
 
-    def updateWindow(self, songInfo: dict):
+    def updateWindow(self, songInfo: SongInfo):
         """ 更新窗口 """
-        singer = songInfo.get('singer', '')
-        songName = songInfo.get('songName', '')
+        singer = songInfo.singer or ''
+        songName = songInfo.title or ''
         text = singer + ' - ' + songName
         self.setToolTip(text)
 

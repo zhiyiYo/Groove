@@ -1,5 +1,7 @@
 # coding:utf-8
+from common.database.entity import SongInfo
 from common.image_process_utils import DominantColor
+from components.widgets.label import TimeLabel
 from components.widgets.menu import PlayBarMoreActionsMenu
 from components.widgets.slider import HollowHandleStyle, Slider
 from PyQt5.QtCore import (QEasingCurve, QParallelAnimationGroup, QPoint,
@@ -32,7 +34,7 @@ class PlayBar(QWidget):
     loopModeChanged = pyqtSignal(QMediaPlaylist.PlaybackMode)
     colorChanged = pyqtSignal(QColor)
 
-    def __init__(self, songInfo: dict, color: QColor, parent=None):
+    def __init__(self, songInfo: SongInfo, color: QColor, parent=None):
         super().__init__(parent)
         self.oldWidth = 1280
         self.__color = color
@@ -40,8 +42,7 @@ class PlayBar(QWidget):
         self.colorAni = QPropertyAnimation(self, b'color', self)
 
         # 创建小部件
-        self.playProgressBar = PlayProgressBar(
-            songInfo.get("duration", "0:00"), self)
+        self.playProgressBar = PlayProgressBar(songInfo.duration, self)
         self.songInfoCard = SongInfoCard(songInfo, self)
         self.centralButtonGroup = CentralButtonGroup(self)
         self.rightWidgetGroup = RightWidgetGroup(self)
@@ -112,7 +113,7 @@ class PlayBar(QWidget):
         self.setCurrentTime = self.playProgressBar.setCurrentTime
         self.setTotalTime = self.playProgressBar.setTotalTime
 
-    def updateSongInfoCard(self, songInfo: dict):
+    def updateSongInfoCard(self, songInfo: SongInfo):
         """ 更新歌曲信息卡 """
         self.songInfoCard.updateWindow(songInfo)
         self.__adjustSongInfoCardWidth()
@@ -289,11 +290,20 @@ class RightWidgetGroup(QWidget):
 class PlayProgressBar(QWidget):
     """ 歌曲播放进度条 """
 
-    def __init__(self, duration: str, parent=None):
+    def __init__(self, duration: int, parent=None):
+        """
+        Parameters
+        ----------
+        duration: int
+            时长，以秒为单位
+
+        parent:
+            父级窗口
+        """
         super().__init__(parent)
         self.progressSlider = Slider(Qt.Horizontal, self)
-        self.currentTimeLabel = QLabel("0:00", self)
-        self.totalTimeLabel = QLabel(duration, self)
+        self.currentTimeLabel = TimeLabel(0, self)
+        self.totalTimeLabel = TimeLabel(duration or 0, self)
         self.hBoxLayout = QHBoxLayout(self)
         self.__initWidget()
 
@@ -322,27 +332,12 @@ class PlayProgressBar(QWidget):
         self.hBoxLayout.setSpacing(10)
 
     def setCurrentTime(self, currentTime: int):
-        """ 更新当前时间标签，currentTime的单位为ms """
-        seconds, minutes = self.getSecondMinute(currentTime)
-        self.currentTimeLabel.setText(f'{minutes}:{str(seconds).rjust(2,"0")}')
+        """ 更新当前时间标签，单位为毫秒 """
+        self.currentTimeLabel.setTime(int(currentTime/1000))
 
     def setTotalTime(self, totalTime: int):
-        """ 更新总时长标签
-
-        Parameters
-        ----------
-        totalTime:
-            总时长，单位为 ms
-        """
-        seconds, minutes = self.getSecondMinute(totalTime)
-        self.totalTimeLabel.setText(f'{minutes}:{str(seconds).rjust(2,"0")}')
-
-    def getSecondMinute(self, time: int):
-        """ 将毫秒转换为分和秒 """
-        seconds = int(time / 1000)
-        minutes = seconds // 60
-        seconds -= minutes * 60
-        return seconds, minutes
+        """ 更新总时长标签，单位为毫秒 """
+        self.totalTimeLabel.setTime(int(totalTime/1000))
 
     def resizeEvent(self, e):
         """ 改变宽度时调整滑动条的宽度 """

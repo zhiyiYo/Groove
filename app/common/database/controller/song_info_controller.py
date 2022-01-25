@@ -33,6 +33,8 @@ class SongInfoController(Singleton):
         # 从数据库中获取所有歌曲信息
         cacheSongInfos = self.songInfoService.listAll()
         cacheSongInfoMap = {Path(i.file): i for i in cacheSongInfos}
+        print('缓存歌曲信息数量：', len(cacheSongInfos))
+        print('现存歌曲信息数量：', len(files))
 
         cacheFiles = set(cacheSongInfoMap.keys())
         currentFiles = set(files)
@@ -56,11 +58,22 @@ class SongInfoController(Singleton):
         songInfos.extend(newSongInfos)
         songInfos.sort(key=lambda i: i.createTime, reverse=True)
 
+        print('新增歌曲信息数量：', len(addedFiles))
+        print('移除歌曲信息数量：', len(removedFiles))
+        print('过期歌曲信息数量：', len(expiredSongInfos))
+
         # 更新数据库
+        t0 = time()
         self.songInfoService.modifyByIds(expiredSongInfos)
+        t1 = time()
         self.songInfoService.addBatch(newSongInfos)
+        t2 = time()
         self.songInfoService.removeByIds(
             [str(i).replace('\\', '/') for i in removedFiles])
+        t3 = time()
+        print('修改歌曲信息耗时：', t1-t0)
+        print('新增歌曲信息耗时：', t2-t1)
+        print('移除歌曲信息耗时：', t3-t2)
 
         return songInfos
 

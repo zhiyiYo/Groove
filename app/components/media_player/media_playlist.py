@@ -3,7 +3,9 @@ import os
 from copy import deepcopy
 from enum import Enum
 from json import dump, load
+from typing import List
 
+from common.database.entity import SongInfo
 from common.os_utils import checkDirExists
 from PyQt5.QtCore import QUrl
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlaylist
@@ -26,7 +28,8 @@ class MediaPlaylist(QMediaPlaylist):
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self.playlist = []
+        self.playlist = []  # type:List[SongInfo]
+        self.lastSongInfo = SongInfo()
         self.playlistType = PlaylistType(PlaylistType.LAST_PLAYLIST)
 
         self.setPlaybackMode(QMediaPlaylist.Sequential)
@@ -34,18 +37,13 @@ class MediaPlaylist(QMediaPlaylist):
         self.randPlayBtPressed = False
         self.__readLastPlaylist()
 
-        if self.playlist:
-            for songInfo in self.playlist:
-                super().addMedia(QMediaContent(QUrl(songInfo["songPath"])))
-
-    def addSong(self, songInfo: dict):
+    def addSong(self, songInfo: SongInfo):
         """ 向播放列表末尾添加一首歌 """
         if not songInfo:
             return
 
         self.playlist.append(songInfo)
-        super().addMedia(QMediaContent(
-            QUrl(songInfo["songPath"])))
+        super().addMedia(QMediaContent(QUrl(songInfo.file)))
 
     def addSongs(self, songInfos: list):
         """ 向播放列表尾部添加多首歌 """
@@ -54,24 +52,24 @@ class MediaPlaylist(QMediaPlaylist):
 
         self.playlist.extend(songInfos)
         for songInfo in songInfos:
-            super().addMedia(QMediaContent(QUrl(songInfo["songPath"])))
+            super().addMedia(QMediaContent(QUrl(songInfo.file)))
 
-    def insertSong(self, index: int, songInfo: dict):
+    def insertSong(self, index: int, songInfo: SongInfo):
         """ 在指定位置插入要播放的歌曲 """
         super().insertMedia(
-            index, QMediaContent(QUrl(songInfo["songPath"])))
+            index, QMediaContent(QUrl(songInfo.file)))
         self.playlist.insert(index, songInfo)
 
-    def insertSongs(self, index: int, songInfos: list):
+    def insertSongs(self, index: int, songInfos: List[SongInfo]):
         """ 插入播放列表 """
         if not songInfos:
             return
 
         self.playlist = self.playlist[:index] + \
             songInfos + self.playlist[index:]
-        mediaContent_list = [
-            QMediaContent(QUrl(i["songPath"])) for i in songInfos]
-        super().insertMedia(index, mediaContent_list)
+
+        medias = [QMediaContent(QUrl(i.file)) for i in songInfos]
+        super().insertMedia(index, medias)
 
     def clear(self):
         """ 清空播放列表 """
@@ -105,21 +103,21 @@ class MediaPlaylist(QMediaPlaylist):
             else:
                 super().previous()
 
-    def getCurrentSong(self) -> dict:
+    def getCurrentSong(self) -> SongInfo:
         """ 获取当前播放的歌曲信息 """
         if self.currentIndex() >= 0:
             return self.playlist[self.currentIndex()]
 
-        return {}
+        return SongInfo(file='__invalid__')
 
-    def setCurrentSong(self, songInfo: dict):
+    def setCurrentSong(self, songInfo: SongInfo):
         """ 按下歌曲卡的播放按钮或者双击歌曲卡时立即在当前的播放列表中播放这首歌 """
         if not songInfo:
             return
 
         self.setCurrentIndex(self.playlist.index(songInfo))
 
-    def playAlbum(self, songInfos: list, index=0):
+    def playAlbum(self, songInfos: List[SongInfo], index=0):
         """ 播放专辑中的歌曲 """
         self.playlistType = PlaylistType.ALBUM_CARD_PLAYLIST
         self.setPlaylist(songInfos, index)
@@ -138,7 +136,7 @@ class MediaPlaylist(QMediaPlaylist):
             # 恢复之前的循环模式
             self.setPlaybackMode(self.prePlayMode)
 
-    def setPlaylist(self, songInfos: list, index=0):
+    def setPlaylist(self, songInfos: List[SongInfo], index=0):
         """ 设置歌曲播放列表 """
         if songInfos == self.playlist:
             return
@@ -147,37 +145,13 @@ class MediaPlaylist(QMediaPlaylist):
         self.addSongs(songInfos)
         self.setCurrentIndex(index)
 
-    @checkDirExists('cache/song_info')
+    # TODO:使用数据库读取
     def save(self):
         """ 保存播放列表到json文件中 """
-        playlistInfo = {
-            "lastPlaylist": self.playlist,
-            "lastSongInfo": self.getCurrentSong(),
-        }
-        with open("cache/song_info/lastPlaylistInfo.json", "w", encoding="utf-8") as f:
-            dump(playlistInfo, f)
 
-    @checkDirExists('cache/song_info')
+    # TODO:使用数据库读取
     def __readLastPlaylist(self):
         """ 从json文件中读取播放列表 """
-        try:
-            with open("cache/song_info/lastPlaylistInfo.json", encoding="utf-8") as f:
-                playlistInfo = load(f)  # type:dict
-                self.playlist = playlistInfo.get(
-                    "lastPlaylist", [])  # type:list
-                self.lastSongInfo = playlistInfo.get(
-                    "lastSongInfo", {})  # type:dict
-        except:
-            self.playlist = []
-            # 关闭窗口前正在播放的歌曲
-            self.lastSongInfo = {}
-        else:
-            # 弹出已经不存在的歌曲
-            if not os.path.exists(self.lastSongInfo.get("songPath", "")):
-                self.lastSongInfo = {}
-            for songInfo in deepcopy(self.playlist):
-                if not os.path.exists(songInfo.get("songPath", "")):
-                    self.playlist.remove(songInfo)
 
     def removeSong(self, index):
         """ 在播放列表中移除歌曲 """
@@ -194,13 +168,13 @@ class MediaPlaylist(QMediaPlaylist):
         self.playlist.pop(index)
         super().removeMedia(index)
 
-    def updateOneSongInfo(self, newSongInfo: dict):
+    def updateOneSongInfo(self, newSongInfo: SongInfo):
         """ 更新播放列表中一首歌曲的信息 """
         for i, songInfo in enumerate(self.playlist):
-            if songInfo["songPath"] == newSongInfo["songPath"]:
+            if songInfo.file == newSongInfo.file:
                 self.playlist[i] = newSongInfo
 
-    def updateMultiSongInfo(self, newSongInfo_list: list):
+    def updateMultiSongInfo(self, songInfos: SongInfo):
         """ 更新播放列表中多首歌曲的信息 """
-        for newSongInfo in newSongInfo_list:
-            self.updateOneSongInfo(newSongInfo)
+        for songInfo in songInfos:
+            self.updateOneSongInfo(songInfo)

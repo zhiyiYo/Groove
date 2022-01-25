@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import (QApplication, QCheckBox, QLabel, QToolButton,
 from .song_card_type import SongCardType
 
 
-class ToolButton(TooltipButton):
+class ToolButton(QToolButton):
     """ 按钮 """
 
     def __init__(self, iconPaths: dict, parent=None):
@@ -74,8 +74,8 @@ class ButtonGroup(QWidget):
 
         self.addToButton.move(80, 0)
         self.playButton.move(20, 0)
-        self.addToButton.setToolTip(self.tr('Add to'))
-        self.playButton.setToolTip(self.tr('Play'))
+        # self.addToButton.setToolTip(self.tr('Add to'))
+        # self.playButton.setToolTip(self.tr('Play'))
 
         # 分配ID并设置属性
         self.setObjectName("buttonGroup")

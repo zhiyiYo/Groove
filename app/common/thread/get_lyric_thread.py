@@ -2,6 +2,7 @@
 import json
 from pathlib import Path
 
+from common.database.entity import SongInfo
 from common.crawler import KuWoMusicCrawler, KuGouMusicCrawler, WanYiMusicCrawler
 from common.lyric_parser import parse_lyric
 from common.os_utils import adjustName
@@ -55,7 +56,7 @@ class GetLyricThread(QThread):
 
         self.crawlFinished.emit(lyric)
 
-    def setSongInfo(self, songInfo: dict):
+    def setSongInfo(self, songInfo: SongInfo):
         """ 设置歌曲信息 """
-        self.singer = songInfo['singer']
-        self.songName = songInfo['songName']
+        self.singer = songInfo.singer
+        self.songName = songInfo.title

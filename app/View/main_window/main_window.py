@@ -342,7 +342,7 @@ class MainWindow(FramelessWindow):
         config["volume"] = self.playBar.volumeSlider.value()
         config["playBar-color"] = list(
             self.playBar.getColor().getRgb()[:3])
-        self.settingInterface.updateConfig(config)
+        self.settingInterface.config.update(config)
         self.mediaPlaylist.save()
 
         # 显示通知
@@ -1278,7 +1278,7 @@ class MainWindow(FramelessWindow):
         config["playBar-color"] = list(
             self.playBar.getColor().getRgb()[:3])
 
-        self.settingInterface.updateConfig(config)
+        self.settingInterface.config.update(config)
         self.mediaPlaylist.save()
         qApp.exit()
 

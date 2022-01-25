@@ -1,4 +1,5 @@
 # coding:utf-8
+from common.database.entity import SongInfo
 from common.os_utils import getCoverPath
 from components.widgets.label import ClickableLabel
 from PyQt5.QtCore import QEvent, QFile, Qt, QTimer, pyqtSignal
@@ -13,16 +14,14 @@ class SongInfoCard(QWidget):
     hidePlayBarSignal = pyqtSignal()
     switchToAlbumInterfaceSig = pyqtSignal(str, str)
 
-    def __init__(self, songInfo: dict = None, parent=None):
+    def __init__(self, songInfo=SongInfo(), parent=None):
         super().__init__(parent)
         self.setSongInfo(songInfo)
         self.timer = QTimer(self)
         self.albumCoverLabel = QLabel(self)
         self.songNameLabel = ClickableLabel(parent=self)
         self.singerAlbumLabel = ClickableLabel(parent=self)
-        # 初始化标志位
         self.isPlayBarVisible = False
-        # 初始化
         self.__initWidget()
 
     def __initWidget(self):
@@ -34,43 +33,37 @@ class SongInfoCard(QWidget):
         self.albumCoverLabel.setFixedSize(136, 136)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.updateCard(self.songInfo)
+
         # 初始化定时器
         self.timer.setInterval(3000)
         self.timer.timeout.connect(self.timerSlot)
         self.__setQss()
+
         # 安装事件过滤器
         self.songNameLabel.installEventFilter(self)
         self.singerAlbumLabel.installEventFilter(self)
+
         # 信号连接到槽
         self.songNameLabel.clicked.connect(
-            lambda: self.switchToAlbumInterfaceSig.emit(self.album, self.singerName))
+            lambda: self.switchToAlbumInterfaceSig.emit(self.album, self.singer))
         self.singerAlbumLabel.clicked.connect(
-            lambda: self.switchToAlbumInterfaceSig.emit(self.album, self.singerName))
+            lambda: self.switchToAlbumInterfaceSig.emit(self.album, self.singer))
 
-    def setSongInfo(self, songInfo: dict):
+    def setSongInfo(self, songInfo: SongInfo):
         """ 设置歌曲信息 """
         self.songInfo = songInfo
-        if not self.songInfo:
-            self.songInfo = {}
+        self.songName = songInfo.title or ''
+        self.singer = songInfo.singer or ''
+        self.album = songInfo.album or ''
+        self.coverPath = getCoverPath(self.singer, self.album, 'album_big')
 
-        self.album = self.songInfo.get("album", self.tr("Unknown album"))
-        self.songName = self.songInfo.get("songName", self.tr("Unknown song"))
-        self.singerName = self.songInfo.get(
-            "singer", self.tr("Unknown artist"))
-        name = self.songInfo.get('coverName', '未知歌手_未知专辑')
-        self.albumCoverPath = getCoverPath(name, "album_big")
-
-    def updateCard(self, songInfo: dict):
+    def updateCard(self, songInfo: SongInfo):
         """ 更新歌曲信息卡 """
         self.setSongInfo(songInfo)
         self.songNameLabel.setText(self.songName)
-        self.singerAlbumLabel.setText(self.singerName + " • " + self.album)
-        self.albumCoverLabel.setPixmap(
-            QPixmap(self.albumCoverPath).scaled(
-                136, 136, Qt.KeepAspectRatio, Qt.SmoothTransformation
-            )
-        )
-        # 调整文本
+        self.singerAlbumLabel.setText(self.singer + " • " + self.album)
+        self.albumCoverLabel.setPixmap(QPixmap(self.coverPath).scaled(
+            136, 136, Qt.KeepAspectRatio, Qt.SmoothTransformation))
         self.adjustText()
 
     def resizeEvent(self, e):
@@ -103,19 +96,22 @@ class SongInfoCard(QWidget):
                 self.songNameLabel.setProperty("state", "normal")
                 self.singerAlbumLabel.setProperty("state", "normal")
                 self.setStyle(QApplication.style())
+
         return super().eventFilter(obj, e)
 
     def enterEvent(self, e):
         """ 鼠标进入时打开计时器并显示播放栏 """
-        if not self.isPlayBarVisible:
-            if not self.timer.isActive():
-                # 显示播放栏
-                self.timer.start()
-                self.showPlayBarSignal.emit()
-            else:
-                # 重置定时器
-                self.timer.stop()
-                self.timer.start()
+        if self.isPlayBarVisible:
+            return
+
+        if not self.timer.isActive():
+            # 显示播放栏
+            self.timer.start()
+            self.showPlayBarSignal.emit()
+        else:
+            # 重置定时器
+            self.timer.stop()
+            self.timer.start()
 
     def timerSlot(self):
         """ 定时器溢出时隐藏播放栏 """

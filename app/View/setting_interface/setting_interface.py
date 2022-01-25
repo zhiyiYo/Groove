@@ -15,6 +15,8 @@ from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import (QFileDialog, QLabel, QLineEdit, QPushButton,
                              QRadioButton, QWidget, QButtonGroup)
 
+from .config import Config
+
 
 class SettingInterface(ScrollArea):
     """ 设置界面 """
@@ -31,26 +33,13 @@ class SettingInterface(ScrollArea):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        # 默认配置
-        self.config = {
-            "selected-folders": [],
-            "mv-quality": "Full HD",
-            "online-play-quality": "Standard quality",
-            "online-music-page-size": 20,
-            "enable-acrylic-background": False,
-            "minimize-to-tray": True,
-            "volume": 30,
-            "playBar-color": [34, 92, 127],
-            'download-folder': os.path.abspath('download').replace("\\", '/')
-        }
-
-        # 读入用户配置
-        self.__readConfig()
+        # 配置
+        self.config = Config()
 
         # 滚动小部件
         self.scrollwidget = QWidget()
 
-        # 设置
+        # 设置标签
         self.settingLabel = QLabel(self.tr("Settings"), self)
 
         # 选择音乐文件夹
@@ -114,7 +103,7 @@ class SettingInterface(ScrollArea):
         self.downloadFolderButton = QPushButton(
             self.tr("Choose"), self.scrollwidget)
         self.downloadFolderLineEdit = QLineEdit(
-            self.config['download-folder'].replace('\\', '/'), self.scrollwidget)
+            self.config['download-folder'], self.scrollwidget)
         self.downloadFolderLabel = QLabel(
             self.tr("Download Directory"), self.scrollwidget)
 
@@ -343,59 +332,7 @@ class SettingInterface(ScrollArea):
 
         self.config["selected-folders"] = selectedFolders
         self.__updateMetaDataSwitchButtonEnabled()
-        self.saveConfig()
         self.selectedMusicFoldersChanged.emit(selectedFolders)
-
-    @checkDirExists('config')
-    def __readConfig(self):
-        """ 读入配置文件数据 """
-        try:
-            with open("config/config.json", encoding="utf-8") as f:
-                self.config.update(json.load(f))
-        except:
-            pass
-
-        # 检查音乐文件夹是否存在，不存在则从配置中移除
-        for folder in self.config["selected-folders"].copy():
-            if not os.path.exists(folder):
-                self.config["selected-folders"].remove(folder)
-
-        # 检测下载文件夹是否存在，不存在就新建一个
-        os.makedirs(self.config['download-folder'], exist_ok=True)
-
-        # 根据是否有选中目录来设置爬虫复选框的启用与否
-        if hasattr(self, "getMetaDataSwitchButton"):
-            self.__updateMetaDataSwitchButtonEnabled()
-
-    def getConfig(self, configName: str, default=None):
-        """ 获取配置
-
-        Parameters
-        ----------
-        configName : str
-            配置名称
-
-        default : Any
-            配置的默认值
-        """
-        return self.config.get(configName, default)
-
-    def updateConfig(self, config: dict):
-        """ 更新并保存配置
-
-        Parameters
-        ----------
-        config : dict
-            配置信息字典
-        """
-        self.config.update(config)
-        self.saveConfig()
-
-    @checkDirExists('config')
-    def saveConfig(self):
-        """ 保存配置 """
-        with open("config/config.json", "w", encoding="utf-8") as f:
-            json.dump(self.config, f)
 
     def __setCheckedOnlineMusicQualityRadioButton(self):
         """ 设置选中的在线音乐音质单选按钮 """
@@ -433,16 +370,15 @@ class SettingInterface(ScrollArea):
         self.pageSizeValueLabel.adjustSize()
         self.config['online-music-page-size'] = value
         self.pageSizeChanged.emit(value)
-        self.saveConfig()
 
     def __onOnlinePlayQualityChanged(self):
         """ 在线播放音质改变槽函数 """
         quality = self.sender().property('quality')
         if self.config['online-play-quality'] == quality:
             return
+
         self.config['online-play-quality'] = quality
         self.onlinePlayQualityChanged.emit(quality)
-        self.saveConfig()
 
     def __onMvQualityChanged(self):
         """ 在线播放音质改变槽函数 """
@@ -452,7 +388,6 @@ class SettingInterface(ScrollArea):
 
         self.config['mv-quality'] = quality
         self.mvQualityChanged.emit(quality)
-        self.saveConfig()
 
     def __onMinimizeToTrayChanged(self):
         """ 最小化到托盘改变槽函数 """
@@ -462,22 +397,21 @@ class SettingInterface(ScrollArea):
 
         self.config['minimize-to-tray'] = minimize
         self.minimizeToTrayChanged.emit(minimize)
-        self.saveConfig()
 
     def __onDownloadFolderButtonClicked(self):
         """ 下载文件夹按钮点击槽函数 """
         folder = QFileDialog.getExistingDirectory(self, "选择文件夹", "./")
-        if folder and self.config['download-folder'] != folder:
-            self.config['download-folder'] = folder
-            self.downloadFolderLineEdit.setText(folder)
-            self.downloadFolderChanged.emit(folder)
-            self.saveConfig()
+        if folder and self.config['download-folder'] == folder:
+            return
+
+        self.config['download-folder'] = folder
+        self.downloadFolderLineEdit.setText(folder)
+        self.downloadFolderChanged.emit(folder)
 
     def __onAcrylicCheckedChanged(self, isChecked: bool):
         """ 是否启用亚克力效果开关按钮状态改变槽函数 """
         self.config["enable-acrylic-background"] = isChecked
         self.acrylicEnableChanged.emit(isChecked)
-        self.saveConfig()
 
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """

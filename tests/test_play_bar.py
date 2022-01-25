@@ -7,15 +7,13 @@ from unittest import TestCase
 
 from app.common import resource
 from app.common.database.entity import SongInfo
-from app.View.my_music_interface.song_tab_interface import \
-    SongListWidget as SongTabListWidget
-from app.View.playing_interface.song_list_widget import \
-    SongListWidget as PlayingSongListWidget
+from app.View.play_bar import PlayBar
+from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QApplication
 
 
-class TestSongListWidget(TestCase):
-    """ 测试歌曲列表控件 """
+class TestSongCard(TestCase):
+    """ 测试歌曲卡 """
 
     def __init__(self, methodName: str = ...) -> None:
         super().__init__(methodName)
@@ -35,16 +33,9 @@ class TestSongListWidget(TestCase):
             modifiedTime=1642818014664
         )
 
-    def test_song_tab_list_widget(self):
-        """ 测试我的音乐界面的歌曲列表课件 """
+    def test_run(self):
+        """ 测试运行 """
         app = QApplication(sys.argv)
-        w = SongTabListWidget([self.songInfo]*10)
-        w.show()
-        app.exec_()
-
-    def test_playing_list_widget(self):
-        """ 测试正在界面的歌曲列表课件 """
-        app = QApplication(sys.argv)
-        w = PlayingSongListWidget([self.songInfo]*10)
+        w = PlayBar(self.songInfo, QColor(184, 113, 119))
         w.show()
         app.exec_()

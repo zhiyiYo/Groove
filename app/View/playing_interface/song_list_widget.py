@@ -1,6 +1,7 @@
 # coding:utf-8
 from typing import List
 
+from common.database.entity import SongInfo
 from components.dialog_box.song_property_dialog import SongPropertyDialog
 from components.widgets.list_widget import ListWidget
 from PyQt5.QtCore import QFile, QSize, Qt, pyqtSignal
@@ -14,18 +15,18 @@ from .song_card import SongCard
 class SongListWidget(ListWidget):
     """ 正在播放列表 """
 
-    emptyChanged = pyqtSignal(bool)                     # 歌曲列表 空/非空 变化
-    removeSongSig = pyqtSignal(int)                     # 移除歌曲
-    currentIndexChanged = pyqtSignal(int)               # 当前播放的变化
-    isAllCheckedChanged = pyqtSignal(bool)              # 歌曲卡卡全部选中改变
-    selectionModeStateChanged = pyqtSignal(bool)        # 进入或退出选择模式
-    checkedSongCardNumChanged = pyqtSignal(int)         # 选中的歌曲卡数量改变
-    switchToSingerInterfaceSig = pyqtSignal(str)        # 切换到歌手界面
-    switchToAlbumInterfaceSig = pyqtSignal(str, str)    # 切换到专辑界面
-    addSongsToNewCustomPlaylistSig = pyqtSignal(list)   # 将歌曲添加到新的自定义播放列表
+    emptyChanged = pyqtSignal(bool)                      # 歌曲列表 空/非空 变化
+    removeSongSig = pyqtSignal(int)                      # 移除歌曲
+    currentIndexChanged = pyqtSignal(int)                # 当前播放的变化
+    isAllCheckedChanged = pyqtSignal(bool)               # 歌曲卡卡全部选中改变
+    selectionModeStateChanged = pyqtSignal(bool)         # 进入或退出选择模式
+    checkedSongCardNumChanged = pyqtSignal(int)          # 选中的歌曲卡数量改变
+    switchToSingerInterfaceSig = pyqtSignal(str)         # 切换到歌手界面
+    switchToAlbumInterfaceSig = pyqtSignal(str, str)     # 切换到专辑界面
+    addSongsToNewCustomPlaylistSig = pyqtSignal(list)    # 将歌曲添加到新的自定义播放列表
     addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 将歌曲添加到已存在的自定义播放列表
 
-    def __init__(self, songInfos: list, parent=None):
+    def __init__(self, songInfos: List[SongInfo], parent=None):
         super().__init__(parent)
         self.songInfos = songInfos
         self.currentIndex = 0
@@ -34,15 +35,12 @@ class SongListWidget(ListWidget):
         self.checkedSongCards = []  # type:List[SongCard]
         self.isInSelectionMode = False
         self.isAllSongCardsChecked = False
-        # 创建歌曲卡
         self.createSongCards()
-        # 初始化
         self.__initWidget()
 
     def __initWidget(self):
         """ 初始化小部件 """
         self.resize(1150 + 60, 800)
-        # 设置内边距
         self.setViewportMargins(30, 0, 30, 0)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.__setQss()
@@ -150,17 +148,17 @@ class SongListWidget(ListWidget):
         if self.songCards:
             self.songCards[self.currentIndex].setPlay(False)
 
-        oldSongNum = len(self.songInfos)
-        newSongNum = len(songInfos)
+        N = len(songInfos)
+        N_ = len(self.songInfos)
 
         # 添加item
-        if newSongNum > oldSongNum:
-            for songInfo in songInfos[oldSongNum:]:
+        if N > N_:
+            for songInfo in songInfos[N_:]:
                 self.appendOneSongCard(songInfo)
                 QApplication.processEvents()
         # 删除多余的item
-        elif newSongNum < oldSongNum:
-            for i in range(oldSongNum - 1, newSongNum - 1, -1):
+        elif N < N_:
+            for i in range(N_ - 1, N - 1, -1):
                 self.item_list.pop()
                 songCard = self.songCards.pop()
                 songCard.deleteLater()
@@ -168,8 +166,8 @@ class SongListWidget(ListWidget):
 
         # 更新部分歌曲卡
         self.songInfos = songInfos
-        n = oldSongNum if newSongNum > oldSongNum else newSongNum
-        for i in range(n):
+
+        for i in range(min(N_, N)):
             songInfo_dict = self.songInfos[i]
             self.songCards[i].updateSongCard(songInfo_dict)
 
@@ -178,19 +176,19 @@ class SongListWidget(ListWidget):
         if self.songInfos:
             self.songCards[self.currentIndex].setPlay(True)
 
-    def updateOneSongCard(self, newSongInfo: dict):
+    def updateOneSongCard(self, newSongInfo: SongInfo):
         """ 更新一个歌曲卡 """
         for i, songInfo in enumerate(self.songInfos):
-            if songInfo["songPath"] == newSongInfo["songPath"]:
+            if songInfo.file == newSongInfo.file:
                 self.songInfos[i] = newSongInfo
                 self.songCards[i].updateSongCard(newSongInfo)
 
-    def updateMultiSongCards(self, newSongInfo_list: list):
+    def updateMultiSongCards(self, songInfos: List[SongInfo]):
         """ 更新多个的歌曲卡 """
-        for newSongInfo in newSongInfo_list:
-            self.updateOneSongCard(newSongInfo)
+        for songInfo in songInfos:
+            self.updateOneSongCard(songInfo)
 
-    def appendOneSongCard(self, songInfo: dict):
+    def appendOneSongCard(self, songInfo: SongInfo):
         """ 在歌曲列表视图尾部添加一个歌曲卡 """
         songCard = SongCard(songInfo)
         songCard.itemIndex = len(self.songCards)
@@ -250,12 +248,11 @@ class SongListWidget(ListWidget):
             self.selectionModeStateChanged.emit(False)
             self.isInSelectionMode = False
 
-    def __setAllSongCardSelectionModeOpen(self, isOpenSelectionMode: bool):
+    def __setAllSongCardSelectionModeOpen(self, isOpen: bool):
         """ 设置所有歌曲卡是否进入选择模式 """
-        # 更新光标样式
-        cursor = Qt.ArrowCursor if isOpenSelectionMode else Qt.PointingHandCursor
+        cursor = Qt.ArrowCursor if isOpen else Qt.PointingHandCursor
         for songCard in self.songCards:
-            songCard.setSelectionModeOpen(isOpenSelectionMode)
+            songCard.setSelectionModeOpen(isOpen)
             songCard.albumLabel.setCursor(cursor)
             songCard.singerLabel.setCursor(cursor)
 
@@ -263,6 +260,7 @@ class SongListWidget(ListWidget):
         """ 设置所有的歌曲卡checked状态 """
         if self.isAllSongCardsChecked == isAllChecked:
             return
+
         self.isAllSongCardsChecked = isAllChecked
         for songCard in self.songCards:
             songCard.setChecked(isAllChecked)

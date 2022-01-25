@@ -27,14 +27,6 @@ class ListWidget(QListWidget):
         self.setDragEnabled(False)
         self.setVerticalScrollMode(self.ScrollPerPixel)
         self.setAttribute(Qt.WA_StyledBackground)
-        self.verticalScrollBar().valueChanged.connect(self.__fakeMoveMouse)
-
-    def __fakeMoveMouse(self):
-        """ 伪移动光标 """
-        pos = QCursor.pos()
-        QCursor.setPos(pos + QPoint(0, 1))
-        QApplication.processEvents()
-        QCursor.setPos(pos)
 
     def wheelEvent(self, e: QWheelEvent):
         """ 实现平滑滚动效果 """

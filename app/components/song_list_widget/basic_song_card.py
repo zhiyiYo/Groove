@@ -85,13 +85,13 @@ class BasicSongCard(QWidget):
             lambda: self.playButtonClicked.emit(self.itemIndex))
 
     def setSongInfo(self, songInfo: SongInfo):
-        """  """
+        """ 设置歌曲信息 """
         self.songInfo = songInfo
         self.songPath = songInfo.file
         self.songName = songInfo.title
         self.singer = songInfo.singer
         self.album = songInfo.album
-        self.year = str(songInfo.year)
+        self.year = str(songInfo.year or '')
         self.genre = songInfo.genre
         self.track = str(songInfo.track)
         self.duration = f"{int(songInfo.duration//60)}:{int(songInfo.duration%60):02}"
@@ -245,8 +245,7 @@ class BasicSongCard(QWidget):
         # 清空动画组的内容
         self.__anis.clear()
         self.__aniGroup.clear()
-        self.__anis = [QPropertyAnimation(
-            widget, b"geometry") for widget in self.__aniWidgets]
+        self.__anis = [QPropertyAnimation(w, b"pos") for w in self.__aniWidgets]
 
         # 初始化动画
         for ani in self.__anis:
@@ -305,21 +304,19 @@ class BasicSongCard(QWidget):
         super().mousePressEvent(e)
         # 移动小部件
         if self.__aniGroup.state() == QAbstractAnimation.Stopped:
-            for deltaX, widget in zip(self.__deltaXs, self.__aniWidgets):
-                widget.move(widget.x() + deltaX, widget.y())
+            for dx, w in zip(self.__deltaXs, self.__aniWidgets):
+                w.move(w.x() + dx, w.y())
         else:
             self.__aniGroup.stop()  # 强制停止还未结束的动画
-            for targetX, widget in zip(self.__aniTargetXs, self.__aniWidgets):
-                widget.move(targetX, widget.y())
+            for x, w in zip(self.__aniTargetXs, self.__aniWidgets):
+                w.move(x, w.y())
 
     def mouseReleaseEvent(self, e: QMouseEvent):
         """ 鼠标松开时开始动画 """
-        for ani, widget, deltaX in zip(
-                self.__anis, self.__aniWidgets, self.__deltaXs):
-            ani.setStartValue(
-                QRect(widget.x(), widget.y(), widget.width(), widget.height()))
-            ani.setEndValue(
-                QRect(widget.x() - deltaX, widget.y(), widget.width(), widget.height()))
+        for ani, w, dx in zip(self.__anis, self.__aniWidgets, self.__deltaXs):
+            ani.setStartValue(w.pos())
+            ani.setEndValue(QPoint(w.x() - dx, w.y()))
+
         self.__aniGroup.start()
 
         if e.button() == Qt.LeftButton:
@@ -380,6 +377,7 @@ class BasicSongCard(QWidget):
         """ 设置歌曲卡选中状态 """
         if self.isChecked == isChecked:
             return
+
         self.checkBox.setChecked(isChecked)
 
     def updateSongCard(self, songInfo: SongInfo):
@@ -428,10 +426,9 @@ class BasicSongCard(QWidget):
         self.songNameCard.resize(self.__scaleableWidgetMaxWidths[0], 60)
         for i in range(1, len(self.__scaleableWidgets)):
             label = self.__scaleableWidgets[i]
-            textWidth = self.__scaleableLabelTextWidths[i - 1]
-            maxLabelWidth = self.__scaleableWidgetMaxWidths[i]
-            width = maxLabelWidth if textWidth > maxLabelWidth else textWidth
-            label.setFixedWidth(width)
+            w = self.__scaleableLabelTextWidths[i - 1]
+            mw = self.__scaleableWidgetMaxWidths[i]
+            label.setFixedWidth(min(mw, w))
 
     def __getScaleableLabelTextWidth(self):
         """ 计算可拉伸的标签的文本宽度 """

@@ -1,5 +1,6 @@
 # coding:utf-8
 from typing import List
+from common.database.entity import SongInfo
 
 from PyQt5.QtCore import (QDateTime, QEasingCurve, QParallelAnimationGroup,
                           QPoint, QPropertyAnimation, Qt, pyqtSignal)
@@ -21,11 +22,11 @@ class SongInfoCardChute(QWidget):
     currentIndexChanged = pyqtSignal([int], [str])
     switchToAlbumInterfaceSig = pyqtSignal(str, str)
 
-    def __init__(self, playlist: list = None, parent=None):
+    def __init__(self, playlist: List[SongInfo] = None, parent=None):
         """
         Parameters
         ----------
-        playlist: list
+        playlist: List[SongInfo]
             播放列表
 
         parent:
@@ -127,7 +128,7 @@ class SongInfoCardChute(QWidget):
         self.aniGroup.start()
 
         # 发送更新背景信号
-        self.currentIndexChanged[str].emit(self.cards[-1].albumCoverPath)
+        self.currentIndexChanged[str].emit(self.cards[-1].coverPath)
 
     def __cycleRightShift(self):
         """ 歌曲卡循环右移 """
@@ -138,7 +139,7 @@ class SongInfoCardChute(QWidget):
         self.aniGroup.start()
 
         # 发送更新背景信号
-        self.currentIndexChanged[str].emit(self.cards[0].albumCoverPath)
+        self.currentIndexChanged[str].emit(self.cards[0].coverPath)
 
     def __setAnimation(self, ani: QPropertyAnimation, card: SongInfoCard, endX: int):
         """ 设置动画 """
@@ -219,7 +220,7 @@ class SongInfoCardChute(QWidget):
         else:
             self.unFinishedAni_queque.append(index)
 
-    def setPlaylist(self, playlist: list, isResetIndex: bool, index=0):
+    def setPlaylist(self, playlist: List[SongInfo], isResetIndex: bool, index=0):
         """ 设置播放列表 """
         self.playlist = playlist
         self.currentIndex = index if isResetIndex else self.currentIndex

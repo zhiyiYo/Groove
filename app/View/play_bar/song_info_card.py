@@ -1,6 +1,7 @@
 # coding:utf-8
 import re
 
+from common.database.entity import SongInfo
 from common.os_utils import getCoverPath
 from components.widgets.label import FadeInLabel
 from components.widgets.perspective_widget import PerspectiveWidget
@@ -16,7 +17,7 @@ class SongInfoCard(PerspectiveWidget):
     albumChanged = pyqtSignal(str)
     MAXWIDTH = 405
 
-    def __init__(self, songInfo: dict, parent=None):
+    def __init__(self, songInfo: SongInfo, parent=None):
         super().__init__(parent, True)
         self.__setSongInfo(songInfo)
         self.coverPath = ""
@@ -41,13 +42,13 @@ class SongInfoCard(PerspectiveWidget):
         if not self.songInfo:
             self.hide()
 
-    def __setSongInfo(self, songInfo: dict):
+    def __setSongInfo(self, songInfo: SongInfo):
         """ 设置歌曲信息 """
         self.songInfo = songInfo
-        self.songName = self.songInfo.get("songName", "")
-        self.singer = self.songInfo.get("singer", "")
+        self.songName = self.songInfo.title or ''
+        self.singer = self.songInfo.singer or ''
 
-    def updateWindow(self, songInfo: dict):
+    def updateWindow(self, songInfo: SongInfo):
         """ 更新歌曲信息卡 """
         self.setVisible(bool(songInfo))
         if not songInfo:
@@ -78,25 +79,24 @@ class SongInfoCard(PerspectiveWidget):
 
     def __setAlbumCover(self):
         """ 设置封面 """
-        if self.songInfo.get("album") is None:
+        if self.songInfo.album is None:
             self.hide()
             return
 
-        name = self.songInfo.get('coverName', '未知歌手_未知专辑')
-        newCoverPath = getCoverPath(name, "album_big")
+        coverPath = getCoverPath(self.singer, self.songInfo.album, "album_big")
+        if coverPath == self.coverPath:
+            return
 
-        # 封面路径变化时发送信号并更新封面
-        if newCoverPath != self.coverPath:
-            self.albumChanged.emit(newCoverPath)
-            self.coverPath = newCoverPath
-            self.albumCoverLabel.setPixmap(QPixmap(newCoverPath).scaled(
-                115, 115, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
+        self.albumChanged.emit(coverPath)
+        self.coverPath = coverPath
+        self.albumCoverLabel.setPixmap(QPixmap(coverPath).scaled(
+            115, 115, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
 
 
 class ScrollTextWindow(QWidget):
     """ 滚动字幕 """
 
-    def __init__(self, songInfo: dict, parent=None):
+    def __init__(self, songInfo: SongInfo, parent=None):
         super().__init__(parent)
         self.maxWidth = 250
         self.setMaximumWidth(250)
@@ -135,11 +135,11 @@ class ScrollTextWindow(QWidget):
         self.songPauseTimer.timeout.connect(self.__restartTextTimer)
         self.singerPauseTimer.timeout.connect(self.__restartTextTimer)
 
-    def __setSongInfo(self, songInfo: dict):
+    def __setSongInfo(self, songInfo: SongInfo):
         """ 更新歌曲信息 """
         self.songInfo = songInfo
-        self.songName = self.songInfo.get("songName", "")
-        self.singer = self.songInfo.get("singer", "")
+        self.songName = self.songInfo.title or ''
+        self.singer = self.songInfo.singer or ''
 
     def __resetFlags(self):
         """ 重置标志位 """
@@ -174,7 +174,7 @@ class ScrollTextWindow(QWidget):
         w = max(self.songNameWidth, self.singerWidth)
         self.setFixedWidth(min(w, maxWidth))
 
-    def updateWindow(self, songInfo: dict):
+    def updateWindow(self, songInfo: SongInfo):
         """ 更新界面 """
         self.__resetFlags()
         self.__setSongInfo(songInfo)

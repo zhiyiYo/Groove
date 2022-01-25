@@ -56,6 +56,7 @@ class BlurButton(TooltipButton):
         if not self.blurPix:
             self.__blur()
 
+        self.__paintRadius=self.radius-5
         super().showEvent(e)
 
     def setBlurPic(self, blurPicPath, blurRadius=35):
