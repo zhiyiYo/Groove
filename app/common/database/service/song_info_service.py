@@ -44,6 +44,9 @@ class SongInfoService(ServiceBase):
     def modifyById(self, songInfo: SongInfo) -> bool:
         return self.songInfoDao.updateById(songInfo)
 
+    def modifyByIds(self, songInfos: List[SongInfo]) -> bool:
+        return self.songInfoDao.updateByIds(songInfos)
+
     def add(self, songInfo: SongInfo) -> bool:
         return self.songInfoDao.insert(songInfo)
 

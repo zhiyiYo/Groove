@@ -1,4 +1,5 @@
 # coding:utf-8
+from time import time
 from typing import Union, List
 from pathlib import Path
 
@@ -56,11 +57,10 @@ class SongInfoController(Singleton):
         songInfos.sort(key=lambda i: i.createTime, reverse=True)
 
         # 更新数据库
+        self.songInfoService.modifyByIds(expiredSongInfos)
+        self.songInfoService.addBatch(newSongInfos)
         self.songInfoService.removeByIds(
             [str(i).replace('\\', '/') for i in removedFiles])
-        self.songInfoService.addBatch(newSongInfos)
-        for songInfo in expiredSongInfos:
-            self.songInfoService.modifyById(songInfo)
 
         return songInfos
 

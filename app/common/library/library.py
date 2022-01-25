@@ -38,10 +38,10 @@ class Library(QObject):
     def load(self):
         """ 载入歌曲信息 """
         files = self.fileSystem.glob()
-        t0 = time()
-        self.songInfos = self.songInfoController.getSongInfos(files)
         t1 = time()
-        self.albumInfos = self.albumInfoController.getAlbumInfos(self.songInfos)
+        self.songInfos = self.songInfoController.getSongInfos(files)
         t2 = time()
-        print('载入歌曲信息耗时：', t1 - t0)
-        print('载入专辑信息耗时：', t2 - t1)
+        self.albumInfos = self.albumInfoController.getAlbumInfos(self.songInfos)
+        t3 = time()
+        print('载入歌曲信息耗时：', t2 - t1)
+        print('载入专辑信息耗时：', t3 - t2)

@@ -33,6 +33,7 @@ class SqlQuery(QSqlQuery):
         """ 最后一条操作指令 """
         query = self.lastQuery()
         for k, v in self.boundValues().items():
-            query = query.replace('?', str(v), 1)
+            query = query.replace('?', str(v))
+            query = query.replace(k, str(v))
 
         return query

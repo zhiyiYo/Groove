@@ -86,6 +86,21 @@ class ServiceBase(Singleton):
         """
         raise NotImplementedError
 
+    def modifyByIds(self, entities: List[Entity]) -> bool:
+        """ 更新多条记录
+
+        Parameters
+        ----------
+        entities: List[Entity]
+            实体类对象
+
+        Returns
+        -------
+        success: bool
+            更新是否成功
+        """
+        raise NotImplementedError
+
     def add(self, entity: Entity) -> bool:
         """ 插入一条记录
 
@@ -97,7 +112,7 @@ class ServiceBase(Singleton):
         Returns
         -------
         success: bool
-            更新是否成功
+            插入是否成功
         """
         raise NotImplementedError
 
@@ -112,7 +127,7 @@ class ServiceBase(Singleton):
         Returns
         -------
         success: bool
-            更新是否成功
+            插入是否成功
         """
         raise NotImplementedError
 

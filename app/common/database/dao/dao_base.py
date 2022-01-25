@@ -2,7 +2,7 @@
 from typing import List
 
 from common.singleton import Singleton
-from PyQt5.QtSql import QSqlRecord
+from PyQt5.QtSql import QSqlDatabase, QSqlRecord
 
 from ..entity import Entity
 from .sql_query import SqlQuery
@@ -12,6 +12,7 @@ class DaoBase(Singleton):
     """ 数据库访问操作抽象类 """
 
     table = ''
+    fields = ['id']
 
     def __init__(self):
         super().__init__()
@@ -57,7 +58,7 @@ class DaoBase(Singleton):
         """
         self._prepareSelectBy(condition)
 
-        if not (self.query.exec()):
+        if not self.query.exec():
             return []
 
         return self.iterRecords()
@@ -85,7 +86,7 @@ class DaoBase(Singleton):
     def listAll(self) -> List[Entity]:
         """ 查询所有记录 """
         sql = f"SELECT * from {self.table}"
-        if not(self.query.exec(sql)):
+        if not self.query.exec(sql):
             return []
 
         return self.iterRecords()
@@ -93,6 +94,7 @@ class DaoBase(Singleton):
     def iterRecords(self) -> List[Entity]:
         """ 迭代所有查询到的记录 """
         entities = []
+
         while self.query.next():
             entity = self.loadFromRecord(self.query.record())
             entities.append(entity)
@@ -118,7 +120,11 @@ class DaoBase(Singleton):
         success: bool
             更新是否成功
         """
-        raise NotImplementedError
+        sql = f"UPDATE {self.table} SET {field} = ? WHERE {self.fields[0]} = ?"
+        self.query.prepare(sql)
+        self.query.addBindValue(value)
+        self.query.addBindValue(id)
+        return self.query.exec()
 
     def updateById(self, entity: Entity) -> bool:
         """ 更新一条记录
@@ -133,7 +139,51 @@ class DaoBase(Singleton):
         success: bool
             更新是否成功
         """
-        raise NotImplementedError
+        if len(self.fields) <= 1:
+            return False
+
+        id_ = self.fields[0]
+        values = ','.join([f'{i} = :{i}' for i in self.fields[1:]])
+        sql = f"UPDATE {self.table} SET {values} WHERE {id_} = :{id_}"
+
+        self.query.prepare(sql)
+        self.bindEntityToQuery(entity)
+
+        return self.query.exec()
+
+    def updateByIds(self, entities: List[Entity]) -> bool:
+        """ 更新多条记录
+
+        Parameters
+        ----------
+        entities: List[Entity]
+            实体类对象
+
+        Returns
+        -------
+        success: bool
+            更新是否成功
+        """
+        if not entities:
+            return True
+
+        if len(self.fields) <= 1:
+            return False
+
+        QSqlDatabase.database().transaction()
+
+        id_ = self.fields[0]
+        values = ','.join([f'{i} = :{i}' for i in self.fields[1:]])
+        sql = f"UPDATE {self.table} SET {values} WHERE {id_} = :{id_}"
+
+        self.query.prepare(sql)
+
+        for entity in entities:
+            self.bindEntityToQuery(entity)
+            self.query.exec()
+
+        success = QSqlDatabase.database().commit()
+        return success
 
     def insert(self, entity: Entity) -> bool:
         """ 插入一条记录
@@ -148,7 +198,11 @@ class DaoBase(Singleton):
         success: bool
             更新是否成功
         """
-        raise NotImplementedError
+        values = ','.join([f':{i}' for i in self.fields])
+        sql = f"INSERT INTO {self.table} VALUES ({values})"
+        self.query.prepare(sql)
+        self.bindEntityToQuery(entity)
+        return self.query.exec()
 
     def insertBatch(self, entities: List[Entity]) -> bool:
         """ 插入多条记录
@@ -163,7 +217,21 @@ class DaoBase(Singleton):
         success: bool
             更新是否成功
         """
-        raise NotImplementedError
+        if not entities:
+            return True
+
+        QSqlDatabase.database().transaction()
+
+        values = ','.join([f':{i}' for i in self.fields])
+        sql = f"INSERT INTO {self.table} VALUES ({values})"
+        self.query.prepare(sql)
+
+        for entity in entities:
+            self.bindEntityToQuery(entity)
+            self.query.exec()
+
+        success = QSqlDatabase.database().commit()
+        return success
 
     def deleteById(self, id) -> bool:
         """ 移除一条记录
@@ -178,7 +246,10 @@ class DaoBase(Singleton):
         success: bool
             更新是否成功
         """
-        raise NotImplementedError
+        sql = f"DELETE FROM {self.table} WHERE {self.fields[0]} = ?"
+        self.query.prepare(sql)
+        self.query.addBindValue(id)
+        return self.query.exec()
 
     def deleteByIds(self, ids: list) -> bool:
         """ 移除多条记录
@@ -193,7 +264,17 @@ class DaoBase(Singleton):
         success: bool
             移除是否成功
         """
-        raise NotImplementedError
+        if not ids:
+            return True
+
+        placeHolders = ','.join(['?']*len(ids))
+        sql = f"DELETE FROM {self.table} WHERE {self.fields[0]} IN ({placeHolders})"
+        self.query.prepare(sql)
+
+        for id in ids:
+            self.query.addBindValue(id)
+
+        return self.query.exec()
 
     def clearTable(self):
         """ 清空表格数据 """
@@ -218,3 +299,9 @@ class DaoBase(Singleton):
     def adjustText(self, text: str):
         """ 处理字符串中的单引号问题 """
         return text.replace("'", "''")
+
+    def bindEntityToQuery(self, entity: Entity):
+        """ 将实体类的值绑定到 query 对象上 """
+        for field in self.fields:
+            value = entity[field]
+            self.query.bindValue(f':{field}', value)

@@ -32,6 +32,9 @@ class AlbumInfoService(ServiceBase):
     def modifyById(self, albumInfo: AlbumInfo) -> bool:
         return self.albumInfoDao.updateById(albumInfo)
 
+    def modifyByIds(self, albumInfos: List[AlbumInfo]) -> bool:
+        return self.albumInfoDao.updateByIds(albumInfos)
+
     def add(self, albumInfo: AlbumInfo) -> bool:
         return self.albumInfoDao.insert(albumInfo)
 
