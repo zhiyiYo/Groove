@@ -35,8 +35,8 @@ class TestAlbumInfoController(TestCase):
         """ 测试获取所有专辑信息 """
         files = self.directory.glob()
         t0 = time()
-        songInfos = self.songInfoController.getSongInfos(files)
-        albumInfos = self.albumInfoController.getAlbumInfos(songInfos)
+        songInfos = self.songInfoController.getSongInfosFromCache(files)
+        albumInfos = self.albumInfoController.getAlbumInfosFromCache(songInfos)
         t1 = time()
         print('耗时：', t1-t0)
 

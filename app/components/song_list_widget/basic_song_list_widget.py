@@ -72,6 +72,7 @@ class BasicSongListWidget(ListWidget):
         self.clearSongCards()
         for songInfo in self.songInfos:
             self.appendOneSongCard(songInfo)
+            QApplication.processEvents()
 
         # 添加一个空白item来填补playBar所占高度
         self.__createPaddingBottomItem()

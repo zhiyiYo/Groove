@@ -17,8 +17,8 @@ class SongInfoController(Singleton):
         super().__init__()
         self.songInfoService = SongInfoService()
 
-    def getSongInfos(self, files: List[Path]):
-        """ 获取歌曲信息
+    def getSongInfosFromCache(self, files: List[Path]):
+        """ 从缓存获取并更新歌曲信息
 
         Parameters
         ----------
@@ -94,3 +94,14 @@ class SongInfoController(Singleton):
             歌曲信息列表
         """
         return self.songInfoService.listBySingerAlbums(singers, albums)
+
+    def getSongInfos(self, files: List[Path]):
+        """ 从本地重新获取歌曲信息并更新数据库 """
+        reader = SongInfoReader()
+        songInfos = [reader.read(i) for i in files]
+
+        # 更新数据库
+        self.songInfoService.clearTable()
+        self.songInfoService.addBatch(songInfos)
+
+        return songInfos

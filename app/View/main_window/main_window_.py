@@ -10,6 +10,7 @@ from common.database.entity import AlbumInfo, SongInfo
 from common.library import Library
 from common.os_utils import moveToTrash
 from common.thread.get_online_song_url_thread import GetOnlineSongUrlThread
+from common.thread.library_thread import LibraryThread
 from components.dialog_box.message_dialog import MessageDialog
 from components.frameless_window import FramelessWindow
 from components.label_navigation_interface import LabelNavigationInterface
@@ -21,7 +22,7 @@ from components.video_window import VideoWindow
 from components.widgets.stacked_widget import (OpacityAniStackedWidget,
                                                PopUpAniStackedWidget)
 from PyQt5.QtCore import (QEasingCurve, QEvent, QEventLoop, QFile, Qt, QTimer,
-                          QUrl, pyqtSignal)
+                          QUrl, pyqtSignal, QThread)
 from PyQt5.QtGui import QCloseEvent, QColor, QIcon, QPixmap
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer, QMediaPlaylist
 from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
@@ -70,16 +71,26 @@ class MainWindow(FramelessWindow):
         # subStackWidget 用来放置 myMusicInterface、albumInterface 等需要在导航栏右边显示的窗口
         self.subStackWidget = PopUpAniStackedWidget(self.subMainWindow)
 
+        # 创建线程
+        self.getOnlineSongUrlThread = GetOnlineSongUrlThread(self)
+        self.libraryThread = LibraryThread()
+
         # 创建设置界面
         self.settingInterface = SettingInterface(self.subMainWindow)
 
         # 创建歌曲库
         self.library = Library(
-            self.settingInterface.config["selected-folders"], self.subMainWindow)
+            self.settingInterface.config["selected-folders"])
+        # self.library.moveToThread(self.libraryThread)
+        # self.libraryThread.started.connect(self.library.load)
+        # self.library.loadFinished.connect(self.libraryThread.finished)
+#
         # eventLoop = QEventLoop(self)
-        # self.library.loadFinished.connect(eventLoop.quit)
-        self.library.load()
+        # self.libraryThread.finished.connect(eventLoop.quit)
+        # self.libraryThread.start()
         # eventLoop.exec()
+
+        # self.library.moveToThread(self.thread())
 
         # 创建我的音乐界面
         self.myMusicInterface = MyMusicInterface(
@@ -113,9 +124,6 @@ class MainWindow(FramelessWindow):
 
         # 创建系统托盘图标
         self.systemTrayIcon = SystemTrayIcon(self)
-
-        # 创建线程
-        self.getOnlineSongUrlThread = GetOnlineSongUrlThread(self)
 
         # 创建快捷键
         self.togglePlayPauseAct_1 = QAction(
@@ -979,6 +987,8 @@ class MainWindow(FramelessWindow):
             self.onMinimizeToTrayChanged)
         self.settingInterface.mvQualityChanged.connect(
             self.playingInterface.getMvUrlThread.setVideoQuality)
+        self.settingInterface.selectedMusicFoldersChanged.connect(
+            self.library.setDirectories)
 
         # 将标题栏返回按钮点击信号连接到槽函数
         self.titleBar.returnButton.clicked.connect(self.onReturnButtonClicked)
@@ -1106,6 +1116,7 @@ class MainWindow(FramelessWindow):
 
         # 将视频界面信号连接到槽函数
         self.videoWindow.fullScreenChanged.connect(self.setVideoFullScreen)
+
 
 class SplashScreen(QWidget):
     """ 启动界面 """

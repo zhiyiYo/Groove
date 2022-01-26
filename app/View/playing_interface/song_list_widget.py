@@ -49,8 +49,11 @@ class SongListWidget(ListWidget):
         """ 创建歌曲卡 """
         for songInfo in self.songInfos:
             self.appendOneSongCard(songInfo)
+            QApplication.processEvents()
+
         if self.songInfos:
             self.songCards[self.currentIndex].setPlay(True)
+
         self.resize(1200, 800)
 
     def __setQss(self):

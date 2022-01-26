@@ -1,7 +1,7 @@
 # coding:utf-8
 from PyQt5.QtSql import QSqlDatabase
 
-from .service import SongInfoService
+from .service import SongInfoService, AlbumInfoService
 
 
 class DbInitializer:
@@ -12,6 +12,7 @@ class DbInitializer:
     def __init__(self):
         self.connect()
         self.songInfoService = SongInfoService()
+        self.albumInfoService = AlbumInfoService()
         self.createTables()
 
     def connect(self):
@@ -24,3 +25,4 @@ class DbInitializer:
     def createTables(self):
         """ 创建数据库表格 """
         self.songInfoService.createTable()
+        self.albumInfoService.createTable()

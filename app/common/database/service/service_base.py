@@ -2,6 +2,7 @@
 from typing import List
 
 from common.singleton import Singleton
+from PyQt5.QtSql import QSqlDatabase
 
 from ..entity import Entity
 
@@ -159,4 +160,8 @@ class ServiceBase(Singleton):
         success: bool
             移除是否成功
         """
+        raise NotImplementedError
+
+    def setDatabase(self, db: QSqlDatabase):
+        """ 使用指定的数据库 """
         raise NotImplementedError

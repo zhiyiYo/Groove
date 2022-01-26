@@ -1,6 +1,8 @@
 # coding:utf-8
 from typing import List
 
+from PyQt5.QtSql import QSqlDatabase
+
 from ..dao import AlbumInfoDao
 from ..entity import AlbumInfo
 
@@ -50,3 +52,6 @@ class AlbumInfoService(ServiceBase):
     def clearTable(self) -> bool:
         """ 清空表格数据 """
         return self.albumInfoDao.clearTable()
+
+    def setDatabase(self, db: QSqlDatabase):
+        self.albumInfoDao.setDatabase(db)

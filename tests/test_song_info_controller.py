@@ -33,7 +33,7 @@ class TestSongInfoController(TestCase):
         """ 测试获取所有歌曲信息 """
         files = self.directory.glob()
         t0 = time()
-        songInfos = self.controller.getSongInfos(files)
+        songInfos = self.controller.getSongInfosFromCache(files)
         t1 = time()
         print('耗时：', t1-t0)
         self.assertEqual(len(songInfos), len(files))

@@ -31,6 +31,29 @@ class FileSystem(QObject):
         if directories:
             self.addDirs(directories)
 
+    def setDirs(self, paths: List[Union[str, Path]]):
+        """ 设置文件夹
+
+        Parameters
+        ----------
+        paths: List[str | Path]
+            文件夹列表
+
+        Returns
+        -------
+        isChanged: bool
+            文件夹是否发送改变
+        """
+        directories = set(paths)
+        oldDirectories = set(self.directories.keys())
+
+        if directories == oldDirectories:
+            return False
+
+        self.removeDirs(oldDirectories - directories)
+        self.addDirs(directories - oldDirectories)
+        return True
+
     def addDir(self, path: Union[str, Path]):
         """ 添加一个文件夹 """
         if not isinstance(path, Path):

@@ -131,7 +131,7 @@ class AlbumCoverReader:
 
             if files:
                 suffix = files[0].suffix.lower()
-                if suffix in ["png", "jpg", "jpeg", "jiff", "gif"]:
+                if suffix in [".png", ".jpg", ".jpeg", ".jiff", ".gif"]:
                     isExists = True
                 else:
                     rmtree(folder)

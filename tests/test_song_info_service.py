@@ -1,6 +1,7 @@
 # coding:utf-8
 import sys
 
+# VS Code 中的格式化会把 `sys.path.append('app')` 放到最后，那种事情不要啊
 sys.path.append('app')
 
 from unittest import TestCase
@@ -82,7 +83,8 @@ class TestSongInfoService(TestCase):
                 modifiedTime=1642818014664
             )
         ]
-        self.service.clearTable()
+        # VS Code 的测试扩展会自动运行代码，导致缓存的数据丢失
+        # self.service.clearTable()
 
     def test_singleton(self):
         """ 测试歌曲信息服务是否为单例 """

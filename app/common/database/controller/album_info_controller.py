@@ -16,8 +16,8 @@ class AlbumInfoController(Singleton):
         self.albumInfoService = AlbumInfoService()
         self.songInfoService = SongInfoService()
 
-    def getAlbumInfos(self, songInfos: List[SongInfo]):
-        """ 获取专辑信息列表
+    def getAlbumInfosFromCache(self, songInfos: List[SongInfo]):
+        """ 从缓存获取专辑信息列表
 
         Parameters
         ----------
@@ -39,14 +39,27 @@ class AlbumInfoController(Singleton):
         currentAlbumInfos = {}  # type:Dict[str, AlbumInfo]
         for songInfo in songInfos:
             key = songInfo.singer + '_' + songInfo.album
+            year = songInfo.year
+            genre = songInfo.genre
             t = songInfo.modifiedTime
 
             if key in cacheAlbumInfos:
                 currentAlbumInfos[key] = cacheAlbumInfos[key]
+
                 if currentAlbumInfos[key].modifiedTime < t:
                     currentAlbumInfos[key].modifiedTime = t
                     expiredAlbumInfos[key] = cacheAlbumInfos[key]
                     expiredAlbumInfos[key].modifiedTime = t
+
+                if not currentAlbumInfos[key].year and year:
+                    currentAlbumInfos[key].year = year
+                    expiredAlbumInfos[key] = cacheAlbumInfos[key]
+                    expiredAlbumInfos[key].year = year
+
+                if not currentAlbumInfos[key].genre and genre:
+                    currentAlbumInfos[key].genre = genre
+                    expiredAlbumInfos[key] = cacheAlbumInfos[key]
+                    expiredAlbumInfos[key].genre = genre
 
             elif key not in currentAlbumInfos:
                 albumInfo = AlbumInfo(
@@ -86,7 +99,7 @@ class AlbumInfoController(Singleton):
         return albumInfos
 
     def getAlbumInfo(self, singer: str, album: str):
-        """ 获取一张专辑信息
+        """ 从数据库获取一张专辑信息
 
         Paramters
         ---------
@@ -108,3 +121,56 @@ class AlbumInfoController(Singleton):
         albumInfo.songInfos = self.songInfoService.listBySingerAlbum(
             singer, album)
         return albumInfo
+
+    def getAlbumInfos(self, songInfos: List[SongInfo]):
+        """ 从新的歌曲信息列表获取专辑信息并更新数据库
+
+        Parameters
+        ----------
+        songInfos: List[SongInfo]
+            歌曲信息列表
+
+        Returns
+        -------
+        albumInfos: List[AlbumInfo]
+            专辑信息列表
+        """
+        albumInfos = {}  # type:Dict[str, AlbumInfo]
+
+        for songInfo in songInfos:
+            key = songInfo.singer + '_' + songInfo.album
+            year = songInfo.year
+            genre = songInfo.genre
+            t = songInfo.modifiedTime
+
+            if key not in albumInfos:
+                albumInfos[key] = AlbumInfo(
+                    id=UUIDUtils.getUUID(),
+                    singer=songInfo.singer,
+                    album=songInfo.album,
+                    year=songInfo.year,
+                    genre=songInfo.genre,
+                    modifiedTime=t
+                )
+            else:
+                if albumInfos[key].modifiedTime < t:
+                    albumInfos[key].modifiedTime = t
+
+                if not albumInfos[key].year and year:
+                    albumInfos[key].year = year
+
+                if not albumInfos[key].genre and genre:
+                    albumInfos[key].genre = genre
+
+        # 排序专辑信息
+        albumInfos = sorted(
+            albumInfos.values(),
+            key=lambda i: i.modifiedTime,
+            reverse=True
+        )
+
+        # 更新数据库
+        self.albumInfoService.clearTable()
+        self.albumInfoService.addBatch(albumInfos)
+
+        return albumInfos

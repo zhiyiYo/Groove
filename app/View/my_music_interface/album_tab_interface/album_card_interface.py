@@ -107,6 +107,7 @@ class AlbumCardInterface(ScrollArea):
         self.hideCheckBoxAnis = []
         for albumInfo in self.albumInfos:
             self.__createOneAlbumCard(albumInfo)
+            QApplication.processEvents()
 
     def __createOneAlbumCard(self, albumInfo: AlbumInfo):
         """ 创建一个专辑卡 """

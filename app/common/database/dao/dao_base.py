@@ -305,3 +305,8 @@ class DaoBase(Singleton):
         for field in self.fields:
             value = entity[field]
             self.query.bindValue(f':{field}', value)
+
+    def setDatabase(self, db: QSqlDatabase):
+        """ 使用指定的数据库 """
+        self.query = SqlQuery(db)
+        self.query.setForwardOnly(True)
