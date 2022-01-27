@@ -20,18 +20,15 @@ class Library(QObject):
 
     cacheFile = 'cache/cache.db'
 
-    def __new__(cls, *args, **kwargs):
-        if not hasattr(cls, '_instance'):
-            cls._instance = super().__new__(cls, *args, **kwargs)
-
-        return cls._instance
-
-    def __init__(self, directories: List[str] = None, parent=None):
+    def __init__(self, directories: List[str] = None, db: QSqlDatabase = None, parent=None):
         """
         Parameters
         ----------
         directories: List[str]
             歌曲文件夹列表
+
+        db: QDataBase
+            使用的数据库
 
         parent:
             父级
@@ -41,26 +38,17 @@ class Library(QObject):
         self.albumInfos = []
         self.directories = directories
         self.fileSystem = FileSystem(directories, self)
-        self.songInfoController = SongInfoController()
-        self.albumInfoController = AlbumInfoController()
+        self.songInfoController = SongInfoController(db)
+        self.albumInfoController = AlbumInfoController(db)
         self.albumCoverController = AlbumCoverController()
 
     def load(self):
         """ 载入歌曲信息 """
-        t0 = time()
         files = self.fileSystem.glob()
-        t1 = time()
-        print('寻找音频文件耗时：', t1 - t0)
         self.songInfos = self.songInfoController.getSongInfosFromCache(files)
-        t2 = time()
         self.albumInfos = self.albumInfoController.getAlbumInfosFromCache(
             self.songInfos)
-        t3 = time()
         self.albumCoverController.getAlbumCovers(self.songInfos)
-        t4 = time()
-        print('载入歌曲信息耗时：', t2 - t1)
-        print('载入专辑信息耗时：', t3 - t2)
-        print('提取专辑封面耗时：', t4 - t3)
         self.loadFinished.emit()
 
     def setDirectories(self, directories: List[str]):
@@ -75,30 +63,26 @@ class Library(QObject):
 
         # 更新信息列表和数据库
         files = self.fileSystem.glob()
-        t1 = time()
         self.songInfos = self.songInfoController.getSongInfos(files)
-        t2 = time()
         self.albumInfos = self.albumInfoController.getAlbumInfos(
             self.songInfos)
-        t3 = time()
         self.albumCoverController.getAlbumCovers(self.songInfos)
-        t4 = time()
-        print('载入歌曲信息耗时：', t2 - t1)
-        print('载入专辑信息耗时：', t3 - t2)
-        print('提取专辑封面耗时：', t4 - t3)
 
         self.reloadFinished.emit()
 
-    def moveToThread(self, thread: QThread):
-        super().moveToThread(thread)
+    def initDatabase(self):
+        """ 初始化数据库 """
+        self.songInfoController.songInfoService.createTable()
+        self.albumInfoController.albumInfoService.createTable()
 
-        id_ = hex(int(thread.currentThreadId()))
-        if not QSqlDatabase.contains(id_):
-            QSqlDatabase.addDatabase('QSQLITE', id_)
-
-        db = QSqlDatabase.database(id_, False)
-        db.setDatabaseName(self.cacheFile)
-        db.open()
-
+    def setDatabase(self, db: QSqlDatabase):
+        """ 设置数据库 """
         self.songInfoController.songInfoService.setDatabase(db)
         self.albumInfoController.albumInfoService.setDatabase(db)
+
+    def copyTo(self, library):
+        """ 拷贝歌曲库的信息 """
+        library.songInfos = self.songInfos
+        library.albumInfos = self.albumInfos
+        library.directories = self.directories.copy()
+        library.fileSystem.setDirs(self.directories)

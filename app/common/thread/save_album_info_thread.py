@@ -1,6 +1,6 @@
 # coding:utf-8
 from common.meta_data.writer import writeSongInfo, writeAlbumCover
-from common.meta_data import SongInfoReader
+from common.meta_data.reader import SongInfoReader
 from PyQt5.QtCore import QThread, pyqtSignal
 
 

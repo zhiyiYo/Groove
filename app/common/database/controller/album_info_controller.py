@@ -2,19 +2,20 @@
 from typing import Dict, List
 
 from common.singleton import Singleton
+from PyQt5.QtSql import QSqlDatabase
 
 from ..entity import AlbumInfo, SongInfo
 from ..service import AlbumInfoService, SongInfoService
 from ..utils import UUIDUtils
 
 
-class AlbumInfoController(Singleton):
+class AlbumInfoController:
     """ 专辑信息控制器 """
 
-    def __init__(self):
+    def __init__(self, db: QSqlDatabase=None):
         super().__init__()
-        self.albumInfoService = AlbumInfoService()
-        self.songInfoService = SongInfoService()
+        self.albumInfoService = AlbumInfoService(db)
+        self.songInfoService = SongInfoService(db)
 
     def getAlbumInfosFromCache(self, songInfos: List[SongInfo]):
         """ 从缓存获取专辑信息列表

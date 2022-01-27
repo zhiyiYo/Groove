@@ -1,6 +1,8 @@
 # coding:utf-8
 from copy import deepcopy
+from typing import List
 
+from common.database.entity import SongInfo
 from common.os_utils import getCoverPath
 from components.buttons.circle_button import CircleButton
 from components.frameless_window import FramelessWindow
@@ -25,9 +27,9 @@ class SmallestPlayInterface(FramelessWindow):
     togglePlayStateSig = pyqtSignal()
     exitSmallestPlayInterfaceSig = pyqtSignal()
 
-    def __init__(self, playlist: list = None, parent=None):
+    def __init__(self, playlist: List[SongInfo] = None, parent=None):
         super().__init__(parent)
-        self.playlist = deepcopy(playlist) if playlist else []
+        self.playlist = playlist if playlist else []
         self.currentIndex = 0
         self.shiftLeftTime = 0
         self.shiftRightTime = 0
@@ -82,8 +84,7 @@ class SmallestPlayInterface(FramelessWindow):
     def __createSongInfoCards(self):
         """ 创建歌曲信息卡 """
         # 创建三个歌曲信息卡，分别为 last, current, next
-        self.songInfoCard_list = [SongInfoCard(
-            parent=self) for i in range(3)]
+        self.songInfoCard_list = [SongInfoCard(parent=self) for i in range(3)]
 
         # 引用当前歌曲卡
         self.lastSongInfoCard = self.songInfoCard_list[0]  # type:SongInfoCard
@@ -264,16 +265,17 @@ class SmallestPlayInterface(FramelessWindow):
         self.lastSongInfoCard = self.songInfoCard_list[lastIndex]
         self.nextSongInfoCard = self.songInfoCard_list[nextIndex]
 
-    def updateOneSongInfo(self, newSongInfo: dict):
+    # TODO：引用的数据不需要这个方法
+    def updateOneSongInfo(self, newSongInfo: SongInfo):
         """ 更新播放列表中一首歌曲的信息 """
         for i, songInfo in enumerate(self.playlist):
-            if songInfo["songPath"] == newSongInfo["songPath"]:
+            if songInfo.title == newSongInfo.title:
                 self.playlist[i] = newSongInfo
 
-    def updateMultiSongInfo(self, newSongInfo_list: list):
+    def updateMultiSongInfo(self, songInfos: List[SongInfo]):
         """ 更新播放列表中多首歌曲的信息 """
-        for newSongInfo in newSongInfo_list:
-            self.updateOneSongInfo(newSongInfo)
+        for songInfo in songInfos:
+            self.updateOneSongInfo(songInfo)
 
     def setCurrentIndex(self, index):
         """ 更新当前下标并移动和更新歌曲信息卡 """
@@ -282,9 +284,10 @@ class SmallestPlayInterface(FramelessWindow):
 
         # 新的下标大于当前下标时，歌曲卡左移
         if self.aniGroup.state() != QAbstractAnimation.Running:
-            songInfo = self.playlist[index]  # type:dict
-            name = songInfo.get('coverName', '未知歌手_未知专辑')
-            self.albumCoverLabel.setCover(getCoverPath(name, "album_big"))
+            songInfo = self.playlist[index]
+            coverPath = getCoverPath(
+                songInfo.singer, songInfo.album, "album_big")
+            self.albumCoverLabel.setCover(coverPath)
             self.__completeShift(index)
         else:
             self.__unCompleteShift_list.append(index)
@@ -333,17 +336,14 @@ class SmallestPlayInterface(FramelessWindow):
 class SongInfoCard(QWidget):
     """ 歌曲信息卡 """
 
-    def __init__(self, songInfo: dict = None, parent=None):
+    def __init__(self, songInfo: SongInfo = None, parent=None):
         super().__init__(parent)
         self.resize(320, 55)
-        # 创建小部件
         self.songNameLabel = QLabel(self)
         self.singerNameLabel = QLabel(self)
         self.opacityEffect = QGraphicsOpacityEffect(self)
         self.ani = QPropertyAnimation(self.opacityEffect, b"opacity")
-        # 初始化
         self.__initWidget()
-        # 设置窗口信息
         self.updateCard(songInfo)
 
     def __initWidget(self):
@@ -355,16 +355,15 @@ class SongInfoCard(QWidget):
         self.songNameLabel.setObjectName("songNameLabel")
         self.singerNameLabel.setObjectName("singerNameLabel")
 
-    def __setSongInfo(self, songInfo: dict):
+    def __setSongInfo(self, songInfo: SongInfo):
         """ 设置标签信息 """
-        if not songInfo:
-            songInfo = {}
-        self.songName = songInfo.get("songName", self.tr("Unknown song"))
-        self.singerName = songInfo.get("singer", self.tr("Unknown artist"))
+        songInfo = SongInfo() if songInfo is None else songInfo
+        self.songName = songInfo.title or ''
+        self.singerName = songInfo.singer or ''
         self.songNameLabel.setText(self.songName)
         self.singerNameLabel.setText(self.singerName)
 
-    def updateCard(self, songInfo: dict):
+    def updateCard(self, songInfo: SongInfo):
         """ 更新窗口 """
         self.__setSongInfo(songInfo)
         self.__adjustLabel()

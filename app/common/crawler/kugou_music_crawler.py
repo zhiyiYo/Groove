@@ -99,7 +99,7 @@ class KuGouMusicCrawler(CrawlerBase):
 
         return song_infos, total
 
-    @exceptionHandler()
+    @exceptionHandler([], 0)
     def getSongInfoList(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[dict], int]:
         # 请求 URL 获取歌曲信息列表
         url = 'https://complexsearch.kugou.com/v2/search/song'

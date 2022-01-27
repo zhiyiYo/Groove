@@ -41,10 +41,11 @@ class Config:
         if key not in self.__config:
             raise KeyError(f'配置项 `{key}` 非法')
 
-        if self.__config[key] != value:
-            self.save()
+        if self.__config[key] == value:
+            return
 
         self.__config[key] = value
+        self.save()
 
     def __getitem__(self, key):
         return self.__config[key]

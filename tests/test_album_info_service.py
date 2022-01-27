@@ -56,10 +56,6 @@ class TestAlbumInfoService(TestCase):
         # VS Code 的测试扩展会自动运行代码，导致缓存的数据丢失
         # self.service.clearTable()
 
-    def test_singleton(self):
-        """ 测试歌曲信息服务是否为单例 """
-        self.assertTrue(self.service is AlbumInfoService())
-
     def test_create_table(self):
         """ 测试创建表格 """
         self.assertTrue(self.service.createTable())

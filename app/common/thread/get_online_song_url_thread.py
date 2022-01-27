@@ -2,7 +2,7 @@
 import requests
 import os
 
-from common.meta_data import AlbumCoverReader
+from common.meta_data.reader import AlbumCoverReader
 from common.crawler import KuWoMusicCrawler
 from PyQt5.QtCore import Qt, pyqtSignal, QThread
 

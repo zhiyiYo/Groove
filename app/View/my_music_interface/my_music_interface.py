@@ -372,6 +372,11 @@ class MyMusicInterface(QWidget):
 
         return albumInfo.songInfos
 
+    def updateWindow(self):
+        """ 更新界面 """
+        self.songListWidget.updateAllSongCards(self.library.songInfos)
+        self.albumCardInterface.updateAllAlbumCards(self.library.albumInfos)
+
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
         # 将按钮点击信号连接到槽

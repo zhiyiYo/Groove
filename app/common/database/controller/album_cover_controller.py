@@ -6,7 +6,7 @@ from common.meta_data.reader import AlbumCoverReader
 from common.singleton import Singleton
 
 
-class AlbumCoverController(Singleton):
+class AlbumCoverController:
     """ 专辑封面控制器 """
 
     def __init__(self):

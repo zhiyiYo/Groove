@@ -79,10 +79,10 @@ class AlbumCoverReader:
         """ 获取多张专辑封面 """
         cls.coverFolder.mkdir(exist_ok=True, parents=True)
         for songInfo in songInfos:
-            cls.getOneAlbumCover(songInfo)
+            cls.getAlbumCover(songInfo)
 
     @classmethod
-    def getOneAlbumCover(cls, songInfo: SongInfo):
+    def getAlbumCover(cls, songInfo: SongInfo):
         """ 获取一张专辑封面 """
         cls.coverFolder.mkdir(exist_ok=True, parents=True)
 
@@ -158,5 +158,5 @@ class AlbumCoverReader:
         folder.mkdir(exist_ok=True, parents=True)
 
         suffix = getPicSuffix(picData)
-        with open(folder/(coverName + suffix), "wb") as f:
+        with open(folder/("cover" + suffix), "wb") as f:
             f.write(picData)

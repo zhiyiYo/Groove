@@ -1,1 +1,1 @@
-from .db_initializer import DbInitializer
+from .db_initializer import DBInitializer

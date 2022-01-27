@@ -14,9 +14,6 @@ class SongInfoDao(DaoBase):
     fields = ['file', 'title', 'singer', 'album', 'year', 'genre', 'duration', 'track',
               'trackTotal', 'disc', 'discTotal', 'createTime', 'modifiedTime']
 
-    def __init__(self):
-        super().__init__()
-
     def createTable(self):
         success = self.query.exec(f"""
             CREATE TABLE IF NOT EXISTS {self.table}(

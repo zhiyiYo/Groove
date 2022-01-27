@@ -21,10 +21,6 @@ class TestLibrary(TestCase):
 
         self.library = Library(['D:/hzz/音乐'])
 
-    def test_singleton(self):
-        """ 测试歌曲库是否为单例 """
-        self.assertTrue(self.library is Library())
-
     def test_load(self):
         """ 测试载入音乐 """
         directory = Directory('D:/hzz/音乐')

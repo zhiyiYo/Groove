@@ -12,9 +12,9 @@ from.service_base import ServiceBase
 class AlbumInfoService(ServiceBase):
     """ 专辑信息服务类 """
 
-    def __init__(self):
+    def __init__(self, db: QSqlDatabase = None):
         super().__init__()
-        self.albumInfoDao = AlbumInfoDao()
+        self.albumInfoDao = AlbumInfoDao(db)
 
     def createTable(self) -> bool:
         return self.albumInfoDao.createTable()

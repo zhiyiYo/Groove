@@ -1,21 +1,22 @@
 # coding:utf-8
-from time import time
-from typing import Union, List
 from pathlib import Path
+from time import time
+from typing import List, Union
 
 from common.meta_data.reader import SongInfoReader
 from common.singleton import Singleton
+from PyQt5.QtSql import QSqlDatabase
 
 from ..entity import SongInfo
 from ..service import SongInfoService
 
 
-class SongInfoController(Singleton):
+class SongInfoController:
     """ 歌曲信息控制器 """
 
-    def __init__(self):
+    def __init__(self, db: QSqlDatabase = None):
         super().__init__()
-        self.songInfoService = SongInfoService()
+        self.songInfoService = SongInfoService(db)
 
     def getSongInfosFromCache(self, files: List[Path]):
         """ 从缓存获取并更新歌曲信息
@@ -23,7 +24,7 @@ class SongInfoController(Singleton):
         Parameters
         ----------
         files: List[Path]
-            音频文件路径列表
+            音频文件路径列表s
 
         Returns
         -------
@@ -33,8 +34,6 @@ class SongInfoController(Singleton):
         # 从数据库中获取所有歌曲信息
         cacheSongInfos = self.songInfoService.listAll()
         cacheSongInfoMap = {Path(i.file): i for i in cacheSongInfos}
-        print('缓存歌曲信息数量：', len(cacheSongInfos))
-        print('现存歌曲信息数量：', len(files))
 
         cacheFiles = set(cacheSongInfoMap.keys())
         currentFiles = set(files)
@@ -58,22 +57,11 @@ class SongInfoController(Singleton):
         songInfos.extend(newSongInfos)
         songInfos.sort(key=lambda i: i.createTime, reverse=True)
 
-        print('新增歌曲信息数量：', len(addedFiles))
-        print('移除歌曲信息数量：', len(removedFiles))
-        print('过期歌曲信息数量：', len(expiredSongInfos))
-
         # 更新数据库
-        t0 = time()
         self.songInfoService.modifyByIds(expiredSongInfos)
-        t1 = time()
         self.songInfoService.addBatch(newSongInfos)
-        t2 = time()
         self.songInfoService.removeByIds(
             [str(i).replace('\\', '/') for i in removedFiles])
-        t3 = time()
-        print('修改歌曲信息耗时：', t1-t0)
-        print('新增歌曲信息耗时：', t2-t1)
-        print('移除歌曲信息耗时：', t3-t2)
 
         return songInfos
 

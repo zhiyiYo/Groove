@@ -25,10 +25,6 @@ class TestSongInfoController(TestCase):
         self.controller = SongInfoController()
         self.directory = Directory('D:/hzz/音乐')
 
-    def test_singleton(self):
-        """ 测试歌曲信息控制是否为单例 """
-        self.assertTrue(self.controller is SongInfoController())
-
     def test_get_song_infos(self):
         """ 测试获取所有歌曲信息 """
         files = self.directory.glob()

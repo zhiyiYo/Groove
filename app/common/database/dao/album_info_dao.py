@@ -11,9 +11,6 @@ class AlbumInfoDao(DaoBase):
     table = 'tbl_album_info'
     fields = ['id', 'singer', 'album', 'year', 'genre', 'modifiedTime']
 
-    def __init__(self):
-        super().__init__()
-
     def createTable(self):
         success = self.query.exec(f"""
             CREATE TABLE IF NOT EXISTS {self.table}(

@@ -12,9 +12,9 @@ from.service_base import ServiceBase
 class SongInfoService(ServiceBase):
     """ 歌曲信息服务类 """
 
-    def __init__(self):
+    def __init__(self, db: QSqlDatabase=None):
         super().__init__()
-        self.songInfoDao = SongInfoDao()
+        self.songInfoDao = SongInfoDao(db)
 
     def createTable(self) -> bool:
         return self.songInfoDao.createTable()

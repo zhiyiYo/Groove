@@ -257,6 +257,7 @@ class AlbumInfoEditDialog(MaskDialogBase):
         """ 保存新专辑封面 """
         if not self.newAlbumCoverPath:
             return
+
         with open(self.newAlbumCoverPath, "rb") as f:
             picData = f.read()
 

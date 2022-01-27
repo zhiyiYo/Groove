@@ -5,7 +5,7 @@ from typing import List, Tuple
 
 import requests
 from common.image_process_utils import getPicSuffix
-from common.meta_data import AlbumCoverReader
+from common.meta_data.reader import AlbumCoverReader
 from common.meta_data.writer import writeAlbumCover, writeSongInfo
 
 
@@ -335,7 +335,7 @@ class CrawlerBase:
         # 保存图片
         folder = AlbumCoverReader.coverFolder / cover_name
         folder.mkdir(exist_ok=True, parents=True)
-        save_path = folder / (cover_name + getPicSuffix(pic_data))
+        save_path = folder / ("cover" + getPicSuffix(pic_data))
         with open(save_path, 'wb') as f:
             f.write(pic_data)
 

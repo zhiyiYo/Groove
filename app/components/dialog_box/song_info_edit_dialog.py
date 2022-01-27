@@ -3,7 +3,8 @@ from copy import deepcopy
 
 from common.database.entity import SongInfo
 from common.auto_wrap import autoWrap
-from common.meta_data import AlbumCoverReader, GENRES, SongInfoReader
+from mutagen.id3 import TCON
+from common.meta_data.reader import AlbumCoverReader, SongInfoReader
 from common.meta_data.writer import writeSongInfo, writeAlbumCover
 from common.os_utils import adjustName
 from common.thread.get_meta_data_thread import GetSongMetaDataThread
@@ -79,7 +80,7 @@ class SongInfoEditDialog(MaskDialogBase):
         self.stateToolTip = None
 
         # 流派补全
-        self.genreCompleter = QCompleter(GENRES, self.widget)
+        self.genreCompleter = QCompleter(TCON.GENRES, self.widget)
         self.genreCompleter.setCompletionMode(QCompleter.InlineCompletion)
         self.genreCompleter.setCaseSensitivity(Qt.CaseInsensitive)
         self.genreLineEdit.setCompleter(self.genreCompleter)
@@ -225,7 +226,7 @@ class SongInfoEditDialog(MaskDialogBase):
         if self.songInfo.get('coverPath'):
             isOk = writeAlbumCover(self.songInfo.file,
                                    self.songInfo['coverPath'])
-            AlbumCoverReader.getOneAlbumCover(self.songInfo)
+            AlbumCoverReader.getAlbumCover(self.songInfo)
 
         # 写入其他元数据
         if not (isOk and writeSongInfo(self.songInfo)):

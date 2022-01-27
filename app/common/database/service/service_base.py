@@ -7,7 +7,7 @@ from PyQt5.QtSql import QSqlDatabase
 from ..entity import Entity
 
 
-class ServiceBase(Singleton):
+class ServiceBase:
     """ 服务抽象类 """
 
     def __init__(self):

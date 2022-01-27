@@ -8,15 +8,15 @@ from ..entity import Entity
 from .sql_query import SqlQuery
 
 
-class DaoBase(Singleton):
+class DaoBase:
     """ 数据库访问操作抽象类 """
 
     table = ''
     fields = ['id']
 
-    def __init__(self):
+    def __init__(self, db: QSqlDatabase=None):
         super().__init__()
-        self.query = SqlQuery()
+        self.query = SqlQuery(db) if db else SqlQuery()
         self.query.setForwardOnly(True)
 
     def createTable(self):

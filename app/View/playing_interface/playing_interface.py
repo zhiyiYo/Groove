@@ -297,13 +297,13 @@ class PlayingInterface(QWidget):
         self.songListWidget.setCurrentIndex(index)
         self.songInfoCardChute.setCurrentIndex(index)
 
-    def setPlaylist(self, playlist: list, isResetIndex: bool = True, index=0):
+    def setPlaylist(self, playlist: List[SongInfo], isResetIndex: bool = True, index=0):
         """ 更新播放列表
 
         Parameters
         ----------
-        playlist: list
-            播放列表，每一个元素都是songInfo字典
+        playlist: List[SongInfo]
+            播放列表
 
         isResetIndex: bool
             是否重置当前歌曲索引
@@ -311,7 +311,7 @@ class PlayingInterface(QWidget):
         index: int
             重置后的当前歌曲索引
         """
-        self.playlist = deepcopy(playlist) if playlist else []
+        self.playlist = playlist if playlist else []
         self.currentIndex = index if isResetIndex else self.currentIndex
         self.songInfoCardChute.setPlaylist(self.playlist, isResetIndex, index)
         self.songListWidget.updateSongCards(self.playlist, isResetIndex, index)
