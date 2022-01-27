@@ -67,6 +67,7 @@ class SongListWidget(ListWidget):
         """ 更新item的尺寸 """
         for item in self.item_list:
             item.setSizeHint(QSize(self.width() - 60, 60))
+
         super().resizeEvent(e)
 
     def __emitCurrentChangedSignal(self, index):
@@ -152,7 +153,7 @@ class SongListWidget(ListWidget):
             self.songCards[self.currentIndex].setPlay(False)
 
         N = len(songInfos)
-        N_ = len(self.songInfos)
+        N_ = len(self.songCards)    # 必须用 songCards，因为 songInfos 是引用
 
         # 添加item
         if N > N_:
@@ -166,13 +167,15 @@ class SongListWidget(ListWidget):
                 songCard = self.songCards.pop()
                 songCard.deleteLater()
                 self.takeItem(i)
+                QApplication.processEvents()
 
         # 更新部分歌曲卡
         self.songInfos = songInfos
 
         for i in range(min(N_, N)):
-            songInfo_dict = self.songInfos[i]
-            self.songCards[i].updateSongCard(songInfo_dict)
+            songInfo = self.songInfos[i]
+            self.songCards[i].updateSongCard(songInfo)
+            QApplication.processEvents()
 
         # 更新样式和当前下标
         self.currentIndex = index if isResetIndex else self.currentIndex
@@ -195,7 +198,7 @@ class SongListWidget(ListWidget):
         """ 在歌曲列表视图尾部添加一个歌曲卡 """
         songCard = SongCard(songInfo)
         songCard.itemIndex = len(self.songCards)
-        songCard.resize(1150, 60)
+        songCard.resize(self.width()-60, 60)
 
         item = QListWidgetItem()
         item.setSizeHint(QSize(songCard.width(), 60))
@@ -285,8 +288,8 @@ class SongListWidget(ListWidget):
             lambda: self.songCards[self.currentRow()].setChecked(True))
         menu.showAlbumAct.triggered.connect(
             lambda: self.switchToAlbumInterfaceSig.emit(
-                self.songCards[self.currentRow()].album,
-                self.songCards[self.currentRow()].singer))
+                self.songCards[self.currentRow()].singer,
+                self.songCards[self.currentRow()].album))
 
         menu.addToMenu.addSongsToPlaylistSig.connect(
             lambda name: self.addSongsToCustomPlaylistSig.emit(

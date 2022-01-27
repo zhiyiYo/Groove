@@ -318,7 +318,7 @@ class SongCard(QWidget):
         self.singerLabel.clicked.connect(
             lambda: self.switchToSingerInterfaceSig.emit(self.singer))
         self.albumLabel.clicked.connect(
-            lambda: self.switchToAlbumInterfaceSig.emit(self.album, self.singer))
+            lambda: self.switchToAlbumInterfaceSig.emit(self.singer, self.album))
         self.checkBox.stateChanged.connect(self.onCheckedStateChanged)
         self.addToButton.clicked.connect(self.__showAddToMenu)
 

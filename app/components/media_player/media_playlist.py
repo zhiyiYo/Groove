@@ -1,12 +1,11 @@
 # coding:utf-8
-import os
-from copy import deepcopy
+import json
 from enum import Enum
-from json import dump, load
+from pathlib import Path
 from typing import List
 
 from common.database.entity import SongInfo
-from common.os_utils import checkDirExists
+from common.library import Library
 from PyQt5.QtCore import QUrl
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlaylist
 
@@ -26,8 +25,11 @@ class PlaylistType(Enum):
 class MediaPlaylist(QMediaPlaylist):
     """ 播放列表类 """
 
-    def __init__(self, parent=None):
+    folder = Path('cache/last_playlist')
+
+    def __init__(self, library: Library, parent=None):
         super().__init__(parent=parent)
+        self.library = library
         self.playlist = []  # type:List[SongInfo]
         self.lastSongInfo = SongInfo()
         self.playlistType = PlaylistType(PlaylistType.LAST_PLAYLIST)
@@ -145,13 +147,35 @@ class MediaPlaylist(QMediaPlaylist):
         self.addSongs(songInfos)
         self.setCurrentIndex(index)
 
-    # TODO:使用数据库读取
     def save(self):
         """ 保存播放列表到json文件中 """
+        self.folder.mkdir(exist_ok=True, parents=True)
+        files = [i.file for i in self.playlist]
+        playlist = {
+            "files": files,
+            "last": files[self.currentIndex()] if files else ''
+        }
+        with open(self.folder/'last_playlist.json', 'w', encoding='utf-8') as f:
+            json.dump(playlist, f)
 
-    # TODO:使用数据库读取
     def __readLastPlaylist(self):
-        """ 从json文件中读取播放列表 """
+        """ 读取上次的播放列表 """
+        file = self.folder/"last_playlist.json"
+        try:
+            with open(file, encoding='utf-8') as f:
+                playlist = json.load(f)
+                files = playlist['files']
+                last = playlist["last"]
+        except:
+            return
+
+        self.playlist = self.library.songInfoController.getSongInfosByFile(
+            files)
+        self.lastSongInfo = self.library.songInfoController.getSongInfoByFile(
+            last) or SongInfo()
+
+        for songInfo in self.playlist:
+            super().addMedia(QMediaContent(QUrl(songInfo.file)))
 
     def removeSong(self, index):
         """ 在播放列表中移除歌曲 """

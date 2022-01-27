@@ -1,8 +1,10 @@
 # coding:utf-8
-from components.widgets.menu import AddToMenu
+from common.os_utils import getCoverPath
+from common.database.entity import AlbumInfo
 from components.app_bar import (AppBarButton, CollapsingAppBarBase,
                                 MoreActionsMenu)
-from PyQt5.QtCore import QPoint, Qt, pyqtSignal, QObject
+from components.widgets.menu import AddToMenu
+from PyQt5.QtCore import QObject, QPoint, Qt, pyqtSignal
 from PyQt5.QtWidgets import QAction
 
 
@@ -12,11 +14,15 @@ class AlbumInfoBar(CollapsingAppBarBase):
     addToNewCustomPlaylistSig = pyqtSignal()
     addToCustomPlaylistSig = pyqtSignal(str)
 
-    def __init__(self, albumInfo: dict, parent=None):
+    def __init__(self, albumInfo: AlbumInfo, parent=None):
         self.setAlbumInfo(albumInfo)
-        super().__init__(self.albumName,
-                         f'{self.singerName}\n{self.year} • {self.genre}',
-                         self.albumCoverPath, 'album', parent)
+        super().__init__(
+            self.album,
+            f'{self.singer}\n{self.year} • {self.genre}',
+            self.albumCoverPath,
+            'album',
+            parent
+        )
 
         self.playAllButton = AppBarButton(
             ":/images/album_interface/Play.png", self.tr("Play all"))
@@ -42,16 +48,15 @@ class AlbumInfoBar(CollapsingAppBarBase):
         self.setAttribute(Qt.WA_StyledBackground)
         self.addToButton.clicked.connect(self.__onAddToButtonClicked)
 
-    def setAlbumInfo(self, albumInfo: dict):
+    def setAlbumInfo(self, albumInfo: AlbumInfo):
         """ 设置专辑信息 """
-        obj = QObject()
-        self.albumInfo = albumInfo if albumInfo else {}
-        self.year = albumInfo.get("year", obj.tr("Unknown year"))
-        self.genre = albumInfo.get("genre", obj.tr("Unknown genre"))
-        self.albumName = albumInfo.get("album", obj.tr("Unknown album"))
-        self.singerName = albumInfo.get("singer", obj.tr("Unknown artist"))
-        self.albumCoverPath = albumInfo.get(
-            "coverPath", ":/images/default_covers/album_200_200.png")
+        self.albumInfo = albumInfo if albumInfo else AlbumInfo()
+        self.year = str(albumInfo.year or '')
+        self.genre = albumInfo.genre or ''
+        self.album = albumInfo.album or ''
+        self.singer = albumInfo.singer or ''
+        self.albumCoverPath = getCoverPath(
+            self.singer, self.album, 'album_big')
 
     def onMoreActionsButtonClicked(self):
         """ 显示更多操作菜单 """
@@ -76,9 +81,11 @@ class AlbumInfoBar(CollapsingAppBarBase):
         menu.newPlaylistAct.triggered.connect(self.addToNewCustomPlaylistSig)
         menu.exec(QPoint(x, y))
 
-    def updateWindow(self, albumInfo: dict):
+    def updateWindow(self, albumInfo: AlbumInfo):
         """ 更新窗口 """
         self.setAlbumInfo(albumInfo)
-        super().updateWindow(self.albumName,
-                             f'{self.singerName}\n{self.year} • {self.genre}',
-                             self.albumCoverPath)
+        super().updateWindow(
+            self.album,
+            f'{self.singer}\n{self.year} • {self.genre}',
+            self.albumCoverPath
+        )

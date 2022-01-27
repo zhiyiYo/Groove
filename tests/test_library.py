@@ -19,11 +19,11 @@ class TestLibrary(TestCase):
         if not self.db.open():
             raise Exception("数据库连接失败")
 
-        self.library = Library(['D:/hzz/音乐'])
+        self.library = Library(['D:/hzz/Music'])
 
     def test_load(self):
         """ 测试载入音乐 """
-        directory = Directory('D:/hzz/音乐')
+        directory = Directory('D:/hzz/Music')
         files = directory.glob()
         self.library.load()
         self.assertEqual(len(self.library.songInfos), len(files))

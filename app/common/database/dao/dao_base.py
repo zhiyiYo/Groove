@@ -14,7 +14,7 @@ class DaoBase:
     table = ''
     fields = ['id']
 
-    def __init__(self, db: QSqlDatabase=None):
+    def __init__(self, db: QSqlDatabase = None):
         super().__init__()
         self.query = SqlQuery(db) if db else SqlQuery()
         self.query.setForwardOnly(True)
@@ -87,6 +87,23 @@ class DaoBase:
         """ 查询所有记录 """
         sql = f"SELECT * from {self.table}"
         if not self.query.exec(sql):
+            return []
+
+        return self.iterRecords()
+
+    def listByIds(self, ids: list) -> List[Entity]:
+        """ 查询所有在主键列表中的记录 """
+        if not ids:
+            return []
+
+        placeHolders = ','.join(['?']*len(ids))
+        sql = f"SELECT * FROM {self.table} WHERE {self.fields[0]} IN ({placeHolders})"
+        self.query.prepare(sql)
+
+        for id in ids:
+            self.query.addBindValue(id)
+
+        if not self.query.exec():
             return []
 
         return self.iterRecords()

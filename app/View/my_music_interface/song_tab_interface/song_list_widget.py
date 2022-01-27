@@ -172,8 +172,8 @@ class SongListWidget(BasicSongListWidget):
         # 显示专辑界面
         menu.showAlbumAct.triggered.connect(
             lambda: self.switchToAlbumInterfaceSig.emit(
-                self.songCards[self.currentRow()].album,
                 self.songCards[self.currentRow()].singer,
+                self.songCards[self.currentRow()].album,
             )
         )
         # 删除歌曲卡

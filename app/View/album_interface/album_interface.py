@@ -1,6 +1,7 @@
 # coding:utf-8
 from copy import deepcopy
 
+from common.database.entity import AlbumInfo, SongInfo
 from common.os_utils import getCoverPath
 from common.thread.save_album_info_thread import SaveAlbumInfoThread
 from components.dialog_box.album_info_edit_dialog import AlbumInfoEditDialog
@@ -18,25 +19,25 @@ class AlbumInterface(ScrollArea):
     """ 专辑界面 """
 
     songCardPlaySig = pyqtSignal(int)                    # 在当前播放列表中播放这首歌
-    playAlbumSignal = pyqtSignal(list)                   # 播放整张专辑
-    playOneSongCardSig = pyqtSignal(dict)                # 将播放列表重置为一首歌
+    playAlbumSignal = pyqtSignal(str, str)               # 播放整张专辑
+    playOneSongCardSig = pyqtSignal(SongInfo)            # 将播放列表重置为一首歌
     playCheckedCardsSig = pyqtSignal(list)               # 播放选中的歌曲卡
-    nextToPlayOneSongSig = pyqtSignal(dict)              # 下一首播放一首歌
-    addOneSongToPlayingSig = pyqtSignal(dict)            # 添加一首歌到正在播放
-    editSongInfoSignal = pyqtSignal(dict, dict)          # 编辑歌曲信息信号
+    nextToPlayOneSongSig = pyqtSignal(SongInfo)          # 下一首播放一首歌
+    addOneSongToPlayingSig = pyqtSignal(SongInfo)        # 添加一首歌到正在播放
+    editSongInfoSignal = pyqtSignal(SongInfo, SongInfo)  # 编辑歌曲信息信号
     selectionModeStateChanged = pyqtSignal(bool)         # 进入/退出 选择模式
     switchToSingerInterfaceSig = pyqtSignal(str)         # 切换到歌手界面
     nextToPlayCheckedCardsSig = pyqtSignal(list)         # 将选中的多首歌添加到下一首播放
     addSongsToPlayingPlaylistSig = pyqtSignal(list)      # 添加歌曲到正在播放
     addSongsToNewCustomPlaylistSig = pyqtSignal(list)    # 添加歌曲到新建播放列表
     addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 添加歌曲到自定义的播放列表中
-    editAlbumInfoSignal = pyqtSignal(dict, dict, str)    # 编辑专辑信息
+    editAlbumInfoSignal = pyqtSignal(AlbumInfo, AlbumInfo, str)  # 编辑专辑信息
 
-    def __init__(self, albumInfo: dict = None, parent=None):
+    def __init__(self, albumInfo: AlbumInfo = None, parent=None):
         """
         Parameters
         ----------
-        albumInfo: dict
+        albumInfo: AlbumInfo
             专辑信息
 
         parent:
@@ -44,13 +45,11 @@ class AlbumInterface(ScrollArea):
         """
         super().__init__(parent)
         self.__getInfo(albumInfo)
-        # 创建小部件
         self.scrollWidget = QWidget(self)
         self.vBox = QVBoxLayout(self.scrollWidget)
         self.songListWidget = SongListWidget(self.songInfos, self)
         self.albumInfoBar = AlbumInfoBar(self.albumInfo, self)
         self.selectionModeBar = SelectionModeBar(self)
-        # 初始化
         self.__initWidget()
 
     def __initWidget(self):
@@ -67,16 +66,14 @@ class AlbumInterface(ScrollArea):
         # 信号连接到槽
         self.__connectSignalToSlot()
 
-    def __getInfo(self, albumInfo: dict):
+    def __getInfo(self, albumInfo: AlbumInfo):
         """ 获取信息 """
-        self.albumInfo = deepcopy(albumInfo) if albumInfo else {}
-        self.songInfos = self.albumInfo.get("songInfos", [])
-        self.album = self.albumInfo.get('album', self.tr('Unknown album'))
-        self.singer = self.albumInfo.get('singer', self.tr('Unknown artist'))
-        self.year = self.albumInfo.get('year', self.tr('Unknown year'))
-        self.genre = self.albumInfo.get('genre', self.tr('Unknown genre'))
-        self.albumInfo['year'] = self.year if self.year else self.tr(
-            'Unknown year')
+        self.albumInfo = albumInfo if albumInfo else AlbumInfo()
+        self.songInfos = self.albumInfo.songInfos
+        self.album = self.albumInfo.album
+        self.singer = self.albumInfo.singer
+        self.year = self.albumInfo.year
+        self.genre = self.albumInfo.genre
 
     def __setQss(self):
         """ 设置层叠样式 """
@@ -87,10 +84,11 @@ class AlbumInterface(ScrollArea):
         self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
         f.close()
 
-    def updateWindow(self, albumInfo: dict):
+    def updateWindow(self, albumInfo: AlbumInfo):
         """ 更新窗口 """
         if albumInfo == self.albumInfo:
             return
+
         self.verticalScrollBar().setValue(0)
         self.__getInfo(albumInfo)
         self.albumInfoBar.updateWindow(self.albumInfo)
@@ -110,15 +108,16 @@ class AlbumInterface(ScrollArea):
         self.selectionModeBar.move(
             0, self.height() - self.selectionModeBar.height())
 
-    def updateOneSongCard(self, oldSongInfo: dict, newSongInfo: dict):
+    # TODO:使用数据库
+    def updateOneSongCard(self, oldSongInfo: SongInfo, newSongInfo: SongInfo):
         """ 更新一个歌曲卡
 
         Parameters
         ----------
-        oldSongInfo: dict
+        oldSongInfo: SongInfo
             旧的歌曲信息
 
-        newSongInfo: dict
+        newSongInfo: SongInfo
             更新后的歌曲信息
         """
         if oldSongInfo not in self.songInfos:
@@ -127,6 +126,7 @@ class AlbumInterface(ScrollArea):
         # 如果新的歌曲信息的"专辑名.歌手"不变，则更新歌曲卡信息，否则将其移除
         newKey = newSongInfo.get("album", "")+"."+newSongInfo.get("singer", "")
         oldKey = oldSongInfo.get("album", "")+"."+oldSongInfo.get("singer", "")
+
         if newKey == oldKey:
             self.songListWidget.updateOneSongCard(newSongInfo, False)
         else:
@@ -134,7 +134,7 @@ class AlbumInterface(ScrollArea):
             self.songListWidget.removeSongCard(index)
 
         self.__sortSongCardsByTrackNum()
-        self.albumInfo["songInfos"] = self.songListWidget.songInfos
+        self.albumInfo.songInfos = self.songListWidget.songInfos
         self.songInfos = self.songListWidget.songInfos
 
     def __showAlbumInfoEditDialog(self):
@@ -153,18 +153,18 @@ class AlbumInterface(ScrollArea):
         w.setStyle(QApplication.style())
         w.exec_()
 
-    def __onSelectionModeStateChanged(self, isOpenSelectionMode: bool):
+    def __onSelectionModeStateChanged(self, isOpen: bool):
         """ 选择状态改变对应的槽函数 """
-        self.selectionModeBar.setHidden(not isOpenSelectionMode)
-        self.selectionModeStateChanged.emit(isOpenSelectionMode)
+        self.selectionModeBar.setHidden(not isOpen)
+        self.selectionModeStateChanged.emit(isOpen)
 
     def __sortSongCardsByTrackNum(self):
         """ 以曲序为基准排序歌曲卡 """
         self.songListWidget.sortSongCardByTrackNum()
-        self.albumInfo["songInfos"] = self.songListWidget.songInfos
+        self.albumInfo.songInfos= self.songListWidget.songInfos
         self.songInfos = self.songListWidget.songInfos
 
-    def __onEditSongInfo(self, oldSongInfo: dict, newSongInfo: dict):
+    def __onEditSongInfo(self, oldSongInfo: AlbumInfo, newSongInfo: AlbumInfo):
         self.__sortSongCardsByTrackNum()
         index = self.songInfos.index(newSongInfo)
 
@@ -177,14 +177,14 @@ class AlbumInterface(ScrollArea):
 
         # 更新专辑信息
         for i, songInfo in enumerate(self.albumInfo["songInfos"]):
-            if songInfo['songPath'] == newSongInfo['songPath']:
+            if songInfo.file == newSongInfo.file:
                 self.albumInfo["songInfos"][i] = newSongInfo.copy()
                 self.albumInfo["genre"] = self.albumInfo["songInfos"][0]["genre"]
 
         self.albumInfoBar.updateWindow(self.albumInfo)
         self.editSongInfoSignal.emit(oldSongInfo, newSongInfo)
 
-    def __onSaveAlbumInfoFinished(self, oldAlbumInfo: dict, newAlbumInfo: dict, coverPath: str):
+    def __onSaveAlbumInfoFinished(self, oldAlbumInfo: AlbumInfo, newAlbumInfo: AlbumInfo, coverPath: str):
         """ 保存专辑信息 """
         # 删除线程
         self.sender().quit()
@@ -214,10 +214,9 @@ class AlbumInterface(ScrollArea):
 
     def __emitPlaylist(self):
         """ 发送歌曲界面选中的播放列表 """
-        playlist = [
-            songCard.songInfo for songCard in self.songListWidget.checkedSongCards
-        ]
+        playlist = [i.songInfo for i in self.songListWidget.checkedSongCards]
         self.__unCheckSongCards()
+
         if self.sender() == self.selectionModeBar.playButton:
             self.playCheckedCardsSig.emit(playlist)
         elif self.sender() == self.selectionModeBar.nextToPlayButton:
@@ -288,7 +287,7 @@ class AlbumInterface(ScrollArea):
         """ 信号连接到槽 """
         # 专辑信息栏信号
         self.albumInfoBar.playAllButton.clicked.connect(
-            lambda: self.playAlbumSignal.emit(self.songInfos))
+            lambda: self.playAlbumSignal.emit(self.singer, self.album))
         self.albumInfoBar.editInfoButton.clicked.connect(
             self.__showAlbumInfoEditDialog)
         self.albumInfoBar.showSingerButton.clicked.connect(

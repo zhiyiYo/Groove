@@ -1628,8 +1628,8 @@ class MainWindow(FramelessWindow):
             self.onSelectionModeStateChanged)
 
         # 将系统托盘图标信号连接到槽函数
-        qApp.aboutToQuit.connect(self.systemTrayIcon.hide)
-        self.systemTrayIcon.exitSignal.connect(self.onExit)
+        qApp.aboutToQuit.connect(self.onExit)
+        self.systemTrayIcon.exitSignal.connect(qApp.quit)
         self.systemTrayIcon.showMainWindowSig.connect(self.show)
         self.systemTrayIcon.togglePlayStateSig.connect(self.togglePlayState)
         self.systemTrayIcon.lastSongSig.connect(self.mediaPlaylist.previous)

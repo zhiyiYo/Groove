@@ -2,6 +2,7 @@
 import os
 from copy import deepcopy
 
+from common.database.entity import AlbumInfo, SongInfo
 from common.image_process_utils import getPicSuffix
 from common.os_utils import adjustName
 from components.buttons.perspective_button import PerspectivePushButton
@@ -18,13 +19,14 @@ from PyQt5.QtWidgets import (QApplication, QCompleter, QFileDialog, QLabel,
 from .mask_dialog_base import MaskDialogBase
 
 
+# TODO:重写专辑信息编辑框
 class AlbumInfoEditDialog(MaskDialogBase):
     """ 专辑信息编辑对话框 """
 
-    saveInfoSig = pyqtSignal(dict, dict, str)
+    saveInfoSig = pyqtSignal(AlbumInfo, AlbumInfo, str)
     MAXHEIGHT = 755
 
-    def __init__(self, albumInfo: dict, parent):
+    def __init__(self, albumInfo: AlbumInfo, parent):
         super().__init__(parent)
         self.oldAlbumInfo = deepcopy(albumInfo)
         self.albumInfo = deepcopy(albumInfo)
@@ -34,9 +36,7 @@ class AlbumInfoEditDialog(MaskDialogBase):
         self.coverPath = self.albumInfo["coverPath"]  # type:str
         self.songInfos = self.albumInfo["songInfos"]  # type:list
         self.newAlbumCoverPath = ''
-        # 创建小部件
         self.__createWidgets()
-        # 初始化
         self.__initWidget()
 
     def __createWidgets(self):

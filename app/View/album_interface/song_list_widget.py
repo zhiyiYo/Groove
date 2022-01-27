@@ -1,25 +1,53 @@
 # coding:utf-8
+from typing import List
+
+from common.database.entity import SongInfo
 from components.dialog_box.message_dialog import MessageDialog
-from components.widgets.menu import AddToMenu, DWMMenu
 from components.song_list_widget import NoScrollSongListWidget, SongCardType
+from components.widgets.menu import AddToMenu, DWMMenu
 from PyQt5.QtCore import QFile, QMargins, Qt, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent
 from PyQt5.QtWidgets import QAction
+
+
+class SongCardListContextMenu(DWMMenu):
+    """ 歌曲卡列表右击菜单 """
+
+    def __init__(self, parent):
+        super().__init__("", parent)
+        # 创建主菜单动作
+        self.playAct = QAction(self.tr("Play"), self)
+        self.nextSongAct = QAction(self.tr("Play next"), self)
+        self.editInfoAct = QAction(self.tr("Edit info"), self)
+        self.showPropertyAct = QAction(self.tr("Properties"), self)
+        self.deleteAct = QAction(self.tr("Delete"), self)
+        self.selectAct = QAction(self.tr("Select"), self)
+        # 创建菜单和子菜单
+        self.addToMenu = AddToMenu(self.tr("Add to"), self)
+        # 将动作添加到菜单中
+        self.addActions([self.playAct, self.nextSongAct])
+        # 将子菜单添加到主菜单
+        self.addMenu(self.addToMenu)
+        # 将其余动作添加到主菜单
+        self.addActions(
+            [self.editInfoAct, self.showPropertyAct, self.deleteAct])
+        self.addSeparator()
+        self.addAction(self.selectAct)
 
 
 class SongListWidget(NoScrollSongListWidget):
     """ 专辑界面歌曲卡列表视图 """
 
     playSignal = pyqtSignal(int)                    # 播放指定歌曲
-    playOneSongSig = pyqtSignal(dict)               # 只播放选中的歌曲
-    nextToPlayOneSongSig = pyqtSignal(dict)         # 插入一首歌到播放列表中
+    playOneSongSig = pyqtSignal(SongInfo)           # 只播放选中的歌曲
+    nextToPlayOneSongSig = pyqtSignal(SongInfo)     # 插入一首歌到播放列表中
     switchToSingerInterfaceSig = pyqtSignal(str)    # 切换到歌手界面
 
-    def __init__(self, songInfos: list, parent=None):
+    def __init__(self, songInfos: List[SongInfo], parent=None):
         """
         Parameters
         ----------
-        songInfos:list
+        songInfos: List[SongInfo]
             歌曲信息列表
 
         parent:
@@ -74,29 +102,23 @@ class SongListWidget(NoScrollSongListWidget):
         self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
         f.close()
 
-    def __connectMenuSignalToSlot(self, contextMenu):
+    def __connectMenuSignalToSlot(self, menu: SongCardListContextMenu):
         """ 右击菜单信号连接到槽 """
-        contextMenu.playAct.triggered.connect(
-            lambda: self.playOneSongSig.emit(
-                self.songCards[self.currentRow()].songInfo))
-        contextMenu.nextSongAct.triggered.connect(
-            lambda: self.nextToPlayOneSongSig.emit(
-                self.songCards[self.currentRow()].songInfo))
-        contextMenu.editInfoAct.triggered.connect(self.showSongInfoEditDialog)
-        contextMenu.showPropertyAct.triggered.connect(
-            self.showSongPropertyDialog)
-        contextMenu.deleteAct.triggered.connect(self.__showMaskDialog)
-        contextMenu.addToMenu.playingAct.triggered.connect(
-            lambda: self.addSongToPlayingSignal.emit(
-                self.songCards[self.currentRow()].songInfo))
-        contextMenu.selectAct.triggered.connect(
+        menu.deleteAct.triggered.connect(self.__showMaskDialog)
+        menu.editInfoAct.triggered.connect(self.showSongInfoEditDialog)
+        menu.showPropertyAct.triggered.connect(self.showSongPropertyDialog)
+        menu.playAct.triggered.connect(
+            lambda: self.playOneSongSig.emit(self.songCards[self.currentRow()].songInfo))
+        menu.nextSongAct.triggered.connect(
+            lambda: self.nextToPlayOneSongSig.emit(self.songCards[self.currentRow()].songInfo))
+        menu.addToMenu.playingAct.triggered.connect(
+            lambda: self.addSongToPlayingSignal.emit(self.songCards[self.currentRow()].songInfo))
+        menu.selectAct.triggered.connect(
             lambda: self.songCards[self.currentRow()].setChecked(True))
-        contextMenu.addToMenu.addSongsToPlaylistSig.connect(
-            lambda name: self.addSongsToCustomPlaylistSig.emit(
-                name, self.songInfos))
-        contextMenu.addToMenu.newPlaylistAct.triggered.connect(
-            lambda: self.addSongsToNewCustomPlaylistSig.emit(
-                [self.songCards[self.currentRow()].songInfo]))
+        menu.addToMenu.addSongsToPlaylistSig.connect(
+            lambda name: self.addSongsToCustomPlaylistSig.emit(name, self.songInfos))
+        menu.addToMenu.newPlaylistAct.triggered.connect(
+            lambda: self.addSongsToNewCustomPlaylistSig.emit([self.songCards[self.currentRow()].songInfo]))
 
     def _connectSongCardSignalToSlot(self, songCard):
         """ 将歌曲卡信号连接到槽 """
@@ -107,28 +129,3 @@ class SongListWidget(NoScrollSongListWidget):
             self.onSongCardCheckedStateChanged)
         songCard.switchToSingerInterfaceSig.connect(
             self.switchToSingerInterfaceSig)
-
-
-class SongCardListContextMenu(DWMMenu):
-    """ 歌曲卡列表右击菜单 """
-
-    def __init__(self, parent):
-        super().__init__("", parent)
-        # 创建主菜单动作
-        self.playAct = QAction(self.tr("Play"), self)
-        self.nextSongAct = QAction(self.tr("Play next"), self)
-        self.editInfoAct = QAction(self.tr("Edit info"), self)
-        self.showPropertyAct = QAction(self.tr("Properties"), self)
-        self.deleteAct = QAction(self.tr("Delete"), self)
-        self.selectAct = QAction(self.tr("Select"), self)
-        # 创建菜单和子菜单
-        self.addToMenu = AddToMenu(self.tr("Add to"), self)
-        # 将动作添加到菜单中
-        self.addActions([self.playAct, self.nextSongAct])
-        # 将子菜单添加到主菜单
-        self.addMenu(self.addToMenu)
-        # 将其余动作添加到主菜单
-        self.addActions(
-            [self.editInfoAct, self.showPropertyAct, self.deleteAct])
-        self.addSeparator()
-        self.addAction(self.selectAct)

@@ -81,7 +81,7 @@ class SongTabSongCard(DurationSongCard):
         self.singerLabel.clicked.connect(
             lambda: self.switchToSingerInterfaceSig.emit(self.singer))
         self.albumLabel.clicked.connect(
-            lambda: self.switchToAlbumInterfaceSig.emit(self.album, self.singer))
+            lambda: self.switchToAlbumInterfaceSig.emit(self.singer, self.album))
 
     def updateSongCard(self, songInfo: SongInfo):
         """ 更新歌曲卡信息 """
@@ -189,7 +189,7 @@ class PlaylistInterfaceSongCard(DurationSongCard):
         self.singerLabel.clicked.connect(
             lambda: self.switchToSingerInterfaceSig.emit(self.singer))
         self.albumLabel.clicked.connect(
-            lambda: self.switchToAlbumInterfaceSig.emit(self.album, self.singer))
+            lambda: self.switchToAlbumInterfaceSig.emit(self.singer, self.album))
         self.addToButton.clicked.connect(
             lambda: self.removeSongSignal.emit(self.itemIndex))
         self.checkBox.stateChanged.connect(self._onCheckedStateChanged)
@@ -256,7 +256,7 @@ class NoCheckBoxSongCard(DurationSongCard):
         self.singerLabel.clicked.connect(
             lambda: self.switchToSingerInterfaceSig.emit(self.singer))
         self.albumLabel.clicked.connect(
-            lambda: self.switchToAlbumInterfaceSig.emit(self.album, self.singer))
+            lambda: self.switchToAlbumInterfaceSig.emit(self.singer, self.album))
         self.addToButton.clicked.connect(self._showAddToMenu)
 
     def updateSongCard(self, songInfo: SongInfo):

@@ -28,6 +28,9 @@ class AlbumInfoService(ServiceBase):
     def listAll(self) -> List[AlbumInfo]:
         return self.albumInfoDao.listAll()
 
+    def listByIds(self, ids: List[str]) -> List[AlbumInfo]:
+        return self.albumInfoDao.listByIds(ids)
+
     def modify(self, id: str, field: str, value) -> bool:
         return self.albumInfoDao.update(id, field, value)
 
@@ -50,7 +53,6 @@ class AlbumInfoService(ServiceBase):
         return self.albumInfoDao.deleteByIds(ids)
 
     def clearTable(self) -> bool:
-        """ 清空表格数据 """
         return self.albumInfoDao.clearTable()
 
     def setDatabase(self, db: QSqlDatabase):

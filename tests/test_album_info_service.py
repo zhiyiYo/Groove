@@ -1,11 +1,12 @@
 # coding:utf-8
+import sys
+
+sys.path.append('app')
+
 from PyQt5.QtSql import QSqlDatabase
 from app.common.database.service import AlbumInfoService
 from app.common.database.entity import AlbumInfo
 from unittest import TestCase
-import sys
-
-sys.path.append('app')
 
 
 class TestAlbumInfoService(TestCase):

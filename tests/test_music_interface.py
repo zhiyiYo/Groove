@@ -25,12 +25,12 @@ class TestMyMusicInterface(TestCase):
         if not self.db.open():
             raise Exception("数据库连接失败")
 
-        self.library = Library(['D:/hzz/音乐'])
+        self.library = Library(['D:/hzz/Music'])
 
     def test_run(self):
         """ 测试运行 """
         self.library.load()
-        
+
         app = QApplication(sys.argv)
         translator = QTranslator()
         translator.load(QLocale.system(), ":/i18n/Groove_")

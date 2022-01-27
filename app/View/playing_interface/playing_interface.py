@@ -8,12 +8,13 @@ from common.thread.get_lyric_thread import GetLyricThread
 from common.thread.get_mv_url_thread import GetMvUrlThread
 from components.buttons.three_state_button import ThreeStatePushButton
 from components.dialog_box.message_dialog import MessageDialog
-from components.widgets.label import BlurCoverLabel
+from components.widgets.label import BlurCoverLabel, MaskLabel
 from components.widgets.lyric_widget import LyricWidget
 from components.widgets.menu import AddToMenu
 from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QFile,
                           QParallelAnimationGroup, QPoint, QPropertyAnimation,
                           QSize, Qt, QTimer, pyqtSignal)
+from PyQt5.QtGui import QColor
 from PyQt5.QtMultimedia import QMediaPlaylist
 from PyQt5.QtWidgets import QLabel, QWidget
 
@@ -73,6 +74,7 @@ class PlayingInterface(QWidget):
 
         # 创建小部件
         self.albumCoverLabel = BlurCoverLabel(12, (450, 450), self)
+        self.maskLabel = MaskLabel(QColor(0, 0, 0, 225), self)
         self.songInfoCardChute = SongInfoCardChute(self.playlist, self)
         self.lyricWidget = LyricWidget(self.songInfoCardChute)
         self.parallelAniGroup = QParallelAnimationGroup(self)
@@ -120,6 +122,7 @@ class PlayingInterface(QWidget):
         self.randomPlayAllButton.hide()
         self.selectionModeBar.hide()
         self.guideLabel.hide()
+        self.maskLabel.hide()
         self.playBar.hide()
 
         # 设置层叠样式
@@ -162,6 +165,7 @@ class PlayingInterface(QWidget):
         super().resizeEvent(e)
         self.albumCoverLabel.setFixedSize(self.size())
         self.albumCoverLabel.adjustCover()
+        self.maskLabel.resize(self.size())
         self.songInfoCardChute.resize(self.size())
         self.lyricWidget.resize(
             self.width(), self.height()-258-self.lyricWidget.y())
@@ -229,9 +233,10 @@ class PlayingInterface(QWidget):
         if self.sender() == self.playBar.showPlaylistButton:
             self.playBar.pullUpArrowButton.timer.start()
 
-        self.playBar.show()
+        self.playBar.setVisible(len(self.playlist) > 0)
         self.parallelAniGroup.start()
-        self.albumCoverLabel.hide()
+        self.maskLabel.show()
+        self.albumCoverLabel.setVisible(len(self.playlist) > 0)
         self.showPlaylistTimer.start()
 
     def showPlayListTimerSlot(self):
@@ -274,6 +279,7 @@ class PlayingInterface(QWidget):
         self.songListWidgetAni.start()
         self.hidePlaylistTimer.start()
         self.albumCoverLabel.show()
+        self.maskLabel.hide()
         self.isPlaylistVisible = False
 
     def __onShowPlaylistButtonClicked(self):
@@ -387,23 +393,15 @@ class PlayingInterface(QWidget):
         self.songListWidget.clearSongCards()
         self.__setGuideLabelHidden(False)
         self.playBar.hide()
+        self.currentIndex = 0
 
     def __setGuideLabelHidden(self, isHidden):
         """ 设置导航标签和随机播放所有按钮的可见性 """
         self.randomPlayAllButton.setHidden(isHidden)
         self.guideLabel.setHidden(isHidden)
         self.songListWidget.setHidden(not isHidden)
-
-        if isHidden:
-            # 隐藏导航标签时根据播放列表是否可见设置磨砂背景和播放栏的可见性
-            self.albumCoverLabel.setHidden(self.isPlaylistVisible)
-            self.playBar.setHidden(not self.isPlaylistVisible)
-        else:
-            # 显示导航标签时隐藏磨砂背景
-            self.albumCoverLabel.hide()
-            self.playBar.hide()
-
-        # 最后再显示歌曲信息卡
+        self.albumCoverLabel.setHidden(not isHidden)
+        self.playBar.setHidden(not isHidden)
         self.songInfoCardChute.setHidden(not isHidden)
 
     def updateOneSongCard(self, newSongInfo: SongInfo):
@@ -472,7 +470,7 @@ class PlayingInterface(QWidget):
         """ 选择栏显示专辑按钮点击槽函数 """
         songCard = self.songListWidget.checkedSongCards[0]
         songCard.setChecked(False)
-        self.switchToAlbumInterfaceSig.emit(songCard.album, songCard.singer)
+        self.switchToAlbumInterfaceSig.emit(songCard.singer, songCard.album)
 
     def __onSelectionModeBarDeleteButtonClicked(self):
         """ 选择栏播放按钮点击槽函数 """

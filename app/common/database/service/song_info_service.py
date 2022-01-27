@@ -12,7 +12,7 @@ from.service_base import ServiceBase
 class SongInfoService(ServiceBase):
     """ 歌曲信息服务类 """
 
-    def __init__(self, db: QSqlDatabase=None):
+    def __init__(self, db: QSqlDatabase = None):
         super().__init__()
         self.songInfoDao = SongInfoDao(db)
 
@@ -31,6 +31,12 @@ class SongInfoService(ServiceBase):
 
     def listAll(self) -> List[SongInfo]:
         return self.songInfoDao.listAll()
+
+    def listByIds(self, files: list) -> List[SongInfo]:
+        songInfos = self.songInfoDao.listByIds(files)
+        k = self.songInfoDao.fields[0]
+        songInfos.sort(key=lambda i: files.index(i[k]))
+        return songInfos
 
     def listBySingerAlbum(self, singer: str, album: str) -> List[SongInfo]:
         """ 通过歌手和专辑查询所有歌曲信息 """
@@ -62,7 +68,6 @@ class SongInfoService(ServiceBase):
         return self.songInfoDao.deleteByIds(files)
 
     def clearTable(self) -> bool:
-        """ 清空表格数据 """
         return self.songInfoDao.clearTable()
 
     def setDatabase(self, db: QSqlDatabase):

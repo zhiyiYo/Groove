@@ -23,7 +23,7 @@ class TestSongInfoController(TestCase):
             raise Exception("数据库连接失败")
 
         self.controller = SongInfoController()
-        self.directory = Directory('D:/hzz/音乐')
+        self.directory = Directory('D:/hzz/Music')
 
     def test_get_song_infos(self):
         """ 测试获取所有歌曲信息 """

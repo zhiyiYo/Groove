@@ -257,3 +257,28 @@ class TimeLabel(QLabel):
         seconds = time % 60
         t = f"{minutes}:{str(seconds).rjust(2,'0')}"
         return t
+
+
+class MaskLabel(QLabel):
+    """ 蒙板标签 """
+
+    def __init__(self, color: QColor, parent=None):
+        """
+        Parameters
+        ----------
+        color: QColor
+            蒙版颜色
+
+        parent:
+            父级窗口
+        """
+        super().__init__(parent=parent)
+        self.color = color
+        self.setAttribute(Qt.WA_TranslucentBackground)
+
+    def paintEvent(self, e):
+        """ 绘制背景 """
+        painter = QPainter(self)
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(self.color)
+        painter.drawRect(self.rect())

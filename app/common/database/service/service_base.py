@@ -51,6 +51,10 @@ class ServiceBase:
         """ 查询所有记录 """
         raise NotImplementedError
 
+    def listByIds(self, ids: list) -> List[Entity]:
+        """ 通过主键查询记录 """
+        raise NotImplementedError
+
     def modify(self, id, field: str, value) -> bool:
         """ 更新一条记录中某个字段的值
 

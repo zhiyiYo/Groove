@@ -45,9 +45,9 @@ class SongInfoCard(QWidget):
 
         # 信号连接到槽
         self.songNameLabel.clicked.connect(
-            lambda: self.switchToAlbumInterfaceSig.emit(self.album, self.singer))
+            lambda: self.switchToAlbumInterfaceSig.emit(self.singer, self.album))
         self.singerAlbumLabel.clicked.connect(
-            lambda: self.switchToAlbumInterfaceSig.emit(self.album, self.singer))
+            lambda: self.switchToAlbumInterfaceSig.emit(self.singer, self.album))
 
     def setSongInfo(self, songInfo: SongInfo):
         """ 设置歌曲信息 """

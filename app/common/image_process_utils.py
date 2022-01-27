@@ -21,7 +21,7 @@ def gaussianBlur(imagePath: str, blurRadius=18, brightFactor=1, blurPicSize: tup
     blurRadius: int
         模糊半径
 
-    brightFactor：float
+    brightFactor: float
         亮度缩放因子
 
     blurPicSize: tuple
@@ -71,7 +71,7 @@ def getBlurPixmap(imagePath: str, blurRadius=30, brightFactor=1, blurPicSize: tu
     blurRadius: int
         模糊半径
 
-    brightnessFactor：float
+    brightnessFactor: float
         亮度缩放因子
 
     blurPicSize: tuple

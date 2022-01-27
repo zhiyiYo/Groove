@@ -121,6 +121,8 @@ class AlbumInfoController:
 
         albumInfo.songInfos = self.songInfoService.listBySingerAlbum(
             singer, album)
+
+        albumInfo.songInfos.sort(key=lambda i:i.track or 0)
         return albumInfo
 
     def getAlbumInfos(self, songInfos: List[SongInfo]):

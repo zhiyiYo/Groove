@@ -25,7 +25,7 @@ class TestAlbumInfoController(TestCase):
 
         self.songInfoController = SongInfoController()
         self.albumInfoController = AlbumInfoController()
-        self.directory = Directory('D:/hzz/音乐')
+        self.directory = Directory('D:/hzz/Music')
 
     def test_get_album_infos(self):
         """ 测试获取所有专辑信息 """
