@@ -2,7 +2,7 @@
 from PyQt5.QtCore import QThread
 from PyQt5.QtSql import QSqlDatabase
 
-from .service import SongInfoService, AlbumInfoService
+from .service import SongInfoService, AlbumInfoService, SingerInfoService
 
 
 class DBInitializer:
@@ -30,5 +30,7 @@ class DBInitializer:
         """ 初始化数据库 """
         songInfoService = SongInfoService(self.db)
         albumInfoService = AlbumInfoService(self.db)
+        singerInfoService = SingerInfoService(self.db)
         songInfoService.createTable()
         albumInfoService.createTable()
+        singerInfoService.createTable()

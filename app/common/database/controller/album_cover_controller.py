@@ -10,7 +10,6 @@ class AlbumCoverController:
     """ 专辑封面控制器 """
 
     def __init__(self):
-        super().__init__()
         self.albumCoverReader = AlbumCoverReader()
 
     def getAlbumCovers(self, songInfos: List[SongInfo]):

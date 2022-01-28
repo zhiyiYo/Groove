@@ -74,7 +74,7 @@ class PlayingInterface(QWidget):
 
         # 创建小部件
         self.albumCoverLabel = BlurCoverLabel(12, (450, 450), self)
-        self.maskLabel = MaskLabel(QColor(0, 0, 0, 225), self)
+        self.maskLabel = MaskLabel(QColor(0, 0, 0, 215), self)
         self.songInfoCardChute = SongInfoCardChute(self.playlist, self)
         self.lyricWidget = LyricWidget(self.songInfoCardChute)
         self.parallelAniGroup = QParallelAnimationGroup(self)
@@ -289,6 +289,7 @@ class PlayingInterface(QWidget):
         else:
             self.hidePlaylist()
 
+    # TODO:封面错误
     def setCurrentIndex(self, index):
         """ 更新播放列表下标 """
         if self.currentIndex == index or index <= -1:

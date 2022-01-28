@@ -56,7 +56,7 @@ class LabelNavigationInterface(QWidget):
                 lambda text=text: self.labelClicked.emit(text))
             self.gridLayout.addWidget(label, row, col, 1, 1, Qt.AlignCenter)
 
-    def setLabels(self, label_list: List[str] = None, layout="letterGridLayout"):
+    def setLabels(self, label_list: List[str] = None, layout="grid"):
         """ 设置导航标签
 
         Parameters
@@ -65,7 +65,7 @@ class LabelNavigationInterface(QWidget):
             需要显示的标签列表
 
         layout: str
-            显示的标签的布局，有字母网格布局`letterGridLayout`和列表布局`listLayout`两种
+            显示的标签的布局，有字母网格布局`grid`和列表布局`list`两种
         """
         self.vBox.removeAllWidget()
         # 删除旧标签
@@ -76,7 +76,7 @@ class LabelNavigationInterface(QWidget):
 
         if self.__label_list:
             # 不使用棋盘布局直接显示所有标签
-            if layout != "letterGridLayout":
+            if layout != "grid":
                 self.__clickableLabel_list = [
                     ClickableLabel(label) for label in label_list
                 ]
@@ -99,7 +99,7 @@ class LabelNavigationInterface(QWidget):
                     )
                     label.setEnabled(label.text() in letter_set)
             # 切换布局
-            self.stackWidget.setCurrentIndex(layout == "letterGridLayout")
+            self.stackWidget.setCurrentIndex(layout == "grid")
 
     def __adjustLabelSize(self):
         """ 调整标签尺寸 """

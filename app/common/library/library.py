@@ -3,11 +3,11 @@ from pathlib import Path
 from time import time
 from typing import List
 
-from PyQt5.QtCore import QObject, Qt, QThread, pyqtSignal
+from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtSql import QSqlDatabase
 
 from ..database.controller import (AlbumCoverController, AlbumInfoController,
-                                   SongInfoController)
+                                   SingerInfoController, SongInfoController)
 from .file_system import FileSystem
 
 
@@ -41,6 +41,7 @@ class Library(QObject):
         self.songInfoController = SongInfoController(db)
         self.albumInfoController = AlbumInfoController(db)
         self.albumCoverController = AlbumCoverController()
+        self.singerInfoController = SingerInfoController(db)
 
     def load(self):
         """ 载入歌曲信息 """
@@ -49,6 +50,9 @@ class Library(QObject):
         self.albumInfos = self.albumInfoController.getAlbumInfosFromCache(
             self.songInfos)
         self.albumCoverController.getAlbumCovers(self.songInfos)
+        self.singerInfos = self.singerInfoController.getSingerInfosFromCache(
+            self.albumInfos)
+
         self.loadFinished.emit()
 
     def setDirectories(self, directories: List[str]):
@@ -67,6 +71,8 @@ class Library(QObject):
         self.albumInfos = self.albumInfoController.getAlbumInfos(
             self.songInfos)
         self.albumCoverController.getAlbumCovers(self.songInfos)
+        self.singerInfos = self.singerInfoController.getSingerInfos(
+            self.albumInfos)
 
         self.reloadFinished.emit()
 
@@ -79,6 +85,7 @@ class Library(QObject):
         """ 设置数据库 """
         self.songInfoController.songInfoService.setDatabase(db)
         self.albumInfoController.albumInfoService.setDatabase(db)
+        self.singerInfoController.singerInfoService.setDatabase(db)
 
     def copyTo(self, library):
         """ 拷贝歌曲库的信息 """

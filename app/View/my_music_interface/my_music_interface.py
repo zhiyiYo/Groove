@@ -36,8 +36,7 @@ class MyMusicInterface(QWidget):
         self.isInSelectionMode = False
         self.stackedWidget = PopUpAniStackedWidget(self)
         self.songListWidget = SongListWidget(self.library.songInfos, self)
-        self.albumCardInterface = AlbumCardInterface(
-            self.library.albumInfos, self)
+        self.albumCardInterface = AlbumCardInterface(self.library, self)
         self.toolBar = ToolBar(self)
 
         self.songTabButton = self.toolBar.songTabButton
@@ -422,8 +421,7 @@ class MyMusicInterface(QWidget):
             self.__onCheckedCardNumChanged)
         self.albumCardInterface.showLabelNavigationInterfaceSig.connect(
             self.showLabelNavigationInterfaceSig)
-        self.albumCardInterface.nextPlaySignal.connect(
-            lambda s, a: self.nextToPlaySig.emit(self.__getAlbumSongInfos(s, a)))
+        self.albumCardInterface.nextPlaySignal.connect(self.nextToPlaySig)
         self.albumCardInterface.albumNumChanged.connect(
             lambda: self.__onCurrentTabChanged(self.stackedWidget.currentIndex()))
         self.albumCardInterface.isAllCheckedChanged.connect(
@@ -431,11 +429,11 @@ class MyMusicInterface(QWidget):
         self.albumCardInterface.deleteAlbumSig.connect(lambda s, a: self.removeSongSig.emit(
             [i.file for i in self.__getAlbumSongInfos(s, a)]))
         self.albumCardInterface.addAlbumToPlayingSignal.connect(
-            lambda s, a: self.addSongsToPlayingPlaylistSig.emit(self.__getAlbumSongInfos(s, a)))
+            self.addSongsToPlayingPlaylistSig)
         self.albumCardInterface.addAlbumToCustomPlaylistSig.connect(
-            lambda n, s, a: self.addSongsToCustomPlaylistSig.emit(n, self.__getAlbumSongInfos(s, a)))
+            self.addSongsToCustomPlaylistSig)
         self.albumCardInterface.addAlbumToNewCustomPlaylistSig.connect(
-            lambda s, a: self.addSongsToNewCustomPlaylistSig.emit(self.__getAlbumSongInfos(s, a)))
+            self.addSongsToNewCustomPlaylistSig)
 
         # 歌曲界面选择栏各按钮信号连接到槽函数
         self.songSelectionModeBar.cancelButton.clicked.connect(

@@ -12,8 +12,7 @@ from ..utils import UUIDUtils
 class AlbumInfoController:
     """ 专辑信息控制器 """
 
-    def __init__(self, db: QSqlDatabase=None):
-        super().__init__()
+    def __init__(self, db: QSqlDatabase = None):
         self.albumInfoService = AlbumInfoService(db)
         self.songInfoService = SongInfoService(db)
 
@@ -28,7 +27,7 @@ class AlbumInfoController:
         Returns
         -------
         albumInfos: List[AlbumInfo]
-            专辑信息列表
+            专辑信息列表，不包含歌曲信息
         """
         # 从数据库获取所有专辑信息
         cacheAlbumInfos = {
@@ -50,17 +49,14 @@ class AlbumInfoController:
                 if currentAlbumInfos[key].modifiedTime < t:
                     currentAlbumInfos[key].modifiedTime = t
                     expiredAlbumInfos[key] = cacheAlbumInfos[key]
-                    expiredAlbumInfos[key].modifiedTime = t
 
                 if not currentAlbumInfos[key].year and year:
                     currentAlbumInfos[key].year = year
                     expiredAlbumInfos[key] = cacheAlbumInfos[key]
-                    expiredAlbumInfos[key].year = year
 
                 if not currentAlbumInfos[key].genre and genre:
                     currentAlbumInfos[key].genre = genre
                     expiredAlbumInfos[key] = cacheAlbumInfos[key]
-                    expiredAlbumInfos[key].genre = genre
 
             elif key not in currentAlbumInfos:
                 albumInfo = AlbumInfo(
@@ -78,16 +74,19 @@ class AlbumInfoController:
                 if currentAlbumInfos[key].modifiedTime < t:
                     currentAlbumInfos[key].modifiedTime = t
 
+                if not currentAlbumInfos[key].year and year:
+                    currentAlbumInfos[key].year = year
+
+                if not currentAlbumInfos[key].genre and genre:
+                    currentAlbumInfos[key].genre = genre
+
         removedIds = []
         for i in set(cacheAlbumInfos.keys())-set(currentAlbumInfos.keys()):
             removedIds.append(cacheAlbumInfos[i].id)
 
         # 更新数据库
         self.albumInfoService.removeByIds(removedIds)
-        for albumInfo in expiredAlbumInfos.values():
-            self.albumInfoService.modify(
-                albumInfo.id, 'modifiedTime', albumInfo.modifiedTime)
-
+        self.albumInfoService.modifyByIds(list(expiredAlbumInfos.values()))
         self.albumInfoService.addBatch(addedAlbumInfos)
 
         # 排序专辑信息
@@ -113,7 +112,7 @@ class AlbumInfoController:
         Returns
         -------
         albumInfo: AlbumInfo
-            专辑信息，没有找到则返回 None
+            专辑信息，包含歌曲信息列表，没有找到则返回 None
         """
         albumInfo = self.albumInfoService.findBy(singer=singer, album=album)
         if not albumInfo:
@@ -122,10 +121,25 @@ class AlbumInfoController:
         albumInfo.songInfos = self.songInfoService.listBySingerAlbum(
             singer, album)
 
-        albumInfo.songInfos.sort(key=lambda i:i.track or 0)
+        albumInfo.songInfos.sort(key=lambda i: i.track or 0)
         return albumInfo
 
-    def getAlbumInfos(self, songInfos: List[SongInfo]):
+    def getAlbumInfosBySinger(self, singer: str):
+        """ 从数据库获取一张空专辑信息
+
+        Paramters
+        ---------
+        singer: str
+            歌手
+
+        Returns
+        -------
+        albumInfo: AlbumInfo
+            专辑信息，不包含歌曲信息列表，没有找到则返回 None
+        """
+        return self.albumInfoService.listBy(singer=singer)
+
+    def getAlbumInfos(self, songInfos: List[SongInfo]) -> List[AlbumInfo]:
         """ 从新的歌曲信息列表获取专辑信息并更新数据库
 
         Parameters
@@ -136,7 +150,7 @@ class AlbumInfoController:
         Returns
         -------
         albumInfos: List[AlbumInfo]
-            专辑信息列表
+            专辑信息列表，不包含歌曲信息
         """
         albumInfos = {}  # type:Dict[str, AlbumInfo]
 

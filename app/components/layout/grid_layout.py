@@ -24,6 +24,7 @@ class GridLayout(QGridLayout):
         # 只能占用一行一列，否则调整列数时会混乱
         super().addWidget(widget, row, column, 1, 1, alignment)
         self.__widget_list.append(widget)
+
         # 更新行数和列数
         self.__rowNum = max(row + 1, self.__rowNum)
         self.__columnNum = max(column + 1, self.__columnNum)

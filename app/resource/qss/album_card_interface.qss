@@ -74,6 +74,16 @@ QLabel {
     background-color: transparent;
 }
 
+QLabel#viewTitleLabel{
+    font: 21px 'Segoe UI', 'Microsoft YaHei';
+    color: rgb(0, 107, 131);
+}
+
+QLabel#guideLabel{
+    color: black;
+    font: 25px 'Segoe UI','Microsoft YaHei'
+}
+
 QLabel#albumLabel[isChecked='False'] {
     color: black;
     font-family: 'Segoe UI', 'Microsoft YaHei';

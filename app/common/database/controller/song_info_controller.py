@@ -15,7 +15,6 @@ class SongInfoController:
     """ 歌曲信息控制器 """
 
     def __init__(self, db: QSqlDatabase = None):
-        super().__init__()
         self.songInfoService = SongInfoService(db)
 
     def getSongInfosFromCache(self, files: List[Path]):
@@ -95,6 +94,7 @@ class SongInfoController:
         """ 从本地重新获取歌曲信息并更新数据库 """
         reader = SongInfoReader()
         songInfos = [reader.read(i) for i in files]
+        songInfos.sort(key=lambda i: i.createTime, reverse=True)
 
         # 更新数据库
         self.songInfoService.clearTable()
