@@ -1,18 +1,16 @@
 # coding:utf-8
-from copy import deepcopy
 from typing import List
 
-from components.album_card import AlbumBlurBackground
-from components.album_card import AlbumCard as AlbumCardBase
-from components.buttons.three_state_button import ThreeStatePushButton
-from components.dialog_box.message_dialog import MessageDialog
-from components.layout.h_box_layout import HBoxLayout
-from components.widgets.menu import AddToMenu, DWMMenu
-from PyQt5.QtCore import (QEasingCurve, QFile, QParallelAnimationGroup, QPoint,
-                          QPropertyAnimation, QSize, Qt, pyqtSignal)
-from PyQt5.QtGui import QContextMenuEvent, QIcon
-from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsOpacityEffect,
-                             QPushButton, QScrollArea, QToolButton, QWidget)
+from common.database.entity import AlbumInfo
+from common.library import Library
+from components.album_card import (AlbumBlurBackground, AlbumCardType,
+                                   HorizonAlbumCardView)
+from PyQt5.QtCore import (QEasingCurve, QFile, QMargins,
+                          QParallelAnimationGroup, QPoint, QPropertyAnimation,
+                          QSize, Qt, pyqtSignal)
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import (QApplication, QGraphicsOpacityEffect, QPushButton,
+                             QScrollArea, QToolButton, QWidget)
 
 
 class AlbumGroupBox(QScrollArea):
@@ -27,10 +25,9 @@ class AlbumGroupBox(QScrollArea):
     addAlbumToNewCustomPlaylistSig = pyqtSignal(list)
     addAlbumToCustomPlaylistSig = pyqtSignal(str, list)
 
-    def __init__(self, parent=None):
+    def __init__(self, library: Library, parent=None):
         super().__init__(parent=parent)
-        self.albumCards = []  # type:List[AlbumCard]
-        self.albumInfos = []  # type:List[dict]
+        self.library = library
         self.titleButton = QPushButton(self.tr('Albums'), self)
         self.scrollRightButton = QToolButton(self)
         self.scrollLeftButton = QToolButton(self)
@@ -43,9 +40,18 @@ class AlbumGroupBox(QScrollArea):
             self.rightOpacityEffect, b'opacity', self)
         self.scrollAni = QPropertyAnimation(
             self.horizontalScrollBar(), b'value', self)
-        self.scrollWidget = QWidget(self)
-        self.hBox = HBoxLayout(self.scrollWidget)
-        self.albumBlurBackground = AlbumBlurBackground(self.scrollWidget)
+
+        self.albumInfos = []  # type:List[AlbumInfo]
+        self.albumBlurBackground = AlbumBlurBackground(self)
+        self.albumCardView = HorizonAlbumCardView(
+            library,
+            [],
+            AlbumCardType.LOCAL_SEARCHED_ALBUM_CARD,
+            margins=QMargins(35, 47, 65, 0),
+            parent=self
+        )
+        self.albumCards = self.albumCardView.albumCards
+
         self.leftMask = QWidget(self)
         self.rightMask = QWidget(self)
         self.__initWidget()
@@ -53,14 +59,14 @@ class AlbumGroupBox(QScrollArea):
     def __initWidget(self):
         """ 初始化小部件 """
         self.setFixedHeight(343)
-        self.setWidget(self.scrollWidget)
+        self.setWidget(self.albumCardView)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scrollLeftButton.raise_()
         self.scrollRightButton.raise_()
         self.albumBlurBackground.lower()
-        self.hBox.setSpacing(20)
-        self.hBox.setContentsMargins(35, 47, 65, 0)
+        # self.hBox.setContentsMargins(35, 47, 65, 0)
+
         self.__setQss()
         self.titleButton.move(37, 0)
         self.leftMask.move(0, 47)
@@ -81,11 +87,9 @@ class AlbumGroupBox(QScrollArea):
         self.scrollRightButton.hide()
         self.leftMask.hide()
         self.resize(1200, 343)
+
         # 信号连接到槽
-        self.horizontalScrollBar().valueChanged.connect(self.__onScrollHorizon)
-        self.scrollLeftButton.clicked.connect(self.__onScrollLeftButtonClicked)
-        self.scrollRightButton.clicked.connect(
-            self.__onScrollRightButtonClicked)
+        self.__connectSignalToSlot()
 
     def __setQss(self):
         """ 设置层叠样式 """
@@ -103,7 +107,6 @@ class AlbumGroupBox(QScrollArea):
     def resizeEvent(self, e):
         self.rightMask.move(self.width()-65, 47)
         self.scrollRightButton.move(self.width()-90, 42)
-        self.scrollWidget.resize(self.scrollWidget.width(), self.height())
 
     def __onScrollHorizon(self, value):
         """ 水平滚动槽函数 """
@@ -132,49 +135,13 @@ class AlbumGroupBox(QScrollArea):
         self.scrollAni.setEasingCurve(QEasingCurve.OutQuad)
         self.scrollAni.start()
 
-    def __createOneAlbumCard(self, albumInfo: dict):
-        """ 创建一个专辑卡 """
-        albumCard = AlbumCard(albumInfo, self.scrollWidget)
-        self.albumCards.append(albumCard)
-        self.hBox.addWidget(albumCard)
-        # 专辑卡信号连接到槽函数
-        albumCard.playSignal.connect(self.playSig)
-        albumCard.nextPlaySignal.connect(self.nextToPlaySig)
-        albumCard.deleteCardSig.connect(self.__showDeleteOneCardDialog)
-        albumCard.addToPlayingSignal.connect(self.addAlbumToPlayingSig)
-        albumCard.switchToSingerInterfaceSig.connect(
-            self.switchToSingerInterfaceSig)
-        albumCard.switchToAlbumInterfaceSig.connect(
-            self.switchToAlbumInterfaceSig)
-        albumCard.showBlurAlbumBackgroundSig.connect(
-            self.__showBlurAlbumBackground)
-        albumCard.hideBlurAlbumBackgroundSig.connect(
-            self.albumBlurBackground.hide)
-        albumCard.addAlbumToCustomPlaylistSig.connect(
-            self.addAlbumToCustomPlaylistSig)
-        albumCard.addAlbumToNewCustomPlaylistSig.connect(
-            self.addAlbumToNewCustomPlaylistSig)
-
     def __showBlurAlbumBackground(self, pos: QPoint, picPath: str):
         """ 显示磨砂背景 """
         # 将全局坐标转为窗口坐标
-        pos = self.scrollWidget.mapFromGlobal(pos)
+        pos = self.albumCardView.mapFromGlobal(pos)
         self.albumBlurBackground.setBlurAlbum(picPath)
         self.albumBlurBackground.move(pos.x() - 31, pos.y() - 16)
         self.albumBlurBackground.show()
-
-    def __showDeleteOneCardDialog(self, albumName: str):
-        """ 显示删除一个专辑卡的对话框 """
-        songPaths = [i["songPath"] for i in self.sender().songInfos]
-
-        title = self.tr("Are you sure you want to delete this?")
-        content = self.tr("If you delete") + f' "{albumName}" ' + \
-            self.tr("it won't be on be this device anymore.")
-
-        w = MessageDialog(title, content, self.window())
-        w.yesSignal.connect(lambda: self.deleteAlbums([albumName]))
-        w.yesSignal.connect(lambda: self.deleteAlbumSig.emit(songPaths))
-        w.exec_()
 
     def enterEvent(self, e):
         """ 进入窗口时显示滚动按钮 """
@@ -231,30 +198,9 @@ class AlbumGroupBox(QScrollArea):
 
     def deleteAlbums(self, albumNames: list):
         """ 删除专辑 """
-        albumInfos = deepcopy(self.albumInfos)
-
-        for albumInfo in albumInfos.copy():
-            if albumInfo["album"] in albumNames:
-                albumInfos.remove(albumInfo)
-
-        self.updateWindow(albumInfos)
 
     def deleteSongs(self, songPaths: list):
         """ 删除歌曲 """
-        albumInfos = deepcopy(self.albumInfos)
-        for albumInfo in albumInfos.copy():
-            songInfos = albumInfo["songInfos"]
-
-            for songInfo in songInfos.copy():
-                if songInfo["songPath"] in songPaths:
-                    songInfos.remove(songInfo)
-
-            # 如果专辑变成空专辑，就将其从专辑列表中移除
-            if not songInfos:
-                albumInfos.remove(albumInfo)
-
-        # 更新窗口
-        self.updateWindow(albumInfos)
 
     def updateWindow(self, albumInfos: list):
         """ 更新窗口 """
@@ -266,79 +212,40 @@ class AlbumGroupBox(QScrollArea):
         self.leftMask.hide()
         self.rightMask.show()
 
-        # 根据具体情况增减专辑卡
-        newCardNum = len(albumInfos)
-        oldCardNum = len(self.albumCards)
-        if newCardNum < oldCardNum:
-            # 删除部分专辑卡
-            for i in range(oldCardNum - 1, newCardNum - 1, -1):
-                albumCard = self.albumCards.pop()
-                self.hBox.removeWidget(albumCard)
-                albumCard.deleteLater()
-        elif newCardNum > oldCardNum:
-            # 新增部分专辑卡
-            for albumInfo in albumInfos[oldCardNum:]:
-                self.__createOneAlbumCard(albumInfo)
-                QApplication.processEvents()
+        # 更新专辑卡
+        self.albumInfos = albumInfos
+        self.albumCardView.updateAllAlbumCards(albumInfos)
 
-        self.scrollWidget.adjustSize()
+    def __onPlay(self, singer: str, album: str):
+        """ 播放一张专辑 """
+        albumInfo = self.library.albumInfoController.getAlbumInfo(
+            singer, album)
 
-        # 更新部分专辑卡
-        self.albumInfos = deepcopy(albumInfos)
-        n = oldCardNum if oldCardNum < newCardNum else newCardNum
-        for i in range(n):
-            albumInfo = albumInfos[i]
-            self.albumCards[i].updateWindow(albumInfo)
-            QApplication.processEvents()
+        if not albumInfo:
+            return
 
-        self.setStyle(QApplication.style())
+        self.playSig.emit(albumInfo.songInfos)
 
+    def __connectSignalToSlot(self):
+        """ 连接信号到槽函数 """
+        self.horizontalScrollBar().valueChanged.connect(self.__onScrollHorizon)
+        self.scrollLeftButton.clicked.connect(self.__onScrollLeftButtonClicked)
+        self.scrollRightButton.clicked.connect(
+            self.__onScrollRightButtonClicked)
 
-class AlbumCard(AlbumCardBase):
-    """ 专辑卡 """
-
-    def contextMenuEvent(self, event: QContextMenuEvent):
-        menu = AlbumCardContextMenu(parent=self)
-        menu.playAct.triggered.connect(
-            lambda: self.playSignal.emit(self.songInfos))
-        menu.nextToPlayAct.triggered.connect(
-            lambda: self.nextPlaySignal.emit(self.songInfos))
-        menu.showSingerAct.triggered.connect(
-            lambda: self.switchToSingerInterfaceSig.emit(self.singer))
-        menu.deleteAct.triggered.connect(
-            lambda: self.deleteCardSig.emit(self.album))
-
-        menu.addToMenu.playingAct.triggered.connect(
-            lambda: self.addToPlayingSignal.emit(self.songInfos))
-        menu.addToMenu.addSongsToPlaylistSig.connect(
-            lambda name: self.addAlbumToCustomPlaylistSig.emit(name, self.songInfos))
-        menu.addToMenu.newPlaylistAct.triggered.connect(
-            lambda: self.addAlbumToNewCustomPlaylistSig.emit(self.songInfos))
-        menu.exec(event.globalPos())
-
-
-class AlbumCardContextMenu(DWMMenu):
-    """ 专辑卡右击菜单"""
-
-    def __init__(self, parent):
-        super().__init__("", parent)
-        self.__createActions()
-        self.setObjectName("albumCardContextMenu")
-        self.setQss()
-
-    def __createActions(self):
-        """ 创建动作 """
-        # 创建动作
-        self.playAct = QAction(self.tr("Play"), self)
-        self.nextToPlayAct = QAction(self.tr("Play next"), self)
-        self.pinToStartMenuAct = QAction(self.tr('Pin to Start'), self)
-        self.deleteAct = QAction(self.tr("Delete"), self)
-        self.showSingerAct = QAction(self.tr("Show artist"), self)
-        self.addToMenu = AddToMenu(self.tr("Add to"), self)
-
-        # 添加动作到菜单
-        self.addActions([self.playAct, self.nextToPlayAct])
-        # 将子菜单添加到主菜单
-        self.addMenu(self.addToMenu)
-        self.addActions(
-            [self.showSingerAct, self.pinToStartMenuAct, self.deleteAct])
+        self.albumCardView.playSig.connect(self.__onPlay)
+        self.albumCardView.nextPlaySig.connect(self.nextToPlaySig)
+        self.albumCardView.addAlbumToPlayingSig.connect(
+            self.addAlbumToPlayingSig)
+        self.albumCardView.switchToSingerInterfaceSig.connect(
+            self.switchToSingerInterfaceSig)
+        self.albumCardView.switchToAlbumInterfaceSig.connect(
+            self.switchToAlbumInterfaceSig)
+        self.albumCardView.showBlurAlbumBackgroundSig.connect(
+            self.__showBlurAlbumBackground)
+        self.albumCardView.hideBlurAlbumBackgroundSig.connect(
+            self.albumBlurBackground.hide)
+        self.albumCardView.addAlbumToCustomPlaylistSig.connect(
+            self.addAlbumToCustomPlaylistSig)
+        self.albumCardView.addAlbumToNewCustomPlaylistSig.connect(
+            self.addAlbumToNewCustomPlaylistSig)

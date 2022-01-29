@@ -1,10 +1,12 @@
 # coding:utf-8
+from typing import List
+from common.database.entity import SongInfo
 from components.dialog_box.message_dialog import MessageDialog
-from components.widgets.label import ClickableLabel
-from components.widgets.menu import AddToMenu, DWMMenu, DownloadMenu
 from components.song_list_widget import NoScrollSongListWidget, SongCardType
-from PyQt5.QtCore import QMargins, Qt, pyqtSignal, QFile
-from PyQt5.QtWidgets import QAction, QWidget, QPushButton
+from components.widgets.label import ClickableLabel
+from components.widgets.menu import AddToMenu, DownloadMenu, DWMMenu
+from PyQt5.QtCore import QFile, QMargins, Qt, pyqtSignal
+from PyQt5.QtWidgets import QAction, QPushButton, QWidget
 
 
 class SongGroupBox(QWidget):
@@ -74,20 +76,21 @@ class SongGroupBox(QWidget):
         self.loadMoreLabel.move(self.loadMoreLabel.x(),
                                 57+self.songListWidget.height()+17)
 
-    def updateWindow(self, songInfos):
+    def updateWindow(self, songInfos: List[SongInfo]):
         """ 更新窗口 """
         if songInfos == self.songInfos:
             return
+
         self.songInfos = songInfos
         self.songListWidget.updateAllSongCards(self.songInfos)
         self.__adjustHeight()
 
-    def loadMoreOnlineMusic(self, songInfos: list):
+    def loadMoreOnlineMusic(self, songInfos: List[SongInfo]):
         """ 载入更多在线音乐
 
         Parameters
         ----------
-        songInfos: list
+        songInfos: List[SongInfo]
             新添加的歌曲信息列表
         """
         if self.songType != 'Online songs':
@@ -102,6 +105,7 @@ class SongGroupBox(QWidget):
         """ 加载更多 """
         if self.loadMoreLabel.isHidden() or self.loadMoreLabel.property("loadFinished") == "true":
             return
+
         self.loadMoreSignal.emit()
 
 
@@ -109,8 +113,8 @@ class LocalSongListWidget(NoScrollSongListWidget):
     """ 本地音乐歌曲卡列表 """
 
     playSignal = pyqtSignal(int)                        # 将播放列表的当前歌曲切换为指定的歌曲卡
-    playOneSongSig = pyqtSignal(dict)                   # 重置播放列表为指定的一首歌
-    nextToPlayOneSongSig = pyqtSignal(dict)             # 将歌曲添加到下一首播放
+    playOneSongSig = pyqtSignal(SongInfo)               # 重置播放列表为指定的一首歌
+    nextToPlayOneSongSig = pyqtSignal(SongInfo)         # 将歌曲添加到下一首播放
     switchToSingerInterfaceSig = pyqtSignal(str)        # 切换到歌手界面
     switchToAlbumInterfaceSig = pyqtSignal(str, str)    # 切换到专辑界面
 
@@ -127,7 +131,7 @@ class LocalSongListWidget(NoScrollSongListWidget):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.__setQss()
 
-    def __playButtonSlot(self, index):
+    def __onPlayButtonClicked(self, index):
         """ 歌曲卡播放按钮槽函数 """
         self.playSignal.emit(index)
         self.setCurrentIndex(index)
@@ -175,8 +179,8 @@ class LocalSongListWidget(NoScrollSongListWidget):
             self.showSongPropertyDialog)
         menu.showAlbumAct.triggered.connect(
             lambda: self.switchToAlbumInterfaceSig.emit(
-                self.songCards[self.currentRow()].album,
-                self.songCards[self.currentRow()].singer))
+                self.songCards[self.currentRow()].singer,
+                self.songCards[self.currentRow()].album))
         menu.deleteAct.triggered.connect(self.__showDeleteCardDialog)
 
         menu.addToMenu.playingAct.triggered.connect(
@@ -192,7 +196,7 @@ class LocalSongListWidget(NoScrollSongListWidget):
     def _connectSongCardSignalToSlot(self, songCard):
         """ 将歌曲卡信号连接到槽 """
         songCard.doubleClicked.connect(self.playSignal)
-        songCard.playButtonClicked.connect(self.__playButtonSlot)
+        songCard.playButtonClicked.connect(self.__onPlayButtonClicked)
         songCard.addSongToPlayingSig.connect(self.addSongToPlayingSignal)
         songCard.clicked.connect(self.setCurrentIndex)
         songCard.switchToSingerInterfaceSig.connect(
@@ -208,10 +212,10 @@ class LocalSongListWidget(NoScrollSongListWidget):
 class OnlineSongListWidget(NoScrollSongListWidget):
     """ 在线音乐歌曲卡列表 """
 
-    playSignal = pyqtSignal(int)                # 将播放列表的当前歌曲切换为指定的歌曲卡
-    playOneSongSig = pyqtSignal(dict)           # 重置播放列表为指定的一首歌
-    nextToPlayOneSongSig = pyqtSignal(dict)     # 将歌曲添加到下一首播放
-    downloadSig = pyqtSignal(dict, str)         # 下载歌曲 (songInfo, quality)
+    playSignal = pyqtSignal(int)                 # 将播放列表的当前歌曲切换为指定的歌曲卡
+    playOneSongSig = pyqtSignal(SongInfo)        # 重置播放列表为指定的一首歌
+    nextToPlayOneSongSig = pyqtSignal(SongInfo)  # 将歌曲添加到下一首播放
+    downloadSig = pyqtSignal(SongInfo, str)      # 下载歌曲 (songInfo, quality)
 
     def __init__(self, parent=None):
         """
@@ -224,7 +228,7 @@ class OnlineSongListWidget(NoScrollSongListWidget):
                          parent, QMargins(30, 0, 30, 0), 0)
         self.__setQss()
 
-    def __playButtonSlot(self, index):
+    def __onPlayButtonClicked(self, index):
         """ 歌曲卡播放按钮槽函数 """
         self.playSignal.emit(index)
         self.setCurrentIndex(index)
@@ -248,7 +252,7 @@ class OnlineSongListWidget(NoScrollSongListWidget):
     def _connectSongCardSignalToSlot(self, songCard):
         """ 将歌曲卡信号连接到槽 """
         songCard.doubleClicked.connect(self.playSignal)
-        songCard.playButtonClicked.connect(self.__playButtonSlot)
+        songCard.playButtonClicked.connect(self.__onPlayButtonClicked)
         songCard.clicked.connect(self.setCurrentIndex)
         songCard.downloadSig.connect(self.downloadSig)
 

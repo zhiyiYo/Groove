@@ -4,9 +4,11 @@ from copy import deepcopy
 from typing import List, Tuple
 
 import requests
+from common.database.entity import SongInfo
 from common.image_process_utils import getPicSuffix
 from common.meta_data.reader import AlbumCoverReader
 from common.meta_data.writer import writeAlbumCover, writeSongInfo
+from common.os_utils import adjustName
 
 
 def exceptionHandler(*default):
@@ -50,7 +52,7 @@ class CrawlerBase:
                           'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'
         }
 
-    def getSongInfoList(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[dict], int]:
+    def getSongInfos(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[SongInfo], int]:
         """ 获取歌曲列表
 
         Parameters
@@ -66,7 +68,7 @@ class CrawlerBase:
 
         Returns
         -------
-        song_infos: List[dict]
+        song_infos: List[SongInfo]
             歌曲信息列表，没找到任何歌曲时为空列表
 
         total: int
@@ -89,12 +91,12 @@ class CrawlerBase:
         """
         raise NotImplementedError("该方法必须被子类实现")
 
-    def getSongUrl(self, song_info: dict, quality: str = 'Standard quality') -> str:
+    def getSongUrl(self, song_info: SongInfo, quality: str = 'Standard quality') -> str:
         """ 获取歌曲下载链接
 
         Parameters
         ----------
-        song_info: dict
+        song_info: SongInfo
             歌曲信息
 
         quality: str
@@ -112,12 +114,12 @@ class CrawlerBase:
         """
         raise NotImplementedError("该方法必须被子类实现")
 
-    def downloadSong(self, song_info: dict, save_dir: str, quality: str = 'Standard quality') -> str:
+    def downloadSong(self, song_info: SongInfo, save_dir: str, quality: str = 'Standard quality') -> str:
         """ 下载歌曲
 
         Parameters
         ----------
-        song_info: dict
+        song_info: SongInfo
             歌曲信息
 
         save_dir: str
@@ -156,7 +158,7 @@ class CrawlerBase:
         """
         raise NotImplementedError("该方法必须被子类实现")
 
-    def search(self, key_word: str, page_num=1, page_size=10, quality: str = 'Standard quality') -> Tuple[List[dict], int]:
+    def search(self, key_word: str, page_num=1, page_size=10, quality: str = 'Standard quality') -> Tuple[List[SongInfo], int]:
         """ 搜索歌曲并获得歌曲下载地址
 
         Parameters
@@ -175,7 +177,7 @@ class CrawlerBase:
 
         Returns
         -------
-        song_infos: List[dict]
+        song_infos: List[SongInfo]
             歌曲信息列表，没找到任何歌曲时为空列表
 
         total: int
@@ -188,7 +190,7 @@ class CrawlerBase:
         """
         raise NotImplementedError("该方法必须被子类实现")
 
-    def getMvInfoList(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[dict], int]:
+    def getMvInfos(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[dict], int]:
         """ 获取歌曲 MV 信息列表
 
         Parameters
@@ -235,12 +237,12 @@ class CrawlerBase:
         """
         raise NotImplementedError("该方法必须被子类实现")
 
-    def saveSong(self, song_info: dict, save_dir: str, suffix: str, data: bytes) -> str:
+    def saveSong(self, song_info: SongInfo, save_dir: str, suffix: str, data: bytes) -> str:
         """ 保存歌曲文件
 
         Parameters
         ----------
-        song_info: dict
+        song_info: SongInfo
             歌曲信息
 
         save_dir: str
@@ -259,7 +261,7 @@ class CrawlerBase:
         """
         # 保存歌曲文件
         song_path = os.path.join(
-            save_dir, f"{song_info['singer']} - {song_info['songName']}{suffix}")
+            save_dir, f"{song_info.singer} - {song_info.title}{suffix}")
         with open(song_path, 'wb') as f:
             f.write(data)
 
@@ -267,11 +269,11 @@ class CrawlerBase:
         cover_path = song_info['coverPath']
         if cover_path.startswith('http'):
             cover_path = self.downloadAlbumCover(
-                cover_path, song_info['coverName'])
+                cover_path, adjustName(song_info.singer+'_'+song_info.album))
 
         # 修改歌曲元数据
         song_info_ = song_info.copy()
-        song_info_['songPath'] = song_path
+        song_info_.file = song_path
         writeSongInfo(song_info_)
         writeAlbumCover(song_path, cover_path)
 

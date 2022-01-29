@@ -1,4 +1,7 @@
 # coding:utf-8
+from typing import List
+
+from common.database.entity import SongInfo
 from PyQt5.QtCore import QMargins, Qt
 
 from .basic_song_list_widget import BasicSongListWidget
@@ -37,15 +40,15 @@ class NoScrollSongListWidget(BasicSongListWidget):
     def wheelEvent(self, e):
         return
 
-    def appendOneSongCard(self, songInfo: dict):
+    def appendOneSongCard(self, songInfo: SongInfo):
         super().appendOneSongCard(songInfo)
         self.__adjustHeight()
 
-    def appendSongCards(self, songInfos: list):
+    def appendSongCards(self, songInfos: List[SongInfo]):
         super().appendSongCards(songInfos)
         self.__adjustHeight()
 
-    def updateAllSongCards(self, songInfos: list):
+    def updateAllSongCards(self, songInfos: List[SongInfo]):
         """ 更新所有歌曲卡，根据给定的信息决定创建或者删除歌曲卡 """
         super().updateAllSongCards(songInfos)
         self.__adjustHeight()

@@ -32,13 +32,13 @@ QLabel {
     color: rgba(0, 0, 0, 0.4);
 }
 
-QLabel#albumNameLabel[isChecked='False'] {
+QLabel#albumLabel[isChecked='False'] {
     color: black;
     font-family: 'Segoe UI', 'Microsoft YaHei';
     font-weight: bold;
 }
 
-QLabel#albumNameLabel[isChecked='True'] {
+QLabel#albumLabel[isChecked='True'] {
     color: white;
     font-family: 'Segoe UI', 'Microsoft YaHei';
     font-weight: bold;

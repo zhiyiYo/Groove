@@ -22,7 +22,7 @@ class GetMvUrlThread(QThread):
     def run(self):
         url = ''
         for crawler in self.crawlers:
-            mvInfo_list, _ = crawler.getMvInfoList(self.key_word, page_size=10)
+            mvInfo_list, _ = crawler.getMvInfos(self.key_word, page_size=10)
             if not mvInfo_list:
                 continue
 

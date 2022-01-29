@@ -3,16 +3,18 @@ import base64
 import json
 import random
 from datetime import datetime
-from typing import List, Tuple
 from pprint import pprint
+from typing import List, Tuple
 
 import requests
-from fuzzywuzzy import fuzz
+from common.database.entity import SongInfo
 from common.os_utils import adjustName
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
+from fuzzywuzzy import fuzz
 
-from .crawler_base import CrawlerBase, AudioQualityError, exceptionHandler, VideoQualityError
+from .crawler_base import (AudioQualityError, CrawlerBase, VideoQualityError,
+                           exceptionHandler)
 
 
 class WanYiMusicCrawler(CrawlerBase):
@@ -44,7 +46,7 @@ class WanYiMusicCrawler(CrawlerBase):
 
     # TODO:只能显示前 20 首搜索结果
     @exceptionHandler([], 0)
-    def getSongInfoList(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[dict], int]:
+    def getSongInfos(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[SongInfo], int]:
         # 发送请求
         url = 'https://music.163.com/weapi/cloudsearch/get/web'
         form_data = {
@@ -61,45 +63,37 @@ class WanYiMusicCrawler(CrawlerBase):
         song_infos = []
         data = json.loads(text)['result']
         for info in data['songs']:
-            song_info = {}
+            song_info = SongInfo()
             song_info['id'] = info['id']
-            song_info['songPath'] = self.song_url_mark
-            song_info['songName'] = info['name']
-            song_info['singer'] = info['ar'][0]['name']
-            song_info['album'] = info['al']['name']
-            song_info['year'] = datetime.fromtimestamp(
+            song_info.file = self.song_url_mark
+            song_info.title = info['name']
+            song_info.singer = info['ar'][0]['name']
+            song_info.album = info['al']['name']
+            song_info.duration = int(info["dt"]/1000)
+            song_info.disc = int(info['cd'])
+            song_info.discTotal = int(info['cd'])
+            song_info.year = datetime.fromtimestamp(
                 info['publishTime']/1000).year
-            song_info['tracknumber'] = '0'
-            song_info['trackTotal'] = '1'
-            song_info['genre'] = ''
-            song_info['disc'] = info['cd']
-            song_info['discTotal'] = info['cd']
 
             # 封面路径
             song_info['coverPath'] = info['al']['picUrl']
-            song_info['coverName'] = adjustName(
-                song_info['singer'] + '_' + song_info['album'])
-
-            # 格式化时长
-            d = info["dt"]/1000
-            song_info["duration"] = f"{int(d//60)}:{int(d%60):02}"
 
             song_infos.append(song_info)
 
         return song_infos, data['songCount']
 
-    def getSongUrl(self, song_info: dict, quality: str = 'Standard quality') -> str:
+    def getSongUrl(self, song_info: SongInfo, quality: str = 'Standard quality') -> str:
         urls = self.getSongUrls([song_info], quality)
         url = urls[0] if urls else ''
         return url
 
     @exceptionHandler([])
-    def getSongUrls(self, song_infos: List[dict], quality: str = 'Standard quality') -> str:
+    def getSongUrls(self, song_infos: List[SongInfo], quality: str = 'Standard quality') -> str:
         """ 获取多首歌曲下载链接
 
         Parameters
         ----------
-        song_infos: List[dict]
+        song_infos: List[SongInfo]
             歌曲信息
 
         quality: str
@@ -152,14 +146,13 @@ class WanYiMusicCrawler(CrawlerBase):
             歌词，如果没找到则返回 `None`
         """
         # 搜索歌曲
-        song_infos, _ = self.getSongInfoList(key_word, page_size=20)
+        song_infos, _ = self.getSongInfos(key_word, page_size=20)
 
         if not song_infos:
             return
 
         # 匹配度小于阈值则返回
-        matches = [key_word == i['singer']+' '+i['songName']
-                   for i in song_infos]
+        matches = [key_word == i.singer+' '+i.title for i in song_infos]
         if not any(matches):
             return
 
@@ -204,7 +197,7 @@ class WanYiMusicCrawler(CrawlerBase):
         return save_path
 
     @exceptionHandler([], 0)
-    def getMvInfoList(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[dict], int]:
+    def getMvInfos(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[dict], int]:
         # 发送搜索歌手的请求
         url = "https://music.163.com/weapi/cloudsearch/get/web"
         form_data = {

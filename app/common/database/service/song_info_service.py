@@ -33,6 +33,7 @@ class SongInfoService(ServiceBase):
         return self.songInfoDao.listAll()
 
     def listByIds(self, files: list) -> List[SongInfo]:
+        """ 通过文件位置查询歌曲信息 """
         songInfos = self.songInfoDao.listByIds(files)
         k = self.songInfoDao.fields[0]
         songInfos.sort(key=lambda i: files.index(i[k]))

@@ -1,8 +1,5 @@
 # coding:utf-8
-from PyQt5.QtSql import QSqlRecord
-
 from .dao_base import DaoBase
-from ..entity.album_info import AlbumInfo
 
 
 class AlbumInfoDao(DaoBase):
@@ -23,13 +20,3 @@ class AlbumInfoDao(DaoBase):
             )
         """)
         return success
-
-    @staticmethod
-    def loadFromRecord(record: QSqlRecord) -> AlbumInfo:
-        albumInfo = AlbumInfo()
-
-        for i in range(record.count()):
-            field = record.fieldName(i)
-            albumInfo[field] = record.value(i)
-
-        return albumInfo

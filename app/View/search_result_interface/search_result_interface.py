@@ -216,7 +216,7 @@ class SearchResultInterface(ScrollArea):
 
         # 对在线歌曲进行匹配并获取播放地址和封面
         self.currentPage = 1
-        self.onlineSongInfo_list, self.totalOnlineMusic = self.crawler.getSongInfoList(
+        self.onlineSongInfo_list, self.totalOnlineMusic = self.crawler.getSongInfos(
             keyWord, 1, self.onlineMusicPageSize)
         self.totalPages = 1 if not self.totalOnlineMusic else ceil(
             self.totalOnlineMusic/self.onlineMusicPageSize)
@@ -317,7 +317,7 @@ class SearchResultInterface(ScrollArea):
 
         # 获取在线音乐
         self.currentPage += 1
-        songInfos, _ = self.crawler.getSongInfoList(
+        songInfos, _ = self.crawler.getSongInfos(
             self.keyWord, self.currentPage, self.onlineMusicPageSize)
 
         # 更新在线音乐列表

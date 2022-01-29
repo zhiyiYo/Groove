@@ -1,17 +1,15 @@
 # coding: utf-8
 import json
-import os
 import re
 from hashlib import md5
 from time import time
 from typing import List, Tuple
-from pprint import pprint
 
 import requests
-from common.meta_data.writer import writeAlbumCover, writeSongInfo
-from common.os_utils import adjustName
+from common.database.entity import SongInfo
 
-from .crawler_base import CrawlerBase, AudioQualityError, VideoQualityError, exceptionHandler
+from .crawler_base import (AudioQualityError, CrawlerBase, VideoQualityError,
+                           exceptionHandler)
 
 
 class KuGouMusicCrawler(CrawlerBase):
@@ -83,7 +81,7 @@ class KuGouMusicCrawler(CrawlerBase):
                 f'音质 `{quality}` 不在支持的音质列表 {self.qualities} 中')
 
         # 根据关键词搜索歌曲
-        song_infos, total = self.getSongInfoList(
+        song_infos, total = self.getSongInfos(
             key_word, page_num, page_size)
         if not song_infos:
             return [], 0
@@ -100,7 +98,7 @@ class KuGouMusicCrawler(CrawlerBase):
         return song_infos, total
 
     @exceptionHandler([], 0)
-    def getSongInfoList(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[dict], int]:
+    def getSongInfos(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[SongInfo], int]:
         # 请求 URL 获取歌曲信息列表
         url = 'https://complexsearch.kugou.com/v2/search/song'
         params = self.__getSearchParams(key_word, page_num, page_size)
@@ -111,25 +109,20 @@ class KuGouMusicCrawler(CrawlerBase):
         data = json.loads(response.text[12:-2])["data"]
         song_infos = []
         for info in data["lists"]:
-            song_info = {}
+            song_info = SongInfo()
             pattern = r'(<em>)|(</em>)'
-            song_info["songName"] = re.sub(pattern, '', info["SongName"])
-            song_info["singer"] = re.sub(pattern, '', info["SingerName"])
-            song_info["album"] = info["AlbumName"]
+            song_info.file = self.song_url_mark
+            song_info.title = re.sub(pattern, '', info["SongName"])
+            song_info.singer = re.sub(pattern, '', info["SingerName"])
+            song_info.album = info["AlbumName"]
+            song_info.duration = info["Duration"]
             song_info["albumID"] = info["AlbumID"]
-            song_info['songPath'] = self.song_url_mark
             song_info["coverPath"] = ''
-            song_info["coverName"] = adjustName(
-                info["SingerName"] + '_' + info["AlbumName"])
 
             # 歌曲请求链接哈希值，对应普通、高音质和无损三种音质
             song_info["fileHash"] = info["FileHash"]
             song_info["HQFileHash"] = info["HQFileHash"]
             song_info["SQFileHash"] = info["SQFileHash"]
-
-            # 格式化时长
-            d = info["Duration"]
-            song_info["duration"] = f"{int(d//60)}:{int(d%60):02}"
 
             song_infos.append(song_info)
 
@@ -160,7 +153,7 @@ class KuGouMusicCrawler(CrawlerBase):
         data = json.loads(response.text)["data"]
         return data
 
-    def getSongUrl(self, song_info: dict, quality: str = 'Standard quality') -> str:
+    def getSongUrl(self, song_info: SongInfo, quality: str = 'Standard quality') -> str:
         if quality not in self.qualities:
             raise AudioQualityError(
                 f'音质 `{quality}` 不在支持的音质列表 {self.qualities} 中')
@@ -171,7 +164,7 @@ class KuGouMusicCrawler(CrawlerBase):
         return data.get('play_url', '')
 
     @exceptionHandler('')
-    def downloadSong(self, song_info: dict, save_dir: str, quality: str = 'Standard quality') -> str:
+    def downloadSong(self, song_info: SongInfo, save_dir: str, quality: str = 'Standard quality') -> str:
         # 获取下载地址
         url = self.getSongUrl(song_info, quality)
         if not url:
@@ -196,14 +189,13 @@ class KuGouMusicCrawler(CrawlerBase):
         lyric: str
             歌词列表，如果没找到则返回 `None`
         """
-        song_infos, _ = self.getSongInfoList(key_word, page_size=10)
+        song_infos, _ = self.getSongInfos(key_word, page_size=10)
 
         if not song_infos:
             return None
 
         # 匹配度小于阈值则返回
-        matches = [key_word == i['singer']+' '+i['songName']
-                   for i in song_infos]
+        matches = [key_word == i.singer+' '+i.title for i in song_infos]
         if not any(matches):
             return
 
@@ -214,7 +206,7 @@ class KuGouMusicCrawler(CrawlerBase):
         return lyric
 
     @exceptionHandler([], 0)
-    def getMvInfoList(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[dict], int]:
+    def getMvInfos(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[dict], int]:
         # 获取 MV 信息列表
         url = 'https://complexsearch.kugou.com/v1/search/mv'
         params = self.__getSearchParams(key_word, page_num, page_size)

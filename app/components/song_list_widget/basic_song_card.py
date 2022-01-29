@@ -92,8 +92,8 @@ class BasicSongCard(QWidget):
         self.singer = songInfo.singer
         self.album = songInfo.album
         self.year = str(songInfo.year or '')
-        self.genre = songInfo.genre
-        self.track = str(songInfo.track)
+        self.genre = songInfo.genre or ''
+        self.track = str(songInfo.track or '')
         self.duration = f"{int(songInfo.duration//60)}:{int(songInfo.duration%60):02}"
 
     def setScalableWidgets(self, widgets: list, widths: list, fixedWidth=0):

@@ -34,12 +34,11 @@ class SongPropertyDialog(MaskDialogBase):
         self.singerLabel = SelectableLabel(songInfo.singer, self.widget)
         self.albumNameLabel = SelectableLabel(songInfo.album, self.widget)
         self.albumSingerLabel = SelectableLabel(songInfo.singer, self.widget)
-        self.discLabel = SelectableLabel(str(songInfo.disc), self.widget)
-        self.genreLabel = SelectableLabel(songInfo.genre, self.widget)
-        self.trackLabel = SelectableLabel(str(songInfo.track), self.widget)
+        self.discLabel = SelectableLabel(str(songInfo.disc or ''), self.widget)
+        self.genreLabel = SelectableLabel(songInfo.genre or '', self.widget)
+        self.trackLabel = SelectableLabel(str(songInfo.track or ''), self.widget)
         self.songPathLabel = SelectableLabel(songInfo.file, self.widget)
-        self.yearLabel = SelectableLabel(
-            str(songInfo.year if songInfo.year else ''), self.widget)
+        self.yearLabel = SelectableLabel(str(songInfo.year or ''), self.widget)
         self.durationLabel = SelectableLabel(
             f"{int(songInfo.duration//60)}:{int(songInfo.duration%60):02}", self.widget)
 

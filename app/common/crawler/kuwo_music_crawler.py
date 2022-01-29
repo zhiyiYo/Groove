@@ -1,14 +1,12 @@
 # coding:utf-8
 import json
-import os
 import re
 from urllib import parse
 from typing import List, Tuple
 
 import requests
 from fuzzywuzzy import fuzz
-from common.meta_data.writer import writeAlbumCover, writeSongInfo
-from common.os_utils import adjustName
+from common.database.entity import SongInfo
 
 from .crawler_base import CrawlerBase, AudioQualityError, exceptionHandler
 
@@ -28,7 +26,7 @@ class KuWoMusicCrawler(CrawlerBase):
         }
 
     @exceptionHandler([], 0)
-    def getSongInfoList(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[dict], int]:
+    def getSongInfos(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[SongInfo], int]:
         key_word = parse.quote(key_word)
 
         # 配置请求头
@@ -44,32 +42,23 @@ class KuWoMusicCrawler(CrawlerBase):
         song_infos = []
         data = json.loads(response.text)['data']
         for info in data['list']:
-            song_info = {}
+            song_info = SongInfo()
             song_info['rid'] = info['rid']
-            song_info['songPath'] = self.song_url_mark  # 标记还未获得播放地址
-            song_info['songName'] = info['name']
-            song_info['singer'] = info['artist']
-            song_info['album'] = info['album']
-            song_info['year'] = info['releaseDate'].split('-')[0]
-            song_info['tracknumber'] = str(info['track'])
-            song_info['trackTotal'] = str(info['track'])
+            song_info.file = self.song_url_mark  # 标记还未获得播放地址
+            song_info.title = info['name']
+            song_info.singer = info['artist']
+            song_info.album = info['album']
+            song_info.year = info['releaseDate'].split('-')[0]
+            song_info.track = info['track']
+            song_info.trackTotal = info['track']
+            song_info.duration = info["duration"]
             song_info['coverPath'] = info.get('albumpic', '')
-            song_info['coverName'] = adjustName(
-                info['artist'] + '_' + info['album'])
-            song_info['genre'] = ''
-            song_info['disc'] = '1'
-            song_info['discTotal'] = '1'
-
-            # 格式化时长
-            d = info["duration"]
-            song_info["duration"] = f"{int(d//60)}:{int(d%60):02}"
-
             song_infos.append(song_info)
 
         return song_infos, int(data['total'])
 
     @exceptionHandler('')
-    def getSongUrl(self, song_info: dict, quality='Standard quality') -> str:
+    def getSongUrl(self, song_info: SongInfo, quality='Standard quality') -> str:
         if quality not in self.qualities:
             raise AudioQualityError(
                 f'音质 `{quality}` 不在支持的音质列表 {self.qualities} 中')
@@ -95,7 +84,7 @@ class KuWoMusicCrawler(CrawlerBase):
         return play_url
 
     @exceptionHandler('')
-    def downloadSong(self, song_info: dict, save_dir: str, quality='Standard quality') -> str:
+    def downloadSong(self, song_info: SongInfo, save_dir: str, quality='Standard quality') -> str:
         # 获取下载地址
         url = self.getSongUrl(song_info, quality)
         if not url:
@@ -113,8 +102,8 @@ class KuWoMusicCrawler(CrawlerBase):
         return self.saveSong(song_info, save_dir, '.mp3', response.content)
 
     @exceptionHandler([], 0)
-    def search(self, key_word: str, page_num=1, page_size=10, quality: str = 'Standard quality') -> Tuple[List[dict], int]:
-        song_infos, total = self.getSongInfoList(
+    def search(self, key_word: str, page_num=1, page_size=10, quality: str = 'Standard quality') -> Tuple[List[SongInfo], int]:
+        song_infos, total = self.getSongInfos(
             key_word, page_num, page_size)
 
         for song_info in song_infos:
@@ -162,14 +151,14 @@ class KuWoMusicCrawler(CrawlerBase):
         lyric: list
             歌词列表，如果没找到则返回 `None`
         """
-        song_infos, _ = self.getSongInfoList(key_word, page_size=10)
+        song_infos, _ = self.getSongInfos(key_word, page_size=10)
 
         if not song_infos:
             return None
 
         # 匹配度小于阈值则返回
         matches = [fuzz.token_set_ratio(
-            key_word, i['singer']+' '+i['songName']) for i in song_infos]
+            key_word, i.singer+' '+i.title) for i in song_infos]
         best_match = max(matches)
         if best_match < 90:
             return
@@ -185,7 +174,7 @@ class KuWoMusicCrawler(CrawlerBase):
         return lyric
 
     @exceptionHandler([], 0)
-    def getMvInfoList(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[dict], int]:
+    def getMvInfos(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[dict], int]:
         key_word = parse.quote(key_word)
 
         # 配置请求头

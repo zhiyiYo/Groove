@@ -7,6 +7,7 @@ from common.thread.save_album_info_thread import SaveAlbumInfoThread
 from components.dialog_box.album_info_edit_dialog import AlbumInfoEditDialog
 from components.dialog_box.message_dialog import MessageDialog
 from components.layout.grid_layout import GridLayout
+from components.layout.h_box_layout import HBoxLayout
 from components.widgets.label import ClickableLabel
 from PyQt5.QtCore import (QMargins, QParallelAnimationGroup, QPoint, Qt,
                           pyqtSignal)
@@ -279,3 +280,50 @@ class GridAlbumCardView(AlbumCardViewBase):
 
         self.column = column
         self.gridLayout.updateColumnNum(column, 210, 290)
+
+
+class HorizonAlbumCardView(AlbumCardViewBase):
+    """ 水平专辑卡视图 """
+
+    def __init__(self, library: Library, albumInfos: List[AlbumInfo], cardType: AlbumCardType,
+                 spacing=20, margins=QMargins(0, 0, 0, 0), create=True, parent=None):
+        """
+        Parameters
+        ----------
+        library: Library
+            歌曲库
+
+        albumInfos: List[AlbumInfo]
+            专辑信息列表
+
+        cardType: AlbumCardType
+            专辑卡类型
+
+        spacing: int
+            专辑卡水平间距
+
+        create: bool
+            是否直接创建歌曲卡
+
+        margins: QMargins
+            布局的外边距
+
+        parent:
+            父级窗口
+        """
+        super().__init__(library, albumInfos, cardType, create, parent)
+        self.hBoxLayout = HBoxLayout(self)
+        self.hBoxLayout.setSpacing(spacing)
+        self.hBoxLayout.setContentsMargins(margins)
+
+        if create:
+            self._addAlbumCardsToLayout()
+
+    def _addAlbumCardsToLayout(self):
+        """ 将所有专辑卡添加到布局 """
+        for card in self.albumCards:
+            self.hBoxLayout.addWidget(card)
+            QApplication.processEvents()
+
+    def _removeAlbumCardsFromLayout(self):
+        self.hBoxLayout.removeAllWidget()

@@ -1,10 +1,9 @@
 # coding:utf-8
 from typing import List
 
-from common.singleton import Singleton
 from PyQt5.QtSql import QSqlDatabase, QSqlRecord
 
-from ..entity import Entity
+from ..entity import Entity, EntityFactory
 from .sql_query import SqlQuery
 
 
@@ -91,22 +90,29 @@ class DaoBase:
 
         return self.iterRecords()
 
-    def listByIds(self, ids: list) -> List[Entity]:
-        """ 查询所有在主键列表中的记录 """
-        if not ids:
+    def listByFields(self, field: str, values: list):
+        """ 查询所有字段值在列表中的记录 """
+        if field not in self.fields:
+            raise ValueError(f"字段名 `{field}` 非法")
+
+        if not values:
             return []
 
-        placeHolders = ','.join(['?']*len(ids))
-        sql = f"SELECT * FROM {self.table} WHERE {self.fields[0]} IN ({placeHolders})"
+        placeHolders = ','.join(['?']*len(values))
+        sql = f"SELECT * FROM {self.table} WHERE {field} IN ({placeHolders})"
         self.query.prepare(sql)
 
-        for id in ids:
-            self.query.addBindValue(id)
+        for value in values:
+            self.query.addBindValue(value)
 
         if not self.query.exec():
             return []
 
         return self.iterRecords()
+
+    def listByIds(self, ids: list) -> List[Entity]:
+        """ 查询所有在主键列表中的记录 """
+        return self.listByFields(self.fields[0], ids)
 
     def iterRecords(self) -> List[Entity]:
         """ 迭代所有查询到的记录 """
@@ -297,8 +303,8 @@ class DaoBase:
         """ 清空表格数据 """
         return self.query.exec(f"DELETE FROM {self.table}")
 
-    @staticmethod
-    def loadFromRecord(record: QSqlRecord) -> Entity:
+    @classmethod
+    def loadFromRecord(cls, record: QSqlRecord) -> Entity:
         """ 根据一条记录创建一个实体类对象
 
         Parameters
@@ -311,7 +317,13 @@ class DaoBase:
         entity: Entity
             实体类对象
         """
-        raise NotImplementedError
+        entity = EntityFactory.create(cls.table)
+
+        for i in range(record.count()):
+            field = record.fieldName(i)
+            entity[field] = record.value(i)
+
+        return entity
 
     def adjustText(self, text: str):
         """ 处理字符串中的单引号问题 """

@@ -1,10 +1,8 @@
 # coding:utf-8
 from typing import List
 
-from PyQt5.QtSql import QSqlRecord
-
 from .dao_base import DaoBase
-from ..entity.song_info import SongInfo
+from ..entity import SongInfo
 
 
 class SongInfoDao(DaoBase):
@@ -67,13 +65,3 @@ class SongInfoDao(DaoBase):
             return []
 
         return self.iterRecords()
-
-    @staticmethod
-    def loadFromRecord(record: QSqlRecord) -> SongInfo:
-        songInfo = SongInfo()
-
-        for i in range(record.count()):
-            field = record.fieldName(i)
-            songInfo[field] = record.value(i)
-
-        return songInfo

@@ -106,5 +106,3 @@ class QQMusicCrawler:
             f.write(requests.get(url, headers=self.headers).content)
 
         return url
-
-
