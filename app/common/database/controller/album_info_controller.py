@@ -137,7 +137,9 @@ class AlbumInfoController:
         albumInfo: AlbumInfo
             专辑信息，不包含歌曲信息列表，没有找到则返回 None
         """
-        return self.albumInfoService.listBy(singer=singer)
+        albumInfos = self.albumInfoService.listBy(singer=singer)
+        albumInfos.sort(key=lambda i: i.year or 0, reverse=True)
+        return albumInfos
 
     def getAlbumInfos(self, songInfos: List[SongInfo]) -> List[AlbumInfo]:
         """ 从新的歌曲信息列表获取专辑信息并更新数据库

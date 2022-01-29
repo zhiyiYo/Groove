@@ -88,14 +88,13 @@ class AlbumCardInterface(ScrollArea):
         self.guideLabel.setHidden(bool(self.albumInfos))
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
-        self.hideCheckBoxAniGroup.finished.connect(self.__hideAllCheckBox)
         self.__setQss()
 
     def __createAlbumCardView(self, albumCards: List[AlbumCard], title=None):
         """ 创建一个专辑卡视图 """
         albumInfos = [i.albumInfo for i in albumCards]
         view = GridAlbumCardView(
-            self.library, albumInfos, AlbumCardType.ALBUM_CARD, title, False, self)
+            self.library, albumInfos, AlbumCardType.ALBUM_CARD, title=title, create=False, parent=self)
         view.setAlbumCards(albumCards)
 
         self.hideCheckBoxAniGroup.addAnimation(view.hideCheckBoxAniGroup)
@@ -327,16 +326,7 @@ class AlbumCardInterface(ScrollArea):
 
         # 退出选择模式时开启隐藏所有复选框的动画
         if not isOpen:
-            self.__startHideCheckBoxAni()
-
-    def __startHideCheckBoxAni(self):
-        """ 开始隐藏复选框动画 """
-        self.hideCheckBoxAniGroup.start()
-
-    def __hideAllCheckBox(self):
-        """ 隐藏所有复选框 """
-        for albumCard in self.albumCards:
-            albumCard.checkBox.hide()
+            self.hideCheckBoxAniGroup.start()
 
     def unCheckAlbumCards(self):
         """ 取消所有已处于选中状态的专辑卡的选中状态 """

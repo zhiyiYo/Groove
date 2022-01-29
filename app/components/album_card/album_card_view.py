@@ -8,11 +8,10 @@ from components.dialog_box.album_info_edit_dialog import AlbumInfoEditDialog
 from components.dialog_box.message_dialog import MessageDialog
 from components.layout.grid_layout import GridLayout
 from components.widgets.label import ClickableLabel
-from PyQt5.QtCore import (QParallelAnimationGroup, QPoint, QPropertyAnimation,
-                          Qt, pyqtSignal)
-from PyQt5.QtWidgets import QApplication, QHBoxLayout, QLabel, QWidget
+from PyQt5.QtCore import (QMargins, QParallelAnimationGroup, QPoint, Qt,
+                          pyqtSignal)
+from PyQt5.QtWidgets import QApplication, QWidget
 
-from .album_blur_background import AlbumBlurBackground
 from .album_card import AlbumCardBase, AlbumCardFactory, AlbumCardType
 
 
@@ -60,10 +59,10 @@ class AlbumCardViewBase(QWidget):
 
         if create:
             for albumInfo in self.albumInfos:
-                self.__createAlbumCard(albumInfo)
+                self._createAlbumCard(albumInfo)
                 QApplication.processEvents()
 
-    def __createAlbumCard(self, albumInfo: AlbumInfo):
+    def _createAlbumCard(self, albumInfo: AlbumInfo):
         """ 创建一个专辑卡 """
         card = AlbumCardFactory.create(self.cardType, albumInfo, self)
         self.hideCheckBoxAniGroup.addAnimation(card.hideCheckBoxAni)
@@ -71,9 +70,7 @@ class AlbumCardViewBase(QWidget):
         # 信号连接到槽
         self._connectCardSignalToSlot(card)
 
-    def setAlbumCards(self, albumCards: List[AlbumCardBase]):
-        """ 设置视图中的专辑卡 """
-        raise NotImplementedError
+        self.albumCards.append(card)
 
     def _connectCardSignalToSlot(self, card: AlbumCardBase):
         """ 将专辑卡信号连接到槽函数 """
@@ -156,6 +153,46 @@ class AlbumCardViewBase(QWidget):
     def updateOneAlbumInfo(self, oldAlbumInfo: AlbumInfo, newAlbumInfo: AlbumInfo, coverPath: str):
         """ 更新一张专辑信息 """
 
+    def setAlbumCards(self, albumCards: List[AlbumCardBase]):
+        """ 设置视图中的专辑卡，不生成新的专辑卡 """
+        raise NotImplementedError
+
+    def _addAlbumCardsToLayout(self):
+        """ 将所有歌曲卡加到布局中 """
+        raise NotImplementedError
+
+    def _removeAlbumCardsFromLayout(self):
+        """ 将所有歌曲卡从布局中移除 """
+        raise NotImplementedError
+
+    def updateAllAlbumCards(self, albumInfos: List[AlbumInfo]):
+        """ 更新所有专辑卡 """
+        self._removeAlbumCardsFromLayout()
+
+        N = len(albumInfos)
+        N_ = len(self.albumCards)
+        if N < N_:
+            for i in range(N_ - 1, N - 1, -1):
+                albumCard = self.albumCards.pop()
+                self.hideCheckBoxAniGroup.takeAnimation(i)
+                albumCard.deleteLater()
+        elif N > N_:
+            for albumInfo in albumInfos[N_:]:
+                self._createAlbumCard(albumInfo)
+                QApplication.processEvents()
+
+        # 更新部分专辑卡
+        self.albumInfos = albumInfos
+        for i in range(min(N, N_)):
+            albumInfo = albumInfos[i]
+            self.albumCards[i].updateWindow(albumInfo)
+            QApplication.processEvents()
+
+        # 将专辑卡添加到布局中
+        self._addAlbumCardsToLayout()
+        self.setStyle(QApplication.style())
+        self.adjustSize()
+
 
 class GridAlbumCardView(AlbumCardViewBase):
     """ 网格布局专辑卡视图 """
@@ -163,7 +200,7 @@ class GridAlbumCardView(AlbumCardViewBase):
     titleClicked = pyqtSignal()
 
     def __init__(self, library: Library, albumInfos: List[AlbumInfo], cardType: AlbumCardType,
-                 title: str = None, create=True, parent=None):
+                 spacings=(10, 20), margins=QMargins(0, 0, 0, 0), title: str = None, create=True, parent=None):
         """
         Parameters
         ----------
@@ -175,6 +212,12 @@ class GridAlbumCardView(AlbumCardViewBase):
 
         cardType: AlbumCardType
             专辑卡类型
+
+        spacings: tuple
+            专辑卡的水平和垂直间距
+
+        margins: QMargins
+            网格布局的外边距
 
         title: str
             标题
@@ -189,11 +232,13 @@ class GridAlbumCardView(AlbumCardViewBase):
         self.column = 5
         self.title = title or ''
         self.titleLabel = ClickableLabel(self.title, self)
+
         self.gridLayout = GridLayout(self)
-        self.gridLayout.setVerticalSpacing(20)
-        self.gridLayout.setHorizontalSpacing(10)
+        margins += QMargins(0, 45*bool(self.title), 0, 0)
+        self.gridLayout.setContentsMargins(margins)
+        self.gridLayout.setHorizontalSpacing(spacings[0])
+        self.gridLayout.setVerticalSpacing(spacings[1])
         self.gridLayout.setAlignment(Qt.AlignLeft)
-        self.gridLayout.setContentsMargins(0, 45*bool(self.title), 0, 0)
 
         self.titleLabel.setVisible(bool(self.title))
         self.titleLabel.move(8, 6)
@@ -203,17 +248,18 @@ class GridAlbumCardView(AlbumCardViewBase):
         self.titleLabel.adjustSize()
 
         if create:
-            self.__addAlbumCardsToLayout()
+            self._addAlbumCardsToLayout()
 
-        self.resize(1255, 300)
-
-    def __addAlbumCardsToLayout(self):
+    def _addAlbumCardsToLayout(self):
         """ 将所有专辑卡添加到布局 """
         for i, card in enumerate(self.albumCards):
             row = i//self.column
             column = i-row*self.column
             self.gridLayout.addWidget(card, row, column)
             QApplication.processEvents()
+
+    def _removeAlbumCardsFromLayout(self):
+        self.gridLayout.removeAllWidgets()
 
     def setAlbumCards(self, albumCards: List[AlbumCardBase]):
         self.albumCards = albumCards
@@ -224,7 +270,7 @@ class GridAlbumCardView(AlbumCardViewBase):
             self.hideCheckBoxAniGroup.addAnimation(card.hideCheckBoxAni)
             self._connectCardSignalToSlot(card)
 
-        self.__addAlbumCardsToLayout()
+        self._addAlbumCardsToLayout()
 
     def resizeEvent(self, e):
         column = 2 if self.width() <= 670 else (self.width()-670)//220+3

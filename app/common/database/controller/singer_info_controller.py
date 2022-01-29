@@ -100,3 +100,7 @@ class SingerInfoController:
         self.singerInfoService.addBatch(singerInfos)
 
         return singerInfos
+
+    def getSingerInfoByName(self, singer: str):
+        """ 通过歌手名获取歌手信息 """
+        return self.singerInfoService.findBy(singer=singer)

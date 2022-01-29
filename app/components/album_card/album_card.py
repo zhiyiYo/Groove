@@ -162,7 +162,6 @@ class SingerInterfaceAlbumCardContextMenu(DWMMenu):
 
     def __init__(self, parent):
         super().__init__("", parent)
-        # 创建动作
         self.__createActions()
         self.setObjectName("albumCardContextMenu")
         self.setQss()

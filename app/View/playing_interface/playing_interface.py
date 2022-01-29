@@ -289,7 +289,6 @@ class PlayingInterface(QWidget):
         else:
             self.hidePlaylist()
 
-    # TODO:封面错误
     def setCurrentIndex(self, index):
         """ 更新播放列表下标 """
         if self.currentIndex == index or index <= -1:

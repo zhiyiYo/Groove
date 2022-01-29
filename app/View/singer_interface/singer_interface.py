@@ -1,24 +1,21 @@
 # coding:utf-8
 import os
-from copy import deepcopy
 from pathlib import Path
 from typing import Dict, List
 
 from common.crawler import KuWoMusicCrawler
-from common.database.entity import AlbumInfo, SingerInfo, SongInfo
+from common.database.entity import AlbumInfo, SingerInfo
 from common.library import Library
 from common.thread.get_singer_avatar_thread import GetSingerAvatarThread
-from common.thread.save_album_info_thread import SaveAlbumInfoThread
-from components.album_card import (AlbumBlurBackground, GridAlbumCardView,
-                                   SingerInterfaceAlbumCard)
+from components.album_card import (AlbumBlurBackground, AlbumCardType,
+                                   GridAlbumCardView, SingerInterfaceAlbumCard)
 from components.buttons.three_state_button import ThreeStateButton
-from components.dialog_box.album_info_edit_dialog import AlbumInfoEditDialog
 from components.dialog_box.message_dialog import MessageDialog
 from components.layout.grid_layout import GridLayout
 from components.widgets.menu import AddToMenu
 from components.widgets.scroll_area import ScrollArea
-from PyQt5.QtCore import (QFile, QParallelAnimationGroup, QPoint,
-                          QPropertyAnimation, Qt, pyqtSignal)
+from PyQt5.QtCore import (QFile, QMargins, QParallelAnimationGroup, QPoint, Qt,
+                          pyqtSignal)
 from PyQt5.QtWidgets import QApplication, QLabel, QWidget
 
 from .selection_mode_bar import SelectionModeBar
@@ -30,7 +27,6 @@ class SingerInterface(ScrollArea):
 
     playSig = pyqtSignal(list)                                  # 播放信号
     nextToPlaySig = pyqtSignal(list)                            # 下一首播放
-    deleteAlbumSig = pyqtSignal(list)                           # 删除专辑
     removeSongSig = pyqtSignal(list)                            # 删除歌曲
     selectionModeStateChanged = pyqtSignal(bool)                # 进入/退出选择模式
     switchToAlbumInterfaceSig = pyqtSignal(str, str)            # 切换到专辑界面
@@ -53,26 +49,28 @@ class SingerInterface(ScrollArea):
             父级
         """
         super().__init__(parent=parent)
-        self.__getInfo(singerInfo)
         self.library = library
         self.columnNum = 5
         self.isInSelectionMode = False
         self.isAllAlbumCardsChecked = False
-        self.albumCards = []            # type:List[SingerInterfaceAlbumCard]
         self.checkedAlbumCards = []     # type:List[SingerInterfaceAlbumCard]
-        self.hideCheckBoxAnis = []      # type:List[QPropertyAnimation]
-        self.albumInfoMap = {}       # type:Dict[str, AlbumInfo]
-        self.albumCardMap = {}       # type:Dict[str, SingerInterfaceAlbumCard]
         self.crawler = KuWoMusicCrawler()
         self.getAvatarThread = GetSingerAvatarThread(self)
 
         # 创建小部件
+        self.__getInfo(singerInfo)
         self.scrollWidget = QWidget(self)
-        self.selectionModeBar = SelectionModeBar(self)
         self.singerInfoBar = SingerInfoBar(self.singerInfo, self)
         self.hideCheckBoxAniGroup = QParallelAnimationGroup(self)
-        self.gridLayout = GridLayout(self.scrollWidget)
         self.albumBlurBackground = AlbumBlurBackground(self.scrollWidget)
+        self.albumCardView = GridAlbumCardView(
+            self.library,
+            self.albumInfos,
+            AlbumCardType.SINGER_INTERFACE_ALBUM_CARD,
+            spacings=(10, 10),
+            margins=QMargins(30, 456, 30, 0),
+            parent=self.scrollWidget
+        )
         self.inYourMusicLabel = QLabel(
             self.tr('In your music'), self.scrollWidget)
         self.playButton = ThreeStateButton(
@@ -84,62 +82,22 @@ class SingerInterface(ScrollArea):
             self.scrollWidget,
             (20, 20)
         )
+        self.selectionModeBar = SelectionModeBar(self)
+        self.albumCards = self.albumCardView.albumCards
 
-        # 创建专辑卡
-        self.__setQss()
-
+        # 初始化
         self.__initWidget()
 
     def __initWidget(self):
         """ 初始化小部件 """
+        self.__setQss()
         self.setWidget(self.scrollWidget)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-        # 设置布局
-        self.gridLayout.setContentsMargins(30, 456, 30, 116)
-        self.gridLayout.setVerticalSpacing(10)
-        self.gridLayout.setHorizontalSpacing(10)
-        self.__addAlbumCardsToLayout()
-
         self.inYourMusicLabel.move(30, 412)
         self.playButton.move(185, 419)
         self.selectionModeBar.hide()
         self.__connectSignalToSlot()
         self.resize(1270, 900)
-
-    def __createOneAlbumCard(self, albumInfo: AlbumInfo):
-        """ 创建一个专辑卡 """
-        albumName = albumInfo.album
-        albumCard = AlbumCard(albumInfo, self.scrollWidget)
-        ani = QPropertyAnimation(albumCard.checkBoxOpacityEffect, b'opacity')
-        self.hideCheckBoxAniGroup.addAnimation(ani)
-        self.hideCheckBoxAnis.append(ani)
-        self.albumCards.append(albumCard)
-        self.albumInfoMap[albumName] = albumInfo
-        self.albumCardMap[albumName] = albumCard
-
-        # 信号连接到槽
-        albumCard.deleteCardSig.connect(self.__showDeleteOneCardDialog)
-        albumCard.playSignal.connect(
-            lambda s, a: self.playSig.emit(self.__getAlbumSongInfos(s, a)))
-        albumCard.nextPlaySignal.connect(
-            lambda s, a: self.nextToPlaySig.emit(self.__getAlbumSongInfos(s, a)))
-        albumCard.addToPlayingSignal.connect(
-            lambda s, a: self.addSongsToPlayingPlaylistSig.emit(self.__getAlbumSongInfos(s, a)))
-        albumCard.switchToAlbumInterfaceSig.connect(
-            self.switchToAlbumInterfaceSig)
-        albumCard.checkedStateChanged.connect(
-            self.__onAlbumCardCheckedStateChanged)
-        albumCard.showBlurAlbumBackgroundSig.connect(
-            self.__showBlurAlbumBackground)
-        albumCard.hideBlurAlbumBackgroundSig.connect(
-            self.albumBlurBackground.hide)
-        albumCard.addAlbumToCustomPlaylistSig.connect(
-            lambda n, s, a: self.addSongsToCustomPlaylistSig.emit(n, self.__getAlbumSongInfos(s, a)))
-        albumCard.addAlbumToNewCustomPlaylistSig.connect(
-            lambda s, a: self.addSongsToNewCustomPlaylistSig.emit(self.__getAlbumSongInfos(s, a)))
-        albumCard.showAlbumInfoEditDialogSig.connect(
-            self.__showAlbumInfoEditDialog)
 
     def __getAlbumSongInfos(self, singer: str, album: str):
         """ 获取一张专辑歌曲信息列表 """
@@ -162,71 +120,32 @@ class SingerInterface(ScrollArea):
 
         return songInfos
 
-    def __playAllSongs(self):
-        """ 播放歌手的所有歌曲 """
-        songInfos = self.__getAlbumsSongInfos(
-            [i.album for i in self.albumInfos])
-        for albumInfo in self.albumInfos:
-            songInfos.extend(albumInfo.get('songInfos', []))
+    def __getCheckedAlbumCardSongInfos(self):
+        """ 获取选中的专辑卡的歌曲信息 """
+        singers = [self.singer]*len(self.checkedAlbumCards)
+        albums = [i.album for i in self.checkedAlbumCards]
+        return self.library.songInfoController.getSongInfosBySingerAlbum(singers, albums)
 
-        self.playSig.emit(songInfos)
-
-    def __addSongsToPlayingPlaylist(self):
-        """ 将歌曲添加到正在播放列表 """
-        songInfos = []
-        for albumInfo in self.albumInfos:
-            songInfos.extend(albumInfo.get('songInfos', []))
-
-        self.addSongsToPlayingPlaylistSig.emit(songInfos)
-
-    def __addSongsToCustomPlaylist(self, playlistName: str):
-        """ 将歌曲添加到正在播放列表 """
-        songInfos = []
-        for albumInfo in self.albumInfos:
-            songInfos.extend(albumInfo.get('songInfos', []))
-
-        self.addSongsToCustomPlaylistSig.emit(playlistName, songInfos)
-
-    def __addSongsToNewCustomPlaylist(self):
-        """ 将歌曲添加到正在播放列表 """
-        songInfos = []
-        for albumInfo in self.albumInfos:
-            songInfos.extend(albumInfo.get('songInfos', []))
-
-        self.addSongsToNewCustomPlaylistSig.emit(songInfos)
-
-    def __addAlbumCardsToLayout(self):
-        """ 将专辑卡添加到布局中 """
-        self.gridLayout.removeAllWidgets()
-        for i, card in enumerate(self.albumCards):
-            row = i//self.columnNum
-            column = i-self.columnNum*row
-            self.gridLayout.addWidget(card, row, column, Qt.AlignLeft)
-
-        self.scrollWidget.resize(
-            self.width(), 456 + self.gridLayout.rowCount() * 300 + 120)
+    def getAllSongInfos(self):
+        """ 获取所有歌曲信息 """
+        albums = [i.album for i in self.albumInfos]
+        return self.__getAlbumsSongInfos(albums)
 
     def resizeEvent(self, e):
         self.singerInfoBar.resize(self.width(), self.singerInfoBar.height())
+        self.albumCardView.setFixedWidth(self.width())
         self.selectionModeBar.resize(
             self.width(), self.selectionModeBar.height())
         self.selectionModeBar.move(
             0, self.height()-self.selectionModeBar.height())
-
-        column = 1 if self.width() < 480 else 2+(self.width()-480)//220
-        if column == self.columnNum:
-            return
-
-        self.columnNum = column
-        self.gridLayout.updateColumnNum(column, 210, 290)
         self.scrollWidget.resize(
-            self.width(), 456 + self.gridLayout.rowCount() * 300 + 120)
+            self.width(), 456 + self.albumCardView.gridLayout.rowCount()*300 + 120)
 
     def __getInfo(self, singerInfo: SingerInfo):
         """ 获取信息 """
-        self.singerInfo = singerInfo
-        self.singer = singerInfo.singer
-        self.genre = singerInfo.genre
+        self.singerInfo = singerInfo or SingerInfo()
+        self.singer = self.singerInfo.singer or ''
+        self.genre = self.singerInfo.genre or ''
         self.albumInfos = self.library.albumInfoController.getAlbumInfosBySinger(
             self.singer)
 
@@ -260,36 +179,14 @@ class SingerInterface(ScrollArea):
 
     def __onDeleteAlbumsYesButtonClicked(self):
         """ 专辑界面选择模式栏删除按钮点击槽函数 """
-        albumNames = []
-        songPaths = []
-        for albumCard in self.checkedAlbumCards.copy():
-            albumNames.append(albumCard.album)
-            songPaths.extend([i["songPath"] for i in albumCard.songInfos])
-            albumCard.setChecked(False)
+        songInfos = self.__getCheckedAlbumCardSongInfos()
+        self.__unCheckAlbumCards()
+        songPaths = [i.file for i in songInfos]
+        self.removeSongSig.emit(songPaths)
 
-        self.deleteAlbums(albumNames)
-        self.deleteAlbumSig.emit(songPaths)
-
-    def __showDeleteOneCardDialog(self, singer: str, album: str):
-        """ 显示删除一个专辑卡的对话框 """
-        title = self.tr("Are you sure you want to delete this?")
-        content = self.tr("If you delete") + f' "{album}" ' + \
-            self.tr("it won't be on be this device anymore.")
-
-        w = MessageDialog(title, content, self.window())
-        w.yesSignal.connect(lambda: self.removeSongSig.emit(
-            [i.file for i in self.__getAlbumSongInfos(singer, album)]))
-        w.exec_()
-
+    # TODO:删除专辑
     def deleteAlbums(self, albumNames: list):
         """ 删除专辑 """
-        albumInfos = deepcopy(self.albumInfos)
-
-        for albumInfo in albumInfos.copy():
-            if albumInfo["album"] in albumNames:
-                albumInfos.remove(albumInfo)
-
-        self.__updateAllAlbumCards(albumInfos)
 
     def __showBlurAlbumBackground(self, pos: QPoint, picPath: str):
         """ 显示磨砂背景 """
@@ -315,8 +212,7 @@ class SingerInterface(ScrollArea):
             0, self.height()-self.selectionModeBar.height())
 
         # 检查是否全部专辑卡选中改变
-        isAllChecked = (len(self.checkedAlbumCards)
-                        == len(self.albumCards))
+        isAllChecked = len(self.checkedAlbumCards) == len(self.albumCards)
         if isAllChecked != self.isAllAlbumCardsChecked:
             self.isAllAlbumCardsChecked = isAllChecked
             self.selectionModeBar.checkAllButton.setCheckedState(
@@ -340,58 +236,13 @@ class SingerInterface(ScrollArea):
 
         # 退出选择模式时开启隐藏所有复选框的动画
         if not isOpen:
-            self.__startHideCheckBoxAni()
-
-    def __startHideCheckBoxAni(self):
-        """ 开始隐藏复选框动画 """
-        for ani in self.hideCheckBoxAnis:
-            ani.setStartValue(1)
-            ani.setEndValue(0)
-            ani.setDuration(140)
-        self.hideCheckBoxAniGroup.start()
-
-    def __hideAllCheckBox(self):
-        """ 隐藏所有复选框 """
-        for albumCard in self.albumCards:
-            albumCard.checkBox.hide()
+            self.albumCardView.hideCheckBoxAniGroup.start()
 
     def __onScrollBarValueChanged(self, value):
         """ 滚动时改变专辑信息栏高度 """
         h = 385 - value
         if h > 155:
             self.singerInfoBar.resize(self.width(), h)
-
-    # TODO:使用数据库
-    def __showAlbumInfoEditDialog(self, singer: str, album: str):
-        """ 显示专辑信息编辑界面信号 """
-        albumInfo = self.library.albumInfoController.getAlbumInfo(
-            singer, album)
-        if not albumInfo:
-            return
-
-        # 创建线程和对话框
-        thread = SaveAlbumInfoThread(self)
-        w = AlbumInfoEditDialog(albumInfo, self.window())
-
-        # 信号连接到槽
-        w.saveInfoSig.connect(thread.setAlbumInfo)
-        w.saveInfoSig.connect(thread.start)
-        thread.saveFinishedSignal.connect(w.onSaveComplete)
-        thread.saveFinishedSignal.connect(self.__onSaveAlbumInfoFinished)
-
-        # 显示对话框
-        w.setStyle(QApplication.style())
-        w.exec_()
-
-    def __onSaveAlbumInfoFinished(self, oldAlbumInfo: dict, newAlbumInfo: dict, coverPath):
-        """ 保存专辑信息槽函数 """
-        # 删除线程
-        self.sender().quit()
-        self.sender().wait()
-        self.sender().deleteLater()
-
-        # 发送信号
-        self.editAlbumInfoSignal.emit(oldAlbumInfo, newAlbumInfo, coverPath)
 
     def __getSingerAvatar(self, singer: str):
         """ 获取歌手头像 """
@@ -412,58 +263,20 @@ class SingerInterface(ScrollArea):
         if self.singerInfo == singerInfo:
             return
 
-        self.__getSingerAvatar(singerInfo.get(
-            'singer', self.tr('Unknown artist')))
-        self.__updateAllAlbumCards(singerInfo.get('albumInfos', []))
         self.__getInfo(singerInfo)
+        self.__getSingerAvatar(self.singerInfo.singer)
+        self.albumCardView.updateAllAlbumCards(self.albumInfos)
         self.singerInfoBar.updateWindow(self.singerInfo)
+        self.scrollWidget.resize(
+            self.width(), 456 + self.albumCardView.gridLayout.rowCount()*300 + 120)
 
     def showEvent(self, e):
-        self.verticalScrollBar().setValue(0)
         self.albumBlurBackground.hide()
         super().showEvent(e)
 
-    def __updateAllAlbumCards(self, albumInfos: list):
-        """ 更新所有专辑卡 """
-        # 根据具体情况增减专辑卡
-        newCardNum = len(albumInfos)
-        oldCardNum = len(self.albumCards)
-        if newCardNum < oldCardNum:
-            # 删除部分专辑卡
-            for i in range(oldCardNum - 1, newCardNum - 1, -1):
-                albumCard = self.albumCards.pop()
-                self.hideCheckBoxAnis.pop()
-                self.hideCheckBoxAniGroup.takeAnimation(i)
-                albumCard.deleteLater()
-        elif newCardNum > oldCardNum:
-            # 新增部分专辑卡
-            for albumInfo in albumInfos[oldCardNum:]:
-                self.__createOneAlbumCard(albumInfo)
-                QApplication.processEvents()
-
-        # 更新部分专辑卡
-        self.albumInfos = albumInfos
-        n = oldCardNum if oldCardNum < newCardNum else newCardNum
-        for i in range(n):
-            albumInfo = albumInfos[i]
-            self.albumCards[i].updateWindow(albumInfo)
-            QApplication.processEvents()
-
-        # 将专辑卡添加到布局中
-        self.__addAlbumCardsToLayout()
-        self.setStyle(QApplication.style())
-
-        # 更新字典
-        for albumCard, albumInfo in zip(self.albumCards, albumInfos):
-            album = albumInfo["album"]
-            self.albumCardMap[album] = albumCard
-            self.albumInfoMap[album] = albumInfo
-
     def __onSelectionModeBarPlayButtonClicked(self):
         """ 选择模式栏播放/下一首播放按钮槽函数 """
-        songInfos = []
-        for albumCard in self.checkedAlbumCards:
-            songInfos.extend(albumCard.albumInfo["songInfos"])
+        songInfos = self.__getCheckedAlbumCardSongInfos()
         self.__unCheckAlbumCards()
 
         if self.sender() is self.selectionModeBar.playButton:
@@ -484,9 +297,7 @@ class SingerInterface(ScrollArea):
         addToButton = self.sender()
 
         # 获取选中的播放列表
-        songInfos = []
-        for albumCard in self.checkedAlbumCards:
-            songInfos.extend(albumCard.songInfos)
+        songInfos = self.__getCheckedAlbumCardSongInfos()
 
         # 计算菜单弹出位置
         pos = self.selectionModeBar.mapToGlobal(addToButton.pos())
@@ -512,22 +323,21 @@ class SingerInterface(ScrollArea):
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
         # 播放全部按钮槽函数
-        self.playButton.clicked.connect(self.__playAllSongs)
-
-        # 动画完成隐藏复选框
-        self.hideCheckBoxAniGroup.finished.connect(self.__hideAllCheckBox)
+        self.playButton.clicked.connect(
+            lambda: self.playSig.emit(self.getAllSongInfos()))
 
         # 将滚动信号连接到槽函数
         self.verticalScrollBar().valueChanged.connect(self.__onScrollBarValueChanged)
 
         # 将歌手信息栏信号连接到槽函数
-        self.singerInfoBar.playAllButton.clicked.connect(self.__playAllSongs)
+        self.singerInfoBar.playAllButton.clicked.connect(
+            lambda: self.playSig.emit(self.getAllSongInfos()))
         self.singerInfoBar.addSongsToPlayingPlaylistSig.connect(
-            self.__addSongsToPlayingPlaylist)
+            lambda: self.addSongsToPlayingPlaylistSig.emit(self.getAllSongInfos()))
         self.singerInfoBar.addSongsToNewCustomPlaylistSig.connect(
-            self.__addSongsToNewCustomPlaylist)
+            lambda: self.addSongsToNewCustomPlaylistSig.emit(self.getAllSongInfos()))
         self.singerInfoBar.addSongsToCustomPlaylistSig.connect(
-            self.__addSongsToCustomPlaylist)
+            lambda n: self.addSongsToCustomPlaylistSig.emit(n, self.getAllSongInfos()))
 
         # 将选择模式栏信号连接到槽函数
         self.selectionModeBar.playButton.clicked.connect(
@@ -541,3 +351,24 @@ class SingerInterface(ScrollArea):
         # 将歌手头像下载线程信号连接到槽
         self.getAvatarThread.downloadFinished.connect(
             self.__onDownloadAvatarFinished)
+
+        # 将专辑卡视图信号连接到槽函数
+        self.albumCardView.playSig.connect(
+            lambda s, a: self.playSig.emit(self.__getAlbumSongInfos(s, a)))
+        self.albumCardView.nextPlaySig.connect(self.nextToPlaySig)
+        self.albumCardView.deleteAlbumSig.connect(
+            lambda s, a: self.removeSongSig.emit(self.__getAlbumSongInfos(s, a)))
+        self.albumCardView.addAlbumToPlayingSig.connect(
+            self.addSongsToPlayingPlaylistSig)
+        self.albumCardView.addAlbumToNewCustomPlaylistSig.connect(
+            self.addSongsToNewCustomPlaylistSig)
+        self.albumCardView.addAlbumToCustomPlaylistSig.connect(
+            self.addSongsToCustomPlaylistSig)
+        self.albumCardView.checkedStateChanged.connect(
+            self.__onAlbumCardCheckedStateChanged)
+        self.albumCardView.switchToAlbumInterfaceSig.connect(
+            self.switchToAlbumInterfaceSig)
+        self.albumCardView.showBlurAlbumBackgroundSig.connect(
+            self.__showBlurAlbumBackground)
+        self.albumCardView.hideBlurAlbumBackgroundSig.connect(
+            self.albumBlurBackground.hide)

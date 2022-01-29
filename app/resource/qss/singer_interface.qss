@@ -53,20 +53,21 @@ QLabel {
     background-color: transparent;
 }
 
-QLabel#albumNameLabel[isChecked='False'] {
+QLabel#albumLabel[isChecked='False'] {
     color: black;
     font-family: 'Segoe UI', 'Microsoft YaHei';
     font-weight: bold;
 }
 
-QLabel#albumNameLabel[isChecked='True'] {
+QLabel#albumLabel[isChecked='True'] {
     color: white;
     font-family: 'Segoe UI', 'Microsoft YaHei';
     font-weight: bold;
 }
 
 QLabel#contentLabel {
-    font-size: 16px;
+    font: 16px 'Segoe UI', 'Microsoft YaHei';
+    color: rgba(0, 0, 0, 0.6);
 }
 
 QLabel#contentLabel[isChecked='True'] {

@@ -25,9 +25,14 @@
 <context>
     <name>AlbumCardBase</name>
     <message>
-        <location filename="../../components/album_card/album_card_base.py" line="56"/>
+        <location filename="../../components/album_card/album_card_base.py" line="42"/>
         <source>Play</source>
         <translation>播放</translation>
+    </message>
+    <message>
+        <location filename="../../components/album_card/album_card_base.py" line="49"/>
+        <source>Add to</source>
+        <translation>添加到</translation>
     </message>
 </context>
 <context>
@@ -38,7 +43,7 @@
         <translation>播放</translation>
     </message>
     <message>
-        <location filename="../../components/album_card/album_card.py" line="82"/>
+        <location filename="../../components/album_card/album_card.py" line="116"/>
         <source>Select</source>
         <translation>选择</translation>
     </message>
@@ -58,7 +63,7 @@
         <translation>删除</translation>
     </message>
     <message>
-        <location filename="../../components/album_card/album_card.py" line="86"/>
+        <location filename="../../components/album_card/album_card.py" line="120"/>
         <source>Edit info</source>
         <translation>编辑信息</translation>
     </message>
@@ -81,7 +86,7 @@
         <translation>这里没有可显示的内容。请尝试其他筛选器。</translation>
     </message>
     <message>
-        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="243"/>
+        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="242"/>
         <source>Unknown</source>
         <translation>未知</translation>
     </message>
@@ -89,17 +94,17 @@
 <context>
     <name>AlbumCardViewBase</name>
     <message>
-        <location filename="../../components/album_card/album_card_view.py" line="111"/>
+        <location filename="../../components/album_card/album_card_view.py" line="109"/>
         <source>Are you sure you want to delete this?</source>
         <translation>是否确定要删除此项？</translation>
     </message>
     <message>
-        <location filename="../../components/album_card/album_card_view.py" line="112"/>
+        <location filename="../../components/album_card/album_card_view.py" line="110"/>
         <source>If you delete</source>
         <translation>如果删除</translation>
     </message>
     <message>
-        <location filename="../../components/album_card/album_card_view.py" line="113"/>
+        <location filename="../../components/album_card/album_card_view.py" line="111"/>
         <source>it won&apos;t be on be this device anymore.</source>
         <translation>，它将不再位于此设备上。</translation>
     </message>
@@ -394,32 +399,32 @@
 <context>
     <name>LocalSearchedAlbumCardContextMenu</name>
     <message>
-        <location filename="../../components/album_card/album_card.py" line="111"/>
+        <location filename="../../components/album_card/album_card.py" line="145"/>
         <source>Play</source>
         <translation>播放</translation>
     </message>
     <message>
-        <location filename="../../components/album_card/album_card.py" line="112"/>
+        <location filename="../../components/album_card/album_card.py" line="146"/>
         <source>Play next</source>
         <translation>下一首播放</translation>
     </message>
     <message>
-        <location filename="../../components/album_card/album_card.py" line="113"/>
+        <location filename="../../components/album_card/album_card.py" line="147"/>
         <source>Pin to Start</source>
         <translation>固定到&quot;开始&quot;菜单</translation>
     </message>
     <message>
-        <location filename="../../components/album_card/album_card.py" line="114"/>
+        <location filename="../../components/album_card/album_card.py" line="148"/>
         <source>Delete</source>
         <translation>删除</translation>
     </message>
     <message>
-        <location filename="../../components/album_card/album_card.py" line="115"/>
+        <location filename="../../components/album_card/album_card.py" line="149"/>
         <source>Show artist</source>
         <translation>显示歌手</translation>
     </message>
     <message>
-        <location filename="../../components/album_card/album_card.py" line="116"/>
+        <location filename="../../components/album_card/album_card.py" line="150"/>
         <source>Add to</source>
         <translation>添加到</translation>
     </message>
@@ -1511,39 +1516,72 @@
 <context>
     <name>SingerInterface</name>
     <message>
-        <location filename="../../View/singer_interface/singer_interface.py" line="76"/>
+        <location filename="../../View/singer_interface/singer_interface.py" line="75"/>
         <source>In your music</source>
         <translation>在你的音乐中</translation>
     </message>
     <message>
-        <location filename="../../View/singer_interface/singer_interface.py" line="417"/>
-        <source>Unknown artist</source>
-        <translation>未知歌手</translation>
-    </message>
-    <message>
-        <location filename="../../View/singer_interface/singer_interface.py" line="250"/>
+        <location filename="../../View/singer_interface/singer_interface.py" line="168"/>
         <source>Are you sure you want to delete these?</source>
         <translation>是否确定要删除这些项？</translation>
     </message>
     <message>
-        <location filename="../../View/singer_interface/singer_interface.py" line="251"/>
+        <location filename="../../View/singer_interface/singer_interface.py" line="169"/>
         <source>If you delete these albums, they won&apos;t be on be this device anymore.</source>
         <translation>如果你删除这些专辑，它们将不再位于此设备上。</translation>
     </message>
     <message>
-        <location filename="../../View/singer_interface/singer_interface.py" line="277"/>
+        <location filename="../../View/singer_interface/singer_interface.py" line="173"/>
         <source>Are you sure you want to delete this?</source>
         <translation>是否确定要删除此项？</translation>
     </message>
     <message>
-        <location filename="../../View/singer_interface/singer_interface.py" line="278"/>
+        <location filename="../../View/singer_interface/singer_interface.py" line="174"/>
         <source>If you delete</source>
         <translation>如果删除</translation>
     </message>
     <message>
-        <location filename="../../View/singer_interface/singer_interface.py" line="279"/>
+        <location filename="../../View/singer_interface/singer_interface.py" line="175"/>
         <source>it won&apos;t be on be this device anymore.</source>
         <translation>，它将不再位于此设备上。</translation>
+    </message>
+</context>
+<context>
+    <name>SingerInterfaceAlbumCardContextMenu</name>
+    <message>
+        <location filename="../../components/album_card/album_card.py" line="172"/>
+        <source>Play</source>
+        <translation>播放</translation>
+    </message>
+    <message>
+        <location filename="../../components/album_card/album_card.py" line="173"/>
+        <source>Select</source>
+        <translation>选择</translation>
+    </message>
+    <message>
+        <location filename="../../components/album_card/album_card.py" line="174"/>
+        <source>Play next</source>
+        <translation>下一首播放</translation>
+    </message>
+    <message>
+        <location filename="../../components/album_card/album_card.py" line="175"/>
+        <source>Pin to Start</source>
+        <translation>固定到&quot;开始&quot;菜单</translation>
+    </message>
+    <message>
+        <location filename="../../components/album_card/album_card.py" line="176"/>
+        <source>Delete</source>
+        <translation>删除</translation>
+    </message>
+    <message>
+        <location filename="../../components/album_card/album_card.py" line="177"/>
+        <source>Edit info</source>
+        <translation>编辑信息</translation>
+    </message>
+    <message>
+        <location filename="../../components/album_card/album_card.py" line="178"/>
+        <source>Add to</source>
+        <translation>添加到</translation>
     </message>
 </context>
 <context>

@@ -1613,7 +1613,7 @@ class MainWindow(FramelessWindow):
 
         # 将歌手界面信号连接到槽函数
         self.singerInterface.playSig.connect(self.playCustomPlaylist)
-        self.singerInterface.deleteAlbumSig.connect(self.deleteSongs)
+        self.singerInterface.removeSongSig.connect(self.deleteSongs)
         self.singerInterface.nextToPlaySig.connect(self.onMultiSongsNextPlay)
         self.singerInterface.editAlbumInfoSignal.connect(self.onEditAlbumInfo)
         self.singerInterface.switchToAlbumInterfaceSig.connect(
