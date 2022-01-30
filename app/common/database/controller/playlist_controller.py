@@ -16,26 +16,25 @@ class PlaylistController:
         self.playlistService = PlaylistService(db)
 
     def getAllPlaylists(self):
-        """ 获取所有播放列表 """
+        """ 获取所有播放列表，不包含具体的歌曲信息 """
         playlists = self.playlistService.listAll()
-
-        for playlist in playlists:
-            files = [i.file for i in playlist.songInfos]
-            playlist.songInfos = self.songInfoService.listByIds(files)
-
+        playlists.sort(key=lambda i: i.modifiedTime, reverse=True)
         return playlists
 
     def getPlaylist(self, name: str):
-        """ 获取一张播放列表 """
+        """ 获取一张播放列表，包含具体的歌曲信息 """
         playlist = self.playlistService.findByName(name)
+        if not playlist:
+            return None
+
         files = [i.file for i in playlist.songInfos]
         playlist.songInfos = self.songInfoService.listByIds(files)
         return playlist
 
     def getPlaylists(self, names: List[str]):
-        """ 获取多张播放列表 """
+        """ 获取多张播放列表，包含具体的歌曲信息 """
         playlists = self.playlistService.listByNames(names)
-        
+
         for playlist in playlists:
             files = [i.file for i in playlist.songInfos]
             playlist.songInfos = self.songInfoService.listByIds(files)
@@ -45,6 +44,10 @@ class PlaylistController:
     def create(self, playlist: Playlist):
         """ 创建播放列表 """
         return self.playlistService.add(playlist)
+
+    def addSongs(self, name: str, songInfos: List[SongInfo]):
+        """ 添加歌曲到播放列表中 """
+        return self.playlistService.addSongs(name, songInfos)
 
     def rename(self, old: str, new: str):
         """ 重命名播放列表 """

@@ -33,7 +33,7 @@ class PlaylistGroupBox(QScrollArea):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.playlists = {}
-        self.playlistCard_list = []  # type:List[PlaylistCard]
+        self.playlistCards = []  # type:List[PlaylistCard]
         self.playlistName2Card_dict = {}  # type:Dict[str, PlaylistCard]
         self.titleButton = QPushButton(self.tr('Playlists'), self)
         self.scrollRightButton = QToolButton(self)
@@ -183,7 +183,7 @@ class PlaylistGroupBox(QScrollArea):
         self.hBox.removeWidget(playlistCard)
 
         # 从列表中弹出小部件
-        self.playlistCard_list.remove(playlistCard)
+        self.playlistCards.remove(playlistCard)
 
         # 更新字典
         self.playlists.pop(playlistName)
@@ -262,7 +262,7 @@ class PlaylistGroupBox(QScrollArea):
     def __createOnePlaylistCard(self, playlistName: str, playlist: dict):
         """ 创建一个播放列表卡 """
         playlistCard = PlaylistCard(playlist, self)
-        self.playlistCard_list.append(playlistCard)
+        self.playlistCards.append(playlistCard)
         self.playlistName2Card_dict[playlistName] = playlistCard
         self.hBox.addWidget(playlistCard)
 
@@ -294,11 +294,11 @@ class PlaylistGroupBox(QScrollArea):
 
         # 根据具体情况增减专辑卡
         newCardNum = len(playlists.keys())
-        oldCardNum = len(self.playlistCard_list)
+        oldCardNum = len(self.playlistCards)
         if newCardNum < oldCardNum:
             # 删除部分播放列表卡
             for i in range(oldCardNum - 1, newCardNum - 1, -1):
-                playlistCard = self.playlistCard_list.pop()
+                playlistCard = self.playlistCards.pop()
                 self.hBox.removeWidget(playlistCard)
                 playlistCard.deleteLater()
         elif newCardNum > oldCardNum:
@@ -313,7 +313,7 @@ class PlaylistGroupBox(QScrollArea):
         self.playlists = deepcopy(playlists)
         n = oldCardNum if oldCardNum < newCardNum else newCardNum
         for i, playlist in enumerate(list(playlists.values())[:n]):
-            self.playlistCard_list[i].updateWindow(playlist)
+            self.playlistCards[i].updateWindow(playlist)
             QApplication.processEvents()
 
         self.setStyle(QApplication.style())

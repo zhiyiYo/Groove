@@ -1,6 +1,7 @@
 # coding:utf-8
 from pathlib import Path
 
+from common.os_utils import getPlaylistNames
 from components.widgets.scroll_area import ScrollArea
 from PyQt5.QtCore import Qt, pyqtSignal, QObject
 from PyQt5.QtGui import QColor, QPainter, QPen
@@ -42,9 +43,11 @@ class NavigationWidget(NavigationWidgetBase):
         self.settingButton = PushButton(
             ":/images/navigation_interface/Settings.png", self.tr("Settings"), (400, 62), self)
         # 创建播放列表名字按钮
-        self.__createPlaylistNameButtons(self.getPlaylistNames())
+        self.__createPlaylistNameButtons(getPlaylistNames())
+
         # 设置当前按钮
         self.currentButton = self.myMusicButton
+
         # 设置可选中的按钮列表
         self._selectableButtons = [
             self.myMusicButton,
@@ -53,6 +56,7 @@ class NavigationWidget(NavigationWidgetBase):
             self.playlistButton,
             self.settingButton,
         ] + self.playlistNameButtons
+
         # 设置可选中的按钮名字列表
         self._selectableButtonNames = [
             "myMusicButton",
@@ -103,12 +107,6 @@ class NavigationWidget(NavigationWidgetBase):
         painter.drawLine(15, self.settingButton.y()-1,
                          self.width()-15, self.settingButton.y()-1)
 
-    def getPlaylistNames(self):
-        """ 扫描播放列表名字 """
-        self.playlistFolder.mkdir(exist_ok=True, parents=True)
-        playlists = [i.stem for i in self.playlistFolder.glob('*.json')]
-        return playlists
-
     def __addPlaylistNameButtonsToScrollWidget(self):
         """ 将播放列表名字按钮添加到滚动部件上 """
         for index, button in enumerate(self.playlistNameButtons):
@@ -124,7 +122,7 @@ class NavigationWidget(NavigationWidgetBase):
     def updateWindow(self):
         """ 更新界面 """
         # 扫描播放列表
-        playlistNames = self.getPlaylistNames()
+        playlistNames = getPlaylistNames()
         if playlistNames == self.playlistNames:
             return
 

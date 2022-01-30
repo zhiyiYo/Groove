@@ -22,21 +22,33 @@ class TestPlaylistService(TestCase):
         self.playlists = [
             Playlist(
                 'aiko',
+                'aiko',
+                'かばん',
+                2,
                 1,
                 [SongInfo('aiko - かばん.mp3'), SongInfo('aiko - 秘密.mp3')]
             ),
             Playlist(
                 '我喜欢',
+                '鎖那',
+                'tutu',
+                2,
                 2,
                 [SongInfo('鎖那 - tutu.mp3'), SongInfo('aiko - 秘密.mp3')]
             ),
             Playlist(
                 '日本歌',
+                'RADWIMPS',
+                '白日',
+                2,
                 1,
                 [SongInfo('RADWIMPS - 白日.mp3'), SongInfo('aiko - Loveletter.mp3')]
             ),
             Playlist(
                 '英文歌',
+                'Charlie Puth',
+                'Cheating on You',
+                1,
                 2,
                 [SongInfo('Charlie Puth - Cheating on You.mp3')]
             ),

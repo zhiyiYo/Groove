@@ -7,7 +7,8 @@ from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtSql import QSqlDatabase
 
 from ..database.controller import (AlbumCoverController, AlbumInfoController,
-                                   SingerInfoController, SongInfoController)
+                                   PlaylistController, SingerInfoController,
+                                   SongInfoController)
 from .file_system import FileSystem
 
 
@@ -36,12 +37,15 @@ class Library(QObject):
         super().__init__(parent=parent)
         self.songInfos = []
         self.albumInfos = []
+        self.singerInfos = []
+        self.playlists = []
         self.directories = directories
         self.fileSystem = FileSystem(directories, self)
         self.songInfoController = SongInfoController(db)
         self.albumInfoController = AlbumInfoController(db)
         self.albumCoverController = AlbumCoverController()
         self.singerInfoController = SingerInfoController(db)
+        self.playlistController = PlaylistController(db)
 
     def load(self):
         """ 载入歌曲信息 """
@@ -52,6 +56,7 @@ class Library(QObject):
         self.albumCoverController.getAlbumCovers(self.songInfos)
         self.singerInfos = self.singerInfoController.getSingerInfosFromCache(
             self.albumInfos)
+        self.playlists = self.playlistController.getAllPlaylists()
 
         self.loadFinished.emit()
 
@@ -91,5 +96,7 @@ class Library(QObject):
         """ 拷贝歌曲库的信息 """
         library.songInfos = self.songInfos
         library.albumInfos = self.albumInfos
+        library.singerInfos = self.singerInfos
+        library.playlists = self.playlists
         library.directories = self.directories.copy()
         library.fileSystem.setDirs(self.directories)

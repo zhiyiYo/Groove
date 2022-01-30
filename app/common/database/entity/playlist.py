@@ -10,6 +10,9 @@ class Playlist(Entity):
     """ 播放列表实体类 """
 
     name: str = None
+    singer: str = None
+    album: str = None
+    count: int = 0
     modifiedTime: int = None
     songInfos: List[SongInfo] = field(default_factory=list)
 

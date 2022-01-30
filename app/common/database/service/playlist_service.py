@@ -1,6 +1,7 @@
 # coding:utf-8
 from typing import List
 
+from PyQt5.QtCore import QDateTime
 from PyQt5.QtSql import QSqlDatabase
 
 from ..dao import PlaylistDao, SongPlaylistDao
@@ -24,13 +25,16 @@ class PlaylistService(ServiceBase):
         return s1 and s2
 
     def findByName(self, name: str) -> Playlist:
-        """ 通过名字查询单张播放列表 """
+        """ 通过名字查询单张播放列表，没找到返回 None """
         playlist = self.playlistDao.selectBy(name=name)  # type:Playlist
+        if not playlist:
+            return None
+
         playlist.songInfos = [
             SongInfo(i.file) for i in self.songPlaylistDao.listBy(name=playlist.name)]
         return playlist
 
-    def listByNames(self, names: str) -> Playlist:
+    def listByNames(self, names: str) -> List[Playlist]:
         """ 通过名字查询多张播放列表 """
         playlists = self.playlistDao.listByIds(names)  # type:Playlist
 
@@ -38,23 +42,16 @@ class PlaylistService(ServiceBase):
             playlist.songInfos = [
                 SongInfo(i.file) for i in self.songPlaylistDao.listBy(name=playlist.name)]
 
-        return playlist
+        return playlists
 
     def listAll(self) -> List[Playlist]:
         """ 查询所有播放列表，不会查询出歌曲信息，只有歌曲文件位置 """
-        playlists = self.playlistDao.listAll()
-
-        for playlist in playlists:
-            playlist.songInfos = [
-                SongInfo(i.file) for i in self.songPlaylistDao.listBy(name=playlist.name)]
-
-        return playlist
+        return self.playlistDao.listAll()
 
     def modifyName(self, old: str, new: str) -> bool:
         """ 修改播放列表的名字 """
         s1 = self.playlistDao.update(old, 'name', new)
         if not s1:
-            print('修改失败')
             return False
 
         songPlaylists = self.songPlaylistDao.listBy(name=old)
@@ -65,12 +62,43 @@ class PlaylistService(ServiceBase):
 
     def add(self, playlist: Playlist) -> bool:
         """ 创建一个播放列表 """
+        songInfo = playlist.songInfos[0] if playlist.songInfos else SongInfo()
+        playlist.singer = songInfo.singer
+        playlist.album = songInfo.album
+        playlist.count = len(playlist.songInfos)
+        playlist.modifiedTime = QDateTime.currentDateTime().toSecsSinceEpoch()
+
         s1 = self.playlistDao.insert(playlist)
         if not s1:
             return False
 
         songPlaylists = [SongPlaylist(
             UUIDUtils.getUUID(), i.file, playlist.name) for i in playlist.songInfos]
+        return self.songPlaylistDao.insertBatch(songPlaylists)
+
+    def addSongs(self, name: str, songInfos: List[SongInfo]) -> bool:
+        """ 添加歌曲到指定的播放列表中 """
+        if not songInfos:
+            return True
+
+        playlist = self.playlistDao.selectBy(name=name)  # type:Playlist
+        if not playlist:
+            return False
+
+        if playlist.count == 0:
+            songInfo = songInfos[0]
+            playlist.singer = songInfo.singer
+            playlist.album = songInfo.album
+
+        playlist.count = playlist.count + len(songInfos)
+        playlist.modifiedTime = QDateTime.currentDateTime().toSecsSinceEpoch()
+
+        s1 = self.playlistDao.updateById(playlist)
+        if not s1:
+            return False
+
+        songPlaylists = [SongPlaylist(
+            UUIDUtils.getUUID(), i.file, playlist.name) for i in songInfos]
         return self.songPlaylistDao.insertBatch(songPlaylists)
 
     def remove(self, name: str) -> bool:

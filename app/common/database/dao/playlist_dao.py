@@ -6,12 +6,15 @@ class PlaylistDao(DaoBase):
     """ 播放列表数据库操作类 """
 
     table = 'tbl_playlist'
-    fields = ['name', 'modifiedTime']
+    fields = ['name', 'singer', 'album', 'count', 'modifiedTime']
 
     def createTable(self):
         success = self.query.exec(f"""
             CREATE TABLE IF NOT EXISTS {self.table}(
                 name TEXT PRIMARY KEY,
+                singer TEXT,
+                album TEXT,
+                count INTEGER,
                 modifiedTime INTEGER
             )
         """)

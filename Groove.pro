@@ -63,6 +63,8 @@ SOURCES += app/View/main_window/main_window.py \
         app/components/video_window/play_bar.py \
         app/components/widgets/lyric_widget.py \
         app/components/album_card/album_card_view.py \
-        app/components/album_card/album_card_base.py
+        app/components/album_card/album_card_base.py \
+        app/components/playlist_card/playlist_card_base.py \
+        app/components/playlist_card/playlist_card_view.py
 
 TRANSLATIONS += app/resource/i18n/Groove_zh.ts

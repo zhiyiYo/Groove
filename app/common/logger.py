@@ -19,7 +19,7 @@ class Logger:
         self.__logFile = self.logFolder/(fileName+'.log')
         self.__logger = logging.getLogger(fileName)
         self.__consoleHandler = logging.StreamHandler()
-        self.__fileHandler = logging.FileHandler(self.__logFile)
+        self.__fileHandler = logging.FileHandler(self.__logFile, encoding='utf-8')
 
         # 设置日志级别
         self.__logger.setLevel(logging.DEBUG)

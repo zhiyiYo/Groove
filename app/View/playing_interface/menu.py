@@ -1,6 +1,7 @@
 # coding:utf-8
 from pathlib import Path
 
+from common.os_utils import getPlaylistNames
 from PyQt5.QtCore import QFile, Qt, pyqtSignal
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction, QMenu
@@ -63,9 +64,9 @@ class AddToMenu(QMenu):
             QIcon(':/images/playing_interface/Playing_white.png'), self.tr('Now playing'), self)
         self.newPlaylistAct = QAction(
             QIcon(':/images/playing_interface/Add_20_20.png'), self.tr('New playlist'), self)
-        playlists = self.__getPlaylistNames()
+        names = getPlaylistNames()
         self.playlistActs = [QAction(QIcon(
-            ":/images/playing_interface/Album.png"), i, self) for i in playlists]
+            ":/images/playing_interface/Album.png"), i, self) for i in names]
 
         self.addAction(self.playingAct)
         self.addSeparator()
@@ -78,18 +79,12 @@ class AddToMenu(QMenu):
         self.setAttribute(Qt.WA_TranslucentBackground)
 
         # 将添加到播放列表的信号连接到槽函数
-        for name, act in zip(playlists, self.playlistActs):
+        for name, act in zip(names, self.playlistActs):
             act.triggered.connect(
                 lambda checked, playlistName=name: self.addSongsToPlaylistSig.emit(playlistName))
 
         # 设置层叠样式
         self.__setQss()
-
-    def __getPlaylistNames(self):
-        """ 扫描播放列表文件夹下的播放列表名字 """
-        self.playlistFolder.mkdir(parents=True, exist_ok=True)
-        playlists = [i.stem for i in self.playlistFolder.glob('*.json')]
-        return playlists
 
     def actionCount(self):
         """ 返回菜单中的动作数 """

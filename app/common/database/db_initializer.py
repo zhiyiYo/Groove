@@ -2,7 +2,8 @@
 from PyQt5.QtCore import QThread
 from PyQt5.QtSql import QSqlDatabase
 
-from .service import SongInfoService, AlbumInfoService, SingerInfoService
+from .service import (AlbumInfoService, PlaylistService, SingerInfoService,
+                      SongInfoService)
 
 
 class DBInitializer:
@@ -20,17 +21,13 @@ class DBInitializer:
         if not self.db.open():
             print("数据库连接失败")
 
-    def disconnect(self):
-        """ 断开连接 """
-        name = self.db.connectionName()
-        self.db.close()
-        QSqlDatabase.removeDatabase(name)
-
     def init(self):
         """ 初始化数据库 """
         songInfoService = SongInfoService(self.db)
         albumInfoService = AlbumInfoService(self.db)
         singerInfoService = SingerInfoService(self.db)
+        playlistService = PlaylistService(self.db)
         songInfoService.createTable()
         albumInfoService.createTable()
         singerInfoService.createTable()
+        playlistService.createTable()

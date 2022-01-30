@@ -15,8 +15,7 @@ class DaoBase:
 
     def __init__(self, db: QSqlDatabase = None):
         super().__init__()
-        self.query = SqlQuery(db) if db else SqlQuery()
-        self.query.setForwardOnly(True)
+        self.setDatabase(db)
 
     def createTable(self):
         """ 创建表格 """
@@ -193,7 +192,12 @@ class DaoBase:
         if len(self.fields) <= 1:
             return False
 
-        QSqlDatabase.database().transaction()
+        if self.connectionName:
+            db = QSqlDatabase.database(self.connectionName)
+        else:
+            db = QSqlDatabase.database()
+
+        db.transaction()
 
         id_ = self.fields[0]
         values = ','.join([f'{i} = :{i}' for i in self.fields[1:]])
@@ -205,7 +209,7 @@ class DaoBase:
             self.bindEntityToQuery(entity)
             self.query.exec()
 
-        success = QSqlDatabase.database().commit()
+        success = db.commit()
         return success
 
     def insert(self, entity: Entity) -> bool:
@@ -243,7 +247,12 @@ class DaoBase:
         if not entities:
             return True
 
-        QSqlDatabase.database().transaction()
+        if self.connectionName:
+            db = QSqlDatabase.database(self.connectionName)
+        else:
+            db = QSqlDatabase.database()
+
+        db.transaction()
 
         values = ','.join([f':{i}' for i in self.fields])
         sql = f"INSERT INTO {self.table} VALUES ({values})"
@@ -253,8 +262,7 @@ class DaoBase:
             self.bindEntityToQuery(entity)
             self.query.exec()
 
-        success = QSqlDatabase.database().commit()
-        return success
+        return db.commit()
 
     def deleteById(self, id) -> bool:
         """ 移除一条记录
@@ -337,5 +345,6 @@ class DaoBase:
 
     def setDatabase(self, db: QSqlDatabase):
         """ 使用指定的数据库 """
+        self.connectionName = db.connectionName() if db else ''
         self.query = SqlQuery(db)
         self.query.setForwardOnly(True)

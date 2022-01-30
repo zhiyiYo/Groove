@@ -1,6 +1,7 @@
 # coding:utf-8
 from pathlib import Path
 
+from common.os_utils import getPlaylistNames
 from common.window_effect import WindowEffect
 from PyQt5.QtCore import (QEasingCurve, QEvent, QFile, QPropertyAnimation,
                           QRect, Qt, pyqtSignal)
@@ -118,11 +119,9 @@ class AddToMenu(DWMMenu):
             QIcon(":/images/menu/Add.png"), self.tr("New playlist"), self)
 
         # 根据播放列表创建动作
-        playlistNames = self.__getPlaylistNames()
+        names = getPlaylistNames()
         self.playlistNameActs = [
-            QAction(QIcon(":/images/menu/Album.png"), name, self)
-            for name in playlistNames
-        ]
+            QAction(QIcon(":/images/menu/Album.png"), i, self) for i in names]
         self.action_list = [self.playingAct,
                             self.newPlaylistAct] + self.playlistNameActs
         self.addAction(self.playingAct)
@@ -130,16 +129,10 @@ class AddToMenu(DWMMenu):
         self.addActions([self.newPlaylistAct] + self.playlistNameActs)
 
         # 将添加到播放列表的信号连接到槽函数
-        for name, act in zip(playlistNames, self.playlistNameActs):
-            # lambda表达式只有在执行的时候才回去寻找变量name，所以需要将name固定下来
+        for name, act in zip(names, self.playlistNameActs):
+            # lambda表达式只有在执行的时候才回去寻找变量 name，所以需要将name固定下来
             act.triggered.connect(
                 lambda checked, playlistName=name: self.addSongsToPlaylistSig.emit(playlistName))
-
-    def __getPlaylistNames(self):
-        """ 扫描播放列表文件夹下的播放列表名字 """
-        self.playlistFolder.mkdir(parents=True, exist_ok=True)
-        playlists = [i.stem for i in self.playlistFolder.glob('*.json')]
-        return playlists
 
     def actionCount(self):
         """ 返回菜单中的动作数 """

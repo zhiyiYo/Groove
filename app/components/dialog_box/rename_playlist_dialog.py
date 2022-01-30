@@ -1,7 +1,6 @@
 # coding:utf-8
-import json
-from pathlib import Path
-
+from common.library import Library
+from common.database.entity import Playlist
 from components.buttons.three_state_button import ThreeStateButton
 from components.dialog_box.mask_dialog_base import MaskDialogBase
 from components.widgets.label import ClickableLabel
@@ -15,16 +14,15 @@ from PyQt5.QtWidgets import (QApplication, QLabel, QLineEdit, QPushButton,
 class RenamePlaylistDialog(MaskDialogBase):
     """ 创建播放列表对话框 """
 
-    renamePlaylistSig = pyqtSignal(dict, dict)
-    playlistFolder = Path('cache/Playlists')
+    renamePlaylistSig = pyqtSignal(str, str)
 
-    def __init__(self, oldPlaylist: dict, parent=None):
+    def __init__(self, library: Library, name: str, parent=None):
         super().__init__(parent=parent)
-        self.oldPlaylist = oldPlaylist
-        self.oldPlaylistName = oldPlaylist["playlistName"]  # type:str
+        self.oldName = name
+        self.library = library
         self.vBoxLayout = QVBoxLayout(self.widget)
         self.iconLabel = QLabel(self.widget)
-        self.lineEdit = LineEdit(self.oldPlaylistName, self.widget)
+        self.lineEdit = LineEdit(self.oldName, self.widget)
         self.cancelLabel = ClickableLabel(self.tr("Cancel"), self.widget)
         self.renamePlaylistButton = QPushButton(self.tr('Rename'), self.widget)
         self.playlistExistedLabel = QLabel(
@@ -41,6 +39,7 @@ class RenamePlaylistDialog(MaskDialogBase):
             QPixmap(":/images/create_playlist_dialog/playlist.png"))
         self.__setQss()
         self.__initLayout()
+
         # 信号连接到槽
         self.cancelLabel.clicked.connect(self.close)
         self.lineEdit.textChanged.connect(self.__onLineEditTextChanged)
@@ -71,50 +70,31 @@ class RenamePlaylistDialog(MaskDialogBase):
         self.vBoxLayout.addWidget(self.cancelLabel, *args)
         self.vBoxLayout.setAlignment(Qt.AlignTop)
 
-    def __isPlaylistExist(self, playlistName: str) -> bool:
+    def __isPlaylistExist(self, name: str) -> bool:
         """ 检测播放列表是否已经存在 """
-        self.playlistFolder.mkdir(exist_ok=True, parents=True)
-
-        # 扫描播放列表文件夹下的播放列表名字
-        playlists = [i.stem for i in self.playlistFolder.glob('*.json')]
-        isExist = playlistName in playlists
-
-        return isExist
+        names = [i.name for i in self.library.playlistController.getAllPlaylists()]
+        return name in names
 
     def __onRenamePlaylistButtonClicked(self):
         """ 重命名播放列表按钮点击槽函数 """
-        playlistName = self.lineEdit.text().strip()
-        if self.__isPlaylistExist(playlistName):
+        name = self.lineEdit.text().strip()
+        if self.__isPlaylistExist(name):
             return
 
-        # 创建新播放列表并写入json文件
-        newPlaylist = {
-            "playlistName": playlistName,
-            "songInfos": self.oldPlaylist["songInfos"],
-            "modifiedTime": QDateTime.currentDateTime().toString(Qt.ISODate),
-        }
-
-        oldPath = self.playlistFolder / (self.oldPlaylistName + '.json')
-        with open(oldPath, "w", encoding="utf-8") as f:
-            json.dump(newPlaylist, f)
-
-        oldPath.rename(self.playlistFolder/(playlistName+'.json'))
-
-        # 发送信号
-        self.renamePlaylistSig.emit(self.oldPlaylist, newPlaylist)
+        self.renamePlaylistSig.emit(self.oldName, name)
         self.close()
 
-    def __onLineEditTextChanged(self, playlistName: str):
+    def __onLineEditTextChanged(self, name: str):
         """ 单行输入框中的播放列表名字改变对应的槽函数 """
-        playlistName = playlistName.strip()
+        name = name.strip()
 
         # 如果播放列表名字存在或者没变就禁用按钮
-        isExist = self.__isPlaylistExist(playlistName)
-        isDisabled = playlistName in ["", self.oldPlaylistName]
+        isExist = self.__isPlaylistExist(name)
+        isDisabled = name in ["", self.oldName]
         self.renamePlaylistButton.setDisabled(isDisabled or isExist)
 
         # 如果播放列表名已存在，显示提示标签
-        if isExist and playlistName != self.oldPlaylistName:
+        if isExist and name != self.oldName:
             self.playlistExistedLabel.show()
         elif not isExist:
             self.playlistExistedLabel.hide()

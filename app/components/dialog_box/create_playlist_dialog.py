@@ -1,25 +1,25 @@
 # coding:utf-8
-import json
-from pathlib import Path
-
+from common.database.entity import Playlist
+from common.library import Library
 from components.buttons.three_state_button import ThreeStateButton
 from components.dialog_box.mask_dialog_base import MaskDialogBase
 from components.widgets.label import ClickableLabel
 from components.widgets.menu import LineEditMenu
-from PyQt5.QtCore import QDateTime, QEvent, Qt, pyqtSignal, QFile
+from PyQt5.QtCore import QEvent, QFile, Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QApplication, QLabel, QLineEdit, QPushButton, QVBoxLayout
+from PyQt5.QtWidgets import (QApplication, QLabel, QLineEdit, QPushButton,
+                             QVBoxLayout)
 
 
 class CreatePlaylistDialog(MaskDialogBase):
     """ 创建播放列表对话框 """
 
-    createPlaylistSig = pyqtSignal(str, dict)
-    playlistFolder = Path('cache/Playlists')
+    createPlaylistSig = pyqtSignal(str, Playlist)
 
-    def __init__(self, songInfos: list = None, parent=None):
+    def __init__(self, library: Library, songInfos: list = None, parent=None):
         super().__init__(parent=parent)
-        self.songInfos = songInfos
+        self.library = library
+        self.songInfos = songInfos or []
         self.vBoxLayout = QVBoxLayout(self.widget)
         self.iconLabel = QLabel(self.widget)
         self.lineEdit = LineEdit(parent=self.widget)
@@ -73,13 +73,10 @@ class CreatePlaylistDialog(MaskDialogBase):
         self.vBoxLayout.addWidget(self.cancelLabel, *args)
         self.vBoxLayout.setAlignment(Qt.AlignTop)
 
-    def __isPlaylistExist(self, playlistName: str) -> bool:
+    def __isPlaylistExist(self, name: str) -> bool:
         """ 检测播放列表是否已经存在，如果已存在就显示提示标签 """
-        self.playlistFolder.mkdir(parents=True, exist_ok=True)
-
-        # 扫描播放列表文件夹下的播放列表名字
-        playlists = [i.stem for i in self.playlistFolder.glob('*.json')]
-        isExist = playlistName in playlists
+        names = [i.name for i in self.library.playlistController.getAllPlaylists()]
+        isExist = name in names
 
         # 如果播放列表名字已存在显示提示标签
         self.playlistExistedLabel.setVisible(isExist)
@@ -90,23 +87,19 @@ class CreatePlaylistDialog(MaskDialogBase):
     def __onCreatePlaylistButtonClicked(self):
         """ 发出创建播放列表的信号 """
         text = self.lineEdit.text().strip()
-        playlistName = text if text else self.tr("New playlist")
+        name = text if text else self.tr("New playlist")
 
         # 如果播放列表已存在，显示提示消息并直接返回
-        if self.__isPlaylistExist(playlistName):
+        if self.__isPlaylistExist(name):
             return
 
         # 创建播放列表
-        songInfos = self.songInfos if self.songInfos else []
-        playlist = {
-            "playlistName": playlistName,
-            "songInfos": songInfos,
-            "modifiedTime": QDateTime.currentDateTime().toString(Qt.ISODate),
-        }
-        with open(self.playlistFolder/(playlistName+'.json'), "w", encoding="utf-8") as f:
-            json.dump(playlist, f)
+        playlist = Playlist(name=name, songInfos=self.songInfos)
+        if not self.library.playlistController.create(playlist):
+            print('插入songplaylist失败')
+            return
 
-        self.createPlaylistSig.emit(playlistName, playlist)
+        self.createPlaylistSig.emit(name, playlist)
         self.close()
 
 

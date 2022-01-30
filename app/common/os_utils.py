@@ -2,7 +2,9 @@
 import os
 import re
 from pathlib import Path
-from typing import Union
+
+from PyQt5.QtSql import QSqlDatabase
+from common.database.service import PlaylistService
 
 from win32com.shell import shell, shellcon
 
@@ -49,7 +51,7 @@ def getCoverPath(singer: str, album: str, coverType: str) -> str:
         专辑
 
     coverType: str
-        封面类型，有以下几种：
+        封面类型，有以下几种:
         * `album_big` - 大默认专辑封面
         * `album_small` - 小默认专辑封面
         * `playlist_big` - 大默认播放列表封面
@@ -75,10 +77,8 @@ def getCoverPath(singer: str, album: str, coverType: str) -> str:
     return cover
 
 
-def isAudioFile(path: Union[str, Path]):
-    """ 判断是否为音频文件 """
-    if not isinstance(path, Path):
-        path = Path(path)
-
-    available_formats = ['.mp3', '.flac', '.m4a', '.mp4']
-    return path.is_file() and path.suffix.lower() in available_formats
+def getPlaylistNames():
+    """ 获取数据库中所有播放列表的名字 """
+    db = QSqlDatabase.database('main')
+    service = PlaylistService(db)
+    return [i.name for i in service.listAll()]

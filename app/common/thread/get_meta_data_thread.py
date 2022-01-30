@@ -6,7 +6,7 @@ from common.crawler.qq_music_crawler import QQMusicCrawler
 from common.database.entity import SongInfo
 from common.library import Directory
 from common.meta_data.writer import writeAlbumCover, writeSongInfo
-from common.os_utils import adjustName, isAudioFile
+from common.os_utils import adjustName
 from PyQt5.QtCore import QThread, pyqtSignal
 
 
