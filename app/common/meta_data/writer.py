@@ -83,8 +83,9 @@ class MP3Writer(MetaDataWriter):
         self.audio['TPE2'] = TPE2(encoding=3, text=songInfo.singer)
         self.audio['TALB'] = TALB(encoding=3, text=songInfo.album)
         self.audio['TCON'] = TCON(encoding=3, text=songInfo.genre)
-        self.audio['TPOS'] = TPOS(encoding=3, text=str(songInfo.disc))
         self.audio['TRCK'] = TRCK(encoding=3, text=str(songInfo.track))
+        if songInfo.disc:
+            self.audio['TPOS'] = TPOS(encoding=3, text=str(songInfo.disc))
         if songInfo.year:
             self.audio['TDRC'] = TDRC(encoding=3, text=str(songInfo.year))
 
@@ -125,8 +126,9 @@ class FLACWriter(MetaDataWriter):
         self.audio['artist'] = songInfo.singer
         self.audio['album'] = songInfo.album
         self.audio['genre'] = songInfo.genre
-        self.audio['discnumber'] = str(songInfo.disc)
-        self.audio['tracknumber'] = str(songInfo.track)
+        if songInfo.disc:
+            self.audio['discnumber'] = str(songInfo.disc)
+            self.audio['tracknumber'] = str(songInfo.track)
         if songInfo.year:
             self.audio['year'] = str(songInfo.year)
 
@@ -158,14 +160,16 @@ class MP4Writer(MetaDataWriter):
         self.audio['trkn'] = [(songInfo.track, trackTotal)]
 
         # 写入光盘
-        discTotal = max(songInfo.disc, songInfo.discTotal)
-        self.audio['disk'] = [(songInfo.disc, discTotal)]
+        if songInfo.disc:
+            discTotal = max(songInfo.disc, songInfo.discTotal)
+            self.audio['disk'] = [(songInfo.disc, discTotal)]
 
         self.audio['©nam'] = songInfo.title
         self.audio['©ART'] = songInfo.singer
         self.audio['aART'] = songInfo.singer
         self.audio['©alb'] = songInfo.album
         self.audio['©gen'] = songInfo.genre
+
         if songInfo.year:
             self.audio['©day'] = str(songInfo.year)
 

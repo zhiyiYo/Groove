@@ -8,8 +8,8 @@ from typing import List, Tuple
 import requests
 from common.database.entity import SongInfo
 
-from .crawler_base import (AudioQualityError, CrawlerBase, VideoQualityError,
-                           exceptionHandler)
+from .crawler_base import AudioQualityError, CrawlerBase, VideoQualityError
+from .exception_handler import exceptionHandler
 
 
 class KuGouMusicCrawler(CrawlerBase):

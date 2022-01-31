@@ -1,6 +1,5 @@
 # coding:utf-8
 import os
-from copy import deepcopy
 from typing import List, Tuple
 
 import requests
@@ -10,34 +9,8 @@ from common.meta_data.reader import AlbumCoverReader
 from common.meta_data.writer import writeAlbumCover, writeSongInfo
 from common.os_utils import adjustName
 
-
-def exceptionHandler(*default):
-    """ 请求异常处理装饰器
-
-    Parameters
-    ----------
-    *default:
-        发生异常时返回的默认值
-    """
-
-    def outer(func):
-
-        def inner(*args, **kwargs):
-            try:
-                return func(*args, **kwargs)
-            except BaseException as e:
-                print(e)
-                value = deepcopy(default)
-                if len(value) == 0:
-                    return None
-                elif len(value) == 1:
-                    return value[0]
-                else:
-                    return value
-
-        return inner
-
-    return outer
+from .exception_handler import exceptionHandler
+from .qq_music_crawler import QQMusicCrawler
 
 
 class CrawlerBase:
@@ -269,11 +242,19 @@ class CrawlerBase:
         cover_path = song_info['coverPath']
         if cover_path.startswith('http'):
             cover_path = self.downloadAlbumCover(
-                cover_path, adjustName(song_info.singer+'_'+song_info.album))
+                cover_path, song_info.singer, song_info.album)
 
         # 修改歌曲元数据
         song_info_ = song_info.copy()
         song_info_.file = song_path
+
+        song_info = QQMusicCrawler().getSongInfo(
+            f"{song_info.singer} - {song_info.title}")
+        if song_info:
+            song_info_.genre = song_info.genre
+            song_info_.disc = song_info.disc
+            song_info_.discTotal = song_info_.discTotal
+
         writeSongInfo(song_info_)
         writeAlbumCover(song_path, cover_path)
 
@@ -306,7 +287,7 @@ class CrawlerBase:
         return save_path
 
     @exceptionHandler('')
-    def downloadAlbumCover(self, url: str, cover_name: str) -> str:
+    def downloadAlbumCover(self, url: str, singer: str, album: str) -> str:
         """ 下载在线专辑封面
 
         Parameters
@@ -314,8 +295,11 @@ class CrawlerBase:
         url: str
             在线专辑封面路径
 
-        cover_name: str
-            封面名字
+        singer: str
+            歌手
+
+        album: str
+            专辑
 
         Returns
         -------
@@ -335,6 +319,9 @@ class CrawlerBase:
         pic_data = response.content
 
         # 保存图片
+        singer = singer or ''
+        album = album or ''
+        cover_name = adjustName(singer + '_' + album)
         folder = AlbumCoverReader.coverFolder / cover_name
         folder.mkdir(exist_ok=True, parents=True)
         save_path = folder / ("cover" + getPicSuffix(pic_data))

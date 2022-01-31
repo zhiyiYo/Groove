@@ -39,6 +39,7 @@ from View.play_bar import PlayBar
 from View.playing_interface import PlayingInterface
 from View.playlist_card_interface import PlaylistCardInterface
 from View.playlist_interface import PlaylistInterface
+from View.search_result_interface import SearchResultInterface
 from View.setting_interface import SettingInterface
 from View.singer_interface import SingerInterface
 from View.smallest_play_interface import SmallestPlayInterface
@@ -145,6 +146,13 @@ class MainWindow(FramelessWindow):
         # 创建系统托盘图标
         self.systemTrayIcon = SystemTrayIcon(self)
 
+        # 创建搜索结果界面
+        pageSize = self.settingInterface.config['online-music-page-size']
+        quality = self.settingInterface.config['online-play-quality']
+        folder = self.settingInterface.config['download-folder']
+        self.searchResultInterface = SearchResultInterface(
+            self.library, pageSize, quality, folder, self.subMainWindow)
+
         # 创建提示气泡
         self.scanInfoTooltip = None
 
@@ -228,6 +236,7 @@ class MainWindow(FramelessWindow):
         self.subStackWidget.addWidget(self.singerInterface, 0, 70)
         self.subStackWidget.addWidget(self.playlistInterface, 0, 70)
         self.subStackWidget.addWidget(self.labelNavigationInterface, 0, 100)
+        self.subStackWidget.addWidget(self.searchResultInterface, 0, 120)
         self.totalStackWidget.addWidget(self.subMainWindow)
         self.totalStackWidget.addWidget(self.playingInterface)
         self.totalStackWidget.addWidget(self.videoWindow)
@@ -590,6 +599,9 @@ class MainWindow(FramelessWindow):
         if songInfo.file != CrawlerBase.song_url_mark:
             return
 
+        i = self.searchResultInterface.onlineSongInfos.index(songInfo)
+        songCard = self.searchResultInterface.onlineSongListWidget.songCards[i]
+
         # 获取封面和播放地址
         eventLoop = QEventLoop(self)
         self.getOnlineSongUrlThread.finished.connect(eventLoop.quit)
@@ -601,9 +613,11 @@ class MainWindow(FramelessWindow):
         # TODO：更优雅地更新在线媒体
         songInfo.file = self.getOnlineSongUrlThread.playUrl
         songInfo['coverPath'] = self.getOnlineSongUrlThread.coverPath
+        songCard.setSongInfo(songInfo)
         self.mediaPlaylist.insertSong(index, songInfo)
         self.playingInterface.playlist[index] = songInfo
         self.smallestPlayInterface.playlist[index] = songInfo
+        self.searchResultInterface.onlineSongInfos[i] = songInfo
         self.mediaPlaylist.removeOnlineSong(index+1)
         self.mediaPlaylist.setCurrentIndex(index)
 
@@ -634,6 +648,10 @@ class MainWindow(FramelessWindow):
         self.songTabSongListWidget.setPlayBySongInfo(songInfo)
         self.albumInterface.songListWidget.setPlayBySongInfo(songInfo)
         self.playlistInterface.songListWidget.setPlayBySongInfo(songInfo)
+        self.searchResultInterface.localSongListWidget.setPlayBySongInfo(
+            songInfo)
+        self.searchResultInterface.onlineSongListWidget.setPlayBySongInfo(
+            songInfo)
 
         # 在更新完界面之后，检查媒体是否可用（需要显示警告图标）
         self.checkMediaAvailable()
@@ -803,6 +821,8 @@ class MainWindow(FramelessWindow):
         self.songTabSongListWidget.cancelPlayState()
         self.albumInterface.songListWidget.cancelPlayState()
         self.playlistInterface.songListWidget.cancelPlayState()
+        self.searchResultInterface.localSongListWidget.cancelPlayState()
+        self.searchResultInterface.onlineSongListWidget.cancelPlayState()
 
         self.playBar.setTotalTime(0)
         self.playBar.progressSlider.setRange(0, 0)
@@ -932,6 +952,12 @@ class MainWindow(FramelessWindow):
 
     def switchToSearchResultInterface(self, keyWord: str):
         """ 切换到搜索结果界面 """
+        self.searchResultInterface.search(keyWord)
+        self.switchToSubInterface(self.searchResultInterface)
+
+        # 设置当前播放歌曲
+        self.searchResultInterface.localSongListWidget.setPlayBySongInfo(
+            self.mediaPlaylist.getCurrentSong())
 
     def switchToSingerInterface(self, singer: str):
         """ 切换到专辑界面 """
@@ -1105,6 +1131,26 @@ class MainWindow(FramelessWindow):
         self.mediaPlaylist.playlistType = PlaylistType.CUSTOM_PLAYLIST
         self.setPlaylist(songInfos, index)
 
+    def playLocalSearchedSongs(self, index: int):
+        """ 播放选中的本地搜索结果中的歌曲卡 """
+        songInfos = self.searchResultInterface.localSongListWidget.songInfos
+
+        if self.mediaPlaylist.playlistType != PlaylistType.CUSTOM_PLAYLIST or \
+                self.mediaPlaylist.playlist != songInfos:
+            self.playCustomPlaylist(songInfos, index)
+
+        self.mediaPlaylist.setCurrentIndex(index)
+
+    def playOnlineSearchedSongs(self, index: int):
+        """ 播放选中的在线搜索结果中的歌曲卡 """
+        songInfos = self.searchResultInterface.onlineSongListWidget.songInfos
+
+        if self.mediaPlaylist.playlistType != PlaylistType.CUSTOM_PLAYLIST or \
+                self.mediaPlaylist.playlist != songInfos:
+            self.playCustomPlaylist(songInfos, index)
+
+        self.mediaPlaylist.setCurrentIndex(index)
+
     def randomPlayAll(self):
         """ 无序播放所有 """
         self.mediaPlaylist.playlistType = PlaylistType.ALL_SONG_PLAYLIST
@@ -1143,6 +1189,8 @@ class MainWindow(FramelessWindow):
 
     def deleteSongs(self, songPaths: List[str]):
         """ 删除歌曲 """
+        for songPath in songPaths:
+            moveToTrash(songPath)
 
     def onUpdateLyricPosTimeOut(self):
         """ 更新歌词位置 """
@@ -1218,6 +1266,8 @@ class MainWindow(FramelessWindow):
         if self.sender() is self.playlistInterface:
             self.playlistCardInterface.deletePlaylistCard(name)
             self.titleBar.returnButton.click()
+        elif self.sender() is self.searchResultInterface:
+            self.playlistCardInterface.deleteOnePlaylistCard(name)
 
     def connectSignalToSlot(self):
         """ 将信号连接到槽 """
@@ -1234,12 +1284,18 @@ class MainWindow(FramelessWindow):
         # 将设置界面信号连接到槽函数
         self.settingInterface.acrylicEnableChanged.connect(
             self.setWindowEffect)
-        self.settingInterface.minimizeToTrayChanged.connect(
-            self.onMinimizeToTrayChanged)
-        self.settingInterface.mvQualityChanged.connect(
-            self.playingInterface.getMvUrlThread.setVideoQuality)
         self.settingInterface.selectedMusicFoldersChanged.connect(
             self.onSelectedFolderChanged)
+        self.settingInterface.downloadFolderChanged.connect(
+            self.searchResultInterface.setDownloadFolder)
+        self.settingInterface.onlinePlayQualityChanged.connect(
+            self.searchResultInterface.setOnlinePlayQuality)
+        self.settingInterface.pageSizeChanged.connect(
+            self.searchResultInterface.setOnlineMusicPageSize)
+        self.settingInterface.mvQualityChanged.connect(
+            self.playingInterface.getMvUrlThread.setVideoQuality)
+        self.settingInterface.minimizeToTrayChanged.connect(
+            self.onMinimizeToTrayChanged)
 
         # 将标题栏返回按钮点击信号连接到槽函数
         self.titleBar.returnButton.clicked.connect(self.onReturnButtonClicked)
@@ -1459,6 +1515,38 @@ class MainWindow(FramelessWindow):
         # 将标签导航界面的信号连接到槽函数
         self.labelNavigationInterface.labelClicked.connect(
             self.onNavigationLabelClicked)
+
+        # 将搜索结果界面信号连接到槽函数
+        self.searchResultInterface.playAlbumSig.connect(self.playAlbum)
+        self.searchResultInterface.deleteAlbumSig.connect(self.deleteSongs)
+        self.searchResultInterface.playLocalSongSig.connect(
+            self.playLocalSearchedSongs)
+        self.searchResultInterface.playOnlineSongSig.connect(
+            self.playOnlineSearchedSongs)
+        self.searchResultInterface.deletePlaylistSig.connect(
+            self.onDeleteCustomPlaylist)
+        self.searchResultInterface.playPlaylistSig.connect(
+            self.playCustomPlaylist)
+        self.searchResultInterface.nextToPlaySig.connect(
+            self.onMultiSongsNextPlay)
+        self.searchResultInterface.playOneSongCardSig.connect(
+            self.playOneSongCard)
+        self.searchResultInterface.renamePlaylistSig.connect(
+            self.onRenamePlaylist)
+        self.searchResultInterface.switchToSingerInterfaceSig.connect(
+            self.switchToSingerInterface)
+        self.searchResultInterface.switchToAlbumInterfaceSig.connect(
+            self.switchToAlbumInterface)
+        self.searchResultInterface.switchToPlaylistInterfaceSig.connect(
+            self.switchToPlaylistInterface)
+        self.searchResultInterface.addSongsToPlayingPlaylistSig.connect(
+            self.addSongsToPlayingPlaylist)
+        self.searchResultInterface.addSongsToNewCustomPlaylistSig.connect(
+            self.showCreatePlaylistDialog)
+        self.searchResultInterface.addSongsToCustomPlaylistSig.connect(
+            self.addSongsToCustomPlaylist)
+        self.searchResultInterface.deleteSongSig.connect(
+            lambda songPath: self.deleteSongs([songPath]))
 
         # 将歌手界面信号连接到槽函数
         self.singerInterface.playSig.connect(self.playCustomPlaylist)

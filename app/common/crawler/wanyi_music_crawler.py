@@ -3,18 +3,16 @@ import base64
 import json
 import random
 from datetime import datetime
-from pprint import pprint
 from typing import List, Tuple
 
 import requests
 from common.database.entity import SongInfo
-from common.os_utils import adjustName
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
 from fuzzywuzzy import fuzz
 
-from .crawler_base import (AudioQualityError, CrawlerBase, VideoQualityError,
-                           exceptionHandler)
+from .crawler_base import AudioQualityError, CrawlerBase, VideoQualityError
+from .exception_handler import exceptionHandler
 
 
 class WanYiMusicCrawler(CrawlerBase):

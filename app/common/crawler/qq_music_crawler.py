@@ -7,7 +7,7 @@ import requests
 from common.database.entity import SongInfo
 from fuzzywuzzy import fuzz
 
-from .crawler_base import exceptionHandler
+from .exception_handler import exceptionHandler
 
 
 class QQMusicCrawler:

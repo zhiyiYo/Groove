@@ -294,16 +294,16 @@ class SongInfoWidget(QWidget):
 
     isTrackNumEmptySig = pyqtSignal(bool)
 
-    def __init__(self, songInfo: dict, parent=None):
+    def __init__(self, songInfo: SongInfo, parent=None):
         super().__init__(parent)
         self.songInfo = songInfo
         # 创建小部件
         self.trackLabel = QLabel(self.tr("Track"), self)
         self.songNameLabel = QLabel(self.tr("Song title"), self)
         self.singerLabel = QLabel(self.tr("Song artist"), self)
-        self.trackNumLineEdit = LineEdit(songInfo["tracknumber"], self, False)
-        self.songNameLineEdit = LineEdit(songInfo["songName"], self)
-        self.singerLineEdit = LineEdit(songInfo["singer"], self)
+        self.trackNumLineEdit = LineEdit(songInfo.track, self, False)
+        self.songNameLineEdit = LineEdit(songInfo.file, self)
+        self.singerLineEdit = LineEdit(songInfo.singer, self)
         self.errorIcon = ErrorIcon(self)
         self.bottomErrorIcon = ErrorIcon(self)
         self.bottomErrorLabel = QLabel(

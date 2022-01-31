@@ -90,6 +90,10 @@ class SongInfoController:
         """ 通过文件路径查询歌曲信息 """
         return self.songInfoService.findByFile(file)
 
+    def getSongInfosLike(self, **condition):
+        """ 模糊查询符合条件的歌曲信息 """
+        return self.songInfoService.listLike(**condition)
+
     def getSongInfos(self, files: List[Path]):
         """ 从本地重新获取歌曲信息并更新数据库 """
         reader = SongInfoReader()

@@ -41,23 +41,23 @@ QLabel#playlistLabel {
     padding: 0px;
 }
 
-QLabel#playlistNameLabel[isChecked='False'] {
+QLabel#nameLabel[isChecked='False'] {
     color: black;
     font-family: 'Segoe UI', 'Microsoft YaHei';
     font-weight: bold;
 }
 
-QLabel#playlistNameLabel[isChecked='True'] {
+QLabel#nameLabel[isChecked='True'] {
     color: white;
     font-family: 'Segoe UI', 'Microsoft YaHei';
     font-weight: bold;
 }
 
-QLabel#playlistLenLabel {
+QLabel#countLabel {
     font-size: 16px;
 }
 
-QLabel#playlistLenLabel[isChecked='True'] {
+QLabel#countLabel[isChecked='True'] {
     color: rgb(153, 196, 205);
 }
 

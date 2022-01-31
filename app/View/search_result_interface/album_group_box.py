@@ -16,7 +16,7 @@ from PyQt5.QtWidgets import (QApplication, QGraphicsOpacityEffect, QPushButton,
 class AlbumGroupBox(QScrollArea):
     """ 专辑分组框 """
 
-    playSig = pyqtSignal(list)
+    playSig = pyqtSignal(str, str)
     nextToPlaySig = pyqtSignal(list)
     deleteAlbumSig = pyqtSignal(list)
     addAlbumToPlayingSig = pyqtSignal(list)
@@ -65,7 +65,6 @@ class AlbumGroupBox(QScrollArea):
         self.scrollLeftButton.raise_()
         self.scrollRightButton.raise_()
         self.albumBlurBackground.lower()
-        # self.hBox.setContentsMargins(35, 47, 65, 0)
 
         self.__setQss()
         self.titleButton.move(37, 0)
@@ -202,7 +201,7 @@ class AlbumGroupBox(QScrollArea):
     def deleteSongs(self, songPaths: list):
         """ 删除歌曲 """
 
-    def updateWindow(self, albumInfos: list):
+    def updateWindow(self, albumInfos: List[AlbumInfo]):
         """ 更新窗口 """
         if albumInfos == self.albumInfos:
             return
@@ -216,16 +215,6 @@ class AlbumGroupBox(QScrollArea):
         self.albumInfos = albumInfos
         self.albumCardView.updateAllAlbumCards(albumInfos)
 
-    def __onPlay(self, singer: str, album: str):
-        """ 播放一张专辑 """
-        albumInfo = self.library.albumInfoController.getAlbumInfo(
-            singer, album)
-
-        if not albumInfo:
-            return
-
-        self.playSig.emit(albumInfo.songInfos)
-
     def __connectSignalToSlot(self):
         """ 连接信号到槽函数 """
         self.horizontalScrollBar().valueChanged.connect(self.__onScrollHorizon)
@@ -233,7 +222,7 @@ class AlbumGroupBox(QScrollArea):
         self.scrollRightButton.clicked.connect(
             self.__onScrollRightButtonClicked)
 
-        self.albumCardView.playSig.connect(self.__onPlay)
+        self.albumCardView.playSig.connect(self.playSig)
         self.albumCardView.nextPlaySig.connect(self.nextToPlaySig)
         self.albumCardView.addAlbumToPlayingSig.connect(
             self.addAlbumToPlayingSig)

@@ -282,16 +282,13 @@ class PlaylistInterface(ScrollArea):
         self.addMusicButton.setVisible(isEmpty)
         self.noMusicLabel.setVisible(isEmpty)
 
-    def __onEditSongInfo(self, oldSongInfo: dict, newSongInfo: dict):
+    def __onEditSongInfo(self, oldSongInfo: SongInfo, newSongInfo: SongInfo):
         """ 编辑歌曲信息槽函数 """
-        self.playlist['songInfos'] = deepcopy(
-            self.songListWidget.songInfos)
-        self.songInfos = self.playlist['songInfos']
         index = self.songInfos.index(newSongInfo)
 
         # 更新封面
         if newSongInfo.get('coverPath'):
-            coverPath = getCoverPath(newSongInfo['coverName'], 'playlist_big')
+            coverPath = getCoverPath(newSongInfo.singer, newSongInfo.album, 'playlist_big')
             oldCoverPath = self.playlistInfoBar.coverPath
             if index == 0 and oldCoverPath != coverPath:
                 self.playlistInfoBar.updateWindow(self.playlist)

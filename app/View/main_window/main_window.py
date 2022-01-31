@@ -1291,7 +1291,7 @@ class MainWindow(FramelessWindow):
         if songInfo['songPath'] != CrawlerBase.song_url_mark:
             return
 
-        i = self.searchResultInterface.onlineSongInfo_list.index(songInfo)
+        i = self.searchResultInterface.onlineSongInfos.index(songInfo)
         songCard = self.searchResultInterface.onlineSongListWidget.songCards[i]
 
         # 获取封面和播放地址
@@ -1309,7 +1309,7 @@ class MainWindow(FramelessWindow):
         self.mediaPlaylist.insertSong(index, songInfo)
         self.playingInterface.playlist[index] = songInfo
         self.smallestPlayInterface.playlist[index] = songInfo
-        self.searchResultInterface.onlineSongInfo_list[i] = songInfo
+        self.searchResultInterface.onlineSongInfos[i] = songInfo
         self.mediaPlaylist.removeOnlineSong(index+1)
         self.mediaPlaylist.setCurrentIndex(index)
 

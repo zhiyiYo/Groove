@@ -8,7 +8,8 @@ import requests
 from fuzzywuzzy import fuzz
 from common.database.entity import SongInfo
 
-from .crawler_base import CrawlerBase, AudioQualityError, exceptionHandler
+from .crawler_base import CrawlerBase, AudioQualityError
+from .exception_handler import exceptionHandler
 
 
 class KuWoMusicCrawler(CrawlerBase):
@@ -52,6 +53,7 @@ class KuWoMusicCrawler(CrawlerBase):
             song_info.track = info['track']
             song_info.trackTotal = info['track']
             song_info.duration = info["duration"]
+            song_info.genre = 'Pop'
             song_info['coverPath'] = info.get('albumpic', '')
             song_infos.append(song_info)
 

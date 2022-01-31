@@ -7,6 +7,7 @@ from common.library import Library
 from components.dialog_box.message_dialog import MessageDialog
 from components.dialog_box.rename_playlist_dialog import RenamePlaylistDialog
 from components.layout.grid_layout import GridLayout
+from components.layout.h_box_layout import HBoxLayout
 from PyQt5.QtCore import (QMargins, QParallelAnimationGroup, QPoint, Qt,
                           pyqtSignal, QDateTime)
 from PyQt5.QtWidgets import QApplication, QWidget
@@ -39,10 +40,10 @@ class PlaylistCardViewBase(QWidget):
             歌曲库
 
         playlists: List[Playlist]
-            专辑信息列表
+            播放列表信息列表
 
         cardType: PlaylistCardType
-            专辑卡类型
+            播放列表卡类型
 
         create: bool
             是否直接创建歌曲卡
@@ -205,7 +206,6 @@ class PlaylistCardViewBase(QWidget):
         if N < N_:
             for i in range(N_ - 1, N - 1, -1):
                 card = self.playlistCards.pop()
-                self.layout().removeWidget(card)
                 self.playlistCardMap.pop(card.name)
                 self.hideCheckBoxAniGroup.takeAnimation(i)
                 card.deleteLater()
@@ -261,11 +261,11 @@ class GridPlaylistCardView(PlaylistCardViewBase):
         library: Library
             歌曲库
 
-        playlists: List[AlbumInfo]
-            专辑信息列表
+        playlists: List[Playlist]
+            播放列表列表
 
-        cardType: AlbumCardType
-            专辑卡类型
+        cardType: PlaylistCardType
+            播放列表卡类型
 
         spacings: tuple
             专辑卡的水平和垂直间距
@@ -322,3 +322,51 @@ class GridPlaylistCardView(PlaylistCardViewBase):
 
         self.column = column
         self.gridLayout.updateColumnNum(column, 298, 288)
+
+
+class HorizonPlaylistCardView(PlaylistCardViewBase):
+    """ 水平播放列表卡视图 """
+
+    def __init__(self, library: Library, playlists: List[Playlist], cardType: PlaylistCardType,
+                 spacing=20, margins=QMargins(0, 0, 0, 0), create=True, parent=None):
+        """
+        Parameters
+        ----------
+        library: Library
+            歌曲库
+
+        playlists: List[Playlist]
+            播放列表列表
+
+        cardType: PlaylistCardType
+            播放列表卡类型
+
+        spacing: int
+            专辑卡的水平间距
+
+        margins: QMargins
+            网格布局的外边距
+
+        create: bool
+            是否立即创建专辑卡
+
+        parent:
+            父级窗口
+        """
+        super().__init__(library, playlists, cardType, create, parent)
+        self.hBoxLayout = HBoxLayout(self)
+        self.hBoxLayout.setSpacing(spacing)
+        self.hBoxLayout.setContentsMargins(margins)
+
+        if create:
+            self._addCardsToLayout()
+
+    def _addCardsToLayout(self):
+        """ 将所有专辑卡添加到布局 """
+        for card in self.playlistCards:
+            self.hBoxLayout.addWidget(card)
+            QApplication.processEvents()
+
+    def _removeCardsFromLayout(self):
+        """ 将所有播放列表卡从布局中移除 """
+        self.hBoxLayout.removeAllWidget()

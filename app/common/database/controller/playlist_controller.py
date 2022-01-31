@@ -50,6 +50,10 @@ class PlaylistController:
 
         return playlists
 
+    def getPlaylistsLike(self, **condition):
+        """ 模糊查询播放列表 """
+        return self.playlistService.listLike(**condition)
+
     def create(self, playlist: Playlist):
         """ 创建播放列表 """
         return self.playlistService.add(playlist)

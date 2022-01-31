@@ -54,6 +54,9 @@ class PlaylistService(ServiceBase):
         """ 查询所有播放列表，不会查询出歌曲信息，只有歌曲文件位置 """
         return self.playlistDao.listAll()
 
+    def listLike(self, **condition) -> List[Playlist]:
+        return self.playlistDao.listLike(**condition)
+
     def modifyName(self, old: str, new: str) -> bool:
         """ 修改播放列表的名字 """
         s1 = self.playlistDao.update(old, 'name', new)

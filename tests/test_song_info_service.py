@@ -20,7 +20,7 @@ class TestSongInfoService(TestCase):
         if not self.db.open():
             raise Exception("数据库连接失败")
 
-        self.service = SongInfoService()
+        self.service = SongInfoService(self.db)
         self.songInfos = [
             SongInfo(
                 file='D:/hzz/音乐/aiko - キラキラ.mp3',
@@ -110,6 +110,11 @@ class TestSongInfoService(TestCase):
         """ 测试查询所有歌曲信息 """
         songInfos = self.service.listAll()
         self.assertEqual(songInfos, self.songInfos)
+
+    def test_list_like(self):
+        """ 测试模糊查询 """
+        songInfos = self.service.listLike(album='aikoの詩。')
+        self.assertEqual(songInfos, self.songInfos[1:])
 
     def test_list_by_singer_album(self):
         """ 测试通过歌手和专辑查询所有歌曲 """

@@ -28,6 +28,9 @@ class AlbumInfoService(ServiceBase):
     def listAll(self) -> List[AlbumInfo]:
         return self.albumInfoDao.listAll()
 
+    def listLike(self, **condition) -> List[AlbumInfo]:
+        return self.albumInfoDao.listLike(**condition)
+
     def listByIds(self, ids: List[str]) -> List[AlbumInfo]:
         return self.albumInfoDao.listByIds(ids)
 

@@ -47,6 +47,21 @@ class ServiceBase:
         """
         raise NotImplementedError
 
+    def listLike(self, **condition) -> List[Entity]:
+        """ 模糊查询所有符合条件的记录
+
+        Parameters
+        ----------
+        condition: dict
+            查询条件
+
+        Returns
+        -------
+        entities: List[Entity]
+            实体类对象列表，没有查询到则为空列表
+        """
+        raise NotImplementedError
+
     def listAll(self) -> List[Entity]:
         """ 查询所有记录 """
         raise NotImplementedError

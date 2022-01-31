@@ -61,6 +61,26 @@ class DaoBase:
 
         return self.iterRecords()
 
+    def listLike(self, **condition) -> List[Entity]:
+        """ 模糊查询所有符合条件（或的关系）的记录
+
+        Parameters
+        ----------
+        condition: dict
+            查询条件
+
+        Returns
+        -------
+        entities: List[Entity]
+            实体类对象列表，没有查询到则为空列表
+        """
+        self._prepareSelectLike(condition)
+
+        if not self.query.exec():
+            return []
+
+        return self.iterRecords()
+
     def _prepareSelectBy(self, condition: dict):
         """ 通过条件预编译查询指令
 
@@ -80,6 +100,26 @@ class DaoBase:
         self.query.prepare(sql)
         for v in condition.values():
             self.query.addBindValue(v)
+
+    def _prepareSelectLike(self, condition: dict):
+        """ 通过条件预编译模糊查询指令
+
+        Parameters
+        ----------
+        table: str
+            表名
+
+        condition: dict
+            查询条件
+        """
+        if not condition:
+            raise ValueError("必须传入至少一个条件")
+
+        placeholders = [f"{k} like ?" for k in condition.keys()]
+        sql = f"SELECT * FROM {self.table} WHERE {' OR '.join(placeholders)}"
+        self.query.prepare(sql)
+        for v in condition.values():
+            self.query.addBindValue(f'%{v}%')
 
     def listAll(self) -> List[Entity]:
         """ 查询所有记录 """

@@ -2,6 +2,7 @@
 import os
 from queue import Queue
 
+from common.database.entity import SongInfo
 from common.crawler import KuWoMusicCrawler
 from PyQt5.QtCore import QThread, pyqtSignal
 
@@ -30,6 +31,6 @@ class DownloadSongThread(QThread):
             # 发送完成一首歌下载信号
             self.downloadOneSongFinished.emit()
 
-    def appendDownloadTask(self, songInfo: dict, quality='Standard quality'):
+    def appendDownloadTask(self, songInfo: SongInfo, quality='Standard quality'):
         """ 添加下载任务 """
         self.download_queque.put((songInfo, quality))

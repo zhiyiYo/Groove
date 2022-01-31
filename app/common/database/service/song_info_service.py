@@ -29,6 +29,9 @@ class SongInfoService(ServiceBase):
     def listBy(self, **condition) -> List[SongInfo]:
         return self.songInfoDao.listBy(**condition)
 
+    def listLike(self, **condition) -> List[SongInfo]:
+        return self.songInfoDao.listLike(**condition)
+
     def listAll(self) -> List[SongInfo]:
         return self.songInfoDao.listAll()
 

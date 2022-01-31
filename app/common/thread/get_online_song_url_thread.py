@@ -1,7 +1,6 @@
 # coding:utf-8
-import requests
-import os
-
+from common.os_utils import adjustName
+from common.database.entity import SongInfo
 from common.meta_data.reader import AlbumCoverReader
 from common.crawler import KuWoMusicCrawler
 from PyQt5.QtCore import Qt, pyqtSignal, QThread
@@ -24,12 +23,12 @@ class GetOnlineSongUrlThread(QThread):
         }
         self.crawler = KuWoMusicCrawler()
 
-    def setSongInfo(self, songInfo: dict, quality='Standard quality'):
+    def setSongInfo(self, songInfo: SongInfo, quality='Standard quality'):
         """ 设置歌曲信息
 
         Parameters
         ----------
-        songInfo: dict
+        songInfo: SongInfo
             歌曲信息
 
         quality: str
@@ -47,11 +46,12 @@ class GetOnlineSongUrlThread(QThread):
 
         # 下载封面
         coverPath = ''
-        folder = AlbumCoverReader.coverFolder/self.songInfo['coverName']
+        coverName = adjustName(self.songInfo.singer+'_'+self.songInfo.album)
+        folder = AlbumCoverReader.coverFolder/coverName
         names = [i.stem for i in folder.glob('*')]
-        if self.songInfo['coverName'] not in names:
+        if coverName not in names or not list(folder.iterdir()):
             coverPath = self.crawler.downloadAlbumCover(
-                self.songInfo['coverPath'], self.songInfo['coverName'])
+                self.songInfo['coverPath'], self.songInfo.singer, self.songInfo.album)
 
         self.coverPath = coverPath
         self.crawlFinished.emit(self.playUrl, coverPath)

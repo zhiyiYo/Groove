@@ -141,6 +141,10 @@ class AlbumInfoController:
         albumInfos.sort(key=lambda i: i.year or 0, reverse=True)
         return albumInfos
 
+    def getAlbumInfosLike(self, **condition):
+        """ 模糊查询专辑信息 """
+        return self.albumInfoService.listLike(**condition)
+
     def getAlbumInfos(self, songInfos: List[SongInfo]) -> List[AlbumInfo]:
         """ 从新的歌曲信息列表获取专辑信息并更新数据库
 
