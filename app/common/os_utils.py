@@ -67,6 +67,8 @@ def getCoverPath(singer: str, album: str, coverType: str) -> str:
         raise ValueError(f"{coverType} 非法")
 
     cover = cover_path_dict[coverType]
+    singer = singer or ''
+    album = album or ''
     folder = Path(f"cache/Album_Cover/{adjustName(singer+'_'+album)}")
     files = list(folder.glob('*')) if folder.exists() else []
 

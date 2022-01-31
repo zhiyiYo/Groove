@@ -1,6 +1,7 @@
 # coding:utf-8
 from math import ceil
 
+from common.database.entity import Playlist, SongInfo
 from common.os_utils import getCoverPath
 from components.widgets.menu import AddToMenu
 from components.app_bar import (AppBarButton, CollapsingAppBarBase,
@@ -16,7 +17,7 @@ class PlaylistInfoBar(CollapsingAppBarBase):
     addToNewCustomPlaylistSig = pyqtSignal()
     addToCustomPlaylistSig = pyqtSignal(str)
 
-    def __init__(self, playlist: dict, parent=None):
+    def __init__(self, playlist: Playlist, parent=None):
         self.__getPlaylistInfo(playlist)
         content = str(len(self.songInfos)) + \
             QObject().tr(" songs")+f' • {self.duration}'
@@ -44,23 +45,19 @@ class PlaylistInfoBar(CollapsingAppBarBase):
         self.setAttribute(Qt.WA_StyledBackground)
         self.addToButton.clicked.connect(self.__onAddToButtonClicked)
 
-    def __getPlaylistInfo(self, playlist: dict):
+    def __getPlaylistInfo(self, playlist: Playlist):
         """ 设置专辑信息 """
         obj = QObject()
-        self.playlist = playlist if playlist else {}
-        self.playlistName = playlist.get(
-            "playlistName", obj.tr("Unknown playlist"))
+        self.playlist = playlist
+        self.playlistName = playlist.name or ''
 
-        self.songInfos = self.playlist.get("songInfos", [])
-        songInfo = self.songInfos[0] if self.songInfos else {}
-        name = songInfo.get('coverName', '未知歌手_未知专辑')
-        self.playlistCoverPath = getCoverPath(name, "playlist_big")
+        self.songInfos = playlist.songInfos
+        songInfo = self.songInfos[0] if self.songInfos else SongInfo()
+        self.playlistCoverPath = getCoverPath(
+            songInfo.singer, songInfo.album, "playlist_big")
 
         # 统计时间
-        seconds = 0
-        for songInfo in self.songInfos:
-            m, s = map(int, songInfo.get("duration", "0:00").split(':'))
-            seconds += m*60+s
+        seconds = sum(i.duration for i in self.songInfos)
         self.hours = seconds//3600
         self.minutes = ceil((seconds % 3600)/60)
         h = obj.tr('hrs')

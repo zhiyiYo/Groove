@@ -155,12 +155,19 @@ class PlaylistCardViewBase(QWidget):
             return
 
         card = self.playlistCardMap[name]
-        playlist = card.playlist
+        index = self.playlistCards.index(card)
+        playlist = self.library.playlistController.getPlaylist(name)
+        self.playlists[index] = playlist
+        card.updateWindow(playlist)
 
-        playlist.singer = playlist.singer or songInfos[0].singer
-        playlist.album = playlist.album or songInfos[0].album
-        playlist.count = playlist.count + len(songInfos)
-        playlist.modifiedTime = QDateTime.currentDateTime().toSecsSinceEpoch()
+    def removeSongsFromPlaylistCard(self, name: str, songInfos: List[SongInfo]):
+        """ 移除一个播放列表中的歌曲 """
+        success = self.library.playlistController.removeSongs(name, songInfos)
+        if not success:
+            return
+
+        card = self.playlistCardMap[name]
+        playlist = self.library.playlistController.getPlaylist(name)
         card.updateWindow(playlist)
 
     def deletePlaylistCard(self, name: str):

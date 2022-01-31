@@ -28,7 +28,11 @@ class PlaylistController:
             return None
 
         files = [i.file for i in playlist.songInfos]
-        playlist.songInfos = self.songInfoService.listByIds(files)
+        songInfos = self.songInfoService.listByIds(files, True)
+        for songInfo, songInfo_ in zip(songInfos, playlist.songInfos):
+            songInfo['id'] = songInfo_['id']
+
+        playlist.songInfos = songInfos
         return playlist
 
     def getPlaylists(self, names: List[str]):
@@ -37,7 +41,12 @@ class PlaylistController:
 
         for playlist in playlists:
             files = [i.file for i in playlist.songInfos]
-            playlist.songInfos = self.songInfoService.listByIds(files)
+            songInfos = self.songInfoService.listByIds(files, True)
+
+            for songInfo, songInfo_ in zip(songInfos, playlist.songInfos):
+                songInfo['id'] = songInfo_['id']
+
+            playlist.songInfos = songInfos
 
         return playlists
 
@@ -48,6 +57,10 @@ class PlaylistController:
     def addSongs(self, name: str, songInfos: List[SongInfo]):
         """ 添加歌曲到播放列表中 """
         return self.playlistService.addSongs(name, songInfos)
+
+    def removeSongs(self, name: str, songInfos: List[SongInfo]):
+        """ 从播放列表中移除歌曲 """
+        return self.playlistService.removeSongs(name, songInfos)
 
     def rename(self, old: str, new: str):
         """ 重命名播放列表 """

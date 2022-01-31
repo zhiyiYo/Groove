@@ -17,7 +17,7 @@ class BasicSongListWidget(ListWidget):
     """ 基本歌曲列表控件 """
 
     emptyChangedSig = pyqtSignal(bool)                   # 歌曲卡是否为空信号
-    removeSongSignal = pyqtSignal(str)                   # 刪除歌曲列表中的一首歌
+    removeSongSignal = pyqtSignal(SongInfo)              # 刪除歌曲列表中的一首歌
     songCardNumChanged = pyqtSignal(int)                 # 歌曲数量发生改变
     isAllCheckedChanged = pyqtSignal(bool)               # 歌曲卡卡全部选中改变
     addSongToPlayingSignal = pyqtSignal(SongInfo)        # 将一首歌添加到正在播放

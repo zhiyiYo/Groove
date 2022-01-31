@@ -4,7 +4,7 @@ from typing import List
 from PyQt5.QtCore import QDateTime
 from PyQt5.QtSql import QSqlDatabase
 
-from ..dao import PlaylistDao, SongPlaylistDao
+from ..dao import PlaylistDao, SongPlaylistDao, SongInfoDao
 from ..entity import Playlist, SongPlaylist, SongInfo
 from ..utils import UUIDUtils
 
@@ -18,6 +18,7 @@ class PlaylistService(ServiceBase):
         super().__init__()
         self.playlistDao = PlaylistDao(db)
         self.songPlaylistDao = SongPlaylistDao(db)
+        self.songInfoDao = SongInfoDao(db)
 
     def createTable(self) -> bool:
         s1 = self.playlistDao.createTable()
@@ -30,8 +31,11 @@ class PlaylistService(ServiceBase):
         if not playlist:
             return None
 
-        playlist.songInfos = [
-            SongInfo(i.file) for i in self.songPlaylistDao.listBy(name=playlist.name)]
+        for songPlaylist in self.songPlaylistDao.listBy(name=playlist.name):
+            songInfo = SongInfo(songPlaylist.file)
+            songInfo['id'] = songPlaylist.id
+            playlist.songInfos.append(songInfo)
+
         return playlist
 
     def listByNames(self, names: str) -> List[Playlist]:
@@ -39,8 +43,10 @@ class PlaylistService(ServiceBase):
         playlists = self.playlistDao.listByIds(names)  # type:Playlist
 
         for playlist in playlists:
-            playlist.songInfos = [
-                SongInfo(i.file) for i in self.songPlaylistDao.listBy(name=playlist.name)]
+            for songPlaylist in self.songPlaylistDao.listBy(name=playlist.name):
+                songInfo = SongInfo(songPlaylist.file)
+                songInfo['id'] = songPlaylist.id
+                playlist.songInfos.append(songInfo)
 
         return playlists
 
@@ -79,7 +85,7 @@ class PlaylistService(ServiceBase):
     def addSongs(self, name: str, songInfos: List[SongInfo]) -> bool:
         """ 添加歌曲到指定的播放列表中 """
         if not songInfos:
-            return True
+            return False
 
         playlist = self.playlistDao.selectBy(name=name)  # type:Playlist
         if not playlist:
@@ -119,6 +125,28 @@ class PlaylistService(ServiceBase):
         songPlaylists = self.songPlaylistDao.listByFields('name', names)
         return self.songPlaylistDao.deleteByIds([i.id for i in songPlaylists])
 
+    def removeSongs(self, name: str, songInfos: List[str]):
+        """ 从指定的播放列表中移除歌曲 """
+        ids = [i['id'] for i in songInfos]
+        s1 = self.songPlaylistDao.deleteByIds(ids)
+        if not s1:
+            return False
+
+        songPlaylist = self.songPlaylistDao.selectBy(name=name)
+        if songPlaylist:
+            songInfo = self.songInfoDao.selectBy(file=songPlaylist.file)
+            count = len(self.songPlaylistDao.listBy(name=name))
+        else:
+            songInfo = SongInfo()
+            count = 0
+
+        playlist = self.playlistDao.selectBy(name=name)  # type:Playlist
+        playlist.singer = songInfo.singer
+        playlist.album = songInfo.album
+        playlist.count = count
+        playlist.modifiedTime = QDateTime.currentDateTime().toSecsSinceEpoch()
+        return self.playlistDao.updateById(playlist)
+
     def clearTable(self) -> bool:
         s1 = self.playlistDao.clearTable()
         s2 = self.songPlaylistDao.clearTable()
@@ -127,3 +155,4 @@ class PlaylistService(ServiceBase):
     def setDatabase(self, db: QSqlDatabase):
         self.playlistDao.setDatabase(db)
         self.songPlaylistDao.setDatabase(db)
+        self.songInfoDao.setDatabase(db)

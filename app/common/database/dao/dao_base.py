@@ -282,6 +282,23 @@ class DaoBase:
         self.query.addBindValue(id)
         return self.query.exec()
 
+    def deleteByFields(self, field: str, values: list):
+        """ 根据某字段的值移除多条记录 """
+        if field not in self.fields:
+            raise ValueError(f"字段名 `{field}` 非法")
+
+        if not values:
+            return True
+
+        placeHolders = ','.join(['?']*len(values))
+        sql = f"DELETE FROM {self.table} WHERE {field} IN ({placeHolders})"
+        self.query.prepare(sql)
+
+        for value in values:
+            self.query.addBindValue(value)
+
+        return self.query.exec()
+
     def deleteByIds(self, ids: list) -> bool:
         """ 移除多条记录
 
@@ -295,17 +312,7 @@ class DaoBase:
         success: bool
             移除是否成功
         """
-        if not ids:
-            return True
-
-        placeHolders = ','.join(['?']*len(ids))
-        sql = f"DELETE FROM {self.table} WHERE {self.fields[0]} IN ({placeHolders})"
-        self.query.prepare(sql)
-
-        for id in ids:
-            self.query.addBindValue(id)
-
-        return self.query.exec()
+        return self.deleteByFields(self.fields[0], ids)
 
     def clearTable(self):
         """ 清空表格数据 """

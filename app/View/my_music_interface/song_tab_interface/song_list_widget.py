@@ -152,7 +152,7 @@ class SongListWidget(BasicSongListWidget):
         w = MessageDialog(title, content, self.window())
         w.yesSignal.connect(lambda: self.removeSongCard(index))
         w.yesSignal.connect(
-            lambda: self.removeSongSignal.emit(songInfo.file))
+            lambda: self.removeSongSignal.emit(songInfo))
         w.exec_()
 
     def __connectMenuSignalToSlot(self, menu: SongCardListContextMenu):

@@ -1,4 +1,6 @@
 # coding:utf-8
+from typing import List
+from common.database.entity import SongInfo
 from components.widgets.menu import AddToMenu, DWMMenu
 from components.song_list_widget import NoScrollSongListWidget, SongCardType
 from PyQt5.QtCore import pyqtSignal, QFile
@@ -15,7 +17,7 @@ class SongListWidget(NoScrollSongListWidget):
     switchToSingerInterfaceSig = pyqtSignal(str)        # 切换到歌手界面
     switchToAlbumInterfaceSig = pyqtSignal(str, str)    # 切换到专辑界面
 
-    def __init__(self, songInfos: list, parent):
+    def __init__(self, songInfos: List[SongInfo], parent):
         """
         Parameters
         ----------
@@ -60,9 +62,9 @@ class SongListWidget(NoScrollSongListWidget):
 
     def __onRemoveButtonClicked(self, index, songCard=None):
         """ 移除歌曲卡按钮点击槽函数 """
-        path = songCard.songPath if songCard else self.sender().songPath
+        songInfo = songCard.songInfo if songCard else self.sender().songInfo
         self.removeSongCard(index)
-        self.removeSongSignal.emit(path)
+        self.removeSongSignal.emit(songInfo)
 
     def _connectSongCardSignalToSlot(self, songCard):
         """ 将歌曲卡信号连接到槽 """

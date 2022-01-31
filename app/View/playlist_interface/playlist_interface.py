@@ -1,7 +1,10 @@
 # coding:utf-8
 from copy import deepcopy
+from typing import List
 
 from common.os_utils import getCoverPath
+from common.database.entity import SongInfo, Playlist
+from common.library import Library
 from components.buttons.three_state_button import ThreeStatePushButton
 from components.dialog_box.message_dialog import MessageDialog
 from components.dialog_box.rename_playlist_dialog import RenamePlaylistDialog
@@ -22,12 +25,12 @@ class PlaylistInterface(ScrollArea):
     songCardPlaySig = pyqtSignal(int)                       # 在当前播放列表中播放这首歌
     deletePlaylistSig = pyqtSignal(str)                     # 删除整张播放列表
     removeSongSig = pyqtSignal(str, list)                   # 从播放列表中移除歌曲
-    playOneSongCardSig = pyqtSignal(dict)                   # 将播放列表重置为一首歌
+    playOneSongCardSig = pyqtSignal(SongInfo)               # 将播放列表重置为一首歌
     playCheckedCardsSig = pyqtSignal(list)                  # 播放选中的歌曲卡
-    nextToPlayOneSongSig = pyqtSignal(dict)                 # 下一首播放一首歌
-    addOneSongToPlayingSig = pyqtSignal(dict)               # 添加一首歌到正在播放
-    renamePlaylistSig = pyqtSignal(dict, dict)              # 重命名播放列表
-    editSongInfoSignal = pyqtSignal(dict, dict)             # 编辑歌曲信息信号
+    nextToPlayOneSongSig = pyqtSignal(SongInfo)             # 下一首播放一首歌
+    addOneSongToPlayingSig = pyqtSignal(SongInfo)           # 添加一首歌到正在播放
+    renamePlaylistSig = pyqtSignal(str, str)                # 重命名播放列表
+    editSongInfoSignal = pyqtSignal(SongInfo, SongInfo)     # 编辑歌曲信息信号
     switchToAlbumCardInterfaceSig = pyqtSignal()            # 切换到专辑卡界面
     selectionModeStateChanged = pyqtSignal(bool)            # 进入/退出 选择模式
     nextToPlayCheckedCardsSig = pyqtSignal(list)            # 将选中的多首歌添加到下一首播放
@@ -37,17 +40,21 @@ class PlaylistInterface(ScrollArea):
     switchToSingerInterfaceSig = pyqtSignal(str)            # 切换到歌手界面
     switchToAlbumInterfaceSig = pyqtSignal(str, str)        # 切换到专辑界面
 
-    def __init__(self, playlist: dict, parent=None):
+    def __init__(self, library: Library, playlist: Playlist = None, parent=None):
         """
         Parameters
         ----------
-        playlist: dict
+        library: Library
+            歌曲库
+
+        playlist: Playlist
             播放列表
 
         parent:
             父级窗口
         """
         super().__init__(parent=parent)
+        self.library = library
         self.__getPlaylistInfo(playlist)
         # 创建小部件
         self.scrollWidget = QWidget(self)
@@ -85,10 +92,11 @@ class PlaylistInterface(ScrollArea):
         # 信号连接到槽
         self.__connectSignalToSlot()
 
-    def updateWindow(self, playlist: dict):
+    def updateWindow(self, playlist: Playlist):
         """ 更新窗口 """
         if playlist == self.playlist:
             return
+
         self.verticalScrollBar().setValue(0)
         self.__getPlaylistInfo(playlist)
         self.playlistInfoBar.updateWindow(self.playlist)
@@ -109,26 +117,27 @@ class PlaylistInterface(ScrollArea):
         self.selectionModeBar.move(
             0, self.height() - self.selectionModeBar.height())
 
-    def updateOneSongCard(self, oldSongInfo: dict, newSongInfo: dict):
+    def updateOneSongCard(self, oldSongInfo: SongInfo, newSongInfo: SongInfo):
         """ 更新一个歌曲卡
 
         Parameters
         ----------
-        oldSongInfo: dict
+        oldSongInfo: SongInfo
             旧的歌曲信息
 
-        newSongInfo: dict
+        newSongInfo: SongInfo
             更新后的歌曲信息
         """
         if oldSongInfo not in self.songInfos:
             return
+
         self.songListWidget.updateOneSongCard(newSongInfo, False)
         self.playlist["songInfos"] = self.songListWidget.songInfos
         self.songInfos = self.playlist["songInfos"]
 
-    def updateMultiSongCards(self, newSongInfo_list: list):
+    def updateMultiSongCards(self, songInfos: List[SongInfo]):
         """ 更新多个歌曲卡 """
-        self.songListWidget.updateMultiSongCards(newSongInfo_list)
+        self.songListWidget.updateMultiSongCards(songInfos)
         self.playlist["songInfos"] = self.songListWidget.songInfos
         self.songInfos = self.playlist["songInfos"]
         self.playlistInfoBar.updateWindow(self.playlist)
@@ -142,12 +151,11 @@ class PlaylistInterface(ScrollArea):
         self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
         f.close()
 
-    def __getPlaylistInfo(self, playlist: dict):
+    def __getPlaylistInfo(self, playlist: Playlist):
         """ 获取播放列表信息 """
-        self.playlist = deepcopy(playlist)
-        self.songInfos = self.playlist.get("songInfos", [])
-        self.playlistName = self.playlist.get(
-            "playlistName", self.tr("Unknown playlist"))
+        self.playlist = playlist if playlist else Playlist()
+        self.songInfos = self.playlist.songInfos
+        self.playlistName = self.playlist.name
 
     def __onSelectionModeStateChanged(self, isOpenSelectionMode: bool):
         """ 选择状态改变对应的槽函数 """
@@ -163,7 +171,7 @@ class PlaylistInterface(ScrollArea):
     def __emitPlaylist(self):
         """ 发送歌曲界面选中的播放列表 """
         playlist = [
-            songCard.songInfo for songCard in self.songListWidget.checkedSongCards]
+            i.songInfo for i in self.songListWidget.checkedSongCards]
         self.__unCheckSongCards()
         if self.sender() is self.selectionModeBar.playButton:
             self.playCheckedCardsSig.emit(playlist)
@@ -196,18 +204,18 @@ class PlaylistInterface(ScrollArea):
         """ 选择栏显示专辑按钮点击槽函数 """
         songCard = self.songListWidget.checkedSongCards[0]
         songCard.setChecked(False)
-        self.switchToAlbumInterfaceSig.emit(songCard.album, songCard.singer)
+        self.switchToAlbumInterfaceSig.emit(songCard.singer, songCard.album)
 
     def __onSelectionModeBarDeleteButtonClicked(self):
         """ 选择模式栏删除按钮槽函数 """
+        songInfos = []
         for songCard in self.songListWidget.checkedSongCards.copy():
             songCard.setChecked(False)
+            songInfos.append(songCard.songInfo)
             self.songListWidget.removeSongCard(songCard.itemIndex)
 
-        self.playlist["songInfos"] = self.songListWidget.songInfos
         self.playlistInfoBar.updateWindow(self.playlist)
-        self.removeSongSig.emit(
-            self.playlistName, self.playlist["songInfos"])
+        self.removeSongSig.emit(self.playlistName, songInfos)
 
     def exitSelectionMode(self):
         """ 退出选择模式 """
@@ -251,24 +259,23 @@ class PlaylistInterface(ScrollArea):
         w.yesSignal.connect(lambda: self.deletePlaylistSig.emit(name))
         w.exec()
 
-    def __showRenamePlaylistDialog(self, oldPlaylist: dict):
+    def __showRenamePlaylistDialog(self, old: str):
         """ 显示重命名播放列表面板 """
-        w = RenamePlaylistDialog(oldPlaylist, self.window())
+        w = RenamePlaylistDialog(self.library, old, self.window())
         w.renamePlaylistSig.connect(self.__renamePlaylist)
         w.exec()
 
-    def __renamePlaylist(self, oldPlaylist: dict, newPlaylist):
+    def __renamePlaylist(self, old: str, new: str):
         """ 重命名播放列表 """
-        self.__getPlaylistInfo(newPlaylist)
-        self.playlistInfoBar.updateWindow(newPlaylist)
-        self.renamePlaylistSig.emit(oldPlaylist, newPlaylist)
-
-    def __onSongListWidgetRemoveSongs(self, songPath: str):
-        """ 从播放列表中移除歌曲 """
-        self.playlist["songInfos"] = self.songListWidget.songInfos
+        self.playlist.name = new
+        self.__getPlaylistInfo(self.playlist)
         self.playlistInfoBar.updateWindow(self.playlist)
-        self.removeSongSig.emit(
-            self.playlistName, self.playlist["songInfos"])
+        self.renamePlaylistSig.emit(old, new)
+
+    def __onSongListWidgetRemoveSongs(self, songInfo: SongInfo):
+        """ 从播放列表中移除歌曲 """
+        self.playlistInfoBar.updateWindow(self.playlist)
+        self.removeSongSig.emit(self.playlistName, [songInfo])
 
     def __onSongListWidgetEmptyChanged(self, isEmpty):
         """ 歌曲卡数量改变槽函数 """
@@ -306,7 +313,7 @@ class PlaylistInterface(ScrollArea):
         self.playlistInfoBar.addToCustomPlaylistSig.connect(
             lambda name: self.addSongsToCustomPlaylistSig.emit(name, self.songInfos))
         self.playlistInfoBar.renameButton.clicked.connect(
-            lambda: self.__showRenamePlaylistDialog(self.playlist))
+            lambda: self.__showRenamePlaylistDialog(self.playlist.name))
         self.playlistInfoBar.deleteButton.clicked.connect(
             self.__showDeletePlaylistDialog)
 

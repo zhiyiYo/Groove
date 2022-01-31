@@ -263,9 +263,9 @@ class PlaylistCardInterface(ScrollArea):
         """ 更新多首歌曲信息 """
         pass
 
-    def updateOnePlaylist(self, name: str, songInfos: List[SongInfo]):
-        """ 更新一个播放列表中的歌曲 """
-        pass
+    def removeSongsFromPlaylist(self, name: str, songInfos: List[SongInfo]):
+        """ 移除一个播放列表中的歌曲 """
+        self.playlistCardView.removeSongsFromPlaylistCard(name, songInfos)
 
     def __emitCheckedPlaylists(self):
         """ 发送选中的播放列表中的歌曲 """

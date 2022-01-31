@@ -412,7 +412,7 @@ class MyMusicInterface(QWidget):
         self.songListWidget.isAllCheckedChanged.connect(
             lambda x: self.songSelectionModeBar.checkAllButton.setCheckedState(not x))
         self.songListWidget.removeSongSignal.connect(
-            lambda songPath: self.removeSongSig.emit([songPath]))
+            lambda songInfo: self.removeSongSig.emit([songInfo.file]))
 
         # 专辑卡界面信号连接到槽函数
         self.albumCardInterface.selectionModeStateChanged.connect(

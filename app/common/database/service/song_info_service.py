@@ -32,11 +32,25 @@ class SongInfoService(ServiceBase):
     def listAll(self) -> List[SongInfo]:
         return self.songInfoDao.listAll()
 
-    def listByIds(self, files: list) -> List[SongInfo]:
-        """ 通过文件位置查询歌曲信息 """
+    def listByIds(self, files: list, repeat=False) -> List[SongInfo]:
+        """ 通过文件位置查询歌曲信息
+
+        Parameters
+        ----------
+        files: List[str]
+            歌曲文件路径
+
+        repeat: bool
+            是否允许歌曲信息重复
+        """
         songInfos = self.songInfoDao.listByIds(files)
         k = self.songInfoDao.fields[0]
         songInfos.sort(key=lambda i: files.index(i[k]))
+
+        if len(songInfos) < len(files) and repeat:
+            songInfoMap = {i.file: i for i in songInfos}
+            songInfos = [songInfoMap[i].copy() for i in files]
+
         return songInfos
 
     def listBySingerAlbum(self, singer: str, album: str) -> List[SongInfo]:
