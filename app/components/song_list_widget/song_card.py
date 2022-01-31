@@ -337,7 +337,7 @@ class SongCardFactory:
     """ 歌曲卡工厂 """
 
     @staticmethod
-    def create(songCardType: SongCardType, songInfo: SongInfo, parent=None):
+    def create(songCardType: SongCardType, songInfo: SongInfo, parent=None) -> BasicSongCard:
         """ 创建一个指定类型的歌曲名字卡
 
         Parameters

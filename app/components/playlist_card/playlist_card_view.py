@@ -185,6 +185,8 @@ class PlaylistCardViewBase(QWidget):
         self.playlists.remove(card.playlist)
         card.deleteLater()
 
+        self.adjustSize()
+
     def setPlaylistCards(self, playlistCards: List[PlaylistCardBase]):
         """ 设置视图中的专辑卡，不生成新的专辑卡 """
         raise NotImplementedError

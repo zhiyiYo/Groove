@@ -47,7 +47,7 @@ class StateTooltip(QWidget):
         self.setAttribute(Qt.WA_StyledBackground)
         self.rotateTimer.setInterval(50)
         self.closeTimer.setInterval(1000)
-        self.contentLabel.setMinimumWidth(200)
+        self.contentLabel.setMinimumWidth(250)
         # 将信号连接到槽函数
         self.closeButton.clicked.connect(
             self.__onCloseButtonClicked)  # 点击关闭按钮只是隐藏了提示条

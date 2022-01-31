@@ -117,8 +117,8 @@ class PlaylistInterface(ScrollArea):
         self.selectionModeBar.move(
             0, self.height() - self.selectionModeBar.height())
 
-    def updateOneSongCard(self, oldSongInfo: SongInfo, newSongInfo: SongInfo):
-        """ 更新一个歌曲卡
+    def updateSongInfo(self, newSongInfo: SongInfo):
+        """ 更新一首歌曲信息
 
         Parameters
         ----------
@@ -128,19 +128,17 @@ class PlaylistInterface(ScrollArea):
         newSongInfo: SongInfo
             更新后的歌曲信息
         """
-        if oldSongInfo not in self.songInfos:
-            return
+        self.songListWidget.updateOneSongCard(newSongInfo)
+        if self.songInfos and self.songInfos[0].file == newSongInfo.file:
+            coverPath = getCoverPath(
+                newSongInfo.singer, newSongInfo.album, 'playlist_big')
+            if coverPath != self.playlistInfoBar.playlistCoverPath:
+                self.playlistInfoBar.updateWindow(self.playlist)
 
-        self.songListWidget.updateOneSongCard(newSongInfo, False)
-        self.playlist["songInfos"] = self.songListWidget.songInfos
-        self.songInfos = self.playlist["songInfos"]
-
-    def updateMultiSongCards(self, songInfos: List[SongInfo]):
-        """ 更新多个歌曲卡 """
-        self.songListWidget.updateMultiSongCards(songInfos)
-        self.playlist["songInfos"] = self.songListWidget.songInfos
-        self.songInfos = self.playlist["songInfos"]
-        self.playlistInfoBar.updateWindow(self.playlist)
+    def updateMultiSongInfos(self, songInfos: List[SongInfo]):
+        """ 更新多首歌曲信息 """
+        for songInfo in songInfos:
+            self.updateSongInfo(songInfo)
 
     def __setQss(self):
         """ 设置层叠样式 """
@@ -282,19 +280,6 @@ class PlaylistInterface(ScrollArea):
         self.addMusicButton.setVisible(isEmpty)
         self.noMusicLabel.setVisible(isEmpty)
 
-    def __onEditSongInfo(self, oldSongInfo: SongInfo, newSongInfo: SongInfo):
-        """ 编辑歌曲信息槽函数 """
-        index = self.songInfos.index(newSongInfo)
-
-        # 更新封面
-        if newSongInfo.get('coverPath'):
-            coverPath = getCoverPath(newSongInfo.singer, newSongInfo.album, 'playlist_big')
-            oldCoverPath = self.playlistInfoBar.coverPath
-            if index == 0 and oldCoverPath != coverPath:
-                self.playlistInfoBar.updateWindow(self.playlist)
-
-        self.editSongInfoSignal.emit(oldSongInfo, newSongInfo)
-
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
         self.addMusicButton.clicked.connect(self.switchToAlbumCardInterfaceSig)
@@ -317,7 +302,7 @@ class PlaylistInterface(ScrollArea):
         # 歌曲列表信号
         self.songListWidget.playSignal.connect(self.songCardPlaySig)
         self.songListWidget.playOneSongSig.connect(self.playOneSongCardSig)
-        self.songListWidget.editSongInfoSignal.connect(self.__onEditSongInfo)
+        self.songListWidget.editSongInfoSignal.connect(self.editSongInfoSignal)
         self.songListWidget.nextToPlayOneSongSig.connect(
             self.nextToPlayOneSongSig)
         self.songListWidget.addSongToPlayingSignal.connect(

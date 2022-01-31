@@ -404,14 +404,14 @@ class PlayingInterface(QWidget):
         self.playBar.setHidden(not isHidden)
         self.songInfoCardChute.setHidden(not isHidden)
 
-    def updateOneSongCard(self, newSongInfo: SongInfo):
-        """ 更新一个歌曲卡 """
+    def updateSongInfo(self, newSongInfo: SongInfo):
+        """ 更新一首歌曲信息 """
         self.songListWidget.updateOneSongCard(newSongInfo)
         self.playlist = self.songListWidget.songInfos
         self.songInfoCardChute.playlist = self.playlist
 
-    def updateMultiSongCards(self, songInfos: List[SongInfo]):
-        """ 更新多个歌曲卡 """
+    def updateMultiSongInfos(self, songInfos: List[SongInfo]):
+        """ 更新多首歌曲信息 """
         self.songListWidget.updateMultiSongCards(songInfos)
         self.playlist = self.songListWidget.songInfos
         self.songInfoCardChute.playlist = self.playlist

@@ -30,10 +30,10 @@ class SingerInterface(ScrollArea):
     removeSongSig = pyqtSignal(list)                            # 删除歌曲
     selectionModeStateChanged = pyqtSignal(bool)                # 进入/退出选择模式
     switchToAlbumInterfaceSig = pyqtSignal(str, str)            # 切换到专辑界面
-    editAlbumInfoSignal = pyqtSignal(AlbumInfo, AlbumInfo, str)  # 编辑专辑信息
     addSongsToPlayingPlaylistSig = pyqtSignal(list)             # 将歌曲添加到正在播放
     addSongsToNewCustomPlaylistSig = pyqtSignal(list)           # 将专辑添加到新建的播放列表
     addSongsToCustomPlaylistSig = pyqtSignal(str, list)         # 专辑添加到已存在的播放列表
+    editAlbumInfoSig = pyqtSignal(AlbumInfo, AlbumInfo, str)
 
     def __init__(self, library: Library, singerInfo: SingerInfo = None, parent=None):
         """
@@ -372,3 +372,4 @@ class SingerInterface(ScrollArea):
             self.__showBlurAlbumBackground)
         self.albumCardView.hideBlurAlbumBackgroundSig.connect(
             self.albumBlurBackground.hide)
+        self.albumCardView.editAlbumInfoSig.connect(self.editAlbumInfoSig)

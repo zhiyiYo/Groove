@@ -21,7 +21,7 @@ from .config import Config
 class SettingInterface(ScrollArea):
     """ 设置界面 """
 
-    crawlComplete = pyqtSignal()
+    crawlFinished = pyqtSignal()
     pageSizeChanged = pyqtSignal(int)
     mvQualityChanged = pyqtSignal(str)
     acrylicEnableChanged = pyqtSignal(bool)
@@ -278,7 +278,7 @@ class SettingInterface(ScrollArea):
         self.getMetaDataSwitchButton.setEnabled(True)
         self.getMetaDataSwitchButton.setChecked(False)
         self.getMetaDataSwitchButton.setText(self.tr("Off"))
-        self.crawlComplete.emit()
+        self.crawlFinished.emit()
 
     def __setQss(self):
         """ 设置层叠样式 """

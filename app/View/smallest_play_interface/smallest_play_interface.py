@@ -265,18 +265,6 @@ class SmallestPlayInterface(FramelessWindow):
         self.lastSongInfoCard = self.songInfoCard_list[lastIndex]
         self.nextSongInfoCard = self.songInfoCard_list[nextIndex]
 
-    # TODO：引用的数据不需要这个方法
-    def updateOneSongInfo(self, newSongInfo: SongInfo):
-        """ 更新播放列表中一首歌曲的信息 """
-        for i, songInfo in enumerate(self.playlist):
-            if songInfo.title == newSongInfo.title:
-                self.playlist[i] = newSongInfo
-
-    def updateMultiSongInfo(self, songInfos: List[SongInfo]):
-        """ 更新播放列表中多首歌曲的信息 """
-        for songInfo in songInfos:
-            self.updateOneSongInfo(songInfo)
-
     def setCurrentIndex(self, index):
         """ 更新当前下标并移动和更新歌曲信息卡 """
         if not self.playlist:

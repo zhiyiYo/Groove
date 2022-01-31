@@ -94,14 +94,26 @@ class SongInfoController:
         """ 模糊查询符合条件的歌曲信息 """
         return self.songInfoService.listLike(**condition)
 
-    def getSongInfos(self, files: List[Path]):
-        """ 从本地重新获取歌曲信息并更新数据库 """
+    def addSongInfos(self, files: List[Path]):
+        """ 向数据库中添加歌曲信息 """
         reader = SongInfoReader()
         songInfos = [reader.read(i) for i in files]
         songInfos.sort(key=lambda i: i.createTime, reverse=True)
 
         # 更新数据库
-        self.songInfoService.clearTable()
         self.songInfoService.addBatch(songInfos)
-
         return songInfos
+
+    def removeSongInfos(self, files: List[Path]) -> List[str]:
+        """ 从数据库中移除歌曲信息 """
+        files = [str(i).replace('\\', '/') for i in files]
+        self.songInfoService.removeByIds(files)
+        return files
+
+    def updateSongInfo(self, songInfo: SongInfo):
+        """ 更新一首歌曲信息 """
+        return self.songInfoService.modifyById(songInfo)
+
+    def updateMultiSongInfos(self, songInfos: List[SongInfo]):
+        """ 更新多首歌曲信息 """
+        return self.songInfoService.modifyByIds(songInfos)

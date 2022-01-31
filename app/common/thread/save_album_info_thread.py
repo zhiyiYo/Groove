@@ -1,4 +1,5 @@
 # coding:utf-8
+from common.database.entity import AlbumInfo, SongInfo
 from common.meta_data.writer import writeSongInfo, writeAlbumCover
 from common.meta_data.reader import SongInfoReader
 from PyQt5.QtCore import QThread, pyqtSignal
@@ -7,15 +8,15 @@ from PyQt5.QtCore import QThread, pyqtSignal
 class SaveAlbumInfoThread(QThread):
     """ 保存专辑信息线程 """
 
-    saveFinishedSignal = pyqtSignal(dict, dict, str)
+    saveFinishedSignal = pyqtSignal(AlbumInfo, AlbumInfo, str)
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self.oldAlbumInfo = {}
-        self.newAlbumInfo = {}
+        self.oldAlbumInfo = AlbumInfo()
+        self.newAlbumInfo = AlbumInfo()
         self.coverPath = ''
 
-    def setAlbumInfo(self, oldAlbumInfo: dict, newAlbumInfo: dict, coverPath: str):
+    def setAlbumInfo(self, oldAlbumInfo: AlbumInfo, newAlbumInfo: AlbumInfo, coverPath: str):
         """ 设置专辑信息 """
         self.oldAlbumInfo = oldAlbumInfo
         self.newAlbumInfo = newAlbumInfo
@@ -23,17 +24,17 @@ class SaveAlbumInfoThread(QThread):
 
     def run(self):
         """ 保存专辑信息 """
-        for i, songInfo in enumerate(self.newAlbumInfo["songInfos"]):
+        for i, songInfo in enumerate(self.newAlbumInfo.songInfos):
             # 修改封面数据
-            writeAlbumCover(songInfo['songPath'], self.coverPath)
+            writeAlbumCover(songInfo.file, self.coverPath)
 
             # 如果歌曲保存失败就重置歌曲信息
             if not writeSongInfo(songInfo):
-                self.newAlbumInfo["songInfos"][i] = self.oldAlbumInfo["songInfos"][i]
+                self.newAlbumInfo.songInfos[i] = self.oldAlbumInfo.songInfos[i]
 
             # 更新修改时间
-            songInfo['modifiedTime'] = SongInfoReader.getModifiedTime(
-                songInfo['songPath'])
+            songInfo.modifiedTime = SongInfoReader.getModifiedTime(
+                songInfo.file)
 
         self.saveFinishedSignal.emit(
             self.oldAlbumInfo, self.newAlbumInfo, self.coverPath)

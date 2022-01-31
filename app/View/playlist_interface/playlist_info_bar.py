@@ -87,7 +87,7 @@ class PlaylistInfoBar(CollapsingAppBarBase):
         menu.newPlaylistAct.triggered.connect(self.addToNewCustomPlaylistSig)
         menu.exec(QPoint(x, y))
 
-    def updateWindow(self, playlist: dict):
+    def updateWindow(self, playlist: Playlist):
         """ 更新窗口 """
         self.__getPlaylistInfo(playlist)
         content = str(len(self.songInfos)) + \

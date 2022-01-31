@@ -136,8 +136,8 @@ class AlbumGroupBox(QScrollArea):
 
     def __showBlurAlbumBackground(self, pos: QPoint, picPath: str):
         """ 显示磨砂背景 """
-        # 将全局坐标转为窗口坐标
-        pos = self.albumCardView.mapFromGlobal(pos)
+        v = self.horizontalScrollBar().value()
+        pos = self.albumCardView.mapFromGlobal(pos) - QPoint(v, 0)
         self.albumBlurBackground.setBlurAlbum(picPath)
         self.albumBlurBackground.move(pos.x() - 31, pos.y() - 16)
         self.albumBlurBackground.show()

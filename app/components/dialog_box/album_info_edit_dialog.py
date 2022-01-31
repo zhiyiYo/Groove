@@ -2,9 +2,10 @@
 import os
 from copy import deepcopy
 
+from mutagen.id3 import TCON
 from common.database.entity import AlbumInfo, SongInfo
 from common.image_process_utils import getPicSuffix
-from common.os_utils import adjustName
+from common.os_utils import getCoverPath
 from components.buttons.perspective_button import PerspectivePushButton
 from components.widgets.label import ErrorIcon
 from components.widgets.line_edit import LineEdit
@@ -19,7 +20,6 @@ from PyQt5.QtWidgets import (QApplication, QCompleter, QFileDialog, QLabel,
 from .mask_dialog_base import MaskDialogBase
 
 
-# TODO:重写专辑信息编辑框
 class AlbumInfoEditDialog(MaskDialogBase):
     """ 专辑信息编辑对话框 """
 
@@ -30,11 +30,11 @@ class AlbumInfoEditDialog(MaskDialogBase):
         super().__init__(parent)
         self.oldAlbumInfo = deepcopy(albumInfo)
         self.albumInfo = deepcopy(albumInfo)
-        self.genre = self.albumInfo["genre"]  # type:str
-        self.singer = self.albumInfo["singer"]  # type:str
-        self.albumName = self.albumInfo["album"]  # type:str
-        self.coverPath = self.albumInfo["coverPath"]  # type:str
-        self.songInfos = self.albumInfo["songInfos"]  # type:list
+        self.genre = self.albumInfo.genre or ''
+        self.singer = self.albumInfo.singer or ''
+        self.album = self.albumInfo.album or ''  # type:str
+        self.coverPath = getCoverPath(self.singer, self.album, 'album_big')
+        self.songInfos = self.albumInfo.songInfos # type:list
         self.newAlbumCoverPath = ''
         self.__createWidgets()
         self.__initWidget()
@@ -51,7 +51,7 @@ class AlbumInfoEditDialog(MaskDialogBase):
         # 上半部分
         self.albumCover = AlbumCoverWindow(
             self.coverPath, (170, 170), self.scrollWidget)
-        self.albumNameLineEdit = LineEdit(self.albumName, self.scrollWidget)
+        self.albumNameLineEdit = LineEdit(self.album, self.scrollWidget)
         self.albumSongerLineEdit = LineEdit(self.singer, self.scrollWidget)
         self.genreLineEdit = LineEdit(self.genre, self.scrollWidget)
         self.albumNameLabel = QLabel(self.tr("Album title"), self.scrollWidget)
@@ -60,11 +60,12 @@ class AlbumInfoEditDialog(MaskDialogBase):
         self.genreLabel = QLabel(self.tr("Genre"), self.scrollWidget)
 
         # 下半部分
-        self.songInfoWidget_list = []
+        self.songInfoWidgets = []
         for songInfo in self.songInfos:
             songInfoWidget = SongInfoWidget(songInfo, self.scrollWidget)
             songInfoWidget.isTrackNumEmptySig.connect(self.__trackNumEmptySlot)
-            self.songInfoWidget_list.append(songInfoWidget)
+            self.songInfoWidgets.append(songInfoWidget)
+
         self.saveButton = PerspectivePushButton(self.tr("Save"), self.widget)
         self.cancelButton = PerspectivePushButton(
             self.tr("Cancel"), self.widget)
@@ -74,41 +75,24 @@ class AlbumInfoEditDialog(MaskDialogBase):
         self.widget.setFixedWidth(936)
         self.widget.setMaximumHeight(self.MAXHEIGHT)
         self.scrollArea.setWidget(self.scrollWidget)
-        self.songInfoWidgetNum = len(self.songInfoWidget_list)  # type:int
+        self.songInfoWidgetNum = len(self.songInfoWidgets)  # type:int
+
         # 初始化定时器
         self.delayTimer.setInterval(300)
         self.delayTimer.timeout.connect(self.__showFileDialog)
+
         # 设置滚动区域的大小
         if self.songInfoWidgetNum <= 4:
             self.scrollArea.resize(931, 216 + self.songInfoWidgetNum * 83)
         else:
             self.scrollArea.resize(931, 595)
-        # 设置层叠样式
+
         self.__setQss()
-        # 初始化布局
         self.__initLayout()
-        # 信号连接到槽
         self.__connectSignalToSlot()
+
         # 流派补全
-        genres = [
-            "Pop",
-            "Blues",
-            "Soundtrack",
-            "Japanese Pop & Rock",
-            "Rock",
-            "J-Pop",
-            "RAP/HIP HOP",
-            "Classical",
-            "Country",
-            "R&B",
-            "Anime",
-            "Dance",
-            "Jazz",
-            "New Age",
-            "Folk",
-            "Easy Listening"
-        ]
-        self.genreCompleter = QCompleter(genres, self.widget)
+        self.genreCompleter = QCompleter(TCON.GENRES, self.widget)
         self.genreCompleter.setCompletionMode(QCompleter.InlineCompletion)
         self.genreCompleter.setCaseSensitivity(Qt.CaseInsensitive)
         self.genreLineEdit.setCompleter(self.genreCompleter)
@@ -124,8 +108,10 @@ class AlbumInfoEditDialog(MaskDialogBase):
         self.albumNameLineEdit.move(225, 36)
         self.albumSongerLineEdit.move(578, 36)
         self.genreLineEdit.move(225, 106)
-        for i, songInfoWidget in enumerate(self.songInfoWidget_list):
+
+        for i, songInfoWidget in enumerate(self.songInfoWidgets):
             songInfoWidget.move(0, songInfoWidget.height() * i + 216)
+
         self.scrollWidget.resize(931, self.songInfoWidgetNum * 83 + 216)
         self.albumNameLineEdit.resize(327, 40)
         self.albumSongerLineEdit.resize(326, 40)
@@ -157,16 +143,17 @@ class AlbumInfoEditDialog(MaskDialogBase):
         self.saveButton.setEnabled(not isShowErrorMsg)
         if not self.sender().bottomErrorLabel.isVisible():
             # 获取曲目为空的小部件的index
-            senderIndex = self.songInfoWidget_list.index(self.sender())
+            senderIndex = self.songInfoWidgets.index(self.sender())
             # 调整面板高度
             self.__adjustWidgetPos(senderIndex, isShowErrorMsg)
 
     def onSaveError(self, index: int):
         """ 保存信息失败槽函数 """
-        songInfoWidget = self.songInfoWidget_list[index]
+        songInfoWidget = self.songInfoWidgets[index]
         if not songInfoWidget.bottomErrorLabel.isVisible():
-            senderIndex = self.songInfoWidget_list.index(songInfoWidget)
+            senderIndex = self.songInfoWidgets.index(songInfoWidget)
             self.__adjustWidgetPos(senderIndex, True)
+
         songInfoWidget.setSaveSongInfoErrorMsgHidden(False)
 
     def onSaveComplete(self):
@@ -192,13 +179,15 @@ class AlbumInfoEditDialog(MaskDialogBase):
                 self.__adjustHeight(deltaHeight)
         elif self.widget.height() <= self.MAXHEIGHT - abs(deltaHeight):
             self.__adjustHeight(deltaHeight)
+
         self.scrollWidget.resize(931, self.scrollWidget.height() + deltaHeight)
         self.saveButton.move(563, self.widget.height() -
                              16-self.saveButton.height())
         self.cancelButton.move(735, self.widget.height() -
                                16-self.saveButton.height())
+
         # 调整后面的小部件的位置
-        for songInfoWidget in self.songInfoWidget_list[senderIndex + 1:]:
+        for songInfoWidget in self.songInfoWidgets[senderIndex + 1:]:
             songInfoWidget.move(0, songInfoWidget.y() + deltaHeight)
 
     def __adjustHeight(self, deltaHeight):
@@ -215,17 +204,13 @@ class AlbumInfoEditDialog(MaskDialogBase):
         self.albumInfo["album"] = self.albumNameLineEdit.text()
         self.albumInfo["singer"] = self.albumSongerLineEdit.text()
         self.albumInfo["genre"] = self.genreLineEdit.text()
-        coverName = adjustName(
-            self.albumSongerLineEdit.text()+'_'+self.albumNameLineEdit.text())
 
-        for songInfo, songInfoWidget in zip(self.songInfos, self.songInfoWidget_list):
+        for songInfo, widget in zip(self.songInfos, self.songInfoWidgets):
             songInfo["album"] = self.albumNameLineEdit.text()
-            songInfo["coverName"] = coverName
-            songInfo["songName"] = songInfoWidget.songNameLineEdit.text()
-            songInfo["singer"] = songInfoWidget.singerLineEdit.text()
+            songInfo["title"] = widget.songNameLineEdit.text()
+            songInfo["singer"] = widget.singerLineEdit.text()
             songInfo["genre"] = self.genreLineEdit.text()
-            # 根据后缀名选择曲目标签的写入方式
-            songInfo["tracknumber"] = songInfoWidget.trackNumLineEdit.text()
+            songInfo["track"] = int(widget.trackLineEdit.text())
 
         self.saveInfoSig.emit(
             self.oldAlbumInfo, self.albumInfo, self.newAlbumCoverPath)
@@ -297,69 +282,69 @@ class SongInfoWidget(QWidget):
     def __init__(self, songInfo: SongInfo, parent=None):
         super().__init__(parent)
         self.songInfo = songInfo
-        # 创建小部件
         self.trackLabel = QLabel(self.tr("Track"), self)
         self.songNameLabel = QLabel(self.tr("Song title"), self)
         self.singerLabel = QLabel(self.tr("Song artist"), self)
-        self.trackNumLineEdit = LineEdit(songInfo.track, self, False)
-        self.songNameLineEdit = LineEdit(songInfo.file, self)
-        self.singerLineEdit = LineEdit(songInfo.singer, self)
+        self.trackLineEdit = LineEdit(str(songInfo.track or 1), self, False)
+        self.songNameLineEdit = LineEdit(songInfo.title or '', self)
+        self.singerLineEdit = LineEdit(songInfo.singer or '', self)
         self.errorIcon = ErrorIcon(self)
         self.bottomErrorIcon = ErrorIcon(self)
         self.bottomErrorLabel = QLabel(
             self.tr("The track must be a number below 1000"), self)
-        # 初始化
         self.__initWidget()
 
     def __initWidget(self):
         """ 初始化小部件 """
         self.setFixedSize(903, 83)
         self.__initLayout()
+
         # 分配ID和属性
         self.bottomErrorLabel.setObjectName("bottomErrorLabel")
-        self.trackNumLineEdit.setProperty("hasClearBt", "false")
-        self.trackNumLineEdit.setProperty("hasText", "false")
+        self.trackLineEdit.setProperty("hasClearBt", "false")
+        self.trackLineEdit.setProperty("hasText", "false")
         self.__setTrackNumEmptyErrorMsgHidden(True)
         self.__checkTrackNum()
+
         # 给输入框设置过滤器
-        rex_trackNum = QRegExp(r"(\d)|([1-9]\d{1,2})")
-        validator_tracknum = QRegExpValidator(
-            rex_trackNum, self.trackNumLineEdit)
-        self.trackNumLineEdit.setValidator(validator_tracknum)
+        trackReg = QRegExp(r"(\d)|([1-9]\d{1,2})")
+        trackValidator = QRegExpValidator(trackReg, self.trackLineEdit)
+        self.trackLineEdit.setValidator(trackValidator)
+
         # 信号连接到槽
-        self.trackNumLineEdit.textChanged.connect(self.__checkTrackNum)
+        self.trackLineEdit.textChanged.connect(self.__checkTrackNum)
 
     def __initLayout(self):
         """ 初始化布局 """
         self.trackLabel.move(30, 0)
         self.songNameLabel.move(135, 0)
         self.singerLabel.move(532, 0)
-        self.trackNumLineEdit.move(30, 26)
+        self.trackLineEdit.move(30, 26)
         self.songNameLineEdit.move(135, 26)
         self.singerLineEdit.move(532, 26)
         self.errorIcon.move(7, 36)
         self.bottomErrorIcon.move(30, 95)
         self.bottomErrorLabel.move(59, 94)
-        self.trackNumLineEdit.resize(80, 41)
+        self.trackLineEdit.resize(80, 41)
         self.singerLineEdit.resize(371, 41)
         self.songNameLineEdit.resize(371, 41)
 
     def __checkTrackNum(self):
         """ 检查曲目是否为空，为空则发出禁用保存按钮信号，并显示错误标签 """
         if (
-            self.trackNumLineEdit.text()
-            and self.trackNumLineEdit.property("hasText") == "false"
+            self.trackLineEdit.text()
+            and self.trackLineEdit.property("hasText") == "false"
         ):
             self.__setTrackNumEmptyErrorMsgHidden(True)
             self.setFixedSize(903, 83)
             self.isTrackNumEmptySig.emit(False)
-            self.trackNumLineEdit.setProperty("hasText", "true")
+            self.trackLineEdit.setProperty("hasText", "true")
             self.setStyle(QApplication.style())
-        elif not self.trackNumLineEdit.text():
+        elif not self.trackLineEdit.text():
             self.isTrackNumEmptySig.emit(True)
             self.setFixedSize(903, 137)
             self.__setTrackNumEmptyErrorMsgHidden(False)
-            self.trackNumLineEdit.setProperty("hasText", "false")
+            self.trackLineEdit.setProperty("hasText", "false")
             self.setStyle(QApplication.style())
 
     def __setTrackNumEmptyErrorMsgHidden(self, isHidden: bool):
@@ -388,7 +373,7 @@ class SongInfoWidget(QWidget):
         """ 设置编辑框是否启用 """
         self.songNameLineEdit.setEnabled(isEnable)
         self.singerLineEdit.setEnabled(isEnable)
-        self.trackNumLineEdit.setEnabled(isEnable)
+        self.trackLineEdit.setEnabled(isEnable)
 
 
 class AlbumCoverWindow(PerspectiveWidget):

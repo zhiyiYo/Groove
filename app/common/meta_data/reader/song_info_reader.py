@@ -108,3 +108,9 @@ class SongInfoReader(QObject):
             track = track[1:]
 
         return int(track)
+
+    @staticmethod
+    def getModifiedTime(file: str):
+        """ 获取歌曲信息修改时间 """
+        path = Path(file)
+        return int(path.stat().st_mtime)

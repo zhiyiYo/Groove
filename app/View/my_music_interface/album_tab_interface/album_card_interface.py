@@ -28,7 +28,7 @@ class AlbumCardInterface(ScrollArea):
     addAlbumToNewCustomPlaylistSig = pyqtSignal(list)           # 将专辑添加到新建的播放列表
     addAlbumToCustomPlaylistSig = pyqtSignal(str, list)         # 专辑添加到已存在的播放列表
     showLabelNavigationInterfaceSig = pyqtSignal(list, str)     # 显示标签导航界面
-    editAlbumInfoSignal = pyqtSignal(AlbumInfo, AlbumInfo, str)  # 完成专辑信息编辑
+    editAlbumInfoSig = pyqtSignal(AlbumInfo, AlbumInfo, str)    # 完成专辑信息编辑
 
     def __init__(self, library: Library, parent=None):
         super().__init__(parent)
@@ -38,11 +38,6 @@ class AlbumCardInterface(ScrollArea):
         self.checkedAlbumCards = []  # type:List[AlbumCard]
         self.albumCardViews = []  # type:List[GridAlbumCardView]
         self.firstViewMap = {}
-
-        # 由键值对 "albumName.singer":albumCard组成的字典，albumInfo 是引用
-        self.albumCardMap = {}  # type:Dict[str, AlbumCard]
-        # TODO:使用数据库移除这个字典
-        self.albumInfoMap = {}  # type:Dict[str, dict]
 
         # 初始化标志位
         self.isInSelectionMode = False
@@ -103,6 +98,7 @@ class AlbumCardInterface(ScrollArea):
         view.playSig.connect(self.playSignal)
         view.nextPlaySig.connect(self.nextPlaySignal)
         view.deleteAlbumSig.connect(self.deleteAlbumSig)
+        view.editAlbumInfoSig.connect(self.editAlbumInfoSig)
         view.addAlbumToPlayingSig.connect(self.addAlbumToPlayingSignal)
         view.switchToAlbumInterfaceSig.connect(self.switchToAlbumInterfaceSig)
         view.checkedStateChanged.connect(self.__onAlbumCardCheckedStateChanged)
@@ -349,14 +345,6 @@ class AlbumCardInterface(ScrollArea):
         self.albumBlurBackground.move(pos.x() - 28, pos.y() - 16)
         self.albumBlurBackground.show()
 
-    # TODO:使用数据库来更新
-    def updateOneSongInfo(self, oldSongInfo: SongInfo, newSongInfo: SongInfo):
-        """ 更新一首歌的信息 """
-
-    # TODO:使用数据库来更新
-    def updateOneAlbumInfo(self, oldAlbumInfo: AlbumInfo, newAlbumInfo: AlbumInfo, coverPath: str):
-        """ 更新一张专辑信息 """
-
     def updateAllAlbumCards(self, albumInfos: List[AlbumInfo]):
         """ 更新所有专辑卡 """
         if albumInfos == self.albumInfos:
@@ -391,14 +379,6 @@ class AlbumCardInterface(ScrollArea):
         # 根据当前专辑卡数决定是否显示导航标签
         self.guideLabel.setHidden(bool(albumInfos))
 
-        # 更新 "专辑名.歌手名"：专辑卡 字典
-        self.albumCardMap.clear()
-        self.albumInfoMap.clear()
-        for albumCard, albumInfo in zip(self.albumCards, albumInfos):
-            key = albumInfo["album"] + "." + albumInfo["singer"]
-            self.albumCardMap[key] = albumCard
-            self.albumInfoMap[key] = albumInfo
-
         if N_ != N:
             self.albumNumChanged.emit(N)
 
@@ -406,10 +386,3 @@ class AlbumCardInterface(ScrollArea):
         """ 滚动到label指定的位置 """
         view = self.firstViewMap[label]
         self.verticalScrollBar().setValue(view.y() - 245)
-
-    # TODO:使用数据库删除
-    def deleteSongs(self, songPaths: list):
-        """ 删除歌曲 """
-
-    def deleteAlbums(self, albums: List[str]):
-        """ 删除专辑 """

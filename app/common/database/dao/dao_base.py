@@ -14,7 +14,6 @@ class DaoBase:
     fields = ['id']
 
     def __init__(self, db: QSqlDatabase = None):
-        super().__init__()
         self.setDatabase(db)
 
     def createTable(self):
@@ -393,5 +392,5 @@ class DaoBase:
     def setDatabase(self, db: QSqlDatabase):
         """ 使用指定的数据库 """
         self.connectionName = db.connectionName() if db else ''
-        self.query = SqlQuery(db)
+        self.query = SqlQuery(db) if db else SqlQuery()
         self.query.setForwardOnly(True)

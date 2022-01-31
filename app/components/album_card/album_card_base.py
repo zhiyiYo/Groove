@@ -10,7 +10,7 @@ from components.widgets.perspective_widget import PerspectiveWidget
 from PyQt5.QtCore import QObject, QPoint, QPropertyAnimation, Qt, pyqtSignal
 from PyQt5.QtGui import QFont, QFontMetrics, QPixmap
 from PyQt5.QtWidgets import (QApplication, QGraphicsOpacityEffect, QLabel,
-                             QVBoxLayout, QWidget)
+                             QVBoxLayout, QWidget, qApp)
 
 
 class AlbumCardBase(PerspectiveWidget):
@@ -39,6 +39,7 @@ class AlbumCardBase(PerspectiveWidget):
         self.albumLabel = ClickableLabel(self.album, self)
         self.contentLabel = ClickableLabel(self.singer, self, False)
         self.albumPic = QLabel(self)
+
         self.playButton = BlurButton(
             self,
             (30, 65),

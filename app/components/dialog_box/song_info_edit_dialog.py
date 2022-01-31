@@ -1,19 +1,16 @@
 # coding:utf-8
-from copy import deepcopy
-
-from common.database.entity import SongInfo
 from common.auto_wrap import autoWrap
-from mutagen.id3 import TCON
+from common.database.entity import SongInfo
 from common.meta_data.reader import AlbumCoverReader, SongInfoReader
-from common.meta_data.writer import writeSongInfo, writeAlbumCover
-from common.os_utils import adjustName
+from common.meta_data.writer import writeAlbumCover, writeSongInfo
 from common.thread.get_meta_data_thread import GetSongMetaDataThread
-from components.widgets.state_tooltip import StateTooltip
 from components.buttons.perspective_button import PerspectivePushButton
 from components.buttons.switch_button import SwitchButton
 from components.widgets.label import ErrorIcon
 from components.widgets.line_edit import LineEdit
-from PyQt5.QtCore import QFile, QRegExp, Qt, pyqtSignal
+from components.widgets.state_tooltip import StateTooltip
+from mutagen.id3 import TCON
+from PyQt5.QtCore import QFile, QRegExp, Qt, pyqtSignal, QDateTime
 from PyQt5.QtGui import QRegExpValidator
 from PyQt5.QtWidgets import (QApplication, QCompleter, QGridLayout, QLabel,
                              QVBoxLayout)

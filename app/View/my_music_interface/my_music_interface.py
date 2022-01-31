@@ -212,7 +212,7 @@ class MyMusicInterface(QWidget):
     def deleteSongs(self, songPaths: List[str]):
         """ 删除歌曲 """
         self.songListWidget.removeSongCards(songPaths)
-        self.albumCardInterface.deleteSongs(songPaths)
+        self.albumCardInterface.updateAllAlbumCards(self.library.albumInfos)
 
     def __showDeleteAlbumsDialog(self):
         """ 显示删除专辑对话框 """
@@ -274,10 +274,15 @@ class MyMusicInterface(QWidget):
         self.albumSelectionModeBar.move(
             0, self.height() - self.albumSelectionModeBar.height())
 
-    def updateOneSongInfo(self, oldSongInfo: SongInfo, newSongInfo: SongInfo):
-        """ 更新一首歌的信息 """
+    def updateSongInfo(self, newSongInfo: SongInfo):
+        """ 更新一首歌曲信息 """
         self.songListWidget.updateOneSongCard(newSongInfo)
-        self.albumCardInterface.updateOneSongInfo(oldSongInfo, newSongInfo)
+        self.albumCardInterface.updateAllAlbumCards(self.library.albumInfos)
+
+    def updateMultiSongInfos(self, songInfos: List[SongInfo]):
+        """ 更新多首歌曲信息 """
+        self.songListWidget.updateMultiSongCards(songInfos)
+        self.albumCardInterface.updateAllAlbumCards(self.library.albumInfos)
 
     def __showSortModeMenu(self):
         """ 显示排序方式菜单 """

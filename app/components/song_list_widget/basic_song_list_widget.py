@@ -77,6 +77,7 @@ class BasicSongListWidget(ListWidget):
         # 添加一个空白item来填补playBar所占高度
         self.__createPaddingBottomItem()
 
+    # TODO：歌曲列表控件新增歌曲卡之后布局有问题
     def appendOneSongCard(self, songInfo: SongInfo):
         """ 在列表尾部添加一个歌曲卡，注意这不会改变歌曲信息列表
 
@@ -102,7 +103,6 @@ class BasicSongListWidget(ListWidget):
         # 信号连接到槽
         self._connectSongCardSignalToSlot(songCard)
 
-    # TODO：在线歌曲列表控件新增歌曲卡之后布局有问题
     def appendSongCards(self, songInfos: List[SongInfo]):
         """  在列表尾部添加一个歌曲卡，注意这不会改变歌曲信息列表
 
@@ -203,13 +203,8 @@ class BasicSongListWidget(ListWidget):
 
         # 获取歌曲卡下标和歌曲信息
         w = SongInfoEditDialog(songCard.songInfo, self.window())
-        w.saveInfoSig.connect(self.__saveModifidiedSongInfo)
+        w.saveInfoSig.connect(self.editSongInfoSignal)
         w.exec_()
-
-    def __saveModifidiedSongInfo(self, oldSongInfo, newSongInfo):
-        """ 保存被更改的歌曲信息 """
-        self.updateOneSongCard(newSongInfo)
-        self.editSongInfoSignal.emit(oldSongInfo, newSongInfo)
 
     def updateOneSongCard(self, newSongInfo: SongInfo):
         """ 更新一个歌曲卡 """
@@ -218,21 +213,10 @@ class BasicSongListWidget(ListWidget):
                 self.songInfos[i] = newSongInfo
                 self.songCards[i].updateSongCard(newSongInfo)
 
-            # TODO: 更新数据库中的歌曲信息，删除注释
-            # if isNeedWriteToFile:
-            # 将修改的信息存入json文件
-            # with open("cache/song_info/songInfo.json", "w", encoding="utf-8") as f:
-            #     dump(self.songInfos, f)
-
-    def updateMultiSongCards(self, newSongInfo_list: list):
+    def updateMultiSongCards(self, songInfos: list):
         """ 更新多个歌曲卡 """
-        for newSongInfo in newSongInfo_list:
-            self.updateOneSongCard(newSongInfo, False)
-
-        # TODO: 更新数据库中的歌曲信息，删除注释
-        # 将修改的信息存入json文件
-        # with open("cache/song_info/songInfo.json", "w", encoding="utf-8") as f:
-        #     dump(self.songInfos, f)
+        for songInfo in songInfos:
+            self.updateOneSongCard(songInfo)
 
     def resizeEvent(self, e):
         """ 更新item的尺寸 """
@@ -324,7 +308,7 @@ class BasicSongListWidget(ListWidget):
 
         # 长度相等就更新信息，不相等创建或者删除 item
         newSongNum = len(songInfos)
-        oldSongNum = len(self.songInfos)
+        oldSongNum = len(self.songCards)
         if newSongNum > oldSongNum:
             # 添加item
             for songInfo in songInfos[oldSongNum:]:
@@ -345,7 +329,7 @@ class BasicSongListWidget(ListWidget):
             self.emptyChangedSig.emit(not bool(songInfos))
 
         # 更新部分歌曲卡
-        self.songInfos = songInfos if songInfos else []
+        self.songInfos = songInfos
         n = min(oldSongNum, newSongNum)
         for songInfo, songCard in zip(songInfos[:n], self.songCards[:n]):
             songCard.updateSongCard(songInfo)

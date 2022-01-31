@@ -192,13 +192,13 @@ class MediaPlaylist(QMediaPlaylist):
         self.playlist.pop(index)
         super().removeMedia(index)
 
-    def updateOneSongInfo(self, newSongInfo: SongInfo):
+    def updateSongInfo(self, newSongInfo: SongInfo):
         """ 更新播放列表中一首歌曲的信息 """
         for i, songInfo in enumerate(self.playlist):
             if songInfo.file == newSongInfo.file:
                 self.playlist[i] = newSongInfo
 
-    def updateMultiSongInfo(self, songInfos: SongInfo):
+    def updateMultiSongInfos(self, songInfos: SongInfo):
         """ 更新播放列表中多首歌曲的信息 """
         for songInfo in songInfos:
-            self.updateOneSongInfo(songInfo)
+            self.updateSongInfo(songInfo)

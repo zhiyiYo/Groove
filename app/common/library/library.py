@@ -1,11 +1,11 @@
 # coding:utf-8
 from pathlib import Path
-from time import time
 from typing import List
 
 from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtSql import QSqlDatabase
 
+from ..database.entity import SongInfo
 from ..database.controller import (AlbumCoverController, AlbumInfoController,
                                    PlaylistController, SingerInfoController,
                                    SongInfoController)
@@ -16,8 +16,9 @@ class Library(QObject):
     """ 歌曲库 """
 
     loadFinished = pyqtSignal()
-    updateFinished = pyqtSignal()
     reloadFinished = pyqtSignal()
+    fileAdded = pyqtSignal(list)
+    fileRemoved = pyqtSignal(list)
 
     cacheFile = 'cache/cache.db'
 
@@ -41,11 +42,15 @@ class Library(QObject):
         self.playlists = []
         self.directories = directories
         self.fileSystem = FileSystem(directories, self)
+
         self.songInfoController = SongInfoController(db)
         self.albumInfoController = AlbumInfoController(db)
         self.albumCoverController = AlbumCoverController()
         self.singerInfoController = SingerInfoController(db)
         self.playlistController = PlaylistController(db)
+
+        self.fileSystem.added.connect(self.__onFileAdded)
+        self.fileSystem.removed.connect(self.__onFileRemoved)
 
     def load(self):
         """ 载入歌曲信息 """
@@ -71,13 +76,7 @@ class Library(QObject):
         self.directories = directories
 
         # 更新信息列表和数据库
-        files = self.fileSystem.glob()
-        self.songInfos = self.songInfoController.getSongInfos(files)
-        self.albumInfos = self.albumInfoController.getAlbumInfos(
-            self.songInfos)
-        self.albumCoverController.getAlbumCovers(self.songInfos)
-        self.singerInfos = self.singerInfoController.getSingerInfos(
-            self.albumInfos)
+        self.load()
 
         self.reloadFinished.emit()
 
@@ -100,3 +99,59 @@ class Library(QObject):
         library.playlists = self.playlists
         library.directories = self.directories.copy()
         library.fileSystem.setDirs(self.directories)
+
+    def updateSongInfo(self, songInfo: SongInfo):
+        """ 更新一首歌曲信息 """
+        self.songInfoController.updateSongInfo(songInfo)
+
+        for i, songInfo_ in enumerate(self.songInfos):
+            if songInfo.file == songInfo_.file:
+                self.songInfos[i] = songInfo
+                break
+
+        self.albumInfos = self.albumInfoController.getAlbumInfosFromCache(
+            self.songInfos)
+        self.singerInfos = self.singerInfoController.getSingerInfosFromCache(
+            self.albumInfos)
+
+    def updateMultiSongInfos(self, songInfos: List[SongInfo]):
+        """ 更新多首歌曲信息 """
+        self.songInfoController.updateMultiSongInfos(songInfos)
+
+        songInfoMap = {i.file: i for i in songInfos}
+        for i, songInfo_ in enumerate(self.songInfos):
+            if songInfo_.file in songInfoMap:
+                self.songInfos[i] = songInfoMap[songInfo_.file]
+
+        self.albumInfos = self.albumInfoController.getAlbumInfosFromCache(
+            self.songInfos)
+        self.singerInfos = self.singerInfoController.getSingerInfosFromCache(
+            self.albumInfos)
+
+    def __onFileAdded(self, files: List[Path]):
+        """ 增加歌曲文件槽函数 """
+        songInfos = self.songInfoController.addSongInfos(files)
+
+        self.songInfos.extend(songInfos)
+        self.songInfos.sort(key=lambda i: i.modifiedTime, reverse=True)
+        self.albumInfos = self.albumInfoController.getAlbumInfosFromCache(
+            self.songInfos)
+        self.singerInfos = self.singerInfoController.getSingerInfosFromCache(
+            self.albumInfos)
+
+        self.fileAdded.emit(songInfos)
+
+    def __onFileRemoved(self, files: List[Path]):
+        """ 移除歌曲文件槽函数 """
+        files = self.songInfoController.removeSongInfos(files)
+
+        for songInfo in self.songInfos.copy():
+            if songInfo.file in files:
+                self.songInfos.remove(songInfo)
+
+        self.albumInfos = self.albumInfoController.getAlbumInfosFromCache(
+            self.songInfos)
+        self.singerInfos = self.singerInfoController.getSingerInfosFromCache(
+            self.albumInfos)
+
+        self.fileRemoved.emit(files)

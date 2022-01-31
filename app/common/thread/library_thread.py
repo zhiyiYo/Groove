@@ -13,10 +13,8 @@ class LibraryThread(QThread):
 
     def __init__(self, directories: List[Directory] = None, parent=None):
         super().__init__(parent=parent)
-        self.db = QSqlDatabase.addDatabase('QSQLITE', 'thread')
-        self.db.setDatabaseName(Library.cacheFile)
-        self.db.open()
-        self.library = Library(directories, self.db, self)
+        db = QSqlDatabase.database('main')
+        self.library = Library(directories, db, self)
         self.task = self.library.load
         self.params = {}
 
@@ -25,6 +23,12 @@ class LibraryThread(QThread):
 
     def run(self):
         """ 获取歌曲库信息 """
+        if not QSqlDatabase.contains('thread'):
+            db = QSqlDatabase.addDatabase('QSQLITE', 'thread')
+            db.setDatabaseName(Library.cacheFile)
+            db.open()
+            self.library.setDatabase(db)
+
         self.task(**self.params)
 
     def setTask(self, task, **params):

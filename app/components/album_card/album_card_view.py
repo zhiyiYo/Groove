@@ -30,6 +30,7 @@ class AlbumCardViewBase(QWidget):
     switchToAlbumInterfaceSig = pyqtSignal(str, str)       # 切换到专辑界面
     showBlurAlbumBackgroundSig = pyqtSignal(QPoint, str)   # 显示磨砂背景
     hideBlurAlbumBackgroundSig = pyqtSignal()              # 隐藏磨砂背景
+    editAlbumInfoSig = pyqtSignal(AlbumInfo, AlbumInfo, str)
 
     def __init__(self, library: Library, albumInfos: List[AlbumInfo], cardType: AlbumCardType, create=True, parent=None):
         """
@@ -142,17 +143,10 @@ class AlbumCardViewBase(QWidget):
 
     def __onSaveAlbumInfoFinished(self, oldAlbumInfo: AlbumInfo, newAlbumInfo: AlbumInfo, coverPath: str):
         """ 保存专辑信息槽函数 """
-        # 删除线程
         self.sender().quit()
         self.sender().wait()
         self.sender().deleteLater()
-
-        # TODO:更新所有专辑卡并发送信号
-        self.updateOneAlbumInfo(oldAlbumInfo, newAlbumInfo, coverPath)
-
-    # TODO:使用数据库来更新
-    def updateOneAlbumInfo(self, oldAlbumInfo: AlbumInfo, newAlbumInfo: AlbumInfo, coverPath: str):
-        """ 更新一张专辑信息 """
+        self.editAlbumInfoSig.emit(oldAlbumInfo, newAlbumInfo, coverPath)
 
     def setAlbumCards(self, albumCards: List[AlbumCardBase]):
         """ 设置视图中的专辑卡，不生成新的专辑卡 """

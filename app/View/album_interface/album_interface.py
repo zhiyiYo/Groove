@@ -1,6 +1,8 @@
 # coding:utf-8
 from copy import deepcopy
+from typing import List
 
+from common.library import Library
 from common.database.entity import AlbumInfo, SongInfo
 from common.os_utils import getCoverPath
 from common.thread.save_album_info_thread import SaveAlbumInfoThread
@@ -24,19 +26,22 @@ class AlbumInterface(ScrollArea):
     playCheckedCardsSig = pyqtSignal(list)               # 播放选中的歌曲卡
     nextToPlayOneSongSig = pyqtSignal(SongInfo)          # 下一首播放一首歌
     addOneSongToPlayingSig = pyqtSignal(SongInfo)        # 添加一首歌到正在播放
-    editSongInfoSignal = pyqtSignal(SongInfo, SongInfo)  # 编辑歌曲信息信号
+    editSongInfoSig = pyqtSignal(SongInfo, SongInfo)  # 编辑歌曲信息信号
     selectionModeStateChanged = pyqtSignal(bool)         # 进入/退出 选择模式
     switchToSingerInterfaceSig = pyqtSignal(str)         # 切换到歌手界面
     nextToPlayCheckedCardsSig = pyqtSignal(list)         # 将选中的多首歌添加到下一首播放
     addSongsToPlayingPlaylistSig = pyqtSignal(list)      # 添加歌曲到正在播放
     addSongsToNewCustomPlaylistSig = pyqtSignal(list)    # 添加歌曲到新建播放列表
     addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 添加歌曲到自定义的播放列表中
-    editAlbumInfoSignal = pyqtSignal(AlbumInfo, AlbumInfo, str)  # 编辑专辑信息
+    editAlbumInfoSig = pyqtSignal(AlbumInfo, AlbumInfo, str)  # 编辑专辑信息
 
-    def __init__(self, albumInfo: AlbumInfo = None, parent=None):
+    def __init__(self, library: Library, albumInfo: AlbumInfo = None, parent=None):
         """
         Parameters
         ----------
+        library: Library
+            歌曲库
+
         albumInfo: AlbumInfo
             专辑信息
 
@@ -45,6 +50,7 @@ class AlbumInterface(ScrollArea):
         """
         super().__init__(parent)
         self.__getInfo(albumInfo)
+        self.library = library
         self.scrollWidget = QWidget(self)
         self.vBox = QVBoxLayout(self.scrollWidget)
         self.songListWidget = SongListWidget(self.songInfos, self)
@@ -108,9 +114,8 @@ class AlbumInterface(ScrollArea):
         self.selectionModeBar.move(
             0, self.height() - self.selectionModeBar.height())
 
-    # TODO:使用数据库
-    def updateOneSongCard(self, oldSongInfo: SongInfo, newSongInfo: SongInfo):
-        """ 更新一个歌曲卡
+    def updateSongInfo(self, newSongInfo: SongInfo):
+        """ 更新一首歌曲信息
 
         Parameters
         ----------
@@ -120,22 +125,16 @@ class AlbumInterface(ScrollArea):
         newSongInfo: SongInfo
             更新后的歌曲信息
         """
-        if oldSongInfo not in self.songInfos:
+        albumInfo = self.library.albumInfoController.getAlbumInfo(
+            self.singer, self.album)
+        if not albumInfo:
             return
 
-        # 如果新的歌曲信息的"专辑名.歌手"不变，则更新歌曲卡信息，否则将其移除
-        newKey = newSongInfo.get("album", "")+"."+newSongInfo.get("singer", "")
-        oldKey = oldSongInfo.get("album", "")+"."+oldSongInfo.get("singer", "")
+        self.updateWindow(albumInfo)
 
-        if newKey == oldKey:
-            self.songListWidget.updateOneSongCard(newSongInfo, False)
-        else:
-            index = self.songListWidget.index(oldSongInfo)
-            self.songListWidget.removeSongCard(index)
-
-        self.__sortSongCardsByTrackNum()
-        self.albumInfo.songInfos = self.songListWidget.songInfos
-        self.songInfos = self.songListWidget.songInfos
+    def updateMultiSongInfos(self, songInfos: List[SongInfo]):
+        """ 更新多首歌曲信息 """
+        self.updateSongInfo(songInfos)
 
     def __showAlbumInfoEditDialog(self):
         """ 显示专辑信息编辑对话框 """
@@ -161,50 +160,15 @@ class AlbumInterface(ScrollArea):
     def __sortSongCardsByTrackNum(self):
         """ 以曲序为基准排序歌曲卡 """
         self.songListWidget.sortSongCardByTrackNum()
-        self.albumInfo.songInfos= self.songListWidget.songInfos
+        self.albumInfo.songInfos = self.songListWidget.songInfos
         self.songInfos = self.songListWidget.songInfos
-
-    def __onEditSongInfo(self, oldSongInfo: AlbumInfo, newSongInfo: AlbumInfo):
-        self.__sortSongCardsByTrackNum()
-        index = self.songInfos.index(newSongInfo)
-
-        # 更新封面
-        if newSongInfo.get('coverPath'):
-            coverPath = getCoverPath(newSongInfo['coverName'], 'album_big')
-            oldCoverPath = self.albumInfoBar.coverPath
-            if oldCoverPath.startswith(':') or (index == 0 and oldCoverPath != coverPath):
-                self.albumInfo['coverPath'] = coverPath
-
-        # 更新专辑信息
-        for i, songInfo in enumerate(self.albumInfo["songInfos"]):
-            if songInfo.file == newSongInfo.file:
-                self.albumInfo["songInfos"][i] = newSongInfo.copy()
-                self.albumInfo["genre"] = self.albumInfo["songInfos"][0]["genre"]
-
-        self.albumInfoBar.updateWindow(self.albumInfo)
-        self.editSongInfoSignal.emit(oldSongInfo, newSongInfo)
 
     def __onSaveAlbumInfoFinished(self, oldAlbumInfo: AlbumInfo, newAlbumInfo: AlbumInfo, coverPath: str):
         """ 保存专辑信息 """
-        # 删除线程
         self.sender().quit()
         self.sender().wait()
         self.sender().deleteLater()
-
-        # 更新窗口
-        albumInfo = deepcopy(newAlbumInfo)
-        songInfos = albumInfo["songInfos"]
-        oldKey = oldAlbumInfo["album"]+'.'+oldAlbumInfo["singer"]
-        for songInfo in songInfos.copy():
-            newKey = songInfo.get('album', '')+'.'+songInfo.get('singer', '')
-            if newKey != oldKey:
-                songInfos.remove(songInfo)
-
-        # 在只修改了封面的情况下必须强制更新专辑信息栏
-        self.albumInfoBar.updateWindow(albumInfo)
-        self.updateWindow(albumInfo)
-        self.__sortSongCardsByTrackNum()
-        self.editAlbumInfoSignal.emit(oldAlbumInfo, newAlbumInfo, coverPath)
+        self.editAlbumInfoSig.emit(oldAlbumInfo, newAlbumInfo, coverPath)
 
     def __unCheckSongCards(self):
         """ 取消已选中歌曲卡的选中状态并更新按钮图标 """
@@ -304,7 +268,7 @@ class AlbumInterface(ScrollArea):
         # 歌曲列表信号
         self.songListWidget.playSignal.connect(self.songCardPlaySig)
         self.songListWidget.playOneSongSig.connect(self.playOneSongCardSig)
-        self.songListWidget.editSongInfoSignal.connect(self.__onEditSongInfo)
+        self.songListWidget.editSongInfoSignal.connect(self.editSongInfoSig)
         self.songListWidget.nextToPlayOneSongSig.connect(
             self.nextToPlayOneSongSig)
         self.songListWidget.addSongToPlayingSignal.connect(

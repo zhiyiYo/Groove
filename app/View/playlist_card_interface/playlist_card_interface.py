@@ -251,18 +251,6 @@ class PlaylistCardInterface(ScrollArea):
             self.deletePlaylistCard(name)
             self.deletePlaylistSig.emit(name)
 
-    def deleteSongs(self, songPaths: list):
-        """ 从各个播放列表中删除歌曲 """
-        pass
-
-    def updateOneSongInfo(self, songInfo: SongInfo):
-        """ 更新一首歌曲信息 """
-        pass
-
-    def updateMultiSongInfo(self, songInfos: List[SongInfo]):
-        """ 更新多首歌曲信息 """
-        pass
-
     def removeSongsFromPlaylist(self, name: str, songInfos: List[SongInfo]):
         """ 移除一个播放列表中的歌曲 """
         self.playlistCardView.removeSongsFromPlaylistCard(name, songInfos)
