@@ -184,10 +184,6 @@ class SingerInterface(ScrollArea):
         songPaths = [i.file for i in songInfos]
         self.removeSongSig.emit(songPaths)
 
-    # TODO:删除专辑
-    def deleteAlbums(self, albumNames: list):
-        """ 删除专辑 """
-
     def __showBlurAlbumBackground(self, pos: QPoint, picPath: str):
         """ 显示磨砂背景 """
         pos = self.scrollWidget.mapFromGlobal(pos)

@@ -92,7 +92,10 @@ class BasicSongListWidget(ListWidget):
 
         # 调整宽度
         margin = self.viewportMargins()
-        songCard.resize(self.width()-margin.left()-margin.right(), 60)
+        size = QSize(self.width()-margin.left()-margin.right(), 60)
+        QApplication.sendEvent(songCard, QResizeEvent(size, songCard.size()))
+        QApplication.processEvents()
+
         item.setSizeHint(QSize(songCard.width(), 60))
 
         self.addItem(item)
