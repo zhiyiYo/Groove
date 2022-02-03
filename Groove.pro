@@ -56,7 +56,6 @@ SOURCES += app/View/main_window/main_window.py \
         app/View/search_result_interface/song_group_box.py \
         app/View/search_result_interface/playlist_group_box.py \
         app/View/search_result_interface/album_group_box.py \
-        app/common/meta_data_getter/song_info_reader.py \
         app/components/system_tray_icon/system_tray_icon.py \
         app/components/video_window/video_window.py \
         app/components/widgets/state_tooltip.py \
@@ -65,6 +64,7 @@ SOURCES += app/View/main_window/main_window.py \
         app/components/album_card/album_card_view.py \
         app/components/album_card/album_card_base.py \
         app/components/playlist_card/playlist_card_base.py \
-        app/components/playlist_card/playlist_card_view.py
+        app/components/playlist_card/playlist_card_view.py \
+        app/common/meta_data/reader/song_info_reader.py
 
 TRANSLATIONS += app/resource/i18n/Groove_zh.ts

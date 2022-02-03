@@ -22,7 +22,7 @@ class SongInfoReader(QObject):
         self.album = self.tr("Unknown album")
         self.genre = self.tr("Unknown genre")
         self.year = None
-        self.track = 1
+        self.track = 0
         self.trackTotal = 1
         self.disc = 1
         self.discTotal = 1

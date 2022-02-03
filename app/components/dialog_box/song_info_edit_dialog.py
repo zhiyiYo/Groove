@@ -105,7 +105,7 @@ class SongInfoEditDialog(MaskDialogBase):
 
         # 将曲目输入框数字改变的信号连接到槽函数
         self.trackLineEdit.textChanged.connect(
-            self.__onTrackNumLineEditTextChanged)
+            self.__onTrackLineEditTextChanged)
         self.getMetaDataSwitchButton.checkedChanged.connect(
             self.__onGetMetaDataCheckedChanged)
 
@@ -210,6 +210,10 @@ class SongInfoEditDialog(MaskDialogBase):
 
     def __saveInfo(self):
         """ 保存标签卡信息 """
+        for lineEdit in [self.yearLineEdit, self.discLineEdit, self.trackLineEdit]:
+            if not lineEdit.text():
+                return
+
         self.songInfo.genre = self.genreLineEdit.text()
         self.songInfo.title = self.songNameLineEdit.text()
         self.songInfo.year = int(self.yearLineEdit.text())
@@ -240,7 +244,7 @@ class SongInfoEditDialog(MaskDialogBase):
             self.saveInfoSig.emit(self.oldSongInfo, self.songInfo)
             self.close()
 
-    def __onTrackNumLineEditTextChanged(self):
+    def __onTrackLineEditTextChanged(self):
         """ 检查曲目输入框的内容是否为空 """
         isEmpty = not bool(self.genreLineEdit.text())
 

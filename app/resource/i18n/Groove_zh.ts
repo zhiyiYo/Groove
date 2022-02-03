@@ -1784,6 +1784,24 @@
     </message>
 </context>
 <context>
+    <name>SongInfoReader</name>
+    <message>
+        <location filename="../../common/meta_data/reader/song_info_reader.py" line="21"/>
+        <source>Unknown artist</source>
+        <translation>未知歌手</translation>
+    </message>
+    <message>
+        <location filename="../../common/meta_data/reader/song_info_reader.py" line="22"/>
+        <source>Unknown album</source>
+        <translation>未知专辑</translation>
+    </message>
+    <message>
+        <location filename="../../common/meta_data/reader/song_info_reader.py" line="23"/>
+        <source>Unknown genre</source>
+        <translation>未知流派</translation>
+    </message>
+</context>
+<context>
     <name>SongInfoEditDialog</name>
     <message>
         <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="41"/>
