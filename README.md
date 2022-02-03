@@ -33,19 +33,10 @@
 ## Features
 
 * Play local music
-![播放本地音乐](docs/screenshot/播放本地音乐.gif)
-
 * Search, play and download online music
-![搜索播放和下载在线音乐](docs/screenshot/搜索播放和下载在线音乐.gif)
-
-* Create playlist
-![创建播放列表](docs/screenshot/创建播放列表.gif)
-
-* View and edit information
-![编辑歌曲信息](docs/screenshot/编辑歌曲信息.gif)
-
+* Create and manage custom playlist
+* View and edit song meta data
 * Watch and download MV
-![观看MV](docs/screenshot/观看MV.gif)
 
 ## Quick start
 1. Create virtual environment:

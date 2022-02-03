@@ -77,7 +77,6 @@ class BasicSongListWidget(ListWidget):
         # 添加一个空白item来填补playBar所占高度
         self.__createPaddingBottomItem()
 
-    # TODO：歌曲列表控件新增歌曲卡之后布局有问题
     def appendOneSongCard(self, songInfo: SongInfo):
         """ 在列表尾部添加一个歌曲卡，注意这不会改变歌曲信息列表
 
