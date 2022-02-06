@@ -22,7 +22,7 @@ class Library(QObject):
 
     cacheFile = 'cache/cache.db'
 
-    def __init__(self, directories: List[str] = None, db: QSqlDatabase = None, parent=None):
+    def __init__(self, directories: List[str] = None, db: QSqlDatabase = None, watch=True, parent=None):
         """
         Parameters
         ----------
@@ -31,6 +31,9 @@ class Library(QObject):
 
         db: QDataBase
             使用的数据库
+
+        watch: bool
+            是否监视文件夹
 
         parent:
             父级
@@ -49,8 +52,9 @@ class Library(QObject):
         self.singerInfoController = SingerInfoController(db)
         self.playlistController = PlaylistController(db)
 
-        self.fileSystem.added.connect(self.__onFileAdded)
-        self.fileSystem.removed.connect(self.__onFileRemoved)
+        if watch:
+            self.fileSystem.added.connect(self.__onFileAdded)
+            self.fileSystem.removed.connect(self.__onFileRemoved)
 
     def load(self):
         """ 载入歌曲信息 """

@@ -14,7 +14,7 @@ class LibraryThread(QThread):
     def __init__(self, directories: List[Directory] = None, parent=None):
         super().__init__(parent=parent)
         db = QSqlDatabase.database('main')
-        self.library = Library(directories, db, self)
+        self.library = Library(directories, db, False, self)
         self.task = self.library.load
         self.params = {}
 
