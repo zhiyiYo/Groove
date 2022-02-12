@@ -1,7 +1,8 @@
 # coding:utf-8
 from typing import List
-from common.database.entity import SongInfo
 
+from common.database.entity import SongInfo
+from common.signal_bus import signalBus
 from PyQt5.QtCore import (QDateTime, QEasingCurve, QParallelAnimationGroup,
                           QPoint, QPropertyAnimation, Qt, pyqtSignal)
 from PyQt5.QtGui import QMouseEvent
@@ -20,7 +21,6 @@ class SongInfoCardChute(QWidget):
     showPlayBarSignal = pyqtSignal()
     hidePlayBarSignal = pyqtSignal()
     currentIndexChanged = pyqtSignal([int], [str])
-    switchToAlbumInterfaceSig = pyqtSignal(str, str)
 
     def __init__(self, playlist: List[SongInfo] = None, parent=None):
         """
@@ -66,8 +66,6 @@ class SongInfoCardChute(QWidget):
         # 信号连接到槽
         self.aniGroup.finished.connect(self.__onScrollAniFinished)
         for card in self.cards:
-            card.switchToAlbumInterfaceSig.connect(
-                self.switchToAlbumInterfaceSig)
             card.hidePlayBarSignal.connect(self.__hidePlayBar)
             card.showPlayBarSignal.connect(self.__showPlayBar)
 

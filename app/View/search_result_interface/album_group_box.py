@@ -16,15 +16,6 @@ from PyQt5.QtWidgets import (QApplication, QGraphicsOpacityEffect, QPushButton,
 class AlbumGroupBox(QScrollArea):
     """ 专辑分组框 """
 
-    playSig = pyqtSignal(str, str)
-    nextToPlaySig = pyqtSignal(list)
-    deleteAlbumSig = pyqtSignal(list)
-    addAlbumToPlayingSig = pyqtSignal(list)
-    switchToSingerInterfaceSig = pyqtSignal(str)
-    switchToAlbumInterfaceSig = pyqtSignal(str, str)
-    addAlbumToNewCustomPlaylistSig = pyqtSignal(list)
-    addAlbumToCustomPlaylistSig = pyqtSignal(str, list)
-
     def __init__(self, library: Library, parent=None):
         super().__init__(parent=parent)
         self.library = library
@@ -222,19 +213,7 @@ class AlbumGroupBox(QScrollArea):
         self.scrollRightButton.clicked.connect(
             self.__onScrollRightButtonClicked)
 
-        self.albumCardView.playSig.connect(self.playSig)
-        self.albumCardView.nextPlaySig.connect(self.nextToPlaySig)
-        self.albumCardView.addAlbumToPlayingSig.connect(
-            self.addAlbumToPlayingSig)
-        self.albumCardView.switchToSingerInterfaceSig.connect(
-            self.switchToSingerInterfaceSig)
-        self.albumCardView.switchToAlbumInterfaceSig.connect(
-            self.switchToAlbumInterfaceSig)
         self.albumCardView.showBlurAlbumBackgroundSig.connect(
             self.__showBlurAlbumBackground)
         self.albumCardView.hideBlurAlbumBackgroundSig.connect(
             self.albumBlurBackground.hide)
-        self.albumCardView.addAlbumToCustomPlaylistSig.connect(
-            self.addAlbumToCustomPlaylistSig)
-        self.albumCardView.addAlbumToNewCustomPlaylistSig.connect(
-            self.addAlbumToNewCustomPlaylistSig)

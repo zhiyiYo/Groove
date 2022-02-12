@@ -1,23 +1,48 @@
 # coding:utf-8
 from typing import List
+
 from common.database.entity import SongInfo
-from components.widgets.menu import AddToMenu, DWMMenu
+from common.signal_bus import signalBus
 from components.song_list_widget import NoScrollSongListWidget, SongCardType
-from PyQt5.QtCore import pyqtSignal, QFile
+from components.song_list_widget.song_card import PlaylistInterfaceSongCard
+from components.widgets.menu import AddToMenu, DWMMenu
+from PyQt5.QtCore import QFile, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent
 from PyQt5.QtWidgets import QAction
+
+
+class SongCardListContextMenu(DWMMenu):
+    """ 歌曲卡列表右击菜单 """
+
+    def __init__(self, parent):
+        super().__init__("", parent)
+        # 创建主菜单动作
+        self.playAct = QAction(self.tr("Play"), self)
+        self.nextSongAct = QAction(self.tr("Play next"), self)
+        self.deleteAct = QAction(self.tr("Delete from playlist"), self)
+        self.showAlbumAct = QAction(self.tr("Show album"), self)
+        self.editInfoAct = QAction(self.tr("Edit info"), self)
+        self.showPropertyAct = QAction(self.tr("Properties"), self)
+        self.selectAct = QAction(self.tr("Select"), self)
+        # 创建菜单和子菜单
+        self.addToMenu = AddToMenu(self.tr("Add to"), self)
+        # 将动作添加到菜单中
+        self.addActions([self.playAct, self.nextSongAct])
+        # 将子菜单添加到主菜单
+        self.addMenu(self.addToMenu)
+        # 将其余动作添加到主菜单
+        self.addActions([self.deleteAct, self.showAlbumAct,
+                        self.editInfoAct, self.showPropertyAct])
+        self.addSeparator()
+        self.addAction(self.selectAct)
 
 
 class SongListWidget(NoScrollSongListWidget):
     """ 歌曲卡列表视图 """
 
     playSignal = pyqtSignal(int)                        # 将当前歌曲切换为指定的歌曲卡
-    playOneSongSig = pyqtSignal(dict)                   # 只播放一首歌
-    nextToPlayOneSongSig = pyqtSignal(dict)             # 下一首播放
-    switchToSingerInterfaceSig = pyqtSignal(str)        # 切换到歌手界面
-    switchToAlbumInterfaceSig = pyqtSignal(str, str)    # 切换到专辑界面
 
-    def __init__(self, songInfos: List[SongInfo], parent):
+    def __init__(self, songInfos: List[SongInfo], parent=None):
         """
         Parameters
         ----------
@@ -66,7 +91,7 @@ class SongListWidget(NoScrollSongListWidget):
         self.removeSongCard(index)
         self.removeSongSignal.emit(songInfo)
 
-    def _connectSongCardSignalToSlot(self, songCard):
+    def _connectSongCardSignalToSlot(self, songCard: PlaylistInterfaceSongCard):
         """ 将歌曲卡信号连接到槽 """
         songCard.doubleClicked.connect(self.__onSongCardDoubleClicked)
         songCard.removeSongSignal.connect(self.__onRemoveButtonClicked)
@@ -74,62 +99,30 @@ class SongListWidget(NoScrollSongListWidget):
         songCard.clicked.connect(self.setCurrentIndex)
         songCard.checkedStateChanged.connect(
             self.onSongCardCheckedStateChanged)
-        songCard.switchToAlbumInterfaceSig.connect(
-            self.switchToAlbumInterfaceSig)
-        songCard.switchToSingerInterfaceSig.connect(
-            self.switchToSingerInterfaceSig)
 
-    def __connectMenuSignalToSlot(self, menu):
+    def __connectMenuSignalToSlot(self, menu: SongCardListContextMenu):
         """ 右击菜单信号连接到槽 """
-        menu.playAct.triggered.connect(
-            lambda: self.playOneSongSig.emit(
-                self.songCards[self.currentRow()].songInfo))
-        menu.nextSongAct.triggered.connect(
-            lambda: self.nextToPlayOneSongSig.emit(
-                self.songCards[self.currentRow()].songInfo))
         menu.editInfoAct.triggered.connect(self.showSongInfoEditDialog)
-        menu.showPropertyAct.triggered.connect(
-            self.showSongPropertyDialog)
-        menu.deleteAct.triggered.connect(lambda: self.__onRemoveButtonClicked(
-            self.currentRow(), self.songCards[self.currentRow()]))
+        menu.showPropertyAct.triggered.connect(self.showSongPropertyDialog)
+
+        menu.playAct.triggered.connect(
+            lambda: signalBus.playOneSongCardSig.emit(self.currentSongInfo))
+        menu.nextSongAct.triggered.connect(
+            lambda: signalBus.nextToPlaySig.emit([self.currentSongInfo]))
+        menu.deleteAct.triggered.connect(
+            lambda: self.__onRemoveButtonClicked(self.currentRow(), self.currentSongCard))
         menu.selectAct.triggered.connect(
-            lambda: self.songCards[self.currentRow()].setChecked(True))
-        menu.showAlbumAct.triggered.connect(lambda: self.switchToAlbumInterfaceSig.emit(
-            self.songCards[self.currentRow()].album,
-            self.songCards[self.currentRow()].singer))
+            lambda: self.currentSongCard.setChecked(True))
+        menu.showAlbumAct.triggered.connect(
+            lambda: signalBus.switchToAlbumInterfaceSig.emit(
+                self.currentSongCard.album,
+                self.currentSongCard.singer
+            )
+        )
 
         menu.addToMenu.playingAct.triggered.connect(
-            lambda: self.addSongToPlayingSignal.emit(
-                self.songCards[self.currentRow()].songInfo))
+            lambda: signalBus.addSongsToPlayingPlaylistSig.emit([self.currentSongInfo]))
         menu.addToMenu.addSongsToPlaylistSig.connect(
-            lambda name: self.addSongsToCustomPlaylistSig.emit(
-                name, self.songInfos))
+            lambda name: signalBus.addSongsToCustomPlaylistSig.emit(name, self.songInfos))
         menu.addToMenu.newPlaylistAct.triggered.connect(
-            lambda: self.addSongsToNewCustomPlaylistSig.emit(
-                [self.songCards[self.currentRow()].songInfo]))
-
-
-class SongCardListContextMenu(DWMMenu):
-    """ 歌曲卡列表右击菜单 """
-
-    def __init__(self, parent):
-        super().__init__("", parent)
-        # 创建主菜单动作
-        self.playAct = QAction(self.tr("Play"), self)
-        self.nextSongAct = QAction(self.tr("Play next"), self)
-        self.deleteAct = QAction(self.tr("Delete from playlist"), self)
-        self.showAlbumAct = QAction(self.tr("Show album"), self)
-        self.editInfoAct = QAction(self.tr("Edit info"), self)
-        self.showPropertyAct = QAction(self.tr("Properties"), self)
-        self.selectAct = QAction(self.tr("Select"), self)
-        # 创建菜单和子菜单
-        self.addToMenu = AddToMenu(self.tr("Add to"), self)
-        # 将动作添加到菜单中
-        self.addActions([self.playAct, self.nextSongAct])
-        # 将子菜单添加到主菜单
-        self.addMenu(self.addToMenu)
-        # 将其余动作添加到主菜单
-        self.addActions([self.deleteAct, self.showAlbumAct,
-                        self.editInfoAct, self.showPropertyAct])
-        self.addSeparator()
-        self.addAction(self.selectAct)
+            lambda: signalBus.addSongsToNewCustomPlaylistSig.emit([self.currentSongInfo]))

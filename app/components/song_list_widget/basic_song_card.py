@@ -2,6 +2,7 @@
 import os
 
 from common.database.entity import SongInfo
+from common.signal_bus import signalBus
 from components.widgets.menu import AddToMenu
 from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
                           QParallelAnimationGroup, QPoint, QPropertyAnimation,
@@ -19,10 +20,7 @@ class BasicSongCard(QWidget):
     clicked = pyqtSignal(int)
     doubleClicked = pyqtSignal(int)
     playButtonClicked = pyqtSignal(int)
-    addSongToPlayingSig = pyqtSignal(SongInfo)
     checkedStateChanged = pyqtSignal(int, bool)
-    addSongToNewCustomPlaylistSig = pyqtSignal(SongInfo)
-    addSongsToCustomPlaylistSig = pyqtSignal(str, list)
 
     def __init__(self, songInfo: SongInfo, songCardType, parent=None):
         """ 实例化歌曲卡
@@ -362,15 +360,15 @@ class BasicSongCard(QWidget):
         # 发出选中状态改变信号
         self.checkedStateChanged.emit(self.itemIndex, self.isChecked)
 
-    def setSelectionModeOpen(self, isOpenSelectionMode: bool):
+    def setSelectionModeOpen(self, isOpen: bool):
         """ 设置是否进入选择模式, 处于选择模式下复选框一直可见，按钮不管是否处于选择模式都不可见 """
-        if self.isInSelectionMode == isOpenSelectionMode:
+        if self.isInSelectionMode == isOpen:
             return
 
-        self.isInSelectionMode = isOpenSelectionMode
+        self.isInSelectionMode = isOpen
 
         # 设置按钮和复选框的可见性
-        self.checkBox.setHidden(not isOpenSelectionMode)
+        self.checkBox.setHidden(not isOpen)
         self.buttonGroup.setHidden(True)
 
     def setChecked(self, isChecked: bool):
@@ -444,12 +442,13 @@ class BasicSongCard(QWidget):
         x = pos.x() + self.addToButton.width() + 5
         y = pos.y() + int(
             self.addToButton.height() / 2 - (13 + 38 * menu.actionCount()) / 2)
+
         menu.playingAct.triggered.connect(
-            lambda: self.addSongToPlayingSig.emit(self.songInfo))
+            lambda: signalBus.addSongsToPlayingPlaylistSig.emit([self.songInfo]))
         menu.newPlaylistAct.triggered.connect(
-            lambda: self.addSongToNewCustomPlaylistSig.emit(self.songInfo))
+            lambda: signalBus.addSongsToNewCustomPlaylistSig.emit([self.songInfo]))
         menu.addSongsToPlaylistSig.connect(
-            lambda name: self.addSongsToCustomPlaylistSig.emit(name, [self.songInfo]))
+            lambda name: signalBus.addSongsToCustomPlaylistSig.emit(name, [self.songInfo]))
         menu.exec(QPoint(x, y))
 
     @property

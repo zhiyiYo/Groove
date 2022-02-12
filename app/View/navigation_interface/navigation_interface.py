@@ -1,11 +1,12 @@
 # coding:utf-8
 
-from PyQt5.QtCore import pyqtSignal, QPoint, QEvent
+from common.signal_bus import signalBus
+from PyQt5.QtCore import QEvent, QPoint, pyqtSignal
 from PyQt5.QtWidgets import QWidget
 
 from .navigation_bar import NavigationBar
-from .navigation_widget import NavigationWidget
 from .navigation_menu import NavigationMenu
+from .navigation_widget import NavigationWidget
 
 
 class NavigationInterface(QWidget):
@@ -16,12 +17,7 @@ class NavigationInterface(QWidget):
     IN_LINE = 2     # 导航窗口展开
     searchSig = pyqtSignal(str)                     # 搜索信号
     displayModeChanged = pyqtSignal(int)            # 显示模式改变
-    showPlayingInterfaceSig = pyqtSignal()          # 显示正在播放界面信号
     showCreatePlaylistDialogSig = pyqtSignal()      # 显示创建播放列表对话框信号
-    switchToSettingInterfaceSig = pyqtSignal()      # 切换到设置界面信号
-    switchToMyMusicInterfaceSig = pyqtSignal()      # 切换到我的音乐界面
-    switchToPlaylistInterfaceSig = pyqtSignal(str)  # 切换到播放列表界面信号
-    switchToPlaylistCardInterfaceSig = pyqtSignal()  # 切换到播放列表卡界面
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -50,11 +46,6 @@ class NavigationInterface(QWidget):
 
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
-        # 发送切换窗口信号
-        self.navigationWidget.switchToPlaylistInterfaceSig.connect(
-            self.switchToPlaylistInterfaceSig)
-        self.navigationMenu.switchToPlaylistInterfaceSig.connect(
-            self.switchToPlaylistInterfaceSig)
 
         # 同步按钮选中状态
         self.navigationBar.selectedButtonChanged.connect(
@@ -82,13 +73,13 @@ class NavigationInterface(QWidget):
         self.navigationMenu.searchSig.connect(self.__collapseWindow)
         for widget in self.__navigation_list:
             widget.playingButton.clicked.connect(
-                self.showPlayingInterfaceSig)
+                signalBus.showPlayingInterfaceSig)
             widget.settingButton.clicked.connect(
-                self.switchToSettingInterfaceSig)
+                signalBus.switchToSettingInterfaceSig)
             widget.myMusicButton.clicked.connect(
-                self.switchToMyMusicInterfaceSig)
+                signalBus.switchToMyMusicInterfaceSig)
             widget.playlistButton.clicked.connect(
-                self.switchToPlaylistCardInterfaceSig)
+                signalBus.switchToPlaylistCardInterfaceSig)
             widget.createPlaylistButton.clicked.connect(
                 self.showCreatePlaylistDialogSig)
 

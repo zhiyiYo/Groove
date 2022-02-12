@@ -144,8 +144,6 @@ class PlayBar(QWidget):
         """ 信号连接到槽 """
         self.moreActionsButton.clicked.connect(self.__showMoreActionsMenu)
         self.volumeButton.clicked.connect(self.__showVolumeSlider)
-        self.volumeSliderWidget.muteStateChanged.connect(
-            self.volumeButton.setMute)
         self.volumeSliderWidget.volumeLevelChanged.connect(
             self.volumeButton.updateIcon)
         for widget in self.__widget_list:

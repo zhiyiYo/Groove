@@ -105,14 +105,14 @@
     </message>
 </context>
 <context>
-    <name>AlbumCardInterface</name>
+    <name>AlbumCardView</name>
     <message>
-        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="59"/>
+        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="47"/>
         <source>There is nothing to display here. Try a different filter.</source>
         <translation>这里没有可显示的内容。请尝试其他筛选器。</translation>
     </message>
     <message>
-        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="238"/>
+        <location filename="../../View/my_music_interface/album_tab_interface/album_card_interface.py" line="215"/>
         <source>Unknown</source>
         <translation>未知</translation>
     </message>
@@ -703,39 +703,9 @@
 <context>
     <name>MyMusicInterface</name>
     <message>
-        <location filename="../../View/my_music_interface/my_music_interface.py" line="83"/>
+        <location filename="../../View/my_music_interface/my_music_interface.py" line="51" />
         <source> Shuffle all</source>
         <translation> 无序播放所有</translation>
-    </message>
-    <message>
-        <location filename="../../View/my_music_interface/my_music_interface.py" line="220"/>
-        <source>Are you sure you want to delete these?</source>
-        <translation>是否确定要删除这些项？</translation>
-    </message>
-    <message>
-        <location filename="../../View/my_music_interface/my_music_interface.py" line="189"/>
-        <source>If you delete these songs, they won&apos;t be on be this device anymore.</source>
-        <translation>如果你删除这些歌曲，它们将不再位于此设备上。</translation>
-    </message>
-    <message>
-        <location filename="../../View/my_music_interface/my_music_interface.py" line="225"/>
-        <source>Are you sure you want to delete this?</source>
-        <translation>是否确定要删除此项？</translation>
-    </message>
-    <message>
-        <location filename="../../View/my_music_interface/my_music_interface.py" line="226"/>
-        <source>If you delete</source>
-        <translation>如果删除</translation>
-    </message>
-    <message>
-        <location filename="../../View/my_music_interface/my_music_interface.py" line="227"/>
-        <source>it won&apos;t be on be this device anymore.</source>
-        <translation>，它将不再位于此设备上。</translation>
-    </message>
-    <message>
-        <location filename="../../View/my_music_interface/my_music_interface.py" line="221"/>
-        <source>If you delete these albums, they won&apos;t be on be this device anymore.</source>
-        <translation>如果你删除这些专辑，它们将不再位于此设备上。</translation>
     </message>
 </context>
 <context>
@@ -2237,6 +2207,252 @@
         <location filename="../../View/singer_interface/singer_info_bar.py" line="51"/>
         <source>Unknown artist</source>
         <translation>未知歌手</translation>
+    </message>
+</context>
+<context>
+    <name>ButtonFactory</name>
+    <message>
+        <location filename="../../components/selection_mode_bar/button.py" line="168"/>
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_bar/button.py" line="171"/>
+        <source>Play</source>
+        <translation>播放</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_bar/button.py" line="174"/>
+        <source>Play next</source>
+        <translation>下一首播放</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_bar/button.py" line="177"/>
+        <source>Add to</source>
+        <translation>添加到</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_bar/button.py" line="180"/>
+        <source>Show artist</source>
+        <translation>显示歌手</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_bar/button.py" line="183"/>
+        <source>Show album</source>
+        <translation>显示专辑</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_bar/button.py" line="186"/>
+        <source>Properties</source>
+        <translation>属性</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_bar/button.py" line="189"/>
+        <source>Edit info</source>
+        <translation>编辑信息</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_bar/button.py" line="192"/>
+        <source>Pin to Start</source>
+        <translation>固定到&quot;开始&quot;菜单</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_bar/button.py" line="195"/>
+        <source>Rename</source>
+        <translation>重命名</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_bar/button.py" line="198"/>
+        <source>Move up</source>
+        <translation>向上移动</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_bar/button.py" line="201"/>
+        <source>Move down</source>
+        <translation>向下移动</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_bar/button.py" line="204"/>
+        <source>Delete</source>
+        <translation>删除</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_bar/button.py" line="211"/>
+        <source>Select all</source>
+        <translation>全选</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_bar/button.py" line="211"/>
+        <source>Deselect all</source>
+        <translation>取消全选</translation>
+    </message>
+</context>
+<context>
+    <name>SongSelectionModeInterface</name>
+    <message>
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="265"/>
+        <source>Are you sure you want to delete these?</source>
+        <translation>是否确定要删除这些项？</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="267"/>
+        <source>If you delete these songs, they won&apos;t be on be this device anymore.</source>
+        <translation>如果你删除这些歌曲，它们将不再位于此设备上。</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="270"/>
+        <source>Are you sure you want to delete this?</source>
+        <translation>是否确定要删除此项？</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="271"/>
+        <source>If you delete</source>
+        <translation>如果删除</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="272"/>
+        <source>it won&apos;t be on be this device anymore.</source>
+        <translation>，它将不再位于此设备上。</translation>
+    </message>
+</context>
+<context>
+    <name>SongTabInterface</name>
+    <message>
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="265"/>
+        <source>Are you sure you want to delete these?</source>
+        <translation>是否确定要删除这些项？</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="267"/>
+        <source>If you delete these songs, they won&apos;t be on be this device anymore.</source>
+        <translation>如果你删除这些歌曲，它们将不再位于此设备上。</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="270"/>
+        <source>Are you sure you want to delete this?</source>
+        <translation>是否确定要删除此项？</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="271"/>
+        <source>If you delete</source>
+        <translation>如果删除</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="272"/>
+        <source>it won&apos;t be on be this device anymore.</source>
+        <translation>，它将不再位于此设备上。</translation>
+    </message>
+</context>
+<context>
+    <name>AlbumInterface</name>
+    <message>
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="265"/>
+        <source>Are you sure you want to delete these?</source>
+        <translation>是否确定要删除这些项？</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="267"/>
+        <source>If you delete these songs, they won&apos;t be on be this device anymore.</source>
+        <translation>如果你删除这些歌曲，它们将不再位于此设备上。</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="270"/>
+        <source>Are you sure you want to delete this?</source>
+        <translation>是否确定要删除此项？</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="271"/>
+        <source>If you delete</source>
+        <translation>如果删除</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="272"/>
+        <source>it won&apos;t be on be this device anymore.</source>
+        <translation>，它将不再位于此设备上。</translation>
+    </message>
+</context>
+<context>
+    <name>AlbumSelectionModeInterface</name>
+    <message>
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="346" />
+        <source>Are you sure you want to delete these?</source>
+        <translation>是否确定要删除这些项？</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="348" />
+        <source>If you delete these albums, they won&apos;t be on be this device anymore.</source>
+        <translation>如果你删除这些专辑，它们将不再位于此设备上。</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="351" />
+        <source>Are you sure you want to delete this?</source>
+        <translation>是否确定要删除此项？</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="352" />
+        <source>If you delete</source>
+        <translation>如果删除</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="353" />
+        <source>it won&apos;t be on be this device anymore.</source>
+        <translation>，它将不再位于此设备上。</translation>
+    </message>
+</context>
+<context>
+    <name>AlbumTabInterface</name>
+    <message>
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="346" />
+        <source>Are you sure you want to delete these?</source>
+        <translation>是否确定要删除这些项？</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="348" />
+        <source>If you delete these albums, they won&apos;t be on be this device anymore.</source>
+        <translation>如果你删除这些专辑，它们将不再位于此设备上。</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="351" />
+        <source>Are you sure you want to delete this?</source>
+        <translation>是否确定要删除此项？</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="352" />
+        <source>If you delete</source>
+        <translation>如果删除</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="353" />
+        <source>it won&apos;t be on be this device anymore.</source>
+        <translation>，它将不再位于此设备上。</translation>
+    </message>
+</context>
+<context>
+    <name>SingerInterface</name>
+    <message>
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="346" />
+        <source>Are you sure you want to delete these?</source>
+        <translation>是否确定要删除这些项？</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="348" />
+        <source>If you delete these albums, they won&apos;t be on be this device anymore.</source>
+        <translation>如果你删除这些专辑，它们将不再位于此设备上。</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="351" />
+        <source>Are you sure you want to delete this?</source>
+        <translation>是否确定要删除此项？</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="352" />
+        <source>If you delete</source>
+        <translation>如果删除</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="353" />
+        <source>it won&apos;t be on be this device anymore.</source>
+        <translation>，它将不再位于此设备上。</translation>
     </message>
 </context>
 </TS>

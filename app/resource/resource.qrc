@@ -3,7 +3,6 @@
         <file>qss/album_card_interface.qss</file>
         <file>qss/album_group_box.qss</file>
         <file>qss/album_info_edit_dialog.qss</file>
-        <file>qss/album_interface.qss</file>
         <file>qss/album_interface_song_list_widget.qss</file>
         <file>qss/create_playlist_dialog.qss</file>
         <file>qss/dialog.qss</file>
@@ -36,6 +35,7 @@
         <file>qss/volume_slider_widget.qss</file>
         <file>qss/lyric_widget.qss</file>
         <file>qss/tooltip.qss</file>
+        <file>qss/selection_mode_interface.qss</file>
 
         <file>images/logo/logo.png</file>
         <file>images/logo/logo_small.png</file>

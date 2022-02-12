@@ -32,9 +32,10 @@ class CheckBox(QCheckBox):
 
     def mousePressEvent(self, e: QMouseEvent):
         """ 转发鼠标点击事件给目标小部件 """
-        super().mousePressEvent(e)
         if not self.forwardTargetWidget:
+            super().mousePressEvent(e)
             return
+
         e = QMouseEvent(
             QEvent.MouseButtonPress,
             QPoint(
@@ -50,6 +51,8 @@ class CheckBox(QCheckBox):
 
     def mouseReleaseEvent(self, e):
         """ 鼠标松开转发事件 """
-        super().mouseReleaseEvent(e)
         if self.forwardTargetWidget:
             QApplication.sendEvent(self.forwardTargetWidget, e)
+        else:
+            super().mouseReleaseEvent(e)
+

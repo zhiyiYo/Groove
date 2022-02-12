@@ -1,14 +1,14 @@
 # coding:utf-8
 from common.database.entity import SongInfo
 from common.image_process_utils import DominantColor
+from common.signal_bus import signalBus
 from components.widgets.label import TimeLabel
 from components.widgets.menu import PlayBarMoreActionsMenu
 from components.widgets.slider import HollowHandleStyle, Slider
 from PyQt5.QtCore import (QEasingCurve, QParallelAnimationGroup, QPoint,
                           QPropertyAnimation, Qt, pyqtProperty, pyqtSignal)
 from PyQt5.QtGui import QColor, QPalette, QResizeEvent
-from PyQt5.QtMultimedia import QMediaPlaylist
-from PyQt5.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
 from View.play_bar.song_info_card import SongInfoCard
 
 from .play_bar_buttons import (BasicButton, LoopModeButton, PlayButton,
@@ -18,20 +18,7 @@ from .play_bar_buttons import (BasicButton, LoopModeButton, PlayButton,
 class PlayBar(QWidget):
     """ 底部播放栏 """
 
-    nextSongSig = pyqtSignal()
-    lastSongSig = pyqtSignal()
-    fullScreenSig = pyqtSignal()
     savePlaylistSig = pyqtSignal()
-    showPlaylistSig = pyqtSignal()
-    clearPlaylistSig = pyqtSignal()
-    volumeChanged = pyqtSignal(int)
-    togglePlayStateSig = pyqtSignal()
-    muteStateChanged = pyqtSignal(bool)
-    randomPlayChanged = pyqtSignal(bool)
-    progressSliderMoved = pyqtSignal(int)
-    showPlayingInterfaceSig = pyqtSignal()
-    showSmallestPlayInterfaceSig = pyqtSignal()
-    loopModeChanged = pyqtSignal(QMediaPlaylist.PlaybackMode)
     colorChanged = pyqtSignal(QColor)
 
     def __init__(self, songInfo: SongInfo, color: QColor, parent=None):
@@ -136,6 +123,9 @@ class PlayBar(QWidget):
 
     def setVolume(self, volume: int):
         """ 设置音量 """
+        if self.volumeSlider.value() == volume:
+            return
+
         self.volumeSlider.setValue(volume)
         self.volumeButton.setVolumeLevel(volume)
 
@@ -145,28 +135,25 @@ class PlayBar(QWidget):
 
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
-        self.nextSongButton.clicked.connect(self.nextSongSig)
-        self.lastSongButton.clicked.connect(self.lastSongSig)
-        self.playButton.clicked.connect(self.togglePlayStateSig)
-        self.volumeSlider.valueChanged.connect(self.volumeChanged)
-        self.progressSlider.clicked.connect(self.progressSliderMoved)
-        self.songInfoCard.clicked.connect(self.showPlayingInterfaceSig)
+        self.nextSongButton.clicked.connect(signalBus.nextSongSig)
+        self.lastSongButton.clicked.connect(signalBus.lastSongSig)
+        self.playButton.clicked.connect(signalBus.togglePlayStateSig)
+        self.volumeSlider.valueChanged.connect(signalBus.volumeChanged)
+        self.progressSlider.clicked.connect(signalBus.progressSliderMoved)
+        self.songInfoCard.clicked.connect(signalBus.showPlayingInterfaceSig)
         self.songInfoCard.albumChanged.connect(self.__onAlbumChanged)
         self.moreActionsButton.clicked.connect(self.__showMoreActionsMenu)
-        self.progressSlider.sliderMoved.connect(self.progressSliderMoved)
-        self.volumeButton.muteStateChanged.connect(self.muteStateChanged)
-        self.loopModeButton.loopModeChanged.connect(self.loopModeChanged)
-        self.randomPlayButton.randomPlayChanged.connect(self.randomPlayChanged)
+        self.progressSlider.sliderMoved.connect(signalBus.progressSliderMoved)
         self.smallPlayModeButton.clicked.connect(
-            self.showSmallestPlayInterfaceSig)
+            signalBus.showSmallestPlayInterfaceSig)
         self.moreActionsMenu.fullScreenAct.triggered.connect(
-            self.fullScreenSig)
+            lambda: signalBus.fullScreenChanged.emit(True))
         self.moreActionsMenu.savePlayListAct.triggered.connect(
             self.savePlaylistSig)
         self.moreActionsMenu.showPlayListAct.triggered.connect(
-            self.showPlaylistSig)
+            signalBus.showPlayingPlaylistSig)
         self.moreActionsMenu.clearPlayListAct.triggered.connect(
-            self.clearPlaylistSig)
+            signalBus.clearPlayingPlaylistSig)
 
     def __onAlbumChanged(self, albumPath: str):
         """ 更新专辑槽函数 """
@@ -175,16 +162,20 @@ class PlayBar(QWidget):
 
         self.colorAni.setStartValue(self.getColor())
         self.colorAni.setEndValue(QColor(r, g, b))
-        self.colorAni.setEasingCurve(QEasingCurve.Linear)
+        self.colorAni.setEasingCurve(QEasingCurve.OutCubic)
         self.colorAni.setDuration(200)
 
         self.songInfoCard.albumCoverLabel.ani.setStartValue(0)
         self.songInfoCard.albumCoverLabel.ani.setEndValue(1)
         self.songInfoCard.albumCoverLabel.ani.setEasingCurve(
-            QEasingCurve.Linear)
+            QEasingCurve.OutCubic)
         self.songInfoCard.albumCoverLabel.ani.setDuration(200)
 
         self.aniGroup.start()
+
+    def setLoopMode(self, loopMode):
+        """ 设置循环模式 """
+        self.loopModeButton.setLoopMode(loopMode)
 
     def setColor(self, color: QColor):
         """ 设置背景颜色 """

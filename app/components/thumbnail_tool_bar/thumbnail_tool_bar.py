@@ -1,4 +1,5 @@
 # coding:utf-8
+from common.signal_bus import signalBus
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWinExtras import QWinThumbnailToolBar, QWinThumbnailToolButton
@@ -25,10 +26,6 @@ class ThumbnailPlayButton(QWinThumbnailToolButton):
 class ThumbnailToolBar(QWinThumbnailToolBar):
     """ 缩略图任务栏 """
 
-    nextSongSig = pyqtSignal()
-    lastSongSig = pyqtSignal()
-    togglePlayStateSig = pyqtSignal()
-
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.playButton = ThumbnailPlayButton(self)
@@ -51,9 +48,9 @@ class ThumbnailToolBar(QWinThumbnailToolBar):
         self.addButton(self.playButton)
         self.addButton(self.nextSongButton)
         # 信号连接到槽
-        self.lastSongButton.clicked.connect(self.lastSongSig)
-        self.nextSongButton.clicked.connect(self.nextSongSig)
-        self.playButton.clicked.connect(self.togglePlayStateSig)
+        self.lastSongButton.clicked.connect(signalBus.lastSongSig)
+        self.nextSongButton.clicked.connect(signalBus.nextSongSig)
+        self.playButton.clicked.connect(signalBus.togglePlayStateSig)
 
     def setButtonsEnabled(self, isEnable: bool):
         """ 设置按钮的启用与否 """

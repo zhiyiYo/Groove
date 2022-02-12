@@ -3,9 +3,11 @@ from copy import deepcopy
 from typing import Dict, List
 
 from common.os_utils import getCoverPath
+from common.signal_bus import signalBus
 from common.database.entity import SongInfo
 from common.thread.get_lyric_thread import GetLyricThread
 from common.thread.get_mv_url_thread import GetMvUrlThread
+from components.selection_mode_interface.bar import PlayingSelectionModeBar
 from components.buttons.three_state_button import ThreeStatePushButton
 from components.dialog_box.message_dialog import MessageDialog
 from components.widgets.label import BlurCoverLabel, MaskLabel
@@ -19,7 +21,6 @@ from PyQt5.QtMultimedia import QMediaPlaylist
 from PyQt5.QtWidgets import QLabel, QWidget
 
 from .play_bar import PlayBar
-from .selection_mode_bar import SelectionModeBar
 from .song_info_card_chute import SongInfoCardChute
 from .song_list_widget import SongListWidget
 
@@ -38,27 +39,11 @@ def handleSelectionMode(func):
 class PlayingInterface(QWidget):
     """ 正在播放界面 """
 
-    lastSongSig = pyqtSignal()                           # 上一首
-    nextSongSig = pyqtSignal()                           # 下一首
-    togglePlayStateSig = pyqtSignal()                    # 播放/暂停
-    volumeChanged = pyqtSignal(int)                      # 改变音量
-    randomPlayAllSig = pyqtSignal()                      # 创建新的无序播放列表
-    randomPlayChanged = pyqtSignal(bool)                 # 随机播放当前播放列表
     removeSongSignal = pyqtSignal(int)                   # 从播放列表移除歌曲
-    muteStateChanged = pyqtSignal(bool)                  # 静音/取消静音
-    progressSliderMoved = pyqtSignal(int)                # 歌曲进度条滑动
-    fullScreenChanged = pyqtSignal(bool)                 # 进入/退出全屏
-    clearPlaylistSig = pyqtSignal()                      # 清空播放列表
     savePlaylistSig = pyqtSignal()                       # 保存播放列表
     currentIndexChanged = pyqtSignal(int)                # 当前歌曲改变
     selectionModeStateChanged = pyqtSignal(bool)         # 进入/退出选择模式
-    switchToSingerInterfaceSig = pyqtSignal(str)         # 切换到歌手界面
-    switchToAlbumInterfaceSig = pyqtSignal(str, str)     # 切换到专辑界面
     switchToVideoInterfaceSig = pyqtSignal(str)          # 切换到视频界面
-    showSmallestPlayInterfaceSig = pyqtSignal()          # 进入最小播放模式
-    addSongsToNewCustomPlaylistSig = pyqtSignal(list)    # 将歌曲添加到新的自定义播放列表
-    addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 将歌曲添加到已存在的自定义播放列表
-    loopModeChanged = pyqtSignal(QMediaPlaylist.PlaybackMode)
 
     def __init__(self, playlist: List[SongInfo] = None, parent=None):
         super().__init__(parent)
@@ -80,7 +65,7 @@ class PlayingInterface(QWidget):
         self.parallelAniGroup = QParallelAnimationGroup(self)
         self.playBar = PlayBar(self)
         self.songListWidget = SongListWidget(self.playlist, self)
-        self.selectionModeBar = SelectionModeBar(self)
+        self.selectionModeBar = PlayingSelectionModeBar(self)
         self.guideLabel = QLabel(self.tr(
             "Here, you will see the song being played and the songs to be played."), self)
         self.randomPlayAllButton = ThreeStatePushButton(
@@ -317,7 +302,7 @@ class PlayingInterface(QWidget):
         index: int
             重置后的当前歌曲索引
         """
-        self.playlist = playlist if playlist else []
+        self.playlist = playlist.copy() if playlist else []
         self.currentIndex = index if isResetIndex else self.currentIndex
         self.songInfoCardChute.setPlaylist(self.playlist, isResetIndex, index)
         self.songListWidget.updateSongCards(self.playlist, isResetIndex, index)
@@ -419,8 +404,8 @@ class PlayingInterface(QWidget):
     @handleSelectionMode
     def __onShowSmallestPlayInterfaceButtonClicked(self):
         """ 显示最小播放模式界面 """
-        self.fullScreenChanged.emit(False)
-        self.showSmallestPlayInterfaceSig.emit()
+        signalBus.fullScreenChanged.emit(False)
+        signalBus.showSmallestPlayInterfaceSig.emit()
 
     def setRandomPlay(self, isRandomPlay: bool):
         """ 设置随机播放 """
@@ -433,7 +418,11 @@ class PlayingInterface(QWidget):
 
     def setVolume(self, volume: int):
         """ 设置音量 """
+        if self.playBar.volumeSliderWidget.volumeSlider.value() == volume:
+            return
+
         self.playBar.volumeSliderWidget.setVolume(volume)
+        self.playBar.volumeButton.setVolumeLevel(volume)
 
     def setCurrentTime(self, currentTime: int):
         """ 设置当前进度条时间 """
@@ -463,14 +452,15 @@ class PlayingInterface(QWidget):
     def __onCheckAllButtonClicked(self):
         """ 全选/取消全选按钮点击槽函数 """
         isChecked = not self.songListWidget.isAllSongCardsChecked
-        self.songListWidget.setAllSongCardCheckedState(isChecked)
+        self.songListWidget.setAllChecked(isChecked)
         self.selectionModeBar.checkAllButton.setCheckedState(isChecked)
 
     def __onSelectionModeBarAlbumButtonClicked(self):
         """ 选择栏显示专辑按钮点击槽函数 """
         songCard = self.songListWidget.checkedSongCards[0]
         songCard.setChecked(False)
-        self.switchToAlbumInterfaceSig.emit(songCard.singer, songCard.album)
+        signalBus.switchToAlbumInterfaceSig.emit(
+            songCard.singer, songCard.album)
 
     def __onSelectionModeBarDeleteButtonClicked(self):
         """ 选择栏播放按钮点击槽函数 """
@@ -504,9 +494,9 @@ class PlayingInterface(QWidget):
         for act in menu.action_list:
             act.triggered.connect(self.exitSelectionMode)
         menu.newPlaylistAct.triggered.connect(
-            lambda: self.addSongsToNewCustomPlaylistSig.emit(songInfos))
+            lambda: signalBus.addSongsToNewCustomPlaylistSig.emit(songInfos))
         menu.addSongsToPlaylistSig.connect(
-            lambda name: self.addSongsToCustomPlaylistSig.emit(name, songInfos))
+            lambda name: signalBus.addSongsToCustomPlaylistSig.emit(name, songInfos))
         menu.exec(QPoint(x, y))
 
     def exitSelectionMode(self):
@@ -557,35 +547,27 @@ class PlayingInterface(QWidget):
         """ 将信号连接到槽 """
         self.getLyricThread.crawlFinished.connect(self.__onCrawlLyricFinished)
         self.getMvUrlThread.crawlFinished.connect(self.__onCrawlMvUrlFinished)
-        self.randomPlayAllButton.clicked.connect(self.randomPlayAllSig)
+        self.randomPlayAllButton.clicked.connect(signalBus.randomPlayAllSig)
 
         # 歌曲信息卡滑动槽信号连接到槽
         self.songInfoCardChute.currentIndexChanged[int].connect(
             self.currentIndexChanged)
         self.songInfoCardChute.currentIndexChanged[str].connect(
             self.albumCoverLabel.setCover)
-        self.songInfoCardChute.switchToAlbumInterfaceSig.connect(
-            self.switchToAlbumInterfaceSig)
         self.songInfoCardChute.showPlayBarSignal.connect(self.showPlayBar)
         self.songInfoCardChute.hidePlayBarSignal.connect(self.hidePlayBar)
 
         # 将播放栏的信号连接到槽
-        self.playBar.randomPlayButton.randomPlayChanged.connect(
-            self.randomPlayChanged)
-        self.playBar.volumeSliderWidget.muteStateChanged.connect(
-            self.muteStateChanged)
         self.playBar.volumeSliderWidget.volumeSlider.valueChanged.connect(
-            self.volumeChanged)
+            signalBus.volumeChanged)
         self.playBar.fullScreenButton.fullScreenChanged.connect(
-            self.fullScreenChanged)
+            signalBus.fullScreenChanged)
         self.playBar.progressSlider.sliderMoved.connect(
-            self.progressSliderMoved)
-        self.playBar.progressSlider.clicked.connect(self.progressSliderMoved)
-        self.playBar.lastSongButton.clicked.connect(self.lastSongSig)
-        self.playBar.nextSongButton.clicked.connect(self.nextSongSig)
-        self.playBar.playButton.clicked.connect(self.togglePlayStateSig)
-        self.playBar.loopModeButton.loopModeChanged.connect(
-            self.loopModeChanged)
+            signalBus.progressSliderMoved)
+        self.playBar.progressSlider.clicked.connect(signalBus.progressSliderMoved)
+        self.playBar.lastSongButton.clicked.connect(signalBus.lastSongSig)
+        self.playBar.nextSongButton.clicked.connect(signalBus.nextSongSig)
+        self.playBar.playButton.clicked.connect(signalBus.togglePlayStateSig)
         self.playBar.pullUpArrowButton.clicked.connect(
             self.__onShowPlaylistButtonClicked)
         self.playBar.showPlaylistButton.clicked.connect(
@@ -595,9 +577,9 @@ class PlayingInterface(QWidget):
         self.playBar.enterSignal.connect(self.__settleDownPlayBar)
         self.playBar.leaveSignal.connect(self.__startSongInfoCardTimer)
         self.playBar.moreActionsMenu.clearPlayListAct.triggered.connect(
-            self.clearPlaylistSig)
+            signalBus.clearPlayingPlaylistSig)
         self.playBar.moreActionsMenu.savePlayListAct.triggered.connect(
-            self.savePlaylistSig)
+            lambda: signalBus.addSongsToNewCustomPlaylistSig.emit(self.playlist))
         self.playBar.moreActionsMenu.lyricVisibleChanged.connect(
             self.__onLyricVisibleChanged)
         self.playBar.moreActionsMenu.movieAct.triggered.connect(
@@ -608,20 +590,12 @@ class PlayingInterface(QWidget):
             self.currentIndexChanged)
         self.songListWidget.removeSongSig.connect(
             self.__removeSongFromPlaylist)
-        self.songListWidget.addSongsToCustomPlaylistSig.connect(
-            self.addSongsToCustomPlaylistSig)
-        self.songListWidget.addSongsToNewCustomPlaylistSig.connect(
-            self.addSongsToNewCustomPlaylistSig)
         self.songListWidget.selectionModeStateChanged.connect(
             self.__onSelectionModeChanged)
-        self.songListWidget.checkedSongCardNumChanged.connect(
+        self.songListWidget.checkedNumChanged.connect(
             lambda n: self.selectionModeBar.setPartButtonHidden(n > 1))
         self.songListWidget.isAllCheckedChanged.connect(
             lambda x: self.selectionModeBar.checkAllButton.setCheckedState(not x))
-        self.songListWidget.switchToAlbumInterfaceSig.connect(
-            self.switchToAlbumInterfaceSig)
-        self.songListWidget.switchToSingerInterfaceSig.connect(
-            self.switchToSingerInterfaceSig)
 
         # 选择栏信号连接到槽函数
         self.selectionModeBar.cancelButton.clicked.connect(
@@ -634,7 +608,7 @@ class PlayingInterface(QWidget):
             self.__onSelectionModeBarDeleteButtonClicked)
         self.selectionModeBar.propertyButton.clicked.connect(
             self.__onSelectionModeBarPropertyButtonClicked)
-        self.selectionModeBar.showAlbumButton.clicked.connect(
+        self.selectionModeBar.albumButton.clicked.connect(
             self.__onSelectionModeBarAlbumButtonClicked)
         self.selectionModeBar.addToButton.clicked.connect(
             self.__onSelectionModeBarAddToButtonClicked)

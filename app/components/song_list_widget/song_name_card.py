@@ -152,12 +152,17 @@ class SongNameCard(QWidget):
         self.setFixedHeight(60)
         self.resize(390, 60)
         self.setAttribute(Qt.WA_TranslucentBackground)
+
+        self.checkBox.setFocusPolicy(Qt.NoFocus)
+
         # 隐藏小部件
         self.playingLabel.hide()
         self.setWidgetHidden(True)
+
         # 分配属性和ID
         self.setObjectName("songNameCard")
         self.songNameLabel.setObjectName("songNameLabel")
+
         # 计算歌名的长度
         self.__getSongNameWidth()
         self.__initLayout()

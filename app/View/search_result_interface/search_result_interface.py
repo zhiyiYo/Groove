@@ -6,6 +6,7 @@ from math import ceil
 from common.crawler import KuWoMusicCrawler
 from common.database.entity import AlbumInfo, Playlist, SongInfo
 from common.library import Library
+from common.signal_bus import signalBus
 from common.thread.download_song_thread import DownloadSongThread
 from components.widgets.scroll_area import ScrollArea
 from components.widgets.state_tooltip import DownloadStateTooltip
@@ -21,22 +22,8 @@ from .song_group_box import SongGroupBox
 class SearchResultInterface(ScrollArea):
 
     downloadFinished = pyqtSignal(str)                   # 下载歌曲完成
-    playAlbumSig = pyqtSignal(str, str)                  # 播放专辑
-    playPlaylistSig = pyqtSignal(list)                   # 播放自定义播放列表
     playLocalSongSig = pyqtSignal(int)                   # 播放本地歌曲
     playOnlineSongSig = pyqtSignal(int)                  # 播放在线音乐
-    nextToPlaySig = pyqtSignal(list)                     # 下一首播放
-    deleteSongSig = pyqtSignal(str)                      # 删除一首歌
-    deleteAlbumSig = pyqtSignal(list)                    # 删除整张专辑
-    deletePlaylistSig = pyqtSignal(str)                  # 删除整张播放列表
-    playOneSongCardSig = pyqtSignal(SongInfo)            # 将播放列表重置为一首歌
-    renamePlaylistSig = pyqtSignal(str, str)             # 重命名播放列表
-    switchToSingerInterfaceSig = pyqtSignal(str)         # 切换到歌手界面
-    switchToPlaylistInterfaceSig = pyqtSignal(str)       # 切换到播放列表界面
-    switchToAlbumInterfaceSig = pyqtSignal(str, str)     # 切换到专辑界面
-    addSongsToPlayingPlaylistSig = pyqtSignal(list)      # 添加歌曲到正在播放
-    addSongsToNewCustomPlaylistSig = pyqtSignal(list)    # 添加歌曲到新的自定义的播放列表中
-    addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 添加歌曲到自定义的播放列表中
 
     def __init__(self, library: Library, onlineMusicPageSize=10, onlinePlayQuality='Standard quality',
                  downloadFolder='app/download', parent=None):
@@ -141,25 +128,6 @@ class SearchResultInterface(ScrollArea):
         self.searchLabel.setVisible(isVisible)
         self.checkSpellLabel.setVisible(isVisible)
         self.searchOthersLabel.setVisible(isVisible)
-
-    def __onDeletePlaylist(self, playlistName: str):
-        """ 删除一个播放列表槽函数 """
-        self.playlists.pop(playlistName)
-        self.__updateWidgetsVisible()
-        self.deletePlaylistSig.emit(playlistName)
-
-    def __onDeleteAlbum(self, songPaths: list):
-        """ 删除一张专辑槽函数 """
-        self.localSongListWidget.removeSongCards(songPaths)
-        self.playlistGroupBox.deleteSongs(songPaths)
-        self.__updateWidgetsVisible()
-        self.deleteAlbumSig.emit(songPaths)
-
-    def __onDeleteOneSong(self, songInfo: SongInfo):
-        """ 删除一首本地歌曲槽函数 """
-        self.albumGroupBox.deleteSongs([songInfo.file])
-        self.__updateWidgetsVisible()
-        self.deleteSongSig.emit(songInfo)
 
     def __downloadSong(self, songInfo: SongInfo, quality: str):
         """ 下载歌曲 """
@@ -322,64 +290,14 @@ class SearchResultInterface(ScrollArea):
 
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
-        # 专辑分组框信号连接到槽
-        self.albumGroupBox.playSig.connect(self.playAlbumSig)
-        self.albumGroupBox.nextToPlaySig.connect(self.nextToPlaySig)
-        self.albumGroupBox.deleteAlbumSig.connect(self.__onDeleteAlbum)
-        self.albumGroupBox.switchToAlbumInterfaceSig.connect(
-            self.switchToAlbumInterfaceSig)
-        self.albumGroupBox.addAlbumToPlayingSig.connect(
-            self.addSongsToPlayingPlaylistSig)
-        self.albumGroupBox.addAlbumToCustomPlaylistSig.connect(
-            self.addSongsToCustomPlaylistSig)
-        self.albumGroupBox.addAlbumToNewCustomPlaylistSig.connect(
-            self.addSongsToNewCustomPlaylistSig)
-        self.albumGroupBox.switchToSingerInterfaceSig.connect(
-            self.switchToSingerInterfaceSig)
-
         # 本地歌曲列表信号连接到槽
         self.localSongListWidget.playSignal.connect(self.playLocalSongSig)
-        self.localSongListWidget.playOneSongSig.connect(
-            self.playOneSongCardSig)
-        self.localSongListWidget.nextToPlayOneSongSig.connect(
-            lambda songInfo: self.nextToPlaySig.emit([songInfo]))
-        self.localSongListWidget.addSongsToCustomPlaylistSig.connect(
-            self.addSongsToCustomPlaylistSig)
-        self.localSongListWidget.addSongsToNewCustomPlaylistSig.connect(
-            self.addSongsToNewCustomPlaylistSig)
-        self.localSongListWidget.addSongToPlayingSignal.connect(
-            lambda songInfo: self.addSongsToPlayingPlaylistSig.emit([songInfo]))
-        self.localSongListWidget.switchToAlbumInterfaceSig.connect(
-            self.switchToAlbumInterfaceSig)
-        self.localSongListWidget.switchToSingerInterfaceSig.connect(
-            self.switchToSingerInterfaceSig)
-        self.localSongListWidget.removeSongSignal.connect(
-            self.__onDeleteOneSong)
 
         # 在线歌曲列表信号连接到槽函数
         self.onlineSongListWidget.playSignal.connect(self.playOnlineSongSig)
         self.onlineSongListWidget.downloadSig.connect(self.__downloadSong)
-        self.onlineSongListWidget.playOneSongSig.connect(
-            self.playOneSongCardSig)
-        self.onlineSongListWidget.nextToPlayOneSongSig.connect(
-            lambda songInfo: self.nextToPlaySig.emit([songInfo]))
         self.onlineSongGroupBox.loadMoreSignal.connect(
             self.__loadMoreOnlineMusic)
-
-        # 播放列表分组框信号连接到槽函数
-        self.playlistGroupBox.playSig.connect(self.playPlaylistSig)
-        self.playlistGroupBox.nextToPlaySig.connect(self.nextToPlaySig)
-        self.playlistGroupBox.deletePlaylistSig.connect(
-            self.__onDeletePlaylist)
-        self.playlistGroupBox.renamePlaylistSig.connect(self.renamePlaylistSig)
-        self.playlistGroupBox.switchToPlaylistInterfaceSig.connect(
-            self.switchToPlaylistInterfaceSig)
-        self.playlistGroupBox.addSongsToPlayingPlaylistSig.connect(
-            self.addSongsToPlayingPlaylistSig)
-        self.playlistGroupBox.addSongsToCustomPlaylistSig.connect(
-            self.addSongsToCustomPlaylistSig)
-        self.playlistGroupBox.addSongsToNewCustomPlaylistSig.connect(
-            self.addSongsToNewCustomPlaylistSig)
 
         # 线程信号连接到槽函数
         self.downloadSongThread.finished.connect(self.__onDownloadAllComplete)

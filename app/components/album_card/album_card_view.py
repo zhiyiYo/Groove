@@ -3,14 +3,15 @@ from typing import List
 
 from common.database.entity import AlbumInfo
 from common.library import Library
+from common.signal_bus import signalBus
 from common.thread.save_album_info_thread import SaveAlbumInfoThread
 from components.dialog_box.album_info_edit_dialog import AlbumInfoEditDialog
 from components.dialog_box.message_dialog import MessageDialog
-from components.layout.grid_layout import GridLayout
-from components.layout.h_box_layout import HBoxLayout
+from components.layout import FlowLayout, HBoxLayout
 from components.widgets.label import ClickableLabel
-from PyQt5.QtCore import (QMargins, QParallelAnimationGroup, QPoint, Qt,
+from PyQt5.QtCore import (QMargins, QParallelAnimationGroup, QPoint, QSize, Qt,
                           pyqtSignal)
+from PyQt5.QtGui import QResizeEvent
 from PyQt5.QtWidgets import QApplication, QWidget
 
 from .album_card import AlbumCardBase, AlbumCardFactory, AlbumCardType
@@ -19,20 +20,12 @@ from .album_card import AlbumCardBase, AlbumCardFactory, AlbumCardType
 class AlbumCardViewBase(QWidget):
     """ 专辑卡视图基类 """
 
-    playSig = pyqtSignal(str, str)                         # 播放
-    nextPlaySig = pyqtSignal(list)                         # 下一首播放
-    deleteAlbumSig = pyqtSignal(str, str)                  # 删除专辑
-    addAlbumToPlayingSig = pyqtSignal(list)                # 添加到正在播放
-    addAlbumToNewCustomPlaylistSig = pyqtSignal(list)      # 添加到新建的播放列表
-    addAlbumToCustomPlaylistSig = pyqtSignal(str, list)    # 添加到自定义播放列表
+    checkedNumChanged = pyqtSignal(int, bool)              # 选中专辑卡数量改变
     checkedStateChanged = pyqtSignal(AlbumCardBase, bool)  # 专辑卡选中状态改变
-    switchToSingerInterfaceSig = pyqtSignal(str)           # 切换到歌手界面
-    switchToAlbumInterfaceSig = pyqtSignal(str, str)       # 切换到专辑界面
     showBlurAlbumBackgroundSig = pyqtSignal(QPoint, str)   # 显示磨砂背景
     hideBlurAlbumBackgroundSig = pyqtSignal()              # 隐藏磨砂背景
-    editAlbumInfoSig = pyqtSignal(AlbumInfo, AlbumInfo, str)
 
-    def __init__(self, library: Library, albumInfos: List[AlbumInfo], cardType: AlbumCardType, create=True, parent=None):
+    def __init__(self, library: Library, albumInfos: List[AlbumInfo], cardType: AlbumCardType, create=True, isGrouped=False, parent=None):
         """
         Parameters
         ----------
@@ -48,14 +41,20 @@ class AlbumCardViewBase(QWidget):
         create: bool
             是否直接创建歌曲卡
 
+        isGrouped: bool
+            是否被分组
+
         parent:
             父级窗口
         """
         super().__init__(parent=parent)
         self.library = library
         self.albumInfos = albumInfos
+        self.isGrouped = isGrouped
         self.cardType = cardType
         self.albumCards = []  # type:List[AlbumCardBase]
+        self.checkedAlbumCards = []  # type:List[AlbumCardBase]
+        self.isInSelectionMode = False
         self.hideCheckBoxAniGroup = QParallelAnimationGroup(self)
         self.hideCheckBoxAniGroup.finished.connect(self.__hideAllCheckBox)
 
@@ -76,27 +75,23 @@ class AlbumCardViewBase(QWidget):
 
     def _connectCardSignalToSlot(self, card: AlbumCardBase):
         """ 将专辑卡信号连接到槽函数 """
-        card.playSignal.connect(self.playSig)
         card.deleteCardSig.connect(self.__showDeleteCardDialog)
-        card.showAlbumInfoEditDialogSig.connect(self.__showAlbumInfoEditDialog)
-        card.switchToAlbumInterfaceSig.connect(self.switchToAlbumInterfaceSig)
+        card.showAlbumInfoEditDialogSig.connect(self.showAlbumInfoEditDialog)
         card.nextPlaySignal.connect(
-            lambda s, a: self.nextPlaySig.emit(self.__getAlbumSongInfos(s, a)))
+            lambda s, a: signalBus.nextToPlaySig.emit(self.getAlbumSongInfos(s, a)))
         card.addToPlayingSignal.connect(
-            lambda s, a: self.addAlbumToPlayingSig.emit(self.__getAlbumSongInfos(s, a)))
+            lambda s, a: signalBus.addSongsToPlayingPlaylistSig.emit(self.getAlbumSongInfos(s, a)))
         card.addAlbumToCustomPlaylistSig.connect(
-            lambda n, s, a: self.addAlbumToCustomPlaylistSig.emit(n, self.__getAlbumSongInfos(s, a)))
+            lambda n, s, a: signalBus.addSongsToCustomPlaylistSig.emit(n, self.getAlbumSongInfos(s, a)))
         card.addAlbumToNewCustomPlaylistSig.connect(
-            lambda s, a: self.addAlbumToNewCustomPlaylistSig.emit(self.__getAlbumSongInfos(s, a)))
-        card.checkedStateChanged.connect(self.checkedStateChanged)
+            lambda s, a: signalBus.addSongsToNewCustomPlaylistSig.emit(self.getAlbumSongInfos(s, a)))
+        card.checkedStateChanged.connect(self.__onAlbumCardCheckedStateChanged)
         card.showBlurAlbumBackgroundSig.connect(
             self.showBlurAlbumBackgroundSig)
         card.hideBlurAlbumBackgroundSig.connect(
             self.hideBlurAlbumBackgroundSig)
-        card.switchToSingerInterfaceSig.connect(
-            self.switchToSingerInterfaceSig)
 
-    def __getAlbumSongInfos(self, singer: str, album: str):
+    def getAlbumSongInfos(self, singer: str, album: str):
         """ 获取一张专辑的歌曲信息列表 """
         albumInfo = self.library.albumInfoController.getAlbumInfo(
             singer, album)
@@ -112,10 +107,11 @@ class AlbumCardViewBase(QWidget):
             self.tr("it won't be on be this device anymore.")
 
         w = MessageDialog(title, content, self.window())
-        w.yesSignal.connect(lambda: self.deleteAlbumSig.emit(singer, album))
+        w.yesSignal.connect(lambda: signalBus.removeSongSig.emit(
+            [i.file for i in self.getAlbumSongInfos(singer, album)]))
         w.exec_()
 
-    def __showAlbumInfoEditDialog(self, singer: str, album: str):
+    def showAlbumInfoEditDialog(self, singer: str, album: str):
         """ 显示专辑信息编辑界面信号 """
         albumInfo = self.library.albumInfoController.getAlbumInfo(
             singer, album)
@@ -146,7 +142,7 @@ class AlbumCardViewBase(QWidget):
         self.sender().quit()
         self.sender().wait()
         self.sender().deleteLater()
-        self.editAlbumInfoSig.emit(oldAlbumInfo, newAlbumInfo, coverPath)
+        signalBus.editAlbumInfoSig.emit(oldAlbumInfo, newAlbumInfo, coverPath)
 
     def setAlbumCards(self, albumCards: List[AlbumCardBase]):
         """ 设置视图中的专辑卡，不生成新的专辑卡 """
@@ -183,10 +179,59 @@ class AlbumCardViewBase(QWidget):
             self.albumCards[i].updateWindow(albumInfo)
             QApplication.processEvents()
 
-        # 将专辑卡添加到布局中
         self._addAlbumCardsToLayout()
         self.setStyle(QApplication.style())
         self.adjustSize()
+
+    def __onAlbumCardCheckedStateChanged(self, albumCard: AlbumCardBase, isChecked: bool):
+        """ 专辑卡选中状态改变对应的槽函数 """
+        N0 = len(self.checkedAlbumCards)
+
+        if albumCard not in self.checkedAlbumCards and isChecked:
+            self.checkedAlbumCards.append(albumCard)
+        elif albumCard in self.checkedAlbumCards and not isChecked:
+            self.checkedAlbumCards.remove(albumCard)
+        else:
+            return
+
+        N1 = len(self.checkedAlbumCards)
+
+        if N0 == 0 and N1 > 0:
+            self.setSelectionModeOpen(True)
+        elif N1 == 0 and not self.isGrouped:
+            self.setSelectionModeOpen(False)
+
+        isAllChecked = N1 == len(self.albumCards)
+        self.checkedNumChanged.emit(N1, isAllChecked)
+
+        if self.isGrouped:
+            self.checkedStateChanged.emit(albumCard, isChecked)
+
+    def setSelectionModeOpen(self, isOpen: bool):
+        """ 设置选择模式是否开启 """
+        if self.isInSelectionMode == isOpen:
+            return
+
+        self.isInSelectionMode = isOpen
+        for albumCard in self.albumCards:
+            albumCard.setSelectionModeOpen(isOpen)
+
+        if not isOpen and not self.isGrouped:
+            self.hideCheckBoxAniGroup.start()
+
+    def setAllChecked(self, isChecked: bool):
+        """ 设置所有专辑卡的选中状态 """
+        for albumCard in self.albumCards:
+            albumCard.setChecked(isChecked)
+
+    def uncheckAll(self):
+        """ 取消所有已处于选中状态的专辑卡的选中状态 """
+        for albumCard in self.checkedAlbumCards.copy():
+            albumCard.setChecked(False)
+
+    def adjustHeight(self):
+        """ 调整高度 """
+        raise NotImplementedError
 
 
 class GridAlbumCardView(AlbumCardViewBase):
@@ -195,7 +240,8 @@ class GridAlbumCardView(AlbumCardViewBase):
     titleClicked = pyqtSignal()
 
     def __init__(self, library: Library, albumInfos: List[AlbumInfo], cardType: AlbumCardType,
-                 spacings=(10, 20), margins=QMargins(0, 0, 0, 0), title: str = None, create=True, parent=None):
+                 spacings=(10, 20), margins=QMargins(0, 0, 0, 0), title: str = None, create=True,
+                 isGrouped=False, parent=None):
         """
         Parameters
         ----------
@@ -220,20 +266,21 @@ class GridAlbumCardView(AlbumCardViewBase):
         create: bool
             是否立即创建专辑卡
 
+        isGrouped: bool
+            是否被分组
+
         parent:
             父级窗口
         """
-        super().__init__(library, albumInfos, cardType, create, parent)
-        self.column = 5
+        super().__init__(library, albumInfos, cardType, create, isGrouped, parent)
         self.title = title or ''
         self.titleLabel = ClickableLabel(self.title, self)
 
-        self.gridLayout = GridLayout(self)
-        margins += QMargins(0, 45*bool(self.title), 0, 0)
-        self.gridLayout.setContentsMargins(margins)
-        self.gridLayout.setHorizontalSpacing(spacings[0])
-        self.gridLayout.setVerticalSpacing(spacings[1])
-        self.gridLayout.setAlignment(Qt.AlignLeft)
+        self.flowLayout = FlowLayout(self)
+        margins_ = margins + QMargins(0, 45*bool(self.title), 0, 0)
+        self.flowLayout.setContentsMargins(margins_)
+        self.flowLayout.setHorizontalSpacing(spacings[0])
+        self.flowLayout.setVerticalSpacing(spacings[1])
 
         self.titleLabel.setVisible(bool(self.title))
         self.titleLabel.move(8, 6)
@@ -247,14 +294,12 @@ class GridAlbumCardView(AlbumCardViewBase):
 
     def _addAlbumCardsToLayout(self):
         """ 将所有专辑卡添加到布局 """
-        for i, card in enumerate(self.albumCards):
-            row = i//self.column
-            column = i-row*self.column
-            self.gridLayout.addWidget(card, row, column)
+        for card in self.albumCards:
+            self.flowLayout.addWidget(card)
             QApplication.processEvents()
 
     def _removeAlbumCardsFromLayout(self):
-        self.gridLayout.removeAllWidgets()
+        self.flowLayout.removeAllWidgets()
 
     def setAlbumCards(self, albumCards: List[AlbumCardBase]):
         self.albumCards = albumCards
@@ -267,20 +312,17 @@ class GridAlbumCardView(AlbumCardViewBase):
 
         self._addAlbumCardsToLayout()
 
-    def resizeEvent(self, e):
-        column = 2 if self.width() <= 670 else (self.width()-670)//220+3
-        if self.column == column:
-            return
-
-        self.column = column
-        self.gridLayout.updateColumnNum(column, 210, 290)
+    def adjustHeight(self):
+        """ 调整高度 """
+        h = self.flowLayout.heightForWidth(self.width())
+        self.resize(self.width(), h)
 
 
 class HorizonAlbumCardView(AlbumCardViewBase):
     """ 水平专辑卡视图 """
 
     def __init__(self, library: Library, albumInfos: List[AlbumInfo], cardType: AlbumCardType,
-                 spacing=20, margins=QMargins(0, 0, 0, 0), create=True, parent=None):
+                 spacing=20, margins=QMargins(0, 0, 0, 0), create=True, isGrouped=False, parent=None):
         """
         Parameters
         ----------
@@ -296,16 +338,19 @@ class HorizonAlbumCardView(AlbumCardViewBase):
         spacing: int
             专辑卡水平间距
 
+        margins: QMargins
+            布局的外边距
+
         create: bool
             是否直接创建歌曲卡
 
-        margins: QMargins
-            布局的外边距
+        isGrouped: bool
+            是否被分组
 
         parent:
             父级窗口
         """
-        super().__init__(library, albumInfos, cardType, create, parent)
+        super().__init__(library, albumInfos, cardType, create, isGrouped, parent)
         self.hBoxLayout = HBoxLayout(self)
         self.hBoxLayout.setSpacing(spacing)
         self.hBoxLayout.setContentsMargins(margins)

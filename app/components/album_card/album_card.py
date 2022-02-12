@@ -2,6 +2,7 @@
 from enum import Enum
 
 from common.database.entity import AlbumInfo
+from common.signal_bus import signalBus
 from components.widgets.menu import AddToMenu, DWMMenu
 from PyQt5.QtCore import QPoint, Qt, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent
@@ -24,7 +25,7 @@ class AlbumCard(AlbumCardBase):
         """ 显示右击菜单 """
         menu = AlbumCardContextMenu(parent=self)
         menu.playAct.triggered.connect(
-            lambda: self.playSignal.emit(self.singer, self.album))
+            lambda: signalBus.playAlbumSig.emit(self.singer, self.album))
         menu.nextToPlayAct.triggered.connect(
             lambda: self.nextPlaySignal.emit(self.singer, self.album))
         menu.deleteAct.triggered.connect(
@@ -32,7 +33,7 @@ class AlbumCard(AlbumCardBase):
         menu.editInfoAct.triggered.connect(self.showAlbumInfoEditDialog)
         menu.selectAct.triggered.connect(self._onSelectActionTriggered)
         menu.showSingerAct.triggered.connect(
-            lambda: self.switchToSingerInterfaceSig.emit(self.singer))
+            lambda: signalBus.switchToSingerInterfaceSig.emit(self.singer))
 
         menu.addToMenu.playingAct.triggered.connect(
             lambda: self.addToPlayingSignal.emit(self.singer, self.album))
@@ -50,13 +51,11 @@ class LocalSearchedAlbumCard(AlbumCardBase):
     def contextMenuEvent(self, event: QContextMenuEvent):
         menu = LocalSearchedAlbumCardContextMenu(parent=self)
         menu.playAct.triggered.connect(
-            lambda: self.playSignal.emit(self.singer, self.album))
+            lambda: signalBus.playAlbumSig.emit(self.singer, self.album))
         menu.nextToPlayAct.triggered.connect(
             lambda: self.nextPlaySignal.emit(self.singer, self.album))
         menu.showSingerAct.triggered.connect(
-            lambda: self.switchToSingerInterfaceSig.emit(self.singer))
-        menu.deleteAct.triggered.connect(
-            lambda: self.deleteCardSig.emit(self.singer, self.album))
+            lambda: signalBus.switchToSingerInterfaceSig.emit(self.singer))
 
         menu.addToMenu.playingAct.triggered.connect(
             lambda: self.addToPlayingSignal.emit(self.singer, self.album))
@@ -84,7 +83,7 @@ class SingerInterfaceAlbumCard(AlbumCardBase):
         """ 显示右击菜单 """
         menu = SingerInterfaceAlbumCardContextMenu(parent=self)
         menu.playAct.triggered.connect(
-            lambda: self.playSignal.emit(self.singer, self.album))
+            lambda: signalBus.playAlbumSig.emit(self.singer, self.album))
         menu.nextToPlayAct.triggered.connect(
             lambda: self.nextPlaySignal.emit(self.singer, self.album))
         menu.addToMenu.playingAct.triggered.connect(
@@ -145,7 +144,6 @@ class LocalSearchedAlbumCardContextMenu(DWMMenu):
         self.playAct = QAction(self.tr("Play"), self)
         self.nextToPlayAct = QAction(self.tr("Play next"), self)
         self.pinToStartMenuAct = QAction(self.tr('Pin to Start'), self)
-        self.deleteAct = QAction(self.tr("Delete"), self)
         self.showSingerAct = QAction(self.tr("Show artist"), self)
         self.addToMenu = AddToMenu(self.tr("Add to"), self)
 
@@ -154,7 +152,7 @@ class LocalSearchedAlbumCardContextMenu(DWMMenu):
         # 将子菜单添加到主菜单
         self.addMenu(self.addToMenu)
         self.addActions(
-            [self.showSingerAct, self.pinToStartMenuAct, self.deleteAct])
+            [self.showSingerAct, self.pinToStartMenuAct])
 
 
 class SingerInterfaceAlbumCardContextMenu(DWMMenu):

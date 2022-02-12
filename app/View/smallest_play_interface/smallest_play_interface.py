@@ -4,6 +4,7 @@ from typing import List
 
 from common.database.entity import SongInfo
 from common.os_utils import getCoverPath
+from common.signal_bus import signalBus
 from components.buttons.circle_button import CircleButton
 from components.frameless_window import FramelessWindow
 from components.widgets.label import BlurCoverLabel
@@ -22,9 +23,6 @@ class SmallestPlayInterface(FramelessWindow):
 
     CYCLE_LEFT_SHIFT = 0
     CYCLE_RIGHT_SHIFT = 1
-    nextSongSig = pyqtSignal()
-    lastSongSig = pyqtSignal()
-    togglePlayStateSig = pyqtSignal()
     exitSmallestPlayInterfaceSig = pyqtSignal()
 
     def __init__(self, playlist: List[SongInfo] = None, parent=None):
@@ -74,9 +72,9 @@ class SmallestPlayInterface(FramelessWindow):
 
         # 信号连接到槽
         self.aniGroup.finished.connect(self.__switchSongInfoCard)
-        self.lastSongButton.clicked.connect(self.lastSongSig)
-        self.nextSongButton.clicked.connect(self.nextSongSig)
-        self.playButton.clicked.connect(self.togglePlayStateSig)
+        self.lastSongButton.clicked.connect(signalBus.lastSongSig)
+        self.nextSongButton.clicked.connect(signalBus.nextSongSig)
+        self.playButton.clicked.connect(signalBus.togglePlayStateSig)
         self.titleBar.closeButton.clicked.connect(self.hide)
         self.exitSmallestModeButton.clicked.connect(
             self.exitSmallestPlayInterfaceSig)
@@ -291,7 +289,7 @@ class SmallestPlayInterface(FramelessWindow):
         isResetIndex: bool
             是否从头播放歌曲
         """
-        self.playlist = deepcopy(playlist) if playlist else []
+        self.playlist = playlist.copy() if playlist else []
         self.currentIndex = 0 if isResetIndex else self.currentIndex
         if playlist:
             self.curSongInfoCard.updateCard(self.playlist[0])
@@ -307,7 +305,7 @@ class SmallestPlayInterface(FramelessWindow):
 
     def clearPlaylist(self):
         """ 清空播放列表 """
-        self.playlist = []
+        self.playlist.clear()
 
     def __completeShift(self, index):
         """ 完成移位，只在调用 `setCurrentIndex()` 时调用 """

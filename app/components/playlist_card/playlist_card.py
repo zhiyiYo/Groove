@@ -2,6 +2,7 @@
 from enum import Enum
 
 from common.database.entity import Playlist, SongInfo
+from common.signal_bus import signalBus
 from components.widgets.menu import AddToMenu, DWMMenu
 from PyQt5.QtWidgets import QAction
 
@@ -48,8 +49,6 @@ class LocalSearchedPlaylistCard(PlaylistCardBase):
             lambda: self.playSig.emit(self.name))
         menu.nextToPlayAct.triggered.connect(
             lambda: self.nextToPlaySig.emit(self.name))
-        menu.deleteAct.triggered.connect(
-            lambda: self.deleteCardSig.emit(self.name))
         menu.renameAct.triggered.connect(
             lambda: self.renamePlaylistSig.emit(self.name))
         menu.addToMenu.playingAct.triggered.connect(
@@ -107,14 +106,13 @@ class LocalSearchedPlaylistCardContextMenu(DWMMenu):
         self.addToMenu = AddToMenu(self.tr("Add to"), self)
         self.renameAct = QAction(self.tr("Rename"), self)
         self.pinToStartMenuAct = QAction(self.tr('Pin to Start'), self)
-        self.deleteAct = QAction(self.tr("Delete"), self)
 
         # 添加动作到菜单
         self.addActions([self.playAct, self.nextToPlayAct])
         # 将子菜单添加到主菜单
         self.addMenu(self.addToMenu)
         self.addActions(
-            [self.renameAct, self.pinToStartMenuAct, self.deleteAct])
+            [self.renameAct, self.pinToStartMenuAct])
 
 
 class PlaylistCardFactory:

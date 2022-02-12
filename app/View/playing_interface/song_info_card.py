@@ -1,6 +1,7 @@
 # coding:utf-8
 from common.database.entity import SongInfo
 from common.os_utils import getCoverPath
+from common.signal_bus import signalBus
 from components.widgets.label import ClickableLabel
 from PyQt5.QtCore import QEvent, QFile, Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QPixmap
@@ -12,7 +13,6 @@ class SongInfoCard(QWidget):
 
     showPlayBarSignal = pyqtSignal()
     hidePlayBarSignal = pyqtSignal()
-    switchToAlbumInterfaceSig = pyqtSignal(str, str)
 
     def __init__(self, songInfo=SongInfo(), parent=None):
         super().__init__(parent)
@@ -45,9 +45,9 @@ class SongInfoCard(QWidget):
 
         # 信号连接到槽
         self.songNameLabel.clicked.connect(
-            lambda: self.switchToAlbumInterfaceSig.emit(self.singer, self.album))
+            lambda: signalBus.switchToAlbumInterfaceSig.emit(self.singer, self.album))
         self.singerAlbumLabel.clicked.connect(
-            lambda: self.switchToAlbumInterfaceSig.emit(self.singer, self.album))
+            lambda: signalBus.switchToAlbumInterfaceSig.emit(self.singer, self.album))
 
     def setSongInfo(self, songInfo: SongInfo):
         """ 设置歌曲信息 """

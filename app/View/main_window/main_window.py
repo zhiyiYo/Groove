@@ -10,6 +10,7 @@ from common.database import DBInitializer
 from common.database.entity import AlbumInfo, Playlist, SongInfo
 from common.library import Library
 from common.os_utils import moveToTrash
+from common.signal_bus import signalBus
 from common.thread.get_online_song_url_thread import GetOnlineSongUrlThread
 from common.thread.library_thread import LibraryThread
 from components.dialog_box.create_playlist_dialog import CreatePlaylistDialog
@@ -24,10 +25,10 @@ from components.video_window import VideoWindow
 from components.widgets.stacked_widget import (OpacityAniStackedWidget,
                                                PopUpAniStackedWidget)
 from components.widgets.state_tooltip import StateTooltip
-from PyQt5.QtSql import QSqlDatabase
 from PyQt5.QtCore import QEasingCurve, QEvent, QEventLoop, QFile, Qt, QTimer
 from PyQt5.QtGui import QColor, QIcon, QPixmap
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist
+from PyQt5.QtSql import QSqlDatabase
 from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
                              QWidget, qApp)
 from PyQt5.QtWinExtras import QtWin
@@ -176,7 +177,6 @@ class MainWindow(FramelessWindow):
         ])
 
         self.songTabSongListWidget = self.myMusicInterface.songListWidget
-        self.albumCardInterface = self.myMusicInterface.albumCardInterface
 
     def initLibrary(self):
         """ 初始化歌曲库 """
@@ -379,9 +379,7 @@ class MainWindow(FramelessWindow):
         # 如果没有上一次的播放列表数据，就设置默认的播放列表
         if not self.mediaPlaylist.playlist:
             songInfos = self.songTabSongListWidget.songInfos
-            self.playingInterface.setPlaylist(songInfos)
-            self.smallestPlayInterface.setPlaylist(songInfos)
-            self.mediaPlaylist.setPlaylist(songInfos)
+            self.setPlaylist(songInfos)
             self.mediaPlaylist.playlistType = PlaylistType.ALL_SONG_PLAYLIST
             self.songTabSongListWidget.setPlay(0)
             if songInfos:
@@ -462,10 +460,8 @@ class MainWindow(FramelessWindow):
     def onVolumeChanged(self, volume: int):
         """ 音量滑动条数值改变时更换图标并设置音量 """
         self.player.setVolume(volume)
-        if self.sender() is self.playBar:
-            self.playingInterface.setVolume(volume)
-        elif self.sender() is self.playingInterface:
-            self.playBar.setVolume(volume)
+        self.playBar.setVolume(volume)
+        self.playingInterface.setVolume(volume)
 
     def setRandomPlay(self, isRandomPlay: bool):
         """ 选择随机播放模式 """
@@ -573,11 +569,8 @@ class MainWindow(FramelessWindow):
         # 记录按下随机播放前的循环模式
         self.mediaPlaylist.prePlayMode = loopMode
 
-        # 更新按钮样式
-        if self.sender() == self.playBar:
-            self.playingInterface.setLoopMode(loopMode)
-        elif self.sender() == self.playingInterface:
-            self.playBar.loopModeButton.setLoopMode(loopMode)
+        self.playBar.setLoopMode(loopMode)
+        self.playingInterface.setLoopMode(loopMode)
 
         if not self.mediaPlaylist.randPlayBtPressed:
             # 随机播放按钮没按下时，直接设置播放模式为循环模式按钮的状态
@@ -800,7 +793,7 @@ class MainWindow(FramelessWindow):
         # 增加导航历史
         self.navigationHistories.append(("totalStackWidget", 1))
 
-    def showPlaylist(self):
+    def showPlayingPlaylist(self):
         """ 显示正在播放界面的播放列表 """
         self.playingInterface.showPlaylist()
         self.playingInterface.playBar.pullUpArrowButton.setArrowDirection(
@@ -809,7 +802,7 @@ class MainWindow(FramelessWindow):
             self.showPlayingInterface()
 
     def clearPlaylist(self):
-        """ 清空播放列表 """
+        """ 清空正在播放列表 """
         self.mediaPlaylist.playlistType = PlaylistType.NO_PLAYLIST
         self.mediaPlaylist.clear()
         self.playingInterface.clearPlaylist()
@@ -836,13 +829,10 @@ class MainWindow(FramelessWindow):
         if self.subStackWidget.currentWidget() is self.labelNavigationInterface:
             self.subStackWidget.setCurrentIndex(0)
 
-    def showCreatePlaylistDialog(self, songInfos: List[SongInfo] = None):
-        """ 显示创建播放列表面板 """
-
     def onSelectionModeStateChanged(self, isOpen: bool):
         """ 进入/退出选择模式信号的槽函数 """
         self.isInSelectionMode = isOpen
-        if self.sender() != self.playingInterface:
+        if not self.playingInterface.isVisible():
             self.playBar.setHidden(isOpen)
 
     def exitSelectionMode(self):
@@ -1004,7 +994,7 @@ class MainWindow(FramelessWindow):
 
         # 增加导航历史
         index = self.myMusicInterface.stackedWidget.indexOf(
-            self.albumCardInterface)
+            self.myMusicInterface.albumTabInterface)
         self.navigationHistories.append(('myMusicInterfaceStackWidget', index))
 
     def onMyMusicInterfaceStackWidgetIndexChanged(self, index):
@@ -1051,14 +1041,7 @@ class MainWindow(FramelessWindow):
         self.smallestPlayInterface.setPlaylist(playlist, reset)
         self.play()
 
-    def onSongCardNextPlay(self, songInfo: SongInfo):
-        """ 下一首播放动作触发对应的槽函数 """
-        reset = not self.mediaPlaylist.playlist
-        index = self.mediaPlaylist.currentIndex()
-        self.mediaPlaylist.insertSong(index + 1, songInfo)
-        self.updatePlaylist(reset)
-
-    def onMultiSongsNextPlay(self, songInfos: List[SongInfo]):
+    def onSongsNextToPlay(self, songInfos: List[SongInfo]):
         """ 多首歌下一首播放动作触发对应的槽函数 """
         reset = not self.mediaPlaylist.playlist
         index = self.mediaPlaylist.currentIndex()
@@ -1263,20 +1246,20 @@ class MainWindow(FramelessWindow):
         """ 重命名播放列表槽函数 """
         self.playlistCardInterface.renamePlaylist(old, new)
         self.navigationInterface.updateWindow()
+        # TODO:更新搜索界面
 
     def onDeleteCustomPlaylist(self, name: str):
         """ 删除自定义播放列表槽函数 """
         self.navigationInterface.updateWindow()
-        if self.sender() is self.playlistInterface:
-            self.playlistCardInterface.deletePlaylistCard(name)
+        self.playlistCardInterface.deletePlaylistCard(name)
+        if self.playlistInterface.isVisible():
             self.titleBar.returnButton.click()
-        elif self.sender() is self.searchResultInterface:
-            self.playlistCardInterface.deleteOnePlaylistCard(name)
 
     def onFileRemoved(self, files: List[str]):
         """ 移除多个文件槽函数 """
         self.myMusicInterface.deleteSongs(files)
         self.albumInterface.songListWidget.removeSongCards(files)
+        # TODO:更新搜索界面
         self.searchResultInterface.localSongListWidget.removeSongCards(files)
 
     def onFileAdded(self, songInfos: List[SongInfo]):
@@ -1324,73 +1307,76 @@ class MainWindow(FramelessWindow):
         # 将导航界面信号连接到槽函数
         self.navigationInterface.displayModeChanged.connect(
             self.onNavigationDisplayModeChanged)
-        self.navigationInterface.showPlayingInterfaceSig.connect(
-            self.showPlayingInterface)
         self.navigationInterface.showCreatePlaylistDialogSig.connect(
             self.showCreatePlaylistDialog)
-        self.navigationInterface.switchToSettingInterfaceSig.connect(
-            self.switchToSettingInterface)
-        self.navigationInterface.switchToMyMusicInterfaceSig.connect(
-            self.switchToMyMusicInterface)
-        self.navigationInterface.switchToPlaylistCardInterfaceSig.connect(
-            self.switchToPlaylistCardInterface)
-        self.navigationInterface.switchToPlaylistInterfaceSig.connect(
-            self.switchToPlaylistInterface)
         self.navigationInterface.searchSig.connect(
             self.switchToSearchResultInterface)
 
-        # 缩略图任务栏信号连接到槽函数
-        self.thumbnailToolBar.togglePlayStateSig.connect(self.togglePlayState)
-        self.thumbnailToolBar.lastSongSig.connect(self.mediaPlaylist.previous)
-        self.thumbnailToolBar.nextSongSig.connect(self.mediaPlaylist.next)
-
         # 将播放栏信号连接到槽函数
-        self.playBar.muteStateChanged.connect(self.setMute)
-        self.playBar.nextSongSig.connect(self.mediaPlaylist.next)
-        self.playBar.lastSongSig.connect(self.mediaPlaylist.previous)
-        self.playBar.togglePlayStateSig.connect(self.togglePlayState)
-        self.playBar.randomPlayChanged.connect(self.setRandomPlay)
-        self.playBar.showPlayingInterfaceSig.connect(self.showPlayingInterface)
-        self.playBar.volumeChanged.connect(self.onVolumeChanged)
-        self.playBar.progressSliderMoved.connect(self.onProgressSliderMoved)
-        self.playBar.loopModeChanged.connect(self.switchLoopMode)
-        self.playBar.fullScreenSig.connect(lambda: self.setFullScreen(True))
-        self.playBar.showPlaylistSig.connect(self.showPlaylist)
-        self.playBar.clearPlaylistSig.connect(self.clearPlaylist)
-        self.playBar.showSmallestPlayInterfaceSig.connect(
-            self.showSmallestPlayInterface)
         self.playBar.savePlaylistSig.connect(
             lambda: self.showCreatePlaylistDialog(self.mediaPlaylist.playlist))
+
+        # 将信号总线信号连接到槽函数
+        signalBus.nextSongSig.connect(self.mediaPlaylist.next)
+        signalBus.lastSongSig.connect(self.mediaPlaylist.previous)
+        signalBus.togglePlayStateSig.connect(self.togglePlayState)
+        signalBus.progressSliderMoved.connect(self.onProgressSliderMoved)
+
+        signalBus.muteStateChanged.connect(self.setMute)
+        signalBus.volumeChanged.connect(self.onVolumeChanged)
+
+        signalBus.loopModeChanged.connect(self.switchLoopMode)
+        signalBus.randomPlayChanged.connect(self.setRandomPlay)
+
+        signalBus.fullScreenChanged.connect(self.setFullScreen)
+
+        signalBus.playAlbumSig.connect(self.playAlbum)
+        signalBus.randomPlayAllSig.connect(self.randomPlayAll)
+        signalBus.playCheckedSig.connect(self.playCustomPlaylist)
+        signalBus.playOneSongCardSig.connect(self.playOneSongCard)
+        signalBus.nextToPlaySig.connect(self.onSongsNextToPlay)
+
+        signalBus.editSongInfoSig.connect(self.onEditSongInfo)
+        signalBus.editAlbumInfoSig.connect(self.onEditAlbumInfo)
+
+        signalBus.addSongsToPlayingPlaylistSig.connect(
+            self.addSongsToPlayingPlaylist)
+        signalBus.addSongsToCustomPlaylistSig.connect(
+            self.addSongsToCustomPlaylist)
+        signalBus.addSongsToNewCustomPlaylistSig.connect(
+            self.showCreatePlaylistDialog)
+        signalBus.selectionModeStateChanged.connect(
+            self.onSelectionModeStateChanged)
+
+        signalBus.removeSongSig.connect(self.deleteSongs)
+        signalBus.clearPlayingPlaylistSig.connect(self.clearPlaylist)
+        signalBus.deletePlaylistSig.connect(self.onDeleteCustomPlaylist)
+        signalBus.renamePlaylistSig.connect(self.onRenamePlaylist)
+
+        signalBus.showPlayingPlaylistSig.connect(self.showPlayingPlaylist)
+        signalBus.showPlayingInterfaceSig.connect(self.showPlayingInterface)
+        signalBus.switchToSingerInterfaceSig.connect(
+            self.switchToSingerInterface)
+        signalBus.switchToAlbumInterfaceSig.connect(
+            self.switchToAlbumInterface)
+        signalBus.switchToMyMusicInterfaceSig.connect(
+            self.switchToMyMusicInterface)
+        signalBus.switchToPlaylistInterfaceSig.connect(
+            self.switchToPlaylistInterface)
+        signalBus.switchToPlaylistCardInterfaceSig.connect(
+            self.switchToPlaylistCardInterface)
+        signalBus.switchToSettingInterfaceSig.connect(
+            self.switchToSettingInterface)
+        signalBus.showSmallestPlayInterfaceSig.connect(
+            self.showSmallestPlayInterface)
+        signalBus.showLabelNavigationInterfaceSig.connect(
+            self.showLabelNavigationInterface)
 
         # 将正在播放界面信号连接到槽函数
         self.playingInterface.currentIndexChanged.connect(
             self.onPlayingInterfaceCurrentIndexChanged)
-        self.playingInterface.muteStateChanged.connect(self.setMute)
-        self.playingInterface.nextSongSig.connect(self.mediaPlaylist.next)
-        self.playingInterface.lastSongSig.connect(self.mediaPlaylist.previous)
-        self.playingInterface.togglePlayStateSig.connect(self.togglePlayState)
-        self.playingInterface.randomPlayChanged.connect(self.setRandomPlay)
-        self.playingInterface.volumeChanged.connect(self.onVolumeChanged)
-        self.playingInterface.fullScreenChanged.connect(self.setFullScreen)
-        self.playingInterface.loopModeChanged.connect(self.switchLoopMode)
-        self.playingInterface.clearPlaylistSig.connect(self.clearPlaylist)
         self.playingInterface.removeSongSignal.connect(
             self.mediaPlaylist.removeSong)
-        self.playingInterface.randomPlayAllSig.connect(self.randomPlayAll)
-        self.playingInterface.progressSliderMoved.connect(
-            self.onProgressSliderMoved)
-        self.playingInterface.switchToSingerInterfaceSig.connect(
-            self.switchToSingerInterface)
-        self.playingInterface.switchToAlbumInterfaceSig.connect(
-            self.switchToAlbumInterface)
-        self.playingInterface.savePlaylistSig.connect(
-            lambda: self.showCreatePlaylistDialog(self.mediaPlaylist.playlist))
-        self.playingInterface.showSmallestPlayInterfaceSig.connect(
-            self.showSmallestPlayInterface)
-        self.playingInterface.addSongsToNewCustomPlaylistSig.connect(
-            self.showCreatePlaylistDialog)
-        self.playingInterface.addSongsToCustomPlaylistSig.connect(
-            self.addSongsToCustomPlaylist)
         self.playingInterface.selectionModeStateChanged.connect(
             self.onSelectionModeStateChanged)
         self.playingInterface.switchToVideoInterfaceSig.connect(
@@ -1399,137 +1385,31 @@ class MainWindow(FramelessWindow):
         # 将歌曲界面歌曲卡列表视图的信号连接到槽函数
         self.songTabSongListWidget.playSignal.connect(
             self.onSongTabSongCardPlay)
-        self.songTabSongListWidget.playOneSongSig.connect(self.playOneSongCard)
-        self.songTabSongListWidget.nextToPlayOneSongSig.connect(
-            self.onSongCardNextPlay)
-        self.songTabSongListWidget.addSongToPlayingSignal.connect(
-            self.addOneSongToPlayingPlaylist)
-        self.songTabSongListWidget.switchToSingerInterfaceSig.connect(
-            self.switchToSingerInterface)
-        self.songTabSongListWidget.switchToAlbumInterfaceSig.connect(
-            self.switchToAlbumInterface)
-        self.songTabSongListWidget.editSongInfoSignal.connect(
-            self.onEditSongInfo)
-
-        # 将专辑卡的信号连接到槽函数
-        self.albumCardInterface.playSignal.connect(self.playAlbum)
-        self.albumCardInterface.editAlbumInfoSig.connect(
-            self.onEditAlbumInfo)
-        self.albumCardInterface.switchToAlbumInterfaceSig.connect(
-            self.switchToAlbumInterface)
-        self.albumCardInterface.switchToSingerInterfaceSig.connect(
-            self.switchToSingerInterface)
 
         # 将我的音乐界面连接到槽函数
-        self.myMusicInterface.removeSongSig.connect(self.deleteSongs)
-        self.myMusicInterface.randomPlayAllSig.connect(self.randomPlayAll)
-        self.myMusicInterface.nextToPlaySig.connect(self.onMultiSongsNextPlay)
-        self.myMusicInterface.playCheckedCardsSig.connect(
-            self.playCustomPlaylist)
         self.myMusicInterface.currentIndexChanged.connect(
             self.onMyMusicInterfaceStackWidgetIndexChanged)
-        self.myMusicInterface.selectionModeStateChanged.connect(
-            self.onSelectionModeStateChanged)
-        self.myMusicInterface.addSongsToCustomPlaylistSig.connect(
-            self.addSongsToCustomPlaylist)
-        self.myMusicInterface.addSongsToNewCustomPlaylistSig.connect(
-            self.showCreatePlaylistDialog)
-        self.myMusicInterface.addSongsToPlayingPlaylistSig.connect(
-            self.addSongsToPlayingPlaylist)
-        self.myMusicInterface.showLabelNavigationInterfaceSig.connect(
-            self.showLabelNavigationInterface)
 
         # 将定时器信号连接到槽函数
         self.updateLyricPosTimer.timeout.connect(self.onUpdateLyricPosTimeOut)
 
         # 将专辑界面的信号连接到槽函数
-        self.albumInterface.playAlbumSignal.connect(self.playAlbum)
-        self.albumInterface.playOneSongCardSig.connect(self.playOneSongCard)
-        self.albumInterface.editSongInfoSig.connect(self.onEditSongInfo)
-        self.albumInterface.editAlbumInfoSig.connect(self.onEditAlbumInfo)
         self.albumInterface.songCardPlaySig.connect(
             self.onAlbumInterfaceSongCardPlay)
-        self.albumInterface.nextToPlayOneSongSig.connect(
-            self.onSongCardNextPlay)
-        self.albumInterface.addOneSongToPlayingSig.connect(
-            self.addOneSongToPlayingPlaylist)
-        self.albumInterface.addSongsToPlayingPlaylistSig.connect(
-            self.addSongsToPlayingPlaylist)
-        self.albumInterface.selectionModeStateChanged.connect(
-            self.onSelectionModeStateChanged)
-        self.albumInterface.playCheckedCardsSig.connect(
-            self.playCustomPlaylist)
-        self.albumInterface.nextToPlayCheckedCardsSig.connect(
-            self.onMultiSongsNextPlay)
-        self.albumInterface.addSongsToCustomPlaylistSig.connect(
-            self.addSongsToCustomPlaylist)
-        self.albumInterface.addSongsToNewCustomPlaylistSig.connect(
-            self.showCreatePlaylistDialog)
-        self.albumInterface.switchToSingerInterfaceSig.connect(
-            self.switchToSingerInterface)
 
         # 将播放界面信号连接到槽函数
-        self.playlistInterface.playAllSig.connect(self.playCustomPlaylist)
-        self.playlistInterface.editSongInfoSignal.connect(self.onEditSongInfo)
-        self.playlistInterface.playOneSongCardSig.connect(self.playOneSongCard)
-        self.playlistInterface.deletePlaylistSig.connect(
-            self.onDeleteCustomPlaylist)
-        self.playlistInterface.playCheckedCardsSig.connect(
-            self.playCustomPlaylist)
         self.playlistInterface.songCardPlaySig.connect(
             self.onPlaylistInterfaceSongCardPlay)
-        self.playlistInterface.addSongsToPlayingPlaylistSig.connect(
-            self.addSongsToPlayingPlaylist)
-        self.playlistInterface.addSongsToNewCustomPlaylistSig.connect(
-            self.showCreatePlaylistDialog)
-        self.playlistInterface.addSongsToCustomPlaylistSig.connect(
-            self.addSongsToCustomPlaylist)
-        self.playlistInterface.nextToPlayOneSongSig.connect(
-            self.onSongCardNextPlay)
-        self.playlistInterface.nextToPlayCheckedCardsSig.connect(
-            self.onMultiSongsNextPlay)
-        self.playlistInterface.addOneSongToPlayingSig.connect(
-            self.addOneSongToPlayingPlaylist)
-        self.playlistInterface.selectionModeStateChanged.connect(
-            self.onSelectionModeStateChanged)
-        self.playlistInterface.switchToAlbumInterfaceSig.connect(
-            self.switchToAlbumInterface)
-        self.playlistInterface.renamePlaylistSig.connect(
-            self.onRenamePlaylist)
         self.playlistInterface.removeSongSig.connect(
             self.playlistCardInterface.removeSongsFromPlaylist)
         self.playlistInterface.switchToAlbumCardInterfaceSig.connect(
             self.switchToAlbumCardInterface)
-        self.playlistInterface.switchToSingerInterfaceSig.connect(
-            self.switchToSingerInterface)
 
         # 将播放列表卡界面信号连接到槽函数
-        self.playlistCardInterface.selectionModeStateChanged.connect(
-            self.onSelectionModeStateChanged)
         self.playlistCardInterface.createPlaylistSig.connect(
             self.showCreatePlaylistDialog)
-        self.playlistCardInterface.renamePlaylistSig.connect(
-            self.onRenamePlaylist)
-        self.playlistCardInterface.deletePlaylistSig.connect(
-            self.onDeleteCustomPlaylist)
-        self.playlistCardInterface.playSig.connect(self.playCustomPlaylist)
-        self.playlistCardInterface.nextToPlaySig.connect(
-            self.onMultiSongsNextPlay)
-        self.playlistCardInterface.switchToPlaylistInterfaceSig.connect(
-            self.switchToPlaylistInterface)
-        self.playlistCardInterface.addSongsToCustomPlaylistSig.connect(
-            self.addSongsToCustomPlaylist)
-        self.playlistCardInterface.addSongsToNewCustomPlaylistSig.connect(
-            self.showCreatePlaylistDialog)
-        self.playlistCardInterface.addSongsToPlayingPlaylistSig.connect(
-            self.addSongsToPlayingPlaylist)
 
         # 将最小播放界面连接到槽函数
-        self.smallestPlayInterface.nextSongSig.connect(self.mediaPlaylist.next)
-        self.smallestPlayInterface.lastSongSig.connect(
-            self.mediaPlaylist.previous)
-        self.smallestPlayInterface.togglePlayStateSig.connect(
-            self.togglePlayState)
         self.smallestPlayInterface.exitSmallestPlayInterfaceSig.connect(
             self.exitSmallestPlayInterface)
 
@@ -1538,64 +1418,15 @@ class MainWindow(FramelessWindow):
             self.onNavigationLabelClicked)
 
         # 将搜索结果界面信号连接到槽函数
-        self.searchResultInterface.playAlbumSig.connect(self.playAlbum)
-        self.searchResultInterface.deleteAlbumSig.connect(self.deleteSongs)
         self.searchResultInterface.playLocalSongSig.connect(
             self.playLocalSearchedSongs)
         self.searchResultInterface.playOnlineSongSig.connect(
             self.playOnlineSearchedSongs)
-        self.searchResultInterface.deletePlaylistSig.connect(
-            self.onDeleteCustomPlaylist)
-        self.searchResultInterface.playPlaylistSig.connect(
-            self.playCustomPlaylist)
-        self.searchResultInterface.nextToPlaySig.connect(
-            self.onMultiSongsNextPlay)
-        self.searchResultInterface.playOneSongCardSig.connect(
-            self.playOneSongCard)
-        self.searchResultInterface.renamePlaylistSig.connect(
-            self.onRenamePlaylist)
-        self.searchResultInterface.switchToSingerInterfaceSig.connect(
-            self.switchToSingerInterface)
-        self.searchResultInterface.switchToAlbumInterfaceSig.connect(
-            self.switchToAlbumInterface)
-        self.searchResultInterface.switchToPlaylistInterfaceSig.connect(
-            self.switchToPlaylistInterface)
-        self.searchResultInterface.addSongsToPlayingPlaylistSig.connect(
-            self.addSongsToPlayingPlaylist)
-        self.searchResultInterface.addSongsToNewCustomPlaylistSig.connect(
-            self.showCreatePlaylistDialog)
-        self.searchResultInterface.addSongsToCustomPlaylistSig.connect(
-            self.addSongsToCustomPlaylist)
-        self.searchResultInterface.deleteSongSig.connect(
-            lambda songPath: self.deleteSongs([songPath]))
-
-        # 将歌手界面信号连接到槽函数
-        self.singerInterface.playSig.connect(self.playCustomPlaylist)
-        self.singerInterface.removeSongSig.connect(self.deleteSongs)
-        self.singerInterface.nextToPlaySig.connect(self.onMultiSongsNextPlay)
-        self.singerInterface.editAlbumInfoSig.connect(self.onEditAlbumInfo)
-        self.singerInterface.switchToAlbumInterfaceSig.connect(
-            self.switchToAlbumInterface)
-        self.singerInterface.addSongsToPlayingPlaylistSig.connect(
-            self.addSongsToPlayingPlaylist)
-        self.singerInterface.addSongsToNewCustomPlaylistSig.connect(
-            self.showCreatePlaylistDialog)
-        self.singerInterface.addSongsToCustomPlaylistSig.connect(
-            self.addSongsToCustomPlaylist)
-        self.singerInterface.selectionModeStateChanged.connect(
-            self.onSelectionModeStateChanged)
 
         # 将系统托盘图标信号连接到槽函数
         qApp.aboutToQuit.connect(self.onExit)
         self.systemTrayIcon.exitSignal.connect(qApp.quit)
         self.systemTrayIcon.showMainWindowSig.connect(self.show)
-        self.systemTrayIcon.togglePlayStateSig.connect(self.togglePlayState)
-        self.systemTrayIcon.lastSongSig.connect(self.mediaPlaylist.previous)
-        self.systemTrayIcon.nextSongSig.connect(self.mediaPlaylist.next)
-        self.systemTrayIcon.switchToSettingInterfaceSig.connect(
-            self.switchToSettingInterface)
-        self.systemTrayIcon.showPlayingInterfaceSig.connect(
-            self.showPlayingInterface)
 
         # 将视频界面信号连接到槽函数
         self.videoWindow.fullScreenChanged.connect(self.setVideoFullScreen)

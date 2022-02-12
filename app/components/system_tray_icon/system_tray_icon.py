@@ -1,5 +1,6 @@
 # coding:utf-8
 from common.database.entity import SongInfo
+from common.signal_bus import signalBus
 from components.widgets.menu import DWMMenu
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QFont, QFontMetrics, QIcon
@@ -10,12 +11,7 @@ class SystemTrayIcon(QSystemTrayIcon):
     """ 系统托盘图标 """
 
     exitSignal = pyqtSignal()
-    lastSongSig = pyqtSignal()
-    nextSongSig = pyqtSignal()
     showMainWindowSig = pyqtSignal()
-    togglePlayStateSig = pyqtSignal()
-    showPlayingInterfaceSig = pyqtSignal()
-    switchToSettingInterfaceSig = pyqtSignal()
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -29,12 +25,12 @@ class SystemTrayIcon(QSystemTrayIcon):
         """ 信号连接到槽 """
         self.activated.connect(self.__onActivated)
         self.menu.exitAct.triggered.connect(self.exitSignal)
-        self.menu.lastSongAct.triggered.connect(self.lastSongSig)
-        self.menu.nextSongAct.triggered.connect(self.nextSongSig)
-        self.menu.songAct.triggered.connect(self.showPlayingInterfaceSig)
+        self.menu.lastSongAct.triggered.connect(signalBus.lastSongSig)
+        self.menu.nextSongAct.triggered.connect(signalBus.nextSongSig)
+        self.menu.songAct.triggered.connect(signalBus.showPlayingInterfaceSig)
         self.menu.playAct.triggered.connect(self.__onPlayActionTriggered)
         self.menu.settingsAct.triggered.connect(
-            self.switchToSettingInterfaceSig)
+            signalBus.switchToSettingInterfaceSig)
 
     def __onActivated(self, reason: QSystemTrayIcon.ActivationReason):
         """ 激活槽函数 """
@@ -57,7 +53,7 @@ class SystemTrayIcon(QSystemTrayIcon):
     def __onPlayActionTriggered(self):
         """ 播放动作触发槽函数 """
         self.setPlay(not self.isPlay)
-        self.togglePlayStateSig.emit()
+        signalBus.togglePlayStateSig.emit()
 
     def updateWindow(self, songInfo: SongInfo):
         """ 更新窗口 """

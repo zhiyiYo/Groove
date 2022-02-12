@@ -1,4 +1,4 @@
-#albumInterface {
+SelectionModeInterface {
     background-color: white;
 }
 
@@ -6,7 +6,7 @@
     background-color: white;
 }
 
-QScrollArea{
+QScrollArea {
     border: none;
 }
 

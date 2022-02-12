@@ -8,11 +8,12 @@
     随机播放的按钮没有按下时，根据循环模式按钮的状态决定播放方式
 """
 
+from common.signal_bus import signalBus
 from components.buttons.tooltip_button import TooltipButton
 from PyQt5.QtCore import QEvent, Qt, pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QPainter, QPen, QPixmap
-from PyQt5.QtWidgets import QToolButton
 from PyQt5.QtMultimedia import QMediaPlaylist
+from PyQt5.QtWidgets import QToolButton
 
 
 class PlayButton(TooltipButton):
@@ -103,8 +104,6 @@ class PlayButton(TooltipButton):
 class RandomPlayButton(TooltipButton):
     """ 随机播放按钮 """
 
-    randomPlayChanged = pyqtSignal(bool)
-
     def __init__(self, parent=None):
         super().__init__(parent)
         self.isSelected = False
@@ -137,7 +136,7 @@ class RandomPlayButton(TooltipButton):
                 self.setToolTip(text)
                 self.isPressed = False
                 self.update()
-                self.randomPlayChanged.emit(self.isSelected)
+                signalBus.randomPlayChanged.emit(self.isSelected)
                 return False
             if e.type() == QEvent.MouseButtonPress and e.button() == Qt.LeftButton:
                 self.hideToolTip()
@@ -258,8 +257,6 @@ class BasicButton(TooltipButton):
 class LoopModeButton(TooltipButton):
     """ 循环播放模式按钮 """
 
-    loopModeChanged = pyqtSignal(QMediaPlaylist.PlaybackMode)
-
     def __init__(self, parent=None):
         super().__init__(parent)
         self.isEnter = False
@@ -282,6 +279,9 @@ class LoopModeButton(TooltipButton):
 
     def setLoopMode(self, loopMode: QMediaPlaylist.PlaybackMode):
         """ 设置循环模式 """
+        if self.loopMode == loopMode:
+            return
+
         self.loopMode = loopMode
         self.clickedTime = self.__loopMode_list.index(loopMode)
         self.update()
@@ -295,7 +295,7 @@ class LoopModeButton(TooltipButton):
                 self.loopMode = self.__loopMode_list[self.clickedTime]
                 self.__updateToolTip()
                 self.update()
-                self.loopModeChanged.emit(self.loopMode)
+                signalBus.loopModeChanged.emit(self.loopMode)
                 return False
 
         return super().eventFilter(obj, e)
@@ -372,8 +372,6 @@ class LoopModeButton(TooltipButton):
 class VolumeButton(TooltipButton):
     """ 音量按钮 """
 
-    muteStateChanged = pyqtSignal(bool)
-
     def __init__(self, parent=None):
         super().__init__(parent)
         # 设置标志位
@@ -405,7 +403,7 @@ class VolumeButton(TooltipButton):
         self.isPressed = False
         self.setMute(not self.isMute)
         self.update()
-        self.muteStateChanged.emit(self.isMute)
+        signalBus.muteStateChanged.emit(self.isMute)
 
     def enterEvent(self, e):
         """ 鼠标进入时更新背景 """

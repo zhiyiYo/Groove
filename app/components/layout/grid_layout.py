@@ -32,12 +32,15 @@ class GridLayout(QGridLayout):
     def appendWidget(self, widget, alignment=Qt.AlignLeft):
         """ 向布局的尾部添加一个小部件 """
         self.__widget_list.append(widget)
+
         # 计算行数和列数
         widgetNum = len(self.__widget_list) - 1
         row = widgetNum // self.columnCount()
         column = widgetNum - self.columnCount() * row
+
         # 添加小部件
         super().addWidget(widget, row, column, 1, 1, alignment)
+
         # 调整网格
         self.updateColumnNum(self.columnCount(), self.columnMinimumWidth(
             0), self.rowMinimumHeight(0))
@@ -55,6 +58,7 @@ class GridLayout(QGridLayout):
         currentColumnNum = super().columnCount()
         self.__columnNum = newColumnNum
         self.__rowNum = newRowNum if newRowNum > 0 else 1
+
         # 先移除所有的小部件
         for widget in self.__widget_list:
             super().removeWidget(widget)
@@ -70,6 +74,7 @@ class GridLayout(QGridLayout):
             x = index // newColumnNum
             y = index - newColumnNum * x
             super().addWidget(widget, x, y, 1, 1, Qt.AlignLeft)
+
         self.setAlignment(Qt.AlignLeft)
 
         # 如果现在的总行数小于旧的网格的总行数，就将多出来的行宽度的最小值设为0

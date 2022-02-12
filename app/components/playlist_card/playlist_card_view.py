@@ -1,15 +1,16 @@
 # coding:utf-8
-from typing import List, Dict
+from typing import Dict, List
 
 import pinyin
 from common.database.entity import Playlist, SongInfo
 from common.library import Library
+from common.signal_bus import signalBus
 from components.dialog_box.message_dialog import MessageDialog
 from components.dialog_box.rename_playlist_dialog import RenamePlaylistDialog
-from components.layout.grid_layout import GridLayout
+from components.layout import GridLayout, HBoxLayout, FlowLayout
 from components.layout.h_box_layout import HBoxLayout
 from PyQt5.QtCore import (QMargins, QParallelAnimationGroup, QPoint, Qt,
-                          pyqtSignal, QDateTime)
+                          pyqtSignal)
 from PyQt5.QtWidgets import QApplication, QWidget
 
 from .blur_background import BlurBackground
@@ -20,17 +21,7 @@ from .playlist_card import (PlaylistCardBase, PlaylistCardFactory,
 class PlaylistCardViewBase(QWidget):
     """ 播放列表卡视图 """
 
-    playSig = pyqtSignal(list)
-    nextToPlaySig = pyqtSignal(list)
-    hideBlurBackgroundSig = pyqtSignal()
-    renamePlaylistSig = pyqtSignal(str, str)
-    deletePlaylistSig = pyqtSignal(str)
-    checkedStateChanged = pyqtSignal(QWidget, bool)
-    switchToPlaylistInterfaceSig = pyqtSignal(str)
-    showBlurBackgroundSig = pyqtSignal(QPoint, str)
-    addSongsToPlayingPlaylistSig = pyqtSignal(list)      # 添加歌曲到正在播放
-    addSongsToNewCustomPlaylistSig = pyqtSignal(list)    # 添加歌曲到新的自定义的播放列表中
-    addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 添加歌曲到自定义的播放列表中
+    checkedNumChanged = pyqtSignal(int, bool)
 
     def __init__(self, library: Library, playlists: List[Playlist], cardType: PlaylistCardType, create=True, parent=None):
         """
@@ -55,14 +46,16 @@ class PlaylistCardViewBase(QWidget):
         self.library = library
         self.playlists = playlists
         self.cardType = cardType
-        self.playlistCards = []     # type:List[PlaylistCardBase]
-        self.playlistCardMap = {}   # type:Dict[str, PlaylistCardBase]
+        self.playlistCards = []         # type:List[PlaylistCardBase]
+        self.playlistCardMap = {}       # type:Dict[str, PlaylistCardBase]
+        self.checkedPlaylistCards = []  # type:List[PlaylistCardBase]
         self.blurBackground = BlurBackground(self)
         self.hideCheckBoxAniGroup = QParallelAnimationGroup(self)
         self.hideCheckBoxAniGroup.finished.connect(self.__hideAllCheckBox)
         self.blurBackground.hide()
 
         self.sortMode = 'modifiedTime'
+        self.isInSelectionMode = False
 
         if create:
             for platlist in self.playlists:
@@ -83,22 +76,20 @@ class PlaylistCardViewBase(QWidget):
     def _connectCardSignalToSlot(self, card: PlaylistCardBase):
         """ 将专辑卡信号连接到槽函数 """
         card.playSig.connect(
-            lambda n: self.playSig.emit(self.__getPlaylistSongInfos(n)))
+            lambda n: signalBus.playCheckedSig.emit(self.__getPlaylistSongInfos(n)))
         card.nextToPlaySig.connect(
-            lambda n: self.nextToPlaySig.emit(self.__getPlaylistSongInfos(n)))
+            lambda n: signalBus.nextToPlaySig.emit(self.__getPlaylistSongInfos(n)))
         card.showBlurBackgroundSig.connect(self.__showBlurBackground)
         card.hideBlurBackgroundSig.connect(self.blurBackground.hide)
         card.renamePlaylistSig.connect(self.showRenamePlaylistDialog)
         card.deleteCardSig.connect(self.showDeleteCardDialog)
-        card.checkedStateChanged.connect(self.checkedStateChanged)
-        card.switchToPlaylistInterfaceSig.connect(
-            self.switchToPlaylistInterfaceSig)
+        card.checkedStateChanged.connect(self.__onPlaylistCardCheckedStateChanged)
         card.addSongsToCustomPlaylistSig.connect(
-            lambda n1, n2: self.addSongsToCustomPlaylistSig.emit(n1, self.__getPlaylistSongInfos(n2)))
+            lambda n1, n2: signalBus.addSongsToCustomPlaylistSig.emit(n1, self.__getPlaylistSongInfos(n2)))
         card.addSongsToNewCustomPlaylistSig.connect(
-            lambda n: self.addSongsToNewCustomPlaylistSig.emit(self.__getPlaylistSongInfos(n)))
+            lambda n: signalBus.addSongsToNewCustomPlaylistSig.emit(self.__getPlaylistSongInfos(n)))
         card.addSongsToPlayingPlaylistSig.connect(
-            lambda n: self.addSongsToPlayingPlaylistSig.emit(self.__getPlaylistSongInfos(n)))
+            lambda n: signalBus.addSongsToPlayingPlaylistSig.emit(self.__getPlaylistSongInfos(n)))
 
     def __showBlurBackground(self, pos: QPoint, coverPath: str):
         """ 显示磨砂背景 """
@@ -110,7 +101,7 @@ class PlaylistCardViewBase(QWidget):
     def showRenamePlaylistDialog(self, name: str):
         """ 显示重命名播放列表面板 """
         w = RenamePlaylistDialog(self.library, name, self.window())
-        w.renamePlaylistSig.connect(self.renamePlaylistSig)
+        w.renamePlaylistSig.connect(signalBus.renamePlaylistSig)
         w.exec()
 
     def showDeleteCardDialog(self, name: str):
@@ -120,8 +111,7 @@ class PlaylistCardViewBase(QWidget):
             self.tr("it won't be on be this device anymore.")
 
         w = MessageDialog(title, content, self.window())
-        w.yesSignal.connect(lambda: self.deletePlaylistCard(name))
-        w.yesSignal.connect(lambda: self.deletePlaylistSig.emit(name))
+        w.yesSignal.connect(lambda: signalBus.deletePlaylistSig.emit(name))
         w.exec()
 
     def __getPlaylistSongInfos(self, name: str):
@@ -246,10 +236,57 @@ class PlaylistCardViewBase(QWidget):
             self.playlistCards.sort(key=lambda i: i.playlist[mode])
         else:
             self.playlistCards.sort(
-                key=lambda i: pinyin.get_initial(i.playlist.name)[0].lower(), reverse=True)
+                key=lambda i: pinyin.get_initial(i.playlist.name)[0].lower())
 
         self._removeCardsFromLayout()
         self._addCardsToLayout()
+
+    def __onPlaylistCardCheckedStateChanged(self, card: PlaylistCardBase, isChecked: bool):
+        """ 播放列表卡选中状态改变槽函数 """
+        N0 = len(self.checkedPlaylistCards)
+
+        if card not in self.checkedPlaylistCards and isChecked:
+            self.checkedPlaylistCards.append(card)
+        elif card in self.checkedPlaylistCards and not isChecked:
+            self.checkedPlaylistCards.remove(card)
+        else:
+            return
+
+        N1 = len(self.checkedPlaylistCards)
+
+        if N0 == 0 and N1 > 0:
+            self.setSelectionModeOpen(True)
+        elif N1 == 0:
+            self.setSelectionModeOpen(False)
+
+        isAllChecked = N1 == len(self.playlistCards)
+        self.checkedNumChanged.emit(N1, isAllChecked)
+
+    def setSelectionModeOpen(self, isOpen: bool):
+        """ 设置所有播放列表卡是否进入选择模式 """
+        if self.isInSelectionMode == isOpen:
+            return
+
+        self.isInSelectionMode = isOpen
+        for card in self.playlistCards:
+            card.setSelectionModeOpen(isOpen)
+
+        if not isOpen:
+            self.hideCheckBoxAniGroup.start()
+
+    def setAllChecked(self, isChecked: bool):
+        """ 设置所有播放列表卡的选中状态 """
+        for card in self.playlistCards:
+            card.setChecked(isChecked)
+
+    def uncheckAll(self):
+        """ 取消所有已处于选中状态的播放列表卡的选中状态 """
+        for card in self.checkedPlaylistCards.copy():
+            card.setChecked(False)
+
+    def adjustHeight(self):
+        """ 调整高度 """
+        raise NotADirectoryError
 
 
 class GridPlaylistCardView(PlaylistCardViewBase):
@@ -283,26 +320,22 @@ class GridPlaylistCardView(PlaylistCardViewBase):
         """
         super().__init__(library, playlists, cardType, create, parent)
         self.column = 3
-        self.gridLayout = GridLayout()
-        self.setLayout(self.gridLayout)
-        self.gridLayout.setContentsMargins(margins)
-        self.gridLayout.setHorizontalSpacing(spacings[0])
-        self.gridLayout.setVerticalSpacing(spacings[1])
-        self.gridLayout.setAlignment(Qt.AlignLeft)
+        self.flowLayout = FlowLayout(self)
+        self.flowLayout.setContentsMargins(margins)
+        self.flowLayout.setHorizontalSpacing(spacings[0])
+        self.flowLayout.setVerticalSpacing(spacings[1])
 
         if create:
             self._addCardsToLayout()
 
     def _addCardsToLayout(self):
         """ 将所有专辑卡添加到布局 """
-        for i, card in enumerate(self.playlistCards):
-            row = i//self.column
-            column = i-row*self.column
-            self.gridLayout.addWidget(card, row, column)
+        for card in self.playlistCards:
+            self.flowLayout.addWidget(card)
             QApplication.processEvents()
 
     def _removeCardsFromLayout(self):
-        self.gridLayout.removeAllWidgets()
+        self.flowLayout.removeAllWidgets()
 
     def setPlaylistCards(self, playlistCards: List[PlaylistCardBase]):
         self.playlistCards.clear()
@@ -317,13 +350,10 @@ class GridPlaylistCardView(PlaylistCardViewBase):
 
         self._addCardsToLayout()
 
-    def resizeEvent(self, e):
-        column = 1 if self.width() <= 641 else (self.width()-641)//308+2
-        if self.column == column:
-            return
-
-        self.column = column
-        self.gridLayout.updateColumnNum(column, 298, 288)
+    def adjustHeight(self):
+        """ 调整高度 """
+        h = self.flowLayout.heightForWidth(self.width())
+        self.resize(self.width(), h)
 
 
 class HorizonPlaylistCardView(PlaylistCardViewBase):

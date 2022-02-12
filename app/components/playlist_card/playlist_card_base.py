@@ -1,18 +1,19 @@
 # coding:utf-8
-from common.database.entity import Playlist
 from common.auto_wrap import autoWrap
+from common.database.entity import Playlist
 from common.image_process_utils import DominantColor
 from common.os_utils import getCoverPath
+from common.signal_bus import signalBus
 from components.buttons.blur_button import BlurButton
 from components.widgets.check_box import CheckBox
 from components.widgets.menu import AddToMenu
 from components.widgets.perspective_widget import PerspectiveWidget
 from PIL import Image
 from PIL.ImageFilter import GaussianBlur
-from PyQt5.QtCore import QPoint, Qt, pyqtSignal, QPropertyAnimation
+from PyQt5.QtCore import QPoint, QPropertyAnimation, Qt, pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QLinearGradient, QPainter, QPixmap
-from PyQt5.QtWidgets import (QApplication, QGraphicsOpacityEffect,
-                             QLabel, QVBoxLayout, QWidget)
+from PyQt5.QtWidgets import (QApplication, QGraphicsOpacityEffect, QLabel,
+                             QVBoxLayout, QWidget)
 
 
 class PlaylistCardBase(PerspectiveWidget):
@@ -24,7 +25,6 @@ class PlaylistCardBase(PerspectiveWidget):
     hideBlurBackgroundSig = pyqtSignal()
     renamePlaylistSig = pyqtSignal(str)
     checkedStateChanged = pyqtSignal(QWidget, bool)
-    switchToPlaylistInterfaceSig = pyqtSignal(str)
     showBlurBackgroundSig = pyqtSignal(QPoint, str)
     addSongsToPlayingPlaylistSig = pyqtSignal(str)      # 添加歌曲到正在播放
     addSongsToNewCustomPlaylistSig = pyqtSignal(str)    # 添加歌曲到新的自定义的播放列表中
@@ -73,6 +73,7 @@ class PlaylistCardBase(PerspectiveWidget):
         self.playButton.hide()
         self.addToButton.hide()
         self.countLabel.setMinimumWidth(200)
+        self.checkBox.setFocusPolicy(Qt.NoFocus)
         self.checkBox.setGraphicsEffect(self.checkBoxOpacityEffect)
         self.playlistCover.setPlaylistCover(self.coverPath)
 
@@ -155,7 +156,7 @@ class PlaylistCardBase(PerspectiveWidget):
             if self.isInSelectionMode:
                 self.setChecked(not self.isChecked)
             else:
-                self.switchToPlaylistInterfaceSig.emit(self.name)
+                signalBus.switchToPlaylistInterfaceSig.emit(self.name)
 
     def updateWindow(self, playlist: Playlist):
         """ 更新专辑卡窗口信息 """

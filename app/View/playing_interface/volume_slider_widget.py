@@ -1,4 +1,5 @@
 # coding:utf-8
+from common.signal_bus import signalBus
 from components.buttons.circle_button import CircleButton
 from components.widgets.slider import Slider
 from PyQt5.QtCore import QEvent, QFile, Qt, pyqtSignal
@@ -9,7 +10,6 @@ from PyQt5.QtWidgets import QWidget
 class VolumeSliderWidget(QWidget):
     """ 音量滑动条 """
 
-    muteStateChanged = pyqtSignal(bool)
     volumeLevelChanged = pyqtSignal(int)
 
     def __init__(self, parent=None):
@@ -32,7 +32,6 @@ class VolumeSliderWidget(QWidget):
         self.volumeSlider.setObjectName('volumeSlider')
         self.__setQss()
         # 信号连接到槽
-        self.volumeButton.muteStateChanged.connect(self.muteStateChanged)
         self.volumeButton.volumeLevelChanged.connect(self.volumeLevelChanged)
         self.volumeSlider.valueChanged.connect(
             self.volumeButton.setVolumeLevel)
@@ -62,8 +61,6 @@ class VolumeSliderWidget(QWidget):
 class VolumeButton(CircleButton):
     """ 音量按钮 """
 
-    # 静音状态改变信号
-    muteStateChanged = pyqtSignal(bool)
     volumeLevelChanged = pyqtSignal(int)
 
     def __init__(self, parent=None):
@@ -110,7 +107,7 @@ class VolumeButton(CircleButton):
                 self.isPressed = not self.isPressed
                 if e.type() == QEvent.MouseButtonRelease:
                     self.setMute(not self.isMute)
-                    self.muteStateChanged.emit(self.isMute)
+                    signalBus.muteStateChanged.emit(self.isMute)
                 self.update()
         return False
 

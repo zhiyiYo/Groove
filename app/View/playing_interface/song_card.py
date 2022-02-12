@@ -1,5 +1,6 @@
 # coding:utf-8
 from common.database.entity import SongInfo
+from common.signal_bus import signalBus
 from components.buttons.tooltip_button import TooltipButton
 from components.widgets.label import ClickableLabel
 from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
@@ -18,10 +19,6 @@ class SongCard(QWidget):
     clicked = pyqtSignal(int)                               # 歌曲卡点击
     aniStartSig = pyqtSignal()                              # 反弹动画开始
     checkedStateChanged = pyqtSignal(int, bool)             # 歌曲卡选中状态改变
-    switchToSingerInterfaceSig = pyqtSignal(str)            # 切换到歌手界面
-    switchToAlbumInterfaceSig = pyqtSignal(str, str)        # 切换到专辑界面
-    addSongToNewCustomPlaylistSig = pyqtSignal(SongInfo)    # 添加歌曲到新建的播放列表
-    addSongToCustomPlaylistSig = pyqtSignal(str, SongInfo)  # 添加歌曲到已存在的播放列表
 
     def __init__(self, songInfo: SongInfo, parent=None):
         super().__init__(parent=parent)
@@ -306,9 +303,9 @@ class SongCard(QWidget):
         y = pos.y()+self.addToButton.height()//2-(13+38*menu.actionCount()//2)
 
         menu.newPlaylistAct.triggered.connect(
-            lambda: self.addSongToNewCustomPlaylistSig.emit(self.songInfo))
+            lambda: signalBus.addSongsToNewCustomPlaylistSig.emit([self.songInfo]))
         menu.addSongsToPlaylistSig.connect(
-            lambda name: self.addSongToCustomPlaylistSig.emit(name, self.songInfo))
+            lambda name: signalBus.addSongsToCustomPlaylistSig.emit(name, [self.songInfo]))
         menu.exec_(QPoint(x, y))
 
     def __connectSignalToSlot(self):
@@ -316,9 +313,9 @@ class SongCard(QWidget):
         self.playButton.clicked.connect(
             lambda: self.clicked.emit(self.itemIndex))
         self.singerLabel.clicked.connect(
-            lambda: self.switchToSingerInterfaceSig.emit(self.singer))
+            lambda: signalBus.switchToSingerInterfaceSig.emit(self.singer))
         self.albumLabel.clicked.connect(
-            lambda: self.switchToAlbumInterfaceSig.emit(self.singer, self.album))
+            lambda: signalBus.switchToAlbumInterfaceSig.emit(self.singer, self.album))
         self.checkBox.stateChanged.connect(self.onCheckedStateChanged)
         self.addToButton.clicked.connect(self.__showAddToMenu)
 

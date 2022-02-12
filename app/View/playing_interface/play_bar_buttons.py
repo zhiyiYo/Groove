@@ -1,4 +1,5 @@
 # coding:utf-8
+from common.signal_bus import signalBus
 from components.buttons.circle_button import CircleButton
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QPainter, QPen, QPixmap
@@ -82,8 +83,6 @@ class SelectableButton(CircleButton):
 class RandomPlayButton(SelectableButton):
     """ 随机播放按钮 """
 
-    randomPlayChanged = pyqtSignal(bool)
-
     def __init__(self, iconPath_list: list, parent=None, iconSize=(47, 47), buttonSize=(47, 47)):
         super().__init__(iconPath_list, parent, iconSize, buttonSize)
         self.setToolTip(self.tr('Random play: off'))
@@ -102,13 +101,11 @@ class RandomPlayButton(SelectableButton):
 
     def mouseReleaseEvent(self, e):
         super().mouseReleaseEvent(e)
-        self.randomPlayChanged.emit(self.isSelected)
+        signalBus.randomPlayChanged.emit(self.isSelected)
 
 
 class LoopModeButton(SelectableButton):
     """ 循环模式按钮 """
-
-    loopModeChanged = pyqtSignal(QMediaPlaylist.PlaybackMode)
 
     def __init__(self, iconPath_list: list, parent=None, iconSize=(47, 47), buttonSize=(47, 47)):
         super().__init__(iconPath_list, parent, iconSize, buttonSize)
@@ -124,7 +121,7 @@ class LoopModeButton(SelectableButton):
         """ 更新循环模式 """
         super().mouseReleaseEvent(e)
         self.loopMode = self.__loopMode_list[self.clickedTime]
-        self.loopModeChanged.emit(self.loopMode)
+        signalBus.loopModeChanged.emit(self.loopMode)
 
     def setLoopMode(self, loopMode: QMediaPlaylist.PlaybackMode):
         """ 设置循环模式 """

@@ -2,6 +2,7 @@
 from common.auto_wrap import autoWrap
 from common.database.entity import AlbumInfo
 from common.os_utils import getCoverPath
+from common.signal_bus import signalBus
 from components.buttons.blur_button import BlurButton
 from components.widgets.check_box import CheckBox
 from components.widgets.label import ClickableLabel
@@ -16,13 +17,10 @@ from PyQt5.QtWidgets import (QApplication, QGraphicsOpacityEffect, QLabel,
 class AlbumCardBase(PerspectiveWidget):
     """ 专辑卡基类 """
 
-    playSignal = pyqtSignal(str, str)                        # 播放专辑
     deleteCardSig = pyqtSignal(str, str)                     # 删除专辑卡
     nextPlaySignal = pyqtSignal(str, str)                    # 下一首播放
     addToPlayingSignal = pyqtSignal(str, str)                # 将专辑添加到正在播放
     checkedStateChanged = pyqtSignal(QWidget, bool)          # 选中状态改变
-    switchToSingerInterfaceSig = pyqtSignal(str)             # 切换到歌手界面
-    switchToAlbumInterfaceSig = pyqtSignal(str, str)         # 切换到专辑界面
     addAlbumToNewCustomPlaylistSig = pyqtSignal(str, str)    # 将专辑添加到新建的播放列表
     addAlbumToCustomPlaylistSig = pyqtSignal(str, str, str)  # 将专辑添加到自定义播放列表
     showAlbumInfoEditDialogSig = pyqtSignal(str, str)        # 显示专辑信息面板信号
@@ -54,7 +52,7 @@ class AlbumCardBase(PerspectiveWidget):
             self.coverPath,
             self.tr('Add to')
         )
-        self.checkBox = CheckBox(self, forwardTargetWidget=self.albumPic)
+        self.checkBox = CheckBox(self)
         self.checkBoxOpacityEffect = QGraphicsOpacityEffect(self)
         self.hideCheckBoxAni = QPropertyAnimation(
             self.checkBoxOpacityEffect, b'opacity', self)
@@ -74,6 +72,7 @@ class AlbumCardBase(PerspectiveWidget):
             200, 200, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
 
         # 给小部件添加特效
+        self.checkBox.setFocusPolicy(Qt.NoFocus)
         self.checkBox.setGraphicsEffect(self.checkBoxOpacityEffect)
 
         # 隐藏按钮
@@ -101,9 +100,9 @@ class AlbumCardBase(PerspectiveWidget):
 
         # 将信号连接到槽函数
         self.playButton.clicked.connect(
-            lambda: self.playSignal.emit(self.singer, self.album))
+            lambda: signalBus.playAlbumSig.emit(self.singer, self.album))
         self.contentLabel.clicked.connect(
-            lambda: self.switchToSingerInterfaceSig.emit(self.singer))
+            lambda: signalBus.switchToSingerInterfaceSig.emit(self.singer))
         self.addToButton.clicked.connect(self.__showAddToMenu)
         self.checkBox.stateChanged.connect(self.__onCheckedStateChanged)
 
@@ -153,7 +152,7 @@ class AlbumCardBase(PerspectiveWidget):
                 self.setChecked(not self.isChecked)
             else:
                 # 不处于选择模式时且鼠标松开事件不是复选框发来的才发送切换到专辑界面的信号
-                self.switchToAlbumInterfaceSig.emit(self.singer, self.album)
+                signalBus.switchToAlbumInterfaceSig.emit(self.singer, self.album)
 
     def showAlbumInfoEditDialog(self):
         """ 显示专辑信息编辑面板 """
@@ -210,7 +209,6 @@ class AlbumCardBase(PerspectiveWidget):
         if self.isInSelectionMode == isOpen:
             return
 
-        # 进入选择模式时显示复选框
         if isOpen:
             self.checkBoxOpacityEffect.setOpacity(1)
             self.checkBox.show()

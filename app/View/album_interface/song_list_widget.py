@@ -2,10 +2,12 @@
 from typing import List
 
 from common.database.entity import SongInfo
+from common.signal_bus import signalBus
 from components.dialog_box.message_dialog import MessageDialog
 from components.song_list_widget import NoScrollSongListWidget, SongCardType
+from components.song_list_widget.song_card import AlbumInterfaceSongCard
 from components.widgets.menu import AddToMenu, DWMMenu
-from PyQt5.QtCore import QFile, QMargins, Qt, pyqtSignal
+from PyQt5.QtCore import QFile, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent
 from PyQt5.QtWidgets import QAction
 
@@ -39,9 +41,6 @@ class SongListWidget(NoScrollSongListWidget):
     """ 专辑界面歌曲卡列表视图 """
 
     playSignal = pyqtSignal(int)                    # 播放指定歌曲
-    playOneSongSig = pyqtSignal(SongInfo)           # 只播放选中的歌曲
-    nextToPlayOneSongSig = pyqtSignal(SongInfo)     # 插入一首歌到播放列表中
-    switchToSingerInterfaceSig = pyqtSignal(str)    # 切换到歌手界面
 
     def __init__(self, songInfos: List[SongInfo], parent=None):
         """
@@ -108,24 +107,22 @@ class SongListWidget(NoScrollSongListWidget):
         menu.editInfoAct.triggered.connect(self.showSongInfoEditDialog)
         menu.showPropertyAct.triggered.connect(self.showSongPropertyDialog)
         menu.playAct.triggered.connect(
-            lambda: self.playOneSongSig.emit(self.songCards[self.currentRow()].songInfo))
+            lambda: signalBus.playOneSongCardSig.emit(self.currentSongInfo))
         menu.nextSongAct.triggered.connect(
-            lambda: self.nextToPlayOneSongSig.emit(self.songCards[self.currentRow()].songInfo))
+            lambda: signalBus.nextToPlaySig.emit([self.currentSongInfo]))
         menu.addToMenu.playingAct.triggered.connect(
-            lambda: self.addSongToPlayingSignal.emit(self.songCards[self.currentRow()].songInfo))
+            lambda: signalBus.addSongsToPlayingPlaylistSig.emit([self.currentSongInfo]))
         menu.selectAct.triggered.connect(
-            lambda: self.songCards[self.currentRow()].setChecked(True))
+            lambda: self.currentSongCard.setChecked(True))
         menu.addToMenu.addSongsToPlaylistSig.connect(
-            lambda name: self.addSongsToCustomPlaylistSig.emit(name, self.songInfos))
+            lambda name: signalBus.addSongsToCustomPlaylistSig.emit(name, self.songInfos))
         menu.addToMenu.newPlaylistAct.triggered.connect(
-            lambda: self.addSongsToNewCustomPlaylistSig.emit([self.songCards[self.currentRow()].songInfo]))
+            lambda: signalBus.addSongsToNewCustomPlaylistSig.emit([self.currentSongInfo]))
 
-    def _connectSongCardSignalToSlot(self, songCard):
+    def _connectSongCardSignalToSlot(self, songCard: AlbumInterfaceSongCard):
         """ 将歌曲卡信号连接到槽 """
         songCard.doubleClicked.connect(self.__onSongCardDoubleClicked)
         songCard.playButtonClicked.connect(self.__playButtonSlot)
         songCard.clicked.connect(self.setCurrentIndex)
         songCard.checkedStateChanged.connect(
             self.onSongCardCheckedStateChanged)
-        songCard.switchToSingerInterfaceSig.connect(
-            self.switchToSingerInterfaceSig)

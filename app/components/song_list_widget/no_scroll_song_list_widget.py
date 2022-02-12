@@ -9,7 +9,7 @@ from .song_card_type import SongCardType
 
 
 class NoScrollSongListWidget(BasicSongListWidget):
-    """ 禁用了滚动的歌曲列表课件 """
+    """ 禁用了滚动的歌曲列表控件 """
 
     def __init__(self, songInfos: list, songCardType: SongCardType, parent=None,
                  viewportMargins=QMargins(30, 0, 30, 0), paddingBottomHeight=116):

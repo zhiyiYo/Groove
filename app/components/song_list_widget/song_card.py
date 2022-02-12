@@ -1,5 +1,6 @@
 # coding:utf-8
 from common.database.entity import SongInfo
+from common.signal_bus import signalBus
 from components.widgets.label import ClickableLabel
 from components.widgets.menu import DownloadMenu
 from PyQt5.QtCore import QPoint, Qt, pyqtSignal
@@ -33,9 +34,6 @@ class DurationSongCard(BasicSongCard):
 
 class SongTabSongCard(DurationSongCard):
     """ 我的音乐歌曲界面的歌曲卡 """
-
-    switchToAlbumInterfaceSig = pyqtSignal(str, str)    # 发送专辑名和歌手名
-    switchToSingerInterfaceSig = pyqtSignal(str)        # 切换到歌手界面
 
     def __init__(self, songInfo: SongInfo, parent=None):
         super().__init__(songInfo, SongCardType.SONG_TAB_SONG_CARD, parent)
@@ -79,9 +77,9 @@ class SongTabSongCard(DurationSongCard):
         self.addToButton.clicked.connect(self._showAddToMenu)
         self.checkBox.stateChanged.connect(self._onCheckedStateChanged)
         self.singerLabel.clicked.connect(
-            lambda: self.switchToSingerInterfaceSig.emit(self.singer))
+            lambda: signalBus.switchToSingerInterfaceSig.emit(self.singer))
         self.albumLabel.clicked.connect(
-            lambda: self.switchToAlbumInterfaceSig.emit(self.singer, self.album))
+            lambda: signalBus.switchToAlbumInterfaceSig.emit(self.singer, self.album))
 
     def updateSongCard(self, songInfo: SongInfo):
         """ 更新歌曲卡信息 """
@@ -99,8 +97,6 @@ class SongTabSongCard(DurationSongCard):
 
 class AlbumInterfaceSongCard(DurationSongCard):
     """ 专辑界面的歌曲卡 """
-
-    switchToSingerInterfaceSig = pyqtSignal(str)  # 切换到歌手界面
 
     def __init__(self, songInfo: SongInfo, parent=None):
         super().__init__(songInfo, SongCardType.ALBUM_INTERFACE_SONG_CARD, parent)
@@ -125,7 +121,7 @@ class AlbumInterfaceSongCard(DurationSongCard):
 
         # 信号连接到槽
         self.singerLabel.clicked.connect(
-            lambda: self.switchToSingerInterfaceSig.emit(self.singer))
+            lambda: signalBus.switchToSingerInterfaceSig.emit(self.singer))
         self.addToButton.clicked.connect(self._showAddToMenu)
         self.checkBox.stateChanged.connect(self._onCheckedStateChanged)
 
@@ -144,8 +140,6 @@ class PlaylistInterfaceSongCard(DurationSongCard):
     """ 播放列表界面的歌曲卡 """
 
     removeSongSignal = pyqtSignal(int)                # 移除歌曲
-    switchToAlbumInterfaceSig = pyqtSignal(str, str)  # 切换到专辑界面
-    switchToSingerInterfaceSig = pyqtSignal(str)      # 切换到歌手界面
 
     def __init__(self, songInfo: SongInfo, parent=None):
         super().__init__(songInfo, SongCardType.PLAYLIST_INTERFACE_SONG_CARD, parent)
@@ -187,9 +181,9 @@ class PlaylistInterfaceSongCard(DurationSongCard):
 
         # 信号连接到槽
         self.singerLabel.clicked.connect(
-            lambda: self.switchToSingerInterfaceSig.emit(self.singer))
+            lambda: signalBus.switchToSingerInterfaceSig.emit(self.singer))
         self.albumLabel.clicked.connect(
-            lambda: self.switchToAlbumInterfaceSig.emit(self.singer, self.album))
+            lambda: signalBus.switchToAlbumInterfaceSig.emit(self.singer, self.album))
         self.addToButton.clicked.connect(
             lambda: self.removeSongSignal.emit(self.itemIndex))
         self.checkBox.stateChanged.connect(self._onCheckedStateChanged)
@@ -210,9 +204,6 @@ class PlaylistInterfaceSongCard(DurationSongCard):
 
 class NoCheckBoxSongCard(DurationSongCard):
     """ 没有复选框的歌曲卡 """
-
-    switchToAlbumInterfaceSig = pyqtSignal(str, str)  # 发送专辑名和歌手名
-    switchToSingerInterfaceSig = pyqtSignal(str)      # 切换到歌手界面
 
     def __init__(self, songInfo: SongInfo, parent=None):
         super().__init__(songInfo, SongCardType.NO_CHECKBOX_SONG_CARD, parent=parent)
@@ -254,9 +245,9 @@ class NoCheckBoxSongCard(DurationSongCard):
 
         # 信号连接到槽
         self.singerLabel.clicked.connect(
-            lambda: self.switchToSingerInterfaceSig.emit(self.singer))
+            lambda: signalBus.switchToSingerInterfaceSig.emit(self.singer))
         self.albumLabel.clicked.connect(
-            lambda: self.switchToAlbumInterfaceSig.emit(self.singer, self.album))
+            lambda: signalBus.switchToAlbumInterfaceSig.emit(self.singer, self.album))
         self.addToButton.clicked.connect(self._showAddToMenu)
 
     def updateSongCard(self, songInfo: SongInfo):

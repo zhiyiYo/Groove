@@ -1,4 +1,5 @@
 # coding:utf-8
+from common.signal_bus import signalBus
 from common.window_effect import WindowEffect
 from PyQt5.QtCore import QEasingCurve, QPropertyAnimation, QRect, Qt
 
@@ -29,7 +30,7 @@ class NavigationMenu(NavigationWidget):
         self.playlistButton.setText(self.tr('Playlists'))
         self.settingButton.setText(self.tr('Settings'))
         # 信号连接到槽
-        self.switchToPlaylistInterfaceSig.connect(self.aniHide)
+        signalBus.switchToPlaylistInterfaceSig.connect(self.aniHide)
         self.myMusicButton.clicked.connect(self.aniHide)
         self.settingButton.clicked.connect(self.aniHide)
 

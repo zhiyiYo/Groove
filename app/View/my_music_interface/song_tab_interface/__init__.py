@@ -1,2 +1,2 @@
 from .song_list_widget import SongListWidget
-from .selection_mode_bar import SelectionModeBar as SongSelectionModeBar
+from .song_tab_interface import SongTabInterface

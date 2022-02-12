@@ -76,6 +76,8 @@ QLabel#contentLabel[isChecked='True'] {
 
 QLabel#inYourMusicLabel {
     font: 22px 'Segoe UI', 'Microsoft YaHei';
+    margin: 0;
+    padding: 0;
 }
 
 

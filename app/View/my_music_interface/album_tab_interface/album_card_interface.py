@@ -4,31 +4,20 @@ from typing import Dict, List
 import pinyin
 from common.database.entity import AlbumInfo, SongInfo
 from common.library import Library
+from common.signal_bus import signalBus
 from components.album_card import (AlbumBlurBackground, AlbumCard,
                                    AlbumCardType, GridAlbumCardView)
-from components.widgets.scroll_area import ScrollArea
-from PyQt5.QtCore import QFile, QParallelAnimationGroup, QPoint, Qt, pyqtSignal
+from PyQt5.QtCore import (QFile, QParallelAnimationGroup, QPoint, QSize, Qt,
+                          pyqtSignal)
 from PyQt5.QtGui import QResizeEvent
 from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget
 
 
-class AlbumCardInterface(ScrollArea):
+class AlbumCardView(QWidget):
     """ 定义一个专辑卡视图 """
 
-    playSignal = pyqtSignal(str, str)                           # 播放专辑
-    nextPlaySignal = pyqtSignal(list)                           # 下一首播放专辑
     albumNumChanged = pyqtSignal(int)                           # 专辑数改变
-    deleteAlbumSig = pyqtSignal(str, str)                       # 删除专辑
-    isAllCheckedChanged = pyqtSignal(bool)                      # 专辑卡全部选中改变
-    addAlbumToPlayingSignal = pyqtSignal(list)                  # 将专辑添加到正在播放
-    selectionModeStateChanged = pyqtSignal(bool)                # 进入/退出 选择模式
-    checkedAlbumCardNumChanged = pyqtSignal(int)                # 选中的专辑卡数量改变
-    switchToSingerInterfaceSig = pyqtSignal(str)                # 切换到歌手界面
-    switchToAlbumInterfaceSig = pyqtSignal(str, str)            # 切换到专辑界面
-    addAlbumToNewCustomPlaylistSig = pyqtSignal(list)           # 将专辑添加到新建的播放列表
-    addAlbumToCustomPlaylistSig = pyqtSignal(str, list)         # 专辑添加到已存在的播放列表
-    showLabelNavigationInterfaceSig = pyqtSignal(list, str)     # 显示标签导航界面
-    editAlbumInfoSig = pyqtSignal(AlbumInfo, AlbumInfo, str)    # 完成专辑信息编辑
+    checkedNumChanged = pyqtSignal(int, bool)                   # 选中专辑卡数量改变
 
     def __init__(self, library: Library, parent=None):
         super().__init__(parent)
@@ -52,20 +41,17 @@ class AlbumCardInterface(ScrollArea):
             "Artist": self.sortBySinger
         }
 
-        # 滚动部件
-        self.scrollWidget = QWidget()
-        self.vBoxLayout = QVBoxLayout(self.scrollWidget)
+        self.vBoxLayout = QVBoxLayout(self)
 
         self.guideLabel = QLabel(
             self.tr("There is nothing to display here. Try a different filter."), self)
 
         # 磨砂背景
-        self.albumBlurBackground = AlbumBlurBackground(self.scrollWidget)
+        self.albumBlurBackground = AlbumBlurBackground(self)
 
         # 创建专辑卡
         self.hideCheckBoxAniGroup = QParallelAnimationGroup(self)
         self.albumCards = [AlbumCard(i, self) for i in self.albumInfos]
-        self.sortByAddTime()
 
         # 初始化
         self.__initWidget()
@@ -73,7 +59,6 @@ class AlbumCardInterface(ScrollArea):
     def __initWidget(self):
         """ 初始化小部件 """
         self.resize(1270, 760)
-        self.setWidget(self.scrollWidget)
         self.vBoxLayout.setSpacing(30)
         self.vBoxLayout.setContentsMargins(15, 245, 0, 120)
         self.guideLabel.move(35, 286)
@@ -81,59 +66,65 @@ class AlbumCardInterface(ScrollArea):
         self.albumBlurBackground.hide()
         self.guideLabel.raise_()
         self.guideLabel.setHidden(bool(self.albumInfos))
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         self.__setQss()
+        self.sortByAddTime()
 
     def __createAlbumCardView(self, albumCards: List[AlbumCard], title=None):
         """ 创建一个专辑卡视图 """
         albumInfos = [i.albumInfo for i in albumCards]
         view = GridAlbumCardView(
-            self.library, albumInfos, AlbumCardType.ALBUM_CARD, title=title, create=False, parent=self)
+            self.library,
+            albumInfos,
+            AlbumCardType.ALBUM_CARD,
+            title=title,
+            create=False,
+            isGrouped=True,
+            parent=self
+        )
+        m = self.vBoxLayout.contentsMargins()
+        view.setFixedWidth(self.width() - m.left() - m.right())
         view.setAlbumCards(albumCards)
+        view.adjustHeight()
 
         self.hideCheckBoxAniGroup.addAnimation(view.hideCheckBoxAniGroup)
 
         # 专辑卡信号连接到槽函数
-        view.playSig.connect(self.playSignal)
-        view.nextPlaySig.connect(self.nextPlaySignal)
-        view.deleteAlbumSig.connect(self.deleteAlbumSig)
-        view.editAlbumInfoSig.connect(self.editAlbumInfoSig)
-        view.addAlbumToPlayingSig.connect(self.addAlbumToPlayingSignal)
-        view.switchToAlbumInterfaceSig.connect(self.switchToAlbumInterfaceSig)
         view.checkedStateChanged.connect(self.__onAlbumCardCheckedStateChanged)
         view.showBlurAlbumBackgroundSig.connect(self.__showBlurAlbumBackground)
         view.hideBlurAlbumBackgroundSig.connect(self.albumBlurBackground.hide)
-        view.addAlbumToCustomPlaylistSig.connect(
-            self.addAlbumToCustomPlaylistSig)
-        view.addAlbumToNewCustomPlaylistSig.connect(
-            self.addAlbumToNewCustomPlaylistSig)
-        view.switchToSingerInterfaceSig.connect(
-            self.switchToSingerInterfaceSig)
 
         self.albumCardViews.append(view)
         return view
 
     def resizeEvent(self, e):
         """ 根据宽度调整网格的列数 """
+        m = self.vBoxLayout.contentsMargins()
+        w = self.width() - m.left() - m.right()
+
         for view in self.albumCardViews:
-            view.setFixedWidth(self.width() - 15)
+            view.setFixedWidth(w)
+            view.adjustHeight()
 
-        self.__adjustHeight()
+        # self.adjustHeight()
 
-    def __adjustHeight(self):
+    def adjustHeight(self):
         """ 调整滚动部件的高度 """
-        r = sum(i.gridLayout.rowCount() for i in self.albumCardViews)
-        n = len(self.albumCardViews)
-        self.scrollWidget.resize(
-            self.width(),
-            310*r + 60*n*(self.sortMode != "Date added") + 120 + 245
-        )
+        if not self.albumCardViews:
+            return
+
+        views = self.albumCardViews
+
+        vh = sum(i.height() for i in views)
+        n = len(views) - 1
+        m = self.vBoxLayout.contentsMargins()
+        h = vh + 30*n + m.top() + m.bottom()
+        self.resize(self.width(), h)
 
     def __removeViewFromLayout(self):
         """ 从竖直布局中移除专辑卡视图 """
         for view in self.albumCardViews:
-            view.gridLayout.removeAllWidgets()
+            view.layout().removeAllWidgets()
             self.hideCheckBoxAniGroup.removeAnimation(
                 view.hideCheckBoxAniGroup)
             view.deleteLater()
@@ -155,10 +146,7 @@ class AlbumCardInterface(ScrollArea):
             if title not in self.firstViewMap:
                 self.firstViewMap[title] = view
 
-        QApplication.sendEvent(self, QResizeEvent(self.size(), self.size()))
-        QApplication.processEvents()
-        self.verticalScrollBar().setValue(0)
-        self.__adjustHeight()
+        self.adjustHeight()
 
     def setSortMode(self, sortMode: str):
         """ 排序专辑卡
@@ -211,8 +199,8 @@ class AlbumCardInterface(ScrollArea):
         # 创建视图
         for letter, cards in groupCards:
             view = self.__createAlbumCardView(cards, letter)
-            view.titleClicked.connect(lambda: self.showLabelNavigationInterfaceSig.emit(
-                list(firstLetters.keys()), "grid"))
+            view.titleClicked.connect(
+                lambda: signalBus.showLabelNavigationInterfaceSig.emit(list(firstLetters.keys()), "grid"))
 
         self.__addViewToLayout()
 
@@ -241,8 +229,8 @@ class AlbumCardInterface(ScrollArea):
         # 创建视图
         for year, cards in groupCards:
             view = self.__createAlbumCardView(cards, year)
-            view.titleClicked.connect(lambda: self.showLabelNavigationInterfaceSig.emit(
-                years, "list"))
+            view.titleClicked.connect(
+                lambda: signalBus.showLabelNavigationInterfaceSig.emit(years, "list"))
 
         self.__addViewToLayout()
 
@@ -263,19 +251,19 @@ class AlbumCardInterface(ScrollArea):
             singers[singer].append(card)
 
         # 排序分组
-        groupCards = sorted(singers.items(), key=lambda i: i[0])
+        groupCards = sorted(
+            singers.items(), key=lambda i: pinyin.get_initial(i[0])[0].lower())
 
         # 创建视图
         for singer, cards in groupCards:
             view = self.__createAlbumCardView(cards, singer)
-            view.titleClicked.connect(lambda: self.showLabelNavigationInterfaceSig.emit(
-                list(singers.keys()), "grid"))
+            view.titleClicked.connect(
+                lambda: signalBus.showLabelNavigationInterfaceSig.emit(list(singers.keys()), "grid"))
 
         self.__addViewToLayout()
 
     def __setQss(self):
         """ 设置层叠样式 """
-        self.scrollWidget.setObjectName("scrollWidget")
         self.guideLabel.setObjectName('guideLabel')
 
         f = QFile(":/qss/album_card_interface.qss")
@@ -287,60 +275,54 @@ class AlbumCardInterface(ScrollArea):
 
     def __onAlbumCardCheckedStateChanged(self, albumCard: AlbumCard, isChecked: bool):
         """ 专辑卡选中状态改变对应的槽函数 """
-        # 如果专辑信息不在选中的专辑信息列表中且对应的专辑卡变为选中状态就将专辑信息添加到列表中
+        N0 = len(self.checkedAlbumCards)
+
         if albumCard not in self.checkedAlbumCards and isChecked:
             self.checkedAlbumCards.append(albumCard)
-            self.checkedAlbumCardNumChanged.emit(
-                len(self.checkedAlbumCards))
-
-        # 如果专辑信息已经在列表中且该专辑卡变为非选中状态就弹出该专辑信息
         elif albumCard in self.checkedAlbumCards and not isChecked:
-            self.checkedAlbumCards.pop(
-                self.checkedAlbumCards.index(albumCard))
-            self.checkedAlbumCardNumChanged.emit(len(self.checkedAlbumCards))
+            self.checkedAlbumCards.remove(albumCard)
+        else:
+            return
 
-        # 检查是否全部专辑卡选中改变
-        isAllChecked = len(self.checkedAlbumCards) == len(self.albumCards)
-        if isAllChecked != self.isAllAlbumCardsChecked:
-            self.isAllAlbumCardsChecked = isAllChecked
-            self.isAllCheckedChanged.emit(isAllChecked)
+        N1 = len(self.checkedAlbumCards)
 
-        # 如果先前不处于选择模式那么这次发生选中状态改变就进入选择模式
-        if not self.isInSelectionMode:
-            self.__setAllAlbumCardSelectionModeOpen(True)
-            self.selectionModeStateChanged.emit(True)
-            self.isInSelectionMode = True
-        elif not self.checkedAlbumCards:
-            self.__setAllAlbumCardSelectionModeOpen(False)
-            self.selectionModeStateChanged.emit(False)
-            self.isInSelectionMode = False
+        if N0 == 0 and N1 > 0:
+            self.setSelectionModeOpen(True)
+        elif N1 == 0:
+            self.setSelectionModeOpen(False)
 
-    def __setAllAlbumCardSelectionModeOpen(self, isOpen: bool):
+        isAllChecked = N1 == len(self.albumCards)
+        self.checkedNumChanged.emit(N1, isAllChecked)
+
+    def setSelectionModeOpen(self, isOpen: bool):
         """ 设置所有专辑卡是否进入选择模式 """
-        for albumCard in self.albumCards:
-            albumCard.setSelectionModeOpen(isOpen)
+        if isOpen == self.isInSelectionMode:
+            return
 
-        # 退出选择模式时开启隐藏所有复选框的动画
+        self.isInSelectionMode = isOpen
+        for view in self.albumCardViews:
+            view.setSelectionModeOpen(isOpen)
+
         if not isOpen:
             self.hideCheckBoxAniGroup.start()
 
-    def unCheckAlbumCards(self):
+    def uncheckAll(self):
         """ 取消所有已处于选中状态的专辑卡的选中状态 """
         for albumCard in self.checkedAlbumCards.copy():
             albumCard.setChecked(False)
 
-    def setAllAlbumCardCheckedState(self, isAllChecked: bool):
+    def setAllChecked(self, isChecked: bool):
         """ 设置所有的专辑卡checked状态 """
-        if self.isAllAlbumCardsChecked == isAllChecked:
+        if self.isAllAlbumCardsChecked == isChecked:
             return
 
-        self.isAllAlbumCardsChecked = isAllChecked
+        self.isAllAlbumCardsChecked = isChecked
         for albumCard in self.albumCards:
-            albumCard.setChecked(isAllChecked)
+            albumCard.setChecked(isChecked)
 
     def __showBlurAlbumBackground(self, pos: QPoint, picPath: str):
         """ 显示磨砂背景 """
-        pos = self.scrollWidget.mapFromGlobal(pos)
+        pos = self.mapFromGlobal(pos)
         self.albumBlurBackground.setBlurAlbum(picPath)
         self.albumBlurBackground.move(pos.x() - 28, pos.y() - 16)
         self.albumBlurBackground.show()
@@ -382,7 +364,11 @@ class AlbumCardInterface(ScrollArea):
         if N_ != N:
             self.albumNumChanged.emit(N)
 
-    def scrollToLabel(self, label: str):
+    def getLabelY(self, label: str):
         """ 滚动到label指定的位置 """
         view = self.firstViewMap[label]
-        self.verticalScrollBar().setValue(view.y() - 245)
+        return view.y() - self.vBoxLayout.contentsMargins().top()
+
+    def showAlbumInfoEditDialog(self, singer: str, album: str):
+        """ 显示专辑信息编辑界面信号 """
+        self.albumCardViews[0].showAlbumInfoEditDialog(singer, album)

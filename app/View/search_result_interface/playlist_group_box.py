@@ -15,15 +15,6 @@ from PyQt5.QtWidgets import (QGraphicsOpacityEffect, QPushButton, QScrollArea,
 class PlaylistGroupBox(QScrollArea):
     """ 播放列表分组框 """
 
-    playSig = pyqtSignal(list)                           # 播放自定义播放列表
-    nextToPlaySig = pyqtSignal(list)                     # 下一首播放自定义播放列表
-    deletePlaylistSig = pyqtSignal(str)                  # 删除播放列表
-    renamePlaylistSig = pyqtSignal(str, str)             # 重命名播放列表
-    switchToPlaylistInterfaceSig = pyqtSignal(str)       # 切换到播放列表界面
-    addSongsToPlayingPlaylistSig = pyqtSignal(list)      # 添加歌曲到正在播放
-    addSongsToNewCustomPlaylistSig = pyqtSignal(list)    # 添加歌曲到新的自定义的播放列表中
-    addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 添加歌曲到自定义的播放列表中
-
     def __init__(self, library: Library, parent=None):
         super().__init__(parent=parent)
         self.library = library
@@ -210,15 +201,3 @@ class PlaylistGroupBox(QScrollArea):
         self.scrollRightButton.clicked.connect(
             self.__onScrollRightButtonClicked)
 
-        self.playlistCardView.playSig.connect(self.playSig)
-        self.playlistCardView.nextToPlaySig.connect(self.nextToPlaySig)
-        self.playlistCardView.renamePlaylistSig.connect(self.renamePlaylistSig)
-        self.playlistCardView.deletePlaylistSig.connect(self.deletePlaylistSig)
-        self.playlistCardView.switchToPlaylistInterfaceSig.connect(
-            self.switchToPlaylistInterfaceSig)
-        self.playlistCardView.addSongsToCustomPlaylistSig.connect(
-            self.addSongsToCustomPlaylistSig)
-        self.playlistCardView.addSongsToNewCustomPlaylistSig.connect(
-            self.addSongsToNewCustomPlaylistSig)
-        self.playlistCardView.addSongsToPlayingPlaylistSig.connect(
-            self.addSongsToPlayingPlaylistSig)

@@ -1,11 +1,12 @@
 # coding:utf-8
 from typing import List
-from common.database.entity import SongInfo
 
+from common.database.entity import SongInfo
+from common.signal_bus import signalBus
 from components.dialog_box.message_dialog import MessageDialog
-from components.widgets.menu import AddToMenu, DWMMenu
-from components.song_list_widget import BasicSongListWidget, SongCardType
+from components.song_list_widget import NoScrollSongListWidget, SongCardType
 from components.song_list_widget.song_card import SongTabSongCard
+from components.widgets.menu import AddToMenu, DWMMenu
 from PyQt5.QtCore import QFile, QMargins, Qt, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent
 from PyQt5.QtWidgets import QAction, QLabel
@@ -37,14 +38,10 @@ class SongCardListContextMenu(DWMMenu):
         self.addAction(self.selectAct)
 
 
-class SongListWidget(BasicSongListWidget):
+class SongListWidget(NoScrollSongListWidget):
     """ 歌曲卡列表视图 """
 
     playSignal = pyqtSignal(SongInfo)                   # 播放选中的歌曲
-    playOneSongSig = pyqtSignal(SongInfo)               # 重置播放列表为指定的一首歌
-    nextToPlayOneSongSig = pyqtSignal(SongInfo)         # 下一首播放
-    switchToSingerInterfaceSig = pyqtSignal(str)        # 切换到歌手界面
-    switchToAlbumInterfaceSig = pyqtSignal(str, str)    # 切换到专辑界面
 
     def __init__(self, songInfos: List[SongInfo], parent=None):
         """
@@ -56,12 +53,7 @@ class SongListWidget(BasicSongListWidget):
         parent:
             父级窗口
         """
-        super().__init__(
-            songInfos,
-            SongCardType.SONG_TAB_SONG_CARD,
-            parent,
-            QMargins(30, 245, 30, 0),
-        )
+        super().__init__(songInfos, SongCardType.SONG_TAB_SONG_CARD, parent)
         self.resize(1150, 758)
         self.sortMode = "createTime"
 
@@ -79,7 +71,7 @@ class SongListWidget(BasicSongListWidget):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         # 设置层叠样式
         self.__setQss()
-        self.guideLabel.move(35, 286)
+        self.guideLabel.move(35, 40)
         self.guideLabel.setHidden(bool(self.songInfos))
 
     def __playButtonSlot(self, index: int):
@@ -107,10 +99,12 @@ class SongListWidget(BasicSongListWidget):
     def __setQss(self):
         """ 设置层叠样式 """
         self.guideLabel.setObjectName('guideLabel')
+
         f = QFile(":/qss/song_tab_interface_song_list_widget.qss")
         f.open(QFile.ReadOnly)
         self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
         f.close()
+
         self.guideLabel.adjustSize()
 
     def setSortMode(self, sortMode: str):
@@ -158,10 +152,10 @@ class SongListWidget(BasicSongListWidget):
     def __connectMenuSignalToSlot(self, menu: SongCardListContextMenu):
         """ 信号连接到槽 """
         menu.playAct.triggered.connect(
-            lambda: self.playOneSongSig.emit(self.songCards[self.currentRow()].songInfo))
+            lambda: signalBus.playOneSongCardSig.emit(self.currentSongInfo))
 
         menu.nextSongAct.triggered.connect(
-            lambda: self.nextToPlayOneSongSig.emit(self.songCards[self.currentRow()].songInfo))
+            lambda: signalBus.nextToPlaySig.emit([self.currentSongInfo]))
 
         # 显示歌曲信息编辑面板
         menu.editInfoAct.triggered.connect(self.showSongInfoEditDialog)
@@ -171,9 +165,9 @@ class SongListWidget(BasicSongListWidget):
 
         # 显示专辑界面
         menu.showAlbumAct.triggered.connect(
-            lambda: self.switchToAlbumInterfaceSig.emit(
-                self.songCards[self.currentRow()].singer,
-                self.songCards[self.currentRow()].album,
+            lambda: signalBus.switchToAlbumInterfaceSig.emit(
+                self.currentSongCard.singer,
+                self.currentSongCard.album,
             )
         )
         # 删除歌曲卡
@@ -181,35 +175,24 @@ class SongListWidget(BasicSongListWidget):
 
         # 将歌曲添加到正在播放列表
         menu.addToMenu.playingAct.triggered.connect(
-            lambda: self.addSongToPlayingSignal.emit(self.songCards[self.currentRow()].songInfo))
+            lambda: signalBus.addSongsToPlayingPlaylistSig.emit([self.currentSongInfo]))
 
         # 进入选择模式
         menu.selectAct.triggered.connect(
-            lambda: self.songCards[self.currentRow()].setChecked(True))
+            lambda: self.currentSongCard.setChecked(True))
 
         # 将歌曲添加到已存在的自定义播放列表中
         menu.addToMenu.addSongsToPlaylistSig.connect(
-            lambda name: self.addSongsToCustomPlaylistSig.emit(
-                name, [self.songCards[self.currentRow()].songInfo]))
+            lambda name: signalBus.addSongsToCustomPlaylistSig.emit(name, [self.currentSongInfo]))
 
         # 将歌曲添加到新建的播放列表
         menu.addToMenu.newPlaylistAct.triggered.connect(
-            lambda: self.addSongsToNewCustomPlaylistSig.emit(
-                [self.songCards[self.currentRow()].songInfo]))
+            lambda: signalBus.addSongsToNewCustomPlaylistSig.emit([self.currentSongInfo]))
 
     def _connectSongCardSignalToSlot(self, songCard: SongTabSongCard):
         """ 将歌曲卡信号连接到槽 """
-        songCard.addSongToPlayingSig.connect(self.addSongToPlayingSignal)
         songCard.doubleClicked.connect(self.__onSongCardDoubleClicked)
         songCard.playButtonClicked.connect(self.__playButtonSlot)
         songCard.clicked.connect(self.setCurrentIndex)
-        songCard.switchToSingerInterfaceSig.connect(
-            self.switchToSingerInterfaceSig)
-        songCard.switchToAlbumInterfaceSig.connect(
-            self.switchToAlbumInterfaceSig)
         songCard.checkedStateChanged.connect(
             self.onSongCardCheckedStateChanged)
-        songCard.addSongsToCustomPlaylistSig.connect(
-            self.addSongsToCustomPlaylistSig)
-        songCard.addSongToNewCustomPlaylistSig.connect(
-            lambda songInfo: self.addSongsToNewCustomPlaylistSig.emit([songInfo]))

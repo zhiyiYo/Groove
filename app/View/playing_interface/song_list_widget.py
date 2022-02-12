@@ -1,6 +1,7 @@
 # coding:utf-8
 from typing import List
 
+from common.signal_bus import signalBus
 from common.database.entity import SongInfo
 from components.dialog_box.song_property_dialog import SongPropertyDialog
 from components.widgets.list_widget import ListWidget
@@ -20,11 +21,7 @@ class SongListWidget(ListWidget):
     currentIndexChanged = pyqtSignal(int)                # 当前播放的变化
     isAllCheckedChanged = pyqtSignal(bool)               # 歌曲卡卡全部选中改变
     selectionModeStateChanged = pyqtSignal(bool)         # 进入或退出选择模式
-    checkedSongCardNumChanged = pyqtSignal(int)          # 选中的歌曲卡数量改变
-    switchToSingerInterfaceSig = pyqtSignal(str)         # 切换到歌手界面
-    switchToAlbumInterfaceSig = pyqtSignal(str, str)     # 切换到专辑界面
-    addSongsToNewCustomPlaylistSig = pyqtSignal(list)    # 将歌曲添加到新的自定义播放列表
-    addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 将歌曲添加到已存在的自定义播放列表
+    checkedNumChanged = pyqtSignal(int)                  # 选中的歌曲卡数量改变
 
     def __init__(self, songInfos: List[SongInfo], parent=None):
         super().__init__(parent)
@@ -212,14 +209,6 @@ class SongListWidget(ListWidget):
         songCard.aniStartSig.connect(
             lambda: self.songCards[self.currentIndex].setPlay(False))
         songCard.clicked.connect(self.__emitCurrentChangedSignal)
-        songCard.switchToSingerInterfaceSig.connect(
-            self.switchToSingerInterfaceSig)
-        songCard.switchToAlbumInterfaceSig.connect(
-            self.switchToAlbumInterfaceSig)
-        songCard.addSongToCustomPlaylistSig.connect(
-            lambda name, songInfo: self.addSongsToCustomPlaylistSig.emit(name, [songInfo]))
-        songCard.addSongToNewCustomPlaylistSig.connect(
-            lambda songInfo: self.addSongsToNewCustomPlaylistSig.emit([songInfo]))
         songCard.checkedStateChanged.connect(self.onCheckedStateChanged)
 
     def onCheckedStateChanged(self, index: int, isChecked: bool):
@@ -229,11 +218,11 @@ class SongListWidget(ListWidget):
         # 如果歌曲卡不在选中的歌曲列表中且该歌曲卡变为选中状态就将其添加到列表中
         if songCard not in self.checkedSongCards and isChecked:
             self.checkedSongCards.append(songCard)
-            self.checkedSongCardNumChanged.emit(len(self.checkedSongCards))
+            self.checkedNumChanged.emit(len(self.checkedSongCards))
         # 如果歌曲卡已经在列表中且该歌曲卡变为非选中状态就弹出该歌曲卡
         elif songCard in self.checkedSongCards and not isChecked:
             self.checkedSongCards.remove(songCard)
-            self.checkedSongCardNumChanged.emit(len(self.checkedSongCards))
+            self.checkedNumChanged.emit(len(self.checkedSongCards))
 
         isAllChecked = (len(self.checkedSongCards)
                         == len(self.songCards))
@@ -262,7 +251,7 @@ class SongListWidget(ListWidget):
             songCard.albumLabel.setCursor(cursor)
             songCard.singerLabel.setCursor(cursor)
 
-    def setAllSongCardCheckedState(self, isAllChecked: bool):
+    def setAllChecked(self, isAllChecked: bool):
         """ 设置所有的歌曲卡checked状态 """
         if self.isAllSongCardsChecked == isAllChecked:
             return
@@ -276,6 +265,16 @@ class SongListWidget(ListWidget):
         for songCard in self.songCards:
             songCard.setChecked(False)
 
+    @property
+    def currentSongCard(self):
+        """ 当前歌曲卡 """
+        return self.songCards[self.currentRow()]
+
+    @property
+    def currentSongInfo(self):
+        """ 当前歌曲信息 """
+        return self.currentSongCard.songInfo
+
     def __connectContextMenuSignalToSlot(self, menu: Menu):
         """ 将信号连接到槽函数 """
         # 右击菜单信号连接到槽函数
@@ -285,15 +284,15 @@ class SongListWidget(ListWidget):
         menu.removeAct.triggered.connect(
             lambda: self.removeSongCard(self.currentRow()))
         menu.selectAct.triggered.connect(
-            lambda: self.songCards[self.currentRow()].setChecked(True))
+            lambda: self.currentSongCard.setChecked(True))
         menu.showAlbumAct.triggered.connect(
-            lambda: self.switchToAlbumInterfaceSig.emit(
-                self.songCards[self.currentRow()].singer,
-                self.songCards[self.currentRow()].album))
+            lambda: signalBus.switchToAlbumInterfaceSig.emit(
+                self.currentSongCard.singer,
+                self.currentSongCard.album
+            )
+        )
 
         menu.addToMenu.addSongsToPlaylistSig.connect(
-            lambda name: self.addSongsToCustomPlaylistSig.emit(
-                name, [self.songInfos[self.currentRow()]]))
+            lambda name: signalBus.addSongsToCustomPlaylistSig.emit(name, [self.currentSongInfo]))
         menu.addToMenu.newPlaylistAct.triggered.connect(
-            lambda: self.addSongsToNewCustomPlaylistSig.emit(
-                [self.songInfos[self.currentRow()]]))
+            lambda: signalBus.addSongsToNewCustomPlaylistSig.emit([self.currentSongInfo]))

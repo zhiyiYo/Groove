@@ -2,13 +2,14 @@
 from pathlib import Path
 
 from common.os_utils import getPlaylistNames
+from common.signal_bus import signalBus
 from components.widgets.scroll_area import ScrollArea
-from PyQt5.QtCore import Qt, pyqtSignal, QObject
+from PyQt5.QtCore import QObject, Qt, pyqtSignal
 from PyQt5.QtGui import QColor, QPainter, QPen
 from PyQt5.QtWidgets import QWidget
 
-from .navigation_widget_base import NavigationWidgetBase
 from .navigation_button import CreatePlaylistButton, PushButton, ToolButton
+from .navigation_widget_base import NavigationWidgetBase
 from .search_line_edit import SearchLineEdit
 
 
@@ -16,7 +17,6 @@ class NavigationWidget(NavigationWidgetBase):
     """ 侧边导航窗口 """
 
     searchSig = pyqtSignal(str)
-    switchToPlaylistInterfaceSig = pyqtSignal(str)
     playlistFolder = Path('cache/Playlists')
 
     def __init__(self, parent):
@@ -159,7 +159,7 @@ class NavigationWidget(NavigationWidgetBase):
         for button in self.playlistNameButtons:
             name = button.property('name')
             button.clicked.connect(
-                lambda checked, name=name: self.switchToPlaylistInterfaceSig.emit(name))
+                lambda checked, name=name: signalBus.switchToPlaylistInterfaceSig.emit(name))
 
     def _onSearchButtonClicked(self):
         """ 搜索按钮点击槽函数 """
