@@ -49,6 +49,7 @@ class SearchResultInterface(ScrollArea):
         self.albumInfos = []            # 匹配到的本地专辑列表
         self.localSongInfos = []        # 匹配到的本地歌曲列表
         self.onlineSongInfos = []       # 匹配到的在线歌曲列表
+
         self.titleLabel = QLabel(self)
         self.searchLabel = QLabel(self)
         self.scrollWidget = QWidget(self)
@@ -62,8 +63,10 @@ class SearchResultInterface(ScrollArea):
             self.tr("Try searching for something else."), self)
         self.checkSpellLabel = QLabel(
             self.tr('Check your spelling, or search for something else'), self)
+
         self.localSongListWidget = self.localSongGroupBox.songListWidget
         self.onlineSongListWidget = self.onlineSongGroupBox.songListWidget
+
         self.crawler = KuWoMusicCrawler()
         self.totalPages = 1                             # 在线音乐总分页数
         self.currentPage = 1                            # 当前在线音乐页码
@@ -71,6 +74,7 @@ class SearchResultInterface(ScrollArea):
         self.downloadFolder = downloadFolder            # 在线音乐的下载目录
         self.onlinePlayQuality = onlinePlayQuality      # 在线音乐播放音质
         self.onlineMusicPageSize = onlineMusicPageSize  # 每页最多显示的在线音乐数量
+
         self.downloadSongThread = DownloadSongThread(self.downloadFolder, self)
         self.downloadStateTooltip = None
         self.__initWidget()
@@ -197,7 +201,7 @@ class SearchResultInterface(ScrollArea):
         self.titleLabel.adjustSize()
         self.albumGroupBox.updateWindow(self.albumInfos)
         self.playlistGroupBox.updateWindow(self.playlists)
-        self.localSongGroupBox.updateWindow(self.localSongInfos)
+        self.localSongGroupBox.updateWindow(self.localSongInfos[:5])
 
         # 显示/隐藏 提示标签
         self.__adjustHeight()
@@ -288,9 +292,18 @@ class SearchResultInterface(ScrollArea):
         self.__updateLoadMoreLabel()
         self.__adjustHeight()
 
+    def deletePlaylistCard(self, name: str):
+        """ 删除一个播放列表卡 """
+        self.playlistGroupBox.playlistCardView.deletePlaylistCard(name)
+        if len(self.playlistGroupBox.playlistCards) == 0:
+            self.playlistGroupBox.hide()
+            self.__adjustHeight()
+
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
         # 本地歌曲列表信号连接到槽
+        self.localSongGroupBox.switchToMoreSearchResultInterfaceSig.connect(
+            lambda: signalBus.switchToMoreSearchResultInterfaceSig.emit(self.keyWord, 'local song', self.localSongInfos))
         self.localSongListWidget.playSignal.connect(self.playLocalSongSig)
 
         # 在线歌曲列表信号连接到槽函数
@@ -298,6 +311,14 @@ class SearchResultInterface(ScrollArea):
         self.onlineSongListWidget.downloadSig.connect(self.__downloadSong)
         self.onlineSongGroupBox.loadMoreSignal.connect(
             self.__loadMoreOnlineMusic)
+
+        # 专辑信号连接到槽函数
+        self.albumGroupBox.switchToMoreSearchResultInterfaceSig.connect(
+            lambda: signalBus.switchToMoreSearchResultInterfaceSig.emit(self.keyWord, 'album', self.albumInfos))
+
+        # 播放列表信号连接到槽函数
+        self.playlistGroupBox.switchToMoreSearchResultInterfaceSig.connect(
+            lambda: signalBus.switchToMoreSearchResultInterfaceSig.emit(self.keyWord, 'playlist', self.playlists))
 
         # 线程信号连接到槽函数
         self.downloadSongThread.finished.connect(self.__onDownloadAllComplete)

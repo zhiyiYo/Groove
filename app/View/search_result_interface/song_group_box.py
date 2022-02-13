@@ -3,7 +3,7 @@ from typing import List
 
 from common.database.entity import SongInfo
 from common.signal_bus import signalBus
-from components.dialog_box.message_dialog import MessageDialog
+from components.buttons.three_state_button import ThreeStatePushButton
 from components.song_list_widget import NoScrollSongListWidget, SongCardType
 from components.song_list_widget.song_card import (NoCheckBoxSongCard,
                                                    OnlineSongCard)
@@ -17,6 +17,7 @@ class SongGroupBox(QWidget):
     """ 歌曲分组框 """
 
     loadMoreSignal = pyqtSignal()
+    switchToMoreSearchResultInterfaceSig = pyqtSignal()
 
     def __init__(self, song_type: str, parent=None):
         """
@@ -44,6 +45,16 @@ class SongGroupBox(QWidget):
             self.titleButton = QPushButton(self.tr('Online songs'), self)
             self.loadMoreLabel = ClickableLabel(self.tr("Load more"), self)
 
+        self.showAllButton = ThreeStatePushButton(
+            {
+                "normal": ":/images/search_result_interface/ShowAll_normal.png",
+                "hover": ":/images/search_result_interface/ShowAll_hover.png",
+                "pressed": ":/images/search_result_interface/ShowAll_pressed.png",
+            },
+            self.tr(' Show All'),
+            (14, 14),
+            self,
+        )
         self.__initWidget()
 
     def __initWidget(self):
@@ -53,12 +64,16 @@ class SongGroupBox(QWidget):
         self.titleButton.move(35, 0)
         self.songListWidget.move(0, 57)
         self.loadMoreLabel.setCursor(Qt.PointingHandCursor)
+        self.showAllButton.setHidden(self.songType == 'Online songs')
+        self.titleButton.clicked.connect(self.__showMoreSearchResultInterface)
+        self.showAllButton.clicked.connect(self.__showMoreSearchResultInterface)
         self.loadMoreLabel.clicked.connect(self.__onLoadMoreLabelClicked)
         self.__setQss()
 
     def __setQss(self):
         """ 设置层叠样式 """
         self.titleButton.setObjectName('titleButton')
+        self.showAllButton.setObjectName('showAllButton')
         self.loadMoreLabel.setProperty("loadFinished", "false")
 
         f = QFile(":/qss/song_group_box.qss")
@@ -67,9 +82,11 @@ class SongGroupBox(QWidget):
         f.close()
 
         self.titleButton.adjustSize()
+        self.showAllButton.adjustSize()
 
     def resizeEvent(self, e):
         self.songListWidget.resize(self.width(), self.songListWidget.height())
+        self.showAllButton.move(self.width()-self.showAllButton.width()-30, 5)
         self.loadMoreLabel.move(self.width()//2-self.loadMoreLabel.width()//2,
                                 57+self.songListWidget.height()+17)
 
@@ -112,6 +129,13 @@ class SongGroupBox(QWidget):
 
         self.loadMoreSignal.emit()
 
+    def __showMoreSearchResultInterface(self):
+        """ 显示更多搜索结果界面 """
+        if self.songType == 'Online songs':
+            return
+
+        self.switchToMoreSearchResultInterfaceSig.emit()
+
 
 class LocalSongListWidget(NoScrollSongListWidget):
     """ 本地音乐歌曲卡列表 """
@@ -127,8 +151,6 @@ class LocalSongListWidget(NoScrollSongListWidget):
         """
         super().__init__(None, SongCardType.NO_CHECKBOX_SONG_CARD,
                          parent, QMargins(30, 0, 30, 0), 0)
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.__setQss()
 
     def __onPlayButtonClicked(self, index):

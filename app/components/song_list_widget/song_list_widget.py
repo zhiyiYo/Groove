@@ -4,12 +4,14 @@ from typing import List
 from common.database.entity import SongInfo
 from common.signal_bus import signalBus
 from components.dialog_box.message_dialog import MessageDialog
-from components.song_list_widget import NoScrollSongListWidget, SongCardType
-from components.song_list_widget.song_card import SongTabSongCard
 from components.widgets.menu import AddToMenu, DWMMenu
-from PyQt5.QtCore import QFile, QMargins, Qt, pyqtSignal
+from PyQt5.QtCore import QFile, Qt, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent
 from PyQt5.QtWidgets import QAction, QLabel
+
+from .no_scroll_song_list_widget import NoScrollSongListWidget
+from .song_card import SongTabSongCard
+from .song_card_type import SongCardType
 
 
 class SongCardListContextMenu(DWMMenu):
@@ -39,7 +41,7 @@ class SongCardListContextMenu(DWMMenu):
 
 
 class SongListWidget(NoScrollSongListWidget):
-    """ 歌曲卡列表视图 """
+    """ 歌曲卡列表控件 """
 
     playSignal = pyqtSignal(SongInfo)                   # 播放选中的歌曲
 

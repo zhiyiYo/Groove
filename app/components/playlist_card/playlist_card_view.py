@@ -129,8 +129,7 @@ class PlaylistCardViewBase(QWidget):
 
     def renamePlaylistCard(self, old: str, new: str):
         """ 重命名播放列表卡 """
-        success = self.library.playlistController.rename(old, new)
-        if not success:
+        if old not in self.playlistCardMap:
             return
 
         card = self.playlistCardMap.pop(old)
@@ -141,8 +140,7 @@ class PlaylistCardViewBase(QWidget):
 
     def addSongsToPlaylistCard(self, name: str, songInfos: List[SongInfo]):
         """ 向播放列表卡添加歌曲 """
-        success = self.library.playlistController.addSongs(name, songInfos)
-        if not success:
+        if name not in self.playlistCardMap:
             return
 
         card = self.playlistCardMap[name]
@@ -153,8 +151,7 @@ class PlaylistCardViewBase(QWidget):
 
     def removeSongsFromPlaylistCard(self, name: str, songInfos: List[SongInfo]):
         """ 移除一个播放列表中的歌曲 """
-        success = self.library.playlistController.removeSongs(name, songInfos)
-        if not success:
+        if name not in self.playlistCardMap:
             return
 
         card = self.playlistCardMap[name]
@@ -163,8 +160,7 @@ class PlaylistCardViewBase(QWidget):
 
     def deletePlaylistCard(self, name: str):
         """ 删除一个播放列表卡 """
-        success = self.library.playlistController.delete(name)
-        if not success:
+        if name not in self.playlistCardMap:
             return
 
         card = self.playlistCardMap.pop(name)

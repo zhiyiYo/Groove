@@ -3,8 +3,10 @@ from typing import List
 
 from common.database.entity import AlbumInfo
 from common.library import Library
+from common.signal_bus import signalBus
 from components.album_card import (AlbumBlurBackground, AlbumCardType,
                                    HorizonAlbumCardView)
+from components.buttons.three_state_button import ThreeStatePushButton
 from PyQt5.QtCore import (QEasingCurve, QFile, QMargins,
                           QParallelAnimationGroup, QPoint, QPropertyAnimation,
                           QSize, Qt, pyqtSignal)
@@ -15,6 +17,8 @@ from PyQt5.QtWidgets import (QApplication, QGraphicsOpacityEffect, QPushButton,
 
 class AlbumGroupBox(QScrollArea):
     """ 专辑分组框 """
+
+    switchToMoreSearchResultInterfaceSig = pyqtSignal()
 
     def __init__(self, library: Library, parent=None):
         super().__init__(parent=parent)
@@ -42,6 +46,17 @@ class AlbumGroupBox(QScrollArea):
             parent=self
         )
         self.albumCards = self.albumCardView.albumCards
+
+        self.showAllButton = ThreeStatePushButton(
+            {
+                "normal": ":/images/search_result_interface/ShowAll_normal.png",
+                "hover": ":/images/search_result_interface/ShowAll_hover.png",
+                "pressed": ":/images/search_result_interface/ShowAll_pressed.png",
+            },
+            self.tr(' Show All'),
+            (14, 14),
+            self,
+        )
 
         self.leftMask = QWidget(self)
         self.rightMask = QWidget(self)
@@ -86,6 +101,7 @@ class AlbumGroupBox(QScrollArea):
         self.leftMask.setObjectName('leftMask')
         self.rightMask.setObjectName('rightMask')
         self.titleButton.setObjectName('titleButton')
+        self.showAllButton.setObjectName('showAllButton')
 
         f = QFile(":/qss/album_group_box.qss")
         f.open(QFile.ReadOnly)
@@ -93,10 +109,12 @@ class AlbumGroupBox(QScrollArea):
         f.close()
 
         self.titleButton.adjustSize()
+        self.showAllButton.adjustSize()
 
     def resizeEvent(self, e):
         self.rightMask.move(self.width()-65, 47)
         self.scrollRightButton.move(self.width()-90, 42)
+        self.showAllButton.move(self.width()-self.showAllButton.width()-30, 5)
 
     def __onScrollHorizon(self, value):
         """ 水平滚动槽函数 """
@@ -208,6 +226,11 @@ class AlbumGroupBox(QScrollArea):
 
     def __connectSignalToSlot(self):
         """ 连接信号到槽函数 """
+        self.titleButton.clicked.connect(
+            self.switchToMoreSearchResultInterfaceSig)
+        self.showAllButton.clicked.connect(
+            self.switchToMoreSearchResultInterfaceSig)
+
         self.horizontalScrollBar().valueChanged.connect(self.__onScrollHorizon)
         self.scrollLeftButton.clicked.connect(self.__onScrollLeftButtonClicked)
         self.scrollRightButton.clicked.connect(

@@ -3,6 +3,7 @@ from typing import Dict, List
 
 from common.database.entity import Playlist
 from common.library import Library
+from components.buttons.three_state_button import ThreeStatePushButton
 from components.playlist_card import HorizonPlaylistCardView, PlaylistCardType
 from PyQt5.QtCore import (QEasingCurve, QFile, QMargins,
                           QParallelAnimationGroup, QPropertyAnimation, QSize,
@@ -14,6 +15,8 @@ from PyQt5.QtWidgets import (QGraphicsOpacityEffect, QPushButton, QScrollArea,
 
 class PlaylistGroupBox(QScrollArea):
     """ 播放列表分组框 """
+
+    switchToMoreSearchResultInterfaceSig = pyqtSignal()
 
     def __init__(self, library: Library, parent=None):
         super().__init__(parent=parent)
@@ -40,6 +43,17 @@ class PlaylistGroupBox(QScrollArea):
             parent=self
         )
         self.playlistCards = self.playlistCardView.playlistCards
+
+        self.showAllButton = ThreeStatePushButton(
+            {
+                "normal": ":/images/search_result_interface/ShowAll_normal.png",
+                "hover": ":/images/search_result_interface/ShowAll_hover.png",
+                "pressed": ":/images/search_result_interface/ShowAll_pressed.png",
+            },
+            self.tr(' Show All'),
+            (14, 14),
+            self,
+        )
 
         self.leftMask = QWidget(self)
         self.rightMask = QWidget(self)
@@ -85,6 +99,7 @@ class PlaylistGroupBox(QScrollArea):
         self.leftMask.setObjectName('leftMask')
         self.rightMask.setObjectName('rightMask')
         self.titleButton.setObjectName('titleButton')
+        self.showAllButton.setObjectName('showAllButton')
 
         f = QFile(":/qss/playlist_group_box.qss")
         f.open(QFile.ReadOnly)
@@ -92,10 +107,12 @@ class PlaylistGroupBox(QScrollArea):
         f.close()
 
         self.titleButton.adjustSize()
+        self.showAllButton.adjustSize()
 
     def resizeEvent(self, e):
         self.rightMask.move(self.width()-65, 47)
         self.scrollRightButton.move(self.width()-90, 42)
+        self.showAllButton.move(self.width()-self.showAllButton.width()-30, 5)
 
     def __onScrollHorizon(self, value):
         """ 水平滚动槽函数 """
@@ -196,6 +213,11 @@ class PlaylistGroupBox(QScrollArea):
 
     def __connectSignalToSlot(self):
         """ 信号连接到槽 """
+        self.titleButton.clicked.connect(
+            self.switchToMoreSearchResultInterfaceSig)
+        self.showAllButton.clicked.connect(
+            self.switchToMoreSearchResultInterfaceSig)
+
         self.horizontalScrollBar().valueChanged.connect(self.__onScrollHorizon)
         self.scrollLeftButton.clicked.connect(self.__onScrollLeftButtonClicked)
         self.scrollRightButton.clicked.connect(

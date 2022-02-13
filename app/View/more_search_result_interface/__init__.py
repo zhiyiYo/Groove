@@ -1,0 +1,1 @@
+from .more_search_result_interface import MoreSearchResultInterface

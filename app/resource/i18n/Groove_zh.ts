@@ -178,6 +178,11 @@
         <source>Albums</source>
         <translation>专辑</translation>
     </message>
+    <message>
+        <location filename="../../View/search_result_interface/album_group_box.py" line="53"/>
+        <source> Show All</source>
+        <translation> 查看全部</translation>
+    </message>
 </context>
 <context>
     <name>AlbumInfoBar</name>
@@ -1174,6 +1179,11 @@
         <source>Playlists</source>
         <translation>播放列表</translation>
     </message>
+    <message>
+        <location filename="../../View/search_result_interface/playlist_group_box.py" line="51" />
+        <source> Show All</source>
+        <translation> 查看全部</translation>
+    </message>
 </context>
 <context>
     <name>PlaylistInfoBar</name>
@@ -1751,6 +1761,11 @@
         <location filename="../../View/search_result_interface/song_group_box.py" line="41"/>
         <source>Load more</source>
         <translation>加载更多</translation>
+    </message>
+    <message>
+        <location filename="../../View/search_result_interface/song_group_box.py" line="54"/>
+        <source> Show All</source>
+        <translation> 查看全部</translation>
     </message>
 </context>
 <context>
@@ -2453,6 +2468,24 @@
         <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="353" />
         <source>it won&apos;t be on be this device anymore.</source>
         <translation>，它将不再位于此设备上。</translation>
+    </message>
+</context>
+<context>
+    <name>MoreSearchResultInterface</name>
+    <message>
+        <location filename="../../View/more_search_result_interface/more_search_result_interface.py" line="62" />
+        <source>search result for local songs</source>
+        <translation>的本地歌曲搜索结果</translation>
+    </message>
+    <message>
+        <location filename="../../View/more_search_result_interface/more_search_result_interface.py" line="78" />
+        <source>search result for albums</source>
+        <translation>的专辑搜索结果</translation>
+    </message>
+    <message>
+        <location filename="../../View/more_search_result_interface/more_search_result_interface.py" line="89" />
+        <source>search result for playlists</source>
+        <translation>的播放列表搜索结果</translation>
     </message>
 </context>
 </TS>

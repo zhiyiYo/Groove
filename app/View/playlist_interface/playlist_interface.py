@@ -133,6 +133,7 @@ class PlaylistInterface(SongSelectionModeInterface):
         self.playlistInfoBar.updateWindow(self.playlist)
         self.adjustScrollHeight()
         self.removeSongSig.emit(self.playlistName, songInfos)
+        self.__onSongListWidgetEmptyChanged(self.songListWidget.songCardNum() == 0)
 
     def __onScrollBarValueChanged(self, value):
         """ 滚动时改变专辑信息栏高度 """
@@ -167,6 +168,8 @@ class PlaylistInterface(SongSelectionModeInterface):
         """ 从播放列表中移除歌曲 """
         self.playlistInfoBar.updateWindow(self.playlist)
         self.removeSongSig.emit(self.playlistName, [songInfo])
+        self.adjustScrollHeight()
+        self.__onSongListWidgetEmptyChanged(self.songListWidget.songCardNum() == 0)
 
     def __onSongListWidgetEmptyChanged(self, isEmpty):
         """ 歌曲卡数量改变槽函数 """

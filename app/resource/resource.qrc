@@ -22,6 +22,7 @@
         <file>qss/playlist_interface.qss</file>
         <file>qss/rename_playlist_dialog.qss</file>
         <file>qss/search_result_interface.qss</file>
+        <file>qss/more_search_result_interface.qss</file>
         <file>qss/setting_interface.qss</file>
         <file>qss/singer_interface.qss</file>
         <file>qss/smallest_play_interface.qss</file>
