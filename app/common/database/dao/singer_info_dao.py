@@ -3,7 +3,7 @@ from .dao_base import DaoBase
 
 
 class SingerInfoDao(DaoBase):
-    """ 歌手信息数据库操作类 """
+    """ Singer information DAO """
 
     table = 'tbl_singer_info'
     fields = ['id', 'singer', 'genre']

@@ -10,7 +10,7 @@ from.service_base import ServiceBase
 
 
 class AlbumInfoService(ServiceBase):
-    """ 专辑信息服务类 """
+    """ Album information service """
 
     def __init__(self, db: QSqlDatabase = None):
         super().__init__()

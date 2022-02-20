@@ -10,7 +10,7 @@ from PyQt5.QtCore import QThread, pyqtSignal
 
 
 class GetLyricThread(QThread):
-    """ 获取歌词线程 """
+    """ Get lyrics thread """
 
     crawlFinished = pyqtSignal(dict)
     cacheFolder = Path('cache/lyric')
@@ -26,10 +26,10 @@ class GetLyricThread(QThread):
         ]
 
     def run(self):
-        """ 搜索歌词 """
+        """ start to get lyric """
         self.cacheFolder.mkdir(exist_ok=True, parents=True)
 
-        # 在本地缓存中寻找文件
+        # search lyrics in local cached files
         file = adjustName(f'{self.singer}_{self.songName}.json')
         lyricPath = self.cacheFolder / file
         if lyricPath.exists():
@@ -37,7 +37,7 @@ class GetLyricThread(QThread):
                 self.crawlFinished.emit(json.load(f))
                 return
 
-        # 搜索歌词
+        # search lyrics online
         notEmpty = False
         keyWord = self.singer + ' ' + self.songName
 
@@ -49,7 +49,7 @@ class GetLyricThread(QThread):
 
         lyric = parse_lyric(lyric)
 
-        # 保存歌词文件
+        # cache lyrics to local
         if notEmpty:
             with open(lyricPath, 'w', encoding='utf-8') as f:
                 json.dump(lyric, f)
@@ -57,6 +57,6 @@ class GetLyricThread(QThread):
         self.crawlFinished.emit(lyric)
 
     def setSongInfo(self, songInfo: SongInfo):
-        """ 设置歌曲信息 """
+        """ set song information for searching lyrics """
         self.singer = songInfo.singer
         self.songName = songInfo.title

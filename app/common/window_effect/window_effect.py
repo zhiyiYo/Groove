@@ -13,10 +13,10 @@ from .c_structures import (ACCENT_POLICY, ACCENT_STATE, DWMNCRENDERINGPOLICY,
 
 
 class WindowEffect:
-    """ 调用windows api实现窗口效果 """
+    """ Window effect of Win10 | Win11 system """
 
     def __init__(self):
-        # 调用api
+        # call API
         self.user32 = WinDLL("user32")
         self.dwmapi = WinDLL("dwmapi")
         self.SetWindowCompositionAttribute = self.user32.SetWindowCompositionAttribute
@@ -31,7 +31,8 @@ class WindowEffect:
         ]
         self.DwmSetWindowAttribute.argtypes = [c_int, DWORD, LPCVOID, DWORD]
         self.DwmExtendFrameIntoClientArea.argtypes = [c_int, POINTER(MARGINS)]
-        # 初始化结构体
+
+        # initialize structure
         self.accentPolicy = ACCENT_POLICY()
         self.winCompAttrData = WINDOWCOMPOSITIONATTRIBDATA()
         self.winCompAttrData.Attribute = WINDOWCOMPOSITIONATTRIB.WCA_ACCENT_POLICY.value
@@ -39,23 +40,23 @@ class WindowEffect:
         self.winCompAttrData.Data = pointer(self.accentPolicy)
 
     def setAcrylicEffect(self, hWnd, gradientColor: str = "F2F2F230", isEnableShadow: bool = True, animationId: int = 0):
-        """ 给窗口开启Win10的亚克力效果
+        """ set acrylic effect for window
 
         Parameter
         ----------
         hWnd: int or `sip.voidptr`
-            窗口句柄
+            window handle
 
         gradientColor: str
-            十六进制亚克力混合色，对应rgba四个分量
+            hexadecimal acrylic mixed color, corresponding to RGBA components
 
         isEnableShadow: bool
-            控制是否启用窗口阴影
+            whether to enable window shadow
 
         animationId: int
-            控制磨砂动画
+            turn on blur animation or not
         """
-        # 亚克力混合色
+        # Acrylic mixed color
         gradientColor = (
             gradientColor[6:]
             + gradientColor[4:6]
@@ -63,72 +64,71 @@ class WindowEffect:
             + gradientColor[:2]
         )
         gradientColor = DWORD(int(gradientColor, base=16))
-        # 磨砂动画
+        # blur animation
         animationId = DWORD(animationId)
-        # 窗口阴影
+        # window shadow
         accentFlags = DWORD(0x20 | 0x40 | 0x80 |
                             0x100) if isEnableShadow else DWORD(0)
         self.accentPolicy.AccentState = ACCENT_STATE.ACCENT_ENABLE_ACRYLICBLURBEHIND.value
         self.accentPolicy.GradientColor = gradientColor
         self.accentPolicy.AccentFlags = accentFlags
         self.accentPolicy.AnimationId = animationId
-        # 开启亚克力
-        self.SetWindowCompositionAttribute(hWnd, pointer(self.winCompAttrData))
+        # enable acrylic effect
+        self.SetWindowCompositionAttribute(int(hWnd), pointer(self.winCompAttrData))
 
     def setAeroEffect(self, hWnd):
-        """ 给窗口开启Aero效果
+        """ add the aero effect to the window
 
         Parameter
         ----------
         hWnd: int or `sip.voidptr`
-            窗口句柄
+            Window handle
         """
         self.accentPolicy.AccentState = ACCENT_STATE.ACCENT_ENABLE_BLURBEHIND.value
-        # 开启Aero
-        self.SetWindowCompositionAttribute(hWnd, pointer(self.winCompAttrData))
+        self.SetWindowCompositionAttribute(int(hWnd), pointer(self.winCompAttrData))
 
     def setTransparentEffect(self, hWnd):
-        """ 设置窗口透明效果 """
+        """ set transparent effect for window """
         self.accentPolicy.AccentState = ACCENT_STATE.ACCENT_ENABLE_TRANSPARENTGRADIENT.value
-        self.SetWindowCompositionAttribute(hWnd, pointer(self.winCompAttrData))
+        self.SetWindowCompositionAttribute(int(hWnd), pointer(self.winCompAttrData))
 
     def removeBackgroundEffect(self, hWnd):
-        """ 移除背景特效效果 """
+        """ Remove background effect """
         self.accentPolicy.AccentState = ACCENT_STATE.ACCENT_DISABLED.value
-        self.SetWindowCompositionAttribute(hWnd, pointer(self.winCompAttrData))
+        self.SetWindowCompositionAttribute(int(hWnd), pointer(self.winCompAttrData))
 
     def moveWindow(self, hWnd):
-        """ 移动窗口
+        """ move the window
 
         Parameter
         ----------
         hWnd: int or `sip.voidptr`
-            窗口句柄
+            Window handle
         """
         win32gui.ReleaseCapture()
         win32api.SendMessage(
-            hWnd, win32con.WM_SYSCOMMAND, win32con.SC_MOVE + win32con.HTCAPTION, 0
+            int(hWnd), win32con.WM_SYSCOMMAND, win32con.SC_MOVE + win32con.HTCAPTION, 0
         )
 
     def addShadowEffect(self, hWnd):
-        """ 给窗口添加阴影
+        """ add DWM shadow to window
 
         Parameter
         ----------
         hWnd: int or `sip.voidptr`
-            窗口句柄
+            Window handle
         """
         hWnd = int(hWnd)
         margins = MARGINS(-1, -1, -1, -1)
         self.DwmExtendFrameIntoClientArea(hWnd, byref(margins))
 
     def addMenuShadowEffect(self, hWnd):
-        """ 给菜单添加阴影
+        """ add DWM shadow to menu
 
         Parameter
         ----------
         hWnd: int or `sip.voidptr`
-            窗口句柄
+            Window handle
         """
         hWnd = int(hWnd)
         self.DwmSetWindowAttribute(
@@ -142,16 +142,16 @@ class WindowEffect:
 
     @staticmethod
     def addWindowAnimation(hWnd):
-        """ 打开窗口动画效果
+        """ Enables the maximize and minimize animation of the window
 
         Parameters
         ----------
         hWnd : int or `sip.voidptr`
-            窗口句柄
+            Window handle
         """
         style = win32gui.GetWindowLong(hWnd, win32con.GWL_STYLE)
         win32gui.SetWindowLong(
-            hWnd,
+            int(hWnd),
             win32con.GWL_STYLE,
             style
             | win32con.WS_MAXIMIZEBOX
@@ -162,15 +162,15 @@ class WindowEffect:
 
     @staticmethod
     def setWindowStayOnTop(hWnd, isStayOnTop: bool):
-        """ 设置窗口是否置顶
+        """ set whether the window is topped
 
         Parameters
         ----------
         hWnd : int or `sip.voidptr`
-            窗口句柄
+            Window handle
         """
         flag = win32con.HWND_TOPMOST if isStayOnTop else win32con.HWND_NOTOPMOST
-        win32gui.SetWindowPos(hWnd, flag, 0, 0, 0, 0,
+        win32gui.SetWindowPos(int(hWnd), flag, 0, 0, 0, 0,
                               win32con.SWP_NOMOVE |
                               win32con.SWP_NOSIZE |
                               win32con.SWP_NOACTIVATE)

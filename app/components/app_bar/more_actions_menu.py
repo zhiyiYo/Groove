@@ -8,25 +8,22 @@ from PyQt5.QtWidgets import QAction, QMenu
 
 
 class MoreActionsMenu(QMenu):
-    """ 更多操作菜单 """
+    """ More actions menu """
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.action_list = []  # type:List[QAction]
-        # 添加动画
         self.animation = QPropertyAnimation(self, b"geometry")
-        # 创建窗口效果实例
         self.windowEffect = WindowEffect()
         self.__initWidget()
 
     def __initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widgets """
         self.setWindowFlags(
             Qt.FramelessWindowHint | Qt.Popup | Qt.NoDropShadowWindowHint)
         self.setObjectName("appBarMoreActionsMenu")
         self.animation.setDuration(300)
         self.animation.setEasingCurve(QEasingCurve.OutQuad)
-        # 设置层叠样式
         self.__setQss()
 
     def event(self, e: QEvent):
@@ -35,7 +32,7 @@ class MoreActionsMenu(QMenu):
         return QMenu.event(self, e)
 
     def __setQss(self):
-        """ 设置层叠样式 """
+        """ set style sheet """
         f = QFile(":/qss/menu.qss")
         f.open(QFile.ReadOnly)
         self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
@@ -50,7 +47,7 @@ class MoreActionsMenu(QMenu):
         self.action_list.append(action)
 
     def exec(self, pos: QPoint):
-        """ 显示菜单 """
+        """ show menu """
         w = max(self.fontMetrics().width(i.text())
                 for i in self.action_list)+40
         h = len(self.action_list)*38+10

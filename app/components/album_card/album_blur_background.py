@@ -10,29 +10,30 @@ from PyQt5.QtWidgets import QWidget
 
 
 class AlbumBlurBackground(QWidget):
-    """ 专辑卡磨砂背景 """
+    """ Blur background under album card """
 
     def __init__(self, parent=None, imagePath: str = '', imageSize: tuple = (210, 210), blurRadius=30):
         """
         Parameters
         ----------
         parent:
-            父级窗口
+            parent window
+
         imagePath: str
-            专辑封面路径
+            album cover path
 
         imageSize: tuple
-            调整大小后的图片尺寸
+            image size after adjusting
 
         blurRadius: int
-            磨砂半径, 磨砂后的图片尺寸将等于磨砂半径*2加上宽和高
+            blur radius
         """
         super().__init__(parent)
         self.__blurImage = None
         self.setBlurAlbum(imagePath, imageSize, blurRadius)
 
     def setBlurAlbum(self, imagePath: str, imageSize: tuple = (210, 210), blurRadius=30):
-        """ 更新磨砂专辑封面 """
+        """ set the album cover to be blurred """
         self.__blurRadius = blurRadius
         if not imagePath:
             return
@@ -44,12 +45,12 @@ class AlbumBlurBackground(QWidget):
 
         albumCover = albumCover.resize(imageSize)
 
-        # 创建一个新图像
+        # create a new image
         blurAlbumCover = Image.new(
             'RGBA', (imageSize[0]+2*blurRadius, imageSize[1]+2*blurRadius), (255, 255, 255, 0))
         blurAlbumCover.paste(albumCover, (blurRadius, blurRadius))
 
-        # 对图像进行高斯模糊
+        # apply Gaussian blur to album cover
         blurAlbumCover = blurAlbumCover.filter(GaussianBlur(blurRadius/2))
         self.__blurImage = ImageQt(blurAlbumCover)
 
@@ -57,14 +58,15 @@ class AlbumBlurBackground(QWidget):
         self.update()
 
     def setBlurRadius(self, blurRadius):
-        """ 设置磨砂半径 """
+        """ set blur radius """
         self.__blurRadius = blurRadius
 
     def paintEvent(self, e):
-        """ 绘制磨砂图 """
+        """ paint blurred album cover """
         super().paintEvent(e)
         if not self.__blurImage:
             return
+
         painter = QPainter(self)
         painter.setRenderHints(QPainter.Antialiasing |
                                QPainter.SmoothPixmapTransform)

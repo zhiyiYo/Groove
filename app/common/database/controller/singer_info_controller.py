@@ -9,23 +9,23 @@ from ..utils import UUIDUtils
 
 
 class SingerInfoController:
-    """ 歌手信息控制器 """
+    """ Singer information controller """
 
     def __init__(self, db: QSqlDatabase = None) -> None:
         self.singerInfoService = SingerInfoService(db)
 
     def getSingerInfosFromCache(self, albumInfos: List[AlbumInfo]) -> List[SingerInfo]:
-        """ 从缓存获取并更新歌手信息
+        """ get singer infortion from cache
 
         Parameters
         ----------
         albumInfos: List[AlbumInfo]
-            歌曲信息列表
+            album information list
 
         Returns
         -------
         singerInfos: List[SingerInfo]
-            专辑信息列表
+            singer information list
         """
         cacheSingerInfos = {
             i.singer: i for i in self.singerInfoService.listAll()
@@ -58,7 +58,7 @@ class SingerInfoController:
         for i in set(cacheSingerInfos.keys())-set(currentSingerInfos.keys()):
             removedIds.append(cacheSingerInfos[i].id)
 
-        # 更新数据库
+        # update database
         self.singerInfoService.removeByIds(removedIds)
         self.singerInfoService.modifyByIds(list(expiredAlbumInfos.values()))
         self.singerInfoService.addBatch(addedSingerInfos)
@@ -66,17 +66,17 @@ class SingerInfoController:
         return list(currentSingerInfos.values())
 
     def getSingerInfos(self, albumInfos: List[AlbumInfo]) -> List[SingerInfo]:
-        """ 从新的专辑信息列表获取歌手信息并更新数据库
+        """ get singer information from album information and update database
 
         Parameters
         ----------
         albumInfos: List[AlbumInfo]
-            歌曲信息列表
+            album information list
 
         Returns
         -------
         singerInfos: List[SingerInfo]
-            专辑信息列表
+            singer information list
         """
         singerInfos = {}  # type:Dict[str, SingerInfo]
 
@@ -95,12 +95,12 @@ class SingerInfoController:
 
         singerInfos = list(singerInfos.values())
 
-        # 更新数据库
+        # update database
         self.singerInfoService.clearTable()
         self.singerInfoService.addBatch(singerInfos)
 
         return singerInfos
 
     def getSingerInfoByName(self, singer: str):
-        """ 通过歌手名获取歌手信息 """
+        """ get singer information by singer name """
         return self.singerInfoService.findBy(singer=singer)

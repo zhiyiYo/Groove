@@ -11,28 +11,29 @@ from .app_bar_button import AppBarButton
 
 
 class CollapsingAppBarBase(QWidget):
+    """ Collapsing app bar base class """
 
     def __init__(self, title: str, content: str, coverPath: str, coverType='album', parent=None):
         """
         Parameters
         ----------
         title: str
-            标题
+            title of bar
 
         content: str
-            内容
+            content of bar
 
         coverPath: str
-            封面路径
+            cover path
 
         coverType: str
-            封面类型，可以是 `album`、`playlist` 或者 `singer`
+            cover type, including `album`, `playlist` and `singer`
 
         parent:
             父级窗口
         """
         if coverType not in ['album', 'playlist', 'singer']:
-            raise ValueError("封面类型非法")
+            raise ValueError(f"Cover type `{coverType}` is illegal")
 
         super().__init__(parent=parent)
         self.title = title
@@ -56,7 +57,7 @@ class CollapsingAppBarBase(QWidget):
         self.__initWidget()
 
     def __initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widgets """
         # self.moreActionsButton.hide()
         self.moreActionsButton.clicked.connect(self.onMoreActionsButtonClicked)
 
@@ -71,32 +72,31 @@ class CollapsingAppBarBase(QWidget):
         self.resize(1300, 385)
 
     def setButtons(self, buttons: List[AppBarButton]):
-        """ 设置工具栏按钮 """
+        """ set buttons on app bar """
         self.__buttons = buttons.copy()
         self.__nButtons = len(self.__buttons)
         for button in buttons:
             button.setParent(self)
 
     def setBackgroundColor(self):
-        """ 设置背景颜色 """
+        """ set the background color of app bar """
         r, g, b = DominantColor.getDominantColor(self.coverPath)
         palette = QPalette()
         palette.setColor(self.backgroundRole(), QColor(r, g, b))
         self.setPalette(palette)
 
     def resizeEvent(self, e: QResizeEvent):
-        """ 改变部件位置和大小 """
         h = self.height()
         needWhiteBar = self.needWhiteBar
 
-        # 调整封面大小和位置
+        # adjust geometry of cover
         coverWidth = 275 - \
             int((385-h)/230*192) if needWhiteBar else 295-int((385-h)/230*206)
         self.coverLabel.resize(coverWidth, coverWidth)
         y = 65-int((385-h)/230*17) if needWhiteBar else 45-int((385-h)/230*4)
         self.coverLabel.move(45, y)
 
-        # 调整标签大小和位置
+        # adjust geometry of labels
         self.titleFontSize = int(40/43*(43-(385-h)/230*12))
         self.contentFontSize = int(16-(385-h)/147*3)
         self.__adjustText()
@@ -114,7 +114,7 @@ class CollapsingAppBarBase(QWidget):
         self.contentLabel.move(x, y2)
         self.contentLabel.setVisible(h >= 238)
 
-        # 调整按钮位置
+        # adjust position of buttons
         if not self.__buttons:
             return
 
@@ -126,18 +126,17 @@ class CollapsingAppBarBase(QWidget):
             button.move(x, y)
             x += button.width()+10
 
-        # 隐藏一部分按钮
+        # Hide part of the button
         index = self.__getLastVisibleButtonIndex()
         self.hiddenButtonNum = self.__nButtons-(index+1)
         self.moreActionsButton.setVisible(index + 1 < self.__nButtons)
         for i, button in enumerate(self.__buttons):
             button.setHidden(i > index)
 
-        # 先移动一次按钮
         self.moreActionsButton.move(
             self.__buttons[index].geometry().right()+10, y)
 
-        # 根据按钮的位置和此时的宽度决定是否再次隐藏按钮
+        # according to the position of the button and the width to decide whether to hide the button again.
         if self.moreActionsButton.isVisible() and self.width() < self.moreActionsButton.geometry().right()+10:
             self.hiddenButtonNum += 1
             self.__buttons[index].hide()
@@ -145,10 +144,11 @@ class CollapsingAppBarBase(QWidget):
                 self.__buttons[index-1].geometry().right()+10, y)
 
     def paintEvent(self, e):
-        """ 封面白条 """
+        """ paint the white lines of cover """
         super().paintEvent(e)
         if not self.needWhiteBar:
             return
+
         painter = QPainter(self)
         painter.setPen(Qt.NoPen)
         painter.setRenderHint(QPainter.Antialiasing)
@@ -158,27 +158,29 @@ class CollapsingAppBarBase(QWidget):
         w1 = 255 - int((385-h)/230*178)
         w2 = 235 - int((385-h)/230*164)
         h_ = (self.coverLabel.width()-w1)//2
-        # 绘制第一个白条
+
+        # paint first white line
         painter.setBrush(QColor(255, 255, 255, 255*0.4))
         painter.drawRect(x+h_, y-h_, w1, h_)
-        # 绘制第二个白条
+
+        # paint second white line
         painter.setBrush(QColor(255, 255, 255, 255*0.2))
         painter.drawRect(x+2*h_, y-2*h_, w2, h_)
 
     @staticmethod
     def __getLabelStyleSheet(fontFamily: Union[str, List[str]], fontSize: int, fontWeight=400):
-        """ 获取标签样式表
+        """ get the style sheet of label
 
         Parameters
         ----------
         fontFamily: str
-            字体家族
+            font family
 
         fontSize: int
-            以 pt 为单位的字体大小
+            font size in pt
 
         fontWeight: int or str
-            字体粗细
+            font weight
         """
         if isinstance(fontFamily, str):
             fontFamily = f"'{fontFamily}'"
@@ -198,13 +200,15 @@ class CollapsingAppBarBase(QWidget):
     def __adjustText(self):
         """ 调整过长的文本 """
         maxWidth = self.width()-40-self.coverLabel.rect().right()-45
-        # 调节标题
+
+        # adjust title
         fontMetrics = QFontMetrics(
             QFont('Microsoft YaHei', round(self.titleFontSize*27/43)))
         title = fontMetrics.elidedText(self.title, Qt.ElideRight, maxWidth)
         self.titleLabel.setText(title)
         self.titleLabel.adjustSize()
-        # 调解内容
+
+        # adjust content
         fontMetrics = QFontMetrics(
             QFont('Microsoft YaHei', round(self.contentFontSize*27/43)))
         content = fontMetrics.elidedText(self.content, Qt.ElideRight, maxWidth)
@@ -212,18 +216,19 @@ class CollapsingAppBarBase(QWidget):
         self.contentLabel.adjustSize()
 
     def __getLastVisibleButtonIndex(self):
-        """ 获取最后一个可见的按钮下标 """
+        """ get the index of last visible button """
         for i, button in enumerate(self.__buttons):
             if button.geometry().right() + 10 > self.width():
                 return i-1
+
         return i
 
     def onMoreActionsButtonClicked(self):
-        """ 更多操作按钮点击槽函数，需要被子类重载 """
-        raise NotImplementedError("此方法需要被重载")
+        """ show more action menu """
+        raise NotImplementedError
 
     def updateWindow(self, title: str, content: str, coverPath: str):
-        """ 更新窗口 """
+        """ update app bar """
         self.title = title
         self.content = content
         self.coverPath = coverPath

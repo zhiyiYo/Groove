@@ -13,7 +13,7 @@ from .file_system import FileSystem
 
 
 class Library(QObject):
-    """ 歌曲库 """
+    """ Song library """
 
     loadFinished = pyqtSignal()
     reloadFinished = pyqtSignal()
@@ -27,16 +27,16 @@ class Library(QObject):
         Parameters
         ----------
         directories: List[str]
-            歌曲文件夹列表
+            audio directories
 
         db: QDataBase
-            使用的数据库
+            database to be used
 
         watch: bool
-            是否监视文件夹
+            whether to monitor audio directories
 
         parent:
-            父级
+            parent instance
         """
         super().__init__(parent=parent)
         self.songInfos = []
@@ -57,7 +57,7 @@ class Library(QObject):
             self.fileSystem.removed.connect(self.__onFileRemoved)
 
     def load(self):
-        """ 载入歌曲信息 """
+        """ load data to library """
         files = self.fileSystem.glob()
         self.songInfos = self.songInfoController.getSongInfosFromCache(files)
         self.albumInfos = self.albumInfoController.getAlbumInfosFromCache(
@@ -70,7 +70,7 @@ class Library(QObject):
         self.loadFinished.emit()
 
     def setDirectories(self, directories: List[str]):
-        """ 设置歌曲文件目录 """
+        """ set the audio directories """
         isChanged = self.fileSystem.setDirs(directories)
 
         if not isChanged:
@@ -79,24 +79,19 @@ class Library(QObject):
 
         self.directories = directories
 
-        # 更新信息列表和数据库
+        # update library
         self.load()
 
         self.reloadFinished.emit()
 
-    def initDatabase(self):
-        """ 初始化数据库 """
-        self.songInfoController.songInfoService.createTable()
-        self.albumInfoController.albumInfoService.createTable()
-
     def setDatabase(self, db: QSqlDatabase):
-        """ 设置数据库 """
+        """ set the database to be used """
         self.songInfoController.songInfoService.setDatabase(db)
         self.albumInfoController.albumInfoService.setDatabase(db)
         self.singerInfoController.singerInfoService.setDatabase(db)
 
     def copyTo(self, library):
-        """ 拷贝歌曲库的信息 """
+        """ copy data to another library """
         library.songInfos = self.songInfos
         library.albumInfos = self.albumInfos
         library.singerInfos = self.singerInfos
@@ -105,7 +100,7 @@ class Library(QObject):
         library.fileSystem.setDirs(self.directories)
 
     def updateSongInfo(self, songInfo: SongInfo):
-        """ 更新一首歌曲信息 """
+        """ update one song information """
         self.songInfoController.updateSongInfo(songInfo)
 
         for i, songInfo_ in enumerate(self.songInfos):
@@ -119,7 +114,7 @@ class Library(QObject):
             self.albumInfos)
 
     def updateMultiSongInfos(self, songInfos: List[SongInfo]):
-        """ 更新多首歌曲信息 """
+        """ update multi song information """
         self.songInfoController.updateMultiSongInfos(songInfos)
 
         songInfoMap = {i.file: i for i in songInfos}
@@ -133,7 +128,7 @@ class Library(QObject):
             self.albumInfos)
 
     def __onFileAdded(self, files: List[Path]):
-        """ 增加歌曲文件槽函数 """
+        """ file added to file system slot """
         songInfos = self.songInfoController.addSongInfos(files)
 
         self.songInfos.extend(songInfos)
@@ -146,7 +141,7 @@ class Library(QObject):
         self.fileAdded.emit(songInfos)
 
     def __onFileRemoved(self, files: List[Path]):
-        """ 移除歌曲文件槽函数 """
+        """ file removed from file system slot """
         files = self.songInfoController.removeSongInfos(files)
 
         for songInfo in self.songInfos.copy():

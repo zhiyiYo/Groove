@@ -10,7 +10,7 @@ from.service_base import ServiceBase
 
 
 class SongInfoService(ServiceBase):
-    """ 歌曲信息服务类 """
+    """ Song information service """
 
     def __init__(self, db: QSqlDatabase = None):
         super().__init__()
@@ -23,7 +23,7 @@ class SongInfoService(ServiceBase):
         return self.songInfoDao.selectBy(**condition)
 
     def findByFile(self, file: str):
-        """ 通过文件路径查询歌曲信息 """
+        """ find song information by the path of audio file """
         return self.songInfoDao.selectByFile(str(file))
 
     def listBy(self, **condition) -> List[SongInfo]:
@@ -36,15 +36,15 @@ class SongInfoService(ServiceBase):
         return self.songInfoDao.listAll()
 
     def listByIds(self, files: list, repeat=False) -> List[SongInfo]:
-        """ 通过文件位置查询歌曲信息
+        """ list song information by the path of audio files
 
         Parameters
         ----------
         files: List[str]
-            歌曲文件路径
+            the path of audio files
 
         repeat: bool
-            是否允许歌曲信息重复
+            allow song information to repeat or not
         """
         songInfos = self.songInfoDao.listByIds(files)
         k = self.songInfoDao.fields[0]
@@ -57,11 +57,11 @@ class SongInfoService(ServiceBase):
         return songInfos
 
     def listBySingerAlbum(self, singer: str, album: str) -> List[SongInfo]:
-        """ 通过歌手和专辑查询所有歌曲信息 """
+        """ list song information by singer name and album name """
         return self.songInfoDao.listBySingerAlbum(singer, album)
 
     def listBySingerAlbums(self, singers: List[str], albums: List[str]):
-        """ 通过歌手和专辑列表查询所有歌曲信息 """
+        """ list song information by singer names and album names  """
         return self.songInfoDao.listBySongerAlbums(singers, albums)
 
     def modify(self, file: str, field: str, value) -> bool:
@@ -89,5 +89,5 @@ class SongInfoService(ServiceBase):
         return self.songInfoDao.clearTable()
 
     def setDatabase(self, db: QSqlDatabase):
-        """ 使用指定的数据库 """
+        """ use the specified database """
         self.songInfoDao.setDatabase(db)

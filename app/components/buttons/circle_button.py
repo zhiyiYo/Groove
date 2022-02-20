@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QToolButton
 
 
 class CircleButton(TooltipButton):
-    """ 圆形按钮 """
+    """ Circle button """
 
     def __init__(self, iconPath: str, parent=None, iconSize: tuple = (47, 47), buttonSize: tuple = (47, 47)):
         super().__init__(parent)
@@ -15,7 +15,7 @@ class CircleButton(TooltipButton):
         self.isEnter = False
         self.isPressed = False
 
-        # 控制绘图位置
+        # control paint position
         self._pixPos_list = [(1, 0), (2, 2)]
 
         self.setAttribute(Qt.WA_TranslucentBackground)
@@ -29,7 +29,6 @@ class CircleButton(TooltipButton):
         self.hideToolTip()
 
     def eventFilter(self, obj, e: QEvent):
-        """ 根据鼠标动作更新标志位和图标 """
         if obj == self:
             if e.type() == QEvent.Enter:
                 self.isEnter = True
@@ -47,10 +46,11 @@ class CircleButton(TooltipButton):
                 self.isPressed = not self.isPressed
                 self.update()
                 return False
+
         return super().eventFilter(obj, e)
 
     def paintEvent(self, e):
-        """ 绘制图标 """
+        """ paint button """
         iconPixmap = self.iconPixmap
         px, py = self._pixPos_list[0]
         painter = QPainter(self)
@@ -72,6 +72,6 @@ class CircleButton(TooltipButton):
         elif self.isEnter:
             painter.setOpacity(0.5)
 
-        # 绘制图标
+        # paint icon
         painter.drawPixmap(px, py, iconPixmap.width(),
                            iconPixmap.height(), iconPixmap)

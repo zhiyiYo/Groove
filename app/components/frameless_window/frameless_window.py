@@ -12,7 +12,7 @@ from common.window_effect.c_structures import MINMAXINFO, NCCALCSIZE_PARAMS
 
 
 class FramelessWindow(QWidget):
-    """ 无边框窗口 """
+    """ Frameless window """
 
     BORDER_WIDTH = 5
 
@@ -20,24 +20,24 @@ class FramelessWindow(QWidget):
         super().__init__(parent)
         self.__monitorInfo = None
         self.windowEffect = WindowEffect()
-        # 取消边框
+
+        # remove window border
         self.setWindowFlags(Qt.FramelessWindowHint |
                             Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint)
 
-        # 添加阴影和窗口动画
+        # add DWM shadow and window animation
         self.windowEffect.addShadowEffect(self.winId())
         self.windowEffect.addWindowAnimation(self.winId())
 
-        # 修复多屏不同 dpi 的显示问题
+        # handle multi screen with different dpi
         self.windowHandle().screenChanged.connect(self.__onScreenChanged)
 
         self.resize(500, 500)
 
     def nativeEvent(self, eventType, message):
-        """ 处理windows消息 """
+        """ handle the Windows message """
         msg = MSG.from_address(message.__int__())
         if msg.message == win32con.WM_NCHITTEST:
-            # 解决多屏下会出现鼠标一直为拖动状态的问题
             xPos = (win32api.LOWORD(msg.lParam) -
                     self.frameGeometry().x()) % 65536
             yPos = win32api.HIWORD(msg.lParam) - self.frameGeometry().y()
@@ -71,44 +71,52 @@ class FramelessWindow(QWidget):
                 window_rect = win32gui.GetWindowRect(msg.hWnd)
                 if not window_rect:
                     return False, 0
-                # 获取显示器句柄
+
+                # get the monitor handle
                 monitor = win32api.MonitorFromRect(window_rect)
                 if not monitor:
                     return False, 0
-                # 获取显示器信息
+
+                # get the monitor information
                 __monitorInfo = win32api.GetMonitorInfo(monitor)
                 monitor_rect = __monitorInfo['Monitor']
                 work_area = __monitorInfo['Work']
-                # 将lParam转换为MINMAXINFO指针
+
+                # convert lParam to MINMAXINFO pointer
                 info = cast(msg.lParam, POINTER(MINMAXINFO)).contents
-                # 调整窗口大小
+
+                # adjust the size of window
                 info.ptMaxSize.x = work_area[2] - work_area[0]
                 info.ptMaxSize.y = work_area[3] - work_area[1]
                 info.ptMaxTrackSize.x = info.ptMaxSize.x
                 info.ptMaxTrackSize.y = info.ptMaxSize.y
-                # 修改左上角坐标
+
+                # modify the upper left coordinate
                 info.ptMaxPosition.x = abs(window_rect[0] - monitor_rect[0])
                 info.ptMaxPosition.y = abs(window_rect[1] - monitor_rect[1])
                 return True, 1
+
         return QWidget.nativeEvent(self, eventType, message)
 
     def _isWindowMaximized(self, hWnd) -> bool:
-        """ 判断窗口是否最大化 """
-        # 返回指定窗口的显示状态以及被恢复的、最大化的和最小化的窗口位置，返回值为元组
+        """ Determine whether the window is maximized """
         windowPlacement = win32gui.GetWindowPlacement(hWnd)
         if not windowPlacement:
             return False
+
         return windowPlacement[1] == win32con.SW_MAXIMIZE
 
     def __monitorNCCALCSIZE(self, msg: MSG):
-        """ 调整窗口大小 """
+        """ Adjust the size of window """
         monitor = win32api.MonitorFromWindow(msg.hWnd)
-        # 如果没有保存显示器信息就直接返回，否则接着调整窗口大小
+
+        # If the display information is not saved, return directly
         if monitor is None and not self.__monitorInfo:
             return
         elif monitor is not None:
             self.__monitorInfo = win32api.GetMonitorInfo(monitor)
-        # 调整窗口大小
+
+        # adjust the size of window
         params = cast(msg.lParam, POINTER(NCCALCSIZE_PARAMS)).contents
         params.rgrc[0].left = self.__monitorInfo['Work'][0]
         params.rgrc[0].top = self.__monitorInfo['Work'][1]

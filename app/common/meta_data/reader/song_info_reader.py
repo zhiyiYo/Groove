@@ -17,7 +17,7 @@ class SongInfoReader(QObject):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        # 歌曲信息的默认值
+        # default values of song information
         self.singer = self.tr('Unknown artist')
         self.album = self.tr("Unknown album")
         self.genre = self.tr("Unknown genre")
@@ -28,17 +28,17 @@ class SongInfoReader(QObject):
         self.discTotal = 1
 
     def read(self, file: Union[str, Path]):
-        """ 读取歌曲信息
+        """ read song information from audio file
 
         Parameters
         ----------
         file: str or Path
-            音频文件路径
+            audio file path
 
         Returns
         -------
         songInfo: SongInfo
-            歌曲信息
+            song information
         """
         if not isinstance(file, Path):
             file = Path(file)
@@ -76,7 +76,7 @@ class SongInfoReader(QObject):
         )
 
     def __getYear(self, tag: TinyTag, file: Path):
-        """ 获取年份 """
+        """ get release year of song """
         if tag.year and tag.year[0] != '0':
             return int(tag.year[:4])
 
@@ -97,13 +97,13 @@ class SongInfoReader(QObject):
         return self.year
 
     def __getTrack(self, tag: TinyTag):
-        """ 获取曲目 """
+        """ get track number of song """
         track = str(tag.track or self.track)
 
-        # 处理 a/b
+        # handle a/b
         track = track.split('/')[0]
 
-        # 处理 An
+        # handle An
         if track[0].upper() == 'A':
             track = track[1:]
 
@@ -111,6 +111,6 @@ class SongInfoReader(QObject):
 
     @staticmethod
     def getModifiedTime(file: str):
-        """ 获取歌曲信息修改时间 """
+        """ get modified time of audio file """
         path = Path(file)
         return int(path.stat().st_mtime)

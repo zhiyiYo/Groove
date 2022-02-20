@@ -9,9 +9,7 @@ from components.dialog_box.album_info_edit_dialog import AlbumInfoEditDialog
 from components.dialog_box.message_dialog import MessageDialog
 from components.layout import FlowLayout, HBoxLayout
 from components.widgets.label import ClickableLabel
-from PyQt5.QtCore import (QMargins, QParallelAnimationGroup, QPoint, QSize, Qt,
-                          pyqtSignal)
-from PyQt5.QtGui import QResizeEvent
+from PyQt5.QtCore import QMargins, QParallelAnimationGroup, QPoint, pyqtSignal
 from PyQt5.QtWidgets import QApplication, QWidget
 
 from .album_card import AlbumCardBase, AlbumCardFactory, AlbumCardType

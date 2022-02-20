@@ -5,7 +5,7 @@ from typing import List
 
 from common.database.entity import SongInfo
 from common.image_process_utils import getPicSuffix
-from common.os_utils import adjustName
+from common.os_utils import getCoverName
 from mutagen import File, FileType
 from mutagen.flac import FLAC
 from mutagen.mp3 import MP3
@@ -13,27 +13,27 @@ from mutagen.mp4 import MP4
 
 
 class AlbumCoverReaderBase:
-    """ 专辑封面获取器抽象类 """
+    """ Album cover reader base class """
 
     @staticmethod
     def getAlbumCover(audio: FileType) -> bytes:
-        """ 读取专辑封面
+        """ extract binary data of album cover from audio file
 
         Parameters
         ----------
         audio: FileType
-            音频标签文件
+            audio tag instance
 
         Returns
         -------
         picData: bytes
-            封面二进制数据，不存在封面时返回 `None`
+            binary data of album cover, `None` if no cover is found
         """
-        raise NotImplementedError("该方法必须被子类实现")
+        raise NotImplementedError
 
 
 class MP3AlbumCoverReader(AlbumCoverReaderBase):
-    """ MP3 专辑封面获取器 """
+    """ MP3 album cover reader """
 
     @staticmethod
     def getAlbumCover(audio: MP3) -> bytes:
@@ -43,7 +43,7 @@ class MP3AlbumCoverReader(AlbumCoverReaderBase):
 
 
 class FLACAlbumCoverReader(AlbumCoverReaderBase):
-    """ FLAC 专辑封面获取器 """
+    """ FLAC album cover reader """
 
     @staticmethod
     def getAlbumCover(audio: FLAC) -> bytes:
@@ -54,7 +54,7 @@ class FLACAlbumCoverReader(AlbumCoverReaderBase):
 
 
 class MP4AlbumCoverReader(AlbumCoverReaderBase):
-    """ MP4/M4A 专辑封面获取器 """
+    """ MP4/M4A album cover reader """
 
     @staticmethod
     def getAlbumCover(audio: MP4) -> bytes:
@@ -65,25 +65,20 @@ class MP4AlbumCoverReader(AlbumCoverReaderBase):
 
 
 class AlbumCoverReader:
-    """ 读取并保存专辑封面类 """
+    """ Read and save album cover class """
 
     coverFolder = Path("cache/Album_Cover")
 
     @classmethod
-    def updateAlbumCovers(cls, songInfos: List[SongInfo]):
-        """ 重新扫描指定的文件下的音频文件的专辑封面 """
-        cls.getAlbumCovers(songInfos)
-
-    @classmethod
     def getAlbumCovers(cls, songInfos: List[SongInfo]):
-        """ 获取多张专辑封面 """
+        """ Read and save album covers from audio files """
         cls.coverFolder.mkdir(exist_ok=True, parents=True)
         for songInfo in songInfos:
             cls.getAlbumCover(songInfo)
 
     @classmethod
     def getAlbumCover(cls, songInfo: SongInfo):
-        """ 获取一张专辑封面 """
+        """ Read and save an album cover from audio file """
         cls.coverFolder.mkdir(exist_ok=True, parents=True)
 
         isExists = cls.__isCoverExists(songInfo.singer, songInfo.album)
@@ -107,23 +102,22 @@ class AlbumCoverReader:
 
     @classmethod
     def __isCoverExists(cls, singer: str, album: str) -> bool:
-        """ 检测封面是否存在
+        """ Check whether the cover exists
 
         Parameters
         ----------
         singer: str
-            歌手
+            singer name
 
         album: str
-            专辑
+            album name
 
         Returns
         -------
         isExists: bool
-            封面是否存在
+            whether the cover exists
         """
-        coverName = adjustName(singer + '_' + album)
-        folder = cls.coverFolder / coverName
+        folder = cls.coverFolder / getCoverName(singer, album)
 
         isExists = False
         if folder.exists():
@@ -140,21 +134,20 @@ class AlbumCoverReader:
 
     @classmethod
     def __save(cls, singer: str, album: str, picData: bytes):
-        """ 储存提取到的专辑封面
+        """ save album cover
 
         Parameters
         ----------
         singer: str
-            歌手
+            singer name
 
         album: str
-            专辑
+            album name
 
         picData: bytes
-            封面二进制数据
+            binary data of album cover
         """
-        coverName = adjustName(singer + '_' + album)
-        folder = cls.coverFolder / coverName
+        folder = cls.coverFolder / getCoverName(singer, album)
         folder.mkdir(exist_ok=True, parents=True)
 
         suffix = getPicSuffix(picData)

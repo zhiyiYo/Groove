@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 
 @dataclass
 class Playlist(Entity):
-    """ 播放列表实体类 """
+    """ Custom playlist """
 
     name: str = None
     singer: str = None
@@ -19,7 +19,7 @@ class Playlist(Entity):
 
 @dataclass
 class SongPlaylist(Entity):
-    """ 歌曲文件-播放列表中间表实体类 """
+    """ Audio file - playlist """
 
     id: str = None
     file: str = None

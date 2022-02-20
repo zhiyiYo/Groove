@@ -11,7 +11,7 @@ from .exception_handler import exceptionHandler
 
 
 class QQMusicCrawler:
-    """ QQ 音乐爬虫 """
+    """ Crawler of QQ Music """
 
     def __init__(self):
         self.headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
@@ -19,20 +19,21 @@ class QQMusicCrawler:
 
     @exceptionHandler()
     def getSongInfo(self, key_word: str, match_thresh=70):
-        """ 搜索指定关键词的歌曲信息
+        """ search song information
 
         Parameters
         ----------
         key_word: str
-            搜索关键词
+            search key word
 
         match_thresh: int
-            匹配度阈值，只返回匹配度大于此阈值的歌曲信息
+            matching degree threshold, the song information is returned when the matching degree
+            is greater than threshold
 
         Returns
         -------
         song_info: SongInfo
-            歌曲信息，如果获取失败返回 `None`
+            song information, `None` if search is fails
         """
         search_url = f"https://c.y.qq.com/soso/fcgi-bin/client_search_cp?new_json=1&p=1&n=5&w={key_word}"
         response = requests.get(search_url, headers=self.headers)
@@ -41,7 +42,7 @@ class QQMusicCrawler:
         if not infos:
             return None
 
-        # 只取第一个匹配项，只有匹配程度大于 70 才使用该信息
+        # only the first item is taken
         info = infos[0]
         match_ratio = fuzz.token_set_ratio(
             f"{info['singer'][0]['name']} - {info['name']}", key_word)
@@ -59,7 +60,7 @@ class QQMusicCrawler:
         song_info.discTotal = info['index_cd'] + 1
         song_info["albummid"] = info['album']['mid']
 
-        # 流派信息
+        # genre map of QQ music
         genres = {
             1: 'Pop',
             2: 'classical',
@@ -82,20 +83,20 @@ class QQMusicCrawler:
 
     @exceptionHandler()
     def getAlbumCoverURL(self, albummid: str, save_path: Union[str, Path]):
-        """ 获取专辑封面并保存到本地
+        """ get album cover and download it to local
 
         Parameters
         ----------
         albummid: str
-            专辑 ID，对应 `crawler.getSongInfo(key_word)["albummid"]`
+            album ID, returned by `song_info["albummid"]`
 
         save_path: str or Path
-            本地保存路径
+            local save path of album cover
 
         Returns
         -------
         url: str
-            专辑封面 URL，如果没有获取到封面就返回 `None`
+            the url of album cover, `None` if no album cover is found
         """
         detail_url = f"https://c.y.qq.com/v8/fcg-bin/musicmall.fcg?_=1628997268750&cmd=get_album_buy_page&albummid={albummid}"
         response = requests.get(detail_url, headers=self.headers)

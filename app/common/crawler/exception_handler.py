@@ -1,14 +1,18 @@
 # coding:utf-8
 from copy import deepcopy
+from ..logger import Logger
+
+
+logger = Logger('crawler')
 
 
 def exceptionHandler(*default):
-    """ 请求异常处理装饰器
+    """ decorator for exception handling
 
     Parameters
     ----------
     *default:
-        发生异常时返回的默认值
+        the default value returned when an exception occurs
     """
 
     def outer(func):
@@ -17,7 +21,7 @@ def exceptionHandler(*default):
             try:
                 return func(*args, **kwargs)
             except BaseException as e:
-                print(e)
+                logger.error(e)
                 value = deepcopy(default)
                 if len(value) == 0:
                     return None

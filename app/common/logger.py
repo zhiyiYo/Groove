@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 class Logger:
-    """ 日志记录器 """
+    """ Logger class """
 
     logFolder = Path('cache/log')
 
@@ -13,7 +13,7 @@ class Logger:
         Parameters
         ----------
         fileName: str
-            日志文件名，不包含后缀
+            log filename which doesn't contain `.log` suffix
         """
         self.logFolder.mkdir(exist_ok=True, parents=True)
         self.__logFile = self.logFolder/(fileName+'.log')
@@ -21,12 +21,12 @@ class Logger:
         self.__consoleHandler = logging.StreamHandler()
         self.__fileHandler = logging.FileHandler(self.__logFile, encoding='utf-8')
 
-        # 设置日志级别
+        # set log level
         self.__logger.setLevel(logging.DEBUG)
         self.__consoleHandler.setLevel(logging.DEBUG)
         self.__fileHandler.setLevel(logging.DEBUG)
 
-        # 设置日志的格式
+        # set log format
         fmt = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
         self.__consoleHandler.setFormatter(fmt)
         self.__fileHandler.setFormatter(fmt)

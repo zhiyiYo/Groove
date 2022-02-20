@@ -3,24 +3,24 @@ from typing import List, Dict
 
 
 class LyricParserBase:
-    """ 歌词解析器基类 """
+    """ Lyrics parser base class """
 
     none_lyric = {'0.0': ['暂无歌词']}
     error_lyric = {'0.0': ['无法解析歌词']}
 
     @staticmethod
     def can_parse(lyric) -> bool:
-        """ 能否解析歌词 """
+        """ can the parser parse the lyrics """
         raise NotImplementedError("该方法必须被子类实现")
 
     @classmethod
     def parse(cls, lyric) -> Dict[str, List[str]]:
-        """ 解析歌词 """
+        """ parse lyrics """
         raise NotImplementedError("该方法必须被子类实现")
 
 
 class KuWoLyricParser(LyricParserBase):
-    """ 酷我音乐歌词解析器 """
+    """ Lyric parser for KuWo Music """
 
     @staticmethod
     def can_parse(lyric: List[Dict[str, str]]) -> bool:
@@ -28,7 +28,6 @@ class KuWoLyricParser(LyricParserBase):
             return True
 
         if isinstance(lyric, list):
-            # 可以解析空列表
             if not lyric:
                 return True
 
@@ -43,12 +42,12 @@ class KuWoLyricParser(LyricParserBase):
 
         times = [i['time'] for i in lyric]
 
-        # 判断是否有翻译
-        times_ = times[1:]+[times[-1]]
+        # determine if there is a translation
+        times_ = times[1:] + [times[-1]]
         is_trans = [t1 == t2 and t1 != '0.0' for t1, t2 in zip(times, times_)]
         is_trans[-1] = sum(is_trans) > 1
 
-        # 制作歌词
+        # make lyrics
         lyrics = {}  # Dict[str, List[str]]
         for i, trans in enumerate(is_trans):
             if trans:
@@ -65,7 +64,7 @@ class KuWoLyricParser(LyricParserBase):
 
 
 class KuGouLyricParser(LyricParserBase):
-    """ 酷狗音乐歌词解析器 """
+    """ Lyric parser for KuGou Music """
 
     @staticmethod
     def can_parse(lyric) -> bool:
@@ -89,7 +88,7 @@ class KuGouLyricParser(LyricParserBase):
 
         lyric = lyric.split('\r\n')[:-1]  # type:list
 
-        # 制作歌词
+        # make lyrics
         lyrics = {}
         for line in lyric:
             time, text = line.split(']')
@@ -103,7 +102,7 @@ class KuGouLyricParser(LyricParserBase):
 
 
 class WanYiLyricParser(LyricParserBase):
-    """ 网易云歌词解析器 """
+    """ Lyric parser for WanYiYun Music """
 
     @staticmethod
     def can_parse(lyric) -> bool:
@@ -125,7 +124,7 @@ class WanYiLyricParser(LyricParserBase):
 
         lyrics_ = {}
 
-        # 原始歌词
+        # original lyrics
         for line in lyric['lyric'].split('\n'):
             if ']' not in line:
                 continue
@@ -134,7 +133,7 @@ class WanYiLyricParser(LyricParserBase):
             if text and time[1:]:
                 lyrics_[time[1:]] = [text]
 
-        # 翻译歌词
+        # translate lyrics
         for line in lyric['tlyric'].split('\n'):
             if ']' not in line:
                 continue
@@ -153,12 +152,11 @@ class WanYiLyricParser(LyricParserBase):
 
 
 def parse_lyric(lyric) -> Dict[str, List[str]]:
-    """ 解析歌词 """
+    """ parse lyrics """
     parsers = [KuWoLyricParser, WanYiLyricParser, KuGouLyricParser]
-    available_parsers = [i for i in parsers if i.can_parse(lyric)]
 
-    if not available_parsers:
-        return LyricParserBase.error_lyric
+    for parser in parsers:
+        if parser.can_parse(lyric):
+            return parser.parse(lyric)
 
-    parser = available_parsers[0]
-    return parser.parse(lyric)
+    return LyricParserBase.error_lyric

@@ -8,34 +8,33 @@ from PyQt5.QtWidgets import QToolButton
 
 
 class BlurButton(TooltipButton):
-    """ 磨砂按钮 """
+    """ Blur button class """
 
     def __init__(self, parent, cropPos: tuple, iconPath: str, blurPicPath: str,
                  text: str, radius=35, blurRadius=40):
-        """ 实例化磨砂按钮
-
+        """
         Parameters
         ----------
         parent:
-            父级
+            parent window
 
         cropPos: tuple
-            图像裁剪位置坐标
+            coordinates of the image cropping position
 
         iconPath: str
-            按钮图标路径
+            icon path
 
         blurPicPath: str
-            磨砂图片路径
+            image to be blurred
 
         text: str
-            按钮工具提示的文本
+            text of tool tip
 
         radius: int
-            按钮半径
+            button radius
 
         blurRadius: int
-            磨砂半径
+            blur radius
         """
         super().__init__(parent=parent)
         self.__paintRadius = radius-5
@@ -60,7 +59,7 @@ class BlurButton(TooltipButton):
         super().showEvent(e)
 
     def setBlurPic(self, blurPicPath, blurRadius=35):
-        """ 设置磨砂图片 """
+        """ set the image to be blurred """
         if self.blurPicPath == blurPicPath:
             return
         self.blurPicPath = blurPicPath
@@ -68,7 +67,7 @@ class BlurButton(TooltipButton):
         self.blurPix = None
 
     def __blur(self):
-        """ 真正进行磨砂操作 """
+        """ do blur action """
         if not self.blurPicPath.startswith(':'):
             img = Image.open(self.blurPicPath)
         else:
@@ -84,33 +83,31 @@ class BlurButton(TooltipButton):
         self.update()
 
     def paintEvent(self, e):
-        """ 绘制背景 """
+        """ paint button """
         painter = QPainter(self)
         painter.setPen(Qt.NoPen)
         painter.setRenderHints(QPainter.Antialiasing |
                                QPainter.SmoothPixmapTransform)
-        # 绘制磨砂背景
+        # paint background
         if self.blurPix:
             r = self.__paintRadius
             dr = self.radius - r
             self.__drawCirclePic(painter, dr, dr, 2*r, 2*r, self.blurPix)
 
-        # 绘制图标
+        # paint icon
         self.__drawCirclePic(painter, 5, 5, self.width()-10,
                              self.height() - 10, self.iconPix)
 
     def __drawCirclePic(self, painter, x, y, width, height, pixmap):
-        """ 在指定区域画圆 """
+        """ paint image in circle region """
         brush = QBrush(pixmap)
         painter.setBrush(brush)
         painter.drawEllipse(x, y, width, height)
 
     def enterEvent(self, e: QEnterEvent):
-        """ 鼠标进入按钮时增大按钮并显示提示条 """
         if self.radiusAni.state() == QPropertyAnimation.Running:
             self.radiusAni.stop()
 
-        # 显示工具提示
         super().enterEvent(e)
 
         self.radiusAni.setStartValue(self.__paintRadius)
@@ -119,7 +116,6 @@ class BlurButton(TooltipButton):
         self.radiusAni.start()
 
     def leaveEvent(self, e):
-        """ 鼠标离开按钮时减小按钮并隐藏提示条 """
         if self.radiusAni.state() == QPropertyAnimation.Running:
             self.radiusAni.stop()
 
@@ -131,7 +127,7 @@ class BlurButton(TooltipButton):
         self.radiusAni.start()
 
     def setPaintRadius(self, radius: int):
-        """ 设置绘制的半径 """
+        """ set the smallest radius of button """
         self.__paintRadius = radius
         self.update()
 

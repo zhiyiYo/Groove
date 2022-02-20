@@ -4,7 +4,7 @@ from PyQt5.QtCore import pyqtSignal, QThread
 
 
 class GetSingerAvatarThread(QThread):
-    """ 获取歌手头像线程 """
+    """ Thread used to get singer avatar """
 
     downloadFinished = pyqtSignal(str)
 
@@ -18,7 +18,7 @@ class GetSingerAvatarThread(QThread):
         ]
 
     def run(self):
-        """ 获取头像 """
+        """ start to get avatar """
         for crawler in self.crawlers:
             save_path = crawler.getSingerAvatar(self.singer, self.saveDir)
             if save_path:

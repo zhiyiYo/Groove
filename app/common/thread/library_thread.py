@@ -7,7 +7,7 @@ from common.library import Library, Directory
 
 
 class LibraryThread(QThread):
-    """ 歌曲库线程 """
+    """ Song library thread """
 
     reloadFinished = pyqtSignal()
 
@@ -18,11 +18,10 @@ class LibraryThread(QThread):
         self.task = self.library.load
         self.params = {}
 
-        # 信号连接到槽
         self.library.reloadFinished.connect(self.reloadFinished)
 
     def run(self):
-        """ 获取歌曲库信息 """
+        """ executive song library task """
         if not QSqlDatabase.contains('thread'):
             db = QSqlDatabase.addDatabase('QSQLITE', 'thread')
             db.setDatabaseName(Library.cacheFile)
@@ -32,15 +31,15 @@ class LibraryThread(QThread):
         self.task(**self.params)
 
     def setTask(self, task, **params):
-        """ 设置任务
+        """ Set the song library task implemented in the thread
 
         Parameters
         ----------
         task:
-            可调用的对象
+            callable object
 
         **params:
-            函数调用时需要的参数
+            parameters to be used in the task
         """
         self.task = task
         self.params = params

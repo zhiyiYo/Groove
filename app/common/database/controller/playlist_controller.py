@@ -9,20 +9,20 @@ from ..service import SongInfoService, PlaylistService
 
 
 class PlaylistController:
-    """ 播放列表控制器 """
+    """ Playlist controller """
 
     def __init__(self, db: QSqlDatabase = None):
         self.songInfoService = SongInfoService(db)
         self.playlistService = PlaylistService(db)
 
     def getAllPlaylists(self):
-        """ 获取所有播放列表，不包含具体的歌曲信息 """
+        """ get all playlists, not contain song information """
         playlists = self.playlistService.listAll()
         playlists.sort(key=lambda i: i.modifiedTime, reverse=True)
         return playlists
 
     def getPlaylist(self, name: str):
-        """ 获取一张播放列表，包含具体的歌曲信息 """
+        """ get a playlist, contain song information """
         playlist = self.playlistService.findByName(name)
         if not playlist:
             return None
@@ -36,7 +36,7 @@ class PlaylistController:
         return playlist
 
     def getPlaylists(self, names: List[str]):
-        """ 获取多张播放列表，包含具体的歌曲信息 """
+        """ get multi playlists, contain song information """
         playlists = self.playlistService.listByNames(names)
 
         for playlist in playlists:
@@ -51,29 +51,29 @@ class PlaylistController:
         return playlists
 
     def getPlaylistsLike(self, **condition):
-        """ 模糊查询播放列表 """
+        """ fuzzy search playlist """
         return self.playlistService.listLike(**condition)
 
     def create(self, playlist: Playlist):
-        """ 创建播放列表 """
+        """ create a playlist """
         return self.playlistService.add(playlist)
 
     def addSongs(self, name: str, songInfos: List[SongInfo]):
-        """ 添加歌曲到播放列表中 """
+        """ add songs to a playlist """
         return self.playlistService.addSongs(name, songInfos)
 
     def removeSongs(self, name: str, songInfos: List[SongInfo]):
-        """ 从播放列表中移除歌曲 """
+        """ remove songs from a playlist """
         return self.playlistService.removeSongs(name, songInfos)
 
     def rename(self, old: str, new: str):
-        """ 重命名播放列表 """
+        """ rename a playlist """
         return self.playlistService.modifyName(old, new)
 
     def delete(self, name: str):
-        """ 删除一个播放列表 """
+        """ delete a playlist """
         return self.playlistService.remove(name)
 
     def deleteBatch(self, names: List[str]):
-        """ 删除多张播放列表 """
+        """ delete multi playlists """
         return self.playlistService.removeBatch(names)

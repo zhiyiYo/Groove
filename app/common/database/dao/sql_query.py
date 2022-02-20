@@ -4,19 +4,19 @@ from PyQt5.QtSql import QSqlQuery, QSqlError, QSqlDatabase
 
 
 class SqlQuery(QSqlQuery):
-    """ 数据库语句执行类 """
+    """ Database sql statement execution class """
 
     cacheLogger = Logger('cache')
 
     def exec(self, query: str = None):
-        """ 执行 SQL 语句 """
+        """ execute sql statement """
         if not query:
             return self.check(super().exec())
 
         return self.check(super().exec(query))
 
     def check(self, success: bool):
-        """ 检查数据库操作结果 """
+        """ check execution result """
         if success:
             return True
 
@@ -28,7 +28,6 @@ class SqlQuery(QSqlQuery):
         return False
 
     def lastBoundQuery(self):
-        """ 最后一条操作指令 """
         query = self.lastQuery()
         for k, v in self.boundValues().items():
             query = query.replace('?', str(v))

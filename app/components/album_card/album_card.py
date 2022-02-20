@@ -4,7 +4,7 @@ from enum import Enum
 from common.database.entity import AlbumInfo
 from common.signal_bus import signalBus
 from components.widgets.menu import AddToMenu, DWMMenu
-from PyQt5.QtCore import QPoint, Qt, pyqtSignal
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QContextMenuEvent
 from PyQt5.QtWidgets import QAction
 
@@ -12,17 +12,16 @@ from .album_card_base import AlbumCardBase
 
 
 class AlbumCardType(Enum):
-    """ 歌曲卡类型枚举类 """
+    """ Album card type enumerated class """
     ALBUM_CARD = 0
     LOCAL_SEARCHED_ALBUM_CARD = 1
     SINGER_INTERFACE_ALBUM_CARD = 2
 
 
 class AlbumCard(AlbumCardBase):
-    """ 专辑卡 """
+    """ Album card """
 
     def contextMenuEvent(self, event: QContextMenuEvent):
-        """ 显示右击菜单 """
         menu = AlbumCardContextMenu(parent=self)
         menu.playAct.triggered.connect(
             lambda: signalBus.playAlbumSig.emit(self.singer, self.album))
@@ -46,7 +45,7 @@ class AlbumCard(AlbumCardBase):
 
 
 class LocalSearchedAlbumCard(AlbumCardBase):
-    """ 本地搜索结果中的专辑卡 """
+    """ Album card in local search result """
 
     def contextMenuEvent(self, event: QContextMenuEvent):
         menu = LocalSearchedAlbumCardContextMenu(parent=self)
@@ -67,7 +66,7 @@ class LocalSearchedAlbumCard(AlbumCardBase):
 
 
 class SingerInterfaceAlbumCard(AlbumCardBase):
-    """ 专辑界面专辑卡 """
+    """ Album card in singer interface """
 
     def __init__(self, albumInfo: dict, parent):
         super().__init__(albumInfo, parent)
@@ -80,7 +79,6 @@ class SingerInterfaceAlbumCard(AlbumCardBase):
         self.contentLabel.setText(self.year)
 
     def contextMenuEvent(self, e):
-        """ 显示右击菜单 """
         menu = SingerInterfaceAlbumCardContextMenu(parent=self)
         menu.playAct.triggered.connect(
             lambda: signalBus.playAlbumSig.emit(self.singer, self.album))
@@ -100,7 +98,7 @@ class SingerInterfaceAlbumCard(AlbumCardBase):
 
 
 class AlbumCardContextMenu(DWMMenu):
-    """ 专辑卡右击菜单"""
+    """ Context menu of album card"""
 
     def __init__(self, parent):
         super().__init__("", parent)
@@ -109,8 +107,7 @@ class AlbumCardContextMenu(DWMMenu):
         self.setQss()
 
     def __createActions(self):
-        """ 创建动作 """
-        # 创建动作
+        # create actions
         self.playAct = QAction(self.tr("Play"), self)
         self.selectAct = QAction(self.tr("Select"), self)
         self.nextToPlayAct = QAction(self.tr("Play next"), self)
@@ -120,7 +117,7 @@ class AlbumCardContextMenu(DWMMenu):
         self.showSingerAct = QAction(self.tr("Show artist"), self)
         self.addToMenu = AddToMenu(self.tr("Add to"), self)
 
-        # 添加动作到菜单
+        # add actions to menu
         self.addActions([self.playAct, self.nextToPlayAct])
         self.addMenu(self.addToMenu)
         self.addActions(
@@ -130,7 +127,7 @@ class AlbumCardContextMenu(DWMMenu):
 
 
 class LocalSearchedAlbumCardContextMenu(DWMMenu):
-    """ 专辑卡右击菜单"""
+    """ Context menu of local searched album card """
 
     def __init__(self, parent):
         super().__init__("", parent)
@@ -139,24 +136,22 @@ class LocalSearchedAlbumCardContextMenu(DWMMenu):
         self.setQss()
 
     def __createActions(self):
-        """ 创建动作 """
-        # 创建动作
+        # create actions
         self.playAct = QAction(self.tr("Play"), self)
         self.nextToPlayAct = QAction(self.tr("Play next"), self)
         self.pinToStartMenuAct = QAction(self.tr('Pin to Start'), self)
         self.showSingerAct = QAction(self.tr("Show artist"), self)
         self.addToMenu = AddToMenu(self.tr("Add to"), self)
 
-        # 添加动作到菜单
+        # add actions to menu
         self.addActions([self.playAct, self.nextToPlayAct])
-        # 将子菜单添加到主菜单
         self.addMenu(self.addToMenu)
         self.addActions(
             [self.showSingerAct, self.pinToStartMenuAct])
 
 
 class SingerInterfaceAlbumCardContextMenu(DWMMenu):
-    """ 专辑界面专辑卡右击菜单"""
+    """ Context menu of singer interface album card"""
 
     def __init__(self, parent):
         super().__init__("", parent)
@@ -165,8 +160,7 @@ class SingerInterfaceAlbumCardContextMenu(DWMMenu):
         self.setQss()
 
     def __createActions(self):
-        """ 创建动作 """
-        # 创建动作
+        # create actions
         self.playAct = QAction(self.tr("Play"), self)
         self.selectAct = QAction(self.tr("Select"), self)
         self.nextToPlayAct = QAction(self.tr("Play next"), self)
@@ -175,9 +169,8 @@ class SingerInterfaceAlbumCardContextMenu(DWMMenu):
         self.editInfoAct = QAction(self.tr("Edit info"), self)
         self.addToMenu = AddToMenu(self.tr("Add to"), self)
 
-        # 添加动作到菜单
+        # add actions to menu
         self.addActions([self.playAct, self.nextToPlayAct])
-        # 将子菜单添加到主菜单
         self.addMenu(self.addToMenu)
         self.addActions(
             [self.pinToStartMenuAct, self.editInfoAct, self.deleteAct])
@@ -186,27 +179,27 @@ class SingerInterfaceAlbumCardContextMenu(DWMMenu):
 
 
 class AlbumCardFactory:
-    """ 专辑卡工厂 """
+    """ Album card factory """
 
     @staticmethod
     def create(cardType: AlbumCardType, albumInfo: AlbumInfo, parent=None) -> AlbumCardBase:
-        """ 创建专辑卡
+        """ create album card
 
         Parameters
         ----------
         cardType: AlbumCardType
-            专辑卡类型
+            album card type
 
         albumInfo: AlbumInfo
-            专辑信息
+            album information
 
         parent:
-            父级窗口
+            parent window
 
         Returns
         -------
         albumCard:
-            专辑卡
+            album card
         """
         albumCardMap = {
             AlbumCardType.ALBUM_CARD: AlbumCard,
@@ -215,6 +208,6 @@ class AlbumCardFactory:
         }
 
         if cardType not in albumCardMap:
-            raise ValueError("专辑卡类型非法")
+            raise ValueError(f"Album card type `{cardType}` is illegal")
 
         return albumCardMap[cardType](albumInfo, parent)

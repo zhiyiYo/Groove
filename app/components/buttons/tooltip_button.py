@@ -1,11 +1,11 @@
 # coding:utf-8
 from components.widgets.tooltip import Tooltip
 from PyQt5.QtCore import QEvent, QObject, QPoint
-from PyQt5.QtWidgets import QApplication, QToolButton, QPushButton
+from PyQt5.QtWidgets import QToolButton, QPushButton
 
 
 class TooltipButton(QToolButton):
-    """ 带工具提示的工具按钮 """
+    """ Tool button with a tooltip """
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -29,16 +29,16 @@ class TooltipButton(QToolButton):
             self.__tooltip = Tooltip(self.toolTip(), self.window())
             self.__tooltip.setDarkTheme(self.__darkTooltip)
 
-        # 更新工具提示
+        # update tooltip
         if self.__tooltip.text != self.toolTip():
             self.__tooltip.setText(self.toolTip())
 
-        # 必须将工具提示移动到按钮区域之外
+        # the tooltip must be moved outside the button area
         pos = self.mapTo(self.window(), QPoint(0, 0))
         x = pos.x() + self.width()//2 - self.__tooltip.width()//2
         y = pos.y() - 2 - self.__tooltip.height()
 
-        # 调整坐标，防止工具提示出现在界面以外
+        # adjust postion to prevent tooltips from appearing outside the window
         x = min(max(5, x), self.window().width() - self.__tooltip.width() - 5)
 
         self.__tooltip.move(x, y)
@@ -55,17 +55,17 @@ class TooltipButton(QToolButton):
             self.__tooltip.hide()
 
     def setDarkToolTip(self, dark=False):
-        """ 设置工具提示的主题 """
+        """ set whether to use the dark theme of tooltip """
         self.__darkTooltip = dark
 
     def hideToolTip(self):
-        """ 隐藏工具提示 """
+        """ hide tooltip """
         if self.__tooltip:
             self.__tooltip.hide()
 
 
 class TooltipPushButton(QPushButton):
-    """ 带工具提示的 Push 按钮 """
+    """ Push button with a tooltip """
 
     def __init__(self, text: str, parent=None):
         super().__init__(text, parent)
@@ -89,16 +89,16 @@ class TooltipPushButton(QPushButton):
             self.__tooltip = Tooltip(self.toolTip(), self.window())
             self.__tooltip.setDarkTheme(self.__darkTooltip)
 
-        # 更新工具提示
+        # update tooltip
         if self.__tooltip.text != self.toolTip():
             self.__tooltip.setText(self.toolTip())
 
-        # 必须将工具提示移动到按钮区域之外
+        # the tooltip must be moved outside the button area
         pos = self.mapTo(self.window(), QPoint(0, 0))
         x = pos.x() + self.width()//2 - self.__tooltip.width()//2
         y = pos.y() - 2 - self.__tooltip.height()
 
-        # 调整坐标，防止工具提示出现在界面以外
+        # adjust postion to prevent tooltips from appearing outside the window
         x = min(max(5, x), self.window().width() - self.__tooltip.width() - 5)
 
         self.__tooltip.move(x, y)
@@ -115,10 +115,10 @@ class TooltipPushButton(QPushButton):
             self.__tooltip.hide()
 
     def setDarkToolTip(self, dark=False):
-        """ 设置工具提示的主题 """
+        """ set whether to use the dark theme of tooltip """
         self.__darkTooltip = dark
 
     def hideToolTip(self):
-        """ 隐藏工具提示 """
+        """ hide tooltip """
         if self.__tooltip:
             self.__tooltip.hide()

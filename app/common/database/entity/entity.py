@@ -3,7 +3,7 @@ from copy import deepcopy
 
 
 class Entity:
-    """ 实体类抽象类 """
+    """ Entity abstract class """
 
     def __setitem__(self, key, value):
         self.__dict__[key] = value

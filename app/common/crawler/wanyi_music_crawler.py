@@ -16,7 +16,7 @@ from .exception_handler import exceptionHandler
 
 
 class WanYiMusicCrawler(CrawlerBase):
-    """ 网易云音乐爬虫 """
+    """ Crawler of WanYiYun Music """
 
     def __init__(self):
         super().__init__()
@@ -42,10 +42,10 @@ class WanYiMusicCrawler(CrawlerBase):
             'Referer': 'https://music.163.com',
         }
 
-    # TODO:只能显示前 20 首搜索结果
+    # TODO: can only get the first 20 search results
     @exceptionHandler([], 0)
     def getSongInfos(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[SongInfo], int]:
-        # 发送请求
+        # send request for song information
         url = 'https://music.163.com/weapi/cloudsearch/get/web'
         form_data = {
             "s": key_word,
@@ -57,7 +57,7 @@ class WanYiMusicCrawler(CrawlerBase):
         }
         text = self.send(url, form_data)
 
-        # 获取歌曲信息
+        # parse the response data
         song_infos = []
         data = json.loads(text)['result']
         for info in data['songs']:
@@ -72,8 +72,6 @@ class WanYiMusicCrawler(CrawlerBase):
             song_info.discTotal = int(info['cd'])
             song_info.year = datetime.fromtimestamp(
                 info['publishTime']/1000).year
-
-            # 封面路径
             song_info['coverPath'] = info['al']['picUrl']
 
             song_infos.append(song_info)
@@ -87,34 +85,34 @@ class WanYiMusicCrawler(CrawlerBase):
 
     @exceptionHandler([])
     def getSongUrls(self, song_infos: List[SongInfo], quality: str = 'Standard quality') -> str:
-        """ 获取多首歌曲下载链接
+        """ get play urls of multi online songs
 
         Parameters
         ----------
         song_infos: List[SongInfo]
-            歌曲信息
+            song information list
 
         quality: str
-            歌曲音质，有 `Standard quality`、`High quality`、`Super quality` 和 `Lossless quality` 四种
+            song sound quality，including `Standard quality`, `High quality`, `Super quality` and `Lossless quality`
 
         Returns
         -------
         urls: List[str]
-            歌曲下载链接列表，没找到时为空列表
+            play url list, empty when no urls are found
 
         Raises
         ------
         AudioQualityError:
-            当音质非法时引发的异常
+            thrown when the sound quality is illegal
         """
         if quality not in self.qualities:
             raise AudioQualityError(
-                f'音质 `{quality}` 不在支持的音质列表 {self.qualities} 中')
+                f'`{quality}` is not in the supported quality list `{self.qualities}`')
 
         qualities = ['standard', 'higher', 'exhigh', 'lossless']
         quality = qualities[self.qualities.index(quality)]
 
-        # 发送请求
+        # send request for play urls
         url = 'https://music.163.com/weapi/song/enhance/player/url/v1'
         form_data = {
             "ids": [i['id'] for i in song_infos],
@@ -123,7 +121,7 @@ class WanYiMusicCrawler(CrawlerBase):
         }
         text = self.send(url, form_data)
 
-        # 解析数据
+        # parse the response data
         data = json.loads(text)['data']
         play_urls = [i['url'] for i in data]
 
@@ -131,30 +129,17 @@ class WanYiMusicCrawler(CrawlerBase):
 
     @exceptionHandler()
     def getLyric(self, key_word: str):
-        """ 获取歌词
-
-        Parameters
-        ----------
-        key_word: str
-            关键词，要求是 `歌手 歌曲名` 形式
-
-        Returns
-        -------
-        lyric:
-            歌词，如果没找到则返回 `None`
-        """
-        # 搜索歌曲
+        # search song information
         song_infos, _ = self.getSongInfos(key_word, page_size=20)
-
         if not song_infos:
             return
 
-        # 匹配度小于阈值则返回
+        # return None when the matching degree is less than threshold(100%)
         matches = [key_word == i.singer+' '+i.title for i in song_infos]
         if not any(matches):
             return
 
-        # 发送获取歌词的请求
+        # send request for lyrics
         url = 'https://music.163.com/weapi/song/lyric'
         form_data = {
             "id": song_infos[matches.index(True)]['id'],
@@ -163,17 +148,17 @@ class WanYiMusicCrawler(CrawlerBase):
         }
         text = self.send(url, form_data)
 
-        # 解析数据
+        # parse the response data
         data = json.loads(text)
         lyrics = {
             "lyric": data['lrc']['lyric'],
-            "tlyric": data['tlyric']['lyric']   # 翻译
+            "tlyric": data['tlyric']['lyric']   # translation
         }
         return lyrics
 
     @exceptionHandler('')
     def getSingerAvatar(self, singer: str, save_dir: str):
-        # 发送搜索歌手的请求
+        # send request for singer information
         url = "https://music.163.com/weapi/cloudsearch/get/web"
         form_data = {
             "s": singer,
@@ -181,22 +166,21 @@ class WanYiMusicCrawler(CrawlerBase):
         }
         text = self.send(url, form_data)
 
-        # 解析歌手信息
+        # parse response data
         data = json.loads(text)['result']['artists']
         if not data or fuzz.token_set_ratio(data[0]['name'], singer) < 98:
             return ''
 
-        # 获取头像
+        # send request for avatar
         response = requests.get(data[0]['img1v1Url'], headers=self.headers)
         response.raise_for_status()
 
-        # 保存头像
-        save_path = self.saveSingerAvatar(singer, save_dir, response.content)
-        return save_path
+        # save avatar
+        return self.saveSingerAvatar(singer, save_dir, response.content)
 
     @exceptionHandler([], 0)
     def getMvInfos(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[dict], int]:
-        # 发送搜索歌手的请求
+        # send request for MV information
         url = "https://music.163.com/weapi/cloudsearch/get/web"
         form_data = {
             "s": key_word,
@@ -207,7 +191,7 @@ class WanYiMusicCrawler(CrawlerBase):
         }
         text = self.send(url, form_data)
 
-        # 解析数据
+        # parse response data
         data = json.loads(text)['result']
         mv_info_list = []
         for info in data['videos']:
@@ -225,29 +209,29 @@ class WanYiMusicCrawler(CrawlerBase):
 
     @exceptionHandler('')
     def getMvUrl(self, mv_info: dict, quality: str = 'SD') -> str:
-        """ 获取 MV 播放地址
+        """ get the play url of MV
 
         Parameters
         ----------
         mv_info: dict
-            MV 信息
+            MV information
 
         quality: str
-            视频画质，可用的有 `Full HD`、`HD`、`SD` 和 `LD`
+            MV quality, including `Full HD`, `HD`, `SD` and `LD`
 
         Returns
         -------
         play_url: str
-            播放地址，没找到时返回空字符串
+            the play url of MV, empty string when no url is found
 
         Raises
         ------
         VideoQualityError:
-            视频画质错误
+            thrown when the MV quality is illegal
         """
         if quality not in self.video_qualities:
             raise VideoQualityError(
-                f"画质 `{quality}` 不在支持的画质列表 {self.qualities} 中")
+                f"`{quality}` is not in supported quality list `{self.qualities}`")
 
         mv_type = mv_info['type']
         mv_url_func_map = {
@@ -259,19 +243,19 @@ class WanYiMusicCrawler(CrawlerBase):
         return play_url
 
     def __getType0MvUrl(self, mv_info: dict, quality: str = 'SD'):
-        """ 获取类型为 0 的 MV 的播放地址 """
-        # 获取可用的清晰度
+        """ get the play url of MV whose type if 0  """
+        # send request for available qualities
         form_data = {"id": mv_info['vid']}
         url = "https://music.163.com/weapi/v1/mv/detail"
         data = json.loads(self.send(url, form_data))['data']
         resolutions = sorted([i['br'] for i in data['brs']], reverse=True)
 
-        # 如果清晰度不可用就选取一个可用的
+        # select an available MV quality
         resolution = self.video_qualities[quality]
         if resolution not in resolutions:
             resolution = resolutions[0]
 
-        # 获取播放地址
+        # send request for play url of MV
         url = "https://music.163.com/weapi/song/enhance/play/mv/url"
         form_data = {
             "id": mv_info['vid'],
@@ -281,19 +265,19 @@ class WanYiMusicCrawler(CrawlerBase):
         return play_url
 
     def __getType1MvUrl(self, mv_info: dict, quality: str = 'SD'):
-        """ 获取类型为 1 的 MV 播放地址 """
-        # 获取可用的清晰度
+        """ get the play url of MV whose type if 1 """
+        # send request for available qualities
         form_data = {"id": mv_info['vid']}
         url = "https://music.163.com/weapi/cloudvideo/v1/video/detail"
         data = json.loads(self.send(url, form_data))['data']
         resolutions = sorted([i['resolution'] for i in data['resolutions']])
 
-        # 如果清晰度不可用就选取一个可用的
+        # select an available MV quality
         resolution = self.video_qualities[quality]
         if resolution not in resolutions:
             resolution = resolutions[-1]
 
-        # 获取播放地址
+        # send request for play url of MV
         url = 'https://music.163.com/weapi/cloudvideo/playurl'
         form_data = {
             "ids": str([mv_info['vid']]),
@@ -304,23 +288,23 @@ class WanYiMusicCrawler(CrawlerBase):
         return play_url
 
     def send(self, url: str, form_data: dict, headers=None) -> str:
-        """ 发送 post 请求
+        """ send a request of post method
 
         Parameters
         ----------
         url: str
-            请求地址
+            request url
 
         form_data: dict
-            未加密的请求数据
+            form data to be encrypted
 
         headers: dict
-            请求头，如果为空则使用默认请求头
+            request headers, use default headers if the param is not `None`
 
         Returns
         -------
         text: str
-            请求获取到的文本数据
+            text data of response
         """
         headers = headers or self.headers
         form_data = self.encryptor.encrypt(str(form_data))
@@ -330,7 +314,7 @@ class WanYiMusicCrawler(CrawlerBase):
 
 
 class Encryptor:
-    """ 加密器 """
+    """ Encryptor for request parameters """
 
     def __init__(self) -> None:
         self.iv = '0102030405060708'
@@ -344,30 +328,30 @@ class Encryptor:
         self.nonce = '0CoJUm6Qyw8W8jud'
 
     def encrypt(self, text: str):
-        """ 加密数据
+        """ encrypt data
 
         Parameters
         ----------
         text: str
-            明文
+            plaintext to be encrypted
 
         Returns
         -------
         result: dict
-            加密结果，是包含 `params` 和 `encSecKey` 这两个键的字典
+            encryption result, contains keys: `params` and `encSecKey`
         """
-        # 随机生成长度为 16 的字符串
+        # randomly generate a string with a length of 16
         characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
         i = ''.join(random.sample(characters, 16))
 
-        # 获取 params
+        # get request parameters
         params = self.AESEncrypt(text, self.nonce)
         params = self.AESEncrypt(params, i)
 
-        # 获取 encSecKey
+        # get encSecKey
         encSecKey = self.RSAEncrypt(i, self.public_key, self.modulus)
 
-        # 加密结果
+        # final result
         result = {
             'params': params,
             'encSecKey': encSecKey
@@ -375,32 +359,32 @@ class Encryptor:
         return result
 
     def AESEncrypt(self, text: str, key: str):
-        """ AES加密
+        """ AES encrypt
 
         Parameters
         ----------
         text: str
-            明文
+            plaintext to be encrypted
 
         key: str
-            密钥
+            secret key
 
         Returns
         -------
         cipher_text: str
-            密文
+            ciphertext
         """
-        # 数据填充
+        # data filling
         text = pad(text.encode(), AES.block_size)
         aes = AES.new(key.encode(), AES.MODE_CBC, self.iv.encode())
 
-        # 加密
+        # encrypt
         cipher_text = aes.encrypt(plaintext=text)
         cipher_text = base64.b64encode(cipher_text).decode()
         return cipher_text
 
     def RSAEncrypt(self, i, e, n):
-        """ RAS 加密 """
-        # 加密 C = M^e mod n
+        """ RAS encrypt """
+        # C = M^e mod n
         num = pow(int(i[::-1].encode().hex(), 16), int(e, 16), int(n, 16))
         return format(num, 'x')

@@ -3,20 +3,20 @@ from PyQt5.QtGui import QMouseEvent
 
 
 def getPressedPos(widget, e: QMouseEvent):
-    """ 检测鼠标并返回按下的方位
+    """ Detect the position of the mouse down
 
     Parameters
     ----------
     widget:
-        小部件
+        the widget which happens mouse press event
 
     e: QMouseEvent
-        鼠标点击事件
+        mouse press event
 
     Returns
     -------
     pressedPos: str or None
-        鼠标点击位置
+        the position of the mouse down
     """
     pressedPos = None
     width = widget.width()
@@ -27,8 +27,7 @@ def getPressedPos(widget, e: QMouseEvent):
     topY = 0 <= e.y() <= int(height / 3)
     midY = int(height / 3) < e.y() <= int(height * 2 / 3)
     bottomY = int(height * 2 / 3) < e.y() <= height
-    
-    # 获取点击位置
+
     if leftX and topY:
         pressedPos = 'left-top'
     elif midX and topY:
@@ -47,4 +46,5 @@ def getPressedPos(widget, e: QMouseEvent):
         pressedPos = 'bottom'
     elif rightX and bottomY:
         pressedPos = 'right-bottom'
+
     return pressedPos

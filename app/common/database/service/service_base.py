@@ -8,179 +8,179 @@ from ..entity import Entity
 
 
 class ServiceBase:
-    """ 服务抽象类 """
+    """ Service abstract class """
 
     def __init__(self):
         super().__init__()
 
     def createTable(self) -> bool:
-        """ 创建表 """
+        """ create table """
         raise NotADirectoryError
 
     def findBy(self, **condition) -> Entity:
-        """ 查询一条符合条件的记录
+        """ query a record that meets the condition
 
         Parameters
         ----------
         condition: dict
-            查询条件
+            query condition
 
         Returns
         -------
         entity: Entity
-            实体类对象，没有查询到则为 None
+            entity instance, `None` if no record is found
         """
         raise NotImplementedError
 
     def listBy(self, **condition) -> List[Entity]:
-        """ 查询所有符合条件的记录
+        """ query all records that meet the conditions
 
         Parameters
         ----------
         condition: dict
-            查询条件
+            query condition
 
         Returns
         -------
         entities: List[Entity]
-            实体类对象列表，没有查询到则为空列表
+            entity instances, empty if no records are found
         """
         raise NotImplementedError
 
     def listLike(self, **condition) -> List[Entity]:
-        """ 模糊查询所有符合条件的记录
+        """ fuzzy query all records that meet the conditions (or relationships)
 
         Parameters
         ----------
         condition: dict
-            查询条件
+            query confition
 
         Returns
         -------
         entities: List[Entity]
-            实体类对象列表，没有查询到则为空列表
+            entity instances, empty if no records are found
         """
         raise NotImplementedError
 
     def listAll(self) -> List[Entity]:
-        """ 查询所有记录 """
+        """ query all records """
         raise NotImplementedError
 
     def listByIds(self, ids: list) -> List[Entity]:
-        """ 通过主键查询记录 """
+        """ query the records of the primary key value in the list """
         raise NotImplementedError
 
     def modify(self, id, field: str, value) -> bool:
-        """ 更新一条记录中某个字段的值
+        """ modify the value of a field in a record
 
         Parameters
         ----------
         id:
-            主键值
+            primary key value
 
         filed: str
-            字段名
+            field name
 
         value:
-            字段值
+            field value
 
         Returns
         -------
         success: bool
-            更新是否成功
+            is the modify successful
         """
         raise NotImplementedError
 
     def modifyById(self, entity: Entity) -> bool:
-        """ 更新一条记录
+        """ modify a record
 
         Parameters
         ----------
         entity: Entity
-            实体类对象
+            entity instance
 
         Returns
         -------
         success: bool
-            更新是否成功
+            is the modify successful
         """
         raise NotImplementedError
 
     def modifyByIds(self, entities: List[Entity]) -> bool:
-        """ 更新多条记录
+        """ modify multi records
 
         Parameters
         ----------
         entities: List[Entity]
-            实体类对象
+            entity instances
 
         Returns
         -------
         success: bool
-            更新是否成功
+            is the modify successful
         """
         raise NotImplementedError
 
     def add(self, entity: Entity) -> bool:
-        """ 插入一条记录
+        """ add a record
 
         Parameters
         ----------
         entity: Entity
-            实体类对象
+            entity instance
 
         Returns
         -------
         success: bool
-            插入是否成功
+            is the add successful
         """
         raise NotImplementedError
 
     def addBatch(self, entities: List[Entity]) -> bool:
-        """ 插入多条记录
+        """ add multi records
 
         Parameters
         ----------
         entities: List[Entity]
-            实体类对象
+            entity instances
 
         Returns
         -------
         success: bool
-            插入是否成功
+            is the add successful
         """
         raise NotImplementedError
 
     def removeById(self, id) -> bool:
-        """ 移除一条记录
+        """ remove a record
 
         Parameters
         ----------
         id:
-            主键值
+            primary key value
 
         Returns
         -------
         success: bool
-            更新是否成功
+            is the remove successful
         """
         raise NotImplementedError
 
     def removeByIds(self, ids: list) -> bool:
-        """ 移除多条记录
+        """ remove multi records
 
         Parameters
         ----------
         ids: list
-            主键值列表
+            primary key values
 
         Returns
         -------
         success: bool
-            移除是否成功
+            is the remove successful
         """
         raise NotImplementedError
 
     def setDatabase(self, db: QSqlDatabase):
-        """ 使用指定的数据库 """
+        """ use the specified database """
         raise NotImplementedError

@@ -5,7 +5,7 @@ from PyQt5.QtCore import pyqtSignal, QThread
 
 
 class GetMvUrlThread(QThread):
-    """ 获取 MV 播放地址线程 """
+    """ Thread used to get the play url of MV """
 
     crawlFinished = pyqtSignal(str)
 
@@ -26,7 +26,7 @@ class GetMvUrlThread(QThread):
             if not mvInfo_list:
                 continue
 
-            # 匹配搜索结果
+            # match search result
             matches = [fuzz.token_set_ratio(
                 i['singer']+' '+i['name'], self.key_word) for i in mvInfo_list]
             best_match = max(matches)
@@ -41,5 +41,5 @@ class GetMvUrlThread(QThread):
         self.crawlFinished.emit(url)
 
     def setVideoQuality(self, quality: str):
-        """ 设置视频的画质 """
+        """ set MV quality """
         self.video_quality = quality

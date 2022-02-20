@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 
 @dataclass
 class AlbumInfo(Entity):
-    """ 专辑信息实体类 """
+    """ ALbum information """
 
     id: str = None
     singer: str = None

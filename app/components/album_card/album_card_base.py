@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import (QApplication, QGraphicsOpacityEffect, QLabel,
 
 
 class AlbumCardBase(PerspectiveWidget):
-    """ 专辑卡基类 """
+    """ Album card base class """
 
     deleteCardSig = pyqtSignal(str, str)                     # 删除专辑卡
     nextPlaySignal = pyqtSignal(str, str)                    # 下一首播放
@@ -60,7 +60,7 @@ class AlbumCardBase(PerspectiveWidget):
         self.__initWidget()
 
     def __initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widgets """
         self.setFixedSize(210, 290)
         self.setAttribute(Qt.WA_StyledBackground)
         self.albumPic.setFixedSize(200, 200)
@@ -71,26 +71,26 @@ class AlbumCardBase(PerspectiveWidget):
         self.albumPic.setPixmap(QPixmap(self.coverPath).scaled(
             200, 200, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
 
-        # 给小部件添加特效
+        # add opacity effect to check box
         self.checkBox.setFocusPolicy(Qt.NoFocus)
         self.checkBox.setGraphicsEffect(self.checkBoxOpacityEffect)
 
-        # 隐藏按钮
+        # hide buttons
         self.playButton.hide()
         self.addToButton.hide()
 
-        # 设置动画
+        # set animation
         self.hideCheckBoxAni.setStartValue(1)
         self.hideCheckBoxAni.setEndValue(0)
         self.hideCheckBoxAni.setDuration(150)
 
-        # 设置鼠标光标
+        # set cursor
         self.contentLabel.setCursor(Qt.PointingHandCursor)
 
-        # 设置部件位置
+        # initialize position of widgets
         self.__initLayout()
 
-        # 分配ID和属性
+        # set properties and ID of widgets
         self.setObjectName("albumCard")
         self.albumLabel.setObjectName("albumLabel")
         self.contentLabel.setObjectName("contentLabel")
@@ -98,7 +98,7 @@ class AlbumCardBase(PerspectiveWidget):
         self.albumLabel.setProperty("isChecked", "False")
         self.contentLabel.setProperty("isChecked", "False")
 
-        # 将信号连接到槽函数
+        # connect signal to slot
         self.playButton.clicked.connect(
             lambda: signalBus.playAlbumSig.emit(self.singer, self.album))
         self.contentLabel.clicked.connect(
@@ -107,7 +107,7 @@ class AlbumCardBase(PerspectiveWidget):
         self.checkBox.stateChanged.connect(self.__onCheckedStateChanged)
 
     def __initLayout(self):
-        """ 初始化布局 """
+        """ initialize layout """
         self.vBoxLayout.setContentsMargins(5, 5, 0, 0)
         self.vBoxLayout.setSpacing(0)
         self.vBoxLayout.addWidget(self.albumPic)
@@ -121,7 +121,7 @@ class AlbumCardBase(PerspectiveWidget):
         self.__adjustLabel()
 
     def __setAlbumInfo(self, albumInfo: AlbumInfo):
-        """ 获取专辑信息 """
+        """ set album information """
         self.albumInfo = albumInfo
         self.album = albumInfo.album
         self.singer = albumInfo.singer
@@ -129,33 +129,29 @@ class AlbumCardBase(PerspectiveWidget):
         self.coverPath = getCoverPath(self.singer, self.album, 'album_big')
 
     def enterEvent(self, e):
-        """ 鼠标进入窗口时显示磨砂背景和按钮 """
-        # 显示磨砂背景
+        # show blur background
         albumCardPos = self.mapToGlobal(QPoint(0, 0))  # type:QPoint
         self.showBlurAlbumBackgroundSig.emit(albumCardPos, self.coverPath)
 
-        # 处于选择模式下按钮不可见
+        # hide button in selection mode
         self.playButton.setHidden(self.isInSelectionMode)
         self.addToButton.setHidden(self.isInSelectionMode)
 
     def leaveEvent(self, e):
-        """ 鼠标离开时隐藏磨砂背景和按钮 """
         self.hideBlurAlbumBackgroundSig.emit()
         self.addToButton.hide()
         self.playButton.hide()
 
     def mouseReleaseEvent(self, e):
-        """ 鼠标松开发送切换到专辑界面信号或者取反选中状态 """
         super().mouseReleaseEvent(e)
         if e.button() == Qt.LeftButton:
             if self.isInSelectionMode:
                 self.setChecked(not self.isChecked)
             else:
-                # 不处于选择模式时且鼠标松开事件不是复选框发来的才发送切换到专辑界面的信号
                 signalBus.switchToAlbumInterfaceSig.emit(self.singer, self.album)
 
     def showAlbumInfoEditDialog(self):
-        """ 显示专辑信息编辑面板 """
+        """ show album information edit dialog """
         self.showAlbumInfoEditDialogSig.emit(self.singer, self.album)
 
     def updateAlbumCover(self, coverPath: str):
@@ -167,7 +163,7 @@ class AlbumCardBase(PerspectiveWidget):
         self.addToButton.setBlurPic(coverPath, 40)
 
     def updateWindow(self, albumInfo: AlbumInfo):
-        """ 更新专辑卡窗口信息 """
+        """ update album card """
         if albumInfo == self.albumInfo:
             return
 
@@ -181,10 +177,10 @@ class AlbumCardBase(PerspectiveWidget):
         self.__adjustLabel()
 
     def __adjustLabel(self):
-        """ 根据专辑名的长度决定是否换行和添加省略号 """
+        """ adjust text of label """
         newText, isWordWrap = autoWrap(self.albumLabel.text(), 22)
         if isWordWrap:
-            # 添加省略号
+            # add ellipsis
             index = newText.index("\n")
             fontMetrics = QFontMetrics(QFont("Microsoft YaHei", 10, 75))
             secondLineText = fontMetrics.elidedText(
@@ -192,7 +188,7 @@ class AlbumCardBase(PerspectiveWidget):
             newText = newText[: index + 1] + secondLineText
             self.albumLabel.setText(newText)
 
-        # 给歌手名添加省略号
+        # add ellipsis to singer name
         fontMetrics = QFontMetrics(QFont("Microsoft YaHei", 10, 25))
         newSongerName = fontMetrics.elidedText(
             self.contentLabel.text(), Qt.ElideRight, 200)
@@ -201,11 +197,11 @@ class AlbumCardBase(PerspectiveWidget):
         self.albumLabel.adjustSize()
 
     def setChecked(self, isChecked: bool):
-        """ 设置歌曲卡的选中状态 """
+        """ set the checked state """
         self.checkBox.setChecked(isChecked)
 
     def setSelectionModeOpen(self, isOpen: bool):
-        """ 设置是否进入选择模式, 处于选择模式下复选框一直可见，按钮不可见 """
+        """ set whether to open selection mode """
         if self.isInSelectionMode == isOpen:
             return
 
@@ -216,12 +212,12 @@ class AlbumCardBase(PerspectiveWidget):
         self.isInSelectionMode = isOpen
 
     def _onSelectActionTriggered(self):
-        """ 右击菜单选择动作对应的槽函数 """
+        """ select action triggered slot """
         self.setSelectionModeOpen(True)
         self.setChecked(True)
 
     def __showAddToMenu(self):
-        """ 显示添加到菜单 """
+        """ show add to menu """
         menu = AddToMenu(parent=self)
         pos = self.mapToGlobal(QPoint(
             self.addToButton.x(), self.addToButton.y()))
@@ -237,10 +233,11 @@ class AlbumCardBase(PerspectiveWidget):
         menu.exec(QPoint(x, y))
 
     def __onCheckedStateChanged(self):
-        """ 复选框选中状态改变对应的槽函数 """
+        """ check box checked state changed slot """
         self.isChecked = self.checkBox.isChecked()
         self.checkedStateChanged.emit(self, self.isChecked)
-        # 更新属性和背景色
+
+        # update text and background color
         self.setProperty("isChecked", str(self.isChecked))
         self.albumLabel.setProperty("isChecked", str(self.isChecked))
         self.contentLabel.setProperty("isChecked", str(self.isChecked))

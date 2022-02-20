@@ -8,7 +8,7 @@ from .sql_query import SqlQuery
 
 
 class DaoBase:
-    """ 数据库访问操作抽象类 """
+    """ Database access operation abstract class """
 
     table = ''
     fields = ['id']
@@ -17,21 +17,21 @@ class DaoBase:
         self.setDatabase(db)
 
     def createTable(self):
-        """ 创建表格 """
+        """ create table """
         raise NotImplementedError
 
     def selectBy(self, **condition) -> Entity:
-        """ 查询一条符合条件的记录
+        """ query a record that meet the conditions
 
         Parameters
         ----------
         condition: dict
-            查询条件
+            query condition
 
         Returns
         -------
         entity: Entity
-            实体类对象，没有查询到则为 None
+            entity instance, `None` if no record is found
         """
         self._prepareSelectBy(condition)
 
@@ -41,17 +41,17 @@ class DaoBase:
         return self.loadFromRecord(self.query.record())
 
     def listBy(self, **condition) -> List[Entity]:
-        """ 查询所有符合条件的记录
+        """ query all records that meet the conditions
 
         Parameters
         ----------
         condition: dict
-            查询条件
+            query condition
 
         Returns
         -------
         entities: List[Entity]
-            实体类对象列表，没有查询到则为空列表
+            entity instances, empty if no records are found
         """
         self._prepareSelectBy(condition)
 
@@ -61,17 +61,17 @@ class DaoBase:
         return self.iterRecords()
 
     def listLike(self, **condition) -> List[Entity]:
-        """ 模糊查询所有符合条件（或的关系）的记录
+        """ Fuzzy query all records that meet the conditions (or relationships)
 
         Parameters
         ----------
         condition: dict
-            查询条件
+            query condition
 
         Returns
         -------
         entities: List[Entity]
-            实体类对象列表，没有查询到则为空列表
+            entity instances, empty if no records are found
         """
         self._prepareSelectLike(condition)
 
@@ -81,18 +81,18 @@ class DaoBase:
         return self.iterRecords()
 
     def _prepareSelectBy(self, condition: dict):
-        """ 通过条件预编译查询指令
+        """ prepare sql select statement
 
         Parameters
         ----------
         table: str
-            表名
+            table name
 
         condition: dict
-            查询条件
+            query condition
         """
         if not condition:
-            raise ValueError("必须传入至少一个条件")
+            raise ValueError("At least one condition must be passed in")
 
         placeholders = [f'{k} = ?' for k in condition.keys()]
         sql = f"SELECT * FROM {self.table} WHERE {' AND '.join(placeholders)}"
@@ -101,18 +101,18 @@ class DaoBase:
             self.query.addBindValue(v)
 
     def _prepareSelectLike(self, condition: dict):
-        """ 通过条件预编译模糊查询指令
+        """ prepare sql fuzzy select statement
 
         Parameters
         ----------
         table: str
-            表名
+            table name
 
         condition: dict
-            查询条件
+            query condition
         """
         if not condition:
-            raise ValueError("必须传入至少一个条件")
+            raise ValueError("At least one condition must be passed in")
 
         placeholders = [f"{k} like ?" for k in condition.keys()]
         sql = f"SELECT * FROM {self.table} WHERE {' OR '.join(placeholders)}"
@@ -121,17 +121,17 @@ class DaoBase:
             self.query.addBindValue(f'%{v}%')
 
     def listAll(self) -> List[Entity]:
-        """ 查询所有记录 """
-        sql = f"SELECT * from {self.table}"
+        """ query all records """
+        sql = f"SELECT * FROM {self.table}"
         if not self.query.exec(sql):
             return []
 
         return self.iterRecords()
 
     def listByFields(self, field: str, values: list):
-        """ 查询所有字段值在列表中的记录 """
+        """ query the records of field values in the list """
         if field not in self.fields:
-            raise ValueError(f"字段名 `{field}` 非法")
+            raise ValueError(f"field name `{field}` is illegal")
 
         if not values:
             return []
@@ -149,11 +149,11 @@ class DaoBase:
         return self.iterRecords()
 
     def listByIds(self, ids: list) -> List[Entity]:
-        """ 查询所有在主键列表中的记录 """
+        """ query the records of the primary key value in the list """
         return self.listByFields(self.fields[0], ids)
 
     def iterRecords(self) -> List[Entity]:
-        """ 迭代所有查询到的记录 """
+        """ iterate over all queried records """
         entities = []
 
         while self.query.next():
@@ -163,23 +163,23 @@ class DaoBase:
         return entities
 
     def update(self, id, field: str, value) -> bool:
-        """ 更新一条记录中某个字段的值
+        """ update the value of a field in a record
 
         Parameters
         ----------
         id:
-            主键值
+            primary key value
 
         filed: str
-            字段名
+            field name
 
         value:
-            字段值
+            field value
 
         Returns
         -------
         success: bool
-            更新是否成功
+            is the update successful
         """
         sql = f"UPDATE {self.table} SET {field} = ? WHERE {self.fields[0]} = ?"
         self.query.prepare(sql)
@@ -188,17 +188,17 @@ class DaoBase:
         return self.query.exec()
 
     def updateById(self, entity: Entity) -> bool:
-        """ 更新一条记录
+        """ update a record
 
         Parameters
         ----------
         entity: Entity
-            实体类对象
+            entity instance
 
         Returns
         -------
         success: bool
-            更新是否成功
+            is the update successful
         """
         if len(self.fields) <= 1:
             return False
@@ -213,17 +213,17 @@ class DaoBase:
         return self.query.exec()
 
     def updateByIds(self, entities: List[Entity]) -> bool:
-        """ 更新多条记录
+        """ update multi records
 
         Parameters
         ----------
         entities: List[Entity]
-            实体类对象
+            entity instances
 
         Returns
         -------
         success: bool
-            更新是否成功
+            is the update successful
         """
         if not entities:
             return True
@@ -252,17 +252,17 @@ class DaoBase:
         return success
 
     def insert(self, entity: Entity) -> bool:
-        """ 插入一条记录
+        """ insert a record
 
         Parameters
         ----------
         entity: Entity
-            实体类对象
+            entity instance
 
         Returns
         -------
         success: bool
-            更新是否成功
+            is the insert successful
         """
         values = ','.join([f':{i}' for i in self.fields])
         sql = f"INSERT INTO {self.table} VALUES ({values})"
@@ -271,17 +271,17 @@ class DaoBase:
         return self.query.exec()
 
     def insertBatch(self, entities: List[Entity]) -> bool:
-        """ 插入多条记录
+        """ insert multi records
 
         Parameters
         ----------
         entities: List[Entity]
-            实体类对象列表
+            entity instances
 
         Returns
         -------
         success: bool
-            更新是否成功
+            is the insert successful
         """
         if not entities:
             return True
@@ -304,17 +304,17 @@ class DaoBase:
         return db.commit()
 
     def deleteById(self, id) -> bool:
-        """ 移除一条记录
+        """ delete a record
 
         Parameters
         ----------
         id:
-            主键值
+            primary key value
 
         Returns
         -------
         success: bool
-            更新是否成功
+            is the delete successful
         """
         sql = f"DELETE FROM {self.table} WHERE {self.fields[0]} = ?"
         self.query.prepare(sql)
@@ -322,9 +322,9 @@ class DaoBase:
         return self.query.exec()
 
     def deleteByFields(self, field: str, values: list):
-        """ 根据某字段的值移除多条记录 """
+        """ delete multi records based on the value of a field """
         if field not in self.fields:
-            raise ValueError(f"字段名 `{field}` 非法")
+            raise ValueError(f"field name `{field}` is illegal")
 
         if not values:
             return True
@@ -339,17 +339,17 @@ class DaoBase:
         return self.query.exec()
 
     def deleteByIds(self, ids: list) -> bool:
-        """ 移除多条记录
+        """ delete multi records
 
         Parameters
         ----------
         ids: list
-            主键值列表
+            primary key values
 
         Returns
         -------
         success: bool
-            移除是否成功
+            is the delete successful
         """
         return self.deleteByFields(self.fields[0], ids)
 
@@ -359,17 +359,17 @@ class DaoBase:
 
     @classmethod
     def loadFromRecord(cls, record: QSqlRecord) -> Entity:
-        """ 根据一条记录创建一个实体类对象
+        """ create an entity instance from a record
 
         Parameters
         ----------
         record: QSqlRecord
-            记录
+            record
 
         Returns
         -------
         entity: Entity
-            实体类对象
+            entity instance
         """
         entity = EntityFactory.create(cls.table)
 
@@ -380,17 +380,17 @@ class DaoBase:
         return entity
 
     def adjustText(self, text: str):
-        """ 处理字符串中的单引号问题 """
+        """ handling single quotation marks in strings """
         return text.replace("'", "''")
 
     def bindEntityToQuery(self, entity: Entity):
-        """ 将实体类的值绑定到 query 对象上 """
+        """ bind the value of entity to query object """
         for field in self.fields:
             value = entity[field]
             self.query.bindValue(f':{field}', value)
 
     def setDatabase(self, db: QSqlDatabase):
-        """ 使用指定的数据库 """
+        """ use the specified database """
         self.connectionName = db.connectionName() if db else ''
         self.query = SqlQuery(db) if db else SqlQuery()
         self.query.setForwardOnly(True)

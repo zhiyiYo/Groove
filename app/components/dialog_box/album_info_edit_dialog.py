@@ -1,16 +1,17 @@
 # coding:utf-8
 import os
 from copy import deepcopy
+from pathlib import Path
 
-from mutagen.id3 import TCON
 from common.database.entity import AlbumInfo, SongInfo
 from common.image_process_utils import getPicSuffix
-from common.os_utils import getCoverPath
+from common.os_utils import getCoverPath, getCoverName
 from components.buttons.perspective_button import PerspectivePushButton
 from components.widgets.label import ErrorIcon
 from components.widgets.line_edit import LineEdit
 from components.widgets.perspective_widget import PerspectiveWidget
 from components.widgets.scroll_area import ScrollArea
+from mutagen.id3 import TCON
 from PyQt5.QtCore import QFile, QRegExp, Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import (QBrush, QColor, QLinearGradient, QPainter, QPixmap,
                          QRegExpValidator)
@@ -21,7 +22,7 @@ from .mask_dialog_base import MaskDialogBase
 
 
 class AlbumInfoEditDialog(MaskDialogBase):
-    """ 专辑信息编辑对话框 """
+    """ Album information edit dialog """
 
     saveInfoSig = pyqtSignal(AlbumInfo, AlbumInfo, str)
     MAXHEIGHT = 755
@@ -34,21 +35,22 @@ class AlbumInfoEditDialog(MaskDialogBase):
         self.singer = self.albumInfo.singer or ''
         self.album = self.albumInfo.album or ''  # type:str
         self.coverPath = getCoverPath(self.singer, self.album, 'album_big')
-        self.songInfos = self.albumInfo.songInfos # type:list
+        self.songInfos = self.albumInfo.songInfos  # type:list
         self.newAlbumCoverPath = ''
         self.__createWidgets()
         self.__initWidget()
 
     def __createWidgets(self):
-        """ 创建小部件 """
+        """ create widgets """
         self.delayTimer = QTimer(self)
-        # 创建滚动区域和抬头
+
+        # create scroll area and title
         self.scrollArea = ScrollArea(self.widget)
         self.scrollWidget = QWidget()
         self.editAlbumInfoLabel = QLabel(
             self.tr("Edit Album Info"), self.widget)
 
-        # 上半部分
+        # Upper half
         self.albumCover = AlbumCoverWindow(
             self.coverPath, (170, 170), self.scrollWidget)
         self.albumNameLineEdit = LineEdit(self.album, self.scrollWidget)
@@ -59,7 +61,7 @@ class AlbumInfoEditDialog(MaskDialogBase):
             self.tr("Album artist"), self.scrollWidget)
         self.genreLabel = QLabel(self.tr("Genre"), self.scrollWidget)
 
-        # 下半部分
+        # Lower half
         self.songInfoWidgets = []
         for songInfo in self.songInfos:
             songInfoWidget = SongInfoWidget(songInfo, self.scrollWidget)
@@ -71,17 +73,17 @@ class AlbumInfoEditDialog(MaskDialogBase):
             self.tr("Cancel"), self.widget)
 
     def __initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widgets """
         self.widget.setFixedWidth(936)
         self.widget.setMaximumHeight(self.MAXHEIGHT)
         self.scrollArea.setWidget(self.scrollWidget)
         self.songInfoWidgetNum = len(self.songInfoWidgets)  # type:int
 
-        # 初始化定时器
+        # initialize timer
         self.delayTimer.setInterval(300)
         self.delayTimer.timeout.connect(self.__showFileDialog)
 
-        # 设置滚动区域的大小
+        # set the size of scroll area
         if self.songInfoWidgetNum <= 4:
             self.scrollArea.resize(931, 216 + self.songInfoWidgetNum * 83)
         else:
@@ -91,14 +93,14 @@ class AlbumInfoEditDialog(MaskDialogBase):
         self.__initLayout()
         self.__connectSignalToSlot()
 
-        # 流派补全
+        # auto completion of genre
         self.genreCompleter = QCompleter(TCON.GENRES, self.widget)
         self.genreCompleter.setCompletionMode(QCompleter.InlineCompletion)
         self.genreCompleter.setCaseSensitivity(Qt.CaseInsensitive)
         self.genreLineEdit.setCompleter(self.genreCompleter)
 
     def __initLayout(self):
-        """ 初始化布局 """
+        """ initialize layout """
         self.editAlbumInfoLabel.move(30, 30)
         self.scrollArea.move(2, 62)
         self.albumCover.move(30, 13)
@@ -126,7 +128,7 @@ class AlbumInfoEditDialog(MaskDialogBase):
                              self.saveButton.width()-5, self.cancelButton.y())
 
     def __setQss(self):
-        """ 设置层叠样式表 """
+        """ set style sheet """
         self.scrollArea.setObjectName("infoEditScrollArea")
         self.editAlbumInfoLabel.setObjectName("editAlbumInfo")
 
@@ -139,16 +141,14 @@ class AlbumInfoEditDialog(MaskDialogBase):
         self.cancelButton.adjustSize()
 
     def __trackNumEmptySlot(self, isShowErrorMsg: bool):
-        """ 如果曲目为空则禁用保存按钮 """
+        """ Disable the save button if the track is empty """
         self.saveButton.setEnabled(not isShowErrorMsg)
         if not self.sender().bottomErrorLabel.isVisible():
-            # 获取曲目为空的小部件的index
             senderIndex = self.songInfoWidgets.index(self.sender())
-            # 调整面板高度
             self.__adjustWidgetPos(senderIndex, isShowErrorMsg)
 
     def onSaveError(self, index: int):
-        """ 保存信息失败槽函数 """
+        """ save fails slot """
         songInfoWidget = self.songInfoWidgets[index]
         if not songInfoWidget.bottomErrorLabel.isVisible():
             senderIndex = self.songInfoWidgets.index(songInfoWidget)
@@ -157,50 +157,49 @@ class AlbumInfoEditDialog(MaskDialogBase):
         songInfoWidget.setSaveSongInfoErrorMsgHidden(False)
 
     def onSaveComplete(self):
-        """ 保存成功槽函数 """
+        """ save successfully slot """
         self.__saveAlbumCover()
         self.close()
 
     def __adjustWidgetPos(self, senderIndex, isShowErrorMsg: bool):
         """ 调整小部件位置 """
-        # 调整面板高度
-        deltaHeight = 54 if isShowErrorMsg else -54
+        # adjust the height of dialog
+        dh = 54 if isShowErrorMsg else -54
         if self.widget.height() == self.MAXHEIGHT:
-            if deltaHeight < 0:
-                height = self.scrollWidget.height() + deltaHeight
+            if dh < 0:
+                height = self.scrollWidget.height() + dh
                 if height < 600:
                     self.widget.setFixedSize(936, height + 155)
                     self.scrollArea.resize(931, height)
-        elif self.MAXHEIGHT - abs(deltaHeight) < self.widget.height() < self.MAXHEIGHT:
-            if deltaHeight > 0:
+        elif self.MAXHEIGHT - abs(dh) < self.widget.height() < self.MAXHEIGHT:
+            if dh > 0:
                 self.widget.setFixedSize(936, self.MAXHEIGHT)
                 self.scrollArea.resize(931, 600)
             else:
-                self.__adjustHeight(deltaHeight)
-        elif self.widget.height() <= self.MAXHEIGHT - abs(deltaHeight):
-            self.__adjustHeight(deltaHeight)
+                self.__adjustHeight(dh)
+        elif self.widget.height() <= self.MAXHEIGHT - abs(dh):
+            self.__adjustHeight(dh)
 
-        self.scrollWidget.resize(931, self.scrollWidget.height() + deltaHeight)
+        self.scrollWidget.resize(931, self.scrollWidget.height() + dh)
         self.saveButton.move(563, self.widget.height() -
                              16-self.saveButton.height())
         self.cancelButton.move(735, self.widget.height() -
                                16-self.saveButton.height())
 
-        # 调整后面的小部件的位置
+        # adjust postion of widgets
         for songInfoWidget in self.songInfoWidgets[senderIndex + 1:]:
-            songInfoWidget.move(0, songInfoWidget.y() + deltaHeight)
+            songInfoWidget.move(0, songInfoWidget.y() + dh)
 
     def __adjustHeight(self, deltaHeight):
-        """ 调整高度 """
+        """ adjust height """
         self.widget.setFixedSize(936, self.widget.height() + deltaHeight)
         self.scrollArea.resize(931, self.scrollArea.height() + deltaHeight)
 
     def __saveAlbumInfo(self):
-        """ 保存专辑信息 """
-        # 禁用小部件
+        """ save album information """
         self.__setWidgetEnable(False)
 
-        # 更新标签信息
+        # update album information
         self.albumInfo["album"] = self.albumNameLineEdit.text()
         self.albumInfo["singer"] = self.albumSongerLineEdit.text()
         self.albumInfo["genre"] = self.genreLineEdit.text()
@@ -215,67 +214,60 @@ class AlbumInfoEditDialog(MaskDialogBase):
         self.saveInfoSig.emit(
             self.oldAlbumInfo, self.albumInfo, self.newAlbumCoverPath)
 
-        # 保存失败时重新启用编辑框
         self.__setWidgetEnable(True)
 
     def __connectSignalToSlot(self):
-        """ 信号连接到槽 """
+        """ connect signal to slot """
         self.saveButton.clicked.connect(self.__saveAlbumInfo)
         self.cancelButton.clicked.connect(self.close)
         self.albumCover.clicked.connect(self.delayTimer.start)
 
     def __showFileDialog(self):
-        """ 显示专辑图片选取对话框 """
+        """ show file dialog to select album cover """
         self.delayTimer.stop()
         path, _ = QFileDialog.getOpenFileName(
             self, self.tr("Open"), "./", self.tr("All files")+"(*.png;*.jpg;*.jpeg;*jpe;*jiff)")
-        if path:
-            # 复制图片到封面文件夹下
-            if os.path.abspath(self.coverPath) == path:
-                return
 
-            # 暂存图片地址并刷新图片
-            self.newAlbumCoverPath = path
-            self.albumCover.setAlbumCover(path)
+        if not path or Path(self.coverPath).absolute() == Path(path).absolute():
+            return
+
+        # update album cover label
+        self.newAlbumCoverPath = path
+        self.albumCover.setAlbumCover(path)
 
     def __saveAlbumCover(self):
-        """ 保存新专辑封面 """
+        """ save album cover """
         if not self.newAlbumCoverPath:
             return
 
         with open(self.newAlbumCoverPath, "rb") as f:
             picData = f.read()
 
-            # 更换文件夹下的封面图片
-            if self.newAlbumCoverPath == os.path.abspath(self.coverPath):
-                return
+        # get suffix of new album cover
+        suffix = getPicSuffix(picData)
 
-            # 判断文件格式后修改后缀名
-            newSuffix = getPicSuffix(picData)
+        # modify the cover path if it's default
+        if self.coverPath == ":/images/default_covers/album_200_200.png":
+            name = getCoverName(self.singer, self.album)
+            coverPath = Path(f"cache/Album_Cover/{name}/cover{suffix}")
+        else:
+            coverPath = Path(self.coverPath)
 
-            # 如果封面路径是默认专辑封面，就修改封面路径
-            if self.coverPath == ":/images/default_covers/album_200_200.png":
-                self.coverPath = "cache/Album_Cover/{0}/{0}{1}".format(
-                    self.albumInfo["coverName"], newSuffix)
+        coverPath.parent.mkdir(exist_ok=True, parents=True)
+        with open(coverPath, "wb") as f:
+            f.write(picData)
 
-            with open(self.coverPath, "wb") as f:
-                f.write(picData)
-
-            oldName, oldSuffix = os.path.splitext(self.coverPath)
-            if newSuffix != oldSuffix:
-                os.rename(self.coverPath, oldName + newSuffix)
-                self.coverPath = oldName + newSuffix
-                self.albumInfo["coverPath"] = self.coverPath
+        if suffix != coverPath.suffix:
+            coverPath.rename(coverPath.with_suffix(suffix))
 
     def __setWidgetEnable(self, isEnable: bool):
-        """ 设置编辑框是否启用 """
+        """ set whether widgets is enabled """
         self.setEnabled(isEnable)
-        # 更新样式
         self.setStyle(QApplication.style())
 
 
 class SongInfoWidget(QWidget):
-    """ 歌曲信息窗口 """
+    """ Song information widget """
 
     isTrackNumEmptySig = pyqtSignal(bool)
 
@@ -295,27 +287,27 @@ class SongInfoWidget(QWidget):
         self.__initWidget()
 
     def __initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widgets """
         self.setFixedSize(903, 83)
         self.__initLayout()
 
-        # 分配ID和属性
+        # set properties and ID
         self.bottomErrorLabel.setObjectName("bottomErrorLabel")
         self.trackLineEdit.setProperty("hasClearBt", "false")
         self.trackLineEdit.setProperty("hasText", "false")
         self.__setTrackNumEmptyErrorMsgHidden(True)
         self.__checkTrackNum()
 
-        # 给输入框设置过滤器
+        # set filter
         trackReg = QRegExp(r"(\d)|([1-9]\d{1,2})")
         trackValidator = QRegExpValidator(trackReg, self.trackLineEdit)
         self.trackLineEdit.setValidator(trackValidator)
 
-        # 信号连接到槽
+        # connect signal to slot
         self.trackLineEdit.textChanged.connect(self.__checkTrackNum)
 
     def __initLayout(self):
-        """ 初始化布局 """
+        """ initialize layout """
         self.trackLabel.move(30, 0)
         self.songNameLabel.move(135, 0)
         self.singerLabel.move(532, 0)
@@ -330,11 +322,9 @@ class SongInfoWidget(QWidget):
         self.songNameLineEdit.resize(371, 41)
 
     def __checkTrackNum(self):
-        """ 检查曲目是否为空，为空则发出禁用保存按钮信号，并显示错误标签 """
-        if (
-            self.trackLineEdit.text()
-            and self.trackLineEdit.property("hasText") == "false"
-        ):
+        """ check if the track number line edit is empty """
+        text = self.trackLineEdit.text()
+        if text and self.trackLineEdit.property("hasText") == "false":
             self.__setTrackNumEmptyErrorMsgHidden(True)
             self.setFixedSize(903, 83)
             self.isTrackNumEmptySig.emit(False)
@@ -348,7 +338,7 @@ class SongInfoWidget(QWidget):
             self.setStyle(QApplication.style())
 
     def __setTrackNumEmptyErrorMsgHidden(self, isHidden: bool):
-        """ 设置曲目为空错误信息是否显示 """
+        """ Set whether the track is empty message is displayed """
         self.errorIcon.setHidden(isHidden)
         self.bottomErrorIcon.setHidden(isHidden)
         self.bottomErrorLabel.setText(
@@ -357,11 +347,12 @@ class SongInfoWidget(QWidget):
         self.bottomErrorLabel.setHidden(isHidden)
 
     def setSaveSongInfoErrorMsgHidden(self, isHidden: bool):
-        """ 设置保存歌曲元数据错误信息是否显示 """
+        """ set whether save song information error message is hidden """
         if not isHidden:
             self.setFixedSize(903, 137)
         else:
             self.setFixedSize(903, 83)
+
         self.errorIcon.setHidden(isHidden)
         self.bottomErrorIcon.setHidden(isHidden)
         self.bottomErrorLabel.setText(
@@ -370,7 +361,7 @@ class SongInfoWidget(QWidget):
         self.bottomErrorLabel.setHidden(isHidden)
 
     def setLineEditEnable(self, isEnable: bool):
-        """ 设置编辑框是否启用 """
+        """ set whether line edit is enabled """
         self.songNameLineEdit.setEnabled(isEnable)
         self.singerLineEdit.setEnabled(isEnable)
         self.trackLineEdit.setEnabled(isEnable)
@@ -385,48 +376,43 @@ class AlbumCoverWindow(PerspectiveWidget):
         super().__init__(parent)
         self.__picPath = picPath
         self.__picSize = picSize
-        # 实例化小部件
         self.albumCoverLabel = QLabel(self)
         self.albumCoverMask = AlbumCoverMask(self)
         self.editAlbumCoverLabel = QLabel(self)
-        # 初始化小部件
         self.__initWidget()
 
     def __initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widget """
         self.setFixedSize(*self.__picSize)
         self.albumCoverLabel.setFixedSize(*self.__picSize)
         self.setAlbumCover(self.__picPath)
-        # 必须将标签的背景设置为透明
         self.editAlbumCoverLabel.setAttribute(Qt.WA_TranslucentBackground)
         self.editAlbumCoverLabel.setPixmap(
             QPixmap(":/images/album_interface/Edit.png"))
         self.editAlbumCoverLabel.move(14, 137)
 
     def setAlbumCover(self, picPath: str):
-        """ 更换专辑封面 """
+        """ set album cover """
         self.__picPath = picPath
         self.albumCoverLabel.setPixmap(QPixmap(picPath).scaled(
             self.width(), self.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
     def mouseReleaseEvent(self, e):
-        """ 鼠标松开发送点击信号 """
         super().mouseReleaseEvent(e)
         self.clicked.emit()
 
 
 class AlbumCoverMask(QWidget):
-    """ 专辑封面渐变遮罩 """
+    """ Mask of album cover """
 
     def __init__(self, parent, size: tuple = (170, 170)):
         super().__init__(parent)
         self.resize(*size)
 
     def paintEvent(self, e):
-        """ 绘制遮罩和图标 """
+        """ paint mask """
         painter = QPainter(self)
         painter.setPen(Qt.NoPen)
-        # 绘制遮罩
         gradientColor = QLinearGradient(0, self.height(), self.width(), 0)
         gradientColor.setColorAt(0, QColor(0, 0, 0, 128))
         gradientColor.setColorAt(1, QColor(0, 0, 0, 0))

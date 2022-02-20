@@ -12,7 +12,7 @@ from.service_base import ServiceBase
 
 
 class PlaylistService(ServiceBase):
-    """ 播放列表服务类 """
+    """ Playlist service """
 
     def __init__(self, db: QSqlDatabase = None):
         super().__init__()

@@ -6,7 +6,7 @@ from PyQt5.QtCore import QThread, pyqtSignal
 
 
 class SaveAlbumInfoThread(QThread):
-    """ 保存专辑信息线程 """
+    """ Save album information thread """
 
     saveFinishedSignal = pyqtSignal(AlbumInfo, AlbumInfo, str)
 
@@ -17,22 +17,22 @@ class SaveAlbumInfoThread(QThread):
         self.coverPath = ''
 
     def setAlbumInfo(self, oldAlbumInfo: AlbumInfo, newAlbumInfo: AlbumInfo, coverPath: str):
-        """ 设置专辑信息 """
+        """ set the album information to be saved """
         self.oldAlbumInfo = oldAlbumInfo
         self.newAlbumInfo = newAlbumInfo
         self.coverPath = coverPath
 
     def run(self):
-        """ 保存专辑信息 """
+        """ start to save information """
         for i, songInfo in enumerate(self.newAlbumInfo.songInfos):
-            # 修改封面数据
+            # modify album cover
             writeAlbumCover(songInfo.file, self.coverPath)
 
-            # 如果歌曲保存失败就重置歌曲信息
+            # rollback when writing song information fails
             if not writeSongInfo(songInfo):
                 self.newAlbumInfo.songInfos[i] = self.oldAlbumInfo.songInfos[i]
 
-            # 更新修改时间
+            # update the modified time of audio file
             songInfo.modifiedTime = SongInfoReader.getModifiedTime(
                 songInfo.file)
 

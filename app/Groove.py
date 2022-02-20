@@ -10,12 +10,12 @@ from View.main_window import MainWindow
 app = QApplication(sys.argv)
 app.setAttribute(Qt.AA_DontCreateNativeWidgetSiblings)
 
-# 国际化
+# Internationalization
 translator = QTranslator()
 translator.load(QLocale.system(), ":/i18n/Groove_")
 app.installTranslator(translator)
 
-# 创建主界面
+# create main window
 groove = MainWindow()
 groove.show()
 

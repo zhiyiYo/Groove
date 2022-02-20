@@ -10,26 +10,26 @@ from ..utils import UUIDUtils
 
 
 class AlbumInfoController:
-    """ 专辑信息控制器 """
+    """ Album information controller """
 
     def __init__(self, db: QSqlDatabase = None):
         self.albumInfoService = AlbumInfoService(db)
         self.songInfoService = SongInfoService(db)
 
     def getAlbumInfosFromCache(self, songInfos: List[SongInfo]):
-        """ 从缓存获取专辑信息列表
+        """ get album information list from cache
 
         Parameters
         ----------
         songInfos: List[SongInfo]
-            歌曲信息列表
+            song information list
 
         Returns
         -------
         albumInfos: List[AlbumInfo]
-            专辑信息列表，不包含歌曲信息
+            album information list, not contain song information
         """
-        # 从数据库获取所有专辑信息
+        # get all album information from database
         cacheAlbumInfos = {
             (i.singer+'_'+i.album): i for i in self.albumInfoService.listAll()
         }
@@ -84,12 +84,12 @@ class AlbumInfoController:
         for i in set(cacheAlbumInfos.keys())-set(currentAlbumInfos.keys()):
             removedIds.append(cacheAlbumInfos[i].id)
 
-        # 更新数据库
+        # update database
         self.albumInfoService.removeByIds(removedIds)
         self.albumInfoService.modifyByIds(list(expiredAlbumInfos.values()))
         self.albumInfoService.addBatch(addedAlbumInfos)
 
-        # 排序专辑信息
+        # sort album information
         albumInfos = sorted(
             currentAlbumInfos.values(),
             key=lambda i: i.modifiedTime,
@@ -99,20 +99,20 @@ class AlbumInfoController:
         return albumInfos
 
     def getAlbumInfo(self, singer: str, album: str):
-        """ 从数据库获取一张专辑信息
+        """ get an album information from the database
 
         Paramters
         ---------
         singer: str
-            歌手
+            singer name
 
         album: str
-            专辑
+            album name
 
         Returns
         -------
         albumInfo: AlbumInfo
-            专辑信息，包含歌曲信息列表，没有找到则返回 None
+            album information, contains song information, `None` if no album is found
         """
         albumInfo = self.albumInfoService.findBy(singer=singer, album=album)
         if not albumInfo:
@@ -125,38 +125,38 @@ class AlbumInfoController:
         return albumInfo
 
     def getAlbumInfosBySinger(self, singer: str):
-        """ 从数据库获取一张空专辑信息
+        """ get all albums of singer
 
         Paramters
         ---------
         singer: str
-            歌手
+            singer name
 
         Returns
         -------
-        albumInfo: AlbumInfo
-            专辑信息，不包含歌曲信息列表，没有找到则返回 None
+        albumInfos: List[AlbumInfo]
+            album information list, not contain song information, empty if no albums if found
         """
         albumInfos = self.albumInfoService.listBy(singer=singer)
         albumInfos.sort(key=lambda i: i.year or 0, reverse=True)
         return albumInfos
 
     def getAlbumInfosLike(self, **condition):
-        """ 模糊查询专辑信息 """
+        """ fuzzy search album information """
         return self.albumInfoService.listLike(**condition)
 
     def getAlbumInfos(self, songInfos: List[SongInfo]) -> List[AlbumInfo]:
-        """ 从新的歌曲信息列表获取专辑信息并更新数据库
+        """ get album information from new song information and update the database
 
         Parameters
         ----------
         songInfos: List[SongInfo]
-            歌曲信息列表
+            song information list
 
         Returns
         -------
         albumInfos: List[AlbumInfo]
-            专辑信息列表，不包含歌曲信息
+            album information list, not contain song information
         """
         albumInfos = {}  # type:Dict[str, AlbumInfo]
 
@@ -185,14 +185,14 @@ class AlbumInfoController:
                 if not albumInfos[key].genre and genre:
                     albumInfos[key].genre = genre
 
-        # 排序专辑信息
+        # sort album information
         albumInfos = sorted(
             albumInfos.values(),
             key=lambda i: i.modifiedTime,
             reverse=True
         )
 
-        # 更新数据库
+        # update database
         self.albumInfoService.clearTable()
         self.albumInfoService.addBatch(albumInfos)
 

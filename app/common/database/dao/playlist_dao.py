@@ -3,7 +3,7 @@ from .dao_base import DaoBase
 
 
 class PlaylistDao(DaoBase):
-    """ 播放列表数据库操作类 """
+    """ Playlist DAO """
 
     table = 'tbl_playlist'
     fields = ['name', 'singer', 'album', 'count', 'modifiedTime']
@@ -22,7 +22,7 @@ class PlaylistDao(DaoBase):
 
 
 class SongPlaylistDao(DaoBase):
-    """ 歌曲文件-播放列表数据库操作类 """
+    """ Audio file - playlist DAO """
 
     table = 'tbl_song_playlist'
     fields = ['id', 'file', 'name']

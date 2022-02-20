@@ -2,7 +2,6 @@
 import os
 import json
 
-from common.os_utils import checkDirExists
 from common.thread.get_meta_data_thread import GetFolderMetaDataThread
 from components.buttons.switch_button import SwitchButton
 from components.dialog_box.folder_list_dialog import FolderListDialog

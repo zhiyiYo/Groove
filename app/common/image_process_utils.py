@@ -11,26 +11,27 @@ from scipy.ndimage.filters import gaussian_filter
 
 
 def gaussianBlur(imagePath: str, blurRadius=18, brightFactor=1, blurPicSize: tuple = None) -> np.ndarray:
-    """ 对图片进行高斯模糊处理
+    """ apply Gaussian blur to image
 
     Parameters
     ----------
     imagePath: str
-        图片路径
+        the image to be blurred
 
     blurRadius: int
-        模糊半径
+        blur radius
 
     brightFactor: float
-        亮度缩放因子
+        brightness scale factor
 
     blurPicSize: tuple
-        高斯模糊前将图片缩放到指定大小，可以加快模糊速度
+        the maximum size of image, if the actual picture exceeds this size,
+        it will be scaled to speed up the computation speed.
 
     Returns
     -------
     image: `~np.ndarray` of shape `(w, h, c)`
-        高斯模糊后的图像
+        the image after blurring
     """
     if not imagePath.startswith(':'):
         image = Image.open(imagePath)
@@ -38,7 +39,7 @@ def gaussianBlur(imagePath: str, blurRadius=18, brightFactor=1, blurPicSize: tup
         image = Image.fromqpixmap(QPixmap(imagePath))
 
     if blurPicSize:
-        # 调整图片尺寸，减小计算量，还能增加额外的模糊
+        # scale image to speed up the computation speed
         w, h = image.size
         ratio = min(blurPicSize[0] / w, blurPicSize[1] / h)
         w_, h_ = w * ratio, h * ratio
@@ -48,11 +49,11 @@ def gaussianBlur(imagePath: str, blurRadius=18, brightFactor=1, blurPicSize: tup
 
     image = np.array(image)
 
-    # 处理图像是灰度图的情况
+    # handle gray image
     if len(image.shape) == 2:
         image = np.stack([image, image, image], axis=-1)
 
-    # 对每一个颜色通道分别磨砂
+    # blur each color channel
     for i in range(3):
         image[:, :, i] = gaussian_filter(
             image[:, :, i], blurRadius) * brightFactor
@@ -61,60 +62,61 @@ def gaussianBlur(imagePath: str, blurRadius=18, brightFactor=1, blurPicSize: tup
 
 
 def getBlurPixmap(imagePath: str, blurRadius=30, brightFactor=1, blurPicSize: tuple = None) -> QPixmap:
-    """ 对原图进行高斯模糊处理
+    """ apply Gaussian blur to image
 
     Parameters
     ----------
     imagePath: str
-        图片路径
+        the image to be blurred
 
     blurRadius: int
-        模糊半径
+        blur radius
 
     brightnessFactor: float
-        亮度缩放因子
+        brightness scale factor
 
     blurPicSize: tuple
-        高斯模糊前将图片缩放到指定大小，可以加快模糊速度
+        the maximum size of image, if the actual picture exceeds this size,
+        it will be scaled to speed up the computation speed.
 
     Returns
     -------
     blurPixmap: QPixmap
-        高斯模糊后的图像
+        the image after blurring
     """
     image = gaussianBlur(imagePath, blurRadius, brightFactor, blurPicSize)
     return Image.fromarray(image).toqpixmap()
 
 
 class DominantColor:
-    """ 获取图像的主色调 """
+    """ Dominant color class """
 
     @classmethod
     def getDominantColor(cls, imagePath: str):
-        """ 获取指定图片的主色调
+        """ extract dominant color from image
 
         Parameters
         ----------
         imagePath: str
-            图片路径
+            image path
 
         Returns
         -------
         r, g, b: int
-            主题色各个通道的灰度值
+            gray value of each color channel
         """
         if imagePath.startswith(':'):
             return (24, 24, 24)
 
         colorThief = ColorThief(imagePath)
 
-        # 调整图像大小，加快运算速度
+        # scale image to speed up the computation speed
         if max(colorThief.image.size) > 400:
             colorThief.image = colorThief.image.resize((400, 400))
 
         palette = colorThief.get_palette(quality=9)
 
-        # 调整调色板明度
+        # adjust the brightness of palette
         palette = cls.__adjustPaletteValue(palette)
         for rgb in palette[:]:
             h, s, v = cls.rgb2hsv(rgb)
@@ -130,7 +132,7 @@ class DominantColor:
 
     @classmethod
     def __adjustPaletteValue(cls, palette: list):
-        """ 调整调色板的明度 """
+        """ adjust the brightness of palette """
         newPalette = []
         for rgb in palette:
             h, s, v = cls.rgb2hsv(rgb)
@@ -149,7 +151,7 @@ class DominantColor:
 
     @staticmethod
     def rgb2hsv(rgb: tuple) -> tuple:
-        """ rgb空间变换到hsv空间 """
+        """ convert rgb to hsv """
         r, g, b = [i / 255 for i in rgb]
         mx = max(r, g, b)
         mn = min(r, g, b)
@@ -168,7 +170,7 @@ class DominantColor:
 
     @staticmethod
     def hsv2rgb(h, s, v) -> tuple:
-        """ hsv空间变换到rgb空间 """
+        """ convert hsv to rgb """
         h60 = h / 60.0
         h60f = floor(h60)
         hi = int(h60f) % 6
@@ -208,8 +210,8 @@ class DominantColor:
         return std_root + (0.3 * mean_root)
 
 
-def getPicSuffix(pic_data) -> str:
-    """ 获取二进制图片数据的后缀名 """
+def getPicSuffix(pic_data: bytes) -> str:
+    """ determine the suffix of binary image data """
     try:
         suffix = '.' + imghdr.what(None, pic_data)
         if suffix == '.jpeg':
@@ -221,53 +223,61 @@ def getPicSuffix(pic_data) -> str:
 
 
 class PixmapPerspectiveTransform:
-    """ 透视变换基类 """
+    """ Pixmap perspective transform class """
 
     def __init__(self, pixmap=None):
         self.pixmap = pixmap
 
     def setPixmap(self, pixmap: QPixmap):
-        """ 设置被变换的QPixmap """
+        """ set the image to be transformed """
         self.pixmap = QPixmap
         self.src = self.transQPixmapToNdarray(pixmap)
         self.height, self.width = self.src.shape[:2]
-        # 变换前后的边角坐标
+
+        # corner coordinates before transformation
         self.srcPoints = np.float32(
             [[0, 0], [self.width - 1, 0], [0, self.height - 1],
              [self.width - 1, self.height - 1]])
 
     def setDstPoints(self, leftTop: list, rightTop, leftBottom, rightBottom):
-        """ 设置变换后的边角坐标 """
+        """ set the corner coordinates after transformation """
         self.dstPoints = np.float32(
             [leftTop, rightTop, leftBottom, rightBottom])
 
     def getPerspectiveTransform(self, imWidth: int, imHeight: int, borderMode=cv.BORDER_CONSTANT, borderValue=[255, 255, 255, 0]) -> QPixmap:
-        """ 透视变换图像
+        """ get transformed image
 
         Parameters
         ----------
         imWidth: int
-            变换后的图像宽度
+            image width before transformation
 
         imHeight: int
-            变换后的图像高度
+            image height before transformation
 
         borderMode: int
-            边框插值方式
+            border interpolation mode
 
         borderValue: list
-            边框颜色
+            filled border color
+
+        Returns
+        -------
+        pixmap: QPixmap
+            image after transformation
         """
-        # 如果是jpg需要加上一个透明通道
+        # handle jpeg image
         if self.src.shape[-1] == 3:
             self.src = cv.cvtColor(self.src, cv.COLOR_BGR2BGRA)
-        # 透视变换矩阵
+
+        # calculate transform matrix
         perspectiveMatrix = cv.getPerspectiveTransform(
             self.srcPoints, self.dstPoints)
-        # 执行变换
+
+        # apply perspective transform
         self.dst = cv.warpPerspective(self.src, perspectiveMatrix, (
             imWidth, imHeight), borderMode=borderMode, borderValue=borderValue)
-        # 将ndarray转换为QPixmap
+
         return self.transNdarrayToQPixmap(self.dst)
 
     def transQPixmapToNdarray(self, pixmap: QPixmap):
@@ -277,17 +287,18 @@ class PixmapPerspectiveTransform:
         image = pixmap.toImage()  # type:QImage
         s = image.bits().asstring(height * width * channels_count)
 
-        # 得到BGRA格式数组
+        # BGRA image array
         array = np.fromstring(s, np.uint8).reshape(
             (height, width, channels_count))
 
         return array
 
     def transNdarrayToQPixmap(self, array: np.ndarray):
-        """ 将numpy数组转换为QPixmap """
+        """ convert numpy array to QPixmap """
         height, width, bytesPerComponent = array.shape
         bytesPerLine = 4 * width
-        # 默认数组维度为 m*n*4
+
+        # array shape: m*n*4
         dst = cv.cvtColor(array, cv.COLOR_BGRA2RGBA)
         pix = QPixmap.fromImage(
             QImage(dst.data, width, height, bytesPerLine, QImage.Format_RGBA8888))

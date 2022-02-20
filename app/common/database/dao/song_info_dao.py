@@ -6,7 +6,7 @@ from ..entity import SongInfo
 
 
 class SongInfoDao(DaoBase):
-    """ 歌曲信息数据库操作类 """
+    """ Song information DAO """
 
     table = 'tbl_song_info'
     fields = ['file', 'title', 'singer', 'album', 'year', 'genre', 'duration', 'track',
@@ -33,15 +33,15 @@ class SongInfoDao(DaoBase):
         return success
 
     def selectByFile(self, file: str) -> SongInfo:
-        """ 通过文件路径查找 """
+        """ find song information by the path of audio file """
         return self.selectBy(file=file)
 
     def listBySingerAlbum(self, singer: str, album: str) -> List[SongInfo]:
-        """ 通过歌手和专辑查询 """
+        """ list song information by singer name and album name """
         return self.listBy(singer=singer, album=album)
 
     def listBySongerAlbums(self, singers: List[str], albums: List[str]) -> List[SongInfo]:
-        """ 通过歌手和专辑列表查询 """
+        """ ist song information by singer names and album names """
         if len(singers) != len(albums):
             raise ValueError('歌手和专辑列表的长度必须相同')
 

@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 class Directory:
-    """ 文件夹类 """
+    """ Audio directory class """
 
     audio_formats = ['.mp3', '.flac', '.mp4', '.m4a']
 
@@ -13,22 +13,22 @@ class Directory:
         Parameters
         ----------
         path: str
-            文件夹路径
+            path of audio directory
         """
         self.path = Path(path)
         self.audioFiles = self.glob()
 
     def glob(self):
-        """ 获取所有音频文件路径 """
+        """ get all audio file paths """
         return [i.absolute() for i in self.path.iterdir() if self.isAudio(i)]
 
     def update(self):
-        """ 更新文件夹
+        """ update audio directory
 
         Returns
         -------
         changedFiles: Dict[str, List[Path]]
-            包含增加和删除的文件列表的字典
+            a dict containing a list of files added and deleted
         """
         files = self.glob()
         filesSet = set(files)
@@ -40,9 +40,10 @@ class Directory:
         self.audioFiles = files
         return changedFiles
 
-    def isAudio(self, path: Union[str, Path]):
-        """ 判断一个路径是否为音频文件 """
+    @classmethod
+    def isAudio(cls, path: Union[str, Path]):
+        """ determine whether a path is an audio file """
         if not isinstance(path, Path):
             path = Path(path)
 
-        return path.is_file() and path.suffix.lower() in self.audio_formats
+        return path.is_file() and path.suffix.lower() in cls.audio_formats

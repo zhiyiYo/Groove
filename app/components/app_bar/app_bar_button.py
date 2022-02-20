@@ -1,7 +1,7 @@
 # coding:utf-8
-from PyQt5.QtCore import Qt, pyqtSignal, QSize
-from PyQt5.QtGui import QPixmap, QIcon, QPainter
-from PyQt5.QtWidgets import QWidget, QPushButton
+from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtGui import QPixmap, QPainter
+from PyQt5.QtWidgets import QPushButton
 
 
 class AppBarButton(QPushButton):
@@ -39,7 +39,7 @@ class AppBarButton(QPushButton):
         return size
 
     def paintEvent(self, e):
-        """ 绘制图标 """
+        """ paint icon """
         super().paintEvent(e)
         painter = QPainter(self)
         y = (self.height()-self.pixmap.height())//2

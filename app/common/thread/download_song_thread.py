@@ -8,7 +8,7 @@ from PyQt5.QtCore import QThread, pyqtSignal
 
 
 class DownloadSongThread(QThread):
-    """ 下载在线歌曲线程 """
+    """ Download song thread """
 
     downloadOneSongFinished = pyqtSignal()
 
@@ -16,21 +16,20 @@ class DownloadSongThread(QThread):
         super().__init__(parent=parent)
         self.downloadFolder = downloadFolder
         self.crawler = KuWoMusicCrawler()
-        self.download_queque = Queue()    # 下载队列，内含 songInfo
+        self.download_queque = Queue()
 
     def run(self):
-        """ 下载歌曲 """
+        """ start to download song """
         os.makedirs(self.downloadFolder, exist_ok=True)
 
         while not self.download_queque.empty():
             songInfo, quality = self.download_queque.get()
 
-            # 发送下载音乐请求
+            # send request to download song
             self.crawler.downloadSong(songInfo, self.downloadFolder, quality)
 
-            # 发送完成一首歌下载信号
             self.downloadOneSongFinished.emit()
 
     def appendDownloadTask(self, songInfo: SongInfo, quality='Standard quality'):
-        """ 添加下载任务 """
+        """ add download task to queque """
         self.download_queque.put((songInfo, quality))

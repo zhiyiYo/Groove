@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 @dataclass
 class SongInfo(Entity):
-    """ 歌曲信息实体类 """
+    """ Song information """
 
     file: str = None
     title: str = None

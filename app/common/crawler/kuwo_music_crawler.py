@@ -13,7 +13,7 @@ from .exception_handler import exceptionHandler
 
 
 class KuWoMusicCrawler(CrawlerBase):
-    """ 酷我音乐爬虫 """
+    """ Crawler of KuWo Music """
 
     def __init__(self):
         super().__init__()
@@ -30,22 +30,22 @@ class KuWoMusicCrawler(CrawlerBase):
     def getSongInfos(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[SongInfo], int]:
         key_word = parse.quote(key_word)
 
-        # 配置请求头
+        # configure request header
         headers = self.headers.copy()
         headers["Referer"] = 'http://www.kuwo.cn/search/list?key='+key_word
 
-        # 请求歌曲信息列表
+        # send request for song information
         url = f'http://www.kuwo.cn/api/www/search/searchMusicBykeyWord?key={key_word}&pn={page_num}&rn={page_size}&reqId=c06e0e50-fe7c-11eb-9998-47e7e13a7206'
         response = requests.get(url, headers=headers)
         response.raise_for_status()
 
-        # 获取歌曲信息
+        # parse the response data
         song_infos = []
         data = json.loads(response.text)['data']
         for info in data['list']:
             song_info = SongInfo()
             song_info['rid'] = info['rid']
-            song_info.file = self.song_url_mark  # 标记还未获得播放地址
+            song_info.file = self.song_url_mark  # remark that the play url is not fetched
             song_info.title = info['name']
             song_info.singer = info['artist']
             song_info.album = info['album']
@@ -63,7 +63,7 @@ class KuWoMusicCrawler(CrawlerBase):
     def getSongUrl(self, song_info: SongInfo, quality='Standard quality') -> str:
         if quality not in self.qualities:
             raise AudioQualityError(
-                f'音质 `{quality}` 不在支持的音质列表 {self.qualities} 中')
+                f'`{quality}` is not in the supported quality list `{self.qualities}`')
 
         rid = song_info['rid']
         br = {
@@ -72,12 +72,12 @@ class KuWoMusicCrawler(CrawlerBase):
             'Super quality': '320k'
         }[quality]
 
-        # 构造请求头
+        # configure request header
         headers = self.headers.copy()
         headers.pop('Referer')
         headers.pop('csrf')
 
-        # 请求歌曲播放地址
+        # send request for play url
         url = f'http://www.kuwo.cn/api/v1/www/music/playUrl?mid={rid}&type=convert_url3&br={br}mp3'
         response = requests.get(url, headers=headers)
         response.raise_for_status()
@@ -87,12 +87,12 @@ class KuWoMusicCrawler(CrawlerBase):
 
     @exceptionHandler('')
     def downloadSong(self, song_info: SongInfo, save_dir: str, quality='Standard quality') -> str:
-        # 获取下载地址
+        # get play url
         url = self.getSongUrl(song_info, quality)
         if not url:
             return ''
 
-        # 请求歌曲资源
+        # send request for binary data of audio
         headers = self.headers.copy()
         headers.pop('Referer')
         headers.pop('csrf')
@@ -100,7 +100,7 @@ class KuWoMusicCrawler(CrawlerBase):
         response = requests.get(url, headers=headers)
         response.raise_for_status()
 
-        # 保存歌曲文件
+        # save audio file
         return self.saveSong(song_info, save_dir, '.mp3', response.content)
 
     @exceptionHandler([], 0)
@@ -117,16 +117,16 @@ class KuWoMusicCrawler(CrawlerBase):
     def getSingerAvatar(self, singer: str, save_dir: str) -> str:
         singer_ = parse.quote(singer)
 
-        # 配置请求头
+        # configure request header
         headers = self.headers.copy()
         headers["Referer"] = 'http://www.kuwo.cn/search/singers?key='+singer_
 
-        # 请求歌手信息列表
+        # send request for singer information
         url = f'http://www.kuwo.cn/api/www/search/searchArtistBykeyWord?key={singer_}&pn=1&rn=3&reqId=c06e0e50-fe7c-11eb-9998-47e7e13a7206'
         response = requests.get(url, headers=headers)
         response.raise_for_status()
 
-        # 请求歌手头像
+        # send request for singer avatar
         artist_info = json.loads(response.text)["data"]["artistList"][0]
         headers = self.headers.copy()
         headers.pop('Referer')
@@ -135,62 +135,48 @@ class KuWoMusicCrawler(CrawlerBase):
         response = requests.get(artist_info['pic300'], headers=headers)
         response.raise_for_status()
 
-        # 保存头像
-        save_path = self.saveSingerAvatar(singer, save_dir, response.content)
-        return save_path
+        # save avatar
+        return self.saveSingerAvatar(singer, save_dir, response.content)
 
     @exceptionHandler()
     def getLyric(self, key_word: str) -> list:
-        """ 获取歌词
-
-        Parameters
-        ----------
-        key_word: str
-            关键词，默认形式为 `歌手 歌曲名`
-
-        Returns
-        -------
-        lyric: list
-            歌词列表，如果没找到则返回 `None`
-        """
         song_infos, _ = self.getSongInfos(key_word, page_size=10)
 
         if not song_infos:
             return None
 
-        # 匹配度小于阈值则返回
+        # If the matching degree is less than threshold, return None
         matches = [fuzz.token_set_ratio(
             key_word, i.singer+' '+i.title) for i in song_infos]
         best_match = max(matches)
         if best_match < 90:
             return
 
-        # 发送请求
+        # send request for lyrics
         rid = song_infos[matches.index(best_match)]['rid']
         url = f"https://m.kuwo.cn/newh5/singles/songinfoandlrc?musicId={rid}"
         response = requests.get(url)
         response.raise_for_status()
 
-        # 歌词可能为 null，此时返回 None
-        lyric = json.loads(response.text)['data']['lrclist']  # type:list
-        return lyric
+        # lyric could be null, corresponding to None
+        return json.loads(response.text)['data']['lrclist']
 
     @exceptionHandler([], 0)
     def getMvInfos(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[dict], int]:
         key_word = parse.quote(key_word)
 
-        # 配置请求头
+        # configure request header
         headers = self.headers.copy()
         headers['csrf'] = '1RTQ5LGVIRZ'
         headers['Cookie'] = 'kw_token=1RTQ5LGVIRZ'
         headers['Referer'] = 'http://www.kuwo.cn/search/mv?'+key_word
 
-        # 搜索 MV 信息
+        # search MV information
         url = f'http://www.kuwo.cn/api/www/search/searchMvBykeyWord?key={key_word}&pn={page_num}&rn={page_size}&reqId=ba2f7511-6e89-11ec-aa1e-9520a8bfa7a5'
         response = requests.get(url, headers=headers)
         response.raise_for_status()
 
-        # 解析信息
+        # parse the response data
         mv_info_list = []
         data = json.loads(response.text)['data']
         for info in data['mvlist']:
@@ -207,16 +193,16 @@ class KuWoMusicCrawler(CrawlerBase):
 
     @exceptionHandler('')
     def getMvUrl(self, mv_info: dict, quality: str = 'SD') -> str:
-        # 配置请求头
+        # configure request header
         headers = self.headers.copy()
         headers.pop('Referer')
         headers.pop('csrf')
 
-        # 获取 HTML 页面
+        # send request for HTML file
         url = f"http://www.kuwo.cn/mvplay/{mv_info['id']}"
         response = requests.get(url, headers=headers)
         response.raise_for_status()
 
-        # 寻找 mp4 链接
+        # search the play url of mp4
         match = re.search(r'src:"(.+\.mp4)"', response.text)
         return match.group(1).replace(r'\u002F', '/')

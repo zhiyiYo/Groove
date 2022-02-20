@@ -9,7 +9,7 @@ from .file_system_watcher import FileSystemWatcher
 
 
 class FileSystem(QObject):
-    """ 文件系统 """
+    """ File system class """
 
     added = pyqtSignal(list)
     removed = pyqtSignal(list)
@@ -19,10 +19,10 @@ class FileSystem(QObject):
         Parameters
         ----------
         directories: List[str]
-            文件夹列表
+            directory list
 
         parent:
-            父级
+            parent instance
         """
         super().__init__(parent=parent)
         self.directories = {}  # type:Dict[Path, Directory]
@@ -32,17 +32,17 @@ class FileSystem(QObject):
             self.addDirs(directories)
 
     def setDirs(self, paths: List[Union[str, Path]]):
-        """ 设置文件夹
+        """ Set the directories in the file system
 
         Parameters
         ----------
         paths: List[str | Path]
-            文件夹列表
+            directory list
 
         Returns
         -------
         isChanged: bool
-            文件夹是否发送改变
+            whether the directories in file system has changed
         """
         directories = set(paths)
         oldDirectories = set(self.directories.keys())
@@ -55,7 +55,7 @@ class FileSystem(QObject):
         return True
 
     def addDir(self, path: Union[str, Path]):
-        """ 添加一个文件夹 """
+        """ add a directory to file system """
         if not isinstance(path, Path):
             path = Path(path)
 
@@ -66,7 +66,7 @@ class FileSystem(QObject):
         self.watcher.addPath(str(path))
 
     def removeDir(self, path: Union[str, Path]):
-        """ 移除一个文件夹 """
+        """ remove a directory from file system """
         if not isinstance(path, Path):
             path = Path(path)
 
@@ -77,17 +77,17 @@ class FileSystem(QObject):
         self.watcher.removePath(str(path))
 
     def addDirs(self, paths: List[Union[str, Path]]):
-        """ 添加多个文件夹 """
+        """ add multi directories to file system """
         for path in paths:
             self.addDir(path)
 
     def removeDirs(self, paths: List[Union[str, Path]]):
-        """ 移除多个文件夹 """
+        """ remove multi directories from file system """
         for path in paths:
             self.removeDir(path)
 
     def glob(self):
-        """ 获取所有音频文件 """
+        """ get all audio file paths """
         files = []  # type:List[Path]
         for directory in self.directories.values():
             files.extend(directory.glob())
@@ -95,7 +95,7 @@ class FileSystem(QObject):
         return files
 
     def __onDirectoryChanged(self, path: str):
-        """ 文件夹改变槽函数 """
+        """ directory changed slot """
         directory = self.directories[Path(path)]
         changedFiles = directory.update()
 

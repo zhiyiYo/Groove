@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Union
 
 from common.database.entity import SongInfo
+from common.logger import Logger
 from mutagen import File, MutagenError
 from mutagen.flac import FLAC, Picture
 from mutagen.id3 import APIC, TALB, TCON, TDRC, TIT2, TPE1, TPE2, TPOS, TRCK
@@ -12,50 +13,53 @@ from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
 
 
-class MetaDataWriter:
-    """ 元数据写入器基类 """
+class MetaDataWriterBase:
+    """ Song meta data writer base class """
 
     def __init__(self, songPath: Union[str, Path]):
         """
         Parameters
         ----------
         songPath: str or Path
-            音频文件路径
+            audio file path
         """
         self.audio = None
 
     def writeSongInfo(self, songInfo: SongInfo):
-        """ 写入歌曲信息
+        """ write song information
 
         Parameters
         ----------
         songInfo: SongInfo
-            歌曲信息字典
+            song information
 
         Returns
         -------
         success: bool
-            写入是否成功
+            whether write song information successfully
         """
         raise NotImplementedError
 
     def writeAlbumCover(self, picData: bytes, mimeType: str):
-        """ 写入专辑封面
+        """ write album cover
 
         Parameters
         ----------
         picData:
-            封面二进制数据
+            binary data of album cover image
 
-        mimeData: str
-            图片数据类型，比如 `image/jpeg`、`image/png`
+        mimeType: str
+            image mime type, e.g. `image/jpeg`, `image/png`
 
         Returns
         -------
         success: bool
-            写入是否成功
+            whether write album cover successfully
         """
         raise NotImplementedError
+
+
+logger = Logger('meta_data_writer')
 
 
 def saveExceptionHandler(func):
@@ -64,14 +68,14 @@ def saveExceptionHandler(func):
         try:
             return func(*args, **kwargs)
         except MutagenError as e:
-            print(e)
+            logger.error(e)
             return False
 
     return wrapper
 
 
-class MP3Writer(MetaDataWriter):
-    """ MP3 元数据写入器 """
+class MP3Writer(MetaDataWriterBase):
+    """ MP3 meta data writer class """
 
     def __init__(self, songPath: Union[str, Path]):
         self.audio = MP3(songPath)
@@ -97,13 +101,13 @@ class MP3Writer(MetaDataWriter):
         keyName = 'APIC:'
         keyNames = []
 
-        # 获取可能已经存在的封面键名
+        # get cover keys which may already exist
         for key in self.audio.tags.keys():
             if key.startswith('APIC'):
                 keyName = key
                 keyNames.append(key)
 
-        # 弹出所有旧标签才能写入新数据
+        # pop old cover keys to write new data
         for key in keyNames:
             self.audio.pop(key)
 
@@ -114,8 +118,8 @@ class MP3Writer(MetaDataWriter):
         return True
 
 
-class FLACWriter(MetaDataWriter):
-    """ FLAC 元数据写入器 """
+class FLACWriter(MetaDataWriterBase):
+    """ FLAC meta data writer class """
 
     def __init__(self, songPath: Union[str, Path]):
         self.audio = FLAC(songPath)
@@ -147,19 +151,19 @@ class FLACWriter(MetaDataWriter):
         return True
 
 
-class MP4Writer(MetaDataWriter):
-    """ MP4/M4A 元数据写入器 """
+class MP4Writer(MetaDataWriterBase):
+    """ MP4/M4A meta data writer class """
 
     def __init__(self, songPath: Union[str, Path]):
         self.audio = MP4(songPath)
 
     @saveExceptionHandler
     def writeSongInfo(self, songInfo: SongInfo):
-        # 写入曲目
+        # write track number
         trackTotal = max(songInfo.track, songInfo.trackTotal)
         self.audio['trkn'] = [(songInfo.track, trackTotal)]
 
-        # 写入光盘
+        # writer disc
         if songInfo.disc:
             discTotal = max(songInfo.disc, songInfo.discTotal)
             self.audio['disk'] = [(songInfo.disc, discTotal)]
@@ -184,17 +188,17 @@ class MP4Writer(MetaDataWriter):
 
 
 def writeSongInfo(songInfo: SongInfo) -> bool:
-    """ 从字典中读取信息并写入歌曲的标签卡信息
+    """ write song information
 
     Parameters
     ----------
     songInfo: SongInfo
-        歌曲信息
+        song information
 
     Returns
     -------
     success: bool
-        是否成功写入
+        whether write song information successfully
     """
     fileType = type(File(songInfo.file, options=[MP3, FLAC, MP4]))
     writerMap = {
@@ -203,41 +207,41 @@ def writeSongInfo(songInfo: SongInfo) -> bool:
         MP4: MP4Writer
     }
     if fileType not in writerMap:
-        print(f'{songInfo.file} 文件格式不支持')
+        logger.info(f'The format of {songInfo.file} is not supported')
         return False
 
-    writer = writerMap[fileType](songInfo.file)  # type:MetaDataWriter
+    writer = writerMap[fileType](songInfo.file)  # type:MetaDataWriterBase
     return writer.writeSongInfo(songInfo)
 
 
 def writeAlbumCover(songPath: Union[str, Path], coverPath: str, picData: bytes = None) -> bool:
-    """ 给音频文件写入封面
+    """ write album cover
 
     Parameters
     ----------
     songPath : str or Path
-        音频文件路径
+        audio file path
 
     coverPath : str
-        封面图片路径
+        album cover path
 
     picData : bytes
-        封面图片二进制数据
+        binary data of album cover image
 
     Returns
     -------
     success: bool
-        是否成功写入
+        whether write album cover successfully
     """
     if not os.path.exists(coverPath) and not picData:
         return False
 
-    # 读取封面数据
+    # read binary data of album cover
     if not picData:
         with open(coverPath, 'rb') as f:
             picData = f.read()
 
-    # 获取图片数据类型
+    # determine the mime type of binary data
     try:
         mimeType = "image/" + imghdr.what(None, picData)
     except:
@@ -250,8 +254,8 @@ def writeAlbumCover(songPath: Union[str, Path], coverPath: str, picData: bytes =
         MP4: MP4Writer
     }
     if fileType not in writerMap:
-        print(f'{songPath} 文件格式不支持')
+        logger.info(f'The format of {songPath} is not supported')
         return False
 
-    writer = writerMap[fileType](songPath)  # type:MetaDataWriter
+    writer = writerMap[fileType](songPath)  # type:MetaDataWriterBase
     return writer.writeAlbumCover(picData, mimeType)

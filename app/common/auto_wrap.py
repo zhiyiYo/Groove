@@ -1,23 +1,23 @@
+# coding: utf-8
 import re
 
 
 def autoWrap(text: str, maxCharactersNum: int) -> tuple:
-    """ 根据字符串的长度决定是否换行
+    """ auto word wrap according to the length of the string
 
     Parameters
     ----------
     maxCharactersNum: int
-        text 换算为 1 个宽度字符的总长度
+        the length of text (convert to letter size, e.g. `你.length = 2`)
 
     Returns
     -------
     newText: str
-        (不)增加换行符后的字符串
+        text after auto word wrap process
 
     isWordWrap: bool
-        是否换行
+        whether a line break occurs in the text
     """
-    # 设置换行标志位
     isWordWrap = True
     text_list = list(text)
     alpha_num = 0
@@ -28,15 +28,15 @@ def autoWrap(text: str, maxCharactersNum: int) -> tuple:
         if Match:
             alpha_num += 1
             if Match.group() == ' ':
-                # 记录上一个空格的下标
+                # record previous blank position
                 blank_index = index
+
             if alpha_num + 2 * not_alpha_num == maxCharactersNum:
-                # 发生异常就说明正好maxCharactersNum-1个长度
                 try:
                     if text[index + 1] == ' ':
-                        # 插入换行符
+                        # insert \n
                         text_list.insert(index + 1, '\n')
-                        # 弹出空格
+                        # pop blank
                         text_list.pop(index + 2)
                     else:
                         text_list.insert(blank_index, '\n')
@@ -64,6 +64,7 @@ def autoWrap(text: str, maxCharactersNum: int) -> tuple:
                 break
     else:
         isWordWrap = False
+
     newText = ''.join(text_list)
 
-    return (newText, isWordWrap)
+    return newText, isWordWrap
