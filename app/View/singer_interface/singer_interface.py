@@ -19,20 +19,20 @@ from .singer_info_bar import SingerInfoBar
 
 
 class SingerInterface(AlbumSelectionModeInterface):
-    """ 歌手界面 """
+    """ Singer interface """
 
     def __init__(self, library: Library, singerInfo: SingerInfo = None, parent=None):
         """
         Parameters
         ----------
         library: Library
-            歌曲库
+            song library
 
         singerInfo: SingerInfo
-            歌手信息
+            singer information
 
         parent:
-            父级
+            parent window
         """
         view = GridAlbumCardView(
             library,
@@ -48,7 +48,6 @@ class SingerInterface(AlbumSelectionModeInterface):
         self.crawler = KuWoMusicCrawler()
         self.getAvatarThread = GetSingerAvatarThread(self)
 
-        # 创建小部件
         self.singerInfoBar = SingerInfoBar(self.singerInfo, self)
         self.albumBlurBackground = AlbumBlurBackground(self.scrollWidget)
         self.inYourMusicLabel = QLabel(
@@ -64,11 +63,10 @@ class SingerInterface(AlbumSelectionModeInterface):
         )
         self.albumCards = self.albumCardView.albumCards
 
-        # 初始化
         self.__initWidget()
 
     def __initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widgets """
         self.__setQss()
         self.vBox.setContentsMargins(0, 456, 0, 120)
         self.inYourMusicLabel.move(30, 412)
@@ -80,7 +78,7 @@ class SingerInterface(AlbumSelectionModeInterface):
         self.resize(1270, 900)
 
     def getAllSongInfos(self):
-        """ 获取所有歌曲信息 """
+        """ get all song information of singer """
         albums = [i.album for i in self.albumInfos]
         singers = [self.singer]*len(albums)
         songInfos = self.library.songInfoController.getSongInfosBySingerAlbum(
@@ -92,7 +90,7 @@ class SingerInterface(AlbumSelectionModeInterface):
         self.singerInfoBar.resize(self.width(), self.singerInfoBar.height())
 
     def __getInfo(self, singerInfo: SingerInfo):
-        """ 获取信息 """
+        """ get singer information """
         self.singerInfo = singerInfo or SingerInfo()
         self.singer = self.singerInfo.singer or ''
         self.genre = self.singerInfo.genre or ''
@@ -100,7 +98,7 @@ class SingerInterface(AlbumSelectionModeInterface):
             self.singer)
 
     def __setQss(self):
-        """ 设置层叠样式 """
+        """ set style sheet """
         self.inYourMusicLabel.setMinimumSize(140, 25)
         self.inYourMusicLabel.setObjectName('inYourMusicLabel')
 
@@ -112,20 +110,20 @@ class SingerInterface(AlbumSelectionModeInterface):
         self.inYourMusicLabel.adjustSize()
 
     def __showBlurAlbumBackground(self, pos: QPoint, picPath: str):
-        """ 显示磨砂背景 """
+        """ show blurred album background """
         pos = self.scrollWidget.mapFromGlobal(pos)
         self.albumBlurBackground.setBlurAlbum(picPath)
         self.albumBlurBackground.move(pos.x() - 28, pos.y() - 16)
         self.albumBlurBackground.show()
 
     def __onScrollBarValueChanged(self, value):
-        """ 滚动时改变专辑信息栏高度 """
+        """ adjust the height of singer information bar when scrolling """
         h = 385 - value
         if h > 155:
             self.singerInfoBar.resize(self.width(), h)
 
     def __getSingerAvatar(self, singer: str):
-        """ 获取歌手头像 """
+        """ get singer avatar """
         avatars = [i.stem for i in Path('cache/singer_avatar').glob('*')]
         if singer not in avatars:
             self.singerInfoBar.coverLabel.hide()
@@ -133,13 +131,13 @@ class SingerInterface(AlbumSelectionModeInterface):
             self.getAvatarThread.start()
 
     def __onDownloadAvatarFinished(self, avatarPath: str):
-        """ 下载歌手头像完成 """
+        """ download avatar finished """
         self.singerInfoBar.coverLabel.show()
         if os.path.exists(avatarPath):
             self.singerInfoBar.updateCover(avatarPath)
 
     def updateWindow(self, singerInfo: SingerInfo):
-        """ 更新窗口 """
+        """ update singer interface """
         if self.singerInfo == singerInfo:
             return
 
@@ -154,15 +152,13 @@ class SingerInterface(AlbumSelectionModeInterface):
         super().showEvent(e)
 
     def __connectSignalToSlot(self):
-        """ 信号连接到槽 """
-        # 播放全部按钮槽函数
+        """ connect signal to slot """
         self.playButton.clicked.connect(
             lambda: signalBus.playCheckedSig.emit(self.getAllSongInfos()))
 
-        # 将滚动信号连接到槽函数
         self.verticalScrollBar().valueChanged.connect(self.__onScrollBarValueChanged)
 
-        # 将歌手信息栏信号连接到槽函数
+        # singer information bar signal
         self.singerInfoBar.playAllButton.clicked.connect(
             lambda: signalBus.playCheckedSig.emit(self.getAllSongInfos()))
         self.singerInfoBar.addSongsToPlayingPlaylistSig.connect(
@@ -172,11 +168,11 @@ class SingerInterface(AlbumSelectionModeInterface):
         self.singerInfoBar.addSongsToCustomPlaylistSig.connect(
             lambda n: signalBus.addSongsToCustomPlaylistSig.emit(n, self.getAllSongInfos()))
 
-        # 将歌手头像下载线程信号连接到槽
+        # download avatar thread signal
         self.getAvatarThread.downloadFinished.connect(
             self.__onDownloadAvatarFinished)
 
-        # 将专辑卡视图信号连接到槽函数
+        # album card view signal
         self.albumCardView.showBlurAlbumBackgroundSig.connect(
             self.__showBlurAlbumBackground)
         self.albumCardView.hideBlurAlbumBackgroundSig.connect(

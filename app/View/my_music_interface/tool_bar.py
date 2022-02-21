@@ -9,23 +9,22 @@ from PyQt5.QtWidgets import QAction, QLabel, QPushButton, QWidget
 
 
 class ToolBar(QWidget):
-    """ 工具栏 """
+    """ Tool bar """
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        # 创建小部件
         self.__createWidgets()
-        # 初始化
         self.__initWidget()
 
     def __createWidgets(self):
-        """ 创建小部件 """
+        """ create widgets """
         self.myMusicLabel = QLabel(self.tr("My music"), self)
-        # 创建导航按钮
+
+        # create tab buttons
         self.songTabButton = TabButton(self.tr("Songs"), self, 0)
         self.singerTabButton = TabButton(self.tr("Artists"), self, 1)
         self.albumTabButton = TabButton(self.tr("Albums"), self, 1)
-        # 创建底部按钮
+
         self.randomPlayAllButton = ThreeStatePushButton(
             {
                 "normal": ":/images/random_play_all/Shuffle_normal.png",
@@ -39,10 +38,12 @@ class ToolBar(QWidget):
         self.sortModeLabel = QLabel(self.tr("Sort by:"), self)
         self.songSortModeButton = QPushButton(self.tr("Date added"), self)
         self.albumSortModeButton = QPushButton(self.tr("Date added"), self)
-        # 创建菜单
+
+        # create menu
         self.songSortModeMenu = AeroMenu(parent=self)
         self.albumSortModeMenu = AeroMenu(parent=self)
-        # 创建动作
+
+        # create actions
         self.songSortBySongerAct = QAction(self.tr("Artist"), self)
         self.songSortByDictOrderAct = QAction(self.tr("A to Z"), self)
         self.songSortByCratedTimeAct = QAction(self.tr("Date added"), self)
@@ -63,17 +64,18 @@ class ToolBar(QWidget):
         ]
 
     def __initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widgets """
         self.__setQss()
         self.__initLayout()
         self.resize(1200, 245)
         self.setAttribute(Qt.WA_StyledBackground)
-        # 隐藏专辑排序按钮
         self.albumSortModeButton.hide()
-        # 将动作添加到菜单中
+
+        # add actions to menu
         self.songSortModeMenu.addActions(self.songSortActions)
         self.albumSortModeMenu.addActions(self.albumSortActions)
-        # 设置属性
+
+        # set properties
         self.songSortByCratedTimeAct.setProperty('mode', 'Date added')
         self.songSortByDictOrderAct.setProperty('mode', 'A to Z')
         self.songSortBySongerAct.setProperty('mode', 'Artist')
@@ -83,10 +85,9 @@ class ToolBar(QWidget):
         self.albumSortByYearAct.setProperty('mode', 'Release year')
 
     def __initLayout(self):
-        """ 初始化布局 """
+        """ initialize layout """
         self.myMusicLabel.move(30, 54)
 
-        # 标签按钮位置
         self.songTabButton.move(33, 136)
         self.singerTabButton.move(
             self.songTabButton.geometry().right()+55, 136)
@@ -101,14 +102,14 @@ class ToolBar(QWidget):
         self.albumSortModeButton.move(self.songSortModeButton.x(), 195)
 
     def paintEvent(self, QPaintEvent):
-        """ 绘制背景 """
+        """ paint horizontal line """
         super().paintEvent(QPaintEvent)
         painter = QPainter(self)
         painter.setPen(QPen(QColor(229, 229, 229)))
         painter.drawLine(30, 176, self.width()-20, 176)
 
     def __setQss(self):
-        """ 设置层叠样式 """
+        """ set style sheet """
         self.myMusicLabel.setObjectName("myMusicLabel")
         self.sortModeLabel.setObjectName("sortModeLabel")
         self.songSortModeMenu.setObjectName("sortModeMenu")
@@ -128,7 +129,7 @@ class ToolBar(QWidget):
 
 
 class TabButton(QPushButton):
-    """ 标签按钮，点击即可换页 """
+    """ Tab button """
 
     buttonSelected = pyqtSignal(int)
 
@@ -137,13 +138,14 @@ class TabButton(QPushButton):
         Parameters
         ----------
         text: str
-            按钮文本
+            button text
 
         parent:
-            父级窗口
+            parent window
 
         tabIndex: int
-            按钮对应的标签窗口索引，范围为 `0 ~ N-1`"""
+            tab index of button
+        """
         super().__init__(parent)
         self.text = text
         self.isEnter = False
@@ -157,99 +159,56 @@ class TabButton(QPushButton):
         self.setFixedSize(self.fontMetrics().width(text), 40)
 
     def setSelected(self, isSelected: bool):
-        """ 设置选中状态 """
+        """ set selected state """
         self.isSelected = isSelected
         self.update()
 
     def enterEvent(self, e):
-        """ 鼠标进入时置位状态位 """
         self.isEnter = True
 
     def leaveEvent(self, e):
-        """ 鼠标进入时清零标志位 """
         self.isEnter = False
 
     def mousePressEvent(self, e):
-        """ 鼠标点击时记录位置 """
         self.pressedPos = getPressedPos(self, e)
         self.update()
         super().mousePressEvent(e)
 
     def mouseReleaseEvent(self, e):
-        """ 鼠标松开更新样式 """
         self.pressedPos = None
         super().mouseReleaseEvent(e)
         self.buttonSelected.emit(self.tabIndex)
 
     def paintEvent(self, e):
-        """ 绘制背景 """
+        """ paint button """
         painter = QPainter(self)
         painter.setRenderHints(QPainter.Antialiasing |
                                QPainter.TextAntialiasing)
         painter.setFont(self.font())
+        self.__paintAllText(painter, 14)
+
         if not self.isSelected:
-            self.__paintAllText(painter, 14)
-        else:
-            self.__paintAllText(painter, 14)
-            if not self.pressedPos:
-                self.__paintLine(
-                    painter,
-                    1,
-                    self.height() - 3,
-                    self.width() - 1,
-                    self.height() - 3,
-                    self.width() - 1,
-                    self.height(),
-                    1,
-                    self.height(),
-                )
-            # 左上角和右下角
-            elif self.pressedPos in ["left-top", "right-bottom"]:
-                self.__paintLine(
-                    painter,
-                    1,
-                    self.height() - 3,
-                    self.width() - 1,
-                    self.height() - 4,
-                    self.width() - 1,
-                    self.height() - 1,
-                    1,
-                    self.height(),
-                )
-            # 左中右上下
-            elif self.pressedPos in ["left", "center", "right", "top", "bottom"]:
-                self.__paintLine(
-                    painter,
-                    2,
-                    self.height() - 4,
-                    self.width() - 2,
-                    self.height() - 4,
-                    self.width() - 2,
-                    self.height() - 1,
-                    2,
-                    self.height() - 1,
-                )
-            # 左下角和右上角
-            elif self.pressedPos in ["left-bottom", "right-top"]:
-                self.__paintLine(
-                    painter,
-                    1,
-                    self.height() - 4,
-                    self.width() - 1,
-                    self.height() - 3,
-                    self.width() - 1,
-                    self.height(),
-                    1,
-                    self.height() - 1,
-                )
+            return
+
+        w = self.width()
+        h = self.height()
+
+        if not self.pressedPos:
+            self.__paintLine(painter, 1, h-3, w-1, h-3, w-1, h, 1, h)
+        elif self.pressedPos in ["left-top", "right-bottom"]:
+            self.__paintLine(painter, 1, h-3, w-1, h-4, w-1, h-1, 1, h)
+        elif self.pressedPos in ["left", "center", "right", "top", "bottom"]:
+            self.__paintLine(painter, 2, h-4, w-2, h-4, w-2, h-1, 2, h-1)
+        elif self.pressedPos in ["left-bottom", "right-top"]:
+            self.__paintLine(painter, 1, h-4, w-1, h-3, w-1, h, 1, h-1)
 
     def __paintText(self, painter, shearX, shearY, x=1, y=5):
-        """ 绘制文本 """
+        """ paint text """
         painter.shear(shearX, shearY)
         painter.drawText(x, y + 21, self.text)
 
     def __paintLine(self, painter, x1, y1, x2, y2, x3, y3, x4, y4):
-        """ 绘制选中标志 """
+        """ paint bottom border line """
         painter.setPen(Qt.NoPen)
         brush = QBrush(QColor(0, 153, 188))
         painter.setBrush(brush)
@@ -258,23 +217,21 @@ class TabButton(QPushButton):
         painter.drawPolygon(QPolygon(points), 4)
 
     def __paintAllText(self, painter, fontSize=16):
-        """ 根据各种点击情况绘制文本 """
+        """ paint all texts """
         if not self.isSelected:
             pen = QPen(QColor(102, 102, 102))
             painter.setPen(pen)
+
         if not self.pressedPos:
             if self.isEnter:
-                # 鼠标进入时画笔改为黑色
                 painter.setPen(QPen(Qt.black))
+
             self.__paintText(painter, 0, 0)
         else:
             painter.setFont(QFont("Microsoft YaHei", fontSize))
-            # 左上角和右下角
             if self.pressedPos in ["left-top", "right-bottom"]:
                 self.__paintText(painter, -0.03, 0)
-            # 左中右上下
             elif self.pressedPos in ["left", "center", "right", "top", "bottom"]:
                 self.__paintText(painter, 0, 0)
-            # 左下角和右上角
             elif self.pressedPos in ["left-bottom", "right-top"]:
                 self.__paintText(painter, 0.03, 0)

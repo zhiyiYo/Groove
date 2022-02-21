@@ -10,7 +10,7 @@ from PyQt5.QtCore import QFile, QMargins, QPoint
 
 
 class PlaylistInterface(PlaylistSelectionModeInterface):
-    """ 播放列表卡界面 """
+    """ Playlist card interface """
 
     def __init__(self, library: Library, parent=None):
         super().__init__(
@@ -24,12 +24,12 @@ class PlaylistInterface(PlaylistSelectionModeInterface):
         self.__setQss()
 
     def updateWindow(self, playlists: List[Playlist]):
-        """ 更新窗口 """
+        """ update window """
         self.playlistCardView.updateAllCards(playlists)
         self.adjustScrollHeight()
 
     def __setQss(self):
-        """ 设置层叠样式 """
+        """ set style sheet """
         f = QFile(":/qss/playlist_card_interface.qss")
         f.open(QFile.ReadOnly)
         self.setStyleSheet(str(f.readAll(), encoding='utf-8'))

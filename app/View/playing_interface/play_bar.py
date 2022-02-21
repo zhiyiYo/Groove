@@ -12,21 +12,18 @@ from .volume_slider_widget import VolumeSliderWidget
 
 
 class PlayBar(QWidget):
-    """ 播放栏 """
+    """ Play bar """
 
-    # 鼠标进入信号
     enterSignal = pyqtSignal()
     leaveSignal = pyqtSignal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        # 创建小部件
         self.__createWidget()
-        # 初始化
         self.__initWidget()
 
     def __createWidget(self):
-        """ 创建小部件 """
+        """ create widgets """
         self.moreActionsMenu = PlayingInterfaceMoreActionsMenu(self)
         self.playButton = PlayButton(self)
         self.volumeButton = VolumeButton(self)
@@ -70,7 +67,7 @@ class PlayBar(QWidget):
         ]
 
     def __initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widgets """
         self.setFixedHeight(193)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.lastSongButton.move(17, 85)
@@ -92,8 +89,7 @@ class PlayBar(QWidget):
         self.__referenceWidget()
 
     def __showVolumeSlider(self):
-        """ 显示音量滑动条 """
-        # 显示播放栏
+        """ show volume slider """
         if not self.volumeSliderWidget.isVisible():
             pos = self.mapToGlobal(self.volumeButton.pos())
             x = pos.x() + int(
@@ -102,11 +98,10 @@ class PlayBar(QWidget):
             self.volumeSliderWidget.move(x, y)
             self.volumeSliderWidget.show()
         else:
-            # 隐藏音量条
             self.volumeSliderWidget.hide()
 
     def __moveButtons(self):
-        """ 移动按钮 """
+        """ move buttons """
         self.pullUpArrowButton.move(
             self.width()//2 - self.pullUpArrowButton.width()//2, 165)
         self.fullScreenButton.move(self.width() - 64, 85)
@@ -114,34 +109,30 @@ class PlayBar(QWidget):
         self.showPlaylistButton.move(self.width() - 184, 85)
 
     def resizeEvent(self, e):
-        """ 改变尺寸时移动按钮 """
         super().resizeEvent(e)
         self.playProgressBar.resize(self.width(), 38)
         self.__moveButtons()
 
     def enterEvent(self, e):
-        """ 鼠标进入时发出进入信号 """
         self.enterSignal.emit()
 
     def leaveEvent(self, e):
-        """ 鼠标离开时发出离开信号 """
         self.leaveSignal.emit()
 
     def __referenceWidget(self):
-        """ 引用小部件及其方法 """
         self.progressSlider = self.playProgressBar.progressSlider
         self.setCurrentTime = self.playProgressBar.setCurrentTime
         self.setTotalTime = self.playProgressBar.setTotalTime
 
     def __showMoreActionsMenu(self):
-        """ 显示更多操作菜单 """
+        """ show more actions menu """
         pos = self.mapToGlobal(self.moreActionsButton.pos())
         x = pos.x() + self.moreActionsButton.width() + 10
         y = pos.y() + self.moreActionsButton.height()//2 - self.moreActionsMenu.height()/2
         self.moreActionsMenu.exec(QPoint(x, y))
 
     def __connectSignalToSlot(self):
-        """ 信号连接到槽 """
+        """ connect signal to slot """
         self.moreActionsButton.clicked.connect(self.__showMoreActionsMenu)
         self.volumeButton.clicked.connect(self.__showVolumeSlider)
         self.volumeSliderWidget.volumeLevelChanged.connect(
@@ -151,17 +142,17 @@ class PlayBar(QWidget):
 
 
 class PlayProgressBar(QWidget):
-    """ 歌曲播放进度条 """
+    """ Play progress bar """
 
     def __init__(self, duration: int = 0, parent=None):
         """
         Parameters
         ----------
         duration: int
-            总时长，以秒为单位
+            duration on seconds
 
         parent:
-            父级窗口
+            parent window
         """
         super().__init__(parent)
         self.progressSlider = Slider(Qt.Horizontal, self)
@@ -170,11 +161,11 @@ class PlayProgressBar(QWidget):
         self.__initWidget()
 
     def __initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widgets """
         self.setFixedHeight(24)
         self.progressSlider.move(73, 0)
 
-        # 设置样式
+        # set the style of slider
         style = HollowHandleStyle({
             "handle.ring-width": 3,
             "handle.hollow-radius": 9,
@@ -186,17 +177,16 @@ class PlayProgressBar(QWidget):
         self.totalTimeLabel.setObjectName("timeLabel")
 
     def setCurrentTime(self, currentTime: int):
-        """ 更新当前时间标签，单位为毫秒 """
+        """ set current time in milliseconds """
         self.currentTimeLabel.setTime(int(currentTime/1000))
         self.currentTimeLabel.move(
             33 - 9 * (len(self.totalTimeLabel.text()) - 4), 1)
 
     def setTotalTime(self, totalTime):
-        """ 更新总时长标签，单位为毫秒 """
+        """ set total time in milliseconds """
         self.totalTimeLabel.setTime(int(totalTime/1000))
 
     def resizeEvent(self, e):
-        """ 改变尺寸时拉伸进度条 """
         self.progressSlider.resize(self.width() - 146, 24)
         self.totalTimeLabel.move(self.width() - 57, 1)
         self.currentTimeLabel.move(33, 1)

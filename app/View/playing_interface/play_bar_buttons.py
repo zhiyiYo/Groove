@@ -7,40 +7,40 @@ from PyQt5.QtMultimedia import QMediaPlaylist
 
 
 class SelectableButton(CircleButton):
-    """ 可选中的按钮 """
+    """ Selectable button """
 
     def __init__(self, iconPath_list: list, parent=None, iconSize=(47, 47), buttonSize=(47, 47)):
         super().__init__(iconPath_list[0], parent, iconSize, buttonSize)
         self.iconPath_list = iconPath_list
-        # 设置选中标志位
         self.isSelected = False
-        # 设置可选中的次数
         self.selectableTime = len(self.iconPath_list)
         self.clickedTime = 0
 
     def mouseReleaseEvent(self, e):
-        """ 鼠标松开时更新点击次数和图标 """
         if not self.clickedTime:
             self.isSelected = True
+
         self.clickedTime += 1
+
         if self.clickedTime == self.selectableTime + 1:
             self.isSelected = False
             self.clickedTime = 0
-            # 更新图标
             self.iconPixmap = QPixmap(self.iconPath_list[0])
         else:
             self.iconPixmap = QPixmap(self.iconPath_list[self.clickedTime - 1])
+
         self.update()
         super().mouseReleaseEvent(e)
 
     def paintEvent(self, e):
-        """ 绘制背景 """
+        """ paint button """
         iconPixmap = self.iconPixmap
         px, py = self._pixPos_list[0]
         painter = QPainter(self)
         painter.setRenderHints(QPainter.Antialiasing |
                                QPainter.SmoothPixmapTransform)
         painter.setPen(Qt.NoPen)
+
         if self.isPressed:
             if not self.isSelected:
                 brush = QBrush(QColor(255, 255, 255, 70))
@@ -49,9 +49,8 @@ class SelectableButton(CircleButton):
                 brush = QBrush(QColor(0, 0, 0, 83))
                 pen = QPen(QColor(255, 255, 255, 160))
                 pen.setWidthF(1.5)
-            # 绘制圆环和背景色
+
             self.__drawCircle(painter, pen, brush)
-            # 更新图标大小和位置
             iconPixmap = self.iconPixmap.scaled(
                 self.iconPixmap.width() - 4,
                 self.iconPixmap.height() - 4,
@@ -64,15 +63,15 @@ class SelectableButton(CircleButton):
                 pen = QPen(QColor(255, 255, 255, 100))
                 pen.setWidthF(1.4)
                 self.__drawCircle(painter, pen, QBrush(QColor(0, 0, 0, 60)))
-            # 鼠标进入时更换图标透明度
             elif self.isEnter:
                 painter.setOpacity(0.5)
-        # 绘制图标
+
+        # paint icon
         painter.drawPixmap(px, py, iconPixmap.width(),
                            iconPixmap.height(), iconPixmap)
 
     def __drawCircle(self, painter, pen, brush):
-        """ 画圆 """
+        """ paint circle """
         painter.setPen(Qt.NoPen)
         painter.setBrush(brush)
         painter.drawEllipse(1, 1, self.iconWidth - 2, self.iconHeight - 2)
@@ -81,14 +80,14 @@ class SelectableButton(CircleButton):
 
 
 class RandomPlayButton(SelectableButton):
-    """ 随机播放按钮 """
+    """ Random play button """
 
     def __init__(self, iconPath_list: list, parent=None, iconSize=(47, 47), buttonSize=(47, 47)):
         super().__init__(iconPath_list, parent, iconSize, buttonSize)
         self.setToolTip(self.tr('Random play: off'))
 
     def setRandomPlay(self, isRandomPlay: bool):
-        """ 设置随机播放状态 """
+        """ set whether to play randomly """
         if self.isSelected == isRandomPlay:
             return
 
@@ -105,7 +104,7 @@ class RandomPlayButton(SelectableButton):
 
 
 class LoopModeButton(SelectableButton):
-    """ 循环模式按钮 """
+    """ Loop mode button """
 
     def __init__(self, iconPath_list: list, parent=None, iconSize=(47, 47), buttonSize=(47, 47)):
         super().__init__(iconPath_list, parent, iconSize, buttonSize)
@@ -118,13 +117,12 @@ class LoopModeButton(SelectableButton):
         self.__updateToolTip()
 
     def mouseReleaseEvent(self, e):
-        """ 更新循环模式 """
         super().mouseReleaseEvent(e)
         self.loopMode = self.__loopMode_list[self.clickedTime]
         signalBus.loopModeChanged.emit(self.loopMode)
 
     def setLoopMode(self, loopMode: QMediaPlaylist.PlaybackMode):
-        """ 设置循环模式 """
+        """ set loop mode """
         if self.loopMode == loopMode:
             return
 
@@ -145,7 +143,7 @@ class LoopModeButton(SelectableButton):
         self.__updateToolTip()
 
     def __updateToolTip(self):
-        """ 根据循环模式更新工具提示 """
+        """ update tooltip """
         if self.loopMode == QMediaPlaylist.Sequential:
             text = self.tr('Loop playback: off')
         elif self.loopMode == QMediaPlaylist.Loop:
@@ -157,58 +155,62 @@ class LoopModeButton(SelectableButton):
 
 
 class PullUpArrow(CircleButton):
-    """ 上拉正在播放列表箭头 """
+    """ Pull up arrow button """
 
     def __init__(self, iconPath, parent=None, iconSize=(27, 27), buttonSize=(27, 27)):
         super().__init__(iconPath, parent, iconSize, buttonSize)
-        # 箭头旋转方向，顺时针旋转为1，逆时针旋转为-1
+        # the direction of rotation: 1 clockwise and -1 counterclockwise.
         self.rotateDirection = 1
         self.deltaAngleStep = 9
         self.totalRotateAngle = 0
-        # 实例化定时器
+
         self.timer = QTimer(self)
         self.timer.setInterval(19)
         self.timer.timeout.connect(self.timerSlot)
         self.setToolTip(self.tr('Show playlist'))
 
     def setArrowDirection(self, direction: str = "up"):
-        """ 设置箭头方向，up朝上，down朝下 """
+        """ set the direction of arrow
+
+        Parmeters
+        ---------
+        direction: str
+            direction of arrow, including `up` and `down`
+        """
         self.rotateDirection = 1 if direction.upper() == "UP" else -1
         self.totalRotateAngle = 0 if direction.upper() == "UP" else 180
         self.update()
 
     def timerSlot(self):
-        """ 定时器溢出时旋转箭头 """
+        """ timer time out slot """
         self.totalRotateAngle = (
-            self.rotateDirection * self.deltaAngleStep + self.totalRotateAngle
-        )
+            self.rotateDirection * self.deltaAngleStep + self.totalRotateAngle)
         self.update()
         if self.totalRotateAngle in [180, 0]:
             self.timer.stop()
             self.rotateDirection = -self.rotateDirection
 
     def mouseReleaseEvent(self, e):
-        """ 鼠标松开时打开计时器 """
         self.timer.start()
         super().mouseReleaseEvent(e)
 
     def paintEvent(self, e):
-        """ 绘制图标 """
+        """ paint button """
         painter = QPainter(self)
         painter.setRenderHints(QPainter.Antialiasing |
                                QPainter.SmoothPixmapTransform)
         painter.setPen(Qt.NoPen)
-        # 鼠标按下时绘制圆形背景，pressed的优先级比hover的优先级高
+
         if self.isPressed and self.rotateDirection == 1:
             brush = QBrush(QColor(0, 0, 0, 50))
             painter.setBrush(brush)
             painter.drawEllipse(0, 0, self.iconWidth, self.iconHeight)
-        # 鼠标进入时更换图标透明度
         elif self.isEnter:
             painter.setOpacity(0.5)
-        # 绘制图标
+
+        # paint icon
         painter.translate(13, 13)
-        painter.rotate(self.totalRotateAngle)  # 坐标系旋转
+        painter.rotate(self.totalRotateAngle)
         painter.drawPixmap(
             -int(self.iconWidth / 2), -
             int(self.iconHeight / 2), self.iconPixmap
@@ -216,14 +218,12 @@ class PullUpArrow(CircleButton):
 
 
 class TwoStateButton(CircleButton):
-    """ 两种状态的按钮 """
+    """ Two state button """
 
     def __init__(self, iconPath_list, parent=None, isState_1=True):
         self.iconPath_list = iconPath_list
         super().__init__(self.iconPath_list[isState_1], parent)
-        # 设置状态1标志位，状态1的图标为图标列表的第二个
         self._isState_1 = isState_1
-        # 创建pixmap列表
         self.pixmap_list = [QPixmap(iconPath)
                             for iconPath in self.iconPath_list]
         self._pixPos_list = [(0, 0), (2, 2)]
@@ -234,7 +234,7 @@ class TwoStateButton(CircleButton):
         super().mouseReleaseEvent(e)
 
     def setState(self, isState_1: bool):
-        """ 设置按钮状态 """
+        """ set the state of button """
         if self._isState_1 == isState_1:
             return
         self._isState_1 = isState_1
@@ -243,7 +243,7 @@ class TwoStateButton(CircleButton):
 
 
 class PlayButton(TwoStateButton):
-    """ 播放按钮 """
+    """ Play button """
 
     def __init__(self, parent=None):
         self.iconPath_list = [
@@ -255,7 +255,7 @@ class PlayButton(TwoStateButton):
         self.setToolTip(self.tr('Play'))
 
     def setPlay(self, isPlay: bool):
-        """ 设置按钮状态 """
+        """ set the play state """
         if self.isPlay == isPlay:
             return
 
@@ -266,7 +266,7 @@ class PlayButton(TwoStateButton):
 
 
 class FullScreenButton(TwoStateButton):
-    """ 转到全屏按钮 """
+    """ Full screen button """
 
     fullScreenChanged = pyqtSignal(bool)
 
@@ -279,7 +279,7 @@ class FullScreenButton(TwoStateButton):
         self.__isFullScreen = False
 
     def setFullScreen(self, isFullScreen: bool):
-        """ 设置全屏 """
+        """ set full screen """
         if self.__isFullScreen == isFullScreen:
             return
 
@@ -299,25 +299,24 @@ class FullScreenButton(TwoStateButton):
 
 
 class VolumeButton(CircleButton):
-    """ 音量按钮 """
+    """ Volume button """
 
     def __init__(self, parent=None):
-        # 按钮图标地址列表
-        self.__iconPath_list = [
+        self.__iconPaths = [
             ":/images/playing_interface/Volume0.png",
             ":/images/playing_interface/Volume1.png",
             ":/images/playing_interface/Volume2.png",
             ":/images/playing_interface/Volume3.png",
             ":/images/playing_interface/volume_white_level_mute_47_47.png",
         ]
-        self.pixmap_list = [QPixmap(i) for i in self.__iconPath_list]
-        super().__init__(self.__iconPath_list[0], parent)
+        self.pixmap_list = [QPixmap(i) for i in self.__iconPaths]
+        super().__init__(self.__iconPaths[0], parent)
         self.isMute = False
         self.__volumeLevel = 0
         self.setToolTip(self.tr('Volume'))
 
     def setMute(self, isMute: bool):
-        """ 设置静音 """
+        """ set whether to mute """
         if self.isMute == isMute:
             return
 
@@ -327,7 +326,7 @@ class VolumeButton(CircleButton):
         self.update()
 
     def setVolumeLevel(self, volume: int):
-        """ 根据音量来设置音量等级 """
+        """ set the volume level """
         if volume == 0:
             self.updateIcon(0)
         elif 0 < volume <= 32 and self.__volumeLevel != 1:
@@ -338,7 +337,7 @@ class VolumeButton(CircleButton):
             self.updateIcon(3)
 
     def updateIcon(self, iconIndex):
-        """ 更新图标 """
+        """ update icon """
         self.__volumeLevel = iconIndex
         if not self.isMute:
             self.iconPixmap = self.pixmap_list[iconIndex]

@@ -10,17 +10,17 @@ from .album_card_interface import AlbumCardView
 
 
 class AlbumTabInterface(AlbumSelectionModeInterface):
-    """ 专辑标签界面 """
+    """ Album tab interface """
 
     def __init__(self, library: Library, parent=None):
         """
         Parameters
         ----------
         library: Library
-            歌曲库
+            song library
 
         parent:
-            父级窗口
+            parent window
         """
         super().__init__(
             library,
@@ -31,24 +31,24 @@ class AlbumTabInterface(AlbumSelectionModeInterface):
         self.vBox.setContentsMargins(0, 0, 0, 0)
 
     def updateWindow(self, albumInfos: List[AlbumInfo]):
-        """ 更新窗口 """
+        """ update window """
         self.albumCardView.updateAllAlbumCards(albumInfos)
         self.adjustScrollHeight()
         self.verticalScrollBar().setValue(0)
 
     def setSortMode(self, sortMode: str):
-        """ 排序专辑卡
+        """ sort album cards
 
         Parameters
         ----------
         sortMode: str
-            排序方式，有`Date added`、`A to Z`、`Release year` 和 `Artist` 四种
+            sort mode, including `Date added`, `A to Z`, `Release year` and `Artist`
         """
         self.albumCardView.setSortMode(sortMode)
         self.adjustScrollHeight()
         self.verticalScrollBar().setValue(0)
 
     def scrollToLabel(self, label: str):
-        """ 滚动到label指定的位置 """
+        """ scroll to the position specified by label """
         y = self.albumCardView.getLabelY(label)
         self.verticalScrollBar().setValue(y)

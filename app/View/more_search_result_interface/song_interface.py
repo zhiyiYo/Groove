@@ -6,27 +6,28 @@ from common.database.entity import SongInfo
 from components.selection_mode_interface import (SelectionModeBarType,
                                                  SongSelectionModeInterface)
 from components.song_list_widget import SongListWidget
-from PyQt5.QtCore import Qt, pyqtSignal
 
 
 class LocalSongInterface(SongSelectionModeInterface):
+    """ Local song interface """
 
     def __init__(self, songInfos: List[SongInfo], parent=None):
         super().__init__(SongListWidget(songInfos), SelectionModeBarType.SONG_TAB, parent)
+        self.resize(1270, 800)
         self.vBox.setContentsMargins(0, 145, 0, 0)
         self.__connectSignalToSlot()
 
     def updateWindow(self, songInfos: List[SongInfo]):
-        """ 更新窗口 """
+        """ update window """
         self.songListWidget.updateAllSongCards(songInfos)
         self.adjustScrollHeight()
 
     def deleteSongs(self, songPaths: List[str]):
-        """ 删除歌曲 """
+        """ delete songs """
         self.songListWidget.removeSongCards(songPaths)
         self.adjustScrollHeight()
 
     def __connectSignalToSlot(self):
-        """ 信号连接到槽 """
+        """ connect signal to slot """
         self.songListWidget.removeSongSignal.connect(
             lambda songInfo: signalBus.removeSongSig.emit([songInfo.file]))

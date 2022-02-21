@@ -16,7 +16,7 @@ from .play_bar_buttons import (BasicButton, LoopModeButton, PlayButton,
 
 
 class PlayBar(QWidget):
-    """ 底部播放栏 """
+    """ Play bar """
 
     savePlaylistSig = pyqtSignal()
     colorChanged = pyqtSignal(QColor)
@@ -28,26 +28,23 @@ class PlayBar(QWidget):
         self.aniGroup = QParallelAnimationGroup(self)
         self.colorAni = QPropertyAnimation(self, b'color', self)
 
-        # 创建小部件
         self.playProgressBar = PlayProgressBar(songInfo.duration, self)
         self.songInfoCard = SongInfoCard(songInfo, self)
         self.centralButtonGroup = CentralButtonGroup(self)
         self.rightWidgetGroup = RightWidgetGroup(self)
         self.moreActionsMenu = PlayBarMoreActionsMenu(self)
 
-        # 初始化小部件
         self.__initWidget()
 
     def __initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widgets """
         self.resize(1312, 115)
         self.setFixedHeight(115)
 
-        # 将动画添加到动画组中
         self.aniGroup.addAnimation(self.colorAni)
         self.aniGroup.addAnimation(self.songInfoCard.albumCoverLabel.ani)
 
-        # 设置背景色
+        # set background color
         self.setAutoFillBackground(True)
         self.setColor(self.__color)
 
@@ -56,7 +53,7 @@ class PlayBar(QWidget):
         self.__connectSignalToSlot()
 
     def __adjustWidgetPos(self):
-        """ 调整小部件位置 """
+        """ adjust the position of widgets """
         w = self.width()
         self.playProgressBar.move(
             int(w/2 - self.playProgressBar.width()/2), self.centralButtonGroup.height())
@@ -65,10 +62,9 @@ class PlayBar(QWidget):
         self.rightWidgetGroup.move(w - self.rightWidgetGroup.width(), 0)
 
     def resizeEvent(self, e: QResizeEvent):
-        """ 调整歌曲信息卡宽度 """
         dw = self.width() - self.oldWidth
 
-        # 调整进度条的宽度
+        # adjust the width of progress slider
         pBar = self.playProgressBar
         pBar.resize(pBar.width() + dw//3, pBar.height())
 
@@ -78,7 +74,7 @@ class PlayBar(QWidget):
         self.oldWidth = self.width()
 
     def __showMoreActionsMenu(self):
-        """ 显示更多操作菜单 """
+        """ show more actions menu """
         globalPos = self.rightWidgetGroup.mapToGlobal(
             self.moreActionsButton.pos())
         x = globalPos.x() + self.moreActionsButton.width() + 30
@@ -86,7 +82,7 @@ class PlayBar(QWidget):
         self.moreActionsMenu.exec(QPoint(x, y))
 
     def __referenceWidgets(self):
-        """ 引用小部件及其方法 """
+        """ reference widgets and methods """
         self.randomPlayButton = self.centralButtonGroup.randomPlayButton
         self.lastSongButton = self.centralButtonGroup.lastSongButton
         self.playButton = self.centralButtonGroup.playButton
@@ -100,13 +96,13 @@ class PlayBar(QWidget):
         self.setCurrentTime = self.playProgressBar.setCurrentTime
         self.setTotalTime = self.playProgressBar.setTotalTime
 
-    def updateSongInfoCard(self, songInfo: SongInfo):
-        """ 更新歌曲信息卡 """
+    def updateWindow(self, songInfo: SongInfo):
+        """ update play bar """
         self.songInfoCard.updateWindow(songInfo)
         self.__adjustSongInfoCardWidth()
 
     def __adjustSongInfoCardWidth(self):
-        """ 调整歌曲信息卡宽度 """
+        """ adjust the width of song information card """
         card = self.songInfoCard
         card.adjustSize()
         if card.width() >= self.playProgressBar.x() - 20:
@@ -114,15 +110,15 @@ class PlayBar(QWidget):
             card.textWindow.setMaxWidth(card.width() - 155)
 
     def setRandomPlay(self, isRandomPlay: bool):
-        """ 设置随机播放 """
+        """ set whether to play randomly """
         self.randomPlayButton.setRandomPlay(isRandomPlay)
 
     def setMute(self, isMute: bool):
-        """ 设置静音 """
+        """ set whether to mute """
         self.volumeButton.setMute(isMute)
 
     def setVolume(self, volume: int):
-        """ 设置音量 """
+        """ set volume """
         if self.volumeSlider.value() == volume:
             return
 
@@ -130,11 +126,11 @@ class PlayBar(QWidget):
         self.volumeButton.setVolumeLevel(volume)
 
     def setPlay(self, isPlay: bool):
-        """ 设置播放状态 """
+        """ set play state """
         self.playButton.setPlay(isPlay)
 
     def __connectSignalToSlot(self):
-        """ 信号连接到槽 """
+        """ connect signal to slot """
         self.nextSongButton.clicked.connect(signalBus.nextSongSig)
         self.lastSongButton.clicked.connect(signalBus.lastSongSig)
         self.playButton.clicked.connect(signalBus.togglePlayStateSig)
@@ -156,7 +152,7 @@ class PlayBar(QWidget):
             signalBus.clearPlayingPlaylistSig)
 
     def __onAlbumChanged(self, albumPath: str):
-        """ 更新专辑槽函数 """
+        """ album changed slot """
         r, g, b = DominantColor.getDominantColor(albumPath)
         self.colorChanged.emit(QColor(r, g, b))
 
@@ -174,11 +170,11 @@ class PlayBar(QWidget):
         self.aniGroup.start()
 
     def setLoopMode(self, loopMode):
-        """ 设置循环模式 """
+        """ set loop mode """
         self.loopModeButton.setLoopMode(loopMode)
 
     def setColor(self, color: QColor):
-        """ 设置背景颜色 """
+        """ set background color """
         self.__color = color
         palette = QPalette()
         palette.setColor(self.backgroundRole(), color)
@@ -191,12 +187,10 @@ class PlayBar(QWidget):
 
 
 class CentralButtonGroup(QWidget):
-    """ 播放按钮组 """
+    """ Central button group """
 
     def __init__(self, parent=None):
         super().__init__(parent)
-
-        # 创建按钮
         self.randomPlayButton = RandomPlayButton(self)
         self.lastSongButton = BasicButton(
             ':/images/play_bar/Previous.png', self)
@@ -204,12 +198,11 @@ class CentralButtonGroup(QWidget):
         self.playButton = PlayButton(self)
         self.loopModeButton = LoopModeButton(self)
 
-        # 创建布局
         self.vBoxLayout = QVBoxLayout(self)
         self.__initWidgets()
 
     def __initWidgets(self):
-        """ 初始化界面 """
+        """ initialize widgets """
         self.setFixedSize(317, 67 + 8 + 3)
 
         hBoxLayout = QHBoxLayout()
@@ -229,13 +222,13 @@ class CentralButtonGroup(QWidget):
         self.vBoxLayout.setContentsMargins(0, 0, 0, 0)
         self.vBoxLayout.addLayout(hBoxLayout)
 
-        # 设置工具提示
+        # set tooltip
         self.lastSongButton.setToolTip(self.tr('Previous'))
         self.nextSongButton.setToolTip(self.tr('Next'))
 
 
 class RightWidgetGroup(QWidget):
-    """ 播放按钮组 """
+    """ Right widget group """
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -251,7 +244,7 @@ class RightWidgetGroup(QWidget):
         self.__initLayout()
 
     def __initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widgets """
         self.setFixedSize(301, 16 + 67)
         self.volumeSlider.setRange(0, 100)
         self.volumeSlider.setStyle(HollowHandleStyle(
@@ -262,7 +255,7 @@ class RightWidgetGroup(QWidget):
         self.moreActionsButton.setToolTip(self.tr('More actions'))
 
     def __initLayout(self):
-        """ 初始化布局 """
+        """ initialize layout """
         spacings = [7, 8, 8, 5, 7]
         widgets = [self.volumeButton, self.volumeSlider,
                    self.smallPlayModeButton, self.moreActionsButton]
@@ -270,7 +263,6 @@ class RightWidgetGroup(QWidget):
         self.hBoxLayout.setSpacing(0)
         self.hBoxLayout.setContentsMargins(0, 0, 0, 0)
 
-        # 将小部件添加到布局中
         for i in range(4):
             self.hBoxLayout.addSpacing(spacings[i])
             self.hBoxLayout.addWidget(widgets[i])
@@ -279,17 +271,17 @@ class RightWidgetGroup(QWidget):
 
 
 class PlayProgressBar(QWidget):
-    """ 歌曲播放进度条 """
+    """ Play progress bar """
 
     def __init__(self, duration: int, parent=None):
         """
         Parameters
         ----------
         duration: int
-            时长，以秒为单位
+            duration of song in seconds
 
         parent:
-            父级窗口
+            parent window
         """
         super().__init__(parent)
         self.progressSlider = Slider(Qt.Horizontal, self)
@@ -299,10 +291,10 @@ class PlayProgressBar(QWidget):
         self.__initWidget()
 
     def __initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widgets """
         self.resize(450, 30)
 
-        # 设置样式
+        # set the style of slider
         self.setStyleSheet("""
             QLabel {
                 color: white;
@@ -315,7 +307,7 @@ class PlayProgressBar(QWidget):
         self.progressSlider.setRange(0, 0)
         self.progressSlider.setFixedHeight(28)
 
-        # 将小部件添加到布局中
+        # add widgets to layout
         self.hBoxLayout.addWidget(self.currentTimeLabel, 0, Qt.AlignHCenter)
         self.hBoxLayout.addWidget(self.progressSlider, 0, Qt.AlignHCenter)
         self.hBoxLayout.addWidget(self.totalTimeLabel, 0, Qt.AlignHCenter)
@@ -323,14 +315,13 @@ class PlayProgressBar(QWidget):
         self.hBoxLayout.setSpacing(10)
 
     def setCurrentTime(self, currentTime: int):
-        """ 更新当前时间标签，单位为毫秒 """
+        """ set current time in milliseconds """
         self.currentTimeLabel.setTime(int(currentTime/1000))
 
     def setTotalTime(self, totalTime: int):
-        """ 更新总时长标签，单位为毫秒 """
+        """ set total time in milliseconds """
         self.totalTimeLabel.setTime(int(totalTime/1000))
 
     def resizeEvent(self, e):
-        """ 改变宽度时调整滑动条的宽度 """
         self.progressSlider.setFixedWidth(self.width() - 100)
         super().resizeEvent(e)

@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import QAction, QLabel, QPushButton, QWidget
 
 
 class PlaylistCardInterface(PlaylistSelectionModeInterface):
-    """ 播放列表卡界面 """
+    """ Playlist card interface """
 
     createPlaylistSig = pyqtSignal()
 
@@ -34,8 +34,7 @@ class PlaylistCardInterface(PlaylistSelectionModeInterface):
         self.__initWidget()
 
     def __createWidgets(self):
-        """ 创建小部件 """
-        # 创建白色遮罩
+        """ create widgets """
         self.whiteMask = QWidget(self)
         self.playlistLabel = QLabel(self.tr("Playlist"), self)
         self.sortModeLabel = QLabel(self.tr("Sort by:"), self)
@@ -51,11 +50,9 @@ class PlaylistCardInterface(PlaylistSelectionModeInterface):
             self,
         )
 
-        # 创建导航标签
         self.guideLabel = QLabel(
             self.tr('There is nothing to display here. Try a different filter.'), self)
 
-        # 创建排序菜单
         self.sortModeMenu = AeroMenu(parent=self)
         self.sortByModifiedTimeAct = QAction(
             self.tr("Date modified"), self, triggered=lambda: self.__sortPlaylist("modifiedTime"))
@@ -63,11 +60,10 @@ class PlaylistCardInterface(PlaylistSelectionModeInterface):
             self.tr("A to Z"), self, triggered=lambda: self.__sortPlaylist("AToZ"))
         self.sortActs = [self.sortByModifiedTimeAct, self.sortByAToZAct]
 
-        # 记录当前的排序方式
         self.currentSortAct = self.sortByModifiedTimeAct
 
     def __initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widgets """
         self.resize(1270, 760)
         self.vBox.setContentsMargins(0, 175, 0, 120)
         self.guideLabel.setHidden(bool(self.playlistCards))
@@ -79,7 +75,7 @@ class PlaylistCardInterface(PlaylistSelectionModeInterface):
         self.__connectSignalToSlot()
 
     def __initLayout(self):
-        """ 初始化布局 """
+        """ initialize layout """
         self.guideLabel.move(44, 196)
         self.playlistLabel.move(30, 54)
         self.createPlaylistButton.move(30, 131)
@@ -88,7 +84,7 @@ class PlaylistCardInterface(PlaylistSelectionModeInterface):
         self.sortModeButton.move(self.sortModeLabel.geometry().right()+7, 130)
 
     def __setQss(self):
-        """ 设置层叠样式 """
+        """ set style sheet """
         self.sortModeLabel.setMinimumSize(50, 28)
         self.guideLabel.setMinimumSize(600, 40)
         self.playlistLabel.setObjectName("playlistLabel")
@@ -109,12 +105,11 @@ class PlaylistCardInterface(PlaylistSelectionModeInterface):
         self.guideLabel.adjustSize()
 
     def resizeEvent(self, e):
-        """ 调整小部件尺寸和位置 """
         super().resizeEvent(e)
         self.whiteMask.resize(self.width() - 15, 175)
 
     def __sortPlaylist(self, key):
-        """ 排序播放列表 """
+        """ sort playlist cards """
         self.sortMode = key
         if key == "modifiedTime":
             self.sortModeButton.setText(self.tr("Date modified"))
@@ -126,23 +121,23 @@ class PlaylistCardInterface(PlaylistSelectionModeInterface):
             self.playlistCardView.setSortMode('A To Z')
 
     def __showSortModeMenu(self):
-        """ 显示排序方式菜单 """
+        """ show sort mode menu """
         self.sortModeMenu.setDefaultAction(self.currentSortAct)
         index = self.sortActs.index(self.currentSortAct)
         pos = self.sender().pos()-QPoint(0, 37*index+1)
         self.sortModeMenu.exec(self.mapToGlobal(pos))
 
     def addPlaylistCard(self, name: str, playlist: Playlist):
-        """ 添加一个播放列表卡 """
+        """ add a playlist card """
         super().addPlaylistCard(name, playlist)
         self.guideLabel.hide()
 
     def deletePlaylistCard(self, name: str):
-        """ 删除一个播放列表卡 """
+        """ delete a playlist card """
         super().deletePlaylistCard(name)
         self.guideLabel.setHidden(bool(self.playlistCards))
 
     def __connectSignalToSlot(self):
-        """ 将信号连接到槽 """
+        """ connect signal to slot """
         self.sortModeButton.clicked.connect(self.__showSortModeMenu)
         self.createPlaylistButton.clicked.connect(self.createPlaylistSig)

@@ -1,14 +1,15 @@
 # coding:utf-8
-from common.os_utils import getCoverPath
 from common.database.entity import AlbumInfo
+from common.os_utils import getCoverPath
 from components.app_bar import (AppBarButton, CollapsingAppBarBase,
                                 MoreActionsMenu)
 from components.widgets.menu import AddToMenu
-from PyQt5.QtCore import QObject, QPoint, Qt, pyqtSignal
+from PyQt5.QtCore import QPoint, Qt, pyqtSignal
 from PyQt5.QtWidgets import QAction
 
 
 class AlbumInfoBar(CollapsingAppBarBase):
+    """ Album information bar """
 
     addToPlayingPlaylistSig = pyqtSignal()
     addToNewCustomPlaylistSig = pyqtSignal()
@@ -49,7 +50,7 @@ class AlbumInfoBar(CollapsingAppBarBase):
         self.addToButton.clicked.connect(self.__onAddToButtonClicked)
 
     def setAlbumInfo(self, albumInfo: AlbumInfo):
-        """ 设置专辑信息 """
+        """ set album information """
         self.albumInfo = albumInfo if albumInfo else AlbumInfo()
         self.year = str(albumInfo.year or '')
         self.genre = albumInfo.genre or ''
@@ -59,7 +60,6 @@ class AlbumInfoBar(CollapsingAppBarBase):
             self.singer, self.album, 'album_big')
 
     def onMoreActionsButtonClicked(self):
-        """ 显示更多操作菜单 """
         menu = MoreActionsMenu()
         index = len(self.buttons)-self.hiddenButtonNum
         actions = self.action_list[index:]
@@ -70,7 +70,7 @@ class AlbumInfoBar(CollapsingAppBarBase):
         menu.exec(QPoint(x, y))
 
     def __onAddToButtonClicked(self):
-        """ 显示添加到菜单 """
+        """ show add to menu """
         menu = AddToMenu(parent=self)
         pos = self.mapToGlobal(self.addToButton.pos())
         x = pos.x() + self.addToButton.width() + 5
@@ -82,7 +82,7 @@ class AlbumInfoBar(CollapsingAppBarBase):
         menu.exec(QPoint(x, y))
 
     def updateWindow(self, albumInfo: AlbumInfo):
-        """ 更新窗口 """
+        """ update window """
         self.setAlbumInfo(albumInfo)
         super().updateWindow(
             self.album,

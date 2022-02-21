@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import QLabel, QAction
 
 
 class SingerInfoBar(CollapsingAppBarBase):
-    """ 歌手信息栏 """
+    """ Singer information bar """
 
     defaultCoverPath = ':/images/default_covers/singer_295_295.png'
 
@@ -23,7 +23,6 @@ class SingerInfoBar(CollapsingAppBarBase):
         self.__getInfo(singerInfo)
         super().__init__(self.singer, self.genre, self.coverPath, 'singer', parent)
 
-        # 创建按钮
         self.playAllButton = AppBarButton(
             ":/images/album_interface/Play.png", self.tr("Play all"))
         self.addToButton = AppBarButton(
@@ -46,18 +45,18 @@ class SingerInfoBar(CollapsingAppBarBase):
         self.setAutoFillBackground(True)
 
     def __getInfo(self, singerInfo: dict):
-        """ 获取信息 """
+        """ get singer information """
         obj = QObject()
         self.singer = singerInfo.get('singer', obj.tr('Unknown artist'))
         self.genre = singerInfo.get('genre', obj.tr('Unknown genre'))
         self.albumInfos = singerInfo.get('albumInfos', [])
 
-        # 获取歌手头像
+        # get singer avatar
         avatars = {i.stem: i for i in Path('cache/singer_avatar').glob('*')}
         self.coverPath = str(avatars.get(self.singer, self.defaultCoverPath))
 
     def setBackgroundColor(self):
-        """ 根据封面背景颜色 """
+        """ set the background color of bar """
         if self.coverPath == self.defaultCoverPath:
             palette = QPalette()
             palette.setColor(self.backgroundRole(), QColor(24, 24, 24))
@@ -72,7 +71,7 @@ class SingerInfoBar(CollapsingAppBarBase):
         super().updateWindow(self.singer, self.genre, self.coverPath)
 
     def updateCover(self, coverPath: str):
-        """ 更新封面 """
+        """ update cover """
         self.coverLabel.setPixmap(QPixmap(coverPath))
         self.blurLabel.updateWindow(coverPath, 8)
         self.__adjustBlurLabel()
@@ -83,14 +82,14 @@ class SingerInfoBar(CollapsingAppBarBase):
         self.__adjustBlurLabel()
 
     def __adjustBlurLabel(self):
-        """ 调整磨砂封面 """
+        """ adjust the size of cover """
         w = max(self.width(), self.height())
         self.blurLabel.resize(self.width(), self.height())
         self.blurLabel.setPixmap(self.blurLabel.pixmap().scaled(
             w, w, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
 
     def onMoreActionsButtonClicked(self):
-        """ 显示更多操作菜单 """
+        """ show more actions menu """
         menu = MoreActionsMenu()
         index = len(self.buttons)-self.hiddenButtonNum
         actions = self.action_list[index:]
@@ -101,7 +100,7 @@ class SingerInfoBar(CollapsingAppBarBase):
         menu.exec(QPoint(x, y))
 
     def __onAddToButtonClicked(self):
-        """ 显示添加到菜单 """
+        """ show add to menu """
         menu = AddToMenu(parent=self)
         pos = self.mapToGlobal(self.addToButton.pos())
         x = pos.x() + self.addToButton.width() + 5
@@ -115,7 +114,7 @@ class SingerInfoBar(CollapsingAppBarBase):
 
 
 class BlurLabel(QLabel):
-    """ 磨砂标签 """
+    """ Blur label """
 
     def __init__(self, imagePath: str, blurRadius=30, parent=None):
         super().__init__(parent=parent)
@@ -124,7 +123,7 @@ class BlurLabel(QLabel):
         self.setPixmap(getBlurPixmap(imagePath, blurRadius, 0.85))
 
     def updateWindow(self, imagePath: str, blurRadius=30):
-        """ 更新磨砂图片 """
+        """ update label """
         self.imagePath = imagePath
         self.blurRadius = blurRadius
         self.setPixmap(getBlurPixmap(imagePath, blurRadius, 0.85, (450, 450)))

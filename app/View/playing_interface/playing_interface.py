@@ -1,15 +1,14 @@
 # coding:utf-8
-from copy import deepcopy
 from typing import Dict, List
 
+from common.database.entity import SongInfo
 from common.os_utils import getCoverPath
 from common.signal_bus import signalBus
-from common.database.entity import SongInfo
 from common.thread.get_lyric_thread import GetLyricThread
 from common.thread.get_mv_url_thread import GetMvUrlThread
-from components.selection_mode_interface.bar import PlayingSelectionModeBar
 from components.buttons.three_state_button import ThreeStatePushButton
 from components.dialog_box.message_dialog import MessageDialog
+from components.selection_mode_interface.bar import PlayingSelectionModeBar
 from components.widgets.label import BlurCoverLabel, MaskLabel
 from components.widgets.lyric_widget import LyricWidget
 from components.widgets.menu import AddToMenu

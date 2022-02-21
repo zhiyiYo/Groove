@@ -59,6 +59,8 @@ class BasicSongListWidget(ListWidget):
         self.setAlternatingRowColors(True)
         self.setViewportMargins(viewportMargins)
 
+        signalBus.playBySongInfoSig.connect(self.setPlayBySongInfo)
+
     def createSongCards(self):
         """ 清空列表并创建新歌曲卡 """
         self.clearSongCards()

@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import QAction
 
 
 class PlaylistInfoBar(CollapsingAppBarBase):
+    """ Playlist information bar """
 
     addToPlayingPlaylistSig = pyqtSignal()
     addToNewCustomPlaylistSig = pyqtSignal()
@@ -46,7 +47,7 @@ class PlaylistInfoBar(CollapsingAppBarBase):
         self.addToButton.clicked.connect(self.__onAddToButtonClicked)
 
     def __getPlaylistInfo(self, playlist: Playlist):
-        """ 设置专辑信息 """
+        """ get playlist information """
         obj = QObject()
         self.playlist = playlist
         self.playlistName = playlist.name or ''
@@ -56,7 +57,7 @@ class PlaylistInfoBar(CollapsingAppBarBase):
         self.playlistCoverPath = getCoverPath(
             songInfo.singer, songInfo.album, "playlist_big")
 
-        # 统计时间
+        # calculate the total duration of playlist
         seconds = sum(i.duration for i in self.songInfos)
         self.hours = seconds//3600
         self.minutes = ceil((seconds % 3600)/60)
@@ -65,7 +66,7 @@ class PlaylistInfoBar(CollapsingAppBarBase):
         self.duration = f"{self.hours} {h} {self.minutes} {m}" if self.hours > 0 else f"{self.minutes} {m}"
 
     def onMoreActionsButtonClicked(self):
-        """ 显示更多操作菜单 """
+        """ show more actions menu """
         menu = MoreActionsMenu()
         index = len(self.buttons)-self.hiddenButtonNum
         actions = self.action_list[index:]
@@ -76,7 +77,7 @@ class PlaylistInfoBar(CollapsingAppBarBase):
         menu.exec(QPoint(x, y))
 
     def __onAddToButtonClicked(self):
-        """ 显示添加到菜单 """
+        """ show add to menu """
         menu = AddToMenu(parent=self)
         pos = self.mapToGlobal(self.addToButton.pos())
         x = pos.x() + self.addToButton.width() + 5
@@ -88,14 +89,14 @@ class PlaylistInfoBar(CollapsingAppBarBase):
         menu.exec(QPoint(x, y))
 
     def updateWindow(self, playlist: Playlist):
-        """ 更新窗口 """
+        """ update playlist information bar """
         self.__getPlaylistInfo(playlist)
         content = str(len(self.songInfos)) + \
             self.tr(" songs")+f' • {self.duration}'
         super().updateWindow(self.playlistName, content, self.playlistCoverPath)
 
     def setBackgroundColor(self):
-        """ 根据封面背景颜色 """
+        """ set background color """
         path = ":/images/default_covers/playlist_113_113.png"
         if self.playlistCoverPath != path:
             super().setBackgroundColor()

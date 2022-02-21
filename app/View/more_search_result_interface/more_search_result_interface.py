@@ -12,7 +12,7 @@ from .song_interface import LocalSongInterface
 
 
 class MoreSearchResultInterface(QWidget):
-    """ 更多搜索结果界面 """
+    """ More search result interface """
 
     playLocalSongSig = pyqtSignal(SongInfo)
 
@@ -31,7 +31,7 @@ class MoreSearchResultInterface(QWidget):
         self.__initWidget()
 
     def __initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widgets """
         self.titleLabel.move(30, 55)
         self.titleMask.setFixedHeight(125)
         self.stackedWidget.addWidget(self.albumInterface)
@@ -45,21 +45,21 @@ class MoreSearchResultInterface(QWidget):
         self.stackedWidget.resize(self.size())
 
     def updateWindow(self, keyWord: str, viewType: str, data: list):
-        """ 更新窗口
+        """ update window
 
         Parameters
         ----------
         keyWord: str
-            关键词
+            key word
 
         viewType: str
-            显示的视图类型，有以下几种：
-            * `local song`: 本地歌曲
-            * `album`: 本地专辑
-            * `playlist`: 本地播放列表
+            the type of displayed view, including：
+            * `local song`: local song
+            * `album`: local album
+            * `playlist`: local playlist
 
         data: list
-            显示的数据
+            data to be displayed in view
         """
         funcMap = {
             'local song': self.showLocalSongInterface,
@@ -68,35 +68,35 @@ class MoreSearchResultInterface(QWidget):
         }
 
         if viewType not in funcMap:
-            raise ValueError(f'`{viewType}` 非法')
+            raise ValueError(f'The view type `{viewType}` is illegal')
 
         funcMap[viewType](keyWord, data)
 
     def showLocalSongInterface(self, keyWord: str, songInfos: List[SongInfo]):
-        """ 更新并显示本地歌曲界面 """
+        """ update and show local song interface """
         self.setTitle(f'"{keyWord}"'+self.tr('search result for local songs'))
         self.localSongInterface.updateWindow(songInfos)
         self.stackedWidget.setCurrentWidget(self.localSongInterface)
 
     def showAlbumInterface(self, keyWord: str, albumInfos: List[AlbumInfo]):
-        """ 更新并显示专辑卡界面 """
+        """ update and show local album card interface """
         self.setTitle(f'"{keyWord}"'+self.tr('search result for albums'))
         self.albumInterface.updateWindow(albumInfos)
         self.stackedWidget.setCurrentWidget(self.albumInterface)
 
     def showPlaylistInterface(self, keyWord: str, playlists: List[Playlist]):
-        """ 更新并显示播放列表卡界面 """
+        """ update and show local playlist card interface """
         self.setTitle(f'"{keyWord}"'+self.tr('search result for playlists'))
         self.playlistInterface.updateWindow(playlists)
         self.stackedWidget.setCurrentWidget(self.playlistInterface)
 
     def setTitle(self, title: str):
-        """ 设置标题 """
+        """ set the title of interface """
         self.titleLabel.setText(title)
         self.titleLabel.adjustSize()
 
     def __setQss(self):
-        """ 设置层叠样式 """
+        """ set style sheet """
         self.titleLabel.setObjectName('titleLabel')
 
         f = QFile(":/qss/more_search_result_interface.qss")
@@ -105,5 +105,5 @@ class MoreSearchResultInterface(QWidget):
         f.close()
 
     def __connectSignalToSlot(self):
-        """ 信号连接到槽 """
+        """ connect signal to slot """
         self.localSongListWidget.playSignal.connect(self.playLocalSongSig)

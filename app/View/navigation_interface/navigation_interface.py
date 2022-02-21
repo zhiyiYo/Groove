@@ -1,5 +1,4 @@
 # coding:utf-8
-
 from common.signal_bus import signalBus
 from PyQt5.QtCore import QEvent, QPoint, pyqtSignal
 from PyQt5.QtWidgets import QWidget
@@ -10,32 +9,29 @@ from .navigation_widget import NavigationWidget
 
 
 class NavigationInterface(QWidget):
-    """ 导航界面 """
+    """ Navigation interface """
 
-    COMPACT = 0     # 折叠窗口
-    OVERLAY = 1     # 显示导航菜单，窗口不展开
-    IN_LINE = 2     # 导航窗口展开
-    searchSig = pyqtSignal(str)                     # 搜索信号
-    displayModeChanged = pyqtSignal(int)            # 显示模式改变
-    showCreatePlaylistDialogSig = pyqtSignal()      # 显示创建播放列表对话框信号
+    COMPACT = 0     # show navigation bar
+    OVERLAY = 1     # show navigation menu
+    IN_LINE = 2     # show navigation widget
+    searchSig = pyqtSignal(str)                # 搜索信号
+    displayModeChanged = pyqtSignal(int)       # 显示模式改变
+    showCreatePlaylistDialogSig = pyqtSignal() # 显示创建播放列表对话框信号
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        # 创建部件
         self.navigationBar = NavigationBar(self)
         self.navigationWidget = NavigationWidget(self)
         self.navigationMenu = NavigationMenu(self)
         self.__navigation_list = [self.navigationBar,
                                   self.navigationWidget, self.navigationMenu]
-        # 设置显示导航菜单/导航部件标志位
         self.__displayMode = self.COMPACT
         self.__isExpanded = False
         self.__isOverlay = False
-        # 初始化
         self.__initWidget()
 
     def __initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widgets """
         self.resize(self.navigationBar.width(), 800)
         self.setCurrentIndex(0)
         self.navigationWidget.hide()
@@ -45,9 +41,9 @@ class NavigationInterface(QWidget):
         self.navigationMenu.installEventFilter(self)
 
     def __connectSignalToSlot(self):
-        """ 信号连接到槽 """
+        """ connect signal to slot """
 
-        # 同步按钮选中状态
+        # set selected button
         self.navigationBar.selectedButtonChanged.connect(
             self.__onSelectedButtonChanged)
         self.navigationWidget.selectedButtonChanged.connect(
@@ -55,11 +51,10 @@ class NavigationInterface(QWidget):
         self.navigationMenu.selectedButtonChanged.connect(
             self.__onSelectedButtonChanged)
 
-        # 发送搜索信号
+        # search
         self.navigationMenu.searchSig.connect(self.__onSearch)
         self.navigationWidget.searchSig.connect(self.__onSearch)
 
-        # 按钮点击信号连接到槽
         self.navigationBar.showMenuButton.clicked.connect(
             self.__expandNavigationWindow)
         self.navigationBar.searchButton.clicked.connect(
@@ -84,25 +79,24 @@ class NavigationInterface(QWidget):
                 self.showCreatePlaylistDialogSig)
 
     def resizeEvent(self, e):
-        """ 调整小部件尺寸 """
         self.navigationBar.resize(self.navigationBar.width(), self.height())
         self.navigationMenu.resize(self.navigationMenu.width(), self.height())
         self.navigationWidget.resize(
             self.navigationWidget.width(), self.height())
 
     def eventFilter(self, obj, e: QEvent):
-        """ 过滤事件 """
-        if obj == self.navigationMenu:
+        if obj is self.navigationMenu:
             if e.type() == QEvent.Hide:
                 self.__isExpanded = False
                 self.navigationBar.show()
+
         return super().eventFilter(obj, e)
 
     def __expandNavigationWindow(self):
-        """ 展开导航窗口 """
+        """ expand navigation window """
         self.__isExpanded = True
         if not self.__isOverlay:
-            # 显示导航部件
+            # show navigation widget
             self.__displayMode = self.IN_LINE
             self.resize(self.navigationWidget.width(), self.height())
             self.navigationWidget.updateWindow()
@@ -110,7 +104,7 @@ class NavigationInterface(QWidget):
             self.navigationWidget.show()
             self.navigationBar.hide()
         else:
-            # 显示导航菜单
+            # show navigation menu
             self.__displayMode = self.OVERLAY
             self.navigationMenu.move(self.mapToGlobal(QPoint(0, 0)))
             self.navigationMenu.updateWindow()
@@ -119,40 +113,42 @@ class NavigationInterface(QWidget):
             self.navigationBar.hide()
 
     def __collapseWindow(self):
-        """ 折叠导航窗口 """
+        """ collapese navigation window """
         self.__isExpanded = False
         self.__displayMode = self.COMPACT
         self.navigationBar.show()
         self.navigationWidget.hide()
+
         if self.sender() is self.navigationMenu.showBarButton:
             self.navigationMenu.aniHide()
         elif self.sender() is self.navigationMenu.playingButton:
             self.navigationMenu.hide()
+
         self.resize(self.navigationBar.width(), self.height())
         self.displayModeChanged.emit(self.__displayMode)
 
     def setOverlay(self, isOverlay: bool):
-        """ 设置展开导航界面时是否为overlay显示模式 """
+        """ set whether in overlay mode """
         self.__isOverlay = isOverlay
 
     def __onSelectedButtonChanged(self, name):
-        """ 选中的按钮变化对应的槽函数 """
+        """ selected button changed slot """
         for widget in self.__navigation_list:
             if widget is not self.sender():
                 widget.setSelectedButton(name)
 
     def setCurrentIndex(self, index: int):
-        """ 选中下标对应的按钮 """
+        """ set selected button """
         for widget in self.__navigation_list:
             widget.setCurrentIndex(index)
 
     def updateWindow(self):
-        """ 更新窗口 """
+        """ update window """
         self.navigationMenu.updateWindow()
         self.navigationWidget.updateWindow()
 
     def __onSearch(self, text):
-        """ 搜索信号槽函数 """
+        """ search slot """
         self.navigationBar.currentButton.setSelected(False)
         self.navigationMenu.currentButton.setSelected(False)
         self.navigationWidget.currentButton.setSelected(False)

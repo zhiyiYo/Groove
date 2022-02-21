@@ -16,22 +16,22 @@ from .song_list_widget import SongListWidget
 
 
 class AlbumInterface(SongSelectionModeInterface):
-    """ 专辑界面 """
+    """ Album interface """
 
-    songCardPlaySig = pyqtSignal(int)                    # 在当前播放列表中播放这首歌
+    songCardPlaySig = pyqtSignal(int)    # 在当前播放列表中播放这首歌
 
     def __init__(self, library: Library, albumInfo: AlbumInfo = None, parent=None):
         """
         Parameters
         ----------
         library: Library
-            歌曲库
+            song library
 
         albumInfo: AlbumInfo
-            专辑信息
+            album information
 
         parent:
-            父级窗口
+            parent window
         """
         self.library = library
         self.__getInfo(albumInfo)
@@ -40,13 +40,13 @@ class AlbumInterface(SongSelectionModeInterface):
         self.__initWidget()
 
     def __initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widgets """
         self.resize(1230, 900)
         self.vBox.setContentsMargins(0, 430, 0, 0)
         self.__connectSignalToSlot()
 
     def __getInfo(self, albumInfo: AlbumInfo):
-        """ 获取信息 """
+        """ get album information """
         self.albumInfo = albumInfo if albumInfo else AlbumInfo()
         self.songInfos = self.albumInfo.songInfos
         self.album = self.albumInfo.album
@@ -55,7 +55,7 @@ class AlbumInterface(SongSelectionModeInterface):
         self.genre = self.albumInfo.genre
 
     def updateWindow(self, albumInfo: AlbumInfo):
-        """ 更新窗口 """
+        """ update window """
         if albumInfo == self.albumInfo:
             return
 
@@ -66,20 +66,16 @@ class AlbumInterface(SongSelectionModeInterface):
         self.adjustScrollHeight()
 
     def resizeEvent(self, e):
-        """ 改变尺寸时改变小部件大小 """
         super().resizeEvent(e)
         self.albumInfoBar.resize(self.width(), self.albumInfoBar.height())
 
     def updateSongInfo(self, newSongInfo: SongInfo):
-        """ 更新一首歌曲信息
+        """ update song information
 
         Parameters
         ----------
-        oldSongInfo: SongInfo
-            旧的歌曲信息
-
         newSongInfo: SongInfo
-            更新后的歌曲信息
+            new song information
         """
         albumInfo = self.library.albumInfoController.getAlbumInfo(
             self.singer, self.album)
@@ -89,45 +85,44 @@ class AlbumInterface(SongSelectionModeInterface):
         self.updateWindow(albumInfo)
 
     def updateMultiSongInfos(self, songInfos: List[SongInfo]):
-        """ 更新多首歌曲信息 """
+        """ update multi song information """
         self.updateSongInfo(songInfos)
 
     def __showAlbumInfoEditDialog(self):
-        """ 显示专辑信息编辑对话框 """
-        # 创建线程和对话框
+        """ show album information dialog """
         thread = SaveAlbumInfoThread(self)
         w = AlbumInfoEditDialog(self.albumInfo, self.window())
 
-        # 信号连接到槽
+        # connect signal to slot
         w.saveInfoSig.connect(thread.setAlbumInfo)
         w.saveInfoSig.connect(thread.start)
         thread.saveFinishedSignal.connect(w.onSaveComplete)
         thread.saveFinishedSignal.connect(self.__onSaveAlbumInfoFinished)
 
-        # 显示对话框
+        # show dialog box
         w.setStyle(QApplication.style())
         w.exec_()
 
     def __onSaveAlbumInfoFinished(self, oldAlbumInfo: AlbumInfo, newAlbumInfo: AlbumInfo, coverPath: str):
-        """ 保存专辑信息 """
+        """ save album information finished slot """
         self.sender().quit()
         self.sender().wait()
         self.sender().deleteLater()
         signalBus.editAlbumInfoSig.emit(oldAlbumInfo, newAlbumInfo, coverPath)
 
     def __onScrollBarValueChanged(self, value):
-        """ 滚动时改变专辑信息栏高度 """
+        """ adjust album information bar height when scrolling """
         h = 385 - value
         if h > 155:
             self.albumInfoBar.resize(self.albumInfoBar.width(), h)
 
     def setCurrentIndex(self, index: int):
-        """ 设置当前播放歌曲 """
+        """ set currently played song """
         self.songListWidget.setPlay(index)
 
     def __connectSignalToSlot(self):
-        """ 信号连接到槽 """
-        # 专辑信息栏信号
+        """ connect signal to slot """
+        # album information bar signal
         self.albumInfoBar.playAllButton.clicked.connect(
             lambda: signalBus.playAlbumSig.emit(self.singer, self.album))
         self.albumInfoBar.editInfoButton.clicked.connect(
@@ -143,8 +138,7 @@ class AlbumInterface(SongSelectionModeInterface):
         self.albumInfoBar.action_list[-2].triggered.connect(
             self.__showAlbumInfoEditDialog)
 
-        # 歌曲列表信号
+        # song list widget signal
         self.songListWidget.playSignal.connect(self.songCardPlaySig)
 
-        # 将滚动信号连接到槽函数
         self.verticalScrollBar().valueChanged.connect(self.__onScrollBarValueChanged)

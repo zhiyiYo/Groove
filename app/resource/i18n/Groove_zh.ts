@@ -174,12 +174,12 @@
 <context>
     <name>AlbumGroupBox</name>
     <message>
-        <location filename="../../View/search_result_interface/album_group_box.py" line="31"/>
+        <location filename="../../View/search_result_interface/album_group_box.py" line="27"/>
         <source>Albums</source>
         <translation>专辑</translation>
     </message>
     <message>
-        <location filename="../../View/search_result_interface/album_group_box.py" line="53"/>
+        <location filename="../../View/search_result_interface/group_box.py" line="40"/>
         <source> Show All</source>
         <translation> 查看全部</translation>
     </message>
@@ -1175,12 +1175,12 @@
 <context>
     <name>PlaylistGroupBox</name>
     <message>
-        <location filename="../../View/search_result_interface/playlist_group_box.py" line="31"/>
+        <location filename="../../View/search_result_interface/playlist_group_box.py" line="27"/>
         <source>Playlists</source>
         <translation>播放列表</translation>
     </message>
     <message>
-        <location filename="../../View/search_result_interface/playlist_group_box.py" line="51" />
+        <location filename="../../View/search_result_interface/group_box.py" line="40" />
         <source> Show All</source>
         <translation> 查看全部</translation>
     </message>

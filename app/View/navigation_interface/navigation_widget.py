@@ -4,7 +4,7 @@ from pathlib import Path
 from common.os_utils import getPlaylistNames
 from common.signal_bus import signalBus
 from components.widgets.scroll_area import ScrollArea
-from PyQt5.QtCore import QObject, Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QColor, QPainter, QPen
 from PyQt5.QtWidgets import QWidget
 
@@ -14,7 +14,7 @@ from .search_line_edit import SearchLineEdit
 
 
 class NavigationWidget(NavigationWidgetBase):
-    """ 侧边导航窗口 """
+    """ Navigation widget """
 
     searchSig = pyqtSignal(str)
     playlistFolder = Path('cache/Playlists')
@@ -28,7 +28,7 @@ class NavigationWidget(NavigationWidgetBase):
         self.__initWidget()
 
     def __createButtons(self):
-        """实例化按钮 """
+        """ create buttons """
         self.showBarButton = ToolButton(
             ":/images/navigation_interface/GlobalNavButton.png", parent=self)
         self.myMusicButton = PushButton(
@@ -42,13 +42,11 @@ class NavigationWidget(NavigationWidgetBase):
         self.createPlaylistButton = CreatePlaylistButton(self.scrollWidget)
         self.settingButton = PushButton(
             ":/images/navigation_interface/Settings.png", self.tr("Settings"), (400, 62), self)
-        # 创建播放列表名字按钮
+
         self.__createPlaylistNameButtons(getPlaylistNames())
 
-        # 设置当前按钮
         self.currentButton = self.myMusicButton
 
-        # 设置可选中的按钮列表
         self._selectableButtons = [
             self.myMusicButton,
             self.historyButton,
@@ -57,7 +55,6 @@ class NavigationWidget(NavigationWidgetBase):
             self.settingButton,
         ] + self.playlistNameButtons
 
-        # 设置可选中的按钮名字列表
         self._selectableButtonNames = [
             "myMusicButton",
             "historyButton",
@@ -67,23 +64,24 @@ class NavigationWidget(NavigationWidgetBase):
         ] + self.playlistNames
 
     def __initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widgets """
         self.resize(400, 800)
         self.setAttribute(Qt.WA_StyledBackground)
         self.setSelectedButton(self.myMusicButton.property('name'))
-        # 将按钮的点击信号连接到槽函数
+
+        # connect signal to slot
         self._connectButtonClickedSigToSlot()
         self.__connectPlaylistNameClickedSigToSlot()
         self.searchLineEdit.searchButton.clicked.connect(
             self._onSearchButtonClicked)
-        # 初始化布局
+
         self.__initLayout()
 
     def __initLayout(self):
-        """ 初始化布局 """
+        """ initialize layout """
         self.scrollArea.move(0, 162)
         self.scrollArea.setWidget(self.scrollWidget)
-        # 将按钮添加到滚动区域
+
         self.historyButton.move(0, 62)
         self.showBarButton.move(0, 40)
         self.playingButton.move(0, 124)
@@ -95,58 +93,55 @@ class NavigationWidget(NavigationWidgetBase):
         self.__adjustScrollWidgetHeight()
 
     def resizeEvent(self, e):
-        """ 调整小部件尺寸 """
         self.scrollArea.resize(self.width(), self.height() - 347)
         self.scrollWidget.resize(self.width(), self.scrollWidget.height())
         self.settingButton.move(0, self.height() - 62 - 115 - 10)
 
     def paintEvent(self, e):
-        """ 绘制分隔符 """
+        """ paint seperator """
         painter = QPainter(self)
         painter.setPen(QColor(0, 0, 0, 30))
         painter.drawLine(15, self.settingButton.y()-1,
                          self.width()-15, self.settingButton.y()-1)
 
     def __addPlaylistNameButtonsToScrollWidget(self):
-        """ 将播放列表名字按钮添加到滚动部件上 """
+        """ add playlist name buttons to scroll widget """
         for index, button in enumerate(self.playlistNameButtons):
             button.move(0, 246 + index * 62)
             button.show()
 
     def __adjustScrollWidgetHeight(self):
-        """ 调整滚动部件的高度 """
+        """ adjust the height of scroll widget """
         buttonHeight = 246 + 62 * len(self.playlistNames)
         height = self.height()-346 if self.height()-346 > buttonHeight else buttonHeight
         self.scrollWidget.resize(400, height)
 
     def updateWindow(self):
-        """ 更新界面 """
-        # 扫描播放列表
+        """ update window """
         playlistNames = getPlaylistNames()
         if playlistNames == self.playlistNames:
             return
 
-        # 删除旧播放列表名字按钮
         while self.playlistNameButtons:
             self._selectableButtons.pop()
             self._selectableButtonNames.pop()
             button = self.playlistNameButtons.pop()
             button.deleteLater()
 
-        # 创建新按钮
+        # create new buttons
         self.__createPlaylistNameButtons(playlistNames)
         self._selectableButtonNames += playlistNames
         self._selectableButtons += self.playlistNameButtons
         self._connectButtonClickedSigToSlot()
         self.__connectPlaylistNameClickedSigToSlot()
 
-        # 移动按钮
+        # move buttons
         self.__addPlaylistNameButtonsToScrollWidget()
         self.__adjustScrollWidgetHeight()
         self.update()
 
     def __createPlaylistNameButtons(self, playlistNames: list):
-        """ 创建播放列表名字按钮 """
+        """ create playlist name buttons """
         self.playlistNames = playlistNames
         self.playlistNameButtons = [
             PushButton(":/images/navigation_interface/Album.png",
@@ -155,14 +150,14 @@ class NavigationWidget(NavigationWidgetBase):
         ]
 
     def __connectPlaylistNameClickedSigToSlot(self):
-        """ 将播放列表名字按钮点击信号连接到槽函数 """
+        """ connect playlist name button clicked signal to slot """
         for button in self.playlistNameButtons:
             name = button.property('name')
             button.clicked.connect(
                 lambda checked, name=name: signalBus.switchToPlaylistInterfaceSig.emit(name))
 
     def _onSearchButtonClicked(self):
-        """ 搜索按钮点击槽函数 """
+        """ search button clicked slot """
         text = self.searchLineEdit.text()
         if text:
             self.currentButton.setSelected(False)
@@ -170,12 +165,11 @@ class NavigationWidget(NavigationWidgetBase):
 
 
 class ScrollWidget(QWidget):
-    """ 滚动部件 """
+    """ Scroll widget """
 
     def paintEvent(self, e):
-        """ 绘制分隔符 """
+        """ paint seperator """
         painter = QPainter(self)
         pen = QPen(QColor(0, 0, 0, 30))
         painter.setPen(pen)
-        # 前两个参数为第一个坐标，后两个为第二个坐标
         painter.drawLine(15, 185, self.width() - 15, 185)

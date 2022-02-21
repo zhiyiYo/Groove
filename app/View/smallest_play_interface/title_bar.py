@@ -1,18 +1,17 @@
 # coding:utf-8
-
 from win32.lib import win32con
 from win32.win32api import SendMessage
 from win32.win32gui import ReleaseCapture
 
-from PyQt5.QtCore import Qt, QEvent
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QResizeEvent
-from PyQt5.QtWidgets import QLabel, QWidget
+from PyQt5.QtWidgets import QWidget
 
 from components.buttons.three_state_button import ThreeStateButton
 
 
 class TitleBar(QWidget):
-    """ 定义标题栏 """
+    """ Title bar """
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -31,11 +30,9 @@ class TitleBar(QWidget):
         self.closeButton.clicked.connect(self.window().close)
 
     def resizeEvent(self, e: QResizeEvent):
-        """ 尺寸改变时移动按钮 """
         self.closeButton.move(self.width() - self.closeButton.width(), 0)
 
     def mousePressEvent(self, event):
-        """ 移动窗口 """
         if 0 < event.pos().x() < self.closeButton.x():
             ReleaseCapture()
             SendMessage(self.window().winId(), win32con.WM_SYSCOMMAND,

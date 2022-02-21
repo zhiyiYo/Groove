@@ -7,35 +7,33 @@ from .navigation_widget import NavigationWidget
 
 
 class NavigationMenu(NavigationWidget):
-    """ 导航菜单 """
+    """ Navigation menu """
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        # 是否削减设置按钮底部空白标志位
         self.__isShowBottomSpacing = False
         self.__ani = QPropertyAnimation(self, b"geometry")
-        # 创建窗口效果
         self.windowEffect = WindowEffect()
         self.__initWidget()
 
     def __initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widgets """
         self.resize(60, 800)
         self.setWindowFlags(Qt.NoDropShadowWindowHint | Qt.Popup)
         self.windowEffect.setAcrylicEffect(self.winId(), "F2F2F299", False)
-        # 强制刷新按钮文字
+
         self.myMusicButton.setText(self.tr('My music'))
         self.historyButton.setText(self.tr("Recent plays"))
         self.playingButton.setText(self.tr('Now playing'))
         self.playlistButton.setText(self.tr('Playlists'))
         self.settingButton.setText(self.tr('Settings'))
-        # 信号连接到槽
+
+        # connect signal to slot
         signalBus.switchToPlaylistInterfaceSig.connect(self.aniHide)
         self.myMusicButton.clicked.connect(self.aniHide)
         self.settingButton.clicked.connect(self.aniHide)
 
     def resizeEvent(self, e):
-        """ 调整小部件尺寸 """
         super().resizeEvent(e)
         self.scrollArea.resize(self.width(), self.height() - 232)
         self.settingButton.move(
@@ -44,7 +42,7 @@ class NavigationMenu(NavigationWidget):
             self.width() - 30, self.searchLineEdit.height())
 
     def aniShow(self):
-        """ 动画显示 """
+        """ show menu """
         super().show()
         self.activateWindow()
         self.searchLineEdit.show()
@@ -55,7 +53,7 @@ class NavigationMenu(NavigationWidget):
         self.__ani.start()
 
     def aniHide(self):
-        """ 动画隐藏 """
+        """ hide menu """
         self.__ani.setStartValue(QRect(self.x(), self.y(), 400, self.height()))
         self.__ani.setEndValue(QRect(self.x(), self.y(), 60, self.height()))
         self.__ani.finished.connect(self.__hideAniFinishedSlot)
@@ -64,17 +62,16 @@ class NavigationMenu(NavigationWidget):
         self.__ani.start()
 
     def __hideAniFinishedSlot(self):
-        """ 隐藏窗体的动画结束 """
+        """ hide animation finished slot """
         super().hide()
         self.resize(60, self.height())
         self.__ani.disconnect()
 
     def setBottomSpacingVisible(self, isBottomSpacingVisible: bool):
-        """ 是否削减设置按钮底部空白 """
         self.__isShowBottomSpacing = isBottomSpacingVisible
 
     def _onSearchButtonClicked(self):
-        """ 搜索按钮点击槽函数 """
+        """ search button clicked slot """
         text = self.searchLineEdit.text()
         if text:
             self.aniHide()

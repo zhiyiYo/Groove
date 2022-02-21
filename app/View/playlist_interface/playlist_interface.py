@@ -18,24 +18,24 @@ from .song_list_widget import SongListWidget
 
 
 class PlaylistInterface(SongSelectionModeInterface):
-    """ 播放列表界面 """
+    """ Playlist interface """
 
-    songCardPlaySig = pyqtSignal(int)                       # 在当前播放列表中播放这首歌
-    removeSongSig = pyqtSignal(str, list)                   # 从播放列表中移除歌曲
-    switchToAlbumCardInterfaceSig = pyqtSignal()            # 切换到专辑卡界面
+    songCardPlaySig = pyqtSignal(int)             # 在当前播放列表中播放这首歌
+    removeSongSig = pyqtSignal(str, list)         # 从播放列表中移除歌曲
+    switchToAlbumCardInterfaceSig = pyqtSignal()  # 切换到专辑卡界面
 
     def __init__(self, library: Library, playlist: Playlist = None, parent=None):
         """
         Parameters
         ----------
         library: Library
-            歌曲库
+            Song library
 
         playlist: Playlist
-            播放列表
+            custom playlist
 
         parent:
-            父级窗口
+            parent window
         """
         self.library = library
         self.__getPlaylistInfo(playlist)
@@ -61,7 +61,7 @@ class PlaylistInterface(SongSelectionModeInterface):
         self.__initWidget()
 
     def __initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widgets """
         self.resize(1230, 900)
         self.vBox.setContentsMargins(0, 430, 0, 0)
         self.noMusicLabel.move(42, 455)
@@ -70,7 +70,7 @@ class PlaylistInterface(SongSelectionModeInterface):
         self.__connectSignalToSlot()
 
     def updateWindow(self, playlist: Playlist):
-        """ 更新窗口 """
+        """ update playlist interface """
         if playlist == self.playlist:
             return
 
@@ -81,21 +81,17 @@ class PlaylistInterface(SongSelectionModeInterface):
         self.adjustScrollHeight()
 
     def resizeEvent(self, e):
-        """ 改变尺寸时改变小部件大小 """
         super().resizeEvent(e)
         self.playlistInfoBar.resize(
             self.width(), self.playlistInfoBar.height())
 
     def updateSongInfo(self, newSongInfo: SongInfo):
-        """ 更新一首歌曲信息
+        """ update one song information
 
         Parameters
         ----------
-        oldSongInfo: SongInfo
-            旧的歌曲信息
-
         newSongInfo: SongInfo
-            更新后的歌曲信息
+            new song information
         """
         self.songListWidget.updateOneSongCard(newSongInfo)
         if self.songInfos and self.songInfos[0].file == newSongInfo.file:
@@ -105,12 +101,12 @@ class PlaylistInterface(SongSelectionModeInterface):
                 self.playlistInfoBar.updateWindow(self.playlist)
 
     def updateMultiSongInfos(self, songInfos: List[SongInfo]):
-        """ 更新多首歌曲信息 """
+        """ update multi song information """
         for songInfo in songInfos:
             self.updateSongInfo(songInfo)
 
     def __setQss(self):
-        """ 设置层叠样式 """
+        """ set style sheet """
         self.setObjectName("playlistInterface")
         f = QFile(":/qss/playlist_interface.qss")
         f.open(QFile.ReadOnly)
@@ -118,7 +114,7 @@ class PlaylistInterface(SongSelectionModeInterface):
         f.close()
 
     def __getPlaylistInfo(self, playlist: Playlist):
-        """ 获取播放列表信息 """
+        """ get playlist information """
         self.playlist = playlist if playlist else Playlist()
         self.songInfos = self.playlist.songInfos
         self.playlistName = self.playlist.name
@@ -136,13 +132,13 @@ class PlaylistInterface(SongSelectionModeInterface):
         self.__onSongListWidgetEmptyChanged(self.songListWidget.songCardNum() == 0)
 
     def __onScrollBarValueChanged(self, value):
-        """ 滚动时改变专辑信息栏高度 """
+        """ change the height of playlist information bar when scrolling """
         h = 385 - value
         if h > 155:
             self.playlistInfoBar.resize(self.playlistInfoBar.width(), h)
 
     def __showDeletePlaylistDialog(self):
-        """ 显示删除播放列表对话框 """
+        """ show delete playlist dialog box """
         name = self.playlistName
         title = self.tr("Are you sure you want to delete this?")
         content = self.tr("If you delete") + f' "{name}" ' + \
@@ -152,35 +148,35 @@ class PlaylistInterface(SongSelectionModeInterface):
         w.exec()
 
     def __showRenamePlaylistDialog(self, old: str):
-        """ 显示重命名播放列表面板 """
+        """ show rename playlist dialog box """
         w = RenamePlaylistDialog(self.library, old, self.window())
         w.renamePlaylistSig.connect(self.__renamePlaylist)
         w.exec()
 
     def __renamePlaylist(self, old: str, new: str):
-        """ 重命名播放列表 """
+        """ rename playlist """
         self.playlist.name = new
         self.__getPlaylistInfo(self.playlist)
         self.playlistInfoBar.updateWindow(self.playlist)
         signalBus.renamePlaylistSig.emit(old, new)
 
     def __onSongListWidgetRemoveSongs(self, songInfo: SongInfo):
-        """ 从播放列表中移除歌曲 """
+        """ song list widget remove songs slot """
         self.playlistInfoBar.updateWindow(self.playlist)
         self.removeSongSig.emit(self.playlistName, [songInfo])
         self.adjustScrollHeight()
         self.__onSongListWidgetEmptyChanged(self.songListWidget.songCardNum() == 0)
 
     def __onSongListWidgetEmptyChanged(self, isEmpty):
-        """ 歌曲卡数量改变槽函数 """
+        """ song list widget empty changed slot """
         self.addMusicButton.setVisible(isEmpty)
         self.noMusicLabel.setVisible(isEmpty)
 
     def __connectSignalToSlot(self):
-        """ 信号连接到槽 """
+        """ connect signal to slot """
         self.addMusicButton.clicked.connect(self.switchToAlbumCardInterfaceSig)
 
-        # 专辑信息栏信号
+        # playlist information bar signal
         self.playlistInfoBar.playAllButton.clicked.connect(
             lambda: signalBus.playCheckedSig.emit(self.songInfos))
         self.playlistInfoBar.addToPlayingPlaylistSig.connect(
@@ -194,12 +190,11 @@ class PlaylistInterface(SongSelectionModeInterface):
         self.playlistInfoBar.deleteButton.clicked.connect(
             self.__showDeletePlaylistDialog)
 
-        # 歌曲列表信号
+        # song list widget signal
         self.songListWidget.playSignal.connect(self.songCardPlaySig)
         self.songListWidget.removeSongSignal.connect(
             self.__onSongListWidgetRemoveSongs)
         self.songListWidget.emptyChangedSig.connect(
             self.__onSongListWidgetEmptyChanged)
 
-        # 将滚动信号连接到槽函数
         self.verticalScrollBar().valueChanged.connect(self.__onScrollBarValueChanged)
