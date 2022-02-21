@@ -1,62 +1,57 @@
 # coding:utf-8
 from common.signal_bus import signalBus
-from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWinExtras import QWinThumbnailToolBar, QWinThumbnailToolButton
 
 
 class ThumbnailPlayButton(QWinThumbnailToolButton):
-    """ 缩略图任务栏的播放/暂停按钮 """
+    """ Thumbnail play button"""
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.setPlay(False)
 
     def setPlay(self, isPlay: bool):
-        """ 根据播放状态设置图标和提示条 """
+        """ set play state """
         self.isPlaying = isPlay
         if self.isPlaying:
-            self.setToolTip("暂停")
             self.setIcon(QIcon(":/images/thumbnail_tool_bar/播放_32_32_2.png"))
         else:
-            self.setToolTip("播放")
             self.setIcon(QIcon(":/images/thumbnail_tool_bar/暂停_32_32_2.png"))
 
 
 class ThumbnailToolBar(QWinThumbnailToolBar):
-    """ 缩略图任务栏 """
+    """ Thumbail tool bar """
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.playButton = ThumbnailPlayButton(self)
         self.lastSongButton = QWinThumbnailToolButton(self)
         self.nextSongButton = QWinThumbnailToolButton(self)
-        # 初始化
         self.__initWidget()
 
     def __initWidget(self):
-        """ 初始化小部件 """
-        # 设置图标和提示条
-        self.lastSongButton.setToolTip("上一首")
-        self.nextSongButton.setToolTip("下一首")
+        """ initialize widgets """
         self.lastSongButton.setIcon(
             QIcon(":/images/thumbnail_tool_bar/上一首_32_32_2.png"))
         self.nextSongButton.setIcon(
             QIcon(":/images/thumbnail_tool_bar/下一首_32_32_2.png"))
-        # 将按钮添加到任务栏
+
+        # add button to bar
         self.addButton(self.lastSongButton)
         self.addButton(self.playButton)
         self.addButton(self.nextSongButton)
-        # 信号连接到槽
+
+        # connect signal to slot
         self.lastSongButton.clicked.connect(signalBus.lastSongSig)
         self.nextSongButton.clicked.connect(signalBus.nextSongSig)
         self.playButton.clicked.connect(signalBus.togglePlayStateSig)
 
     def setButtonsEnabled(self, isEnable: bool):
-        """ 设置按钮的启用与否 """
+        """ set button enabled """
         for button in self.buttons():
             button.setEnabled(isEnable)
 
     def setPlay(self, isPlay: bool):
-        """ 设置播放状态 """
+        """ set play state """
         self.playButton.setPlay(isPlay)

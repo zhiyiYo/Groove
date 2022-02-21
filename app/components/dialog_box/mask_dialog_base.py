@@ -6,14 +6,14 @@ from PyQt5.QtWidgets import (QDialog, QGraphicsDropShadowEffect,
 
 
 class MaskDialogBase(QDialog):
-    """ 带遮罩的对话框抽象基类 """
+    """ Dialog box base class with a mask """
 
     def __init__(self, parent):
         super().__init__(parent=parent)
         self.__hBoxLayout = QHBoxLayout(self)
         self.windowMask = QWidget(self)
 
-        # 蒙版中间的对话框，所有小部件以他为父级窗口
+        # dialog box in the center of mask, all widgets take it as parent
         self.widget = QWidget(self, objectName='centerWidget')
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
@@ -25,7 +25,7 @@ class MaskDialogBase(QDialog):
         self.__setShadowEffect()
 
     def __setShadowEffect(self):
-        """ 添加阴影 """
+        """ add shadow to dialog """
         shadowEffect = QGraphicsDropShadowEffect(self.widget)
         shadowEffect.setBlurRadius(60)
         shadowEffect.setOffset(0, 10)
@@ -33,7 +33,7 @@ class MaskDialogBase(QDialog):
         self.widget.setGraphicsEffect(shadowEffect)
 
     def showEvent(self, e):
-        """ 淡入 """
+        """ fade in """
         opacityEffect = QGraphicsOpacityEffect(self)
         self.setGraphicsEffect(opacityEffect)
         opacityAni = QPropertyAnimation(opacityEffect, b'opacity', self)
@@ -46,7 +46,7 @@ class MaskDialogBase(QDialog):
         super().showEvent(e)
 
     def closeEvent(self, e):
-        """ 淡出 """
+        """ fade out """
         self.widget.setGraphicsEffect(None)
         opacityEffect = QGraphicsOpacityEffect(self)
         self.setGraphicsEffect(opacityEffect)

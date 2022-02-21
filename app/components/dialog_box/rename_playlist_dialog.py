@@ -5,14 +5,14 @@ from components.buttons.three_state_button import ThreeStateButton
 from components.dialog_box.mask_dialog_base import MaskDialogBase
 from components.widgets.label import ClickableLabel
 from components.widgets.menu import LineEditMenu
-from PyQt5.QtCore import QDateTime, QEvent, QFile, Qt, pyqtSignal
+from PyQt5.QtCore import QEvent, QFile, Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import (QApplication, QLabel, QLineEdit, QPushButton,
                              QVBoxLayout)
 
 
 class RenamePlaylistDialog(MaskDialogBase):
-    """ 创建播放列表对话框 """
+    """ Rename playlist dialog box """
 
     renamePlaylistSig = pyqtSignal(str, str)
 
@@ -30,7 +30,7 @@ class RenamePlaylistDialog(MaskDialogBase):
         self.__initWidget()
 
     def __initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widgets """
         self.widget.setFixedSize(586, 594)
         self.renamePlaylistButton.setEnabled(False)
         self.playlistExistedLabel.hide()
@@ -40,14 +40,14 @@ class RenamePlaylistDialog(MaskDialogBase):
         self.__setQss()
         self.__initLayout()
 
-        # 信号连接到槽
+        # connect signal to slot
         self.cancelLabel.clicked.connect(self.close)
         self.lineEdit.textChanged.connect(self.__onLineEditTextChanged)
         self.renamePlaylistButton.clicked.connect(
             self.__onRenamePlaylistButtonClicked)
 
     def __setQss(self):
-        """ 设置层叠样式 """
+        """ set style sheet """
         self.cancelLabel.setObjectName("cancelLabel")
         f = QFile(":/qss/rename_playlist_dialog.qss")
         f.open(QFile.ReadOnly)
@@ -71,12 +71,12 @@ class RenamePlaylistDialog(MaskDialogBase):
         self.vBoxLayout.setAlignment(Qt.AlignTop)
 
     def __isPlaylistExist(self, name: str) -> bool:
-        """ 检测播放列表是否已经存在 """
+        """ detect if the playlist exists """
         names = [i.name for i in self.library.playlistController.getAllPlaylists()]
         return name in names
 
     def __onRenamePlaylistButtonClicked(self):
-        """ 重命名播放列表按钮点击槽函数 """
+        """ rename button clicked slot """
         name = self.lineEdit.text().strip()
         if self.__isPlaylistExist(name):
             return
@@ -85,15 +85,14 @@ class RenamePlaylistDialog(MaskDialogBase):
         self.close()
 
     def __onLineEditTextChanged(self, name: str):
-        """ 单行输入框中的播放列表名字改变对应的槽函数 """
+        """ line edit text changed slot """
         name = name.strip()
 
-        # 如果播放列表名字存在或者没变就禁用按钮
+        # disable button if the playlist exists
         isExist = self.__isPlaylistExist(name)
         isDisabled = name in ["", self.oldName]
         self.renamePlaylistButton.setDisabled(isDisabled or isExist)
 
-        # 如果播放列表名已存在，显示提示标签
         if isExist and name != self.oldName:
             self.playlistExistedLabel.show()
         elif not isExist:
@@ -101,7 +100,7 @@ class RenamePlaylistDialog(MaskDialogBase):
 
 
 class LineEdit(QLineEdit):
-    """ 编辑框 """
+    """ Playlist name line edit """
 
     def __init__(self, text="", parent=None):
         super().__init__(text, parent)
@@ -111,47 +110,43 @@ class LineEdit(QLineEdit):
             "pressed": ":/images/create_playlist_dialog/clear_pressed_50_50.png",
         }
 
-        # 创建小部件
         self.clearButton = ThreeStateButton(iconPath_dict, self, (50, 50))
         self.pencilPic = QLabel(self)
         self.menu = LineEditMenu(self)
-        # 初始化
+
         self.initWidget()
         self.setQss()
 
     def initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widgets """
         self.setFixedSize(484, 70)
         self.adjustButtonPos()
-        self.textChanged.connect(self.textChangedEvent)
+        self.textChanged.connect(self.__onTextChanged)
         self.setObjectName("createPlaylistPanelLineEdit")
-        # 初始化按钮
+
         self.clearButton.hide()
         self.clearButton.installEventFilter(self)
         self.pencilPic.setPixmap(
             QPixmap(":/images/create_playlist_dialog/pencil_50_50.png"))
-        # 设置文字的外间距，防止文字和文本重叠
+
+        # prevent text and icon overlapping
         self.setTextMargins(
             0, 0, self.clearButton.width() + self.pencilPic.pixmap().width() + 1, 0)
 
-    def textChangedEvent(self):
-        """ 编辑框的文本改变时选择是否显示清空按钮 """
+    def __onTextChanged(self):
         self.clearButton.setVisible(bool(self.text()))
 
     def enterEvent(self, e):
-        """ 鼠标进入更新样式 """
         if not self.text():
             self.pencilPic.setPixmap(
                 QPixmap(":/images/create_playlist_dialog/pencil_noFocus_hover_50_50.png"))
 
     def leaveEvent(self, e):
-        """ 鼠标离开更新样式 """
         if not self.text():
             self.pencilPic.setPixmap(
                 QPixmap(":/images/create_playlist_dialog/pencil_noFocus_50_50.png"))
 
     def focusOutEvent(self, e):
-        """ 当焦点移到别的输入框时隐藏按钮 """
         super().focusOutEvent(e)
 
         if not self.text():
@@ -163,10 +158,8 @@ class LineEdit(QLineEdit):
             QPixmap(":/images/create_playlist_dialog/pencil_noFocus_50_50.png"))
 
     def focusInEvent(self, e):
-        """ 焦点进入时更换样式并取消提示文字 """
         super().focusInEvent(e)
 
-        # 必须有判断的一步，不然每次右击菜单执行完都会触发focusInEvent()导致菜单功能混乱
         if self.property("noText") == "true":
             self.clear()
 
@@ -176,38 +169,34 @@ class LineEdit(QLineEdit):
             QPixmap(":/images/create_playlist_dialog/pencil_50_50.png"))
 
     def mousePressEvent(self, e):
-        """ 鼠标点击事件 """
         if e.button() == Qt.LeftButton:
-            # 需要调用父类的鼠标点击事件，不然无法部分选中
             super().mousePressEvent(e)
-            # 如果输入框中有文本，就设置为只读并显示清空按钮
             if self.text():
                 self.clearButton.show()
 
     def contextMenuEvent(self, e):
-        """ 设置右击菜单 """
+        """ show context menu """
         self.menu.exec_(e.globalPos())
 
     def resizeEvent(self, e):
-        """ 调整大小的同时改变按钮位置 """
         self.adjustButtonPos()
 
     def eventFilter(self, obj, e):
-        """ 过滤事件 """
-        if obj == self.clearButton:
+        if obj is self.clearButton:
             if e.type() == QEvent.MouseButtonRelease and e.button() == Qt.LeftButton:
                 self.clear()
                 self.clearButton.hide()
                 return True
+
         return super().eventFilter(obj, e)
 
     def adjustButtonPos(self):
-        """ 调整按钮的位置 """
+        """ adjust button position """
         self.clearButton.move(self.width() - 101, 10)
         self.pencilPic.move(self.width() - 51, 10)
 
     def setQss(self):
-        """ 设置层叠样式 """
+        """ set style sheet """
         f = QFile(":/qss/line_edit.qss")
         f.open(QFile.ReadOnly)
         self.setStyleSheet(str(f.readAll(), encoding='utf-8'))

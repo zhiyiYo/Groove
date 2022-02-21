@@ -9,7 +9,7 @@ from .song_card_type import SongCardType
 
 
 class NoScrollSongListWidget(BasicSongListWidget):
-    """ 禁用了滚动的歌曲列表控件 """
+    """ Song list widget which disable scrolling """
 
     def __init__(self, songInfos: list, songCardType: SongCardType, parent=None,
                  viewportMargins=QMargins(30, 0, 30, 0), paddingBottomHeight=116):
@@ -17,19 +17,19 @@ class NoScrollSongListWidget(BasicSongListWidget):
         Parameters
         ----------
         songInfos: list
-            歌曲信息列表
+            song information list
 
         songCardType: SongCardType
-            歌曲卡类型
+            song card type
 
         parent:
-            父级窗口
+            parent window
 
         viewportMargins: QMargins
-            视口的外边距
+            viewport margins
 
         paddingBottomHeight: int
-            列表视图底部留白
+            leave a blank at the bottom. If it is `0` or `None`, it will not be added
         """
         super().__init__(songInfos, songCardType, parent, viewportMargins, 0)
         self.resize(1150, 758)
@@ -49,7 +49,6 @@ class NoScrollSongListWidget(BasicSongListWidget):
         self.__adjustHeight()
 
     def updateAllSongCards(self, songInfos: List[SongInfo]):
-        """ 更新所有歌曲卡，根据给定的信息决定创建或者删除歌曲卡 """
         super().updateAllSongCards(songInfos)
         self.__adjustHeight()
 
@@ -62,6 +61,6 @@ class NoScrollSongListWidget(BasicSongListWidget):
         self.__adjustHeight()
 
     def __adjustHeight(self):
-        """ 调整高度 """
+        """ adjust height """
         self.resize(self.width(), 60*len(self.songCards) +
                     self.__paddingBottomHeight)

@@ -98,7 +98,7 @@ class SingerInterfaceAlbumCard(AlbumCardBase):
 
 
 class AlbumCardContextMenu(DWMMenu):
-    """ Context menu of album card"""
+    """ Context menu of album card """
 
     def __init__(self, parent):
         super().__init__("", parent)
@@ -183,7 +183,7 @@ class AlbumCardFactory:
 
     @staticmethod
     def create(cardType: AlbumCardType, albumInfo: AlbumInfo, parent=None) -> AlbumCardBase:
-        """ create album card
+        """ create an album card
 
         Parameters
         ----------

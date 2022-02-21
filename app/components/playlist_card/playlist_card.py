@@ -10,16 +10,15 @@ from .playlist_card_base import PlaylistCardBase
 
 
 class PlaylistCardType(Enum):
-    """ 播放列表卡类型 """
+    """ Playlist card type """
     PLAYLIST_CARD = 0
     LOCAL_SEARCHED_PLAYLIST_CARD = 1
 
 
 class PlaylistCard(PlaylistCardBase):
-    """ 播放列表卡 """
+    """ Playlist card """
 
     def contextMenuEvent(self, e):
-        """ 显示右击菜单 """
         menu = PlaylistCardContextMenu(parent=self)
 
         menu.playAct.triggered.connect(lambda: self.playSig.emit(self.name))
@@ -41,7 +40,7 @@ class PlaylistCard(PlaylistCardBase):
 
 
 class LocalSearchedPlaylistCard(PlaylistCardBase):
-    """ 本地搜索得到的播放列表卡 """
+    """ Playlist card in local search result """
 
     def contextMenuEvent(self, e):
         menu = LocalSearchedPlaylistCardContextMenu(self)
@@ -61,7 +60,7 @@ class LocalSearchedPlaylistCard(PlaylistCardBase):
 
 
 class PlaylistCardContextMenu(DWMMenu):
-    """ 播放列表卡右击菜单 """
+    """ Context menu of playlist card """
 
     def __init__(self, parent=None):
         super().__init__("", parent)
@@ -70,8 +69,7 @@ class PlaylistCardContextMenu(DWMMenu):
         self.setQss()
 
     def __createActions(self):
-        """ 创建动作 """
-        # 创建动作
+        # create actions
         self.playAct = QAction(self.tr("Play"), self)
         self.nextToPlayAct = QAction(self.tr("Play next"), self)
         self.addToMenu = AddToMenu(self.tr("Add to"), self)
@@ -80,9 +78,8 @@ class PlaylistCardContextMenu(DWMMenu):
         self.deleteAct = QAction(self.tr("Delete"), self)
         self.selectAct = QAction(self.tr("Select"), self)
 
-        # 添加动作到菜单
+        # add actions to menu
         self.addActions([self.playAct, self.nextToPlayAct])
-        # 将子菜单添加到主菜单
         self.addMenu(self.addToMenu)
         self.addActions(
             [self.renameAct, self.pinToStartMenuAct, self.deleteAct])
@@ -91,7 +88,7 @@ class PlaylistCardContextMenu(DWMMenu):
 
 
 class LocalSearchedPlaylistCardContextMenu(DWMMenu):
-    """ 播放列表卡右击菜单"""
+    """ Context menu of local searched playlist card"""
 
     def __init__(self, parent):
         super().__init__("", parent)
@@ -100,43 +97,42 @@ class LocalSearchedPlaylistCardContextMenu(DWMMenu):
         self.setQss()
 
     def __createActions(self):
-        """ 创建动作 """
+        # create actions
         self.playAct = QAction(self.tr("Play"), self)
         self.nextToPlayAct = QAction(self.tr("Play next"), self)
         self.addToMenu = AddToMenu(self.tr("Add to"), self)
         self.renameAct = QAction(self.tr("Rename"), self)
         self.pinToStartMenuAct = QAction(self.tr('Pin to Start'), self)
 
-        # 添加动作到菜单
+        # add actions to menu
         self.addActions([self.playAct, self.nextToPlayAct])
-        # 将子菜单添加到主菜单
         self.addMenu(self.addToMenu)
         self.addActions(
             [self.renameAct, self.pinToStartMenuAct])
 
 
 class PlaylistCardFactory:
-    """ 专辑卡工厂 """
+    """ Playlist card factory """
 
     @staticmethod
     def create(cardType: PlaylistCardType, playlist: Playlist, parent=None) -> PlaylistCardBase:
-        """ 创建播放列表卡
+        """ create a playlist card
 
         Parameters
         ----------
         cardType: PlaylistCardType
-            专辑卡类型
+            playlist card type
 
         playlist: Playlist
-            播放列表
+            custom playlist
 
         parent:
-            父级窗口
+            parent window
 
         Returns
         -------
         playlistCard:
-            播放列表卡
+            playlist card
         """
         playlistCardMap = {
             PlaylistCardType.PLAYLIST_CARD: PlaylistCard,
@@ -144,6 +140,6 @@ class PlaylistCardFactory:
         }
 
         if cardType not in playlistCardMap:
-            raise ValueError("专辑卡类型非法")
+            raise ValueError(f"Playlist card type `{cardType}` is illegal")
 
         return playlistCardMap[cardType](playlist, parent)

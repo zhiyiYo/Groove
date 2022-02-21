@@ -10,11 +10,10 @@ from PyQt5.QtWidgets import QAction, QApplication, QMenu
 
 
 class AeroMenu(QMenu):
-    """ Aero菜单 """
+    """ Aero menu """
 
     def __init__(self, string="", parent=None):
         super().__init__(string, parent)
-        # 创建窗口特效
         self.windowEffect = WindowEffect()
         self.setWindowFlags(
             Qt.FramelessWindowHint | Qt.Popup | Qt.NoDropShadowWindowHint)
@@ -28,12 +27,12 @@ class AeroMenu(QMenu):
         return QMenu.event(self, e)
 
     def setMenuEffect(self):
-        """ 开启特效 """
+        """ set menu effect """
         self.windowEffect.setAeroEffect(self.winId())
         self.windowEffect.addMenuShadowEffect(self.winId())
 
     def setQss(self):
-        """ 设置层叠样式 """
+        """ set style sheet """
         f = QFile(":/qss/menu.qss")
         f.open(QFile.ReadOnly)
         self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
@@ -41,7 +40,7 @@ class AeroMenu(QMenu):
 
 
 class AcrylicMenu(QMenu):
-    """ 亚克力菜单 """
+    """ Acrylic menu """
 
     def __init__(self, string="", parent=None, acrylicColor="e5e5e5CC"):
         super().__init__(string, parent)
@@ -56,17 +55,16 @@ class AcrylicMenu(QMenu):
         return QMenu.event(self, e)
 
     def __initWidget(self):
-        """ 初始化菜单 """
+        """ initialize widgets """
         self.setAttribute(Qt.WA_StyledBackground)
         self.setWindowFlags(
-            Qt.FramelessWindowHint | Qt.Popup | Qt.NoDropShadowWindowHint
-        )
+            Qt.FramelessWindowHint | Qt.Popup | Qt.NoDropShadowWindowHint)
         self.setProperty("effect", "acrylic")
         self.setObjectName("acrylicMenu")
         self.setQss()
 
     def setQss(self):
-        """ 设置层叠样式 """
+        """ set style sheet """
         f = QFile(":/qss/menu.qss")
         f.open(QFile.ReadOnly)
         self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
@@ -74,11 +72,10 @@ class AcrylicMenu(QMenu):
 
 
 class DWMMenu(QMenu):
-    """ 使用 DWM 窗口阴影的菜单 """
+    """ A menu with DWM shadow """
 
     def __init__(self, title="", parent=None):
         super().__init__(title, parent)
-        # 创建窗口特效
         self.windowEffect = WindowEffect()
         self.setWindowFlags(
             Qt.FramelessWindowHint | Qt.Popup | Qt.NoDropShadowWindowHint)
@@ -91,7 +88,7 @@ class DWMMenu(QMenu):
         return QMenu.event(self, e)
 
     def setQss(self):
-        """ 设置层叠样式表 """
+        """ set style sheet """
         f = QFile(":/qss/menu.qss")
         f.open(QFile.ReadOnly)
         self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
@@ -99,26 +96,24 @@ class DWMMenu(QMenu):
 
 
 class AddToMenu(DWMMenu):
-    """ 添加到菜单 """
+    """ Add to menu """
 
-    addSongsToPlaylistSig = pyqtSignal(str)  # 将歌曲添加到已存在的自定义播放列表
-    playlistFolder = Path('cache/Playlists')
+    addSongsToPlaylistSig = pyqtSignal(str)
 
     def __init__(self, title="Add to", parent=None):
         super().__init__(title, parent)
         self.setObjectName("addToMenu")
-        # 创建动作
         self.createActions()
         self.setQss()
 
     def createActions(self):
-        """ 创建三个动作 """
+        """ create actions """
         self.playingAct = QAction(
             QIcon(":/images/menu/Playing.png"), self.tr("Now playing"), self)
         self.newPlaylistAct = QAction(
             QIcon(":/images/menu/Add.png"), self.tr("New playlist"), self)
 
-        # 根据播放列表创建动作
+        # create actions according to playlists
         names = getPlaylistNames()
         self.playlistNameActs = [
             QAction(QIcon(":/images/menu/Album.png"), i, self) for i in names]
@@ -128,19 +123,17 @@ class AddToMenu(DWMMenu):
         self.addSeparator()
         self.addActions([self.newPlaylistAct] + self.playlistNameActs)
 
-        # 将添加到播放列表的信号连接到槽函数
+        # connect the signal of playlist to slot
         for name, act in zip(names, self.playlistNameActs):
-            # lambda表达式只有在执行的时候才回去寻找变量 name，所以需要将name固定下来
             act.triggered.connect(
                 lambda checked, playlistName=name: self.addSongsToPlaylistSig.emit(playlistName))
 
     def actionCount(self):
-        """ 返回菜单中的动作数 """
         return len(self.action_list)
 
 
 class DownloadMenu(DWMMenu):
-    """ 下载歌曲菜单 """
+    """ Download online music menu """
 
     downloadSig = pyqtSignal(str)
 
@@ -161,7 +154,7 @@ class DownloadMenu(DWMMenu):
 
 
 class LineEditMenu(DWMMenu):
-    """ 单行输入框右击菜单 """
+    """ Line edit menu """
 
     def __init__(self, parent):
         super().__init__("", parent)
@@ -172,7 +165,6 @@ class LineEditMenu(DWMMenu):
         self.setQss()
 
     def createActions(self):
-        # 创建动作
         self.cutAct = QAction(
             QIcon(":/images/menu/Cut.png"),
             self.tr("Cut"),
@@ -203,29 +195,15 @@ class LineEditMenu(DWMMenu):
         )
         self.selectAllAct = QAction(
             self.tr("Select all"), self, shortcut="Ctrl+A", triggered=self.parent().selectAll)
-        # 创建动作列表
-        self.action_list = [
-            self.cutAct,
-            self.copyAct,
-            self.pasteAct,
-            self.cancelAct,
-            self.selectAllAct,
-        ]
+        self.action_list = [self.cutAct, self.copyAct,
+                            self.pasteAct, self.cancelAct, self.selectAllAct]
 
     def exec_(self, pos):
-        # 删除所有动作
         self.clear()
-        # clear之后之前的动作已不再存在故需重新创建
         self.createActions()
-        # 初始化属性
         self.setProperty("hasCancelAct", "false")
 
-        # 访问系统剪贴板
-        self.clipboard = QApplication.clipboard()
-
-        # 根据剪贴板内容是否为text分两种情况讨论
-        if self.clipboard.mimeData().hasText():
-            # 再根据3种情况分类讨论
+        if QApplication.clipboard().mimeData().hasText():
             if self.parent().text():
                 self.setProperty("hasCancelAct", "true")
                 if self.parent().selectedText():
@@ -248,18 +226,16 @@ class LineEditMenu(DWMMenu):
         w = 130+max(self.fontMetrics().width(i.text()) for i in self.actions())
         h = len(self.actions()) * 40 + 10
 
-        # 不能把初始的宽度设置为0px，不然会报警
         self.animation.setStartValue(QRect(pos.x(), pos.y(), 1, 1))
         self.animation.setEndValue(QRect(pos.x(), pos.y(), w, h))
         self.setStyle(QApplication.style())
 
-        # 开始动画
         self.animation.start()
         super().exec_(pos)
 
 
 class MoreActionsMenu(AeroMenu):
-    """ 更多操作菜单 """
+    """ More actions menu """
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -269,14 +245,14 @@ class MoreActionsMenu(AeroMenu):
         self.__initWidget()
 
     def __initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widgets """
         self.setObjectName("moreActionsMenu")
         self.animation.setDuration(300)
         self.animation.setEasingCurve(QEasingCurve.OutQuad)
 
     def _createActions(self):
-        """ 创建动作"""
-        raise NotImplementedError("该方法必须被子类实现")
+        """ create actions"""
+        raise NotImplementedError
 
     def exec(self, pos):
         h = len(self.action_list) * 38
@@ -284,13 +260,12 @@ class MoreActionsMenu(AeroMenu):
                 for i in self.action_list) + 65
         self.animation.setStartValue(QRect(pos.x(), pos.y(), 1, h))
         self.animation.setEndValue(QRect(pos.x(), pos.y(), w, h))
-        # 开始动画
         self.animation.start()
         super().exec(pos)
 
 
 class PlayBarMoreActionsMenu(MoreActionsMenu):
-    """ 播放栏更多操作菜单 """
+    """ Play bar more actions menu """
 
     def _createActions(self):
         self.savePlayListAct = QAction(
@@ -307,7 +282,7 @@ class PlayBarMoreActionsMenu(MoreActionsMenu):
 
 
 class PlayingInterfaceMoreActionsMenu(MoreActionsMenu):
-    """ 正在播放界面更多操作菜单 """
+    """ Playing interface more actions menu """
 
     lyricVisibleChanged = pyqtSignal(bool)
 
@@ -318,7 +293,7 @@ class PlayingInterfaceMoreActionsMenu(MoreActionsMenu):
         self.adjustSize()
 
     def __onLyricActionTrigger(self):
-        """ 歌词动作槽函数 """
+        """ lyric action triggered slot """
         isVisible = self.lyricAct.property('showLyric')
         self.lyricAct.setProperty('showLyric', not isVisible)
         self.lyricAct.setText(

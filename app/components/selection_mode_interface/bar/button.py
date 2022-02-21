@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QPushButton
 
 
 class Button(QPushButton):
-    """ 选择模式栏按钮 """
+    """ Button of selection mode bar """
 
     def __init__(self, iconPath: str, text: str, parent=None, buttonSize: tuple = (85, 70), objectName=None):
         super().__init__(parent)
@@ -21,37 +21,35 @@ class Button(QPushButton):
             self.setObjectName(objectName)
 
     def setText(self, text: str):
-        """ 设置按钮文字 """
+        """ set the text of button """
         self.buttonText = text
         self.__adjustText()
         self.update()
 
     def setIcon(self, iconPath: str):
-        """ 设置按钮图标 """
+        """ set the icon of button """
         self.__iconPixmap = QPixmap(iconPath)
         self.update()
 
     def __adjustText(self):
-        """ 根据字符串宽度调整按钮高度和字符串换行 """
+        """ adjust the text which is too long """
         maxWidth = self.width()-4
         buttonChar_list = list(self.buttonText)
 
-        # 计算宽度
+        # calculate text width
         textWidth = 0
         for index, char in enumerate(self.buttonText):
             if textWidth + self.fontMetrics().width(char) > maxWidth:
                 textWidth = 0
-                # 插入换行符并调整尺寸
                 buttonChar_list.insert(index, '\n')
                 self.resize(self.width(), self.height() + 20)
+
             textWidth += self.fontMetrics().width(char)
 
-        # 更新字符串和字符串所占rect
         self.buttonText = ''.join(buttonChar_list)
         self.__textRect = QRect(0, 40, self.width(), self.height() - 40)
 
     def eventFilter(self, obj, e: QEvent):
-        """ 过滤事件 """
         if obj == self:
             if e.type() == QEvent.Enter:
                 self.__isEnter = True
@@ -61,24 +59,25 @@ class Button(QPushButton):
                 self.__isEnter = False
                 self.update()
                 return False
+
         return super().eventFilter(obj, e)
 
     def paintEvent(self, e):
-        """ 绘制图标和文字 """
+        """ paint button """
         painter = QPainter(self)
         painter.setRenderHints(QPainter.Antialiasing |
                                QPainter.SmoothPixmapTransform)
         if self.__isEnter:
-            # 绘制深色背景和边框
+            # paint background and border
             painter.setPen(QPen(QColor(170, 170, 170)))
             painter.setBrush(QBrush(QColor(0, 0, 0, 17)))
             painter.drawRect(self.rect())
 
-        # 绘制图标
+        # paint icon
         painter.drawPixmap(32, 15, self.__iconPixmap.width(),
                            self.__iconPixmap.height(), self.__iconPixmap)
 
-        # 绘制文字
+        # paint text
         painter.setPen(QPen(Qt.black))
         painter.setFont(self.font())
         painter.drawText(
@@ -86,28 +85,28 @@ class Button(QPushButton):
 
 
 class TwoStateButton(Button):
-    """ 双态按钮 """
+    """ Two state button """
 
-    clicked = pyqtSignal(bool)  # true-->全选
+    clicked = pyqtSignal(bool)  # true --> select all
 
     def __init__(self, iconPaths: list, texts: list, parent=None, buttonSize: tuple = (85, 70), isState_1=0):
         """
         Parameters
         ----------
         iconPaths: list
-            存状态0和状态1对应按钮图标地址的列表
+            icon path list contains state0 and state1 icon
 
         texts: list
-            与状态0和状态1相对应的按钮文字列表
+            texts list contains state0 and state1 text
 
         parent:
-            父级窗口
+            parent window
 
         buttonSize: tuple
-            按钮大小元组
+            button size
 
         isState_0: bool
-            是否处于状态1
+            whether button in state0
         """
         super().__init__(
             iconPaths[isState_1], texts[isState_1], parent, buttonSize)
@@ -118,13 +117,12 @@ class TwoStateButton(Button):
             QPixmap(iconPath) for iconPath in self.__iconPaths]
 
     def mouseReleaseEvent(self, e):
-        """ 按钮松开时取反状态 """
         super().mouseReleaseEvent(e)
         self.setState(not self.__isState_1)
         self.clicked.emit(self.__isState_1)
 
     def setState(self, isState_1: bool):
-        """ 设置按钮状态 """
+        """ set button state """
         self.__isState_1 = isState_1
         self.setText(self.__texts[self.__isState_1])
         self.setIcon(self.__iconPixmap_list[self.__isState_1])
@@ -132,25 +130,25 @@ class TwoStateButton(Button):
 
 
 class CheckAllButton(TwoStateButton):
-    """ 全选按钮 """
+    """ Check all button """
 
     def __init__(self, iconPaths, texts, parent=None, buttonSize=(84, 70), isState_1=0):
         super().__init__(iconPaths, texts, parent, buttonSize, isState_1)
         self.setObjectName('checkAllButton')
 
     def setCheckedState(self, isChecked: bool):
-        """ 设置全选/取消全选状态
+        """ set check all/deselect all state
 
         Parameters
         ----------
         isChecked: bool
-            按钮图标是否为 `全选` 字样，若为 `False`，为 `取消全选` 字样
+            whether the button icon is `select all`, icon will be `deselect all` if `isChecked` is `False`
         """
         self.setState(not isChecked)
 
 
 class ButtonFactory(QObject):
-    """ 选择模式栏按钮工厂 """
+    """ Selection mode button factory """
 
     CANCEL = 0
     PLAY = 1
@@ -171,7 +169,7 @@ class ButtonFactory(QObject):
         super().__init__()
 
     def create(self, buttonType: int) -> Button:
-        """ 创建一个按钮 """
+        """ create a button """
         if buttonType == self.CANCEL:
             button = Button(
                 ":/images/selection_mode_bar/Cancel.png", self.tr("Cancel"), objectName='cancelButton')
@@ -220,6 +218,6 @@ class ButtonFactory(QObject):
                 [self.tr("Select all"), self.tr("Deselect all")],
             )
         else:
-            raise ValueError(f'`{buttonType}` 非法')
+            raise ValueError(f'Button type `{buttonType}` is illegal')
 
         return button

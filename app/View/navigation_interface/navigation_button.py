@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QPushButton
 from common.get_pressed_pos import getPressedPos
 
 
-class NavigationButton(TooltipPushButton):
+class NavigationButton(QPushButton):
     """ 侧边导航栏按钮 """
 
     def __init__(self, iconPath: str, text="", buttonSize: tuple = (60, 60), parent=None):
@@ -51,7 +51,6 @@ class NavigationButton(TooltipPushButton):
     def mousePressEvent(self, e):
         """ 鼠标点击时更新样式 """
         self.pressedPos = getPressedPos(self, e)
-        self.hideToolTip()
         self.update()
         super().mousePressEvent(e)
 

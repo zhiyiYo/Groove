@@ -3,13 +3,13 @@ from collections import deque
 from enum import Enum
 from math import cos, pi
 
-from PyQt5.QtCore import QDateTime, Qt, QTimer, QPoint
-from PyQt5.QtGui import QWheelEvent, QCursor
+from PyQt5.QtCore import QDateTime, QPoint, Qt, QTimer
+from PyQt5.QtGui import QWheelEvent
 from PyQt5.QtWidgets import QApplication, QListWidget
 
 
 class ListWidget(QListWidget):
-    """ 一个可以平滑滚动的列表控件"""
+    """ A list widget which can scroll smoothly """
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -29,52 +29,52 @@ class ListWidget(QListWidget):
         self.setAttribute(Qt.WA_StyledBackground)
 
     def wheelEvent(self, e: QWheelEvent):
-        """ 实现平滑滚动效果 """
         if self.smoothMode == SmoothMode.NO_SMOOTH:
             super().wheelEvent(e)
             return
 
-        # 将当前时间点插入队尾
+        # push current time to queque
         now = QDateTime.currentDateTime().toMSecsSinceEpoch()
         self.scrollStamps.append(now)
         while now - self.scrollStamps[0] > 500:
             self.scrollStamps.popleft()
 
-        # 根据未处理完的事件调整移动速率增益
+        # adjust the acceration ratio based on unprocessed events
         accerationRatio = min(len(self.scrollStamps) / 15, 1)
         if not self.lastWheelEvent:
             self.lastWheelEvent = QWheelEvent(e)
         else:
             self.lastWheelEvent = e
 
-        # 计算步数
+        # get the number of steps
         self.stepsTotal = self.fps * self.duration / 1000
 
-        # 计算每一个事件对应的移动距离
+        # get the moving distance corresponding to each event
         delta = e.angleDelta().y() * self.stepRatio
         if self.acceleration > 0:
             delta += delta * self.acceleration * accerationRatio
 
-        # 将移动距离和步数组成列表，插入队列等待处理
+        # form a list of moving distances and steps, and insert it into the queue for processing.
         self.stepsLeftQueue.append([delta, self.stepsTotal])
 
-        # 定时器的溢出时间t=1000ms/帧数
+        # overflow time of timer: 1000ms/frames
         self.smoothMoveTimer.start(1000 // self.fps)
 
     def __smoothMove(self):
-        """ 计时器溢出时进行平滑滚动 """
+        """ scroll when timer time out """
         totalDelta = 0
 
-        # 计算所有未处理完事件的滚动距离，定时器每溢出一次就将步数-1
+        # Calculate the scrolling distance of all unprocessed events,
+        # the timer will reduce the number of steps by 1 each time it overflows.
         for i in self.stepsLeftQueue:
             totalDelta += self.__subDelta(i[0], i[1])
             i[1] -= 1
 
-        # 如果事件已处理完，就将其移出队列
+        # If the event has been processed, move it out of the queue
         while self.stepsLeftQueue and self.stepsLeftQueue[0][1] == 0:
             self.stepsLeftQueue.popleft()
 
-        # 构造滚轮事件
+        # create wheel event
         e = QWheelEvent(
             self.lastWheelEvent.pos(),
             self.lastWheelEvent.globalPos(),
@@ -86,18 +86,18 @@ class ListWidget(QListWidget):
             Qt.NoModifier
         )
 
-        # 将构造出来的滚轮事件发送给app处理
+        # send wheel event to app
         QApplication.sendEvent(self.verticalScrollBar(), e)
 
-        # 如果队列已空，停止滚动
+        # stop scrolling if the queque is empty
         if not self.stepsLeftQueue:
             self.smoothMoveTimer.stop()
 
     def __subDelta(self, delta, stepsLeft):
-        """ 计算每一步的插值 """
+        """ get the interpolation for each step """
         m = self.stepsTotal / 2
         x = abs(self.stepsTotal - stepsLeft - m)
-        # 根据滚动模式计算插值
+
         res = 0
         if self.smoothMode == SmoothMode.NO_SMOOTH:
             res = 0
@@ -109,11 +109,12 @@ class ListWidget(QListWidget):
             res = 3 / 4 / m * (1 - x * x / m / m) * delta
         elif self.smoothMode == SmoothMode.COSINE:
             res = (cos(x * pi / m) + 1) / (2 * m) * delta
+
         return res
 
 
 class SmoothMode(Enum):
-    """ 滚动模式 """
+    """ Scroll mode """
     NO_SMOOTH = 0
     CONSTANT = 1
     LINEAR = 2

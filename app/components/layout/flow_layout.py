@@ -4,13 +4,13 @@ from PyQt5.QtWidgets import QLayout
 
 
 class FlowLayout(QLayout):
+    """ Flow layout """
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.__items = []
         self.__verticalSpacing = 10
         self.__horizontalSpacing = 10
-        self.__margins = QMargins(0, 0, 0, 0)
-        super().setContentsMargins(self.__margins)
 
     def addItem(self, item):
         self.__items.append(item)
@@ -31,7 +31,7 @@ class FlowLayout(QLayout):
         return None
 
     def removeAllWidgets(self):
-        """ 从布局中移除所有的部件 """
+        """ remove all widgets from layout """
         while self.__items:
             self.takeAt(0)
 
@@ -42,12 +42,12 @@ class FlowLayout(QLayout):
         return True
 
     def heightForWidth(self, width: int):
-        """ 根据宽度计算最小高度 """
-        return self.__do_layout(QRect(0, 0, width, 0), False)
+        """ get the minimal height according to width """
+        return self.__doLayout(QRect(0, 0, width, 0), False)
 
     def setGeometry(self, rect: QRect):
         super().setGeometry(rect)
-        self.__do_layout(rect, True)
+        self.__doLayout(rect, True)
 
     def sizeHint(self):
         return self.minimumSize()
@@ -58,29 +58,29 @@ class FlowLayout(QLayout):
         for item in self.__items:
             size = size.expandedTo(item.minimumSize())
 
-        m = self.__margins
+        m = self.contentsMargins()
         size += QSize(m.left()+m.right(), m.top()+m.bottom())
 
         return size
 
     def setVerticalSpacing(self, spacing: int):
-        """ 设置竖直方向的间距 """
+        """ set vertical spacing between widgets """
         self.__verticalSpacing = spacing
 
     def verticalSpacing(self):
-        """ 返回竖直方向的间距 """
+        """ get vertical spacing between widgets """
         return self.__verticalSpacing
 
     def setHorizontalSpacing(self, spacing: int):
-        """ 设置水平方向的间距 """
+        """ set horizontal spacing between widgets """
         self.__horizontalSpacing = spacing
 
     def horizontalSpacing(self):
-        """ 返回水平方向间距 """
+        """ get horizontal spacing between widgets """
         return self.__horizontalSpacing
 
-    def __do_layout(self, rect: QRect, move: bool):
-        """ 根据大小调整小部件位置 """
+    def __doLayout(self, rect: QRect, move: bool):
+        """ adjust widgets position according to the window size """
         margin = self.contentsMargins()
         x = rect.x() + margin.left()
         y = rect.y() + margin.top()

@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget
 
 
 class LyricWidget(ScrollArea):
+    """ Lyrics widget """
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -28,7 +29,7 @@ class LyricWidget(ScrollArea):
         self.__initWidget()
 
     def __initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widgets """
         self.resize(800, 800)
         self.setWidget(self.scrollWidget)
         self.setAttribute(Qt.WA_TranslucentBackground)
@@ -43,7 +44,7 @@ class LyricWidget(ScrollArea):
         self.verticalScrollBar().valueChanged.connect(self.__adjustTextColor)
 
     def setLyric(self, lyric: Dict[str, List[str]]):
-        """ 设置歌词 """
+        """ set lyrics """
         if self.lyric == lyric:
             return
 
@@ -57,7 +58,7 @@ class LyricWidget(ScrollArea):
         self.scrollAni.setEndValue(0)
         self.scrollAni.state()
 
-        # 刷新歌词
+        # update lyrics
         N = len(self.lyricLabels)
         N_ = len(self.times)
 
@@ -92,18 +93,18 @@ class LyricWidget(ScrollArea):
         self.setLoadingState(False)
 
     def setCurrentTime(self, time: int):
-        """ 设置当前时间
+        """ set current time
 
         Parameters
         ----------
         time: int
-            以毫秒为单位的时间
+            time in milliseconds
         """
         time = str(time/1000)
         if not self.times:
             return
 
-        # 确定索引
+        # get index of time
         times = [float(i) for i in self.times]
         i = bisect.bisect_left(times, float(time))
         i = min(len(self.times)-1, i)
@@ -113,7 +114,7 @@ class LyricWidget(ScrollArea):
         if i == self.currentIndex:
             return
 
-        # 更新歌词样式
+        # update the style of lyrics
         if self.currentIndex >= 0:
             self.lyricLabels[self.currentIndex].setPlay(False)
 
@@ -122,7 +123,7 @@ class LyricWidget(ScrollArea):
         label.setPlay(True)
         self.scrollWidget.adjustSize()
 
-        # 滚动歌词
+        # scroll lyrics
         y = label.y() - self.verticalScrollBar().value()
         dy = y - self.height()//2 + label.height()//2
         self.scrollAni.setStartValue(self.verticalScrollBar().value())
@@ -131,7 +132,7 @@ class LyricWidget(ScrollArea):
         self.scrollAni.start()
 
     def __adjustTextColor(self):
-        """ 调整字体颜色 """
+        """ adjust text color """
         hideBottom = False
         for label in self.lyricLabels:
             vh = label.visibleRegion().boundingRect().height()
@@ -148,7 +149,6 @@ class LyricWidget(ScrollArea):
                 label.setPalette(palette)
 
             elif vh > 0 and vh < h:
-                # 判断是上面被隐藏还是下面被隐藏
                 hideBottom = label.y() - self.verticalScrollBar().value() > 0
 
                 label.setForegroundRole(QPalette.Text)
@@ -169,14 +169,13 @@ class LyricWidget(ScrollArea):
                 break
 
     def resizeEvent(self, e):
-        """ 调整窗口大小 """
         self.scrollWidget.setFixedWidth(self.width())
         self.loadingLabel.move(
             self.width()//2-self.loadingLabel.width()//2, 160)
         self.__adjustTextColor()
 
     def __setQss(self):
-        """ 设置层叠样式 """
+        """ set style sheet """
         self.loadingLabel.setObjectName('loadingLabel')
 
         f = QFile(":/qss/lyric_widget.qss")
@@ -189,23 +188,23 @@ class LyricWidget(ScrollArea):
             self.width()//2-self.loadingLabel.width()//2, 160)
 
     def setLoadingState(self, isLoading: bool):
-        """ 设置加载歌词状态 """
+        """ set the loading state of lyrics """
         self.loadingLabel.setVisible(isLoading)
         self.scrollWidget.setVisible(not isLoading)
 
 
 class LyricLabel(QLabel):
-    """ 歌词标签 """
+    """ lyric label """
 
     def __init__(self, lyric: List[str], parent=None):
         """
         Parameters
         ----------
         lyric: List[str]
-            歌词
+            lyric list, including original lyric and translated lyrics (optional)
 
         parent:
-            父级窗口
+            parent window
         """
         super().__init__(parent=parent)
         self.maxCharacters = 50
@@ -213,24 +212,24 @@ class LyricLabel(QLabel):
         self.setLyric(lyric)
 
     def setLyric(self, lyric: List[str]):
-        """ 设置歌词 """
+        """ set lyric """
         self.lyric = lyric
         wrapLyric = [autoWrap(i, self.maxCharacters)[0] for i in lyric]
         self.setText('\n'.join(wrapLyric))
         self.setPlay(False)
 
     def setPlay(self, isPlay: bool):
-        """ 设置歌词是否正在播放 """
+        """ set the play state of lyric """
         self.isPlay = isPlay
 
-        # 改变字体颜色
+        # change font color
         palette = QPalette()
         self.setForegroundRole(QPalette.Text)
         alpha = 255 if isPlay else 255*0.6
         palette.setBrush(QPalette.Text, QColor(255, 255, 255, alpha))
         self.setPalette(palette)
 
-        # 改变字号
+        # change font size
         self.setProperty('isPlay', 'true' if isPlay else 'false')
         self.setStyle(QApplication.style())
         self.adjustSize()

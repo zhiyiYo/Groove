@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import QGridLayout, QStackedWidget, QWidget
 
 
 class LabelNavigationInterface(QWidget):
-    """ 标签导航界面 """
+    """ Label navigation interface """
 
     labelClicked = pyqtSignal(str)
 
@@ -23,17 +23,16 @@ class LabelNavigationInterface(QWidget):
         self.vBox = VBoxLayout(self.scrollWidget)
         self.letterNavigationWidget = QWidget(self)
         self.gridLayout = QGridLayout(self.letterNavigationWidget)
-        self.__clickableLabel_list = []  # type:List[ClickableLabel]
-        self.__clickableLetterLabel_list = [
-            ClickableLabel(chr(i)) for i in range(65, 91)
-        ]  # type:List[ClickableLabel]
-        self.__clickableLetterLabel_list.append(ClickableLabel("..."))
-        # 初始化界面
+        self.__clickableLabels = []  # type:List[ClickableLabel]
+        self.__clickableLetterLabels = [
+            ClickableLabel(chr(i)) for i in range(65, 91)]  # type:List[ClickableLabel]
+        self.__clickableLetterLabels.append(ClickableLabel("..."))
+
         self.setLabels(label_list)
         self.__initWidget()
 
     def __initWidget(self):
-        """ 初始化界面 """
+        """ initialize widgets """
         self.resize(800, 800)
         self.vBox.setSpacing(40)
         self.gridLayout.setSpacing(60)
@@ -44,10 +43,11 @@ class LabelNavigationInterface(QWidget):
         self.scrollArea.setWidget(self.scrollWidget)
         self.stackWidget.addWidget(self.scrollWidget)
         self.stackWidget.addWidget(self.letterNavigationWidget)
-        # 设置层叠样式
+
         self.__setQss()
-        # 调整字母标签尺寸并将字母添加到网格布局中
-        for i, label in enumerate(self.__clickableLetterLabel_list):
+
+        # add letters to layout
+        for i, label in enumerate(self.__clickableLetterLabels):
             row = i // 8
             col = i - row * 8
             label.setFixedHeight(50)
@@ -56,67 +56,64 @@ class LabelNavigationInterface(QWidget):
                 lambda text=text: self.labelClicked.emit(text))
             self.gridLayout.addWidget(label, row, col, 1, 1, Qt.AlignCenter)
 
-    def setLabels(self, label_list: List[str] = None, layout="grid"):
-        """ 设置导航标签
+    def setLabels(self, labels: List[str] = None, layout="grid"):
+        """ set labels in layout
 
         Parameters
         ----------
-        label_list: List[str]
-            需要显示的标签列表
+        labels: List[str]
+            labels need to display
 
         layout: str
-            显示的标签的布局，有字母网格布局`grid`和列表布局`list`两种
+            layout of labels, including `grid` and `list`
         """
         self.vBox.removeAllWidget()
-        # 删除旧标签
-        for label in self.__clickableLabel_list:
-            label.deleteLater()
-        self.__clickableLabel_list = []
-        self.__label_list = label_list if label_list else []
 
-        if self.__label_list:
-            # 不使用棋盘布局直接显示所有标签
-            if layout != "grid":
-                self.__clickableLabel_list = [
-                    ClickableLabel(label) for label in label_list
-                ]
-                self.__connectLabelSigToSlot()
-                # 将新的标签添加到布局中
-                self.__adjustLabelSize()
-                for label in self.__clickableLabel_list:
-                    label.setCursor(Qt.PointingHandCursor)
-                    self.vBox.addWidget(label)
-            else:
-                # 生成首字母集合
-                _ = set(pinyin.get_initial(i)[0].upper() for i in label_list)
-                letter_set = set(i if 65 <= ord(i) <= 90 else "..." for i in _)
-                # 启用在字母结合中的标签
-                for label in self.__clickableLetterLabel_list:
-                    label.setCursor(
-                        Qt.PointingHandCursor
-                        if label.text() in letter_set
-                        else Qt.ArrowCursor
-                    )
-                    label.setEnabled(label.text() in letter_set)
-            # 切换布局
-            self.stackWidget.setCurrentIndex(layout == "grid")
+        for label in self.__clickableLabels:
+            label.deleteLater()
+
+        self.__clickableLabels = []
+        self.__labels = labels if labels else []
+
+        if not self.__labels:
+            return
+
+        if layout != "grid":
+            self.__clickableLabels = [
+                ClickableLabel(label) for label in labels]
+            self.__connectLabelSigToSlot()
+
+            self.__adjustLabelSize()
+            for label in self.__clickableLabels:
+                label.setCursor(Qt.PointingHandCursor)
+                self.vBox.addWidget(label)
+        else:
+            letters = set(pinyin.get_initial(i)[0].upper() for i in labels)
+            letters = set(i if 65 <= ord(i) <=
+                            90 else "..." for i in letters)
+
+            for label in self.__clickableLetterLabels:
+                enabled = label.text() in letters
+                cursor = Qt.PointingHandCursor if enabled else Qt.ArrowCursor
+                label.setCursor(cursor)
+                label.setEnabled(enabled)
+
+        self.stackWidget.setCurrentIndex(layout == "grid")
 
     def __adjustLabelSize(self):
         """ 调整标签尺寸 """
-        for label in self.__clickableLabel_list:
+        for label in self.__clickableLabels:
             label.setFixedHeight(50)
-        labelNum = len(self.__clickableLabel_list)
-        self.scrollWidget.resize(
-            self.width(), 50 * labelNum + 40 * (labelNum - 1) + 140 + 25
-        )
+
+        N = len(self.__clickableLabels)
+        self.scrollWidget.resize(self.width(), 50*N + 40*(N - 1) + 140 + 25)
 
     def resizeEvent(self, e):
-        """ 调整部件尺寸 """
         self.stackWidget.resize(self.size())
         self.scrollWidget.resize(self.width(), self.scrollWidget.height())
 
     def __setQss(self):
-        """ 设置层叠样式 """
+        """ set style sheet """
         self.scrollWidget.setObjectName("scrollWidget")
         f = QFile(":/qss/label_navigation_interface.qss")
         f.open(QFile.ReadOnly)
@@ -125,11 +122,11 @@ class LabelNavigationInterface(QWidget):
 
     def __connectLabelSigToSlot(self):
         """ 标签点击信号的槽函数 """
-        for label in self.__clickableLabel_list:
+        for label in self.__clickableLabels:
             text = label.text()
             label.clicked.connect(
                 lambda text=text: self.labelClicked.emit(text))
 
     @property
-    def label_list(self):
-        return self.__label_list
+    def labels(self):
+        return self.__labels

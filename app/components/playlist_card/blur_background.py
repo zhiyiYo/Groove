@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QWidget
 
 
 class BlurBackground(QWidget):
-    """ 播放列表封面磨砂背景 """
+    """ Blur background under playlist card """
 
     def __init__(self, parent=None, imagePath: str = '', blurRadius=30):
         super().__init__(parent)
@@ -15,35 +15,36 @@ class BlurBackground(QWidget):
         self.setBlurPic(imagePath, blurRadius)
 
     def setBlurPic(self, imagePath: str, blurRadius: int = 30):
-        """ 设置磨砂图片 """
+        """ set the cover to be blurred """
         if not imagePath:
             return
 
-        # 读入专辑封面
+        # read album cover
         if not imagePath.startswith(':'):
             cover = Image.open(imagePath)
         else:
             cover = Image.fromqpixmap(QPixmap(imagePath))
 
         cover = cover.resize((288, 288)).crop((0, 92, 288, 288))
-        # 创建一个新图像
+
+        # create a new image
         blurImage = Image.new(
             'RGBA', (288 + 2 * blurRadius, 196 + 2 * blurRadius), (255, 255, 255, 0))
         blurImage.paste(cover, (blurRadius, blurRadius))
 
-        # 对图像进行高斯模糊
+        # apply Gaussian blur to image
         blurImage = blurImage.filter(GaussianBlur(blurRadius/2))
         self.__blurPix = blurImage.toqpixmap()
-        # 调整窗口大小
+
         self.resize(*blurImage.size)
-        # 绘制磨砂图
         self.update()
 
     def paintEvent(self, e):
-        """ 绘制磨砂图 """
+        """ paint blur background """
         super().paintEvent(e)
         if not self.__blurPix:
             return
+
         painter = QPainter(self)
         painter.setRenderHints(QPainter.Antialiasing |
                                QPainter.SmoothPixmapTransform)

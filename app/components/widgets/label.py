@@ -7,9 +7,8 @@ from PyQt5.QtWidgets import QLabel
 
 
 class ClickableLabel(QLabel):
-    """ 定义可发出点击信号的Label """
+    """ Clickable label """
 
-    # 创建点击信号
     clicked = pyqtSignal()
 
     def __init__(self, text="", parent=None, isSendEventToParent: bool = True):
@@ -17,12 +16,10 @@ class ClickableLabel(QLabel):
         self.isSendEventToParent = isSendEventToParent
 
     def mousePressEvent(self, e):
-        """ 处理鼠标点击 """
         if self.isSendEventToParent:
             super().mousePressEvent(e)
 
     def mouseReleaseEvent(self, event: QMouseEvent):
-        """ 鼠标松开时发送信号 """
         if self.isSendEventToParent:
             super().mouseReleaseEvent(event)
         if event.button() == Qt.LeftButton:
@@ -30,6 +27,8 @@ class ClickableLabel(QLabel):
 
 
 class ErrorIcon(QLabel):
+    """ Error icon """
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setPixmap(
@@ -38,7 +37,7 @@ class ErrorIcon(QLabel):
 
 
 class AvatarLabel(QLabel):
-    """ 圆形头像 """
+    """ Circle avatar label """
 
     def __init__(self, imagePath: str, parent=None):
         super().__init__(parent)
@@ -51,7 +50,7 @@ class AvatarLabel(QLabel):
         self.update()
 
     def paintEvent(self, e):
-        """ 绘制头像 """
+        """ paint avatar """
         painter = QPainter(self)
         painter.setRenderHints(QPainter.Antialiasing |
                                QPainter.SmoothPixmapTransform)
@@ -63,7 +62,7 @@ class AvatarLabel(QLabel):
 
 
 class FadeInLabel(QLabel):
-    """ 淡入标签 """
+    """ Fade in label """
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -86,7 +85,7 @@ class FadeInLabel(QLabel):
         self.update()
 
     def paintEvent(self, e):
-        """ 绘制图像 """
+        """ paint label """
         painter = QPainter(self)
         painter.setOpacity(self.__opacity)
         painter.drawPixmap(0, 0, self.__pixmap)
@@ -95,10 +94,10 @@ class FadeInLabel(QLabel):
 
 
 class FadeOutMaskLabel(FadeInLabel):
-    """ 淡出遮罩 """
+    """ fade out mask label """
 
     def fadeOut(self):
-        """ 显示并淡出遮罩 """
+        """ show and fade out mask """
         if self.ani.state() == self.ani.Running:
             return
 
@@ -114,7 +113,7 @@ class FadeOutMaskLabel(FadeInLabel):
 
 
 class AcrylicTextureLabel(QLabel):
-    """ 亚克力纹理标签 """
+    """ Acrylic texture label """
 
     def __init__(self, tintColor: QColor, luminosityColor: QColor = Qt.white, tintOpacity=0.7,
                  noiseOpacity=0.03, parent=None):
@@ -122,19 +121,19 @@ class AcrylicTextureLabel(QLabel):
         Parameters
         ----------
         tintColor: QColor
-            RGB 主色调
+            RGB tint color
 
         luminosityColor: QColor
-            亮度层颜色
+            luminosity color
 
         tintOpacity: float
-            主色调层透明度
+            opacity of tint color layer
 
         noiseOpacity: float
-            噪声层透明度
+            opacity of noise layer
 
         parent:
-            父级窗口
+            parent window
         """
         super().__init__(parent=parent)
         self.tintColor = QColor(tintColor)
@@ -146,23 +145,23 @@ class AcrylicTextureLabel(QLabel):
         self.luminosityColor.setAlpha(0)
 
     def setTintColor(self, color: QColor):
-        """ 设置主色调 """
+        """ set tint color """
         self.tintColor = color
         self.update()
 
     def paintEvent(self, e):
-        """ 绘制亚克力纹理 """
+        """ paint acrylic texture """
         acrylicTexture = QImage(64, 64, QImage.Format_ARGB32_Premultiplied)
 
-        # 绘制亮度层
+        # paint luminosity layer
         acrylicTexture.fill(self.luminosityColor)
 
-        # 绘制主色调
+        # paint tint color layer
         painter = QPainter(acrylicTexture)
         painter.setOpacity(self.tintOpacity)
         painter.fillRect(acrylicTexture.rect(), self.tintColor)
 
-        # 绘制噪声
+        # paint noise layer
         painter.setOpacity(self.noiseOpacity)
         painter.drawImage(acrylicTexture.rect(), self.noiseImage)
 
@@ -172,20 +171,21 @@ class AcrylicTextureLabel(QLabel):
 
 
 class BlurCoverLabel(QLabel):
-    """ 磨砂封面标签 """
+    """ Blur cover label """
 
     def __init__(self, blurRadius=6, maxBlurSize=(450, 450), parent=None):
         """
         Parameters
         ----------
         blurRadius: int
-            磨砂半径
+            blur radius
 
         maxBlurSize: tuple
-            最大磨砂尺寸，越小磨砂速度越快
+            the maximum size of image, if the actual picture exceeds this size,
+            it will be scaled to speed up the computation speed.
 
         parent:
-            父级窗口
+            parent window
         """
         super().__init__(parent=parent)
         self.blurRadius = blurRadius
@@ -198,13 +198,13 @@ class BlurCoverLabel(QLabel):
         self.blurThread.blurFinished.connect(self.__onBlurFinished)
 
     def __onBlurFinished(self, blurPixmap: QPixmap, color: QColor):
-        """ 磨砂完成槽函数 """
+        """ blur finished slot """
         self.acrylicTextureLabel.setTintColor(color)
         self.blurPixmap = blurPixmap
         self.adjustCover()
 
     def setCover(self, coverPath: str):
-        """ 设置封面 """
+        """ set the cover to blur """
         if coverPath == self.coverPath:
             return
 
@@ -213,7 +213,7 @@ class BlurCoverLabel(QLabel):
         self.blurThread.start()
 
     def adjustCover(self):
-        """ 调整封面尺寸 """
+        """ adjust cover size """
         if self.blurPixmap.isNull():
             return
 
@@ -223,7 +223,7 @@ class BlurCoverLabel(QLabel):
             w, w, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
 
     def setForegroundColor(self, color: QColor):
-        """ 设置前景色 """
+        """ set foreground color """
         self.acrylicTextureLabel.setTintColor(color)
 
     def resizeEvent(self, e):
@@ -232,27 +232,33 @@ class BlurCoverLabel(QLabel):
 
 
 class TimeLabel(QLabel):
-    """ 时间标签 """
+    """ Time label """
 
     def __init__(self, time: int, parent=None):
         """
         Parameters
         ----------
         time: int
-            时长，以秒为单位
+            time in seconds
 
         parent:
-            父级窗口
+            parent window
         """
         super().__init__(self.__parseTime(time), parent)
 
     def setTime(self, time: int):
-        """ 设置时间，以秒为单位 """
+        """ set time
+
+        Parameters
+        ----------
+        time: int
+            time in seconds
+        """
         self.setText(self.__parseTime(time))
 
     @staticmethod
     def __parseTime(time: int):
-        """ 解析时长为字符串 """
+        """ parse integer time to string """
         minutes = time // 60
         seconds = time % 60
         t = f"{minutes}:{str(seconds).rjust(2,'0')}"
@@ -260,24 +266,24 @@ class TimeLabel(QLabel):
 
 
 class MaskLabel(QLabel):
-    """ 蒙板标签 """
+    """ Mask label """
 
     def __init__(self, color: QColor, parent=None):
         """
         Parameters
         ----------
         color: QColor
-            蒙版颜色
+            mask color
 
         parent:
-            父级窗口
+            parent window
         """
         super().__init__(parent=parent)
         self.color = color
         self.setAttribute(Qt.WA_TranslucentBackground)
 
     def paintEvent(self, e):
-        """ 绘制背景 """
+        """ paint mask """
         painter = QPainter(self)
         painter.setPen(Qt.NoPen)
         painter.setBrush(self.color)

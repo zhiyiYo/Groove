@@ -1,8 +1,8 @@
 # coding:utf-8
 from components.widgets.slider import HollowHandleStyle, Slider
-from PyQt5.QtCore import Qt, pyqtSignal, QPropertyAnimation, QTimer
-from PyQt5.QtGui import QBrush, QColor, QLinearGradient, QPainter
-from PyQt5.QtWidgets import QLabel, QWidget, QGraphicsOpacityEffect
+from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtGui import QColor, QLinearGradient, QPainter
+from PyQt5.QtWidgets import QLabel, QWidget
 from View.playing_interface.play_bar_buttons import (CircleButton,
                                                      FullScreenButton,
                                                      PlayButton, VolumeButton)
@@ -11,7 +11,7 @@ from .volume_slider_widget import VolumeSliderWidget
 
 
 class PlayBar(QWidget):
-    """ 播放栏 """
+    """ Play bar """
 
     progressSliderMoved = pyqtSignal(int)
 
@@ -34,13 +34,13 @@ class PlayBar(QWidget):
         self.__initWidget()
 
     def __initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widgets """
         self.__setQss()
         self.resize(600, 250)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setMouseTracking(True)
 
-        # 设置滑动条样式
+        # set the style of slider
         style = HollowHandleStyle({
             "groove.height": 4,
             "sub-page.color": QColor(72, 210, 242),
@@ -64,13 +64,13 @@ class PlayBar(QWidget):
         self.__connectSignalToSlot()
 
     def __initLayout(self):
-        """ 初始化布局 """
+        """ initialize layout """
         self.progressSlider.move(30, 100)
         self.currentTimeLabel.move(30, 130)
         self.volumeButton.move(30, 170)
 
     def __setQss(self):
-        """ 设置层叠样式 """
+        """ set style sheet """
         styleSheet = """
             QLabel {
                 font: 14px 'Segoe UI', 'Microsoft YaHei';
@@ -85,7 +85,7 @@ class PlayBar(QWidget):
         self.totalTimeLabel.adjustSize()
 
     def paintEvent(self, e):
-        """ 绘制渐变背景 """
+        """ paint play bar """
         painter = QPainter(self)
         linear = QLinearGradient(0, 0, 0, self.height())
         linear.setColorAt(0, QColor(0, 0, 0, 0))
@@ -112,18 +112,24 @@ class PlayBar(QWidget):
             self.downloadButton.x()-self.fullScreenButton.width()-10, 170)
 
     def setCurrentTime(self, currentTime: int):
-        """ 更新当前时间标签，currentTime的单位为ms """
+        """ set current time
+
+        Parameters
+        ----------
+        currentTime: int
+            current time in milliseconds
+        """
         self.currentTimeLabel.setText(self.__parseTime(currentTime))
         self.progressSlider.setValue(currentTime)
         self.currentTimeLabel.adjustSize()
 
     def setTotalTime(self, totalTime: int):
-        """ 设置总时长
+        """ set total time
 
         Parameters
         ----------
         totalTime:
-            总时长，单位为 ms
+            total time in milliseconds
         """
         self.progressSlider.setRange(0, totalTime)
         self.totalTimeLabel.setText(self.__parseTime(totalTime))
@@ -133,7 +139,7 @@ class PlayBar(QWidget):
 
     @staticmethod
     def __parseTime(time: int) -> str:
-        """ 将毫秒转换为时分秒 """
+        """ covert integer time to string """
         seconds = int(time / 1000)
         hours = seconds // 3600
         minutes = str(seconds // 60).rjust(2, "0")
@@ -141,7 +147,7 @@ class PlayBar(QWidget):
         return f'{hours}:{minutes}:{seconds}'
 
     def __toggleVolumeWidget(self):
-        """ 显示/隐藏音量滑动条 """
+        """ toggle the visibility of volume widget """
         if not self.volumeSliderWidget.isVisible():
             pos = self.mapToGlobal(self.volumeButton.pos())
             self.volumeSliderWidget.move(self.window().x(), pos.y()-100)
@@ -150,7 +156,7 @@ class PlayBar(QWidget):
             self.volumeSliderWidget.hide()
 
     def __connectSignalToSlot(self):
-        """ 信号连接到槽 """
+        """ connect signal to slot """
         self.progressSlider.clicked.connect(self.progressSliderMoved)
         self.progressSlider.sliderMoved.connect(self.progressSliderMoved)
         self.volumeButton.clicked.connect(self.__toggleVolumeWidget)

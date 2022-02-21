@@ -23,7 +23,7 @@ class PlaylistType(Enum):
 
 
 class MediaPlaylist(QMediaPlaylist):
-    """ 播放列表类 """
+    """ Media playlist class """
 
     folder = Path('cache/last_playlist')
 
@@ -40,7 +40,7 @@ class MediaPlaylist(QMediaPlaylist):
         self.__readLastPlaylist()
 
     def addSong(self, songInfo: SongInfo):
-        """ 向播放列表末尾添加一首歌 """
+        """ append song to playlist """
         if not songInfo:
             return
 
@@ -48,7 +48,7 @@ class MediaPlaylist(QMediaPlaylist):
         super().addMedia(QMediaContent(QUrl(songInfo.file)))
 
     def addSongs(self, songInfos: list):
-        """ 向播放列表尾部添加多首歌 """
+        """ append multi songs to playlist """
         if not songInfos:
             return
 
@@ -57,13 +57,12 @@ class MediaPlaylist(QMediaPlaylist):
             super().addMedia(QMediaContent(QUrl(songInfo.file)))
 
     def insertSong(self, index: int, songInfo: SongInfo):
-        """ 在指定位置插入要播放的歌曲 """
-        super().insertMedia(
-            index, QMediaContent(QUrl(songInfo.file)))
+        """ insert song to playlist  """
+        super().insertMedia(index, QMediaContent(QUrl(songInfo.file)))
         self.playlist.insert(index, songInfo)
 
     def insertSongs(self, index: int, songInfos: List[SongInfo]):
-        """ 插入播放列表 """
+        """ insert multi songs to playlist """
         if not songInfos:
             return
 
@@ -74,15 +73,13 @@ class MediaPlaylist(QMediaPlaylist):
         super().insertMedia(index, medias)
 
     def clear(self):
-        """ 清空播放列表 """
+        """ clear playlist """
         self.playlist.clear()
         super().clear()
 
     def next(self):
-        """ 播放下一首 """
-        # 如果已经是最后一首就转到第一首歌开始播放
+        """ play next song """
         if self.currentIndex() == self.mediaCount() - 1:
-            # 列表循环时切换到第一首
             if self.playbackMode() == QMediaPlaylist.Loop:
                 self.setCurrentIndex(0)
             elif self.playbackMode() == QMediaPlaylist.Random:
@@ -94,8 +91,7 @@ class MediaPlaylist(QMediaPlaylist):
                 super().next()
 
     def previous(self):
-        """ 播放上一首 """
-        # 如果是第一首就转到最后一首歌开始播放
+        """ play previous song """
         if self.currentIndex() == 0:
             if self.playbackMode() == QMediaPlaylist.Loop:
                 self.setCurrentIndex(self.mediaCount() - 1)
@@ -106,40 +102,37 @@ class MediaPlaylist(QMediaPlaylist):
                 super().previous()
 
     def getCurrentSong(self) -> SongInfo:
-        """ 获取当前播放的歌曲信息 """
+        """ get current song information """
         if self.currentIndex() >= 0:
             return self.playlist[self.currentIndex()]
 
         return SongInfo(file='__invalid__')
 
     def setCurrentSong(self, songInfo: SongInfo):
-        """ 按下歌曲卡的播放按钮或者双击歌曲卡时立即在当前的播放列表中播放这首歌 """
+        """ set the song currently played """
         if not songInfo:
             return
 
         self.setCurrentIndex(self.playlist.index(songInfo))
 
     def playAlbum(self, songInfos: List[SongInfo], index=0):
-        """ 播放专辑中的歌曲 """
+        """ play songs in an alum """
         self.playlistType = PlaylistType.ALBUM_CARD_PLAYLIST
         self.setPlaylist(songInfos, index)
 
     def setRandomPlay(self, isRandomPlay=False):
-        """ 按下随机播放按钮时根据循环模式决定是否设置随机播放模式 """
+        """ set whether to play randomly """
         if isRandomPlay:
             self.randPlayBtPressed = True
-            # 记录按下随机播放前的循环模式
             self.prePlayMode = self.playbackMode()
-            # 不处于单曲循环模式时就设置为随机播放
             if self.playbackMode() != QMediaPlaylist.CurrentItemInLoop:
                 self.setPlaybackMode(QMediaPlaylist.Random)
         else:
             self.randPlayBtPressed = False
-            # 恢复之前的循环模式
             self.setPlaybackMode(self.prePlayMode)
 
     def setPlaylist(self, songInfos: List[SongInfo], index=0):
-        """ 设置歌曲播放列表 """
+        """ set songs in playlist """
         if songInfos == self.playlist:
             return
 
@@ -148,7 +141,7 @@ class MediaPlaylist(QMediaPlaylist):
         self.setCurrentIndex(index)
 
     def save(self):
-        """ 保存播放列表到json文件中 """
+        """ save playlist to json file """
         self.folder.mkdir(exist_ok=True, parents=True)
         files = [i.file for i in self.playlist]
         playlist = {
@@ -159,7 +152,7 @@ class MediaPlaylist(QMediaPlaylist):
             json.dump(playlist, f)
 
     def __readLastPlaylist(self):
-        """ 读取上次的播放列表 """
+        """ read last playlist from json file """
         file = self.folder/"last_playlist.json"
         try:
             with open(file, encoding='utf-8') as f:
@@ -178,7 +171,7 @@ class MediaPlaylist(QMediaPlaylist):
             super().addMedia(QMediaContent(QUrl(songInfo.file)))
 
     def removeSong(self, index):
-        """ 在播放列表中移除歌曲 """
+        """ remove song from playlist """
         currentIndex = self.currentIndex()
         if currentIndex >= index:
             currentIndex -= 1
@@ -188,17 +181,17 @@ class MediaPlaylist(QMediaPlaylist):
         self.setCurrentIndex(currentIndex)
 
     def removeOnlineSong(self, index: int):
-        """ 移除在线歌曲 """
+        """ remove online song from playlist """
         self.playlist.pop(index)
         super().removeMedia(index)
 
     def updateSongInfo(self, newSongInfo: SongInfo):
-        """ 更新播放列表中一首歌曲的信息 """
+        """ update song information """
         for i, songInfo in enumerate(self.playlist):
             if songInfo.file == newSongInfo.file:
                 self.playlist[i] = newSongInfo
 
     def updateMultiSongInfos(self, songInfos: SongInfo):
-        """ 更新播放列表中多首歌曲的信息 """
+        """ update multi song information """
         for songInfo in songInfos:
             self.updateSongInfo(songInfo)

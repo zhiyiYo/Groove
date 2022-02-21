@@ -8,7 +8,7 @@ from .mask_dialog_base import MaskDialogBase
 
 
 class MessageDialog(MaskDialogBase):
-    """ 带遮罩的消息对话框 """
+    """ Message dialog box with a mask """
 
     yesSignal = pyqtSignal()
     cancelSignal = pyqtSignal()
@@ -24,21 +24,22 @@ class MessageDialog(MaskDialogBase):
         self.__initWidget()
 
     def __initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widgets """
         self.windowMask.resize(self.size())
         self.widget.setMaximumWidth(675)
         self.titleLabel.move(30, 30)
         self.contentLabel.move(30, 70)
         self.contentLabel.setText(autoWrap(self.content, 71)[0])
-        # 设置层叠样式和布局
+
         self.__setQss()
         self.__initLayout()
-        # 信号连接到槽
+
+        # connect signal to slot
         self.yesButton.clicked.connect(self.__onYesButtonClicked)
         self.cancelButton.clicked.connect(self.__onCancelButtonClicked)
 
     def __initLayout(self):
-        """ 初始化布局 """
+        """ initialize layout """
         self.contentLabel.adjustSize()
         self.widget.setFixedSize(60+self.contentLabel.width(),
                                  self.contentLabel.y() + self.contentLabel.height()+115)
@@ -58,7 +59,7 @@ class MessageDialog(MaskDialogBase):
         self.close()
 
     def __setQss(self):
-        """ 设置层叠样式 """
+        """ set style sheet """
         self.windowMask.setObjectName('windowMask')
         self.titleLabel.setObjectName('titleLabel')
         self.contentLabel.setObjectName('contentLabel')

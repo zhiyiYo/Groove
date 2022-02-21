@@ -11,7 +11,7 @@ from .button import Button
 
 
 class SelectionModeBarBase(QWidget):
-    """ 选择模式栏基类 """
+    """ Selection mode bar base class """
 
     cancelSig = pyqtSignal()
     playSig = pyqtSignal()
@@ -54,18 +54,18 @@ class SelectionModeBarBase(QWidget):
         }
 
     def addButton(self, button: int):
-        """ 向窗口右侧添加一个按钮 """
+        """ add a button to bar """
         self.addButtons([button])
 
     def addSeparator(self):
-        """ 添加分隔符 """
+        """ add a seperator to bar """
         if not self.buttons:
             return
 
         self.__separatorIndexes.append(len(self.buttons))
 
     def insertSeparator(self, index: int):
-        """ 在指定位置插入分隔符 """
+        """ insert a seperator to bar """
         if index < 1:
             return
 
@@ -73,12 +73,12 @@ class SelectionModeBarBase(QWidget):
         self.__separatorIndexes.sort()
 
     def addButtons(self, buttons: List[int]):
-        """ 向窗口添加多个按钮
+        """ add multi buttons to bar
 
         Parameters
         ----------
         buttons: List[int]
-            按钮类型列表
+            button type list
         """
         bf = BF()
         buttons = [bf.create(i) for i in buttons]
@@ -98,13 +98,13 @@ class SelectionModeBarBase(QWidget):
         self.__adjustButtonPos()
 
     def setToHideButtons(self, buttons: List[Button]):
-        """ 设置在多选模式下需要隐藏的按钮 """
+        """ set the buttons hidden when there is multiple selection """
         self.__buttonToHides = buttons
         self.__alwaysVisibleButtons = [
             i for i in self.buttons if i not in buttons]
 
     def setPartButtonHidden(self, isHidden: bool):
-        """ 隐藏指定的隐藏列表中的按钮 """
+        """ set whether to hide part of buttons """
         if self.hasHidePartButton == isHidden:
             return
 
@@ -120,27 +120,25 @@ class SelectionModeBarBase(QWidget):
         self.__adjustButtonPos()
 
     def __adjustButtonPos(self):
-        """ 调整此时可见的按钮的位置 """
+        """ adjust button position """
         for index, button in enumerate(self.__currentVisibleButtons[::-1]):
             rawIndex = self.buttons.index(button)
             isRightHasSeparator = (rawIndex + 1 in self.__separatorIndexes)
             button.move(self.width() - (index + 1) * button.width() -
                         41 * isRightHasSeparator, 0)
 
-        # 调整窗口高度
+        # adjust bar height
         heights = [i.height() for i in self.__currentVisibleButtons]
         height = max(heights) if heights else 70
         self.resize(self.width(), height)
 
-        # 刷新界面
         self.update()
 
     def resizeEvent(self, e):
-        """ 改变尺寸时移动按钮 """
         self.__adjustButtonPos()
 
     def paintEvent(self, e):
-        """ 绘制分隔符 """
+        """ paint bar """
         painter = QPainter(self)
         painter.setPen(Qt.NoPen)
         painter.setBrush(QBrush(QColor(230, 230, 230)))
@@ -153,7 +151,7 @@ class SelectionModeBarBase(QWidget):
 
 
 class SongTabSelectionModeBar(SelectionModeBarBase):
-    """ 我的音乐歌曲界面选择模式栏 """
+    """ Song tab interface selection mode bar """
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -167,7 +165,7 @@ class SongTabSelectionModeBar(SelectionModeBarBase):
 
 
 class AlbumTabSelectionModeBar(SelectionModeBarBase):
-    """ 我的音乐专辑界面选择模式栏 """
+    """ Album tab interface selection mode bar """
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -181,7 +179,7 @@ class AlbumTabSelectionModeBar(SelectionModeBarBase):
 
 
 class PlayingSelectionModeBar(SelectionModeBarBase):
-    """ 正在播放界面选择模式栏 """
+    """ Playing interface selection mode bar """
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -195,7 +193,7 @@ class PlayingSelectionModeBar(SelectionModeBarBase):
 
 
 class SingerInterfaceSelectionModeBar(SelectionModeBarBase):
-    """ 歌手界面选择模式栏 """
+    """ Singer interface selection mode bar """
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -209,7 +207,7 @@ class SingerInterfaceSelectionModeBar(SelectionModeBarBase):
 
 
 class AlbumInterfaceSelectionModeBar(SelectionModeBarBase):
-    """ 专辑界面选择模式栏 """
+    """ Album interface selection mode bar """
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -223,7 +221,7 @@ class AlbumInterfaceSelectionModeBar(SelectionModeBarBase):
 
 
 class PlaylistCardSelectionModeBar(SelectionModeBarBase):
-    """ 播放列表卡界面选择模式栏 """
+    """ Playlist card interface selection mode bar """
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -237,7 +235,7 @@ class PlaylistCardSelectionModeBar(SelectionModeBarBase):
 
 
 class PlaylistSelectionModeBar(SelectionModeBarBase):
-    """ 播放列表界面选择模式栏 """
+    """ Playlist interface selection mode bar """
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -252,7 +250,7 @@ class PlaylistSelectionModeBar(SelectionModeBarBase):
 
 
 class SelectionModeBarType(Enum):
-    """ 选择模式栏类型 """
+    """ Selection mode bar type """
     SONG_TAB = 0
     ALBUM_TAB = 1
     PLAYING = 2
@@ -263,11 +261,11 @@ class SelectionModeBarType(Enum):
 
 
 class SelectionModeBarFactory:
-    """ 选择模式栏工厂 """
+    """ Selection mode bar type """
 
     @staticmethod
     def create(barType: SelectionModeBarType, parent=None) -> SelectionModeBarBase:
-        """ 创建选择模式栏 """
+        """ create a selection mode bar """
         barMap = {
             SelectionModeBarType.SONG_TAB: SongTabSelectionModeBar,
             SelectionModeBarType.ALBUM_TAB: AlbumTabSelectionModeBar,
@@ -279,6 +277,6 @@ class SelectionModeBarFactory:
         }
 
         if barType not in barMap:
-            raise ValueError(f'{barType} 非法')
+            raise ValueError(f'Selection mode bar type `{barType}` is illegal')
 
         return barMap[barType](parent)

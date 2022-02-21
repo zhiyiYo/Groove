@@ -15,10 +15,10 @@ from .play_bar import PlayBar
 
 
 class VideoWindow(QGraphicsView):
-    """ 视频界面 """
+    """ Video window """
 
-    downloadSignal = pyqtSignal(str, str)  # 下载 MV
-    fullScreenChanged = pyqtSignal(bool)   # 进入/退出全屏
+    downloadSignal = pyqtSignal(str, str)  # download MV
+    fullScreenChanged = pyqtSignal(bool)   # enter/exit full screen
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -36,24 +36,24 @@ class VideoWindow(QGraphicsView):
         self.__initWidget()
 
     def __initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widgets """
         self.resize(800, 800)
         self.setMouseTracking(True)
         self.setScene(self.graphicsScene)
         self.addActions([self.toggleFullScreenAct])
         self.hidePlayBarTimer.setSingleShot(True)
 
-        # 设置视频播放窗口
+        # set the widget to play video
         self.graphicsScene.addItem(self.videoItem)
         self.player.setVideoOutput(self.videoItem)
         self.setRenderHints(QPainter.Antialiasing |
                             QPainter.SmoothPixmapTransform)
 
-        # 隐藏滚动条
+        # hide scroll bar
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
-        # 初始化音量
+        # initialize volume
         self.player.setVolume(30)
         self.playBar.volumeSliderWidget.setVolume(30)
 
@@ -67,7 +67,7 @@ class VideoWindow(QGraphicsView):
         self.playBar.setFixedSize(self.width(), self.playBar.height())
 
     def setVideo(self, url: str, videoName: str):
-        """ 设置视频 """
+        """ set the video to play """
         self.url = url
         self.videoName = videoName
         self.resetTransform()
@@ -76,14 +76,14 @@ class VideoWindow(QGraphicsView):
         self.play()
 
     def togglePlayState(self):
-        """ 切换播放状态 """
+        """ toggle play state """
         if self.player.state() == QMediaPlayer.PlayingState:
             self.pause()
         else:
             self.play()
 
     def __setQss(self):
-        """ 设置层叠样式 """
+        """ set style sheet """
         self.setStyleSheet("""
             QGraphicsView {
                 background: black;
@@ -92,12 +92,12 @@ class VideoWindow(QGraphicsView):
         """)
 
     def play(self):
-        """ 播放视频 """
+        """ play video """
         self.player.play()
         self.playBar.playButton.setPlay(True)
 
     def pause(self):
-        """ 暂停视频 """
+        """ pause video """
         self.player.pause()
         self.playBar.playButton.setPlay(False)
 
@@ -107,62 +107,60 @@ class VideoWindow(QGraphicsView):
         e.accept()
 
     def __onDurationChanged(self, duration: int):
-        """ 视频时长改变槽函数 """
+        """ duration changed slot """
         if duration < 1:
             return
 
         self.playBar.setTotalTime(duration)
 
     def mouseMoveEvent(self, e):
-        """ 鼠标移动时显示播放栏 """
         self.hidePlayBarTimer.stop()
         self.playBar.show()
         self.hidePlayBarTimer.start(1500)
 
     def mousePressEvent(self, e):
-        """ 鼠标点击时切换播放栏可见性 """
         self.playBar.setVisible(not self.playBar.isVisible())
         if self.playBar.isVisible():
             self.hidePlayBarTimer.start(1500)
 
     def __enterFullScreen(self):
-        """ 进入全屏 """
+        """ enter full screen """
         self.playBar.fullScreenButton.setFullScreen(True)
         self.playBar.fullScreenButton.setToolTip(self.tr('Exit fullscreen'))
         self.fullScreenChanged.emit(True)
 
     def __exitFullScreen(self):
-        """ 退出全屏 """
+        """ exit full screen """
         self.playBar.fullScreenButton.setFullScreen(False)
         self.playBar.fullScreenButton.setToolTip(self.tr('Show fullscreen'))
         self.fullScreenChanged.emit(False)
 
     def __toggleFullScreen(self):
-        """ 切换全屏状态 """
+        """ toggle full screen """
         if self.window().isFullScreen():
             self.__exitFullScreen()
         else:
             self.__enterFullScreen()
 
     def __onMediaStatusChanged(self, status: QMediaPlayer.MediaStatus):
-        """ 媒体状态改变槽函数 """
+        """ media status changed slot """
         if status != QMediaPlayer.EndOfMedia:
             return
 
         self.playBar.playButton.setPlay(False)
 
     def __skipBack(self):
-        """ 回退 10 秒 """
+        """ Back up for 10 seconds. """
         pos = self.player.position()
         self.player.setPosition(pos-10000)
 
     def __skipForward(self):
-        """ 快进 10 秒 """
+        """ Fast forward 10 seconds """
         pos = self.player.position()
         self.player.setPosition(pos+10000)
 
     def __onPlayerError(self, error: QMediaPlayer.Error):
-        """ 播放器错误槽函数 """
+        """ play error slot """
         if error == QMediaPlayer.NoError:
             return
 
@@ -183,7 +181,7 @@ class VideoWindow(QGraphicsView):
         w.exec()
 
     def __onDownloadButtonClicked(self):
-        """ 下载按钮点击槽函数 """
+        """ download button clicked slot """
         path, _ = QFileDialog.getSaveFileName(
             self, self.tr('save as'), f'./{self.videoName}', 'MP4 (*.mp4)')
         if not path:
@@ -209,14 +207,14 @@ class VideoWindow(QGraphicsView):
         self.downloadMvThread.start()
 
     def __onFullScreenChanged(self, isFullScreen: bool):
-        """ 全屏状态改变才函数 """
+        """ full screen changed slot """
         text = self.tr('Exit fullscreen') if isFullScreen else self.tr(
             'Show fullscreen')
         self.playBar.fullScreenButton.setToolTip(text)
         self.fullScreenChanged.emit(isFullScreen)
 
     def __connectSignalToSlot(self):
-        """ 信号连接到槽 """
+        """ connect signal to slot """
         self.player.error.connect(self.__onPlayerError)
         self.player.durationChanged.connect(self.__onDurationChanged)
         self.player.positionChanged.connect(self.playBar.setCurrentTime)
@@ -239,7 +237,7 @@ class VideoWindow(QGraphicsView):
 
 
 class GraphicsVideoItem(QGraphicsVideoItem):
-    """ 视频图元 """
+    """ Graphics video item """
 
     def paint(self, painter: QPainter, option, widget):
         painter.setCompositionMode(QPainter.CompositionMode_Difference)

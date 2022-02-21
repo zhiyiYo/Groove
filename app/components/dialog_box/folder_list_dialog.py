@@ -14,7 +14,7 @@ from .mask_dialog_base import MaskDialogBase
 
 
 class FolderListDialog(MaskDialogBase):
-    """ 文件夹列表对话框 """
+    """ Folder list dialog box """
 
     folderChanged = pyqtSignal(list)
 
@@ -22,7 +22,7 @@ class FolderListDialog(MaskDialogBase):
         super().__init__(parent=parent)
         self.title = title
         self.content = content
-        self.__original_paths = folderPaths
+        self.__originalPaths = folderPaths
         self.folderPaths = folderPaths.copy()
 
         self.vBoxLayout = QVBoxLayout(self.widget)
@@ -38,7 +38,7 @@ class FolderListDialog(MaskDialogBase):
         self.__initWidget()
 
     def __initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widgets """
         self.__setQss()
 
         w = max(self.titleLabel.width()+60, self.contentLabel.width()+60, 440)
@@ -53,20 +53,20 @@ class FolderListDialog(MaskDialogBase):
         self.scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.__initLayout()
 
-        # 信号连接到槽
+        # connect signal to slot
         self.addFolderCard.clicked.connect(self.__showFileDialog)
         self.completeButton.clicked.connect(self.__onButtonClicked)
         for card in self.folderCards:
             card.clicked.connect(self.__showDeleteFolderCardDialog)
 
     def __initLayout(self):
-        """ 初始化布局 """
+        """ initialize layout """
         self.vBoxLayout.setContentsMargins(30, 30, 30, 30)
         self.vBoxLayout.setSizeConstraint(QVBoxLayout.SetFixedSize)
         self.vBoxLayout.setAlignment(Qt.AlignTop)
         self.vBoxLayout.setSpacing(0)
 
-        # 标签
+        # labels
         layout_1 = QVBoxLayout()
         layout_1.setContentsMargins(0, 0, 0, 0)
         layout_1.setSpacing(7)
@@ -75,7 +75,7 @@ class FolderListDialog(MaskDialogBase):
         self.vBoxLayout.addLayout(layout_1, 0)
         self.vBoxLayout.addSpacing(15)
 
-        # 卡片
+        # cards
         layout_2 = QHBoxLayout()
         layout_2.setAlignment(Qt.AlignCenter)
         layout_2.setContentsMargins(5, 0, 5, 0)
@@ -91,7 +91,7 @@ class FolderListDialog(MaskDialogBase):
         for card in self.folderCards:
             self.scrollLayout.addWidget(card, 0, Qt.AlignTop)
 
-        # 按钮
+        # buttons
         layout_3 = QHBoxLayout()
         layout_3.setContentsMargins(0, 0, 0, 0)
         layout_3.addStretch(1)
@@ -101,14 +101,14 @@ class FolderListDialog(MaskDialogBase):
         self.__adjustWidgetSize()
 
     def __showFileDialog(self):
-        """ 显示文件对话框 """
+        """ show file dialog to select folder """
         path = QFileDialog.getExistingDirectory(
             self, self.tr("Choose folder"), "./")
 
         if not path or path in self.folderPaths:
             return
 
-        # 创建文件路径卡
+        # create folder card
         card = FolderCard(path, self.scrollWidget)
         self.scrollLayout.addWidget(card, 0, Qt.AlignTop)
         card.clicked.connect(self.__showDeleteFolderCardDialog)
@@ -120,7 +120,7 @@ class FolderListDialog(MaskDialogBase):
         self.__adjustWidgetSize()
 
     def __showDeleteFolderCardDialog(self):
-        """ 显示删除文件夹卡片对话框 """
+        """ show delete folder card dialog """
         sender = self.sender()
         title = self.tr('Are you sure you want to delete the folder?')
         content = self.tr("If you delete the ") + f'"{sender.folderName}"' + \
@@ -131,18 +131,18 @@ class FolderListDialog(MaskDialogBase):
         dialog.exec_()
 
     def __deleteFolderCard(self, folderCard):
-        """ 删除选中的文件卡 """
+        """ delete selected folder card """
         self.scrollLayout.removeWidget(folderCard)
         index = self.folderCards.index(folderCard)
         self.folderCards.pop(index)
         self.folderPaths.pop(index)
         folderCard.deleteLater()
 
-        # 更新高度
+        # adjust height
         self.__adjustWidgetSize()
 
     def __setQss(self):
-        """ 设置层叠样式 """
+        """ set style sheet """
         self.titleLabel.setObjectName('titleLabel')
         self.contentLabel.setObjectName('contentLabel')
         self.completeButton.setObjectName('completeButton')
@@ -159,8 +159,8 @@ class FolderListDialog(MaskDialogBase):
         self.completeButton.adjustSize()
 
     def __onButtonClicked(self):
-        """ 完成按钮点击槽函数 """
-        if sorted(self.__original_paths) != sorted(self.folderPaths):
+        """ done button clicked slot """
+        if sorted(self.__originalPaths) != sorted(self.folderPaths):
             self.setEnabled(False)
             QApplication.processEvents()
             self.folderChanged.emit(self.folderPaths)
@@ -175,7 +175,7 @@ class FolderListDialog(MaskDialogBase):
 
 
 class ClickableWindow(QWidget):
-    """ 可点击窗口 """
+    """ Clickable window """
 
     clicked = pyqtSignal()
 
@@ -188,17 +188,14 @@ class ClickableWindow(QWidget):
         self._isEnter = False
 
     def enterEvent(self, e):
-        """ 鼠标进入界面就置位进入标志位 """
         self._isEnter = True
         self.update()
 
     def leaveEvent(self, e):
-        """ 鼠标离开就清零置位标志位 """
         self._isEnter = False
         self.update()
 
     def mouseReleaseEvent(self, e):
-        """ 鼠标松开时更新界面 """
         self._isPressed = False
         self.update()
         if e.button() == Qt.LeftButton:
@@ -209,7 +206,7 @@ class ClickableWindow(QWidget):
         self.update()
 
     def paintEvent(self, e):
-        """ 绘制背景 """
+        """ paint window """
         painter = QPainter(self)
         painter.setRenderHints(QPainter.Antialiasing)
         brush = QBrush(QColor(204, 204, 204))
@@ -233,7 +230,7 @@ class ClickableWindow(QWidget):
 
 
 class FolderCard(ClickableWindow):
-    """ 文件夹卡片 """
+    """ Folder card """
 
     def __init__(self, folderPath: str, parent=None):
         super().__init__(parent)
@@ -242,32 +239,30 @@ class FolderCard(ClickableWindow):
         self.__closeIcon = QPixmap(":/images/setting_interface/Close.png")
 
     def paintEvent(self, e):
-        """ 绘制背景 """
+        """ paint card """
         super().paintEvent(e)
         painter = QPainter(self)
         painter.setRenderHints(
             QPainter.TextAntialiasing | QPainter.SmoothPixmapTransform)
 
-        # 绘制文字和图标
+        # paint text and icon
         if self._isPressed:
             self.__drawText(painter, 15, 10, 15, 9)
-            painter.drawPixmap(
-                self.width() - 33, 23, self.__closeIcon.width(), self.__closeIcon.height(), self.__closeIcon)
+            painter.drawPixmap(self.width() - 33, 23, self.__closeIcon)
         else:
             self.__drawText(painter, 12, 11, 12, 10)
-            painter.drawPixmap(
-                self.width() - 30, 25, self.__closeIcon.width(), self.__closeIcon.height(), self.__closeIcon)
+            painter.drawPixmap(self.width() - 30, 25, self.__closeIcon)
 
     def __drawText(self, painter, x1, fontSize1, x2, fontSize2):
-        """ 绘制文字 """
-        # 绘制文件夹名字
+        """ draw text """
+        # paint folder name
         font = QFont("Microsoft YaHei", fontSize1, 75)
         painter.setFont(font)
         name = QFontMetrics(font).elidedText(
             self.folderName, Qt.ElideRight, self.width()-60)
         painter.drawText(x1, 37, name)
 
-        # 绘制路径
+        # paint folder path
         font = QFont("Microsoft YaHei", fontSize2)
         painter.setFont(font)
         path = QFontMetrics(font).elidedText(
@@ -276,29 +271,23 @@ class FolderCard(ClickableWindow):
 
 
 class AddFolderCard(ClickableWindow):
-    """ 添加文件夹卡 """
+    """ Add folder card """
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.__iconPix = QPixmap(":/images/setting_interface/Add.png")
 
     def paintEvent(self, e):
-        """ 绘制背景 """
+        """ paint card """
         super().paintEvent(e)
         painter = QPainter(self)
+        w = self.width()
+        h = self.height()
+        pw = self.__iconPix.width()
+        ph = self.__iconPix.height()
         if not self._isPressed:
             painter.drawPixmap(
-                int(self.width() / 2 - self.__iconPix.width() / 2),
-                int(self.height() / 2 - self.__iconPix.height() / 2),
-                self.__iconPix.width(),
-                self.__iconPix.height(),
-                self.__iconPix,
-            )
+                int(w/2 - pw/2), int(h/2 - ph/2), self.__iconPix)
         else:
             painter.drawPixmap(
-                int(self.width() / 2 - (self.__iconPix.width() - 4) / 2),
-                int(self.height() / 2 - (self.__iconPix.height() - 4) / 2),
-                self.__iconPix.width() - 4,
-                self.__iconPix.height() - 4,
-                self.__iconPix,
-            )
+                int(w/2 - (pw - 4)/2), int(h/2 - (ph - 4)/2), pw - 4, ph - 4, self.__iconPix)

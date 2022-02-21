@@ -4,28 +4,28 @@ from PyQt5.QtWidgets import QHBoxLayout
 
 
 class HBoxLayout(QHBoxLayout):
-    """ 水平布局 """
+    """ Horizontal box layout """
 
     def __init__(self, parent):
         super().__init__(parent)
         self.__widget_list = []
 
     def addWidget(self, widget, stretch=0, alignment=Qt.AlignLeft):
-        """ 向布局中添加小部件 """
+        """ add widget to layout """
         super().addWidget(widget, stretch, alignment)
         self.__widget_list.append(widget)
 
     def removeWidget(self, widget):
-        """ 从布局中移除小部件 """
+        """ remove widget from layout """
         super().removeWidget(widget)
         self.__widget_list.remove(widget)
 
     def removeAllWidget(self):
-        """ 从布局中移除所有小部件 """
+        """ remove all widgets from layout """
         for widget in self.__widget_list:
             super().removeWidget(widget)
+
         self.__widget_list.clear()
 
     def widgets(self) -> list:
-        """ 返回小部件列表 """
         return self.__widget_list

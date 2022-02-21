@@ -22,7 +22,7 @@ from .mask_dialog_base import MaskDialogBase
 
 
 class AlbumInfoEditDialog(MaskDialogBase):
-    """ Album information edit dialog """
+    """ Album information edit dialog box """
 
     saveInfoSig = pyqtSignal(AlbumInfo, AlbumInfo, str)
     MAXHEIGHT = 755

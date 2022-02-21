@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QAction, QApplication, QSystemTrayIcon
 
 
 class SystemTrayIcon(QSystemTrayIcon):
-    """ 系统托盘图标 """
+    """ System tray icon """
 
     exitSignal = pyqtSignal()
     showMainWindowSig = pyqtSignal()
@@ -22,7 +22,7 @@ class SystemTrayIcon(QSystemTrayIcon):
         self.__connectSignalToSlot()
 
     def __connectSignalToSlot(self):
-        """ 信号连接到槽 """
+        """ connect signal to slot """
         self.activated.connect(self.__onActivated)
         self.menu.exitAct.triggered.connect(self.exitSignal)
         self.menu.lastSongAct.triggered.connect(signalBus.lastSongSig)
@@ -33,12 +33,12 @@ class SystemTrayIcon(QSystemTrayIcon):
             signalBus.switchToSettingInterfaceSig)
 
     def __onActivated(self, reason: QSystemTrayIcon.ActivationReason):
-        """ 激活槽函数 """
+        """ system tray icon activated slot """
         if reason == self.Trigger:
             self.showMainWindowSig.emit()
 
     def setPlay(self, isPlay: bool):
-        """ 设置播放状态 """
+        """ set play state """
         if self.isPlay == isPlay:
             return
 
@@ -51,12 +51,12 @@ class SystemTrayIcon(QSystemTrayIcon):
             self.menu.playAct.setText(self.tr('Play'))
 
     def __onPlayActionTriggered(self):
-        """ 播放动作触发槽函数 """
+        """ play action triggered slot """
         self.setPlay(not self.isPlay)
         signalBus.togglePlayStateSig.emit()
 
     def updateWindow(self, songInfo: SongInfo):
-        """ 更新窗口 """
+        """ update window """
         singer = songInfo.singer or ''
         songName = songInfo.title or ''
         text = singer + ' - ' + songName
@@ -70,7 +70,7 @@ class SystemTrayIcon(QSystemTrayIcon):
 
 
 class SystemTrayMenu(DWMMenu):
-    """ 系统托盘菜单 """
+    """ System tray menu """
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)

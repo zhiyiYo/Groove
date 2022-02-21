@@ -7,61 +7,52 @@ from PyQt5.QtWidgets import QPushButton, QToolButton
 class BasicButton(QToolButton):
     """ 基本六态按钮 """
 
-    def __init__(self, iconPathDict_list: list, parent=None, iconSize_tuple: tuple = (57, 40)):
+    def __init__(self, iconPaths: list, parent=None, iconSize: tuple = (57, 40)):
         super().__init__(parent=parent)
-        self.iconPathDict_list = iconPathDict_list
-        self.iconWidth, self.iconHeight = iconSize_tuple
-        # 图标颜色标志位
+        self.iconPaths = iconPaths
+        self.iconWidth, self.iconHeight = iconSize
         self.isWhiteIcon = False
-        # 初始化
-        self.__initWidget()
 
-    def __initWidget(self):
-        """ 初始化小部件 """
         self.resize(self.iconWidth, self.iconHeight)
         self.setIconSize(QSize(self.width(), self.height()))
         self.setStyleSheet("border: none; margin: 0px")
         self.__updateIcon("normal")
 
     def enterEvent(self, e):
-        """ hover时更换图标 """
         self.__updateIcon("hover")
 
     def leaveEvent(self, e):
-        """ leave时更换图标 """
         self.__updateIcon("normal")
 
     def mousePressEvent(self, e):
-        """ 鼠标左键按下时更换图标 """
         if e.button() == Qt.RightButton:
             return
         self.__updateIcon("pressed")
         super().mousePressEvent(e)
 
     def mouseReleaseEvent(self, e):
-        """ 鼠标松开时更换按钮图标 """
         if e.button() == Qt.RightButton:
             return
         self.__updateIcon("normal")
         super().mouseReleaseEvent(e)
 
     def setWhiteIcon(self, isWhite: bool):
-        """ 设置图标颜色 """
+        """ set icon color """
         self.isWhiteIcon = isWhite
         self.__updateIcon("normal")
 
     def __updateIcon(self, iconState: str):
-        """ 更新图标 """
+        """ update icon """
         self.setIcon(
-            QIcon(self.iconPathDict_list[self.isWhiteIcon][iconState]))
+            QIcon(self.iconPaths[self.isWhiteIcon][iconState]))
 
 
 class MaximizeButton(QPushButton):
-    """ 定义最大化按钮 """
+    """ Maximize button """
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.iconPathDict_list = [
+        self.iconPaths = [
             [
                 {
                     "normal": ":/images/title_bar/透明黑色最大化按钮_57_40.png",
@@ -88,7 +79,6 @@ class MaximizeButton(QPushButton):
             ],
         ]
         self.resize(57, 40)
-        # 设置标志位
         self.isMax = False
         self.isWhiteIcon = False
         self.setStyleSheet("QPushButton{border:none;margin:0}")
@@ -97,34 +87,28 @@ class MaximizeButton(QPushButton):
         self.setIconSize(QSize(57, 40))
 
     def setWhiteIcon(self, isWhite: bool):
-        """ 设置图标颜色 """
+        """ set icon color """
         self.isWhiteIcon = isWhite
         self.__updateIcon("normal")
 
     def __updateIcon(self, iconState: str):
-        """ 更新图标 """
+        """ update icon """
         self.setIcon(
-            QIcon(self.iconPathDict_list[self.isMax]
-                  [self.isWhiteIcon][iconState])
-        )
+            QIcon(self.iconPaths[self.isMax][self.isWhiteIcon][iconState]))
 
     def enterEvent(self, e):
-        """ hover时更换图标 """
         self.__updateIcon("hover")
 
     def leaveEvent(self, e):
-        """ leave时更换图标 """
         self.__updateIcon("normal")
 
     def mousePressEvent(self, e):
-        """ 鼠标左键按下时更换图标 """
         if e.button() == Qt.RightButton:
             return
         self.__updateIcon("pressed")
         super().mousePressEvent(e)
 
     def mouseReleaseEvent(self, e):
-        """ 鼠标松开时更换按钮图标 """
         if e.button() == Qt.RightButton:
             return
         self.isMax = not self.isMax
@@ -132,7 +116,7 @@ class MaximizeButton(QPushButton):
         super().mouseReleaseEvent(e)
 
     def setMaxState(self, isMax: bool):
-        """ 更新最大化标志位和图标 """
+        """ set maximized state """
         if self.isMax == isMax:
             return
         self.isMax = isMax

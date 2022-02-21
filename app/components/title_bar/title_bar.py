@@ -11,7 +11,7 @@ from .title_bar_buttons import BasicButton, MaximizeButton
 
 
 class TitleBar(QWidget):
-    """ 定义标题栏 """
+    """ Title bar """
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -22,7 +22,7 @@ class TitleBar(QWidget):
         self.__initWidget()
 
     def __createButtons(self):
-        """ 创建各按钮 """
+        """ create buttons """
         self.minButton = BasicButton(
             [
                 {
@@ -67,14 +67,14 @@ class TitleBar(QWidget):
                 },
             ],
             self,
-            iconSize_tuple=(60, 40),
+            iconSize=(60, 40),
         )
         self.maxButton = MaximizeButton(self)
         self.buttons = [self.minButton, self.maxButton,
                         self.closeButton, self.returnButton]
 
     def __initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widgets """
         self.setFixedHeight(40)
         self.title.setObjectName('titleLabel')
         self.setStyleSheet("""
@@ -87,34 +87,30 @@ class TitleBar(QWidget):
         self.title.hide()
         self.returnButton.hide()
 
-        # 将按钮的点击信号连接到槽函数
+        # connect signal to slot
         self.minButton.clicked.connect(self.window().showMinimized)
         self.maxButton.clicked.connect(self.__showRestoreWindow)
         self.closeButton.clicked.connect(self.window().close)
 
-        # 给返回按钮安装事件过滤器
         self.returnButton.installEventFilter(self)
         self.title.installEventFilter(self)
 
     def resizeEvent(self, e: QResizeEvent):
-        """ 尺寸改变时移动按钮 """
         self.title.move(self.returnButton.isVisible() * 60, 0)
         self.closeButton.move(self.width() - 57, 0)
         self.maxButton.move(self.width() - 2 * 57, 0)
         self.minButton.move(self.width() - 3 * 57, 0)
 
     def mouseDoubleClickEvent(self, e):
-        """ 双击最大化/缩小窗口 """
         self.__showRestoreWindow()
 
     def mousePressEvent(self, e):
-        """ 移动窗口 """
         if self.childAt(e.pos()):
             return
 
         ReleaseCapture()
         SendMessage(
-            self.window().winId(),
+            int(self.window().winId()),
             win32con.WM_SYSCOMMAND,
             win32con.SC_MOVE + win32con.HTCAPTION,
             0,
@@ -122,7 +118,7 @@ class TitleBar(QWidget):
         e.ignore()
 
     def __showRestoreWindow(self):
-        """ 复原窗口并更换最大化按钮的图标 """
+        """ show restored window """
         if self.window().isMaximized():
             self.window().showNormal()
             self.maxButton.setMaxState(False)
@@ -131,12 +127,11 @@ class TitleBar(QWidget):
             self.maxButton.setMaxState(True)
 
     def setWhiteIcon(self, isWhiteIcon: bool):
-        """ 设置图标颜色 """
+        """ set icon color """
         for button in self.buttons:
             button.setWhiteIcon(isWhiteIcon)
 
     def eventFilter(self, obj, e: QEvent):
-        """ 过滤事件 """
         if obj == self.returnButton:
             if e.type() == QEvent.Hide:
                 cond = self.title.parent() is not self

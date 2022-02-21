@@ -7,7 +7,7 @@ from common.library import Library
 from common.signal_bus import signalBus
 from components.dialog_box.message_dialog import MessageDialog
 from components.dialog_box.rename_playlist_dialog import RenamePlaylistDialog
-from components.layout import GridLayout, HBoxLayout, FlowLayout
+from components.layout import HBoxLayout, FlowLayout
 from components.layout.h_box_layout import HBoxLayout
 from PyQt5.QtCore import (QMargins, QParallelAnimationGroup, QPoint, Qt,
                           pyqtSignal)
@@ -28,19 +28,19 @@ class PlaylistCardViewBase(QWidget):
         Parameters
         ----------
         library: Library
-            歌曲库
+            song library
 
         playlists: List[Playlist]
-            播放列表信息列表
+            playlist list
 
         cardType: PlaylistCardType
-            播放列表卡类型
+            playlist card type
 
         create: bool
-            是否直接创建歌曲卡
+            whether to create playlist card
 
         parent:
-            父级窗口
+            parent window
         """
         super().__init__(parent=parent)
         self.library = library
@@ -59,22 +59,21 @@ class PlaylistCardViewBase(QWidget):
 
         if create:
             for platlist in self.playlists:
-                self._createAlbumCard(platlist)
+                self._createPlaylistCard(platlist)
                 QApplication.processEvents()
 
-    def _createAlbumCard(self, platlist: Playlist):
-        """ 创建一个专辑卡 """
+    def _createPlaylistCard(self, platlist: Playlist):
+        """ create a playlist card """
         card = PlaylistCardFactory.create(self.cardType, platlist, self)
         self.hideCheckBoxAniGroup.addAnimation(card.hideCheckBoxAni)
 
-        # 信号连接到槽
         self._connectCardSignalToSlot(card)
 
         self.playlistCards.append(card)
         self.playlistCardMap[platlist.name] = card
 
     def _connectCardSignalToSlot(self, card: PlaylistCardBase):
-        """ 将专辑卡信号连接到槽函数 """
+        """ connect playlist card signal to slot """
         card.playSig.connect(
             lambda n: signalBus.playCheckedSig.emit(self.__getPlaylistSongInfos(n)))
         card.nextToPlaySig.connect(
@@ -92,20 +91,20 @@ class PlaylistCardViewBase(QWidget):
             lambda n: signalBus.addSongsToPlayingPlaylistSig.emit(self.__getPlaylistSongInfos(n)))
 
     def __showBlurBackground(self, pos: QPoint, coverPath: str):
-        """ 显示磨砂背景 """
+        """ show blur background """
         pos = self.mapFromGlobal(pos)
         self.blurBackground.setBlurPic(coverPath, 40)
         self.blurBackground.move(pos.x() - 30, pos.y() - 20)
         self.blurBackground.show()
 
     def showRenamePlaylistDialog(self, name: str):
-        """ 显示重命名播放列表面板 """
+        """ show rename playlist dialog box """
         w = RenamePlaylistDialog(self.library, name, self.window())
         w.renamePlaylistSig.connect(signalBus.renamePlaylistSig)
         w.exec()
 
     def showDeleteCardDialog(self, name: str):
-        """ 显示删除一个播放列表卡对话框 """
+        """ show delete playlist card dialog box """
         title = self.tr("Are you sure you want to delete this?")
         content = self.tr("If you delete") + f' "{name}" ' + \
             self.tr("it won't be on be this device anymore.")
@@ -115,7 +114,7 @@ class PlaylistCardViewBase(QWidget):
         w.exec()
 
     def __getPlaylistSongInfos(self, name: str):
-        """ 获取一个播放列表的歌曲信息 """
+        """ get song information of playlist """
         playlist = self.library.playlistController.getPlaylist(name)
         if not playlist:
             return []
@@ -123,12 +122,12 @@ class PlaylistCardViewBase(QWidget):
         return playlist.songInfos
 
     def __hideAllCheckBox(self):
-        """ 隐藏所有复选框 """
+        """ hide check box of playlist cards """
         for card in self.playlistCards:
             card.checkBox.hide()
 
     def renamePlaylistCard(self, old: str, new: str):
-        """ 重命名播放列表卡 """
+        """ rename playlist card """
         if old not in self.playlistCardMap:
             return
 
@@ -139,7 +138,7 @@ class PlaylistCardViewBase(QWidget):
         self.setSortMode(self.sortMode)
 
     def addSongsToPlaylistCard(self, name: str, songInfos: List[SongInfo]):
-        """ 向播放列表卡添加歌曲 """
+        """ add songs to playlist card """
         if name not in self.playlistCardMap:
             return
 
@@ -150,7 +149,7 @@ class PlaylistCardViewBase(QWidget):
         card.updateWindow(playlist)
 
     def removeSongsFromPlaylistCard(self, name: str, songInfos: List[SongInfo]):
-        """ 移除一个播放列表中的歌曲 """
+        """ remove songs from playlist card """
         if name not in self.playlistCardMap:
             return
 
@@ -159,7 +158,7 @@ class PlaylistCardViewBase(QWidget):
         card.updateWindow(playlist)
 
     def deletePlaylistCard(self, name: str):
-        """ 删除一个播放列表卡 """
+        """ delete a playlist card """
         if name not in self.playlistCardMap:
             return
 
@@ -174,19 +173,19 @@ class PlaylistCardViewBase(QWidget):
         self.adjustSize()
 
     def setPlaylistCards(self, playlistCards: List[PlaylistCardBase]):
-        """ 设置视图中的专辑卡，不生成新的专辑卡 """
+        """ set playlist cards in the view and do not generate new cards """
         raise NotImplementedError
 
     def _addCardsToLayout(self):
-        """ 将所有播放列表卡加到布局中 """
+        """ add all playlist cards to layout """
         raise NotImplementedError
 
     def _removeCardsFromLayout(self):
-        """ 将所有播放列表卡从布局中移除 """
+        """ remove all playlist cards from layout """
         raise NotImplementedError
 
     def updateAllCards(self, playlists: List[Playlist]):
-        """ 更新所有播放列表卡 """
+        """ update all playlist cards """
         self._removeCardsFromLayout()
 
         N = len(playlists)
@@ -199,31 +198,27 @@ class PlaylistCardViewBase(QWidget):
                 card.deleteLater()
         elif N > N_:
             for playlist in playlists[N_:]:
-                self._createAlbumCard(playlist)
+                self._createPlaylistCard(playlist)
                 QApplication.processEvents()
 
-        # 更新部分专辑卡
+        # update part of playlist cards
         self.playlists = playlists
         for i in range(min(N, N_)):
             playlist = playlists[i]
             self.playlistCards[i].updateWindow(playlist)
             QApplication.processEvents()
 
-        # 将专辑卡添加到布局中
         self._addCardsToLayout()
         self.setStyle(QApplication.style())
         self.adjustSize()
 
     def setSortMode(self, mode: str):
-        """ 设置专辑卡的排序模式
+        """ set the sort mode of playlist cards
 
         Parameters
         ----------
         mode: str
-            排序依据，可以是 `A To Z` 或者 `modifiedTime`
-
-        reverse: bool
-            是否降序
+            sort mode, including `A To Z` and `modifiedTime`
         """
         self.sortMode = mode
         self._removeCardsFromLayout()
@@ -238,7 +233,7 @@ class PlaylistCardViewBase(QWidget):
         self._addCardsToLayout()
 
     def __onPlaylistCardCheckedStateChanged(self, card: PlaylistCardBase, isChecked: bool):
-        """ 播放列表卡选中状态改变槽函数 """
+        """ playlist card checked state changed slot """
         N0 = len(self.checkedPlaylistCards)
 
         if card not in self.checkedPlaylistCards and isChecked:
@@ -259,7 +254,7 @@ class PlaylistCardViewBase(QWidget):
         self.checkedNumChanged.emit(N1, isAllChecked)
 
     def setSelectionModeOpen(self, isOpen: bool):
-        """ 设置所有播放列表卡是否进入选择模式 """
+        """ set whether to open selection mode """
         if self.isInSelectionMode == isOpen:
             return
 
@@ -271,22 +266,22 @@ class PlaylistCardViewBase(QWidget):
             self.hideCheckBoxAniGroup.start()
 
     def setAllChecked(self, isChecked: bool):
-        """ 设置所有播放列表卡的选中状态 """
+        """ set the checked state of all playlist cards """
         for card in self.playlistCards:
             card.setChecked(isChecked)
 
     def uncheckAll(self):
-        """ 取消所有已处于选中状态的播放列表卡的选中状态 """
+        """ uncheck all playlist cards """
         for card in self.checkedPlaylistCards.copy():
             card.setChecked(False)
 
     def adjustHeight(self):
-        """ 调整高度 """
+        """ adjust view height """
         raise NotADirectoryError
 
 
 class GridPlaylistCardView(PlaylistCardViewBase):
-    """ 网格布局播放列表卡视图 """
+    """ Playlist card view with grid layout """
 
     def __init__(self, library: Library, playlists: List[Playlist], cardType: PlaylistCardType,
                  spacings=(10, 20), margins=QMargins(0, 0, 0, 0), create=True, parent=None):
@@ -294,25 +289,25 @@ class GridPlaylistCardView(PlaylistCardViewBase):
         Parameters
         ----------
         library: Library
-            歌曲库
+            song library
 
         playlists: List[Playlist]
-            播放列表列表
+            playlist list
 
         cardType: PlaylistCardType
-            播放列表卡类型
+            playlist card type
 
         spacings: tuple
-            专辑卡的水平和垂直间距
+            horizontal and vertical spacing between playlist cards
 
         margins: QMargins
-            网格布局的外边距
+            margins of grid layout
 
         create: bool
-            是否立即创建专辑卡
+            whether to create album card
 
         parent:
-            父级窗口
+            parent window
         """
         super().__init__(library, playlists, cardType, create, parent)
         self.column = 3
@@ -325,7 +320,6 @@ class GridPlaylistCardView(PlaylistCardViewBase):
             self._addCardsToLayout()
 
     def _addCardsToLayout(self):
-        """ 将所有专辑卡添加到布局 """
         for card in self.playlistCards:
             self.flowLayout.addWidget(card)
             QApplication.processEvents()
@@ -347,13 +341,12 @@ class GridPlaylistCardView(PlaylistCardViewBase):
         self._addCardsToLayout()
 
     def adjustHeight(self):
-        """ 调整高度 """
         h = self.flowLayout.heightForWidth(self.width())
         self.resize(self.width(), h)
 
 
 class HorizonPlaylistCardView(PlaylistCardViewBase):
-    """ 水平播放列表卡视图 """
+    """ Playlist card view with horizontal box layout """
 
     def __init__(self, library: Library, playlists: List[Playlist], cardType: PlaylistCardType,
                  spacing=20, margins=QMargins(0, 0, 0, 0), create=True, parent=None):
@@ -361,25 +354,25 @@ class HorizonPlaylistCardView(PlaylistCardViewBase):
         Parameters
         ----------
         library: Library
-            歌曲库
+            song library
 
         playlists: List[Playlist]
-            播放列表列表
+            playlist list
 
         cardType: PlaylistCardType
-            播放列表卡类型
+            playlist card type
 
         spacing: int
-            专辑卡的水平间距
+            horizontal spacing between playlist cards
 
         margins: QMargins
-            网格布局的外边距
+            margins of grid layout
 
         create: bool
-            是否立即创建专辑卡
+            whether to create album card
 
         parent:
-            父级窗口
+            parent window
         """
         super().__init__(library, playlists, cardType, create, parent)
         self.hBoxLayout = HBoxLayout(self)
@@ -390,11 +383,9 @@ class HorizonPlaylistCardView(PlaylistCardViewBase):
             self._addCardsToLayout()
 
     def _addCardsToLayout(self):
-        """ 将所有专辑卡添加到布局 """
         for card in self.playlistCards:
             self.hBoxLayout.addWidget(card)
             QApplication.processEvents()
 
     def _removeCardsFromLayout(self):
-        """ 将所有播放列表卡从布局中移除 """
         self.hBoxLayout.removeAllWidget()

@@ -6,32 +6,30 @@ from PyQt5.QtWidgets import QApplication, QCheckBox
 
 
 class CheckBox(QCheckBox):
-    """ 可以转发点击消息的复选框 """
+    """ A check box that can forward click signal """
 
     def __init__(self, parent=None, text="", forwardTargetWidget=None):
-        """ 实例化复选框
-
+        """
         Parameters
         ----------
         parent:
-            父级窗口
+            parent window
 
         text: str
-            复选框的文字
+            text of check box
 
         forwardTargetWidget:
-            转发鼠标点击消息的目的小部件
+            the widget to receive signal
         """
         super().__init__(parent)
         self.setText(text)
         self.forwardTargetWidget = forwardTargetWidget
 
     def setForwardTargetWidget(self, widget):
-        """ 设置转发目的地小部件 """
+        """ set the widget to receive signal """
         self.forwardTargetWidget = widget
 
     def mousePressEvent(self, e: QMouseEvent):
-        """ 转发鼠标点击事件给目标小部件 """
         if not self.forwardTargetWidget:
             super().mousePressEvent(e)
             return
@@ -50,7 +48,6 @@ class CheckBox(QCheckBox):
         QApplication.sendEvent(self.forwardTargetWidget, e)
 
     def mouseReleaseEvent(self, e):
-        """ 鼠标松开转发事件 """
         if self.forwardTargetWidget:
             QApplication.sendEvent(self.forwardTargetWidget, e)
         else:

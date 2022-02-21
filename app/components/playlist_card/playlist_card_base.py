@@ -17,7 +17,7 @@ from PyQt5.QtWidgets import (QApplication, QGraphicsOpacityEffect, QLabel,
 
 
 class PlaylistCardBase(PerspectiveWidget):
-    """ 播放列表卡基类 """
+    """ Playlist card base class """
 
     playSig = pyqtSignal(str)
     nextToPlaySig = pyqtSignal(str)
@@ -64,11 +64,11 @@ class PlaylistCardBase(PerspectiveWidget):
         self.__initWidget()
 
     def __initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widgets """
         self.setFixedSize(298, 288)
         self.setAttribute(Qt.WA_StyledBackground)
 
-        # 隐藏按钮和复选框
+        # hide buttons and check box
         self.checkBox.hide()
         self.playButton.hide()
         self.addToButton.hide()
@@ -77,21 +77,20 @@ class PlaylistCardBase(PerspectiveWidget):
         self.checkBox.setGraphicsEffect(self.checkBoxOpacityEffect)
         self.playlistCover.setPlaylistCover(self.coverPath)
 
-        # 设置动画
+        # set animation
         self.hideCheckBoxAni.setStartValue(1)
         self.hideCheckBoxAni.setEndValue(0)
         self.hideCheckBoxAni.setDuration(150)
 
-        # 分配ID和属性
+        # set properties and ID
         self.setObjectName("playlistCard")
         self.nameLabel.setObjectName("nameLabel")
         self.countLabel.setObjectName("countLabel")
         self.setProperty("isChecked", "False")
         self.nameLabel.setProperty("isChecked", "False")
         self.countLabel.setProperty("isChecked", "False")
-        self.__initLayout()
 
-        # 信号连接到槽
+        self.__initLayout()
         self.__connectSignalToSlot()
 
     def __initLayout(self):
@@ -110,7 +109,7 @@ class PlaylistCardBase(PerspectiveWidget):
         self.__adjustLabel()
 
     def __getPlaylistInfo(self, playlist: Playlist):
-        """ 获取播放列表信息 """
+        """ get playlist information """
         self.playlist = playlist
         self.name = playlist.name
         self.count = playlist.count
@@ -119,7 +118,7 @@ class PlaylistCardBase(PerspectiveWidget):
         self.coverPath = getCoverPath(singer, album, 'playlist_small')
 
     def __adjustLabel(self):
-        """ 调整标签的文本长度和位置 """
+        """ adjust the text of label """
         newText, isWordWrap = autoWrap(self.name, 32)
         if isWordWrap:
             # 添加省略号
@@ -134,23 +133,20 @@ class PlaylistCardBase(PerspectiveWidget):
         self.countLabel.adjustSize()
 
     def enterEvent(self, e):
-        """ 鼠标进入窗口时显示磨砂背景和按钮 """
-        # 显示磨砂背景
+        # show blur background
         pos = self.mapToGlobal(QPoint(0, 0))  # type:QPoint
         self.showBlurBackgroundSig.emit(pos, self.coverPath)
 
-        # 处于选择模式下按钮不可见
+        # hide button in selection mode
         self.playButton.setHidden(self.isInSelectionMode)
         self.addToButton.setHidden(self.isInSelectionMode)
 
     def leaveEvent(self, e):
-        """ 鼠标离开时隐藏磨砂背景和按钮 """
         self.hideBlurBackgroundSig.emit()
         self.addToButton.hide()
         self.playButton.hide()
 
     def mouseReleaseEvent(self, e):
-        """ 鼠标松开发送切换到专辑界面信号或者取反选中状态 """
         super().mouseReleaseEvent(e)
         if e.button() == Qt.LeftButton:
             if self.isInSelectionMode:
@@ -159,7 +155,7 @@ class PlaylistCardBase(PerspectiveWidget):
                 signalBus.switchToPlaylistInterfaceSig.emit(self.name)
 
     def updateWindow(self, playlist: Playlist):
-        """ 更新专辑卡窗口信息 """
+        """ update playlist card """
         self.__getPlaylistInfo(playlist)
         self.playlistCover.setPlaylistCover(self.coverPath)
         self.nameLabel.setText(self.name)
@@ -169,26 +165,25 @@ class PlaylistCardBase(PerspectiveWidget):
         self.__adjustLabel()
 
     def __onCheckedStateChanged(self):
-        """ 复选框选中状态改变对应的槽函数 """
+        """ checked state changed slot """
         self.isChecked = self.checkBox.isChecked()
         self.checkedStateChanged.emit(self, self.isChecked)
 
-        # 更新属性和背景色
+        # update style
         self.setProperty("isChecked", str(self.isChecked))
         self.nameLabel.setProperty("isChecked", str(self.isChecked))
         self.countLabel.setProperty("isChecked", str(self.isChecked))
         self.setStyle(QApplication.style())
 
     def setChecked(self, isChecked: bool):
-        """ 设置歌曲卡的选中状态 """
+        """ set checked state """
         self.checkBox.setChecked(isChecked)
 
     def setSelectionModeOpen(self, isOpen: bool):
-        """ 设置是否进入选择模式, 处于选择模式下复选框一直可见，按钮不可见 """
+        """ set whether to open selection mode """
         if self.isInSelectionMode == isOpen:
             return
 
-        # 进入选择模式时显示复选框
         if isOpen:
             self.checkBoxOpacityEffect.setOpacity(1)
             self.checkBox.show()
@@ -196,13 +191,13 @@ class PlaylistCardBase(PerspectiveWidget):
         self.isInSelectionMode = isOpen
 
     def __connectSignalToSlot(self):
-        """ 信号连接到槽 """
+        """ connect signal to slot """
         self.checkBox.stateChanged.connect(self.__onCheckedStateChanged)
         self.playButton.clicked.connect(lambda: self.playSig.emit(self.name))
         self.addToButton.clicked.connect(self.__showAddToMenu)
 
     def __showAddToMenu(self):
-        """ 显示添加到菜单 """
+        """ show add to menu """
         menu = AddToMenu(parent=self)
         pos = self.mapToGlobal(QPoint(
             self.addToButton.x(), self.addToButton.y()))
@@ -218,13 +213,13 @@ class PlaylistCardBase(PerspectiveWidget):
         menu.exec(QPoint(x, y))
 
     def _onSelectActionTrigerred(self):
-        """ 右击菜单选择动作对应的槽函数 """
+        """ select action triggered slot """
         self.setSelectionModeOpen(True)
         self.setChecked(True)
 
 
 class PlaylistCover(QWidget):
-    """ 播放列表封面 """
+    """ Playlist cover """
 
     def __init__(self, parent=None, picPath: str = ""):
         super().__init__(parent)
@@ -236,11 +231,11 @@ class PlaylistCover(QWidget):
         self.setPlaylistCover(picPath)
 
     def setPlaylistCover(self, picPath: str):
-        """ 设置封面 """
+        """ set playlist cover """
         if picPath == self.coverPath:
             return
 
-        # 封面磨砂
+        # blur cover
         self.coverPath = picPath
 
         if not picPath.startswith(':'):
@@ -253,12 +248,12 @@ class PlaylistCover(QWidget):
         self.__playlistCoverPix = QPixmap(picPath).scaled(
             135, 135, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)  # type:QPixmap
 
-        # 获取主色调
+        # get dominant color of cover
         self.dominantRgb = DominantColor.getDominantColor(picPath)
         self.update()
 
     def paintEvent(self, e):
-        """ 绘制背景 """
+        """ paint playlist card """
         super().paintEvent(e)
         if not self.__blurPix:
             return
@@ -266,17 +261,21 @@ class PlaylistCover(QWidget):
         painter = QPainter(self)
         painter.setPen(Qt.NoPen)
         painter.setRenderHints(QPainter.Antialiasing)
-        # 绘制磨砂背景
+
+        # paint blurred cover
         painter.drawPixmap(0, 0, self.__blurPix)
-        # 绘制主题色
+
+        # paint dominant color
         gradientColor = QLinearGradient(0, self.height(), 0, 0)
         gradientColor.setColorAt(0, QColor(*self.dominantRgb, 128))
         gradientColor.setColorAt(1, QColor(*self.dominantRgb, 10))
         painter.setBrush(QBrush(gradientColor))
         painter.drawRect(self.rect())
-        # 绘制封面
+
+        # paint cover
         painter.drawPixmap(76, 31, self.__playlistCoverPix)
-        # 绘制封面集
+
+        # paint line
         painter.setBrush(QBrush(QColor(*self.dominantRgb, 100)))
         painter.drawRect(96, 21, self.width() - 192, 5)
         painter.setBrush(QBrush(QColor(*self.dominantRgb, 210)))
