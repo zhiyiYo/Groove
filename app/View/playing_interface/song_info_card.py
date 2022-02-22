@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QApplication, QLabel, QWidget
 
 
 class SongInfoCard(QWidget):
-    """ 歌曲信息卡 """
+    """ Song information card """
 
     showPlayBarSignal = pyqtSignal()
     hidePlayBarSignal = pyqtSignal()
@@ -25,7 +25,7 @@ class SongInfoCard(QWidget):
         self.__initWidget()
 
     def __initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widgets """
         self.resize(1307, 136)
         self.setFixedHeight(136)
         self.setMinimumWidth(400)
@@ -34,23 +34,22 @@ class SongInfoCard(QWidget):
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.updateCard(self.songInfo)
 
-        # 初始化定时器
+        # initialize timer
         self.timer.setInterval(3000)
         self.timer.timeout.connect(self.timerSlot)
         self.__setQss()
 
-        # 安装事件过滤器
         self.songNameLabel.installEventFilter(self)
         self.singerAlbumLabel.installEventFilter(self)
 
-        # 信号连接到槽
+        # connect signal to slot
         self.songNameLabel.clicked.connect(
             lambda: signalBus.switchToAlbumInterfaceSig.emit(self.singer, self.album))
         self.singerAlbumLabel.clicked.connect(
             lambda: signalBus.switchToAlbumInterfaceSig.emit(self.singer, self.album))
 
     def setSongInfo(self, songInfo: SongInfo):
-        """ 设置歌曲信息 """
+        """ set song information """
         self.songInfo = songInfo
         self.songName = songInfo.title or ''
         self.singer = songInfo.singer or ''
@@ -58,7 +57,7 @@ class SongInfoCard(QWidget):
         self.coverPath = getCoverPath(self.singer, self.album, 'album_big')
 
     def updateCard(self, songInfo: SongInfo):
-        """ 更新歌曲信息卡 """
+        """ update song information card """
         self.setSongInfo(songInfo)
         self.songNameLabel.setText(self.songName)
         self.singerAlbumLabel.setText(self.singer + " • " + self.album)
@@ -70,7 +69,7 @@ class SongInfoCard(QWidget):
         self.adjustText()
 
     def __setQss(self):
-        """ 设置层叠样式 """
+        """ set style sheet """
         self.songNameLabel.setObjectName("songNameLabel")
         self.singerAlbumLabel.setObjectName("singerAlbumLabel")
         self.songNameLabel.setProperty("state", "normal")
@@ -82,7 +81,6 @@ class SongInfoCard(QWidget):
         f.close()
 
     def eventFilter(self, obj, e: QEvent):
-        """ 重写事件过滤器 """
         if obj in [self.songNameLabel, self.singerAlbumLabel]:
             if e.type() == QEvent.MouseButtonPress:
                 self.songNameLabel.setProperty("state", "pressed")
@@ -100,33 +98,31 @@ class SongInfoCard(QWidget):
         return super().eventFilter(obj, e)
 
     def enterEvent(self, e):
-        """ 鼠标进入时打开计时器并显示播放栏 """
         if self.isPlayBarVisible:
             return
 
         if not self.timer.isActive():
-            # 显示播放栏
             self.timer.start()
             self.showPlayBarSignal.emit()
         else:
-            # 重置定时器
             self.timer.stop()
             self.timer.start()
 
     def timerSlot(self):
-        """ 定时器溢出时隐藏播放栏 """
+        """ timer time out slot """
         self.timer.stop()
         self.hidePlayBarSignal.emit()
 
     def adjustText(self):
-        """ 根据文本长度决定是否插入换行符 """
+        """ adjust the text of labels """
         maxWidth = self.width() - 232
-        # 设置专辑名歌手名标签的长度
+
+        # set width of album name
         fontMetrics = self.singerAlbumLabel.fontMetrics()
         w = fontMetrics.width(self.singerAlbumLabel.text())
         self.singerAlbumLabel.setFixedWidth(min(maxWidth, w))
 
-        # 调整专辑名标签
+        # adjust album name
         fontMetrics = self.songNameLabel.fontMetrics()
         newSongName_list = list(self.songName)  # type:list
         totalWidth = 0

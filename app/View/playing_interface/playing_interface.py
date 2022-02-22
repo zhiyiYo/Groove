@@ -25,7 +25,7 @@ from .song_list_widget import SongListWidget
 
 
 def handleSelectionMode(func):
-    """ 处理选择模式装饰器 """
+    """ Selection mode decorator """
 
     def wrapper(playingInterface, *args, **kwargs):
         if playingInterface.isInSelectionMode:
@@ -52,11 +52,11 @@ class PlayingInterface(QWidget):
         self.isInSelectionMode = True
         self.isLyricVisible = True
 
-        # 创建线程
+        # create threads
         self.getLyricThread = GetLyricThread(self)
         self.getMvUrlThread = GetMvUrlThread(self)
 
-        # 创建小部件
+        # create widgets
         self.albumCoverLabel = BlurCoverLabel(12, (450, 450), self)
         self.maskLabel = MaskLabel(QColor(0, 0, 0, 215), self)
         self.songInfoCardChute = SongInfoCardChute(self.playlist, self)
@@ -78,22 +78,21 @@ class PlayingInterface(QWidget):
             self
         )
 
-        # 创建动画
+        # create animations
         self.playBarAni = QPropertyAnimation(self.playBar, b"pos")
         self.songInfoCardChuteAni = QPropertyAnimation(
             self.songInfoCardChute, b"pos")
         self.songListWidgetAni = QPropertyAnimation(
             self.songListWidget, b"pos")
 
-        # 创建定时器
+        # create timer
         self.showPlaylistTimer = QTimer(self)
         self.hidePlaylistTimer = QTimer(self)
 
-        # 初始化
         self.__initWidget()
 
     def __initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widgets """
         self.resize(1100, 870)
         self.currentSmallestModeSize = QSize(340, 340)
         self.setAttribute(Qt.WA_StyledBackground)
@@ -102,25 +101,23 @@ class PlayingInterface(QWidget):
         self.randomPlayAllButton.move(45, 117)
         self.playBar.move(0, self.height() - self.playBar.height())
 
-        # 隐藏部件
+        # hide widgets
         self.randomPlayAllButton.hide()
         self.selectionModeBar.hide()
         self.guideLabel.hide()
         self.maskLabel.hide()
         self.playBar.hide()
 
-        # 设置层叠样式
         self.__setQss()
 
-        # 开启磨砂线程
+        # start to blur cover
         if self.playlist:
             self.albumCoverLabel.setCover(
                 self.songInfoCardChute.cards[1].coverPath)
 
-        # 将信号连接到槽
         self.__connectSignalToSlot()
 
-        # 初始化动画
+        # initialize animations
         self.playBarAni.setDuration(350)
         self.songListWidgetAni.setDuration(350)
         self.songListWidgetAni.setEasingCurve(QEasingCurve.InOutQuad)
@@ -128,14 +125,14 @@ class PlayingInterface(QWidget):
         self.parallelAniGroup.addAnimation(self.playBarAni)
         self.parallelAniGroup.addAnimation(self.songInfoCardChuteAni)
 
-        # 初始化定时器
+        # initialize timers
         self.showPlaylistTimer.setInterval(120)
         self.hidePlaylistTimer.setInterval(120)
-        self.showPlaylistTimer.timeout.connect(self.showPlayListTimerSlot)
+        self.showPlaylistTimer.timeout.connect(self.showPlaylistTimerSlot)
         self.hidePlaylistTimer.timeout.connect(self.hidePlaylistTimerSlot)
 
     def __setQss(self):
-        """ 设置层叠样式 """
+        """ set style sheet """
         self.setObjectName("playingInterface")
         self.guideLabel.setObjectName("guideLabel")
         self.randomPlayAllButton.setObjectName("randomPlayAllButton")
@@ -145,7 +142,6 @@ class PlayingInterface(QWidget):
         f.close()
 
     def resizeEvent(self, e):
-        """ 改变尺寸时也改变小部件的大小 """
         super().resizeEvent(e)
         self.albumCoverLabel.setFixedSize(self.size())
         self.albumCoverLabel.adjustCover()
@@ -170,8 +166,7 @@ class PlayingInterface(QWidget):
             self.songListWidget.move(0, self.height())
 
     def showPlayBar(self):
-        """ 显示播放栏 """
-        # 只在播放栏不可见的时候显示播放栏和开启动画
+        """ show play bar """
         if self.playBar.isVisible():
             return
 
@@ -184,7 +179,7 @@ class PlayingInterface(QWidget):
         self.songInfoCardChuteAni.start()
 
     def hidePlayBar(self):
-        """ 隐藏播放栏 """
+        """ hide play bar """
         if not self.playBar.isVisible() or self.isPlaylistVisible:
             return
 
@@ -196,7 +191,7 @@ class PlayingInterface(QWidget):
         self.songInfoCardChuteAni.start()
 
     def showPlaylist(self):
-        """ 显示播放列表 """
+        """ show playlist """
         if self.songListWidgetAni.state() == QAbstractAnimation.Running:
             return
 
@@ -223,20 +218,20 @@ class PlayingInterface(QWidget):
         self.albumCoverLabel.setVisible(len(self.playlist) > 0)
         self.showPlaylistTimer.start()
 
-    def showPlayListTimerSlot(self):
-        """ 显示播放列表定时器溢出槽函数 """
+    def showPlaylistTimerSlot(self):
+        """ show playlist timer time out slot """
         self.showPlaylistTimer.stop()
         self.songListWidgetAni.start()
         self.isPlaylistVisible = True
 
     def hidePlaylistTimerSlot(self):
-        """ 显示播放列表定时器溢出槽函数 """
+        """ hide playlist timer time out slot """
         self.hidePlaylistTimer.stop()
         self.parallelAniGroup.start()
 
     @handleSelectionMode
     def hidePlaylist(self):
-        """ 隐藏播放列表 """
+        """ hide playlist """
         if self.parallelAniGroup.state() == QAbstractAnimation.Running:
             return
 
@@ -267,18 +262,17 @@ class PlayingInterface(QWidget):
         self.isPlaylistVisible = False
 
     def __onShowPlaylistButtonClicked(self):
-        """ 显示或隐藏播放列表 """
+        """ show playlist button clicked """
         if not self.isPlaylistVisible:
             self.showPlaylist()
         else:
             self.hidePlaylist()
 
     def setCurrentIndex(self, index):
-        """ 更新播放列表下标 """
+        """ set currently played song """
         if self.currentIndex == index or index <= -1:
             return
 
-        # 在播放列表的最后一首歌被移除时不更新样式
         if index >= len(self.playlist):
             return
 
@@ -288,18 +282,18 @@ class PlayingInterface(QWidget):
         self.songInfoCardChute.setCurrentIndex(index)
 
     def setPlaylist(self, playlist: List[SongInfo], isResetIndex: bool = True, index=0):
-        """ 更新播放列表
+        """ set playing playlist
 
         Parameters
         ----------
         playlist: List[SongInfo]
-            播放列表
+            playing playlist
 
         isResetIndex: bool
-            是否重置当前歌曲索引
+            whether to reset index to 0
 
         index: int
-            重置后的当前歌曲索引
+            the index of currently played song
         """
         self.playlist = playlist.copy() if playlist else []
         self.currentIndex = index if isResetIndex else self.currentIndex
@@ -311,27 +305,24 @@ class PlayingInterface(QWidget):
         if self.playlist:
             self.__getLyric()
 
-        # 设置提示标签可见性
-        if playlist and not self.songListWidget.isVisible():
-            self.__setGuideLabelHidden(True)
-        else:
-            self.__setGuideLabelHidden(False)
+        self.__setGuideLabelHidden(
+            playlist and not self.songListWidget.isVisible())
 
     def setPlay(self, isPlay: bool):
-        """ 设置播放状态 """
+        """ set play state """
         self.playBar.playButton.setPlay(isPlay)
 
     def __settleDownPlayBar(self):
-        """ 定住播放栏 """
+        """ settle down play bar """
         self.songInfoCardChute.stopSongInfoCardTimer()
 
     def __startSongInfoCardTimer(self):
-        """ 重新打开歌曲信息卡的定时器 """
+        """ restart the timer of song information cards """
         if not self.playBar.volumeSliderWidget.isVisible():
             self.songInfoCardChute.startSongInfoCardTimer()
 
     def __removeSongFromPlaylist(self, index):
-        """ 从播放列表中移除选中的歌曲 """
+        """ remove a song from playlist """
         n = len(self.playlist)
 
         if self.currentIndex > index:
@@ -342,12 +333,12 @@ class PlayingInterface(QWidget):
             self.currentIndex -= 1
             self.songInfoCardChute.currentIndex -= 1
             if n > 0:
-                name = self.playlist[self.currentIndex].get(
-                    'coverName', '未知歌手_未知专辑')
-                self.albumCoverLabel.setCover(getCoverPath(name, "album_big"))
+                songInfo = self.playlist[self.currentIndex]
+                self.albumCoverLabel.setCover(getCoverPath(
+                    songInfo.singer, songInfo.album, "album_big"))
                 self.__getLyric()
 
-        # 强制更新当前歌曲的信息
+        # update song information of song information card
         if n > 0:
             self.songInfoCardChute.cards[1].updateCard(
                 self.playlist[self.currentIndex])
@@ -366,21 +357,20 @@ class PlayingInterface(QWidget):
 
         self.removeSongSignal.emit(index)
 
-        # 如果播放列表为空，隐藏小部件
         if len(self.playlist) == 0:
             self.__setGuideLabelHidden(False)
 
     @handleSelectionMode
     def clearPlaylist(self):
-        """ 清空歌曲卡 """
+        """ clear playlist """
         self.playlist.clear()
         self.songListWidget.clearSongCards()
         self.__setGuideLabelHidden(False)
         self.playBar.hide()
         self.currentIndex = 0
 
-    def __setGuideLabelHidden(self, isHidden):
-        """ 设置导航标签和随机播放所有按钮的可见性 """
+    def __setGuideLabelHidden(self, isHidden: bool):
+        """ set whether to hide guide label """
         self.randomPlayAllButton.setHidden(isHidden)
         self.guideLabel.setHidden(isHidden)
         self.songListWidget.setHidden(not isHidden)
@@ -389,34 +379,34 @@ class PlayingInterface(QWidget):
         self.songInfoCardChute.setHidden(not isHidden)
 
     def updateSongInfo(self, newSongInfo: SongInfo):
-        """ 更新一首歌曲信息 """
+        """ update song information """
         self.songListWidget.updateOneSongCard(newSongInfo)
         self.playlist = self.songListWidget.songInfos
         self.songInfoCardChute.playlist = self.playlist
 
     def updateMultiSongInfos(self, songInfos: List[SongInfo]):
-        """ 更新多首歌曲信息 """
+        """ update multi song information """
         self.songListWidget.updateMultiSongCards(songInfos)
         self.playlist = self.songListWidget.songInfos
         self.songInfoCardChute.playlist = self.playlist
 
     @handleSelectionMode
     def __onShowSmallestPlayInterfaceButtonClicked(self):
-        """ 显示最小播放模式界面 """
+        """ show smallest play interface """
         signalBus.fullScreenChanged.emit(False)
         signalBus.showSmallestPlayInterfaceSig.emit()
 
     def setRandomPlay(self, isRandomPlay: bool):
-        """ 设置随机播放 """
+        """ set whether to play randomly """
         self.playBar.randomPlayButton.setRandomPlay(isRandomPlay)
 
     def setMute(self, isMute: bool):
-        """ 设置静音 """
+        """ set whether to mute """
         self.playBar.volumeButton.setMute(isMute)
         self.playBar.volumeSliderWidget.volumeButton.setMute(isMute)
 
     def setVolume(self, volume: int):
-        """ 设置音量 """
+        """ set volume """
         if self.playBar.volumeSliderWidget.volumeSlider.value() == volume:
             return
 
@@ -424,63 +414,63 @@ class PlayingInterface(QWidget):
         self.playBar.volumeButton.setVolumeLevel(volume)
 
     def setCurrentTime(self, currentTime: int):
-        """ 设置当前进度条时间 """
+        """ set current time in milliseconds """
         self.playBar.setCurrentTime(currentTime)
 
     def setFullScreen(self, isFullScreen: int):
-        """ 更新全屏按钮图标 """
+        """ set full screen """
         self.playBar.fullScreenButton.setFullScreen(isFullScreen)
 
     def setLoopMode(self, loopMode: QMediaPlaylist.PlaybackMode):
-        """ 设置循环模式 """
+        """ set loop mode """
         self.playBar.loopModeButton.setLoopMode(loopMode)
 
     def __onSelectionModeChanged(self, isOpenSelectionMode: bool):
-        """ 选择模式状态变化槽函数 """
+        """ selection mode changed slot """
         self.isInSelectionMode = isOpenSelectionMode
         self.selectionModeBar.setVisible(isOpenSelectionMode)
         self.selectionModeStateChanged.emit(isOpenSelectionMode)
 
     def __onCancelButtonClicked(self):
-        """ 选择栏取消按钮点击槽函数 """
+        """ selection mode bar cancel button clicked slot """
         self.selectionModeBar.checkAllButton.setCheckedState(
             not self.songListWidget.isAllSongCardsChecked)
         self.songListWidget.unCheckAllSongCards()
         self.selectionModeBar.checkAllButton.setCheckedState(True)
 
     def __onCheckAllButtonClicked(self):
-        """ 全选/取消全选按钮点击槽函数 """
+        """ selection mode bar check all button clicked slot """
         isChecked = not self.songListWidget.isAllSongCardsChecked
         self.songListWidget.setAllChecked(isChecked)
         self.selectionModeBar.checkAllButton.setCheckedState(isChecked)
 
     def __onSelectionModeBarAlbumButtonClicked(self):
-        """ 选择栏显示专辑按钮点击槽函数 """
+        """ selection mode bar album button clicked slot """
         songCard = self.songListWidget.checkedSongCards[0]
         songCard.setChecked(False)
         signalBus.switchToAlbumInterfaceSig.emit(
             songCard.singer, songCard.album)
 
     def __onSelectionModeBarDeleteButtonClicked(self):
-        """ 选择栏播放按钮点击槽函数 """
+        """ selection mode bar delete button clicked slot """
         for songCard in self.songListWidget.checkedSongCards.copy():
             songCard.setChecked(False)
             self.songListWidget.removeSongCard(songCard.itemIndex)
 
     def __onSelectionModeBarPlayButtonClicked(self):
-        """ 选择栏播放按钮点击槽函数 """
+        """ selection mode bar play button clicked slot """
         songCard = self.songListWidget.checkedSongCards[0]
         songCard.setChecked(False)
         self.currentIndexChanged.emit(songCard.itemIndex)
 
     def __onSelectionModeBarPropertyButtonClicked(self):
-        """ 选择栏播放按钮点击槽函数 """
+        """ selection mode bar property button clicked slot """
         songCard = self.songListWidget.checkedSongCards[0]
         songCard.setChecked(False)
-        self.songListWidget.showSongPropertyDialog(songCard)
+        self.songListWidget.showSongPropertyDialog(songCard.songInfo)
 
     def __onSelectionModeBarAddToButtonClicked(self):
-        """ 选择栏添加到按钮点击槽函数 """
+        """ selection mode bar add to button clicked slot """
         menu = AddToMenu(parent=self)
         btn = self.selectionModeBar.addToButton
         pos = self.selectionModeBar.mapToGlobal(btn.pos())
@@ -489,9 +479,9 @@ class PlayingInterface(QWidget):
         songInfos = [
             i.songInfo for i in self.songListWidget.checkedSongCards]
 
-        # 菜单信号连接到槽
         for act in menu.action_list:
             act.triggered.connect(self.exitSelectionMode)
+
         menu.newPlaylistAct.triggered.connect(
             lambda: signalBus.addSongsToNewCustomPlaylistSig.emit(songInfos))
         menu.addSongsToPlaylistSig.connect(
@@ -499,17 +489,17 @@ class PlayingInterface(QWidget):
         menu.exec(QPoint(x, y))
 
     def exitSelectionMode(self):
-        """ 退出选择模式 """
+        """ exit selection mode """
         self.__onCancelButtonClicked()
 
     def __getLyric(self):
-        """ 获取歌词 """
+        """ get lyrics of currently played song """
         self.lyricWidget.setLoadingState(True)
         self.getLyricThread.setSongInfo(self.playlist[self.currentIndex])
         self.getLyricThread.start()
 
     def __onCrawlLyricFinished(self, lyric: Dict[str, List[str]]):
-        """ 获取歌词完成槽函数 """
+        """ crawl lyrics finished slot """
         if self.isLyricVisible:
             self.lyricWidget.show()
 
@@ -517,12 +507,12 @@ class PlayingInterface(QWidget):
         self.lyricWidget.setCurrentTime(self.playBar.progressSlider.value())
 
     def __onLyricVisibleChanged(self, isVisible: bool):
-        """ 更多操作菜单歌词可见性变化信号槽函数 """
+        """ lyrics visibility changed slot """
         self.lyricWidget.setVisible(isVisible)
         self.isLyricVisible = isVisible
 
     def __searchMV(self):
-        """ 搜索 MV """
+        """ search MV """
         if not self.playlist:
             return
 
@@ -531,7 +521,7 @@ class PlayingInterface(QWidget):
         self.getMvUrlThread.start()
 
     def __onCrawlMvUrlFinished(self, url: str):
-        """ 获取 MV 播放地址完成槽函数 """
+        """ crawl the play url of MV finished slot """
         if not url:
             w = MessageDialog(self.tr('Unable to find the corresponding MV'), self.tr(
                 'Sorry, there are no MVs available for the current song'), self.window())
@@ -539,16 +529,15 @@ class PlayingInterface(QWidget):
             w.exec_()
             return
 
-        # 显示播放界面
         self.switchToVideoInterfaceSig.emit(url)
 
     def __connectSignalToSlot(self):
-        """ 将信号连接到槽 """
+        """ connect signal to slot """
         self.getLyricThread.crawlFinished.connect(self.__onCrawlLyricFinished)
         self.getMvUrlThread.crawlFinished.connect(self.__onCrawlMvUrlFinished)
         self.randomPlayAllButton.clicked.connect(signalBus.randomPlayAllSig)
 
-        # 歌曲信息卡滑动槽信号连接到槽
+        # song information chute signal
         self.songInfoCardChute.currentIndexChanged[int].connect(
             self.currentIndexChanged)
         self.songInfoCardChute.currentIndexChanged[str].connect(
@@ -556,14 +545,15 @@ class PlayingInterface(QWidget):
         self.songInfoCardChute.showPlayBarSignal.connect(self.showPlayBar)
         self.songInfoCardChute.hidePlayBarSignal.connect(self.hidePlayBar)
 
-        # 将播放栏的信号连接到槽
+        # play bar signal
         self.playBar.volumeSliderWidget.volumeSlider.valueChanged.connect(
             signalBus.volumeChanged)
         self.playBar.fullScreenButton.fullScreenChanged.connect(
             signalBus.fullScreenChanged)
         self.playBar.progressSlider.sliderMoved.connect(
             signalBus.progressSliderMoved)
-        self.playBar.progressSlider.clicked.connect(signalBus.progressSliderMoved)
+        self.playBar.progressSlider.clicked.connect(
+            signalBus.progressSliderMoved)
         self.playBar.lastSongButton.clicked.connect(signalBus.lastSongSig)
         self.playBar.nextSongButton.clicked.connect(signalBus.nextSongSig)
         self.playBar.playButton.clicked.connect(signalBus.togglePlayStateSig)
@@ -584,7 +574,7 @@ class PlayingInterface(QWidget):
         self.playBar.moreActionsMenu.movieAct.triggered.connect(
             self.__searchMV)
 
-        # 将歌曲列表的信号连接到槽函数
+        # song list widget signal
         self.songListWidget.currentIndexChanged.connect(
             self.currentIndexChanged)
         self.songListWidget.removeSongSig.connect(
@@ -596,7 +586,7 @@ class PlayingInterface(QWidget):
         self.songListWidget.isAllCheckedChanged.connect(
             lambda x: self.selectionModeBar.checkAllButton.setCheckedState(not x))
 
-        # 选择栏信号连接到槽函数
+        # selection mode bar signal
         self.selectionModeBar.cancelButton.clicked.connect(
             self.__onCancelButtonClicked)
         self.selectionModeBar.checkAllButton.clicked.connect(

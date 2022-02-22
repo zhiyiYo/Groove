@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QWidget
 
 
 class VolumeSliderWidget(QWidget):
-    """ 音量滑动条 """
+    """ Volume slider widget """
 
     volumeLevelChanged = pyqtSignal(int)
 
@@ -16,11 +16,10 @@ class VolumeSliderWidget(QWidget):
         super().__init__(parent)
         self.volumeButton = VolumeButton(self)
         self.volumeSlider = Slider(Qt.Horizontal, self)
-        # 初始化
         self.__initWidget()
 
     def __initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widgets """
         self.setFixedSize(345, 78)
         self.volumeButton.move(25, 15)
         self.volumeSlider.move(108, 25)
@@ -31,20 +30,21 @@ class VolumeSliderWidget(QWidget):
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.volumeSlider.setObjectName('volumeSlider')
         self.__setQss()
-        # 信号连接到槽
+
+        # connect signal to slot
         self.volumeButton.volumeLevelChanged.connect(self.volumeLevelChanged)
         self.volumeSlider.valueChanged.connect(
             self.volumeButton.setVolumeLevel)
 
     def __setQss(self):
-        """ 设置层叠样式 """
+        """ set style sheet """
         f = QFile(":/qss/volume_slider_widget.qss")
         f.open(QFile.ReadOnly)
         self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
         f.close()
 
     def paintEvent(self, e):
-        """ 绘制背景 """
+        """ paint widgets """
         painter = QPainter(self)
         painter.setRenderHints(QPainter.Antialiasing |
                                QPainter.SmoothPixmapTransform)
@@ -53,32 +53,31 @@ class VolumeSliderWidget(QWidget):
         painter.drawRoundedRect(self.rect(), 8, 8)
 
     def setVolume(self, volume: int):
-        """ 设置音量 """
+        """ set volume """
         self.volumeSlider.setValue(volume)
         self.volumeButton.setVolumeLevel(volume)
 
 
 class VolumeButton(CircleButton):
-    """ 音量按钮 """
+    """ Volume button """
 
     volumeLevelChanged = pyqtSignal(int)
 
     def __init__(self, parent=None):
-        # 按钮图标地址列表
-        self.__iconPath_list = [
+        self.__iconPaths = [
             ":/images/playing_interface/Volume0_black.png",
             ":/images/playing_interface/Volume1_black.png",
             ":/images/playing_interface/Volume2_black.png",
             ":/images/playing_interface/Volume3_black.png",
             ":/images/playing_interface/volume_black_level_mute_47_47.png",
         ]
-        self.pixmap_list = [QPixmap(i) for i in self.__iconPath_list]
-        super().__init__(self.__iconPath_list[0], parent)
+        self.pixmap_list = [QPixmap(i) for i in self.__iconPaths]
+        super().__init__(self.__iconPaths[0], parent)
         self.isMute = False
         self.__volumeLevel = 0
 
     def setVolumeLevel(self, volume):
-        """ 根据音量来设置对应图标 """
+        """ set volume level """
         if volume == 0:
             self.updateIcon(0)
         elif 0 < volume <= 32 and self.__volumeLevel != 1:
@@ -89,16 +88,15 @@ class VolumeButton(CircleButton):
             self.updateIcon(3)
 
     def updateIcon(self, iconIndex: int):
-        """ 更新图标 """
+        """ update volume icon """
         self.__volumeLevel = iconIndex
         self.volumeLevelChanged.emit(iconIndex)
-        # 静音时不更新图标
+
         if not self.isMute:
             self.iconPixmap = self.pixmap_list[iconIndex]
             self.update()
 
     def eventFilter(self, obj, e):
-        """ 安装监听 """
         if obj == self:
             if e.type() in [QEvent.Enter, QEvent.Leave]:
                 self.isEnter = not self.isEnter
@@ -112,7 +110,7 @@ class VolumeButton(CircleButton):
         return False
 
     def setMute(self, isMute: bool):
-        """ 设置静音 """
+        """ set whether to mute """
         if self.isMute == isMute:
             return
         self.isMute = isMute
