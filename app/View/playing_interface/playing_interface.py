@@ -306,7 +306,7 @@ class PlayingInterface(QWidget):
             self.__getLyric()
 
         self.__setGuideLabelHidden(
-            playlist and not self.songListWidget.isVisible())
+            bool(playlist) and not self.songListWidget.isVisible())
 
     def setPlay(self, isPlay: bool):
         """ set play state """
