@@ -391,8 +391,9 @@ class SettingInterface(ScrollArea):
 
     def __onDownloadFolderButtonClicked(self):
         """ download folder button clicked slot """
-        folder = QFileDialog.getExistingDirectory(self, "选择文件夹", "./")
-        if folder and self.config['download-folder'] == folder:
+        folder = QFileDialog.getExistingDirectory(
+            self, self.tr("Choose folder"), "./")
+        if not folder or self.config['download-folder'] == folder:
             return
 
         self.config['download-folder'] = folder

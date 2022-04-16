@@ -3,6 +3,7 @@ from ctypes import POINTER, cast
 from ctypes.wintypes import MSG
 
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QCursor
 from PyQt5.QtWidgets import QWidget
 from win32 import win32api, win32gui
 from win32.lib import win32con
@@ -38,12 +39,12 @@ class FramelessWindow(QWidget):
         """ handle the Windows message """
         msg = MSG.from_address(message.__int__())
         if msg.message == win32con.WM_NCHITTEST:
-            xPos = (win32api.LOWORD(msg.lParam) -
-                    self.frameGeometry().x()) % 65536
-            yPos = win32api.HIWORD(msg.lParam) - self.frameGeometry().y()
+            pos = QCursor.pos()
+            xPos = pos.x() - self.x()
+            yPos = pos.y() - self.y()
             w, h = self.width(), self.height()
             lx = xPos < self.BORDER_WIDTH
-            rx = xPos + 9 > w - self.BORDER_WIDTH
+            rx = xPos > w - self.BORDER_WIDTH
             ty = yPos < self.BORDER_WIDTH
             by = yPos > h - self.BORDER_WIDTH
             if lx and ty:

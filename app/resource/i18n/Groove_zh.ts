@@ -1515,6 +1515,11 @@
         <translation>选择查找音乐的位置</translation>
     </message>
     <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="395"/>
+        <source>Choose folder</source>
+        <translation>选择文件夹</translation>
+    </message>
+    <message>
         <location filename="../../View/setting_interface/setting_interface.py" line="103"/>
         <source>Choose</source>
         <translation>浏览</translation>

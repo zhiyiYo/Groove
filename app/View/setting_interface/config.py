@@ -35,6 +35,10 @@ class Config:
             if not os.path.exists(folder):
                 self.__config["selected-folders"].remove(folder)
 
+        if not os.path.exists(self.__config['download-folder']):
+            self.__config['download-folder'] = str(
+                Path('download').absolute()).replace("\\", '/')
+
         os.makedirs(self.__config['download-folder'], exist_ok=True)
 
     def __setitem__(self, key, value):
