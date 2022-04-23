@@ -1,11 +1,11 @@
 <p align="center">
-  <img width="12%" align="center" src="app/resource/images/logo/logo.png" alt="logo">
+  <img width="12%" align="center" src="../app/resource/images/logo/logo.png" alt="logo">
 </p>
   <h1 align="center">
-  Groove Music
+  Groove 音乐
 </h1>
 <p align="center">
-  A music player based on PyQt5 and LAV Filters.
+  一个基于 PyQt5 和 LAV Filters 的音乐播放器.
 </p>
 
 <p align="center">
@@ -28,22 +28,22 @@
 </p>
 
 <p align="center">
-English | <a href="docs/README_zh.md">简体中文</a>
+<a href="../README_zh.md">English</a> | 简体中文
 </p>
 
-## Interface
-![界面](docs/screenshot/Groove音乐.png)
+## 界面
+![界面](./screenshot/Groove音乐.png)
 
-## Features
+## 功能
 
-* Play local music
-* Search, play and download online music
-* Create and manage custom playlist
-* View and edit song meta data
-* Watch and download MV
+* 播放本地音乐
+* 搜索、播放和下载在线音乐
+* 创建和管理个人播放列表
+* 查看和编辑歌曲元数据
+* 观看和下载在线 MV
 
-## Quick start
-1. Create virtual environment:
+## 快速开始
+1. 创建虚拟环境:
 
     ```shell
     conda create -n Groove python=3.8
@@ -51,8 +51,8 @@ English | <a href="docs/README_zh.md">简体中文</a>
     pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
     ```
 
-2. Download [LAV Filters](https://github.com/Nevcairiel/LAVFilters/releases/download/0.74/LAVFilters-0.74-Installer.exe).
-3. Open Groove music:
+2. 下载 [LAV Filters](https://github.com/Nevcairiel/LAVFilters/releases/download/0.74/LAVFilters-0.74-Installer.exe).
+3. 打开 Groove 音乐:
 
     ```shell
     cd app
@@ -60,33 +60,34 @@ English | <a href="docs/README_zh.md">简体中文</a>
     python Groove.py
     ```
 
-## Install
-1. Download [LAV Filters](https://github.com/Nevcairiel/LAVFilters/releases/download/0.74/LAVFilters-0.74-Installer.exe).
-2. Download `Groove_v*.*.*_windows_x64.zip` from [release page](https://github.com/zhiyiYo/Groove/releases).
-3. Unzip `Groove_v*.*.*_windows_x64.zip`
-4. Go to `Groove` folder, find and double click **Groove.exe**
-5. Start to enjoy your music~~
+## 安装
+1. 下载 [LAV Filters](https://github.com/Nevcairiel/LAVFilters/releases/download/0.74/LAVFilters-0.74-Installer.exe).
+2. 从 [Release](https://github.com/zhiyiYo/Groove/releases) 页面下载 `Groove_v*.*.*_windows_x64.zip`.
+3. 解压 `Groove_v*.*.*_windows_x64.zip`
+4. 在解压出来的 `Groove` 文件夹中，找到并双击运行 **Groove.exe**
+5. 开启你的音乐之旅 😊~~
 
 
-## FAQ
-* **Why does the window get stuck when it is dragged?**
 
-  Because the interface background uses acrylic effect, this problem will occur for some versions of win10. There are three solutions:
+## 常见问题
+* **为什么窗口拖动的时候会出现卡顿现象？**
 
-  * Upgrade win10 to the latest version.
-  * Uncheck the check box of **Advanced system settings --> Performance --> Show window contents when dragging**.
-  * Turn off the option to enable acrylic background in the setting interface.
+  由于界面使用了亚克力窗口特效，在某些版本的 Win10 上会出现这个问题。有三种解决方案:
 
-* **What formats of audio files are supported?**
+  * 更新 Win10 到最新版本，比如 Win11.
+  * 取消复选框的选中 **高级系统设置 --> 性能 --> 拖动时显示窗口内容**.
+  * 在设置界面禁用亚克力效果.
 
-  Currently, the following audio files are supported:
+* **支持哪些格式的音频文件呀？**
+
+  目前支持以下几种的音频文件:
   * mp3
   * flac
   * mp4/m4a
 
 
-## License
-```
+## 许可证
+```txt
 MIT License
 
 Copyright (c) 2022 Zhengzhi Huang
