@@ -51,7 +51,7 @@ English | <a href="docs/README_zh.md">简体中文</a>
     pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
     ```
 
-2. Download [LAV Filters](https://github.com/Nevcairiel/LAVFilters/releases/download/0.74/LAVFilters-0.74-Installer.exe).
+2. Download and install [LAV Filters](https://github.com/Nevcairiel/LAVFilters/releases/download/0.74/LAVFilters-0.74-Installer.exe).
 3. Open Groove music:
 
     ```shell
@@ -61,7 +61,7 @@ English | <a href="docs/README_zh.md">简体中文</a>
     ```
 
 ## Install
-1. Download [LAV Filters](https://github.com/Nevcairiel/LAVFilters/releases/download/0.74/LAVFilters-0.74-Installer.exe).
+1. Download and install [LAV Filters](https://github.com/Nevcairiel/LAVFilters/releases/download/0.74/LAVFilters-0.74-Installer.exe).
 2. Download `Groove_v*.*.*_windows_x64.zip` from [release page](https://github.com/zhiyiYo/Groove/releases).
 3. Unzip `Groove_v*.*.*_windows_x64.zip`
 4. Go to `Groove` folder, find and double click **Groove.exe**

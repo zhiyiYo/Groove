@@ -28,7 +28,7 @@
 </p>
 
 <p align="center">
-<a href="../README_zh.md">English</a> | 简体中文
+<a href="../README.md">English</a> | 简体中文
 </p>
 
 ## 界面
@@ -51,7 +51,7 @@
     pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
     ```
 
-2. 下载 [LAV Filters](https://github.com/Nevcairiel/LAVFilters/releases/download/0.74/LAVFilters-0.74-Installer.exe).
+2. 下载并安装 [LAV Filters](https://github.com/Nevcairiel/LAVFilters/releases/download/0.74/LAVFilters-0.74-Installer.exe).
 3. 打开 Groove 音乐:
 
     ```shell
@@ -61,7 +61,7 @@
     ```
 
 ## 安装
-1. 下载 [LAV Filters](https://github.com/Nevcairiel/LAVFilters/releases/download/0.74/LAVFilters-0.74-Installer.exe).
+1. 下载并安装 [LAV Filters](https://github.com/Nevcairiel/LAVFilters/releases/download/0.74/LAVFilters-0.74-Installer.exe).
 2. 从 [Release](https://github.com/zhiyiYo/Groove/releases) 页面下载 `Groove_v*.*.*_windows_x64.zip`.
 3. 解压 `Groove_v*.*.*_windows_x64.zip`
 4. 在解压出来的 `Groove` 文件夹中，找到并双击运行 **Groove.exe**
