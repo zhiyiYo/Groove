@@ -37,10 +37,26 @@ English | <a href="docs/README_zh.md">简体中文</a>
 ## Features
 
 * Play local music
+
+  ![local music](docs/screenshot/本地音乐.gif)
+
 * Search, play and download online music
+
+  ![online music](docs/screenshot/在线音乐.gif)
+
 * Create and manage custom playlist
+
+  ![custom playlist](docs/screenshot/播放列表.gif)
+
 * View and edit song meta data
+
+  ![song meta data](docs/screenshot/歌曲信息.gif)
+
 * Watch and download MV
+
+  ![MV](docs/screenshot/播放和下载MV.png)
+
+
 
 ## Quick start
 1. Create virtual environment:

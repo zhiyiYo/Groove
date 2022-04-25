@@ -37,10 +37,25 @@
 ## 功能
 
 * 播放本地音乐
+
+  ![local music](screenshot/本地音乐.gif)
+
 * 搜索、播放和下载在线音乐
+
+  ![online music](screenshot/在线音乐.gif)
+
 * 创建和管理个人播放列表
+
+  ![custom playlist](screenshot/播放列表.gif)
+
 * 查看和编辑歌曲元数据
+
+  ![song meta data](screenshot/歌曲信息.gif)
+
 * 观看和下载在线 MV
+
+  ![MV](screenshot/播放和下载MV.png)
+
 
 ## 快速开始
 1. 创建虚拟环境:
