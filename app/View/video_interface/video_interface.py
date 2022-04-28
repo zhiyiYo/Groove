@@ -1,20 +1,17 @@
 # coding:utf-8
-from pathlib import Path
-
 from common.thread.download_mv_thread import DownloadMvThread
 from components.dialog_box.message_dialog import MessageDialog
 from components.widgets.state_tooltip import DownloadStateTooltip
-from PyQt5.QtCore import QSizeF, Qt, QUrl, pyqtSignal, QTimer
+from PyQt5.QtCore import QSizeF, Qt, QTimer, QUrl, pyqtSignal
 from PyQt5.QtGui import QPainter
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QGraphicsVideoItem
-from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsScene,
-                             QGraphicsView, QFileDialog)
+from PyQt5.QtWidgets import QAction, QFileDialog, QGraphicsScene, QGraphicsView
 
 from .play_bar import PlayBar
 
 
-class VideoWindow(QGraphicsView):
+class VideoInterface(QGraphicsView):
     """ Video window """
 
     downloadSignal = pyqtSignal(str, str)  # download MV

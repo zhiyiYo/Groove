@@ -56,7 +56,7 @@ class LyricWidget(ScrollArea):
         self.scrollAni.setDuration(200)
         self.scrollAni.setStartValue(self.verticalScrollBar().value())
         self.scrollAni.setEndValue(0)
-        self.scrollAni.state()
+        self.scrollAni.start()
 
         # update lyrics
         N = len(self.lyricLabels)

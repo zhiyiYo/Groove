@@ -1,5 +1,4 @@
 # coding:utf-8
-import os
 import re
 from pathlib import Path
 
@@ -87,7 +86,7 @@ def getCoverPath(singer: str, album: str, coverType: str) -> str:
 
 
 def getPlaylistNames():
-    """ 获取数据库中所有播放列表的名字 """
+    """ get all playlist names in database """
     db = QSqlDatabase.database('main')
     service = PlaylistService(db)
     return [i.name for i in service.listAll()]

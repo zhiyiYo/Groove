@@ -21,7 +21,6 @@ from components.media_player import MediaPlaylist, PlaylistType
 from components.system_tray_icon import SystemTrayIcon
 from components.thumbnail_tool_bar import ThumbnailToolBar
 from components.title_bar import TitleBar
-from components.video_window import VideoWindow
 from components.widgets.stacked_widget import (OpacityAniStackedWidget,
                                                PopUpAniStackedWidget)
 from components.widgets.state_tooltip import StateTooltip
@@ -43,6 +42,7 @@ from View.search_result_interface import SearchResultInterface
 from View.setting_interface import SettingInterface
 from View.singer_interface import SingerInterface
 from View.smallest_play_interface import SmallestPlayInterface
+from View.video_interface import VideoInterface
 
 
 class MainWindow(FramelessWindow):
@@ -119,7 +119,7 @@ class MainWindow(FramelessWindow):
             self.mediaPlaylist.playlist, self)
 
         # create video interface
-        self.videoWindow = VideoWindow(self)
+        self.videoInterface = VideoInterface(self)
 
         # create album interface
         self.albumInterface = AlbumInterface(
@@ -220,7 +220,7 @@ class MainWindow(FramelessWindow):
         """ initialize widgets """
         self.resize(1240, 970)
         self.setMinimumSize(1030, 800)
-        self.videoWindow.hide()
+        self.videoInterface.hide()
 
         QApplication.setQuitOnLastWindowClosed(
             not self.settingInterface.config['minimize-to-tray'])
@@ -242,7 +242,7 @@ class MainWindow(FramelessWindow):
         self.subStackWidget.addWidget(self.moreSearchResultInterface, 0, 120)
         self.totalStackWidget.addWidget(self.subMainWindow)
         self.totalStackWidget.addWidget(self.playingInterface)
-        self.totalStackWidget.addWidget(self.videoWindow)
+        self.totalStackWidget.addWidget(self.videoInterface)
         self.subMainWindow.setGraphicsEffect(None)
 
         self.adjustWidgetGeometry()
@@ -389,6 +389,9 @@ class MainWindow(FramelessWindow):
             if index is not None:
                 self.songTabSongListWidget.setPlay(index)
 
+        # pause player
+        self.pause()
+
     def initPlayBar(self):
         """ initialize play bar """
         volume = self.settingInterface.config["volume"]
@@ -418,8 +421,8 @@ class MainWindow(FramelessWindow):
         self.navigationHistories.append(("totalStackWidget", 1))
 
         self.showFullScreen()
-        self.videoWindow.playBar.fullScreenButton.setFullScreen(True)
-        self.videoWindow.playBar.fullScreenButton.setToolTip(
+        self.videoInterface.playBar.fullScreenButton.setFullScreen(True)
+        self.videoInterface.playBar.fullScreenButton.setToolTip(
             self.tr('Exit fullscreen'))
         self.playingInterface.setFullScreen(True)
         if self.playingInterface.isPlaylistVisible:
@@ -467,6 +470,11 @@ class MainWindow(FramelessWindow):
             self.setPlayButtonState(True)
             self.playBar.songInfoCard.show()
 
+    def pause(self):
+        """ pause audio player """
+        self.player.pause()
+        self.setPlayButtonState(False)
+
     def setPlaylist(self, playlist: list, index=0):
         """ set playing playlist """
         self.playingInterface.setPlaylist(playlist, index=index)
@@ -503,13 +511,12 @@ class MainWindow(FramelessWindow):
 
     def togglePlayState(self):
         """ toggle play state """
-        if self.totalStackWidget.currentWidget() is self.videoWindow:
-            self.videoWindow.togglePlayState()
+        if self.totalStackWidget.currentWidget() is self.videoInterface:
+            self.videoInterface.togglePlayState()
             return
 
         if self.player.state() == QMediaPlayer.PlayingState:
-            self.player.pause()
-            self.setPlayButtonState(False)
+            self.pause()
             self.thumbnailToolBar.setButtonsEnabled(True)
         else:
             self.play()
@@ -541,6 +548,29 @@ class MainWindow(FramelessWindow):
             return
 
         self.setPlayButtonState(False)
+
+    def onPlayerError(self, error: QMediaPlayer.Error):
+        """ media player error slot """
+        if error == QMediaPlayer.NoError:
+            return
+
+        self.pause()
+
+        messageMap = {
+            QMediaPlayer.ResourceError: self.tr(
+                "The media resource couldn't be resolved."),
+            QMediaPlayer.FormatError: self.tr(
+                "The format of a media resource isn't supported."),
+            QMediaPlayer.NetworkError: self.tr("A network error occurred."),
+            QMediaPlayer.AccessDeniedError: self.tr(
+                "There are not the appropriate permissions to play the media resource."),
+            QMediaPlayer.ServiceMissingError: self.tr(
+                "A valid playback service was not found, playback cannot proceed.")
+        }
+        w = MessageDialog(self.tr('An error occurred'), messageMap[error], self)
+        w.cancelButton.setText(self.tr('Close'))
+        w.yesButton.hide()
+        w.exec()
 
     def onProgressSliderMoved(self, position):
         """ progress slider moved slot """
@@ -635,8 +665,7 @@ class MainWindow(FramelessWindow):
             return
 
         # pause player when the media is not available
-        self.player.pause()
-        self.setPlayButtonState(False)
+        self.pause()
 
         # pop up message dialog
         w = MessageDialog(self.tr("Can't play this song"), self.tr(
@@ -658,7 +687,7 @@ class MainWindow(FramelessWindow):
 
         history = self.navigationHistories.pop()
         if history == ("totalStackWidget", 2):
-            self.videoWindow.pause()
+            self.videoInterface.pause()
             self.totalStackWidget.setCurrentIndex(1)
             return
 
@@ -705,11 +734,10 @@ class MainWindow(FramelessWindow):
 
     def showVideoWindow(self, url: str):
         """ show video window """
-        self.player.pause()
-        self.setPlayButtonState(False)
+        self.pause()
 
         songInfo = self.mediaPlaylist.getCurrentSong()
-        self.videoWindow.setVideo(url, songInfo.singer+' - '+songInfo.title)
+        self.videoInterface.setVideo(url, songInfo.singer+' - '+songInfo.title)
         self.totalStackWidget.setCurrentIndex(2)
 
         self.navigationHistories.append(("totalStackWidget", 2))
@@ -832,7 +860,7 @@ class MainWindow(FramelessWindow):
         self.titleBar.returnButton.show()
         self.titleBar.show()
 
-        self.videoWindow.playBar.fullScreenButton.setFullScreen(False)
+        self.videoInterface.playBar.fullScreenButton.setFullScreen(False)
         self.playingInterface.setFullScreen(False)
         if self.playingInterface.isPlaylistVisible:
             self.playingInterface.songInfoCardChute.move(
@@ -876,7 +904,7 @@ class MainWindow(FramelessWindow):
         self.show()
 
         # TODO: 从视频界面直接切换回设置界面
-        if self.videoWindow.isVisible():
+        if self.videoInterface.isVisible():
             return
 
         if self.playingInterface.isVisible():
@@ -1273,6 +1301,7 @@ class MainWindow(FramelessWindow):
         """ connect signal to slot """
 
         # player signal
+        self.player.error.connect(self.onPlayerError)
         self.player.positionChanged.connect(self.onPlayerPositionChanged)
         self.player.durationChanged.connect(self.onPlayerDurationChanged)
         self.player.mediaStatusChanged.connect(self.onMediaStatusChanged)
@@ -1433,7 +1462,7 @@ class MainWindow(FramelessWindow):
         self.systemTrayIcon.showMainWindowSig.connect(self.show)
 
         # video window signal
-        self.videoWindow.fullScreenChanged.connect(self.setVideoFullScreen)
+        self.videoInterface.fullScreenChanged.connect(self.setVideoFullScreen)
 
         # library thread signal
         self.libraryThread.reloadFinished.connect(self.onReloadFinished)

@@ -1,13 +1,15 @@
 # coding:utf-8
 from components.buttons.circle_button import CircleButton
+from components.buttons.play_bar_buttons import (FullScreenButton,
+                                                 LoopModeButton, PlayButton,
+                                                 PullUpArrow, RandomPlayButton,
+                                                 VolumeButton)
 from components.widgets.label import TimeLabel
 from components.widgets.menu import PlayingInterfaceMoreActionsMenu
 from components.widgets.slider import HollowHandleStyle, Slider
 from PyQt5.QtCore import QPoint, Qt, pyqtSignal
 from PyQt5.QtWidgets import QWidget
 
-from .play_bar_buttons import (FullScreenButton, LoopModeButton, PlayButton,
-                               PullUpArrow, RandomPlayButton, VolumeButton)
 from .volume_slider_widget import VolumeSliderWidget
 
 

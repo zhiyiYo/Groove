@@ -1,11 +1,11 @@
 # coding:utf-8
+from components.buttons.play_bar_buttons import (CircleButton,
+                                                 FullScreenButton, PlayButton,
+                                                 VolumeButton)
 from components.widgets.slider import HollowHandleStyle, Slider
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QColor, QLinearGradient, QPainter
 from PyQt5.QtWidgets import QLabel, QWidget
-from View.playing_interface.play_bar_buttons import (CircleButton,
-                                                     FullScreenButton,
-                                                     PlayButton, VolumeButton)
 
 from .volume_slider_widget import VolumeSliderWidget
 

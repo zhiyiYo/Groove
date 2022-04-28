@@ -11,12 +11,12 @@ class LyricParserBase:
     @staticmethod
     def can_parse(lyric) -> bool:
         """ can the parser parse the lyrics """
-        raise NotImplementedError("该方法必须被子类实现")
+        raise NotImplementedError
 
     @classmethod
     def parse(cls, lyric) -> Dict[str, List[str]]:
         """ parse lyrics """
-        raise NotImplementedError("该方法必须被子类实现")
+        raise NotImplementedError
 
 
 class KuWoLyricParser(LyricParserBase):

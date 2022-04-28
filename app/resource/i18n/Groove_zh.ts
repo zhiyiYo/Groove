@@ -648,6 +648,36 @@
         <source>Scanning song information</source>
         <translation>正在扫描歌曲信息</translation>
     </message>
+    <message>
+        <location filename="../../View/main_window/main_window.py" line="555"/>
+        <source>The media resource couldn&apos;t be resolved.</source>
+        <translation>无法解析此音频，请检查是否安装了 LAV Filters。</translation>
+    </message>
+    <message>
+        <location filename="../../View/main_window/main_window.py" line="557"/>
+        <source>The format of a media resource isn&apos;t supported.</source>
+        <translation>暂不支持播放该格式的音频。</translation>
+    </message>
+    <message>
+        <location filename="../../View/main_window/main_window.py" line="558"/>
+        <source>A network error occurred.</source>
+        <translation>发生了网络错误。</translation>
+    </message>
+    <message>
+        <location filename="../../View/main_window/main_window.py" line="560"/>
+        <source>There are not the appropriate permissions to play the media resource.</source>
+        <translation>没有权限播放该音频。</translation>
+    </message>
+    <message>
+        <location filename="../../View/main_window/main_window.py" line="562"/>
+        <source>A valid playback service was not found, playback cannot proceed.</source>
+        <translation>音频服务不存在，无法继续播放，请检查是否安装了 LAV Filters。</translation>
+    </message>
+    <message>
+        <location filename="../../View/main_window/main_window.py" line="564"/>
+        <source>An error occurred</source>
+        <translation>发生了错误</translation>
+    </message>
 </context>
 <context>
     <name>Menu</name>
@@ -708,7 +738,7 @@
 <context>
     <name>MyMusicInterface</name>
     <message>
-        <location filename="../../View/my_music_interface/my_music_interface.py" line="51" />
+        <location filename="../../View/my_music_interface/my_music_interface.py" line="51"/>
         <source> Shuffle all</source>
         <translation> 无序播放所有</translation>
     </message>
@@ -866,22 +896,22 @@
         <translation>以最小模式播放</translation>
     </message>
     <message>
-        <location filename="../../components/video_window/play_bar.py" line="56"/>
+        <location filename="../../View/video_interface/play_bar.py" line="56"/>
         <source>Rewind</source>
         <translation>快退</translation>
     </message>
     <message>
-        <location filename="../../components/video_window/play_bar.py" line="57"/>
+        <location filename="../../View/video_interface/play_bar.py" line="57"/>
         <source>Fast forward</source>
         <translation>快进</translation>
     </message>
     <message>
-        <location filename="../../components/video_window/play_bar.py" line="58"/>
+        <location filename="../../View/video_interface/play_bar.py" line="58"/>
         <source>Download</source>
         <translation>下载</translation>
     </message>
     <message>
-        <location filename="../../components/video_window/play_bar.py" line="59"/>
+        <location filename="../../View/video_interface/play_bar.py" line="59"/>
         <source>Show fullscreen</source>
         <translation>转到全屏</translation>
     </message>
@@ -1180,7 +1210,7 @@
         <translation>播放列表</translation>
     </message>
     <message>
-        <location filename="../../View/search_result_interface/group_box.py" line="40" />
+        <location filename="../../View/search_result_interface/group_box.py" line="40"/>
         <source> Show All</source>
         <translation> 查看全部</translation>
     </message>
@@ -2126,64 +2156,64 @@
     </message>
 </context>
 <context>
-    <name>VideoWindow</name>
+    <name>VideoInterface</name>
     <message>
-        <location filename="../../components/video_window/video_window.py" line="170"/>
+        <location filename="../../View/video_interface/video_interface.py" line="170"/>
         <source>The media resource couldn&apos;t be resolved.</source>
         <translation>无效视频源。</translation>
     </message>
     <message>
-        <location filename="../../components/video_window/video_window.py" line="172"/>
+        <location filename="../../View/video_interface/video_interface.py" line="172"/>
         <source>The format of a media resource isn&apos;t supported.</source>
         <translation>暂不支持播放该格式的视频。</translation>
     </message>
     <message>
-        <location filename="../../components/video_window/video_window.py" line="174"/>
+        <location filename="../../View/video_interface/video_interface.py" line="174"/>
         <source>A network error occurred.</source>
         <translation>发生了网络错误。</translation>
     </message>
     <message>
-        <location filename="../../components/video_window/video_window.py" line="175"/>
+        <location filename="../../View/video_interface/video_interface.py" line="175"/>
         <source>There are not the appropriate permissions to play the media resource.</source>
         <translation>没有权限播放该视频。</translation>
     </message>
     <message>
-        <location filename="../../components/video_window/video_window.py" line="180"/>
+        <location filename="../../View/video_interface/video_interface.py" line="180"/>
         <source>An error occurred</source>
         <translation>发生了错误</translation>
     </message>
     <message>
-        <location filename="../../components/video_window/video_window.py" line="177"/>
+        <location filename="../../View/video_interface/video_interface.py" line="177"/>
         <source>A valid playback service was not found, playback cannot proceed.</source>
         <translation>视频服务不存在，无法继续播放。</translation>
     </message>
     <message>
-        <location filename="../../components/video_window/video_window.py" line="198"/>
+        <location filename="../../View/video_interface/video_interface.py" line="198"/>
         <source>Downloading MVs</source>
         <translation>正在下载 MV</translation>
     </message>
     <message>
-        <location filename="../../components/video_window/video_window.py" line="199"/>
+        <location filename="../../View/video_interface/video_interface.py" line="199"/>
         <source>There are</source>
         <translation>还剩</translation>
     </message>
     <message>
-        <location filename="../../components/video_window/video_window.py" line="200"/>
+        <location filename="../../View/video_interface/video_interface.py" line="200"/>
         <source>left. Please wait patiently</source>
         <translation>首，要耐心等待哦</translation>
     </message>
     <message>
-        <location filename="../../components/video_window/video_window.py" line="187"/>
+        <location filename="../../View/video_interface/video_interface.py" line="187"/>
         <source>save as</source>
         <translation>另存为</translation>
     </message>
     <message>
-        <location filename="../../components/video_window/video_window.py" line="213"/>
+        <location filename="../../View/video_interface/video_interface.py" line="213"/>
         <source>Exit fullscreen</source>
         <translation>退出全屏</translation>
     </message>
     <message>
-        <location filename="../../components/video_window/video_window.py" line="213"/>
+        <location filename="../../View/video_interface/video_interface.py" line="213"/>
         <source>Show fullscreen</source>
         <translation>转到全屏</translation>
     </message>
@@ -2394,27 +2424,27 @@
 <context>
     <name>AlbumSelectionModeInterface</name>
     <message>
-        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="346" />
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="346"/>
         <source>Are you sure you want to delete these?</source>
         <translation>是否确定要删除这些项？</translation>
     </message>
     <message>
-        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="348" />
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="348"/>
         <source>If you delete these albums, they won&apos;t be on be this device anymore.</source>
         <translation>如果你删除这些专辑，它们将不再位于此设备上。</translation>
     </message>
     <message>
-        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="351" />
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="351"/>
         <source>Are you sure you want to delete this?</source>
         <translation>是否确定要删除此项？</translation>
     </message>
     <message>
-        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="352" />
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="352"/>
         <source>If you delete</source>
         <translation>如果删除</translation>
     </message>
     <message>
-        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="353" />
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="353"/>
         <source>it won&apos;t be on be this device anymore.</source>
         <translation>，它将不再位于此设备上。</translation>
     </message>
@@ -2422,55 +2452,27 @@
 <context>
     <name>AlbumTabInterface</name>
     <message>
-        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="346" />
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="346"/>
         <source>Are you sure you want to delete these?</source>
         <translation>是否确定要删除这些项？</translation>
     </message>
     <message>
-        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="348" />
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="348"/>
         <source>If you delete these albums, they won&apos;t be on be this device anymore.</source>
         <translation>如果你删除这些专辑，它们将不再位于此设备上。</translation>
     </message>
     <message>
-        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="351" />
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="351"/>
         <source>Are you sure you want to delete this?</source>
         <translation>是否确定要删除此项？</translation>
     </message>
     <message>
-        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="352" />
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="352"/>
         <source>If you delete</source>
         <translation>如果删除</translation>
     </message>
     <message>
-        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="353" />
-        <source>it won&apos;t be on be this device anymore.</source>
-        <translation>，它将不再位于此设备上。</translation>
-    </message>
-</context>
-<context>
-    <name>SingerInterface</name>
-    <message>
-        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="346" />
-        <source>Are you sure you want to delete these?</source>
-        <translation>是否确定要删除这些项？</translation>
-    </message>
-    <message>
-        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="348" />
-        <source>If you delete these albums, they won&apos;t be on be this device anymore.</source>
-        <translation>如果你删除这些专辑，它们将不再位于此设备上。</translation>
-    </message>
-    <message>
-        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="351" />
-        <source>Are you sure you want to delete this?</source>
-        <translation>是否确定要删除此项？</translation>
-    </message>
-    <message>
-        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="352" />
-        <source>If you delete</source>
-        <translation>如果删除</translation>
-    </message>
-    <message>
-        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="353" />
+        <location filename="../../components/selection_mode_interface/selection_mode_interface.py" line="353"/>
         <source>it won&apos;t be on be this device anymore.</source>
         <translation>，它将不再位于此设备上。</translation>
     </message>
@@ -2478,17 +2480,17 @@
 <context>
     <name>MoreSearchResultInterface</name>
     <message>
-        <location filename="../../View/more_search_result_interface/more_search_result_interface.py" line="62" />
+        <location filename="../../View/more_search_result_interface/more_search_result_interface.py" line="62"/>
         <source>search result for local songs</source>
         <translation>的本地歌曲搜索结果</translation>
     </message>
     <message>
-        <location filename="../../View/more_search_result_interface/more_search_result_interface.py" line="78" />
+        <location filename="../../View/more_search_result_interface/more_search_result_interface.py" line="78"/>
         <source>search result for albums</source>
         <translation>的专辑搜索结果</translation>
     </message>
     <message>
-        <location filename="../../View/more_search_result_interface/more_search_result_interface.py" line="89" />
+        <location filename="../../View/more_search_result_interface/more_search_result_interface.py" line="89"/>
         <source>search result for playlists</source>
         <translation>的播放列表搜索结果</translation>
     </message>

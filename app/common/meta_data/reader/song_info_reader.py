@@ -13,7 +13,7 @@ from common.database.entity import SongInfo
 
 
 class SongInfoReader(QObject):
-    """ 歌曲信息读取器 """
+    """ Song information reader """
 
     def __init__(self, parent=None):
         super().__init__(parent)

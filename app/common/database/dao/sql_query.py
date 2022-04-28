@@ -30,7 +30,7 @@ class SqlQuery(QSqlQuery):
     def lastBoundQuery(self):
         query = self.lastQuery()
         for k, v in self.boundValues().items():
-            query = query.replace('?', str(v))
+            query = query.replace('?', str(v), 1)
             query = query.replace(k, str(v))
 
         return query

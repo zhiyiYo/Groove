@@ -1,9 +1,10 @@
 # coding:utf-8
 from common.signal_bus import signalBus
-from components.buttons.circle_button import CircleButton
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QPainter, QPen, QPixmap
 from PyQt5.QtMultimedia import QMediaPlaylist
+
+from .circle_button import CircleButton
 
 
 class SelectableButton(CircleButton):
