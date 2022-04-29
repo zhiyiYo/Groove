@@ -27,6 +27,7 @@ from components.widgets.state_tooltip import StateTooltip
 from PyQt5.QtCore import QEasingCurve, QEvent, QEventLoop, QFile, Qt, QTimer
 from PyQt5.QtGui import QColor, QIcon, QPixmap
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist
+from PyQt5.QtSql import QSqlDatabase
 from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
                              QWidget, qApp)
 from PyQt5.QtWinExtras import QtWin
@@ -53,15 +54,8 @@ class MainWindow(FramelessWindow):
         self.isInSelectionMode = False
         self.navigationHistories = [("myMusicInterfaceStackWidget", 0)]
         self.setObjectName("mainWindow")
-        self.initDatabase()
         self.createWidgets()
         self.initWidget()
-
-    def initDatabase(self):
-        """ initialize database """
-        initializer = DBInitializer()
-        initializer.init()
-        self.db = initializer.db
 
     def createWidgets(self):
         """ create widgets """
@@ -185,8 +179,12 @@ class MainWindow(FramelessWindow):
 
     def initLibrary(self):
         """ initialize song library """
+        DBInitializer.init()
+
         self.library = Library(
-            self.settingInterface.config["selected-folders"], self.db)
+            self.settingInterface.config["selected-folders"],
+            QSqlDatabase.database(DBInitializer.connectionName)
+        )
         self.libraryThread = LibraryThread(
             self.settingInterface.config["selected-folders"], self)
 
@@ -558,14 +556,14 @@ class MainWindow(FramelessWindow):
 
         messageMap = {
             QMediaPlayer.ResourceError: self.tr(
-                "The media resource couldn't be resolved."),
+                "The media resource couldn't be resolved, please check if LAV filters is installed."),
             QMediaPlayer.FormatError: self.tr(
                 "The format of a media resource isn't supported."),
             QMediaPlayer.NetworkError: self.tr("A network error occurred."),
             QMediaPlayer.AccessDeniedError: self.tr(
                 "There are not the appropriate permissions to play the media resource."),
             QMediaPlayer.ServiceMissingError: self.tr(
-                "A valid playback service was not found, playback cannot proceed.")
+                "A valid playback service was not found, please check if LAV filters is installed.")
         }
         w = MessageDialog(self.tr('An error occurred'), messageMap[error], self)
         w.cancelButton.setText(self.tr('Close'))
@@ -1207,6 +1205,10 @@ class MainWindow(FramelessWindow):
         self.settingInterface.config.update(config)
         self.mediaPlaylist.save()
         self.systemTrayIcon.hide()
+
+        # close database
+        QSqlDatabase.database(DBInitializer.connectionName).close()
+        QSqlDatabase.removeDatabase(DBInitializer.connectionName)
 
     def onNavigationLabelClicked(self, label: str):
         """ navigation label clicked slot """

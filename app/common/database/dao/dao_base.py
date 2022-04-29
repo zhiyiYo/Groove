@@ -7,6 +7,17 @@ from ..entity import Entity, EntityFactory
 from .sql_query import SqlQuery
 
 
+def finishQuery(func):
+    """ Finish sql query to unlock database """
+
+    def wrapper(dao, *args, **kwargs):
+        result = func(dao, *args, **kwargs)
+        dao.query.finish()
+        return result
+
+    return wrapper
+
+
 class DaoBase:
     """ Database access operation abstract class """
 
@@ -20,6 +31,7 @@ class DaoBase:
         """ create table """
         raise NotImplementedError
 
+    @finishQuery
     def selectBy(self, **condition) -> Entity:
         """ query a record that meet the conditions
 
@@ -152,6 +164,7 @@ class DaoBase:
         """ query the records of the primary key value in the list """
         return self.listByFields(self.fields[0], ids)
 
+    @finishQuery
     def iterRecords(self) -> List[Entity]:
         """ iterate over all queried records """
         entities = []
@@ -162,6 +175,7 @@ class DaoBase:
 
         return entities
 
+    @finishQuery
     def update(self, id, field: str, value) -> bool:
         """ update the value of a field in a record
 
@@ -187,6 +201,7 @@ class DaoBase:
         self.query.addBindValue(id)
         return self.query.exec()
 
+    @finishQuery
     def updateById(self, entity: Entity) -> bool:
         """ update a record
 
@@ -212,6 +227,7 @@ class DaoBase:
 
         return self.query.exec()
 
+    @finishQuery
     def updateByIds(self, entities: List[Entity]) -> bool:
         """ update multi records
 
@@ -251,6 +267,7 @@ class DaoBase:
         success = db.commit()
         return success
 
+    @finishQuery
     def insert(self, entity: Entity) -> bool:
         """ insert a record
 
@@ -270,6 +287,7 @@ class DaoBase:
         self.bindEntityToQuery(entity)
         return self.query.exec()
 
+    @finishQuery
     def insertBatch(self, entities: List[Entity]) -> bool:
         """ insert multi records
 
@@ -303,6 +321,7 @@ class DaoBase:
 
         return db.commit()
 
+    @finishQuery
     def deleteById(self, id) -> bool:
         """ delete a record
 
@@ -321,6 +340,7 @@ class DaoBase:
         self.query.addBindValue(id)
         return self.query.exec()
 
+    @finishQuery
     def deleteByFields(self, field: str, values: list):
         """ delete multi records based on the value of a field """
         if field not in self.fields:

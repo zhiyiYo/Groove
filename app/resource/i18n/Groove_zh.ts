@@ -650,7 +650,7 @@
     </message>
     <message>
         <location filename="../../View/main_window/main_window.py" line="555"/>
-        <source>The media resource couldn&apos;t be resolved.</source>
+        <source>The media resource couldn&apos;t be resolved, please check if LAV filters is installed.</source>
         <translation>无法解析此音频，请检查是否安装了 LAV Filters。</translation>
     </message>
     <message>
@@ -670,7 +670,7 @@
     </message>
     <message>
         <location filename="../../View/main_window/main_window.py" line="562"/>
-        <source>A valid playback service was not found, playback cannot proceed.</source>
+        <source>A valid playback service was not found, please check if LAV filters is installed.</source>
         <translation>音频服务不存在，无法继续播放，请检查是否安装了 LAV Filters。</translation>
     </message>
     <message>

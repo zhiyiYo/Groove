@@ -1,5 +1,7 @@
 # coding:utf-8
+from common.logger import Logger
 from PyQt5.QtSql import QSqlDatabase
+from PyQt5.QtWidgets import qApp
 
 from .service import (AlbumInfoService, PlaylistService, SingerInfoService,
                       SongInfoService)
@@ -8,25 +10,20 @@ from .service import (AlbumInfoService, PlaylistService, SingerInfoService,
 class DBInitializer:
     """ Database initializer """
 
+    logger = Logger("cache")
+    connectionName = "main"
     cacheFile = 'cache/cache.db'
 
-    def __init__(self):
-        self.connect()
-
-    def connect(self):
-        """ connect database """
-        self.db = QSqlDatabase.addDatabase('QSQLITE', 'main')
-        self.db.setDatabaseName(self.cacheFile)
-        if not self.db.open():
-            print("Database connection failed")
-
-    def init(self):
+    @classmethod
+    def init(cls):
         """ Initialize database """
-        songInfoService = SongInfoService(self.db)
-        albumInfoService = AlbumInfoService(self.db)
-        singerInfoService = SingerInfoService(self.db)
-        playlistService = PlaylistService(self.db)
-        songInfoService.createTable()
-        albumInfoService.createTable()
-        singerInfoService.createTable()
-        playlistService.createTable()
+        db = QSqlDatabase.addDatabase('QSQLITE', cls.connectionName)
+        db.setDatabaseName(cls.cacheFile)
+        if not db.open():
+            Logger.error("Database connection failed")
+            qApp.exit()
+
+        SongInfoService(db).createTable()
+        AlbumInfoService(db).createTable()
+        SingerInfoService(db).createTable()
+        PlaylistService(db).createTable()
