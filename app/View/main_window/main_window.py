@@ -200,7 +200,12 @@ class MainWindow(FramelessWindow):
 
     def initWindow(self):
         """ initialize window """
-        self.resize(1240, 970)
+        r = self.devicePixelRatioF()
+        desktop = QApplication.desktop().availableGeometry()
+        w, h = desktop.width(), desktop.height()
+        self.resize(1240/r, 970/r)
+        self.setMinimumSize(1030/r, 800/r)
+
         self.setWindowTitle(self.tr("Groove Music"))
         self.setWindowIcon(QIcon(":/images/logo/logo_small.png"))
 
@@ -208,16 +213,13 @@ class MainWindow(FramelessWindow):
         self.setWindowFlags(Qt.FramelessWindowHint |
                             Qt.WindowMinMaxButtonsHint)
         self.windowEffect.addWindowAnimation(self.winId())
-        desktop = QApplication.desktop().availableGeometry()
-        self.move(desktop.width()//2 - self.width()//2,
-                  desktop.height()//2 - self.height()//2)
+
+        self.move(w//2 - self.width()//2, h//2 - self.height()//2)
         self.show()
         QApplication.processEvents()
 
     def initWidget(self):
         """ initialize widgets """
-        self.resize(1240, 970)
-        self.setMinimumSize(1030, 800)
         self.videoInterface.hide()
 
         QApplication.setQuitOnLastWindowClosed(
@@ -329,9 +331,9 @@ class MainWindow(FramelessWindow):
                 self.titleBar.returnButton.setParent(obj)
 
                 # show title
-                self.titleBar.title.setParent(obj)
-                self.titleBar.title.move(15, 10)
-                self.titleBar.title.show()
+                self.titleBar.titleLabel.setParent(obj)
+                self.titleBar.titleLabel.move(15, 10)
+                self.titleBar.titleLabel.show()
 
                 # shorten the navigation menu if the play bar is visible
                 isScaled = self.playBar.isVisible()
@@ -342,9 +344,9 @@ class MainWindow(FramelessWindow):
                     self.navigationInterface.navigationMenu.width(), height)
             elif e.type() == QEvent.Hide:
                 # hide title
-                self.titleBar.title.setParent(self.titleBar)
+                self.titleBar.titleLabel.setParent(self.titleBar)
                 self.titleBar.returnButton.setParent(self.titleBar)
-                self.titleBar.title.hide()
+                self.titleBar.titleLabel.hide()
 
             self.titleBar.returnButton.setVisible(isVisible)
 
@@ -410,7 +412,7 @@ class MainWindow(FramelessWindow):
 
         # update title bar
         self.playBar.hide()
-        self.titleBar.title.hide()
+        self.titleBar.titleLabel.hide()
         self.titleBar.setWhiteIcon(True)
         self.titleBar.hide()
 
@@ -565,7 +567,8 @@ class MainWindow(FramelessWindow):
             QMediaPlayer.ServiceMissingError: self.tr(
                 "A valid playback service was not found, please check if LAV filters is installed.")
         }
-        w = MessageDialog(self.tr('An error occurred'), messageMap[error], self)
+        w = MessageDialog(self.tr('An error occurred'),
+                          messageMap[error], self)
         w.cancelButton.setText(self.tr('Close'))
         w.yesButton.hide()
         w.exec()
@@ -768,7 +771,8 @@ class MainWindow(FramelessWindow):
         if len(self.navigationHistories) == 1 and cond:
             self.titleBar.returnButton.hide()
 
-        self.titleBar.title.setVisible(self.navigationInterface.isExpanded)
+        self.titleBar.titleLabel.setVisible(
+            self.navigationInterface.isExpanded)
 
     def showPlayingInterface(self):
         """ show playing interface """
@@ -779,7 +783,7 @@ class MainWindow(FramelessWindow):
 
         self.exitSelectionMode()
         self.playBar.hide()
-        self.titleBar.title.hide()
+        self.titleBar.titleLabel.hide()
         self.titleBar.returnButton.show()
 
         if not self.playingInterface.isPlaylistVisible and len(self.playingInterface.playlist) > 0:
@@ -821,7 +825,8 @@ class MainWindow(FramelessWindow):
 
     def onNavigationDisplayModeChanged(self, disPlayMode: int):
         """ navigation interface display mode changed slot """
-        self.titleBar.title.setVisible(self.navigationInterface.isExpanded)
+        self.titleBar.titleLabel.setVisible(
+            self.navigationInterface.isExpanded)
         self.adjustWidgetGeometry()
         self.navigationInterface.navigationMenu.stackUnder(self.playBar)
         # 如果现在显示的是字母导航界面就将其隐藏
@@ -1481,7 +1486,9 @@ class SplashScreen(QWidget):
         super().__init__(parent=parent)
         self.hBoxLayout = QHBoxLayout(self)
         self.logo = QLabel(self)
-        self.logo.setPixmap(QPixmap(":/images/logo/splash_screen_logo.png"))
+        pixmap = QPixmap(":/images/logo/splash_screen_logo.png")
+        pixmap.setDevicePixelRatio(self.devicePixelRatioF())
+        self.logo.setPixmap(pixmap)
         self.hBoxLayout.addWidget(self.logo, 0, Qt.AlignCenter)
         self.setAttribute(Qt.WA_StyledBackground)
         self.setStyleSheet('background:white')

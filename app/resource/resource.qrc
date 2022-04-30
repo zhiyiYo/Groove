@@ -37,6 +37,7 @@
         <file>qss/lyric_widget.qss</file>
         <file>qss/tooltip.qss</file>
         <file>qss/selection_mode_interface.qss</file>
+        <file>qss/title_bar.qss</file>
 
         <file>images/logo/logo.png</file>
         <file>images/logo/logo_small.png</file>
@@ -105,6 +106,8 @@
         <file>images/create_playlist_dialog/playlist.png</file>
         <file>images/line_edit/clear_hover.png</file>
         <file>images/line_edit/clear_normal.png</file>
+        <file>images/line_edit/close_hover.png</file>
+        <file>images/line_edit/close_normal.png</file>
         <file>images/line_edit/clear_pressed.png</file>
         <file>images/menu/Add.png</file>
         <file>images/menu/Album.png</file>

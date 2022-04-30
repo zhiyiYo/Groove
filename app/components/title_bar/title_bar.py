@@ -3,11 +3,11 @@ from win32.lib import win32con
 from win32.win32api import SendMessage
 from win32.win32gui import ReleaseCapture
 
-from PyQt5.QtCore import Qt, QEvent
+from PyQt5.QtCore import QFile, Qt, QEvent
 from PyQt5.QtGui import QResizeEvent
 from PyQt5.QtWidgets import QLabel, QWidget
 
-from .title_bar_buttons import BasicButton, MaximizeButton
+from .title_bar_buttons import TitleBarButton, MaximizeButton
 
 
 class TitleBar(QWidget):
@@ -15,76 +15,21 @@ class TitleBar(QWidget):
 
     def __init__(self, parent):
         super().__init__(parent)
-        self.resize(1360, 40)
+        self.resize(600, 40)
         self.setAttribute(Qt.WA_TranslucentBackground)
-        self.title = QLabel(self.tr("Groove Music"), self)
-        self.__createButtons()
-        self.__initWidget()
-
-    def __createButtons(self):
-        """ create buttons """
-        self.minButton = BasicButton(
-            [
-                {
-                    "normal": ":/images/title_bar/透明黑色最小化按钮_57_40.png",
-                    "hover": ":/images/title_bar/绿色最小化按钮_hover_57_40.png",
-                    "pressed": ":/images/title_bar/黑色最小化按钮_pressed_57_40.png",
-                },
-                {
-                    "normal": ":/images/title_bar/白色最小化按钮_57_40.png",
-                    "hover": ":/images/title_bar/绿色最小化按钮_hover_57_40.png",
-                    "pressed": ":/images/title_bar/黑色最小化按钮_pressed_57_40.png",
-                },
-            ],
-            self,
-        )
-        self.closeButton = BasicButton(
-            [
-                {
-                    "normal": ":/images/title_bar/透明黑色关闭按钮_57_40.png",
-                    "hover": ":/images/title_bar/关闭按钮_hover_57_40.png",
-                    "pressed": ":/images/title_bar/关闭按钮_pressed_57_40.png",
-                },
-                {
-                    "normal": ":/images/title_bar/透明白色关闭按钮_57_40.png",
-                    "hover": ":/images/title_bar/关闭按钮_hover_57_40.png",
-                    "pressed": ":/images/title_bar/关闭按钮_pressed_57_40.png",
-                },
-            ],
-            self,
-        )
-        self.returnButton = BasicButton(
-            [
-                {
-                    "normal": ":/images/title_bar/黑色返回按钮_60_40.png",
-                    "hover": ":/images/title_bar/黑色返回按钮_hover_60_40.png",
-                    "pressed": ":/images/title_bar/黑色返回按钮_pressed_60_40.png",
-                },
-                {
-                    "normal": ":/images/title_bar/白色返回按钮_60_40.png",
-                    "hover": ":/images/title_bar/白色返回按钮_hover_60_40.png",
-                    "pressed": ":/images/title_bar/白色返回按钮_pressed_60_40.png",
-                },
-            ],
-            self,
-            iconSize=(60, 40),
-        )
+        self.titleLabel = QLabel(self.tr("Groove Music"), self)
+        self.minButton = TitleBarButton(parent=self)
+        self.closeButton = TitleBarButton(parent=self)
+        self.returnButton = TitleBarButton((60, 40), self)
         self.maxButton = MaximizeButton(self)
-        self.buttons = [self.minButton, self.maxButton,
-                        self.closeButton, self.returnButton]
+        self.__initWidget()
 
     def __initWidget(self):
         """ initialize widgets """
         self.setFixedHeight(40)
-        self.title.setObjectName('titleLabel')
-        self.setStyleSheet("""
-            QWidget{background-color:transparent}
-            QLabel{
-                font:14px 'Segoe UI Semilight','Microsoft YaHei Light';
-                padding:10px 15px 10px 15px;
-            }
-        """)
-        self.title.hide()
+        self.__setQss()
+
+        self.titleLabel.hide()
         self.returnButton.hide()
 
         # connect signal to slot
@@ -93,10 +38,23 @@ class TitleBar(QWidget):
         self.closeButton.clicked.connect(self.window().close)
 
         self.returnButton.installEventFilter(self)
-        self.title.installEventFilter(self)
+        self.titleLabel.installEventFilter(self)
+
+    def __setQss(self):
+        """ set style sheet """
+        self.titleLabel.setObjectName("titleLabel")
+        self.minButton.setObjectName("minButton")
+        self.maxButton.setObjectName("maxButton")
+        self.closeButton.setObjectName("closeButton")
+        self.returnButton.setObjectName("returnButton")
+
+        f = QFile(":/qss/title_bar.qss")
+        f.open(QFile.ReadOnly)
+        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
+        f.close()
 
     def resizeEvent(self, e: QResizeEvent):
-        self.title.move(self.returnButton.isVisible() * 60, 0)
+        self.titleLabel.move(self.returnButton.isVisible() * 60, 0)
         self.closeButton.move(self.width() - 57, 0)
         self.maxButton.move(self.width() - 2 * 57, 0)
         self.minButton.move(self.width() - 3 * 57, 0)
@@ -128,20 +86,20 @@ class TitleBar(QWidget):
 
     def setWhiteIcon(self, isWhiteIcon: bool):
         """ set icon color """
-        for button in self.buttons:
+        for button in self.findChildren(TitleBarButton):
             button.setWhiteIcon(isWhiteIcon)
 
     def eventFilter(self, obj, e: QEvent):
         if obj == self.returnButton:
             if e.type() == QEvent.Hide:
-                cond = self.title.parent() is not self
-                self.title.move(15 * cond, 10 * cond)
+                cond = self.titleLabel.parent() is not self
+                self.titleLabel.move(15 * cond, 10 * cond)
             elif e.type() == QEvent.Show:
-                self.title.move(
-                    self.returnButton.width() + self.title.x(), self.title.y())
-        elif obj == self.title:
+                self.titleLabel.move(
+                    self.returnButton.width() + self.titleLabel.x(), self.titleLabel.y())
+        elif obj == self.titleLabel:
             if e.type() == QEvent.Show and self.returnButton.isVisible():
-                self.title.move(
-                    self.returnButton.width() + self.title.y(), self.title.y())
+                self.titleLabel.move(
+                    self.returnButton.width() + self.titleLabel.y(), self.titleLabel.y())
 
         return super().eventFilter(obj, e)

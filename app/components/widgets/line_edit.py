@@ -14,8 +14,8 @@ class LineEdit(QLineEdit):
         self.needClearBtn = needClearBtn
         self.clickedTime = 0
         iconPaths = {
-            "normal": ":/images/line_edit/clear_normal.png",
-            "hover": ":/images/line_edit/clear_hover.png",
+            "normal": ":/images/line_edit/close_normal.png",
+            "hover": ":/images/line_edit/close_hover.png",
             "pressed": ":/images/line_edit/clear_pressed.png",
         }
         self.clearButton = ThreeStateButton(iconPaths, self)

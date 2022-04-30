@@ -36,3 +36,20 @@ QSlider::sub-page:horizontal {
 QSlider::add-page:horizontal {
     background-color: rgba(255, 255, 255, 0.25);
 }
+
+TitleBarButton {
+    border: none;
+    margin: 0px;
+}
+
+#closeButton {
+    border-image: url(:/images/title_bar/透明白色关闭按钮_57_40.png)
+}
+
+#closeButton:hover {
+    border-image: url(:/images/title_bar/关闭按钮_hover_57_40.png)
+}
+
+#closeButton:pressed {
+    border-image: url(:/images/title_bar/关闭按钮_pressed_57_40.png)
+}

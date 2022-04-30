@@ -1,6 +1,4 @@
 # coding:utf-8
-from pathlib import Path
-
 from common.os_utils import getPlaylistNames
 from common.window_effect import WindowEffect
 from PyQt5.QtCore import (QEasingCurve, QEvent, QFile, QPropertyAnimation,

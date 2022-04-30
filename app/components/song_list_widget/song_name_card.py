@@ -1,6 +1,6 @@
 # coding:utf-8
 from PyQt5.QtCore import QEvent, QSize, Qt
-from PyQt5.QtGui import QFont, QFontMetrics, QIcon, QPixmap
+from PyQt5.QtGui import QFont, QFontMetrics, QIcon, QPainter, QPixmap
 from PyQt5.QtWidgets import (QApplication, QCheckBox, QLabel, QToolButton,
                              QWidget)
 
@@ -30,14 +30,22 @@ class ToolButton(QToolButton):
             * selected
         """
         self.state = state
-        self.setIcon(QIcon(self.iconPaths[state]))
+        self.update()
         self.setProperty("state", state)
 
     def setIconPaths(self, iconPaths: dict):
         """ set icon paths of button """
         self.iconPaths = iconPaths
-        self.setIcon(QIcon(iconPaths[self.state]))
+        self.update()
 
+    def paintEvent(self, e):
+        super().paintEvent(e)
+        painter = QPainter(self)
+        painter.setPen(Qt.NoPen)
+        painter.setRenderHints(QPainter.Antialiasing |
+                              QPainter.SmoothPixmapTransform)
+        pixmap = QPixmap(self.iconPaths[self.state])
+        painter.drawPixmap(self.rect(), pixmap)
 
 class ButtonGroup(QWidget):
     """ Button group of song name card """

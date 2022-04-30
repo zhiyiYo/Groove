@@ -1,6 +1,6 @@
 # coding:utf-8
 from PyQt5.QtCore import QEvent, QSize, Qt
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QPainter, QPixmap
 from PyQt5.QtWidgets import QPushButton, QToolButton
 
 
@@ -55,32 +55,44 @@ class ThreeStateButton(QToolButton):
             icon size
         """
         super().__init__(parent)
+        self.__state = 'normal'
         self.iconPaths = iconPaths
         self.resize(*iconSize)
-        self.initWidget()
-
-    def initWidget(self):
+        self.setIconSize(self.size())
         self.setCursor(Qt.ArrowCursor)
-        self.setIcon(QIcon(self.iconPaths['normal']))
-        self.setIconSize(QSize(self.width(), self.height()))
         self.setStyleSheet('border: none; margin: 0px')
 
     def enterEvent(self, e):
-        self.setIcon(QIcon(self.iconPaths['hover']))
+        self.__updateIcon('hover')
 
     def leaveEvent(self, e):
-        self.setIcon(QIcon(self.iconPaths['normal']))
+        self.__updateIcon('normal')
 
     def mousePressEvent(self, e):
         if e.button() == Qt.RightButton:
             return
 
-        self.setIcon(QIcon(self.iconPaths['pressed']))
+        self.__updateIcon('pressed')
         super().mousePressEvent(e)
 
     def mouseReleaseEvent(self, e):
         if e.button() == Qt.RightButton:
             return
 
-        self.setIcon(QIcon(self.iconPaths['normal']))
+        self.__updateIcon('normal')
         super().mouseReleaseEvent(e)
+
+    def __updateIcon(self, state: str):
+        if state == self.__state:
+            return
+
+        self.__state = state
+        self.update()
+
+    def paintEvent(self, e):
+        super().paintEvent(e)
+        painter = QPainter(self)
+        painter.setRenderHints(
+            QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
+        painter.setPen(Qt.NoPen)
+        painter.drawPixmap(self.rect(), QPixmap(self.iconPaths[self.__state]))

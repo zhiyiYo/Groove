@@ -42,6 +42,8 @@ class AppBarButton(QPushButton):
         """ paint icon """
         super().paintEvent(e)
         painter = QPainter(self)
+        painter.setRenderHints(QPainter.Antialiasing |
+                               QPainter.SmoothPixmapTransform)
         y = (self.height()-self.pixmap.height())//2
         painter.drawPixmap(24, y, self.pixmap)
         painter.setPen(Qt.white)

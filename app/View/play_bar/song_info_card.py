@@ -205,6 +205,7 @@ class ScrollTextWindow(QWidget):
     def paintEvent(self, e):
         """ paint text """
         painter = QPainter(self)
+        painter.setRenderHints(QPainter.Antialiasing | QPainter.TextAntialiasing)
         painter.setPen(Qt.white)
 
         # paint song name

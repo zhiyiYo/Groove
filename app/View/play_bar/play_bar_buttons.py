@@ -1,10 +1,9 @@
 # coding:utf-8
 from common.signal_bus import signalBus
 from components.buttons.tooltip_button import TooltipButton
-from PyQt5.QtCore import QEvent, Qt, pyqtSignal
+from PyQt5.QtCore import QEvent, Qt
 from PyQt5.QtGui import QBrush, QColor, QPainter, QPen, QPixmap
 from PyQt5.QtMultimedia import QMediaPlaylist
-from PyQt5.QtWidgets import QToolButton
 
 
 class PlayButton(TooltipButton):
@@ -303,7 +302,8 @@ class LoopModeButton(TooltipButton):
         """ paint button """
         iconPixmap = self.iconPixmaps[self.clickedTime]
         painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing, True)
+        painter.setRenderHints(QPainter.Antialiasing |
+                               QPainter.SmoothPixmapTransform)
         painter.setPen(Qt.NoPen)
 
         # paint background color

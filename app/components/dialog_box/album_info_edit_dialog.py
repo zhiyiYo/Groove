@@ -1,13 +1,12 @@
 # coding:utf-8
-import os
 from copy import deepcopy
 from pathlib import Path
 
 from common.database.entity import AlbumInfo, SongInfo
 from common.image_process_utils import getPicSuffix
-from common.os_utils import getCoverPath, getCoverName
+from common.os_utils import getCoverName, getCoverPath
 from components.buttons.perspective_button import PerspectivePushButton
-from components.widgets.label import ErrorIcon
+from components.widgets.label import ErrorIcon, PixmapLabel
 from components.widgets.line_edit import LineEdit
 from components.widgets.perspective_widget import PerspectiveWidget
 from components.widgets.scroll_area import ScrollArea
@@ -378,7 +377,7 @@ class AlbumCoverWindow(PerspectiveWidget):
         self.__picSize = picSize
         self.albumCoverLabel = QLabel(self)
         self.albumCoverMask = AlbumCoverMask(self)
-        self.editAlbumCoverLabel = QLabel(self)
+        self.editAlbumCoverLabel = PixmapLabel(self)
         self.__initWidget()
 
     def __initWidget(self):

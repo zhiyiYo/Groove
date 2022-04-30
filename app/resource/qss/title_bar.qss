@@ -1,0 +1,133 @@
+QWidget {
+    background-color: transparent
+}
+
+QLabel {
+    font: 14px 'Segoe UI Semilight', 'Microsoft YaHei Light';
+    padding: 10px 15px 10px 15px;
+}
+
+TitleBarButton {
+    border: none;
+    margin: 0px;
+}
+
+#minButton[isWhite=false] {
+    border-image: url(:/images/title_bar/透明黑色最小化按钮_57_40.png)
+}
+
+#minButton[isWhite=false]:hover {
+    border-image: url(:/images/title_bar/绿色最小化按钮_hover_57_40.png)
+}
+
+#minButton[isWhite=false]:pressed {
+    border-image: url(:/images/title_bar/黑色最小化按钮_pressed_57_40.png)
+}
+
+#minButton[isWhite="true"] {
+    border-image: url(:/images/title_bar/白色最小化按钮_57_40.png)
+}
+
+#minButton[isWhite="true"]:hover {
+    border-image: url(:/images/title_bar/绿色最小化按钮_hover_57_40.png)
+}
+
+#minButton[isWhite="true"]:pressed {
+    border-image: url(:/images/title_bar/黑色最小化按钮_pressed_57_40.png)
+}
+
+#returnButton[isWhite=false] {
+    border-image: url(:/images/title_bar/黑色返回按钮_60_40.png)
+}
+
+#returnButton[isWhite=false]:hover {
+    border-image: url(:/images/title_bar/黑色返回按钮_hover_60_40.png)
+}
+
+#returnButton[isWhite=false]:pressed {
+    border-image: url(:/images/title_bar/黑色返回按钮_pressed_60_40.png)
+}
+
+#returnButton[isWhite="true"] {
+    border-image: url(:/images/title_bar/白色返回按钮_60_40.png)
+}
+
+#returnButton[isWhite="true"]:hover {
+    border-image: url(:/images/title_bar/白色返回按钮_hover_60_40.png)
+}
+
+#returnButton[isWhite="true"]:pressed {
+    border-image: url(:/images/title_bar/白色返回按钮_pressed_60_40.png)
+}
+
+#closeButton[isWhite=false] {
+    border-image: url(:/images/title_bar/透明黑色关闭按钮_57_40.png)
+}
+
+#closeButton[isWhite=false]:hover {
+    border-image: url(:/images/title_bar/关闭按钮_hover_57_40.png)
+}
+
+#closeButton[isWhite=false]:pressed {
+    border-image: url(:/images/title_bar/关闭按钮_pressed_57_40.png)
+}
+
+#closeButton[isWhite="true"] {
+    border-image: url(:/images/title_bar/透明白色关闭按钮_57_40.png)
+}
+
+#closeButton[isWhite="true"]:hover {
+    border-image: url(:/images/title_bar/关闭按钮_hover_57_40.png)
+}
+
+#closeButton[isWhite="true"]:pressed {
+    border-image: url(:/images/title_bar/关闭按钮_pressed_57_40.png)
+}
+
+#maxButton[isWhite=false][isMax=false] {
+    border-image: url(:/images/title_bar/透明黑色最大化按钮_57_40.png)
+}
+
+#maxButton[isWhite=false][isMax=false]:hover {
+    border-image: url(:/images/title_bar/绿色最大化按钮_hover_57_40.png)
+}
+
+#maxButton[isWhite=false][isMax=false]:pressed {
+    border-image: url(:/images/title_bar/黑色最大化按钮_pressed_57_40.png)
+}
+
+#maxButton[isWhite=true][isMax=false] {
+    border-image: url(:/images/title_bar/白色最大化按钮_57_40.png)
+}
+
+#maxButton[isWhite=true][isMax=false]:hover {
+    border-image: url(:/images/title_bar/绿色最大化按钮_hover_57_40.png)
+}
+
+#maxButton[isWhite=true][isMax=false]:pressed {
+    border-image: url(:/images/title_bar/黑色最大化按钮_pressed_57_40.png)
+}
+
+#maxButton[isWhite=false][isMax=true] {
+    border-image: url(:/images/title_bar/黑色向下还原按钮_57_40.png)
+}
+
+#maxButton[isWhite=false][isMax=true]:hover {
+    border-image: url(:/images/title_bar/绿色向下还原按钮_hover_57_40.png)
+}
+
+#maxButton[isWhite=false][isMax=true]:pressed {
+    border-image: url(:/images/title_bar/向下还原按钮_pressed_57_40.png)
+}
+
+#maxButton[isWhite=true][isMax=true] {
+    border-image: url(:/images/title_bar/白色向下还原按钮_57_40.png)
+}
+
+#maxButton[isWhite=true][isMax=true]:hover {
+    border-image: url(:/images/title_bar/绿色向下还原按钮_hover_57_40.png)
+}
+
+#maxButton[isWhite=true][isMax=true]:pressed {
+    border-image: url(:/images/title_bar/向下还原按钮_pressed_57_40.png)
+}

@@ -3,7 +3,7 @@ from common.database.entity import Playlist
 from common.library import Library
 from components.buttons.three_state_button import ThreeStateButton
 from components.dialog_box.mask_dialog_base import MaskDialogBase
-from components.widgets.label import ClickableLabel
+from components.widgets.label import ClickableLabel, PixmapLabel
 from components.widgets.menu import LineEditMenu
 from PyQt5.QtCore import QEvent, QFile, Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap
@@ -114,7 +114,7 @@ class LineEdit(QLineEdit):
         }
 
         self.clearButton = ThreeStateButton(iconPaths, self, (50, 50))
-        self.pencilPic = QLabel(self)
+        self.pencilLabel = PixmapLabel(self)
         self.menu = LineEditMenu(self)
 
         self.initWidget()
@@ -129,12 +129,12 @@ class LineEdit(QLineEdit):
 
         self.clearButton.hide()
         self.clearButton.installEventFilter(self)
-        self.pencilPic.setPixmap(
+        self.pencilLabel.setPixmap(
             QPixmap(":/images/create_playlist_dialog/pencil_50_50.png"))
 
         # prevent text and icon overlapping
         self.setTextMargins(
-            0, 0, self.clearButton.width() + self.pencilPic.pixmap().width() + 1, 0)
+            0, 0, self.clearButton.width() + self.pencilLabel.pixmap().width() + 1, 0)
 
     def __onTextChanged(self):
         """ 编辑框的文本改变时选择是否显示清空按钮 """
@@ -142,12 +142,12 @@ class LineEdit(QLineEdit):
 
     def enterEvent(self, e):
         if not self.text():
-            self.pencilPic.setPixmap(
+            self.pencilLabel.setPixmap(
                 QPixmap(":/images/create_playlist_dialog/pencil_noFocus_hover_50_50.png"))
 
     def leaveEvent(self, e):
         if not self.text():
-            self.pencilPic.setPixmap(
+            self.pencilLabel.setPixmap(
                 QPixmap(":/images/create_playlist_dialog/pencil_noFocus_50_50.png"))
 
     def focusOutEvent(self, e):
@@ -158,7 +158,7 @@ class LineEdit(QLineEdit):
             self.setStyle(QApplication.style())
 
         self.clearButton.hide()
-        self.pencilPic.setPixmap(
+        self.pencilLabel.setPixmap(
             QPixmap(":/images/create_playlist_dialog/pencil_noFocus_50_50.png"))
 
     def focusInEvent(self, e):
@@ -169,7 +169,7 @@ class LineEdit(QLineEdit):
 
         self.setProperty("noText", "false")
         self.setStyle(QApplication.style())
-        self.pencilPic.setPixmap(
+        self.pencilLabel.setPixmap(
             QPixmap(":/images/create_playlist_dialog/pencil_50_50.png"))
 
     def mousePressEvent(self, e):
@@ -197,7 +197,7 @@ class LineEdit(QLineEdit):
     def __adjustButtonPos(self):
         """ adjust button position """
         self.clearButton.move(self.width() - 101, 10)
-        self.pencilPic.move(self.width() - 51, 10)
+        self.pencilLabel.move(self.width() - 51, 10)
 
     def __setQss(self):
         """ set style sheet """
