@@ -418,7 +418,9 @@ class BasicSongCard(QWidget):
 
     def __getScaleableLabelTextWidth(self):
         """ get the text width of stretchable label """
-        fontMetrics = QFontMetrics(QFont("Microsoft YaHei", 9))
+        font = QFont("Microsoft YaHei")
+        font.setPixelSize(15)
+        fontMetrics = QFontMetrics(font)
         self.__scaleableLabelTextWidths = [
             fontMetrics.width(label.text()) for label in self.__scaleableWidgets[1:]]
 

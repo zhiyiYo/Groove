@@ -236,7 +236,9 @@ class SongCard(QWidget):
 
     def __getLabelWidth(self):
         """ get the text width of labels """
-        fontMetrics = QFontMetrics(QFont("Microsoft YaHei", 9))
+        font = QFont("Microsoft YaHei")
+        font.setPixelSize(15)
+        fontMetrics = QFontMetrics(font)
         self.singerWidth = fontMetrics.width(self.singer)
         self.albumWidth = fontMetrics.width(self.album)
 
@@ -400,7 +402,9 @@ class SongNameCard(QWidget):
 
     def __getSongNameWidth(self):
         """ get song name width """
-        fontMetrics = QFontMetrics(QFont("Microsoft YaHei", 9))
+        font = QFont("Microsoft YaHei")
+        font.setPixelSize(15)
+        fontMetrics = QFontMetrics(font)
         self.songNameWidth = fontMetrics.width(self.songName)
 
     def setPlay(self, isPlay: bool):

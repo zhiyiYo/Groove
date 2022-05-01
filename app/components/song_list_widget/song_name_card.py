@@ -173,7 +173,9 @@ class SongNameCard(QWidget):
 
     def __getSongNameWidth(self):
         """ get song name width """
-        fontMetrics = QFontMetrics(QFont("Microsoft YaHei", 10))
+        font = QFont("Microsoft YaHei")
+        font.setPixelSize(16)
+        fontMetrics = QFontMetrics(font)
         self.songNameWidth = fontMetrics.width(self.songName)
 
     def _moveButtonGroup(self):
