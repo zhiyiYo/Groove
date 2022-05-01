@@ -279,6 +279,7 @@ class PlayingInterface(QWidget):
         self.currentIndex = index
         self.__getLyric()
         self.songListWidget.setCurrentIndex(index)
+        # background cover will be updated by songInfoCardChute's signal
         self.songInfoCardChute.setCurrentIndex(index)
 
     def setPlaylist(self, playlist: List[SongInfo], isResetIndex: bool = True, index=0):
@@ -377,6 +378,17 @@ class PlayingInterface(QWidget):
         self.albumCoverLabel.setHidden(not isHidden)
         self.playBar.setHidden(not isHidden)
         self.songInfoCardChute.setHidden(not isHidden)
+
+    def updateSongInfoByIndex(self, index: int, songInfo: SongInfo):
+        """ update song information by index """
+        self.playlist[index] = songInfo
+
+        # update album cover
+        index_ = self.songInfoCardChute.currentIndex
+        if self.currentIndex != index_ and index == index_:
+            self.songInfoCardChute.cards[1].updateCard(songInfo)
+            self.albumCoverLabel.setCover(getCoverPath(
+                songInfo.singer, songInfo.album, "album_big"))
 
     def updateSongInfo(self, newSongInfo: SongInfo):
         """ update song information """

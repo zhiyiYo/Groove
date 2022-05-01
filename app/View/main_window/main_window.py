@@ -621,7 +621,7 @@ class MainWindow(FramelessWindow):
         songInfo['coverPath'] = self.getOnlineSongUrlThread.coverPath
         songCard.setSongInfo(songInfo)
         self.mediaPlaylist.insertSong(index, songInfo)
-        self.playingInterface.playlist[index] = songInfo
+        self.playingInterface.updateSongInfoByIndex(index, songInfo)
         self.smallestPlayInterface.playlist[index] = songInfo
         self.searchResultInterface.onlineSongInfos[i] = songInfo
         self.mediaPlaylist.removeOnlineSong(index+1)
@@ -1053,7 +1053,8 @@ class MainWindow(FramelessWindow):
             songInfos.clear()
             songInfos.extend(diffSongInfos)
 
-        songInfos = deepcopy(songInfos)
+        songInfos = deepcopy(
+            [i for i in songInfos if not i.file.startswith('http')])
 
         # find new songs
         oldPlaylist = self.library.playlistController.getPlaylist(name)
@@ -1246,6 +1247,7 @@ class MainWindow(FramelessWindow):
 
     def showCreatePlaylistDialog(self, songInfos: List[SongInfo] = None):
         """ show create playlist dialog box """
+        songInfos = [i for i in songInfos if not i.file.startswith('http')]
         w = CreatePlaylistDialog(self.library, songInfos, self)
         w.createPlaylistSig.connect(self.onCreatePlaylist)
         w.exec_()

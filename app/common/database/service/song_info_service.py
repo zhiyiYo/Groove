@@ -52,7 +52,7 @@ class SongInfoService(ServiceBase):
 
         if len(songInfos) < len(files) and repeat:
             songInfoMap = {i.file: i for i in songInfos}
-            songInfos = [songInfoMap[i].copy() for i in files]
+            songInfos = [songInfoMap[i].copy() for i in files if i in songInfoMap]
 
         return songInfos
 
