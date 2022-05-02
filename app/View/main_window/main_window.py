@@ -24,6 +24,7 @@ from components.title_bar import TitleBar
 from components.widgets.stacked_widget import (OpacityAniStackedWidget,
                                                PopUpAniStackedWidget)
 from components.widgets.state_tooltip import StateTooltip
+from components.widgets.label import PixmapLabel
 from PyQt5.QtCore import QEasingCurve, QEvent, QEventLoop, QFile, Qt, QTimer
 from PyQt5.QtGui import QColor, QIcon, QPixmap
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist
@@ -1247,6 +1248,7 @@ class MainWindow(FramelessWindow):
 
     def showCreatePlaylistDialog(self, songInfos: List[SongInfo] = None):
         """ show create playlist dialog box """
+        songInfos = songInfos or []
         songInfos = [i for i in songInfos if not i.file.startswith('http')]
         w = CreatePlaylistDialog(self.library, songInfos, self)
         w.createPlaylistSig.connect(self.onCreatePlaylist)
@@ -1487,10 +1489,8 @@ class SplashScreen(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.hBoxLayout = QHBoxLayout(self)
-        self.logo = QLabel(self)
-        pixmap = QPixmap(":/images/logo/splash_screen_logo.png")
-        pixmap.setDevicePixelRatio(self.devicePixelRatioF())
-        self.logo.setPixmap(pixmap)
+        self.logo = PixmapLabel(self)
+        self.logo.setPixmap(QPixmap(":/images/logo/splash_screen_logo.png"))
         self.hBoxLayout.addWidget(self.logo, 0, Qt.AlignCenter)
         self.setAttribute(Qt.WA_StyledBackground)
         self.setStyleSheet('background:white')

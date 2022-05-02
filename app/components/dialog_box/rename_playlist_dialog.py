@@ -1,9 +1,8 @@
 # coding:utf-8
 from common.library import Library
-from common.database.entity import Playlist
 from components.buttons.three_state_button import ThreeStateButton
 from components.dialog_box.mask_dialog_base import MaskDialogBase
-from components.widgets.label import ClickableLabel
+from components.widgets.label import ClickableLabel, PixmapLabel
 from components.widgets.menu import LineEditMenu
 from PyQt5.QtCore import QEvent, QFile, Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap
@@ -21,7 +20,7 @@ class RenamePlaylistDialog(MaskDialogBase):
         self.oldName = name
         self.library = library
         self.vBoxLayout = QVBoxLayout(self.widget)
-        self.iconLabel = QLabel(self.widget)
+        self.iconLabel = PixmapLabel(self.widget)
         self.lineEdit = LineEdit(self.oldName, self.widget)
         self.cancelLabel = ClickableLabel(self.tr("Cancel"), self.widget)
         self.renamePlaylistButton = QPushButton(self.tr('Rename'), self.widget)
@@ -43,6 +42,8 @@ class RenamePlaylistDialog(MaskDialogBase):
         # connect signal to slot
         self.cancelLabel.clicked.connect(self.close)
         self.lineEdit.textChanged.connect(self.__onLineEditTextChanged)
+        self.lineEdit.returnPressed.connect(
+            self.__onRenamePlaylistButtonClicked)
         self.renamePlaylistButton.clicked.connect(
             self.__onRenamePlaylistButtonClicked)
 
@@ -111,7 +112,7 @@ class LineEdit(QLineEdit):
         }
 
         self.clearButton = ThreeStateButton(iconPath_dict, self, (50, 50))
-        self.pencilPic = QLabel(self)
+        self.pencilPic = PixmapLabel(self)
         self.menu = LineEditMenu(self)
 
         self.initWidget()

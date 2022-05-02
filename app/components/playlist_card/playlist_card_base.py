@@ -260,7 +260,7 @@ class PlaylistCover(QWidget):
 
         painter = QPainter(self)
         painter.setPen(Qt.NoPen)
-        painter.setRenderHints(QPainter.Antialiasing)
+        painter.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
 
         # paint blurred cover
         painter.drawPixmap(0, 0, self.__blurPix)

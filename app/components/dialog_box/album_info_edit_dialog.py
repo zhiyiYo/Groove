@@ -375,7 +375,7 @@ class AlbumCoverWindow(PerspectiveWidget):
         super().__init__(parent)
         self.__picPath = picPath
         self.__picSize = picSize
-        self.albumCoverLabel = QLabel(self)
+        self.albumCoverLabel = PixmapLabel(self)
         self.albumCoverMask = AlbumCoverMask(self)
         self.editAlbumCoverLabel = PixmapLabel(self)
         self.__initWidget()

@@ -1,13 +1,13 @@
 # coding:utf-8
 import os
-from copy import deepcopy
 from math import ceil
 
 from common.crawler import KuWoMusicCrawler
-from common.database.entity import AlbumInfo, Playlist, SongInfo
+from common.database.entity import SongInfo
 from common.library import Library
 from common.signal_bus import signalBus
 from common.thread.download_song_thread import DownloadSongThread
+from components.widgets.label import PixmapLabel
 from components.widgets.scroll_area import ScrollArea
 from components.widgets.state_tooltip import DownloadStateTooltip
 from PyQt5.QtCore import QFile, Qt, pyqtSignal
@@ -52,7 +52,7 @@ class SearchResultInterface(ScrollArea):
         self.onlineSongInfos = []    # matched online information
 
         self.titleLabel = QLabel(self)
-        self.searchLabel = QLabel(self)
+        self.searchLabel = PixmapLabel(self)
         self.scrollWidget = QWidget(self)
         self.vBox = QVBoxLayout(self.scrollWidget)
         self.albumGroupBox = AlbumGroupBox(library, self.scrollWidget)

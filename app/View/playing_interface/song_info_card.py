@@ -2,7 +2,7 @@
 from common.database.entity import SongInfo
 from common.os_utils import getCoverPath
 from common.signal_bus import signalBus
-from components.widgets.label import ClickableLabel
+from components.widgets.label import ClickableLabel, PixmapLabel
 from PyQt5.QtCore import QEvent, QFile, Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QLabel, QWidget
@@ -18,7 +18,7 @@ class SongInfoCard(QWidget):
         super().__init__(parent)
         self.setSongInfo(songInfo)
         self.timer = QTimer(self)
-        self.albumCoverLabel = QLabel(self)
+        self.albumCoverLabel = PixmapLabel(self)
         self.songNameLabel = ClickableLabel(parent=self)
         self.singerAlbumLabel = ClickableLabel(parent=self)
         self.isPlayBarVisible = False

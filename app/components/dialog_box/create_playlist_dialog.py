@@ -21,7 +21,7 @@ class CreatePlaylistDialog(MaskDialogBase):
         self.library = library
         self.songInfos = songInfos or []
         self.vBoxLayout = QVBoxLayout(self.widget)
-        self.iconLabel = QLabel(self.widget)
+        self.iconLabel = PixmapLabel(self.widget)
         self.lineEdit = LineEdit(parent=self.widget)
         self.cancelLabel = ClickableLabel(self.tr("Cancel"), self.widget)
         self.yourCreationLabel = QLabel(self.tr("Created by you"), self.widget)
@@ -44,6 +44,8 @@ class CreatePlaylistDialog(MaskDialogBase):
         # connect signal to slot
         self.cancelLabel.clicked.connect(self.close)
         self.lineEdit.textChanged.connect(self.__isPlaylistExist)
+        self.lineEdit.returnPressed.connect(
+            self.__onCreatePlaylistButtonClicked)
         self.createPlaylistButton.clicked.connect(
             self.__onCreatePlaylistButtonClicked)
 

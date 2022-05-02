@@ -1,6 +1,7 @@
 # coding:utf-8
+from components.widgets.label import PixmapLabel
 from PyQt5.QtCore import QEvent, QSize, Qt
-from PyQt5.QtGui import QFont, QFontMetrics, QIcon, QPainter, QPixmap
+from PyQt5.QtGui import QFont, QFontMetrics, QPainter, QPixmap
 from PyQt5.QtWidgets import (QApplication, QCheckBox, QLabel, QToolButton,
                              QWidget)
 
@@ -138,7 +139,7 @@ class SongNameCard(QWidget):
         self.songName = songName
         self.isPlay = False
         self.checkBox = QCheckBox(self)  # type:QCheckBox
-        self.playingLabel = QLabel(self)
+        self.playingLabel = PixmapLabel(self)
         self.songNameLabel = QLabel(songName, self)
         self.buttonGroup = ButtonGroup(self)
         self.playButton = self.buttonGroup.playButton

@@ -1,7 +1,7 @@
 # coding:utf-8
 from common.database.entity import SongInfo
 from common.signal_bus import signalBus
-from components.widgets.label import ClickableLabel
+from components.widgets.label import ClickableLabel, PixmapLabel
 from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
                           QParallelAnimationGroup, QPoint, QPropertyAnimation,
                           QSize, Qt, pyqtSignal)
@@ -370,7 +370,7 @@ class SongNameCard(QWidget):
         super().__init__(parent)
         self.songName = songName
         self.checkBox = QCheckBox(self)
-        self.playingLabel = QLabel(self)
+        self.playingLabel = PixmapLabel(self)
         self.songNameLabel = QLabel(songName, self)
         self.buttonGroup = ButtonGroup(self)
         self.playButton = self.buttonGroup.playButton

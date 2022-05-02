@@ -5,13 +5,13 @@ from common.os_utils import getCoverPath
 from common.signal_bus import signalBus
 from components.buttons.blur_button import BlurButton
 from components.widgets.check_box import CheckBox
-from components.widgets.label import ClickableLabel
+from components.widgets.label import ClickableLabel, PixmapLabel
 from components.widgets.menu import AddToMenu
 from components.widgets.perspective_widget import PerspectiveWidget
-from PyQt5.QtCore import QObject, QPoint, QPropertyAnimation, Qt, pyqtSignal
+from PyQt5.QtCore import QPoint, QPropertyAnimation, Qt, pyqtSignal
 from PyQt5.QtGui import QFont, QFontMetrics, QPixmap
 from PyQt5.QtWidgets import (QApplication, QGraphicsOpacityEffect, QLabel,
-                             QVBoxLayout, QWidget, qApp)
+                             QVBoxLayout, QWidget)
 
 
 class AlbumCardBase(PerspectiveWidget):
@@ -36,7 +36,7 @@ class AlbumCardBase(PerspectiveWidget):
         self.vBoxLayout = QVBoxLayout(self)
         self.albumLabel = ClickableLabel(self.album, self)
         self.contentLabel = ClickableLabel(self.singer, self, False)
-        self.albumPic = QLabel(self)
+        self.albumPic = PixmapLabel(self)
 
         self.playButton = BlurButton(
             self,
