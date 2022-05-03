@@ -1,8 +1,10 @@
 # coding:utf-8
 import os
+from pathlib import Path
 from typing import List, Tuple
 
 import requests
+from common.os_utils import adjustName
 from common.database.entity import SongInfo
 from common.image_process_utils import getPicSuffix
 from common.meta_data.reader import AlbumCoverReader
@@ -269,7 +271,7 @@ class CrawlerBase:
             singer name
 
         save_dir: str
-            directory to save the avatar file
+            root directory to save the avatar file
 
         data: bytes
             the binary data of response
@@ -279,12 +281,13 @@ class CrawlerBase:
         save_path: str
             save path of avatar image, empty string when the download fails
         """
-        os.makedirs(save_dir, exist_ok=True)
-        save_path = os.path.join(save_dir, singer+getPicSuffix(data))
+        folder = Path(save_dir)/adjustName(singer)
+        folder.mkdir(exist_ok=True, parents=True)
+        save_path = folder/('avatar'+getPicSuffix(data))
         with open(save_path, 'wb') as f:
             f.write(data)
 
-        return save_path
+        return str(save_path)
 
     @exceptionHandler('')
     def downloadAlbumCover(self, url: str, singer: str, album: str) -> str:

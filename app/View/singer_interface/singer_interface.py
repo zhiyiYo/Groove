@@ -5,6 +5,7 @@ from pathlib import Path
 from common.crawler import KuWoMusicCrawler
 from common.database.entity import SingerInfo
 from common.library import Library
+from common.os_utils import adjustName
 from common.signal_bus import signalBus
 from common.thread.get_singer_avatar_thread import GetSingerAvatarThread
 from components.album_card import (AlbumBlurBackground, AlbumCardType,
@@ -124,8 +125,8 @@ class SingerInterface(AlbumSelectionModeInterface):
 
     def __getSingerAvatar(self, singer: str):
         """ get singer avatar """
-        avatars = [i.stem for i in Path('cache/singer_avatar').glob('*')]
-        if singer not in avatars:
+        folders = [i.stem for i in Path('cache/singer_avatar').glob('*')]
+        if adjustName(singer) not in folders:
             self.singerInfoBar.coverLabel.hide()
             self.getAvatarThread.singer = singer
             self.getAvatarThread.start()

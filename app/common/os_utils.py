@@ -68,16 +68,16 @@ def getCoverPath(singer: str, album: str, coverType: str) -> str:
         * `playlist_big` - big default playlist cover
         * `playlist_small` - small default playlist cover
     """
-    cover_path_dict = {
+    cover_paths = {
         "album_big": ":/images/default_covers/album_200_200.png",
         "album_small": ":/images/default_covers/album_113_113.png",
         "playlist_big": ":/images/default_covers/playlist_275_275.png",
         "playlist_small": ":/images/default_covers/playlist_135_135.png",
     }
-    if coverType not in cover_path_dict:
+    if coverType not in cover_paths:
         raise ValueError(f"`{coverType}` is not supported")
 
-    cover = cover_path_dict[coverType]
+    cover = cover_paths[coverType]
     folder = Path("cache/Album_Cover") / getCoverName(singer, album)
     files = list(folder.glob('*')) if folder.exists() else []
 
@@ -86,6 +86,36 @@ def getCoverPath(singer: str, album: str, coverType: str) -> str:
         cover = str(files[0])
 
     return cover
+
+
+def getSingerAvatarPath(singer: str, size='small'):
+    """ get singer avatar path
+
+    Parameters
+    ----------
+    singer: str
+        singer name
+
+    size: str
+        size of default avatar, could be `small` or `big`
+    """
+    avatar_paths = {
+        "big": ":/images/default_covers/singer_295_295.png",
+        "small": ":/images/default_covers/singer_200_200.png",
+    }
+    if size not in avatar_paths:
+        raise ValueError(f"`{size}` size is not supported")
+
+    avatar = avatar_paths[size]
+    singer = adjustName(singer) if singer else ''
+    folder = Path("cache/singer_avatar") / singer
+    files = list(folder.glob('*'))
+
+    # use the first image file in directory
+    if files and files[0].suffix.lower() in (".png", ".jpg", ".jpeg", ".jiff", ".gif"):
+        avatar = str(files[0])
+
+    return avatar
 
 
 def getPlaylistNames():

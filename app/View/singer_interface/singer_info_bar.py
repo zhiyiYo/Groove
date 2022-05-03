@@ -1,13 +1,12 @@
 # coding:utf-8
-import os
-from pathlib import Path
-
-from components.widgets.menu import AddToMenu
 from common.image_process_utils import getBlurPixmap
-from components.app_bar import AppBarButton, CollapsingAppBarBase, MoreActionsMenu
-from PyQt5.QtCore import Qt, pyqtSignal, QPoint, QObject
-from PyQt5.QtGui import QPalette, QColor, QPixmap
-from PyQt5.QtWidgets import QLabel, QAction
+from common.os_utils import getSingerAvatarPath
+from components.app_bar import (AppBarButton, CollapsingAppBarBase,
+                                MoreActionsMenu)
+from components.widgets.menu import AddToMenu
+from PyQt5.QtCore import QObject, QPoint, Qt, pyqtSignal
+from PyQt5.QtGui import QColor, QPalette, QPixmap
+from PyQt5.QtWidgets import QAction, QLabel
 
 
 class SingerInfoBar(CollapsingAppBarBase):
@@ -50,10 +49,7 @@ class SingerInfoBar(CollapsingAppBarBase):
         self.singer = singerInfo.get('singer', obj.tr('Unknown artist'))
         self.genre = singerInfo.get('genre', obj.tr('Unknown genre'))
         self.albumInfos = singerInfo.get('albumInfos', [])
-
-        # get singer avatar
-        avatars = {i.stem: i for i in Path('cache/singer_avatar').glob('*')}
-        self.coverPath = str(avatars.get(self.singer, self.defaultCoverPath))
+        self.coverPath = getSingerAvatarPath(self.singer, 'big')
 
     def setBackgroundColor(self):
         """ set the background color of bar """
