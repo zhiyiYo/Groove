@@ -1,5 +1,5 @@
 # coding:utf-8
-from PIL import Image
+from PIL import Image, ImageDraw
 from PIL.ImageFilter import GaussianBlur
 from PIL.ImageQt import ImageQt
 
@@ -8,8 +8,8 @@ from PyQt5.QtGui import QPainter, QPixmap
 from PyQt5.QtWidgets import QWidget
 
 
-class AlbumBlurBackground(QWidget):
-    """ Blur background under album card """
+class SingerBlurBackground(QWidget):
+    """ Blur background under singer card """
 
     def __init__(self, parent=None, imagePath: str = '', imageSize: tuple = (210, 210), blurRadius=30):
         """
@@ -19,7 +19,7 @@ class AlbumBlurBackground(QWidget):
             parent window
 
         imagePath: str
-            album cover path
+            singer avatar path
 
         imageSize: tuple
             image size after adjusting
@@ -33,27 +33,30 @@ class AlbumBlurBackground(QWidget):
 
     def setBlurAlbum(self, imagePath: str, imageSize: tuple = (210, 210), blurRadius=30):
         """ set the album cover to be blurred """
-        self.__blurRadius = blurRadius
         if not imagePath:
             return
 
         if not imagePath.startswith(':'):
-            albumCover = Image.open(imagePath)
+            avatar = Image.open(imagePath)
         else:
-            albumCover=Image.fromqpixmap(QPixmap(imagePath))
+            avatar = Image.fromqpixmap(QPixmap(imagePath))
 
-        albumCover = albumCover.resize(imageSize)
+        avatar = avatar.resize(imageSize)
+        self.__blurRadius = blurRadius
 
         # create a new image
-        blurAlbumCover = Image.new(
-            'RGBA', (imageSize[0]+2*blurRadius, imageSize[1]+2*blurRadius), (255, 255, 255, 0))
-        blurAlbumCover.paste(albumCover, (blurRadius, blurRadius))
+        blurAvatar = Image.new(
+            'RGBA', (imageSize[0]+2*blurRadius, imageSize[1]+2*blurRadius), (0, 0, 0, 0))
+        mask = Image.new('L', imageSize, 0)
+        draw = ImageDraw.Draw(mask)
+        draw.pieslice([(0, 0), imageSize], 0, 360, fill=255)
+        blurAvatar.paste(avatar, (blurRadius, blurRadius), mask)
 
         # apply Gaussian blur to album cover
-        blurAlbumCover = blurAlbumCover.filter(GaussianBlur(blurRadius/2))
-        self.__blurImage = ImageQt(blurAlbumCover)
+        blurAvatar = blurAvatar.filter(GaussianBlur(blurRadius/2))
+        self.__blurImage = ImageQt(blurAvatar)
 
-        self.resize(*blurAlbumCover.size)
+        self.resize(*blurAvatar.size)
         self.update()
 
     def setBlurRadius(self, blurRadius):

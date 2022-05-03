@@ -38,6 +38,7 @@
         <file>qss/tooltip.qss</file>
         <file>qss/selection_mode_interface.qss</file>
         <file>qss/title_bar.qss</file>
+        <file>qss/singer_card_interface.qss</file>
 
         <file>images/logo/logo.png</file>
         <file>images/logo/logo_small.png</file>
@@ -94,6 +95,7 @@
         <file>images/default_covers/playlist_135_135.png</file>
         <file>images/default_covers/playlist_275_275.png</file>
         <file>images/default_covers/singer_295_295.png</file>
+        <file>images/default_covers/singer_200_200.png</file>
         <file>images/album_tab_interface/Add.png</file>
         <file>images/album_tab_interface/CheckMark.png</file>
         <file>images/album_tab_interface/Play.png</file>
