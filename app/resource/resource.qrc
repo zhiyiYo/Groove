@@ -39,6 +39,7 @@
         <file>qss/selection_mode_interface.qss</file>
         <file>qss/title_bar.qss</file>
         <file>qss/singer_card_interface.qss</file>
+        <file>qss/singer_group_box.qss</file>
 
         <file>images/logo/logo.png</file>
         <file>images/logo/logo_small.png</file>

@@ -1,13 +1,14 @@
 # coding: utf-8
 from typing import List
 
-from common.database.entity import AlbumInfo, SongInfo, Playlist
+from common.database.entity import AlbumInfo, Playlist, SingerInfo, SongInfo
 from common.library import Library
-from PyQt5.QtCore import QFile, Qt, pyqtSignal
-from PyQt5.QtWidgets import QHBoxLayout, QLabel, QStackedWidget, QWidget
+from PyQt5.QtCore import QFile, pyqtSignal
+from PyQt5.QtWidgets import QLabel, QStackedWidget, QWidget
 
 from .album_interface import AlbumInterface
 from .playlist_interface import PlaylistInterface
+from .singer_interface import SingerInterface
 from .song_interface import LocalSongInterface
 
 
@@ -21,6 +22,7 @@ class MoreSearchResultInterface(QWidget):
         self.resize(1270, 800)
         self.stackedWidget = QStackedWidget(self)
         self.albumInterface = AlbumInterface(library, self)
+        self.singerInterface = SingerInterface(library, self)
         self.localSongInterface = LocalSongInterface([], self)
         self.playlistInterface = PlaylistInterface(library, self)
         self.titleMask = QWidget(self)
@@ -35,6 +37,7 @@ class MoreSearchResultInterface(QWidget):
         self.titleLabel.move(30, 55)
         self.titleMask.setFixedHeight(125)
         self.stackedWidget.addWidget(self.albumInterface)
+        self.stackedWidget.addWidget(self.singerInterface)
         self.stackedWidget.addWidget(self.playlistInterface)
         self.stackedWidget.addWidget(self.localSongInterface)
         self.__setQss()
@@ -56,6 +59,7 @@ class MoreSearchResultInterface(QWidget):
             the type of displayed view, including：
             * `local song`: local song
             * `album`: local album
+            * `singer`: local singer
             * `playlist`: local playlist
 
         data: list
@@ -64,6 +68,7 @@ class MoreSearchResultInterface(QWidget):
         funcMap = {
             'local song': self.showLocalSongInterface,
             'album': self.showAlbumInterface,
+            'singer': self.showSingerInterface,
             'playlist': self.showPlaylistInterface
         }
 
@@ -89,6 +94,12 @@ class MoreSearchResultInterface(QWidget):
         self.setTitle(f'"{keyWord}"'+self.tr('search result for playlists'))
         self.playlistInterface.updateWindow(playlists)
         self.stackedWidget.setCurrentWidget(self.playlistInterface)
+
+    def showSingerInterface(self, keyWord: str, singerInfos: List[SingerInfo]):
+        """ update and show local album card interface """
+        self.setTitle(f'"{keyWord}"'+self.tr('search result for singers'))
+        self.singerInterface.updateWindow(singerInfos)
+        self.stackedWidget.setCurrentWidget(self.singerInterface)
 
     def setTitle(self, title: str):
         """ set the title of interface """

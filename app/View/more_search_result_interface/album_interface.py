@@ -1,7 +1,7 @@
 # coding:utf-8
 from typing import List
 
-from common.database.entity import AlbumInfo, SongInfo
+from common.database.entity import AlbumInfo
 from common.library import Library
 from components.album_card import (AlbumBlurBackground, AlbumCardType,
                                    GridAlbumCardView)

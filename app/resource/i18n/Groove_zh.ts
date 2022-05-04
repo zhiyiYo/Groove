@@ -1823,6 +1823,19 @@
     </message>
 </context>
 <context>
+    <name>SingerGroupBox</name>
+    <message>
+        <location filename="../../View/search_result_interface/singer_group_box.py" line="26"/>
+        <source>Singers</source>
+        <translation>歌手</translation>
+    </message>
+    <message>
+        <location filename="../../View/search_result_interface/group_box.py" line="40"/>
+        <source> Show All</source>
+        <translation> 查看全部</translation>
+    </message>
+</context>
+<context>
     <name>SmallestPlayInterface</name>
     <message>
         <location filename="../../View/smallest_play_interface/smallest_play_interface.py" line="73"/>
@@ -2591,6 +2604,11 @@
         <location filename="../../View/more_search_result_interface/more_search_result_interface.py" line="89"/>
         <source>search result for playlists</source>
         <translation>的播放列表搜索结果</translation>
+    </message>
+    <message>
+        <location filename="../../View/more_search_result_interface/more_search_result_interface.py" line="100"/>
+        <source>search result for singers</source>
+        <translation>的歌手搜索结果</translation>
     </message>
 </context>
 </TS>

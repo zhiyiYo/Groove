@@ -57,3 +57,6 @@ class SingerInfoService(ServiceBase):
 
     def setDatabase(self, db: QSqlDatabase):
         self.singerInfoDao.setDatabase(db)
+
+    def listLike(self, **condition) -> List[SingerInfo]:
+        return self.singerInfoDao.listLike(**condition)

@@ -16,6 +16,7 @@ from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget
 
 from .album_group_box import AlbumGroupBox
 from .playlist_group_box import PlaylistGroupBox
+from .singer_group_box import SingerGroupBox
 from .song_group_box import SongGroupBox
 
 
@@ -48,6 +49,7 @@ class SearchResultInterface(ScrollArea):
         self.keyWord = ''            # searched key word
         self.playlists = {}          # matched local playlists
         self.albumInfos = []         # matched album information
+        self.singerInfos = []        # matched singer information
         self.localSongInfos = []     # matched song information
         self.onlineSongInfos = []    # matched online information
 
@@ -56,6 +58,7 @@ class SearchResultInterface(ScrollArea):
         self.scrollWidget = QWidget(self)
         self.vBox = QVBoxLayout(self.scrollWidget)
         self.albumGroupBox = AlbumGroupBox(library, self.scrollWidget)
+        self.singerGroupBox = SingerGroupBox(library, self.scrollWidget)
         self.playlistGroupBox = PlaylistGroupBox(library, self.scrollWidget)
         self.localSongGroupBox = SongGroupBox('Local songs', self.scrollWidget)
         self.onlineSongGroupBox = SongGroupBox(
@@ -84,6 +87,7 @@ class SearchResultInterface(ScrollArea):
         """ initialize widgets """
         self.vBox.setSpacing(20)
         self.vBox.setContentsMargins(0, 10, 0, 116)
+        self.vBox.addWidget(self.singerGroupBox)
         self.vBox.addWidget(self.albumGroupBox)
         self.vBox.addWidget(self.playlistGroupBox)
         self.vBox.addWidget(self.localSongGroupBox)
@@ -101,6 +105,7 @@ class SearchResultInterface(ScrollArea):
 
     def resizeEvent(self, e):
         self.scrollWidget.resize(self.width(), self.scrollWidget.height())
+        self.singerGroupBox.resize(self.width(), self.singerGroupBox.height())
         self.albumGroupBox.resize(self.width(), self.albumGroupBox.height())
         self.localSongGroupBox.resize(
             self.width(), self.localSongGroupBox.height())
@@ -163,6 +168,11 @@ class SearchResultInterface(ScrollArea):
         """ search local songs, albums, playlist and online songs """
         self.keyWord = keyWord
 
+        # match singer information
+        self.singerInfos = self.library.singerInfoController.getSingerInfosLike(
+            singer=keyWord
+        )
+
         # match album information
         self.albumInfos = self.library.albumInfoController.getAlbumInfosLike(
             singer=keyWord,
@@ -196,6 +206,7 @@ class SearchResultInterface(ScrollArea):
         # update window
         self.titleLabel.setText(f'"{keyWord}"'+self.tr('Search Result'))
         self.titleLabel.adjustSize()
+        self.singerGroupBox.updateWindow(self.singerInfos)
         self.albumGroupBox.updateWindow(self.albumInfos)
         self.playlistGroupBox.updateWindow(self.playlists)
         self.localSongGroupBox.updateWindow(self.localSongInfos[:5])
@@ -207,18 +218,21 @@ class SearchResultInterface(ScrollArea):
 
     def __adjustHeight(self):
         """ adjust window height """
+        isSingerVisible = len(self.singerInfos) > 0
         isAlbumVisible = len(self.albumInfos) > 0
         isPlaylistVisible = len(self.playlists) > 0
         isLocalSongVisible = len(self.localSongInfos) > 0
         isOnlineSongVisible = len(self.onlineSongInfos) > 0
 
         visibleNum = isAlbumVisible+isLocalSongVisible + \
-            isPlaylistVisible+isOnlineSongVisible
+            isPlaylistVisible+isOnlineSongVisible+isSingerVisible
         spacing = 0 if not visibleNum else (visibleNum-1)*20
 
         self.scrollWidget.resize(
             self.width(),
-            241 + isAlbumVisible*self.albumGroupBox.height() +
+            241 +
+            isSingerVisible*self.singerGroupBox.height() +
+            isAlbumVisible*self.albumGroupBox.height() +
             isLocalSongVisible*self.localSongGroupBox.height() +
             isOnlineSongVisible*self.onlineSongGroupBox.height() +
             isPlaylistVisible*self.playlistGroupBox.height() + spacing
@@ -227,6 +241,7 @@ class SearchResultInterface(ScrollArea):
 
     def __updateWidgetsVisible(self):
         """ update the visibility of widgets """
+        self.singerGroupBox.setVisible(bool(self.singerInfos))
         self.albumGroupBox.setVisible(bool(self.albumInfos))
         self.playlistGroupBox.setVisible(bool(self.playlists))
         self.localSongGroupBox.setVisible(bool(self.localSongInfos))
@@ -307,6 +322,10 @@ class SearchResultInterface(ScrollArea):
         self.onlineSongListWidget.downloadSig.connect(self.__downloadSong)
         self.onlineSongGroupBox.loadMoreSignal.connect(
             self.__loadMoreOnlineMusic)
+
+        # album group box signal
+        self.singerGroupBox.switchToMoreSearchResultInterfaceSig.connect(
+            lambda: signalBus.switchToMoreSearchResultInterfaceSig.emit(self.keyWord, 'singer', self.singerInfos))
 
         # album group box signal
         self.albumGroupBox.switchToMoreSearchResultInterfaceSig.connect(

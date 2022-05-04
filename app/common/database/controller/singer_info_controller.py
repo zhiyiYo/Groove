@@ -104,3 +104,7 @@ class SingerInfoController:
     def getSingerInfoByName(self, singer: str):
         """ get singer information by singer name """
         return self.singerInfoService.findBy(singer=singer)
+
+    def getSingerInfosLike(self, **condition):
+        """ fuzzy search album information """
+        return self.singerInfoService.listLike(**condition)
