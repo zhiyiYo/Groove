@@ -23,7 +23,7 @@ class SingerTabInterface(SingerSelectionModeInterface):
 
     def updateWindow(self, singerInfos: List[SingerInfo]):
         """ update window """
-        self.singerCardView.updateAllAlbumCards(singerInfos)
+        self.singerCardView.updateAllSingerCards(singerInfos)
         self.adjustScrollHeight()
         self.verticalScrollBar().setValue(0)
 

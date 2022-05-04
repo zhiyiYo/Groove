@@ -125,7 +125,7 @@ class SingerInterface(AlbumSelectionModeInterface):
 
     def __getSingerAvatar(self, singer: str):
         """ get singer avatar """
-        folders = [i.stem for i in Path('cache/singer_avatar').glob('*')]
+        folders = [i.stem for i in Path('cache/singer_avatar').glob('*') if i.is_dir()]
         if adjustName(singer) not in folders:
             self.singerInfoBar.coverLabel.hide()
             self.getAvatarThread.singer = singer

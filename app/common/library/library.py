@@ -5,10 +5,10 @@ from typing import List
 from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtSql import QSqlDatabase
 
-from ..database.entity import SongInfo
 from ..database.controller import (AlbumCoverController, AlbumInfoController,
                                    PlaylistController, SingerInfoController,
                                    SongInfoController)
+from ..database.entity import SongInfo
 from .file_system import FileSystem
 
 

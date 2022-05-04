@@ -5,6 +5,7 @@ import pinyin
 from common.database.entity import SingerInfo
 from common.library import Library
 from common.signal_bus import signalBus
+from common.thread.singer_avatar_downloader import SingerAvatarDownloader
 from components.singer_card import (GridSingerCardView, SingerBlurBackground,
                                     SingerCard, SingerCardType)
 from PyQt5.QtCore import QFile, QParallelAnimationGroup, QPoint, Qt, pyqtSignal
@@ -37,6 +38,7 @@ class SingerCardView(QWidget):
         self.singerBlurBackground = SingerBlurBackground(self)
         self.hideCheckBoxAniGroup = QParallelAnimationGroup(self)
         self.singerCards = [SingerCard(i, self) for i in self.singerInfos]
+        self.singerCardMap = {i.singer: i for i in self.singerCards}
 
         self.__initWidget()
 
@@ -53,6 +55,10 @@ class SingerCardView(QWidget):
 
         self.__setQss()
         self.sortByFirstLetter()
+        self.__downloadAvatars()
+
+        signalBus.downloadAvatarFinished.connect(
+            lambda s, p: self.singerCardMap[s].updateAvatar(p))
 
     def __createSingerCardView(self, singerCards: List[SingerCard], title=None):
         """ create a singer card view """
@@ -74,9 +80,12 @@ class SingerCardView(QWidget):
         self.hideCheckBoxAniGroup.addAnimation(view.hideCheckBoxAniGroup)
 
         # connect signal to slot
-        view.checkedStateChanged.connect(self.__onSingerCardCheckedStateChanged)
-        view.showBlurSingerBackgroundSig.connect(self.__showBlurSingerBackground)
-        view.hideBlurSingerBackgroundSig.connect(self.singerBlurBackground.hide)
+        view.checkedStateChanged.connect(
+            self.__onSingerCardCheckedStateChanged)
+        view.showBlurSingerBackgroundSig.connect(
+            self.__showBlurSingerBackground)
+        view.hideBlurSingerBackgroundSig.connect(
+            self.singerBlurBackground.hide)
 
         self.singerCardViews.append(view)
         return view
@@ -226,6 +235,7 @@ class SingerCardView(QWidget):
         if singerInfos == self.singerInfos:
             return
 
+        self.singerCardMap.clear()
         N = len(singerInfos)
         N_ = len(self.singerCards)
         if N < N_:
@@ -246,7 +256,9 @@ class SingerCardView(QWidget):
             QApplication.processEvents()
 
         # resort album cards
+        self.singerCardMap = {i.singer: i for i in self.singerCards}
         self.sortByFirstLetter()
+        self.__downloadAvatars()
 
         self.guideLabel.setHidden(bool(singerInfos))
 
@@ -257,3 +269,11 @@ class SingerCardView(QWidget):
         """ get the vertical position value of speciftied label """
         view = self.firstViewMap[label]
         return view.y() - self.vBoxLayout.contentsMargins().top()
+
+    def __downloadAvatars(self):
+        """ download avatars """
+        singers = []
+        for v in self.singerCardViews:
+            singers.extend([i.singer for i in v.singerCards])
+
+        SingerAvatarDownloader.download(singers)

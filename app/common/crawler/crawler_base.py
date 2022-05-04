@@ -1,15 +1,14 @@
 # coding:utf-8
 import os
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 import requests
-from common.os_utils import adjustName
 from common.database.entity import SongInfo
 from common.image_process_utils import getPicSuffix
 from common.meta_data.reader import AlbumCoverReader
 from common.meta_data.writer import writeAlbumCover, writeSongInfo
-from common.os_utils import getCoverName
+from common.os_utils import adjustName, getCoverName
 
 from .exception_handler import exceptionHandler
 from .qq_music_crawler import QQMusicCrawler
@@ -262,7 +261,7 @@ class CrawlerBase:
 
         return song_path
 
-    def saveSingerAvatar(self, singer: str, save_dir: str, data: bytes) -> str:
+    def saveSingerAvatar(self, singer: str, save_dir: Union[str, Path], data: bytes) -> str:
         """ write the binary data of response to an avatar image file
 
         Parameters
@@ -270,7 +269,7 @@ class CrawlerBase:
         singer: str
             singer name
 
-        save_dir: str
+        save_dir: str or Path
             root directory to save the avatar file
 
         data: bytes

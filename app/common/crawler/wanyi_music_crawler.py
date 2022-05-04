@@ -3,7 +3,8 @@ import base64
 import json
 import random
 from datetime import datetime
-from typing import List, Tuple
+from pathlib import Path
+from typing import List, Tuple, Union
 
 import requests
 from common.database.entity import SongInfo
@@ -157,7 +158,7 @@ class WanYiMusicCrawler(CrawlerBase):
         return lyrics
 
     @exceptionHandler('')
-    def getSingerAvatar(self, singer: str, save_dir: str):
+    def getSingerAvatar(self, singer: str, save_dir: Union[str, Path]):
         # send request for singer information
         url = "https://music.163.com/weapi/cloudsearch/get/web"
         form_data = {

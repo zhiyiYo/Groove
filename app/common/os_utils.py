@@ -79,7 +79,7 @@ def getCoverPath(singer: str, album: str, coverType: str) -> str:
 
     cover = cover_paths[coverType]
     folder = Path("cache/Album_Cover") / getCoverName(singer, album)
-    files = list(folder.glob('*')) if folder.exists() else []
+    files = [i for i in folder.glob('*') if i.is_file()]
 
     # use the first image file in directory
     if files and files[0].suffix.lower() in (".png", ".jpg", ".jpeg", ".jiff", ".gif"):
@@ -109,7 +109,7 @@ def getSingerAvatarPath(singer: str, size='small'):
     avatar = avatar_paths[size]
     singer = adjustName(singer) if singer else ''
     folder = Path("cache/singer_avatar") / singer
-    files = list(folder.glob('*'))
+    files = [i for i in folder.glob('*') if i.is_file()]
 
     # use the first image file in directory
     if files and files[0].suffix.lower() in (".png", ".jpg", ".jpeg", ".jiff", ".gif"):

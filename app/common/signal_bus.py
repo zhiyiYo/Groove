@@ -56,5 +56,7 @@ class SignalBus(Singleton, QObject):
 
     fullScreenChanged = pyqtSignal(bool)  # 全屏/退出全屏
 
+    downloadAvatarFinished = pyqtSignal(str, str)  # 下载了一个头像
+
 
 signalBus = SignalBus()

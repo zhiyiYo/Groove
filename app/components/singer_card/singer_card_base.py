@@ -42,7 +42,11 @@ class SingerAvatar(QWidget):
             singer name
         """
         self.singer = singer
-        self.imagePath = getSingerAvatarPath(singer)
+        self.updateAvatar(getSingerAvatarPath(singer))
+
+    def updateAvatar(self, imagePath: str):
+        """ update avatar """
+        self.imagePath = imagePath
         self.__pixmap = QPixmap(self.imagePath)
         self.update()
 
@@ -135,7 +139,8 @@ class SingerCardBase(PerspectiveWidget):
         self.singerLabel.setProperty("isChecked", "False")
 
         # connect signal to slot
-        self.playButton.clicked.connect(lambda: self.playSignal.emit(self.singer))
+        self.playButton.clicked.connect(
+            lambda: self.playSignal.emit(self.singer))
         self.singerLabel.clicked.connect(
             lambda: signalBus.switchToSingerInterfaceSig.emit(self.singer))
         self.addToButton.clicked.connect(self.__showAddToMenu)
@@ -193,6 +198,12 @@ class SingerCardBase(PerspectiveWidget):
                 self.setChecked(not self.isChecked)
             else:
                 signalBus.switchToSingerInterfaceSig.emit(self.singer)
+
+    def updateAvatar(self, imagePath: str):
+        """ update avatar """
+        self.avatar.updateAvatar(imagePath)
+        self.playButton.setBlurPic(imagePath, 40)
+        self.addToButton.setBlurPic(imagePath, 40)
 
     def updateWindow(self, singerInfo: SingerInfo):
         """ update singer card """

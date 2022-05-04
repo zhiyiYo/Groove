@@ -155,7 +155,7 @@ class AlbumCardBase(PerspectiveWidget):
         self.showAlbumInfoEditDialogSig.emit(self.singer, self.album)
 
     def updateAlbumCover(self, coverPath: str):
-        """ 更新专辑封面 """
+        """ update album cover """
         self.coverPath = coverPath
         self.albumPic.setPixmap(QPixmap(self.coverPath).scaled(
             200, 200, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
