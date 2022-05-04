@@ -10,6 +10,7 @@ from PyQt5.QtGui import QPalette
 from PyQt5.QtWidgets import QWidget
 
 from .album_tab_interface import AlbumTabInterface
+from .singer_tab_interface import SingerTabInterface
 from .song_tab_interface import SongTabInterface
 from .tool_bar import ToolBar
 
@@ -25,14 +26,17 @@ class MyMusicInterface(QWidget):
         self.isInSelectionMode = False
         self.stackedWidget = PopUpAniStackedWidget(self)
         self.songTabInterface = SongTabInterface(self.library.songInfos, self)
+        self.singerTabInterface = SingerTabInterface(self.library, self)
         self.albumTabInterface = AlbumTabInterface(library, self)
         self.toolBar = ToolBar(self)
 
         self.songTabButton = self.toolBar.songTabButton
+        self.singerTabButton = self.toolBar.singerTabButton
         self.albumTabButton = self.toolBar.albumTabButton
         self.currentSongSortAct = self.toolBar.songSortByCratedTimeAct
         self.currentAlbumSortAct = self.toolBar.albumSortByCratedTimeAct
         self.songListWidget = self.songTabInterface.songListWidget
+        self.singerCardView = self.singerTabInterface.singerCardView
         self.albumCardView = self.albumTabInterface.albumCardView
 
         self.__initWidget()
@@ -42,6 +46,7 @@ class MyMusicInterface(QWidget):
         self.resize(1300, 970)
 
         self.stackedWidget.addWidget(self.songTabInterface, 0, 30)
+        self.stackedWidget.addWidget(self.singerTabInterface, 0, 30)
         self.stackedWidget.addWidget(self.albumTabInterface, 0, 30)
         self.songTabButton.setSelected(True)
 
@@ -58,16 +63,21 @@ class MyMusicInterface(QWidget):
 
         self.__connectSignalToSlot()
 
-    def __onCurrentTabChanged(self, index):
+    def __onCurrentTabChanged(self):
         """ current tab changed slot """
+        index = self.stackedWidget.currentIndex()
         self.toolBar.songSortModeButton.setVisible(index == 0)
-        self.toolBar.albumSortModeButton.setVisible(index == 1)
+        self.toolBar.singerSortModeButton.setVisible(index == 1)
+        self.toolBar.albumSortModeButton.setVisible(index == 2)
 
         text = self.tr(" Shuffle all")
         if index == 0:
             self.toolBar.randomPlayAllButton.setText(
                 text+f" ({self.songListWidget.songCardNum()})")
         elif index == 1:
+            self.toolBar.randomPlayAllButton.setText(
+                text+f" ({len(self.singerCardView.singerCards)})")
+        elif index == 2:
             self.toolBar.randomPlayAllButton.setText(
                 text+f" ({len(self.albumCardView.albumCards)})")
 
@@ -81,7 +91,8 @@ class MyMusicInterface(QWidget):
     def exitSelectionMode(self):
         """ exit selection mode """
         self.songTabInterface.exitSelectionMode()
-        self.__unCheckAlbumCards()
+        self.albumTabInterface.exitSelectionMode()
+        self.singerTabInterface.exitSelectionMode()
 
     def setCurrentTab(self, index: int):
         """ set current tab interface """
@@ -90,7 +101,7 @@ class MyMusicInterface(QWidget):
 
     def setSelectedButton(self, index):
         """ set selected tab button """
-        for button in [self.songTabButton, self.albumTabButton]:
+        for button in [self.songTabButton, self.singerTabButton, self.albumTabButton]:
             button.setSelected(button.tabIndex == index)
 
     def __onButtonSelected(self, tabIndex: int):
@@ -155,12 +166,14 @@ class MyMusicInterface(QWidget):
     def updateWindow(self):
         """ update window """
         self.songTabInterface.updateWindow(self.library.songInfos)
+        self.singerTabInterface.updateWindow(self.library.singerInfos)
         self.albumTabInterface.updateWindow(self.library.albumInfos)
 
     def __connectSignalToSlot(self):
         """ connect signal to slot """
-        self.songTabButton.buttonSelected.connect(self.__onButtonSelected)
-        self.albumTabButton.buttonSelected.connect(self.__onButtonSelected)
+        self.songTabButton.selected.connect(self.__onButtonSelected)
+        self.singerTabButton.selected.connect(self.__onButtonSelected)
+        self.albumTabButton.selected.connect(self.__onButtonSelected)
 
         self.toolBar.songSortModeButton.clicked.connect(
             self.__showSortModeMenu)
@@ -176,7 +189,7 @@ class MyMusicInterface(QWidget):
         self.stackedWidget.currentChanged.connect(self.__onCurrentTabChanged)
 
         self.songListWidget.songCardNumChanged.connect(
-            lambda: self.__onCurrentTabChanged(self.stackedWidget.currentIndex()))
-
-        self.albumCardView.albumNumChanged.connect(
-            lambda: self.__onCurrentTabChanged(self.stackedWidget.currentIndex()))
+            self.__onCurrentTabChanged)
+        self.singerCardView.singerNumChanged.connect(
+            self.__onCurrentTabChanged)
+        self.albumCardView.albumNumChanged.connect(self.__onCurrentTabChanged)

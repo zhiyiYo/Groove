@@ -9,7 +9,7 @@ from components.widgets.menu import AddToMenu
 from components.widgets.perspective_widget import PerspectiveWidget
 from PyQt5.QtCore import QPoint, QPropertyAnimation, Qt, pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QPainter, QPen, QPixmap
-from PyQt5.QtWidgets import QApplication, QGraphicsOpacityEffect,QWidget
+from PyQt5.QtWidgets import QApplication, QGraphicsOpacityEffect, QWidget
 
 
 class SingerAvatar(QWidget):
@@ -52,7 +52,7 @@ class SingerAvatar(QWidget):
         painter.setRenderHints(
             QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
         w = self.width()
-        painter.setPen(QPen(QColor(230, 230, 230), 2))
+        painter.setPen(QPen(QColor(0, 0, 0, 25), 2))
         painter.setBrush(QBrush(self.__pixmap.scaled(
             w, w, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)))
         painter.drawRoundedRect(self.rect(), w//2, w//2)
@@ -61,6 +61,7 @@ class SingerAvatar(QWidget):
 class SingerCardBase(PerspectiveWidget):
     """ Singer card base class """
 
+    playSignal = pyqtSignal(str)                            # 播放
     nextPlaySignal = pyqtSignal(str)                        # 下一首播放
     addToPlayingSignal = pyqtSignal(str)                    # 将歌手添加到正在播放
     checkedStateChanged = pyqtSignal(QWidget, bool)         # 选中状态改变
@@ -70,7 +71,7 @@ class SingerCardBase(PerspectiveWidget):
     hideBlurSingerBackgroundSig = pyqtSignal()              # 隐藏磨砂背景
 
     def __init__(self, singerInfo: SingerInfo, parent=None):
-        super().__init__(parent=parent)
+        super().__init__(parent, True)
         self.__setSingerInfo(singerInfo)
         self.isChecked = False
         self.isInSelectionMode = False
@@ -103,6 +104,7 @@ class SingerCardBase(PerspectiveWidget):
         self.setFixedSize(210, 265)
         self.setAttribute(Qt.WA_StyledBackground)
         self.singerLabel.setAlignment(Qt.AlignCenter)
+        self.singerLabel.setWordWrap(True)
 
         # initialize layout
         self.singerLabel.setFixedWidth(210)
@@ -133,8 +135,7 @@ class SingerCardBase(PerspectiveWidget):
         self.singerLabel.setProperty("isChecked", "False")
 
         # connect signal to slot
-        self.playButton.clicked.connect(
-            lambda: signalBus.playSingerSig.emit(self.singer))
+        self.playButton.clicked.connect(lambda: self.playSignal.emit(self.singer))
         self.singerLabel.clicked.connect(
             lambda: signalBus.switchToSingerInterfaceSig.emit(self.singer))
         self.addToButton.clicked.connect(self.__showAddToMenu)
@@ -195,7 +196,7 @@ class SingerCardBase(PerspectiveWidget):
 
     def updateWindow(self, singerInfo: SingerInfo):
         """ update singer card """
-        if singerInfo==self.singerInfo:
+        if singerInfo == self.singerInfo:
             return
 
         self.__setSingerInfo(singerInfo)
@@ -223,4 +224,3 @@ class SingerCardBase(PerspectiveWidget):
         """ select action triggered slot """
         self.setSelectionModeOpen(True)
         self.setChecked(True)
-

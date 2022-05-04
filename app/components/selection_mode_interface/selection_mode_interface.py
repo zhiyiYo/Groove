@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import QVBoxLayout, QWidget
 from ..album_card import AlbumCardViewBase
 from ..dialog_box.message_dialog import MessageDialog
 from ..playlist_card import PlaylistCardViewBase
+from ..singer_card import SingerCardViewBase
 from ..song_list_widget import BasicSongListWidget
 from ..widgets.menu import AddToMenu
 from ..widgets.scroll_area import ScrollArea
@@ -283,6 +284,50 @@ class SongSelectionModeInterface(SelectionModeInterface):
             self.songListWidget.removeSongCard(songCard.itemIndex)
 
         signalBus.removeSongSig.emit(songPaths)
+
+
+class SingerSelectionModeInterface(SelectionModeInterface):
+    """ Singer card selection mode interface """
+
+    def __init__(self, library: Library, view: SingerCardViewBase, barType: SelectionModeBarType, parent=None):
+        """
+        Parameters
+        ----------
+        library: Library
+            song library
+
+        view: SingerCardViewBase
+            singer card view
+
+        barType: SelectionModeBarType
+            selection mode bar type
+
+        parent:
+            parent window
+        """
+        super().__init__(barType, parent)
+        self.library = library
+        self.singerCardView = view
+        self.vBox.setSizeConstraint(QVBoxLayout.SetFixedSize)
+        self.setView(view)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+    def adjustScrollHeight(self):
+        self.scrollWidget.adjustSize()
+
+    def resizeEvent(self, e):
+        super().resizeEvent(e)
+        m = self.vBox.contentsMargins()
+        w = self.width() - m.left() - m.right()
+        self.singerCardView.setFixedWidth(w)
+        self.singerCardView.adjustHeight()
+        self.adjustScrollHeight()
+
+    def _getCheckedSongInfos(self) -> List[SongInfo]:
+        singers = [i.singer for i in self.singerCardView.checkedSingerCards]
+        songInfos = self.library.songInfoController.getSongInfosBySingers(
+            singers)
+        return songInfos
 
 
 class AlbumSelectionModeInterface(SelectionModeInterface):

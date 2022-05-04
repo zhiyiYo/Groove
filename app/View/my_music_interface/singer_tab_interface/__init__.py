@@ -1,0 +1,1 @@
+from .singer_tab_interface import SingerTabInterface

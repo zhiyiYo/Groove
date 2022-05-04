@@ -62,6 +62,21 @@ class SongInfoController:
 
         return songInfos
 
+    def getSongInfosBySingers(self, singers: List[str]):
+        """ get song information by singer names
+
+        Parameters
+        ----------
+        singers: str
+            singer name list
+
+        Returns
+        -------
+        songInfos: List[SongInfo]
+            song information list
+        """
+        return self.songInfoService.listBySingers(singers)
+
     def getSongInfosBySingerAlbum(self, singers: List[str], albums: List[str]):
         """ get song information by singer names and album names
 

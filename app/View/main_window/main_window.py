@@ -989,7 +989,7 @@ class MainWindow(FramelessWindow):
         self.subStackWidget.setCurrentWidget(self.myMusicInterface)
         self.titleBar.setWhiteIcon(False)
         self.titleBar.returnButton.show()
-        self.myMusicInterface.setCurrentTab(1)
+        self.myMusicInterface.setCurrentTab(2)
         self.navigationInterface.setCurrentIndex(0)
 
         # add navigation history

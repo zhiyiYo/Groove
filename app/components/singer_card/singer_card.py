@@ -20,8 +20,7 @@ class SingerCard(SingerCardBase):
 
     def contextMenuEvent(self, event):
         menu = SingerCardContextMenu(parent=self)
-        menu.playAct.triggered.connect(
-            lambda: signalBus.playSingerSig.emit(self.singer))
+        menu.playAct.triggered.connect(lambda: self.playSignal.emit(self.singer))
         menu.nextToPlayAct.triggered.connect(
             lambda: self.nextPlaySignal.emit(self.singer))
         menu.selectAct.triggered.connect(self._onSelectActionTriggered)
@@ -41,8 +40,7 @@ class LocalSearchedSingerCard(SingerCardBase):
 
     def contextMenuEvent(self, event):
         menu = LocalSearchedSingerCardContextMenu(parent=self)
-        menu.playAct.triggered.connect(
-            lambda: signalBus.playSingerSig.emit(self.singer))
+        menu.playAct.triggered.connect(lambda: self.playSignal.emit(self.singer))
         menu.nextToPlayAct.triggered.connect(
             lambda: self.nextPlaySignal.emit(self.singer))
 
@@ -53,7 +51,6 @@ class LocalSearchedSingerCard(SingerCardBase):
         menu.addToMenu.newPlaylistAct.triggered.connect(
             lambda: self.addSingerToNewCustomPlaylistSig.emit(self.singer))
         menu.exec(event.globalPos())
-
 
 
 class SingerCardContextMenu(DWMMenu):

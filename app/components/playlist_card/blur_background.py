@@ -1,17 +1,15 @@
 # coding:utf-8
+from components.widgets.label import FadeInLabel
 from PIL import Image
 from PIL.ImageFilter import GaussianBlur
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPainter, QPixmap
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtGui import QPixmap
 
 
-class BlurBackground(QWidget):
+class BlurBackground(FadeInLabel):
     """ Blur background under playlist card """
 
     def __init__(self, parent=None, imagePath: str = '', blurRadius=30):
         super().__init__(parent)
-        self.__blurPix = None
         self.setBlurPic(imagePath, blurRadius)
 
     def setBlurPic(self, imagePath: str, blurRadius: int = 30):
@@ -34,19 +32,12 @@ class BlurBackground(QWidget):
 
         # apply Gaussian blur to image
         blurImage = blurImage.filter(GaussianBlur(blurRadius/2))
-        self.__blurPix = blurImage.toqpixmap()
-
         self.resize(*blurImage.size)
-        self.update()
+        self.setPixmap(blurImage.toqpixmap())
 
-    def paintEvent(self, e):
-        """ paint blur background """
-        super().paintEvent(e)
-        if not self.__blurPix:
-            return
-
-        painter = QPainter(self)
-        painter.setRenderHints(QPainter.Antialiasing |
-                               QPainter.SmoothPixmapTransform)
-        painter.setPen(Qt.NoPen)
-        painter.drawPixmap(0, 0, self.__blurPix)
+    def showEvent(self, e):
+        super().showEvent(e)
+        self.ani.setStartValue(0)
+        self.ani.setEndValue(1)
+        self.ani.setDuration(110)
+        self.ani.start()

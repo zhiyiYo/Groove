@@ -36,11 +36,37 @@ class SongInfoDao(DaoBase):
         """ find song information by the path of audio file """
         return self.selectBy(file=file)
 
+    def listBySingers(self, singers: List[str]) -> List[SongInfo]:
+        """ list song information by singer name """
+        if not singers:
+            return []
+
+        values = []
+        orders = []
+        for i, singer in enumerate(singers, 1):
+            value = f"'{self.adjustText(singer)}'"
+            values.append(value)
+            orders.append(f"WHEN {value} THEN {i}")
+
+        sql = f"""SELECT * FROM {self.table} WHERE singer in (
+                {','.join(values)}
+            )
+            ORDER BY
+                CASE singer
+                {' '.join(orders)}
+                END
+            , album
+            """
+        if not self.query.exec(sql):
+            return []
+
+        return self.iterRecords()
+
     def listBySingerAlbum(self, singer: str, album: str) -> List[SongInfo]:
         """ list song information by singer name and album name """
         return self.listBy(singer=singer, album=album)
 
-    def listBySongerAlbums(self, singers: List[str], albums: List[str]) -> List[SongInfo]:
+    def listBySingerAlbums(self, singers: List[str], albums: List[str]) -> List[SongInfo]:
         """ ist song information by singer names and album names """
         if len(singers) != len(albums):
             raise ValueError('歌手和专辑列表的长度必须相同')

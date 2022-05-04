@@ -1,10 +1,10 @@
 # coding:utf-8
-from .tooltip_button import TooltipButton
 from PIL import Image
 from PIL.ImageFilter import GaussianBlur
-from PyQt5.QtCore import QPoint, QPropertyAnimation, Qt, pyqtProperty
+from PyQt5.QtCore import QEasingCurve, QPropertyAnimation, Qt, pyqtProperty
 from PyQt5.QtGui import QBrush, QEnterEvent, QPainter, QPixmap
-from PyQt5.QtWidgets import QToolButton
+
+from .tooltip_button import TooltipButton
 
 
 class BlurButton(TooltipButton):
@@ -38,6 +38,7 @@ class BlurButton(TooltipButton):
         """
         super().__init__(parent=parent)
         self.__paintRadius = radius-5
+        self.__opacity = 0
         self.radius = radius
         self.resize(radius*2, radius*2)
         self.setAttribute(Qt.WA_TranslucentBackground)
@@ -49,19 +50,25 @@ class BlurButton(TooltipButton):
         self.iconPix = QPixmap(iconPath).scaled(
             radius*2, radius*2, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         self.radiusAni = QPropertyAnimation(self, b'paintRadius', self)
+        self.opacityAni = QPropertyAnimation(self, b'opacity', self)
         self.setToolTip(text)
 
     def showEvent(self, e):
         if not self.blurPix:
             self.__blur()
 
-        self.__paintRadius=self.radius-5
+        self.__paintRadius = self.radius-5
+        self.opacityAni.setStartValue(0)
+        self.opacityAni.setEndValue(1)
+        self.opacityAni.setDuration(110)
+        self.opacityAni.start()
         super().showEvent(e)
 
     def setBlurPic(self, blurPicPath, blurRadius=35):
         """ set the image to be blurred """
         if self.blurPicPath == blurPicPath:
             return
+
         self.blurPicPath = blurPicPath
         self.blurRadius = blurRadius
         self.blurPix = None
@@ -85,6 +92,7 @@ class BlurButton(TooltipButton):
     def paintEvent(self, e):
         """ paint button """
         painter = QPainter(self)
+        painter.setOpacity(self.__opacity)
         painter.setPen(Qt.NoPen)
         painter.setRenderHints(QPainter.Antialiasing |
                                QPainter.SmoothPixmapTransform)
@@ -134,4 +142,12 @@ class BlurButton(TooltipButton):
     def getPaintRadius(self):
         return self.__paintRadius
 
+    def getOpacity(self):
+        return self.__opacity
+
+    def setOpacity(self, opacity: float):
+        self.__opacity = opacity
+        self.update()
+
     paintRadius = pyqtProperty(int, getPaintRadius, setPaintRadius)
+    opacity = pyqtProperty(float, getOpacity, setOpacity)

@@ -164,6 +164,19 @@ class SongTabSelectionModeBar(SelectionModeBarBase):
         self.insertSeparator(1)
 
 
+class SingerTabSelectionModeBar(SelectionModeBarBase):
+    """ Singer tab interface selection mode bar """
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.addButtons([
+            BF.CANCEL, BF.PLAY, BF.NEXT_TO_PLAY,
+            BF.ADD_TO, BF.PIN_TO_START, BF.CHECK_ALL
+        ])
+        self.setToHideButtons(self.buttons[4:5])
+        self.insertSeparator(1)
+
+
 class AlbumTabSelectionModeBar(SelectionModeBarBase):
     """ Album tab interface selection mode bar """
 
@@ -252,12 +265,13 @@ class PlaylistSelectionModeBar(SelectionModeBarBase):
 class SelectionModeBarType(Enum):
     """ Selection mode bar type """
     SONG_TAB = 0
-    ALBUM_TAB = 1
-    PLAYING = 2
-    SINGER = 3
-    ALBUM = 4
-    PLAYLIST_CARD = 5
-    PLAYLIST = 6
+    SINGER_TAB = 1
+    ALBUM_TAB = 2
+    PLAYING = 3
+    SINGER = 4
+    ALBUM = 5
+    PLAYLIST_CARD = 6
+    PLAYLIST = 7
 
 
 class SelectionModeBarFactory:
@@ -268,6 +282,7 @@ class SelectionModeBarFactory:
         """ create a selection mode bar """
         barMap = {
             SelectionModeBarType.SONG_TAB: SongTabSelectionModeBar,
+            SelectionModeBarType.SINGER_TAB: SingerTabSelectionModeBar,
             SelectionModeBarType.ALBUM_TAB: AlbumTabSelectionModeBar,
             SelectionModeBarType.PLAYING: PlayingSelectionModeBar,
             SelectionModeBarType.SINGER: SingerInterfaceSelectionModeBar,

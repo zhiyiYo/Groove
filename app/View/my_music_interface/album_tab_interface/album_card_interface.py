@@ -2,14 +2,12 @@
 from typing import Dict, List
 
 import pinyin
-from common.database.entity import AlbumInfo, SongInfo
+from common.database.entity import AlbumInfo
 from common.library import Library
 from common.signal_bus import signalBus
 from components.album_card import (AlbumBlurBackground, AlbumCard,
                                    AlbumCardType, GridAlbumCardView)
-from PyQt5.QtCore import (QFile, QParallelAnimationGroup, QPoint, QSize, Qt,
-                          pyqtSignal)
-from PyQt5.QtGui import QResizeEvent
+from PyQt5.QtCore import QFile, QParallelAnimationGroup, QPoint, Qt, pyqtSignal
 from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget
 
 
@@ -280,8 +278,8 @@ class AlbumCardView(QWidget):
         elif N1 == 0:
             self.setSelectionModeOpen(False)
 
-        isAllChecked = N1 == len(self.albumCards)
-        self.checkedNumChanged.emit(N1, isAllChecked)
+        self.isAllAlbumCardsChecked = N1 == len(self.albumCards)
+        self.checkedNumChanged.emit(N1, self.isAllAlbumCardsChecked)
 
     def setSelectionModeOpen(self, isOpen: bool):
         """ set whether to open selection mode """

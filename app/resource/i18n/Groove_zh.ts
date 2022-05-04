@@ -1636,6 +1636,104 @@
     </message>
 </context>
 <context>
+    <name>SingerCardBase</name>
+    <message>
+        <location filename="../../components/singer_card/singer_card_base.py" line="93"/>
+        <source>Add to</source>
+        <translation>添加到</translation>
+    </message>
+    <message>
+        <location filename="../../components/singer_card/singer_card_base.py" line="86"/>
+        <source>Play</source>
+        <translation>播放</translation>
+    </message>
+</context>
+<context>
+    <name>SingerCard</name>
+    <message>
+        <location filename="../../components/singer_card/singer_card_base.py" line="93"/>
+        <source>Add to</source>
+        <translation>添加到</translation>
+    </message>
+    <message>
+        <location filename="../../components/singer_card/singer_card_base.py" line="86"/>
+        <source>Play</source>
+        <translation>播放</translation>
+    </message>
+</context>
+<context>
+    <name>LocalSearchedSingerCard</name>
+    <message>
+        <location filename="../../components/singer_card/singer_card_base.py" line="93"/>
+        <source>Add to</source>
+        <translation>添加到</translation>
+    </message>
+    <message>
+        <location filename="../../components/singer_card/singer_card_base.py" line="86"/>
+        <source>Play</source>
+        <translation>播放</translation>
+    </message>
+</context>
+<context>
+    <name>SingerCardContextMenu</name>
+    <message>
+        <location filename="../../components/singer_card/singer_card.py" line="67"/>
+        <source>Play</source>
+        <translation>播放</translation>
+    </message>
+    <message>
+        <location filename="../../components/singer_card/singer_card.py" line="68"/>
+        <source>Select</source>
+        <translation>选择</translation>
+    </message>
+    <message>
+        <location filename="../../components/singer_card/singer_card.py" line="69"/>
+        <source>Play next</source>
+        <translation>下一首播放</translation>
+    </message>
+    <message>
+        <location filename="../../components/singer_card/singer_card.py" line="70"/>
+        <source>Pin to Start</source>
+        <translation>固定到&quot;开始&quot;菜单</translation>
+    </message>
+    <message>
+        <location filename="../../components/singer_card/singer_card.py" line="71"/>
+        <source>Add to</source>
+        <translation>添加到</translation>
+    </message>
+</context>
+<context>
+    <name>LocalSearchedSingerCardContextMenu</name>
+    <message>
+        <location filename="../../components/singer_card/singer_card.py" line="92"/>
+        <source>Play</source>
+        <translation>播放</translation>
+    </message>
+    <message>
+        <location filename="../../components/singer_card/singer_card.py" line="93"/>
+        <source>Play next</source>
+        <translation>下一首播放</translation>
+    </message>
+    <message>
+        <location filename="../../components/singer_card/singer_card.py" line="94"/>
+        <source>Pin to Start</source>
+        <translation>固定到&quot;开始&quot;菜单</translation>
+    </message>
+    <message>
+        <location filename="../../components/singer_card/singer_card.py" line="95"/>
+        <source>Add to</source>
+        <translation>添加到</translation>
+    </message>
+</context>
+<context>
+    <name>SingerCardView</name>
+    <message>
+        <location filename="../../View/my_music_interface/singer_tab_interface/singer_card_interface.py" line="35"/>
+        <source>There is nothing to display here. Try a different filter.</source>
+        <translation>这里没有可显示的内容。请尝试其他筛选器。</translation>
+    </message>
+</context>
+<context>
     <name>SingerInfoBar</name>
     <message>
         <location filename="../../View/singer_interface/singer_info_bar.py" line="41"/>

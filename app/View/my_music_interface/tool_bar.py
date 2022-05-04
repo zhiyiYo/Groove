@@ -3,8 +3,7 @@ from common.get_pressed_pos import getPressedPos
 from components.buttons.three_state_button import ThreeStatePushButton
 from components.widgets.menu import AeroMenu
 from PyQt5.QtCore import QFile, QPoint, Qt, pyqtSignal
-from PyQt5.QtGui import (QBrush, QColor, QFont, QFontMetrics, QPainter, QPen,
-                         QPolygon)
+from PyQt5.QtGui import QBrush, QColor, QFont, QPainter, QPen, QPolygon
 from PyQt5.QtWidgets import QAction, QLabel, QPushButton, QWidget
 
 
@@ -23,7 +22,7 @@ class ToolBar(QWidget):
         # create tab buttons
         self.songTabButton = TabButton(self.tr("Songs"), self, 0)
         self.singerTabButton = TabButton(self.tr("Artists"), self, 1)
-        self.albumTabButton = TabButton(self.tr("Albums"), self, 1)
+        self.albumTabButton = TabButton(self.tr("Albums"), self, 2)
 
         self.randomPlayAllButton = ThreeStatePushButton(
             {
@@ -37,6 +36,7 @@ class ToolBar(QWidget):
         )
         self.sortModeLabel = QLabel(self.tr("Sort by:"), self)
         self.songSortModeButton = QPushButton(self.tr("Date added"), self)
+        self.singerSortModeButton = QPushButton(self.tr("A to Z"), self)
         self.albumSortModeButton = QPushButton(self.tr("Date added"), self)
 
         # create menu
@@ -70,6 +70,7 @@ class ToolBar(QWidget):
         self.resize(1200, 245)
         self.setAttribute(Qt.WA_StyledBackground)
         self.albumSortModeButton.hide()
+        self.singerSortModeButton.hide()
 
         # add actions to menu
         self.songSortModeMenu.addActions(self.songSortActions)
@@ -99,6 +100,7 @@ class ToolBar(QWidget):
             self.randomPlayAllButton.geometry().right()+50, 200)
         self.songSortModeButton.move(
             self.sortModeLabel.geometry().right()+7, 195)
+        self.singerSortModeButton.move(self.songSortModeButton.x(), 195)
         self.albumSortModeButton.move(self.songSortModeButton.x(), 195)
 
     def paintEvent(self, QPaintEvent):
@@ -115,6 +117,7 @@ class ToolBar(QWidget):
         self.songSortModeMenu.setObjectName("sortModeMenu")
         self.albumSortModeMenu.setObjectName("sortModeMenu")
         self.songSortModeButton.setObjectName("sortModeButton")
+        self.singerSortModeButton.setObjectName("sortModeButton")
         self.albumSortModeButton.setObjectName("sortModeButton")
         self.randomPlayAllButton.setObjectName("randomPlayButton")
         self.albumSortModeMenu.setProperty("modeNumber", "4")
@@ -131,7 +134,7 @@ class ToolBar(QWidget):
 class TabButton(QPushButton):
     """ Tab button """
 
-    buttonSelected = pyqtSignal(int)
+    selected = pyqtSignal(int)
 
     def __init__(self, text: str, parent=None, tabIndex: int = 0):
         """
@@ -177,7 +180,7 @@ class TabButton(QPushButton):
     def mouseReleaseEvent(self, e):
         self.pressedPos = None
         super().mouseReleaseEvent(e)
-        self.buttonSelected.emit(self.tabIndex)
+        self.selected.emit(self.tabIndex)
 
     def paintEvent(self, e):
         """ paint button """

@@ -75,8 +75,14 @@ class FadeInLabel(QLabel):
         self.__pixmap = pixmap
         self.update()
 
+    def pixmap(self):
+        return self.__pixmap
+
     def paintEvent(self, e):
         """ paint label """
+        if not self.__pixmap:
+            return
+
         painter = QPainter(self)
         painter.setRenderHints(
             QPainter.Antialiasing | QPainter.SmoothPixmapTransform)

@@ -56,13 +56,17 @@ class SongInfoService(ServiceBase):
 
         return songInfos
 
+    def listBySingers(self, singers: List[str])-> List[SongInfo]:
+        """ list song information by singer names """
+        return self.songInfoDao.listBySingers(singers)
+
     def listBySingerAlbum(self, singer: str, album: str) -> List[SongInfo]:
         """ list song information by singer name and album name """
         return self.songInfoDao.listBySingerAlbum(singer, album)
 
     def listBySingerAlbums(self, singers: List[str], albums: List[str]):
         """ list song information by singer names and album names  """
-        return self.songInfoDao.listBySongerAlbums(singers, albums)
+        return self.songInfoDao.listBySingerAlbums(singers, albums)
 
     def modify(self, file: str, field: str, value) -> bool:
         return self.songInfoDao.update(file, field, value)
