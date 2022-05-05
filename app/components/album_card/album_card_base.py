@@ -5,13 +5,13 @@ from common.os_utils import getCoverPath
 from common.signal_bus import signalBus
 from components.buttons.blur_button import BlurButton
 from components.widgets.check_box import CheckBox
-from components.widgets.label import ClickableLabel, PixmapLabel
+from components.widgets.label import AlbumCover, ClickableLabel
 from components.widgets.menu import AddToMenu
 from components.widgets.perspective_widget import PerspectiveWidget
 from PyQt5.QtCore import QPoint, QPropertyAnimation, Qt, pyqtSignal
-from PyQt5.QtGui import QFont, QFontMetrics, QPixmap
-from PyQt5.QtWidgets import (QApplication, QGraphicsOpacityEffect, QLabel,
-                             QVBoxLayout, QWidget)
+from PyQt5.QtGui import QFont, QFontMetrics
+from PyQt5.QtWidgets import (QApplication, QGraphicsOpacityEffect, QVBoxLayout,
+                             QWidget)
 
 
 class AlbumCardBase(PerspectiveWidget):
@@ -36,7 +36,7 @@ class AlbumCardBase(PerspectiveWidget):
         self.vBoxLayout = QVBoxLayout(self)
         self.albumLabel = ClickableLabel(self.album, self)
         self.contentLabel = ClickableLabel(self.singer, self, False)
-        self.albumPic = PixmapLabel(self)
+        self.albumPic = AlbumCover(self.coverPath, parent=self)
 
         self.playButton = BlurButton(
             self,
@@ -63,13 +63,10 @@ class AlbumCardBase(PerspectiveWidget):
         """ initialize widgets """
         self.setFixedSize(210, 290)
         self.setAttribute(Qt.WA_StyledBackground)
-        self.albumPic.setFixedSize(200, 200)
         self.contentLabel.setFixedWidth(210)
         self.albumLabel.setFixedWidth(210)
         self.playButton.move(35, 70)
         self.addToButton.move(105, 70)
-        self.albumPic.setPixmap(QPixmap(self.coverPath).scaled(
-            200, 200, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
 
         # add opacity effect to check box
         self.checkBox.setFocusPolicy(Qt.NoFocus)
@@ -129,13 +126,12 @@ class AlbumCardBase(PerspectiveWidget):
         self.coverPath = getCoverPath(self.singer, self.album, 'album_big')
 
     def enterEvent(self, e):
-        # show blur background
         albumCardPos = self.mapToGlobal(QPoint(0, 0))  # type:QPoint
         self.showBlurAlbumBackgroundSig.emit(albumCardPos, self.coverPath)
 
-        # hide button in selection mode
-        self.playButton.setHidden(self.isInSelectionMode)
-        self.addToButton.setHidden(self.isInSelectionMode)
+        if not self.isInSelectionMode:
+            self.playButton.fadeIn()
+            self.addToButton.fadeIn()
 
     def leaveEvent(self, e):
         self.hideBlurAlbumBackgroundSig.emit()
@@ -148,7 +144,8 @@ class AlbumCardBase(PerspectiveWidget):
             if self.isInSelectionMode:
                 self.setChecked(not self.isChecked)
             else:
-                signalBus.switchToAlbumInterfaceSig.emit(self.singer, self.album)
+                signalBus.switchToAlbumInterfaceSig.emit(
+                    self.singer, self.album)
 
     def showAlbumInfoEditDialog(self):
         """ show album information edit dialog """
@@ -157,8 +154,7 @@ class AlbumCardBase(PerspectiveWidget):
     def updateAlbumCover(self, coverPath: str):
         """ update album cover """
         self.coverPath = coverPath
-        self.albumPic.setPixmap(QPixmap(self.coverPath).scaled(
-            200, 200, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
+        self.albumPic.setCover(coverPath)
         self.playButton.setBlurPic(coverPath, 40)
         self.addToButton.setBlurPic(coverPath, 40)
 
@@ -168,8 +164,7 @@ class AlbumCardBase(PerspectiveWidget):
             return
 
         self.__setAlbumInfo(albumInfo)
-        self.albumPic.setPixmap(QPixmap(self.coverPath).scaled(
-            200, 200, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
+        self.albumPic.setCover(self.coverPath)
         self.albumLabel.setText(self.album)
         self.contentLabel.setText(self.singer)
         self.playButton.setBlurPic(self.coverPath, 40)

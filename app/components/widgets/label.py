@@ -1,9 +1,9 @@
 # coding:utf-8
 from common.thread.blur_cover_thread import BlurCoverThread
-from PyQt5.QtCore import Qt, pyqtSignal, QPropertyAnimation, pyqtProperty
-from PyQt5.QtGui import (QBrush, QColor, QImage, QMouseEvent, QPainter,
-                         QPalette, QPixmap)
-from PyQt5.QtWidgets import QLabel
+from PyQt5.QtCore import QPropertyAnimation, Qt, pyqtProperty, pyqtSignal
+from PyQt5.QtGui import (QBrush, QColor, QImage, QImageReader, QMouseEvent,
+                         QPainter, QPixmap)
+from PyQt5.QtWidgets import QLabel, QWidget
 
 
 class ClickableLabel(QLabel):
@@ -322,3 +322,44 @@ class ErrorIcon(PixmapLabel):
         super().__init__(parent)
         self.setPixmap(
             QPixmap(":/images/song_tab_interface/Info_red.png"))
+
+
+class AlbumCover(QWidget):
+    """ Album cover """
+
+    def __init__(self, imagePath: str, size=(200, 200), parent=None):
+        """
+        Parameters
+        ----------
+        imagePath: str
+            album cover path
+
+        size: tuple
+            cover size
+
+        parent:
+            parent window
+        """
+        super().__init__(parent=parent)
+        self.setFixedSize(*size)
+        self.setCover(imagePath)
+
+    def setCover(self, imagePath: str):
+        """ update album cover """
+        self.imagePath = imagePath
+        # lazy load
+        self.__image = QImage()
+        self.update()
+
+    def paintEvent(self, e):
+        if self.__image.isNull():
+            reader = QImageReader(self.imagePath)
+            reader.setScaledSize(self.size())
+            reader.setAutoTransform(True)
+            self.__image = reader.read()
+
+        painter = QPainter(self)
+        painter.setRenderHints(QPainter.Antialiasing |
+                               QPainter.SmoothPixmapTransform)
+        painter.setPen(Qt.NoPen)
+        painter.drawImage(self.rect(), self.__image)

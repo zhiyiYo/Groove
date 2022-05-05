@@ -13,7 +13,6 @@ class SongTabInterface(SongSelectionModeInterface):
 
     def __init__(self, songInfos: List[SongInfo], parent=None):
         super().__init__(SongListWidget(songInfos), SelectionModeBarType.SONG_TAB, parent)
-        self.resize(1300, 970)
         self.vBox.setContentsMargins(0, 245, 0, 0)
         self.__connectSignalToSlot()
 

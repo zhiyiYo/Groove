@@ -8,7 +8,7 @@ from components.widgets.label import ClickableLabel
 from components.widgets.menu import AddToMenu
 from components.widgets.perspective_widget import PerspectiveWidget
 from PyQt5.QtCore import QPoint, QPropertyAnimation, Qt, pyqtSignal
-from PyQt5.QtGui import QBrush, QColor, QPainter, QPen, QPixmap
+from PyQt5.QtGui import QBrush, QColor, QImage, QImageReader, QPainter, QPen
 from PyQt5.QtWidgets import QApplication, QGraphicsOpacityEffect, QWidget
 
 
@@ -47,18 +47,23 @@ class SingerAvatar(QWidget):
     def updateAvatar(self, imagePath: str):
         """ update avatar """
         self.imagePath = imagePath
-        self.__pixmap = QPixmap(self.imagePath)
+        self.__image = QImage()
         self.update()
 
     def paintEvent(self, e):
         """ paint avatar """
+        if self.__image.isNull():
+            reader = QImageReader(self.imagePath)
+            reader.setScaledSize(self.size())
+            reader.setAutoTransform(True)
+            self.__image = reader.read()
+
         painter = QPainter(self)
         painter.setRenderHints(
             QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
         w = self.width()
         painter.setPen(QPen(QColor(0, 0, 0, 25), 2))
-        painter.setBrush(QBrush(self.__pixmap.scaled(
-            w, w, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)))
+        painter.setBrush(QBrush(self.__image))
         painter.drawRoundedRect(self.rect(), w//2, w//2)
 
 
@@ -182,9 +187,9 @@ class SingerCardBase(PerspectiveWidget):
         pos = self.mapToGlobal(QPoint(0, 0))  # type:QPoint
         self.showBlurSingerBackgroundSig.emit(pos, self.avatar.imagePath)
 
-        # hide button in selection mode
-        self.playButton.setHidden(self.isInSelectionMode)
-        self.addToButton.setHidden(self.isInSelectionMode)
+        if not self.isInSelectionMode:
+            self.playButton.fadeIn()
+            self.addToButton.fadeIn()
 
     def leaveEvent(self, e):
         self.hideBlurSingerBackgroundSig.emit()

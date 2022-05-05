@@ -137,9 +137,9 @@ class PlaylistCardBase(PerspectiveWidget):
         pos = self.mapToGlobal(QPoint(0, 0))  # type:QPoint
         self.showBlurBackgroundSig.emit(pos, self.coverPath)
 
-        # hide button in selection mode
-        self.playButton.setHidden(self.isInSelectionMode)
-        self.addToButton.setHidden(self.isInSelectionMode)
+        if not self.isInSelectionMode:
+            self.playButton.fadeIn()
+            self.addToButton.fadeIn()
 
     def leaveEvent(self, e):
         self.hideBlurBackgroundSig.emit()

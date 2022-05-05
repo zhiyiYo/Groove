@@ -53,17 +53,6 @@ class BlurButton(TooltipButton):
         self.opacityAni = QPropertyAnimation(self, b'opacity', self)
         self.setToolTip(text)
 
-    def showEvent(self, e):
-        if not self.blurPix:
-            self.__blur()
-
-        self.__paintRadius = self.radius-5
-        self.opacityAni.setStartValue(0)
-        self.opacityAni.setEndValue(1)
-        self.opacityAni.setDuration(110)
-        self.opacityAni.start()
-        super().showEvent(e)
-
     def setBlurPic(self, blurPicPath, blurRadius=35):
         """ set the image to be blurred """
         if self.blurPicPath == blurPicPath:
@@ -88,6 +77,23 @@ class BlurButton(TooltipButton):
         self.blurPix = img.toqpixmap()
 
         self.update()
+
+    def fadeIn(self):
+        """ fade in """
+        self.__opacity = 0
+        super().show()
+        self.opacityAni.setStartValue(0)
+        self.opacityAni.setEndValue(1)
+        self.opacityAni.setDuration(110)
+        self.opacityAni.start()
+
+    def showEvent(self, e):
+        if not self.blurPix:
+            self.__blur()
+
+        self.__paintRadius = self.radius-5
+        self.__opacity = 1
+        super().showEvent(e)
 
     def paintEvent(self, e):
         """ paint button """

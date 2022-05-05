@@ -58,6 +58,7 @@ class BasicSongListWidget(ListWidget):
 
         self.setAlternatingRowColors(True)
         self.setViewportMargins(viewportMargins)
+        self.setUniformItemSizes(True)
 
         signalBus.playBySongInfoSig.connect(self.setPlayBySongInfo)
 
@@ -78,8 +79,8 @@ class BasicSongListWidget(ListWidget):
         songInfo: SongInfo
             song information
         """
-        item = QListWidgetItem()
-        songCard = SongCardFactory.create(self.songCardType, songInfo)
+        item = QListWidgetItem(self)
+        songCard = SongCardFactory.create(self.songCardType, songInfo, self)
         songCard.itemIndex = len(self.songCards)
 
         # adjust song card width

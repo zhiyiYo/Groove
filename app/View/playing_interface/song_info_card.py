@@ -2,10 +2,9 @@
 from common.database.entity import SongInfo
 from common.os_utils import getCoverPath
 from common.signal_bus import signalBus
-from components.widgets.label import ClickableLabel, PixmapLabel
+from components.widgets.label import ClickableLabel, AlbumCover
 from PyQt5.QtCore import QEvent, QFile, Qt, QTimer, pyqtSignal
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QApplication, QLabel, QWidget
+from PyQt5.QtWidgets import QApplication, QWidget
 
 
 class SongInfoCard(QWidget):
@@ -18,7 +17,7 @@ class SongInfoCard(QWidget):
         super().__init__(parent)
         self.setSongInfo(songInfo)
         self.timer = QTimer(self)
-        self.albumCoverLabel = PixmapLabel(self)
+        self.albumCoverLabel = AlbumCover(self.coverPath, (136, 136), self)
         self.songNameLabel = ClickableLabel(parent=self)
         self.singerAlbumLabel = ClickableLabel(parent=self)
         self.isPlayBarVisible = False
@@ -30,7 +29,6 @@ class SongInfoCard(QWidget):
         self.setFixedHeight(136)
         self.setMinimumWidth(400)
         self.albumCoverLabel.move(30, 0)
-        self.albumCoverLabel.setFixedSize(136, 136)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.updateCard(self.songInfo)
 
@@ -61,8 +59,7 @@ class SongInfoCard(QWidget):
         self.setSongInfo(songInfo)
         self.songNameLabel.setText(self.songName)
         self.singerAlbumLabel.setText(self.singer + " • " + self.album)
-        self.albumCoverLabel.setPixmap(QPixmap(self.coverPath).scaled(
-            136, 136, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        self.albumCoverLabel.setCover(self.coverPath)
         self.adjustText()
 
     def resizeEvent(self, e):

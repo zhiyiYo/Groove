@@ -237,7 +237,6 @@ class SongSelectionModeInterface(SelectionModeInterface):
 
     def resizeEvent(self, e):
         super().resizeEvent(e)
-        self.songListWidget.resize(self.width(), self.songListWidget.height())
         self.adjustScrollHeight()
 
     def _getCheckedSongInfos(self) -> List[SongInfo]:

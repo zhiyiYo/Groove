@@ -40,6 +40,7 @@ class SongListWidget(ListWidget):
         self.resize(1150 + 60, 800)
         self.setViewportMargins(30, 0, 30, 0)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setUniformItemSizes(True)
         self.__setQss()
 
     def createSongCards(self):
@@ -180,11 +181,11 @@ class SongListWidget(ListWidget):
 
     def appendOneSongCard(self, songInfo: SongInfo):
         """ append a song card """
-        songCard = SongCard(songInfo)
+        songCard = SongCard(songInfo, self)
         songCard.itemIndex = len(self.songCards)
         songCard.resize(self.width()-60, 60)
 
-        item = QListWidgetItem()
+        item = QListWidgetItem(self)
         item.setSizeHint(QSize(songCard.width(), 60))
         self.addItem(item)
         self.setItemWidget(item, songCard)
