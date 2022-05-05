@@ -113,6 +113,7 @@ class VideoInterface(QGraphicsView):
     def mouseMoveEvent(self, e):
         self.hidePlayBarTimer.stop()
         self.playBar.show()
+        self.setCursor(Qt.ArrowCursor)
         self.hidePlayBarTimer.start(1500)
 
     def mousePressEvent(self, e):
@@ -210,6 +211,10 @@ class VideoInterface(QGraphicsView):
         self.playBar.fullScreenButton.setToolTip(text)
         self.fullScreenChanged.emit(isFullScreen)
 
+    def __onHideTimeOut(self):
+        self.playBar.hide()
+        self.setCursor(Qt.BlankCursor)
+
     def __connectSignalToSlot(self):
         """ connect signal to slot """
         self.player.error.connect(self.__onPlayerError)
@@ -230,7 +235,7 @@ class VideoInterface(QGraphicsView):
         self.playBar.downloadButton.clicked.connect(
             self.__onDownloadButtonClicked)
 
-        self.hidePlayBarTimer.timeout.connect(self.playBar.hide)
+        self.hidePlayBarTimer.timeout.connect(self.__onHideTimeOut)
 
 
 class GraphicsVideoItem(QGraphicsVideoItem):

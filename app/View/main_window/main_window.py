@@ -738,8 +738,8 @@ class MainWindow(FramelessWindow):
         self.pause()
 
         songInfo = self.mediaPlaylist.getCurrentSong()
-        self.videoInterface.setVideo(url, songInfo.singer+' - '+songInfo.title)
         self.totalStackWidget.setCurrentIndex(2)
+        self.videoInterface.setVideo(url, songInfo.singer+' - '+songInfo.title)
 
         self.navigationHistories.append(("totalStackWidget", 2))
         self.titleBar.returnButton.show()
