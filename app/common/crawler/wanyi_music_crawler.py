@@ -173,7 +173,7 @@ class WanYiMusicCrawler(CrawlerBase):
             return ''
 
         # send request for avatar
-        response = requests.get(data[0]['img1v1Url'], headers=self.headers)
+        response = requests.get(data[0]['img1v1Url']+'?param=300y300', headers=self.headers)
         response.raise_for_status()
 
         # save avatar
