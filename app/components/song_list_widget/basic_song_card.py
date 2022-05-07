@@ -6,7 +6,7 @@ from common.signal_bus import signalBus
 from components.widgets.menu import AddToMenu
 from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
                           QParallelAnimationGroup, QPoint, QPropertyAnimation,
-                          QRect, Qt, pyqtSignal)
+                          Qt, pyqtSignal)
 from PyQt5.QtGui import QFont, QFontMetrics, QMouseEvent
 from PyQt5.QtWidgets import QApplication, QWidget
 
@@ -338,12 +338,8 @@ class BasicSongCard(QWidget):
         self.addToButton = self.songNameCard.addToButton
         self.checkBox = self.songNameCard.checkBox
 
-    def onPlayButtonClicked(self):
-        """ 播放按钮按下时更新样式 """
-        self.playButtonClicked.emit(self.itemIndex)
-
     def _onCheckedStateChanged(self):
-        """ 复选框选中状态改变对应的槽函数 """
+        """ checked state changed slot """
         self.isChecked = self.checkBox.isChecked()
         self.setSelected(self.isChecked)
 

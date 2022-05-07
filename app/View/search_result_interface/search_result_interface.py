@@ -316,12 +316,16 @@ class SearchResultInterface(ScrollArea):
         self.localSongGroupBox.switchToMoreSearchResultInterfaceSig.connect(
             lambda: signalBus.switchToMoreSearchResultInterfaceSig.emit(self.keyWord, 'local song', self.localSongInfos))
         self.localSongListWidget.playSignal.connect(self.playLocalSongSig)
+        self.localSongListWidget.currentIndexChanged.connect(
+            self.onlineSongListWidget.cancelSelectedState)
 
         # online song group box signal
         self.onlineSongListWidget.playSignal.connect(self.playOnlineSongSig)
         self.onlineSongListWidget.downloadSig.connect(self.__downloadSong)
         self.onlineSongGroupBox.loadMoreSignal.connect(
             self.__loadMoreOnlineMusic)
+        self.onlineSongListWidget.currentIndexChanged.connect(
+            self.localSongListWidget.cancelSelectedState)
 
         # album group box signal
         self.singerGroupBox.switchToMoreSearchResultInterfaceSig.connect(

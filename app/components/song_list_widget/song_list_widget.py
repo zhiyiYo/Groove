@@ -74,7 +74,6 @@ class SongListWidget(NoScrollSongListWidget):
     def __playButtonSlot(self, index: int):
         """ play button clicked slot """
         self.playSignal.emit(self.songCards[index].songInfo)
-        self.setCurrentIndex(index)
 
     def contextMenuEvent(self, e: QContextMenuEvent):
         """ show context menu """
@@ -113,6 +112,7 @@ class SongListWidget(NoScrollSongListWidget):
         if self.sortMode == sortMode:
             return
 
+        playingSongInfo = self.playingSongInfo
         self.sortMode = sortMode
         key = {
             "Date added": "createTime",
@@ -122,8 +122,8 @@ class SongListWidget(NoScrollSongListWidget):
         songInfos = self.sortSongInfo(key)
         self.updateAllSongCards(songInfos)
 
-        if self.playingSongInfo in self.songInfos:
-            self.setPlay(self.songInfos.index(self.playingSongInfo))
+        if playingSongInfo in self.songInfos:
+            self.setPlay(self.songInfos.index(playingSongInfo))
 
     def updateAllSongCards(self, songInfos: List[SongInfo]):
         super().updateAllSongCards(songInfos)

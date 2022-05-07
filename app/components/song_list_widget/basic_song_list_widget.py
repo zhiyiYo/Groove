@@ -21,6 +21,7 @@ class BasicSongListWidget(ListWidget):
     removeSongSignal = pyqtSignal(SongInfo)      # 刪除歌曲列表中的一首歌
     songCardNumChanged = pyqtSignal(int)         # 歌曲数量发生改变
     checkedNumChanged = pyqtSignal(int, bool)    # 选中的歌曲卡数量发生改变
+    currentIndexChanged = pyqtSignal(int)        # 选中的歌曲卡改变
 
     def __init__(self, songInfos: List[SongInfo], songCardType: SongCardType, parent=None,
                  viewportMargins=QMargins(30, 0, 30, 0), paddingBottomHeight: int = 116):
@@ -46,14 +47,13 @@ class BasicSongListWidget(ListWidget):
         self.__songCardType = songCardType
         self.paddingBottomHeight = paddingBottomHeight
         self.songInfos = songInfos if songInfos else []
-        self.currentIndex = 0
-        self.playingIndex = 0  # the index of playing song card
-        self.playingSongInfo = self.songInfos[0] if songInfos else None
+        self.currentIndex = None  # the index of selected song card
+        self.playingIndex = None  # the index of playing song card
 
         self.isInSelectionMode = False
 
         self.item_list = []
-        self.songCards = []
+        self.songCards = []  # type:List[BasicSongCard]
         self.checkedSongCards = []
 
         self.setAlternatingRowColors(True)
@@ -61,6 +61,7 @@ class BasicSongListWidget(ListWidget):
         self.setUniformItemSizes(True)
 
         signalBus.playBySongInfoSig.connect(self.setPlayBySongInfo)
+        signalBus.clearPlayingPlaylistSig.connect(self.cancelState)
 
     def createSongCards(self):
         """ 清空列表并创建新歌曲卡 """
@@ -114,20 +115,28 @@ class BasicSongListWidget(ListWidget):
 
         self.__createPaddingBottomItem()
 
-    def setCurrentIndex(self, index):
+    def setCurrentIndex(self, index: int):
         """ set currently selected song card """
-        if not self.isInSelectionMode:
-            if index != self.currentIndex:
-                self.songCards[self.currentIndex].setSelected(False)
-                self.songCards[index].setSelected(True)
-        else:
+        if not self.songCards:
+            return
+
+        if self.isInSelectionMode:
             songCard = self.songCards[index]
             songCard.setChecked(not songCard.isChecked)
+        elif index != self.currentIndex:
+            if self.currentIndex is not None:
+                self.songCards[self.currentIndex].setSelected(False)
+
+            self.songCards[index].setSelected(True)
+            self.currentIndexChanged.emit(index)
 
         self.currentIndex = index
 
     def removeSongCard(self, index: int):
         """ remove a song card """
+        if not self.songCards:
+            return
+
         songCard = self.songCards.pop(index)
         songCard.deleteLater()
         self.item_list.pop(index)
@@ -138,7 +147,7 @@ class BasicSongListWidget(ListWidget):
         for i in range(index, len(self.songCards)):
             self.songCards[i].itemIndex = i
 
-        if self.currentIndex >= index:
+        if self.currentIndex is not None and self.currentIndex >= index:
             self.currentIndex -= 1
             self.playingIndex -= 1
 
@@ -156,34 +165,48 @@ class BasicSongListWidget(ListWidget):
         if not self.songCards:
             return
 
-        self.songCards[self.currentIndex].setSelected(False)
+        if self.currentIndex is not None:
+            self.songCards[self.currentIndex].setSelected(False)
+
+        if self.playingIndex is not None:
+            self.songCards[self.playingIndex].setPlay(False)
+
         self.currentIndex = index
-        self.songCards[self.playingIndex].setPlay(False)
         self.playingIndex = index
 
         if index >= 0:
             self.songCards[index].setPlay(True)
-            self.playingSongInfo = self.songInfos[index]
 
     def setPlayBySongInfo(self, songInfo: SongInfo):
         """ set the song card playback status. If the song is not in current song list,
-            the song card being played will be canceled play status.
+            the song card being played will be canceled playback and selected status.
         """
         index = self.index(songInfo)
         if index is not None:
             self.setPlay(index)
         else:
-            self.cancelPlayState()
+            self.cancelState()
+
+    def cancelSelectedState(self):
+        """ cancel the selected status """
+        if not self.songCards or self.currentIndex is None:
+            return
+
+        self.songCards[self.currentIndex].setSelected(False)
+        self.currentIndex = None
 
     def cancelPlayState(self):
-        """ cancel the playback status of the song card which is playing """
+        """ cancel the playback status """
         if not self.songCards or self.playingIndex is None:
             return
 
         self.songCards[self.playingIndex].setPlay(False)
-        self.currentIndex = 0
-        self.playingIndex = 0
-        self.playingSongInfo = None
+        self.playingIndex = None
+
+    def cancelState(self):
+        """ cancel selected and playback status """
+        self.cancelSelectedState()
+        self.cancelPlayState()
 
     def showSongPropertyDialog(self, songInfo: SongInfo = None):
         """ show song property dialog box """
@@ -281,7 +304,7 @@ class BasicSongListWidget(ListWidget):
         self.__removePaddingBottomItem()
 
         # cancel the current song card playback status
-        if self.songCards:
+        if self.songCards and self.currentIndex is not None:
             self.songCards[self.currentIndex].setPlay(False)
 
         newSongNum = len(songInfos)
@@ -310,9 +333,8 @@ class BasicSongListWidget(ListWidget):
         for songInfo, songCard in zip(songInfos[:n], self.songCards[:n]):
             songCard.updateSongCard(songInfo)
 
-        self.currentIndex = 0
-        self.playingIndex = 0
-        self.playingSongInfo = None
+        self.currentIndex = None
+        self.playingIndex = None
         for songCard in self.songCards:
             songCard.setPlay(False)
 
@@ -330,8 +352,8 @@ class BasicSongListWidget(ListWidget):
             songCard.deleteLater()
 
         self.songCards.clear()
-        self.currentIndex = 0
-        self.playingIndex = 0
+        self.currentIndex = None
+        self.playingIndex = None
 
     def sortSongInfo(self, key: str, reverse=True):
         """ sort song information list
@@ -409,3 +431,10 @@ class BasicSongListWidget(ListWidget):
     @property
     def currentSongInfo(self) -> SongInfo:
         return self.currentSongCard.songInfo
+
+    @property
+    def playingSongInfo(self):
+        if not self.songCards or self.playingIndex is None:
+            return None
+
+        return self.songInfos[self.playingIndex]

@@ -153,11 +153,6 @@ class LocalSongListWidget(NoScrollSongListWidget):
                          parent, QMargins(30, 0, 30, 0), 0)
         self.__setQss()
 
-    def __onPlayButtonClicked(self, index):
-        """ 歌曲卡播放按钮槽函数 """
-        self.playSignal.emit(index)
-        self.setCurrentIndex(index)
-
     def contextMenuEvent(self, e):
         """ 重写鼠标右击时间的响应函数 """
         hitIndex = self.indexAt(e.pos()).column()
@@ -198,7 +193,7 @@ class LocalSongListWidget(NoScrollSongListWidget):
     def _connectSongCardSignalToSlot(self, songCard: NoCheckBoxSongCard):
         """ 将歌曲卡信号连接到槽 """
         songCard.doubleClicked.connect(self.playSignal)
-        songCard.playButtonClicked.connect(self.__onPlayButtonClicked)
+        songCard.playButtonClicked.connect(self.playSignal)
         songCard.clicked.connect(self.setCurrentIndex)
 
 
@@ -219,11 +214,6 @@ class OnlineSongListWidget(NoScrollSongListWidget):
                          parent, QMargins(30, 0, 30, 0), 0)
         self.__setQss()
 
-    def __onPlayButtonClicked(self, index):
-        """ 歌曲卡播放按钮槽函数 """
-        self.playSignal.emit(index)
-        self.setCurrentIndex(index)
-
     def contextMenuEvent(self, e):
         """ 重写鼠标右击时间的响应函数 """
         hitIndex = self.indexAt(e.pos()).column()
@@ -243,7 +233,7 @@ class OnlineSongListWidget(NoScrollSongListWidget):
     def _connectSongCardSignalToSlot(self, songCard: OnlineSongCard):
         """ 将歌曲卡信号连接到槽 """
         songCard.doubleClicked.connect(self.playSignal)
-        songCard.playButtonClicked.connect(self.__onPlayButtonClicked)
+        songCard.playButtonClicked.connect(self.playSignal)
         songCard.clicked.connect(self.setCurrentIndex)
         songCard.downloadSig.connect(self.downloadSig)
 

@@ -811,17 +811,10 @@ class MainWindow(FramelessWindow):
         self.playingInterface.clearPlaylist()
         self.smallestPlayInterface.clearPlaylist()
         self.playBar.songInfoCard.hide()
-        self.setPlayButtonState(False)
-        self.setPlayButtonEnabled(False)
-
-        self.songTabSongListWidget.cancelPlayState()
-        self.albumInterface.songListWidget.cancelPlayState()
-        self.playlistInterface.songListWidget.cancelPlayState()
-        self.searchResultInterface.localSongListWidget.cancelPlayState()
-        self.searchResultInterface.onlineSongListWidget.cancelPlayState()
-
         self.playBar.setTotalTime(0)
         self.playBar.progressSlider.setRange(0, 0)
+        self.setPlayButtonState(False)
+        self.setPlayButtonEnabled(False)
 
     def onNavigationDisplayModeChanged(self, disPlayMode: int):
         """ navigation interface display mode changed slot """

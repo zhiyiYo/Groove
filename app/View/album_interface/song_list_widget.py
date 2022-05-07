@@ -70,18 +70,11 @@ class SongListWidget(NoScrollSongListWidget):
             self.__connectMenuSignalToSlot(contextMenu)
             contextMenu.exec(self.cursor().pos())
 
-    def __playButtonSlot(self, index):
-        """ play button clicked slot """
-        self.playSignal.emit(index)
-        self.setCurrentIndex(index)
-        self.setPlay(index)
-
     def __onSongCardDoubleClicked(self, index):
         """ song card double clicked slot """
         if self.isInSelectionMode:
             return
 
-        self.setPlay(index)
         self.playSignal.emit(index)
 
     def __setQss(self):
@@ -112,7 +105,7 @@ class SongListWidget(NoScrollSongListWidget):
     def _connectSongCardSignalToSlot(self, songCard: AlbumInterfaceSongCard):
         """ connect song card signal to slot """
         songCard.doubleClicked.connect(self.__onSongCardDoubleClicked)
-        songCard.playButtonClicked.connect(self.__playButtonSlot)
+        songCard.playButtonClicked.connect(self.playSignal)
         songCard.clicked.connect(self.setCurrentIndex)
         songCard.checkedStateChanged.connect(
             self.onSongCardCheckedStateChanged)

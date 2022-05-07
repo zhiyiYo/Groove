@@ -70,13 +70,14 @@ class SongListWidget(NoScrollSongListWidget):
     def __onPlayButtonClicked(self, index):
         """ play button clicked slot """
         self.playSignal.emit(index)
-        self.setCurrentIndex(index)
+        # the following line can't be deleted, because there may be duplicate songs
         self.setPlay(index)
 
     def __onSongCardDoubleClicked(self, index):
         """ song card double clicked slot """
         if self.isInSelectionMode:
             return
+
         self.playSignal.emit(index)
 
     def __onRemoveButtonClicked(self, index, songCard=None):
