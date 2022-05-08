@@ -1,9 +1,10 @@
 # coding:utf-8
+from common.config import config
 from common.os_utils import getCoverName
 from common.database.entity import SongInfo
 from common.meta_data.reader import AlbumCoverReader
 from common.crawler import KuWoMusicCrawler
-from PyQt5.QtCore import Qt, pyqtSignal, QThread
+from PyQt5.QtCore import pyqtSignal, QThread
 
 
 class GetOnlineSongUrlThread(QThread):
@@ -15,7 +16,7 @@ class GetOnlineSongUrlThread(QThread):
         super().__init__(parent=parent)
         self.playUrl = None
         self.coverPath = None
-        self.songInfo = None
+        self.songInfo = None    # type: SongInfo
         self.quality = 'Standard quality'
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
@@ -23,26 +24,13 @@ class GetOnlineSongUrlThread(QThread):
         }
         self.crawler = KuWoMusicCrawler()
 
-    def setSongInfo(self, songInfo: SongInfo, quality='Standard quality'):
-        """ set song information for getting play url
-
-        Parameters
-        ----------
-        songInfo: SongInfo
-            song information
-
-        quality: str
-            song sound quality
-        """
-        self.quality = quality
-        self.songInfo = songInfo
-
     def run(self):
         """ start to get play url """
         AlbumCoverReader.coverFolder.mkdir(exist_ok=True, parents=True)
 
         # get play url
-        self.playUrl = self.crawler.getSongUrl(self.songInfo, self.quality)
+        self.playUrl = self.crawler.getSongUrl(
+            self.songInfo, config['online-play-quality'])
 
         # download album cover
         coverPath = ''

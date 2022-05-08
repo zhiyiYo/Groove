@@ -1,4 +1,5 @@
 # coding:utf-8
+from common.config import config
 from common.thread.get_meta_data_thread import GetFolderMetaDataThread
 from components.buttons.switch_button import SwitchButton
 from components.dialog_box.folder_list_dialog import FolderListDialog
@@ -10,8 +11,6 @@ from PyQt5.QtCore import QEvent, QFile, Qt, QUrl, pyqtSignal
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import (QButtonGroup, QFileDialog, QLabel, QLineEdit,
                              QPushButton, QRadioButton, QWidget)
-
-from .config import Config
 
 
 class SettingInterface(ScrollArea):
@@ -28,7 +27,7 @@ class SettingInterface(ScrollArea):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.config = Config()
+        self.config = config
 
         self.scrollwidget = QWidget()
 

@@ -1,5 +1,6 @@
 # coding:utf-8
 from fuzzywuzzy import fuzz
+from common.config import config
 from common.crawler import KuWoMusicCrawler, WanYiMusicCrawler, KuGouMusicCrawler
 from PyQt5.QtCore import pyqtSignal, QThread
 
@@ -12,7 +13,6 @@ class GetMvUrlThread(QThread):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.key_word = ''
-        self.video_quality = 'Full HD'
         self.crawlers = [
             KuGouMusicCrawler(),
             WanYiMusicCrawler(),
@@ -34,12 +34,8 @@ class GetMvUrlThread(QThread):
                 continue
 
             url = crawler.getMvUrl(
-                mvInfo_list[matches.index(best_match)], self.video_quality)
+                mvInfo_list[matches.index(best_match)], config['mv-quality'])
             if url:
                 break
 
         self.crawlFinished.emit(url)
-
-    def setVideoQuality(self, quality: str):
-        """ set MV quality """
-        self.video_quality = quality

@@ -2,6 +2,7 @@
 import os
 from math import ceil
 
+from common.config import config
 from common.crawler import KuWoMusicCrawler
 from common.database.entity import SongInfo
 from common.library import Library
@@ -23,23 +24,15 @@ from .song_group_box import SongGroupBox
 class SearchResultInterface(ScrollArea):
     """ Search result interface """
 
-    downloadFinished = pyqtSignal(str)    # 下载歌曲完成
     playLocalSongSig = pyqtSignal(int)    # 播放本地歌曲
     playOnlineSongSig = pyqtSignal(int)   # 播放在线音乐
 
-    def __init__(self, library: Library, onlineMusicPageSize=10, onlinePlayQuality='Standard quality',
-                 downloadFolder='app/download', parent=None):
+    def __init__(self, library: Library, parent=None):
         """
         Parameters
         ----------
-        onlineMusicPageSize: int
-            number of online songs displayed per page
-
-        onlinePlayQuality: str
-            online play quality, including  `Standard quality`, `High quality` and `Super quality`
-
-        downloadFolder: str
-            the folder to save downloaded music
+        library: Library
+            song library
 
         parent:
             parent window
@@ -75,11 +68,8 @@ class SearchResultInterface(ScrollArea):
         self.totalPages = 1                             # 在线音乐总分页数
         self.currentPage = 1                            # 当前在线音乐页码
         self.totalOnlineMusic = 0                       # 数据库中所有符合条件的在线音乐数
-        self.downloadFolder = downloadFolder            # 在线音乐的下载目录
-        self.onlinePlayQuality = onlinePlayQuality      # 在线音乐播放音质
-        self.onlineMusicPageSize = onlineMusicPageSize  # 每页最多显示的在线音乐数量
 
-        self.downloadSongThread = DownloadSongThread(self.downloadFolder, self)
+        self.downloadSongThread = DownloadSongThread(self)
         self.downloadStateTooltip = None
         self.__initWidget()
 
@@ -162,7 +152,6 @@ class SearchResultInterface(ScrollArea):
     def __onDownloadAllComplete(self):
         """ download finished slot """
         self.downloadStateTooltip = None
-        self.downloadFinished.emit(self.downloadFolder)
 
     def search(self, keyWord: str):
         """ search local songs, albums, playlist and online songs """
@@ -197,9 +186,9 @@ class SearchResultInterface(ScrollArea):
         # search online songs
         self.currentPage = 1
         self.onlineSongInfos, self.totalOnlineMusic = self.crawler.getSongInfos(
-            keyWord, 1, self.onlineMusicPageSize)
+            keyWord, 1, config['online-music-page-size'])
         self.totalPages = 1 if not self.totalOnlineMusic else ceil(
-            self.totalOnlineMusic/self.onlineMusicPageSize)
+            self.totalOnlineMusic/config['online-music-page-size'])
 
         self.__updateLoadMoreLabel()
 
@@ -250,25 +239,6 @@ class SearchResultInterface(ScrollArea):
                 self.playlistGroupBox.isHidden() and self.onlineSongGroupBox.isHidden():
             self.__setHintsLabelVisible(True)
 
-    def setDownloadFolder(self, folder: str):
-        """ set the folder to download online music """
-        if not os.path.exists(folder):
-            raise ValueError(f"The folder `{folder}` doesn't exists")
-
-        self.downloadSongThread.downloadFolder = folder
-        self.downloadFolder = folder
-
-    def setOnlinePlayQuality(self, quality: str):
-        """ set online music quality """
-        if quality not in ['Standard quality', 'High quality', 'Super quality']:
-            raise ValueError(f'The quality `{quality}` is illegal')
-
-        self.onlinePlayQuality = quality
-
-    def setOnlineMusicPageSize(self, pageSize: int):
-        """ set online music page size """
-        self.onlineMusicPageSize = pageSize if pageSize > 0 else 20
-
     def __updateLoadMoreLabel(self):
         """ update load more label """
         label = self.onlineSongGroupBox.loadMoreLabel
@@ -293,7 +263,7 @@ class SearchResultInterface(ScrollArea):
         # send request for online music
         self.currentPage += 1
         songInfos, _ = self.crawler.getSongInfos(
-            self.keyWord, self.currentPage, self.onlineMusicPageSize)
+            self.keyWord, self.currentPage, config['online-music-page-size'])
 
         # update online music group box
         offset = len(self.onlineSongListWidget.songInfos)

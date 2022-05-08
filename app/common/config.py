@@ -3,8 +3,10 @@ import json
 import os
 from pathlib import Path
 
+from .singleton import Singleton
 
-class Config:
+
+class Config(Singleton):
     """ Config of app """
 
     folder = Path('config')
@@ -62,5 +64,8 @@ class Config:
     def save(self):
         """ save config """
         self.folder.mkdir(parents=True, exist_ok=True)
-        with open("config/config.json", "w", encoding="utf-8") as f:
+        with open(self.folder/"config.json", "w", encoding="utf-8") as f:
             json.dump(self.__config, f)
+
+
+config = Config()

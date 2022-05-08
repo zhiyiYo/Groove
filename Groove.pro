@@ -68,6 +68,9 @@ SOURCES += app/View/main_window/main_window.py \
         app/common/meta_data/reader/song_info_reader.py \
         app/components/selection_mode_bar/button.py \
         app/components/selection_mode_interface/selection_mode_interface.py \
-        app/View/more_search_result_interface/more_search_result_interface.py
+        app/View/more_search_result_interface/more_search_result_interface.py \
+        app/components/singer_card/singer_card_base.py \
+        app/components/singer_card/singer_card.py \
+        app/View/search_result_interface/singer_group_box.py
 
 TRANSLATIONS += app/resource/i18n/Groove_zh.ts

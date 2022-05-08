@@ -61,3 +61,27 @@ QLineEdit:!focus {
 QLineEdit:hover:!focus {
     background: rgb(250, 250, 250);
 }
+
+#returnButton[isWhite=false] {
+    border-image: url(:/images/title_bar/黑色返回按钮_60_40.png)
+}
+
+#returnButton[isWhite=false]:hover {
+    border-image: url(:/images/title_bar/黑色返回按钮_hover_60_40.png)
+}
+
+#returnButton[isWhite=false]:pressed {
+    border-image: url(:/images/title_bar/黑色返回按钮_pressed_60_40.png)
+}
+
+#returnButton[isWhite="true"] {
+    border-image: url(:/images/title_bar/白色返回按钮_60_40.png)
+}
+
+#returnButton[isWhite="true"]:hover {
+    border-image: url(:/images/title_bar/白色返回按钮_hover_60_40.png)
+}
+
+#returnButton[isWhite="true"]:pressed {
+    border-image: url(:/images/title_bar/白色返回按钮_pressed_60_40.png)
+}

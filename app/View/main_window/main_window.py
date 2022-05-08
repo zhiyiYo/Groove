@@ -5,6 +5,7 @@ from random import shuffle
 from typing import List
 
 from common import resource
+from common.config import config
 from common.crawler import CrawlerBase
 from common.database import DBInitializer
 from common.database.entity import AlbumInfo, Playlist, SongInfo
@@ -21,16 +22,15 @@ from components.media_player import MediaPlaylist, PlaylistType
 from components.system_tray_icon import SystemTrayIcon
 from components.thumbnail_tool_bar import ThumbnailToolBar
 from components.title_bar import TitleBar
+from components.widgets.label import PixmapLabel
 from components.widgets.stacked_widget import (OpacityAniStackedWidget,
                                                PopUpAniStackedWidget)
 from components.widgets.state_tooltip import StateTooltip
-from components.widgets.label import PixmapLabel
 from PyQt5.QtCore import QEasingCurve, QEvent, QEventLoop, QFile, Qt, QTimer
 from PyQt5.QtGui import QColor, QIcon, QPixmap
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist
 from PyQt5.QtSql import QSqlDatabase
-from PyQt5.QtWidgets import (QAction, QApplication, QHBoxLayout, QLabel,
-                             QWidget, qApp)
+from PyQt5.QtWidgets import QAction, QApplication, QHBoxLayout, QWidget, qApp
 from PyQt5.QtWinExtras import QtWin
 from View.album_interface import AlbumInterface
 from View.more_search_result_interface import MoreSearchResultInterface
@@ -105,9 +105,8 @@ class MainWindow(FramelessWindow):
         self.thumbnailToolBar.setWindow(self.windowHandle())
 
         # create play bar
-        color = self.settingInterface.config['playBar-color']
         self.playBar = PlayBar(
-            self.mediaPlaylist.lastSongInfo, QColor(*color), self)
+            self.mediaPlaylist.lastSongInfo, QColor(*config['playBar-color']), self)
 
         # create playing interface
         self.playingInterface = PlayingInterface(
@@ -144,11 +143,8 @@ class MainWindow(FramelessWindow):
         self.systemTrayIcon = SystemTrayIcon(self)
 
         # create search result interface
-        pageSize = self.settingInterface.config['online-music-page-size']
-        quality = self.settingInterface.config['online-play-quality']
-        folder = self.settingInterface.config['download-folder']
         self.searchResultInterface = SearchResultInterface(
-            self.library, pageSize, quality, folder, self.subMainWindow)
+            self.library, self.subMainWindow)
 
         # create more search result interface
         self.moreSearchResultInterface = MoreSearchResultInterface(
@@ -183,11 +179,10 @@ class MainWindow(FramelessWindow):
         DBInitializer.init()
 
         self.library = Library(
-            self.settingInterface.config["selected-folders"],
+            config["selected-folders"],
             QSqlDatabase.database(DBInitializer.connectionName)
         )
-        self.libraryThread = LibraryThread(
-            self.settingInterface.config["selected-folders"], self)
+        self.libraryThread = LibraryThread(config["selected-folders"], self)
 
         eventLoop = QEventLoop(self)
         self.libraryThread.finished.connect(eventLoop.quit)
@@ -201,10 +196,11 @@ class MainWindow(FramelessWindow):
 
     def initWindow(self):
         """ initialize window """
+        r = self.devicePixelRatioF()
         desktop = QApplication.desktop().availableGeometry()
         w, h = desktop.width(), desktop.height()
         self.resize(w*1240/1920, h*970/1080)
-        self.setMinimumSize(w*1030/1920, h*800/1080)
+        self.setMinimumSize(w*r*1030/1920, h*r*780/1080)
 
         self.setWindowTitle(self.tr("Groove Music"))
         self.setWindowIcon(QIcon(":/images/logo/logo_small.png"))
@@ -220,10 +216,7 @@ class MainWindow(FramelessWindow):
 
     def initWidget(self):
         """ initialize widgets """
-        self.videoInterface.hide()
-
-        QApplication.setQuitOnLastWindowClosed(
-            not self.settingInterface.config['minimize-to-tray'])
+        QApplication.setQuitOnLastWindowClosed(not config['minimize-to-tray'])
 
         desktop = QApplication.desktop().availableGeometry()
         self.smallestPlayInterface.move(desktop.width() - 390, 40)
@@ -253,10 +246,6 @@ class MainWindow(FramelessWindow):
 
         self.updateLyricPosTimer.setInterval(200)
 
-        # set MV quality
-        self.playingInterface.getMvUrlThread.setVideoQuality(
-            self.settingInterface.config['mv-quality'])
-
         self.initPlaylist()
         self.connectSignalToSlot()
         self.initPlayBar()
@@ -274,8 +263,7 @@ class MainWindow(FramelessWindow):
         self.navigationInterface.show()
         self.playBar.show()
         self.systemTrayIcon.show()
-        self.setWindowEffect(
-            self.settingInterface.config["enable-acrylic-background"])
+        self.setWindowEffect(config["enable-acrylic-background"])
 
     def setWindowEffect(self, isEnableAcrylic: bool):
         """ set window effect """
@@ -394,8 +382,7 @@ class MainWindow(FramelessWindow):
 
     def initPlayBar(self):
         """ initialize play bar """
-        volume = self.settingInterface.config["volume"]
-        self.playBar.setVolume(volume)
+        self.playBar.setVolume(config["volume"])
 
         if self.mediaPlaylist.playlist:
             self.playBar.updateWindow(self.mediaPlaylist.getCurrentSong())
@@ -611,8 +598,7 @@ class MainWindow(FramelessWindow):
         # get play url and cover
         eventLoop = QEventLoop(self)
         self.getOnlineSongUrlThread.finished.connect(eventLoop.quit)
-        self.getOnlineSongUrlThread.setSongInfo(
-            songInfo, self.settingInterface.config['online-play-quality'])
+        self.getOnlineSongUrlThread.songInfo = songInfo
         self.getOnlineSongUrlThread.start()
         eventLoop.exec()
 
@@ -1197,11 +1183,10 @@ class MainWindow(FramelessWindow):
 
     def onExit(self):
         """ exit main window """
-        config = {
+        config.update({
             "volume": self.playBar.volumeSlider.value(),
             "playBar-color": list(self.playBar.getColor().getRgb()[:3])
-        }
-        self.settingInterface.config.update(config)
+        })
         self.mediaPlaylist.save()
         self.systemTrayIcon.hide()
 
@@ -1318,14 +1303,6 @@ class MainWindow(FramelessWindow):
             self.setWindowEffect)
         self.settingInterface.selectedMusicFoldersChanged.connect(
             self.onSelectedFolderChanged)
-        self.settingInterface.downloadFolderChanged.connect(
-            self.searchResultInterface.setDownloadFolder)
-        self.settingInterface.onlinePlayQualityChanged.connect(
-            self.searchResultInterface.setOnlinePlayQuality)
-        self.settingInterface.pageSizeChanged.connect(
-            self.searchResultInterface.setOnlineMusicPageSize)
-        self.settingInterface.mvQualityChanged.connect(
-            self.playingInterface.getMvUrlThread.setVideoQuality)
         self.settingInterface.minimizeToTrayChanged.connect(
             self.onMinimizeToTrayChanged)
         self.settingInterface.crawlFinished.connect(

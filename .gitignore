@@ -6,7 +6,7 @@
 *.code-workspace
 
 # 忽略配置文件夹
-config
+config.json
 
 # 忽略缓存
 cache
