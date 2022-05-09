@@ -23,6 +23,7 @@ class PlayBar(QWidget):
 
     def __init__(self, songInfo: SongInfo, color: QColor, parent=None):
         super().__init__(parent)
+        self.__oldWidth = 1280
         self.__color = color
         self.aniGroup = QParallelAnimationGroup(self)
         self.colorAni = QPropertyAnimation(self, b'color', self)
@@ -61,8 +62,7 @@ class PlayBar(QWidget):
         self.rightWidgetGroup.move(w - self.rightWidgetGroup.width(), 0)
 
     def resizeEvent(self, e: QResizeEvent):
-        ow = e.oldSize().width() if e.oldSize().width() > 0 else 1280
-        dw = self.width() - ow
+        dw = self.width() - self.__oldWidth
 
         # adjust the width of progress slider
         pBar = self.playProgressBar
@@ -70,6 +70,8 @@ class PlayBar(QWidget):
 
         self.__adjustWidgetPos()
         self.__adjustSongInfoCardWidth()
+
+        self.__oldWidth = self.width()
 
     def __showMoreActionsMenu(self):
         """ show more actions menu """
