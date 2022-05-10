@@ -119,9 +119,6 @@ class PlayBar(QWidget):
 
     def setVolume(self, volume: int):
         """ set volume """
-        if self.volumeSlider.value() == volume:
-            return
-
         self.volumeSlider.setValue(volume)
         self.volumeButton.setVolumeLevel(volume)
 

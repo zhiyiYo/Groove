@@ -430,11 +430,11 @@ class VolumeButton(TooltipButton):
         """ set volume level """
         if volume == 0:
             self.__updateIcon(0)
-        elif volume <= 32 and self.currentVolumeLevel != 1:
+        elif volume <= 32:
             self.__updateIcon(1)
-        elif 33 <= volume <= 65 and self.currentVolumeLevel != 2:
+        elif 33 <= volume <= 65:
             self.__updateIcon(2)
-        elif volume > 65 and self.currentVolumeLevel != 3:
+        elif volume > 65:
             self.__updateIcon(3)
 
     def __updateIcon(self, iconIndex):
