@@ -9,6 +9,7 @@ from common.config import config
 from common.crawler import CrawlerBase
 from common.database import DBInitializer
 from common.database.entity import AlbumInfo, Playlist, SongInfo
+from common.hotkey_manager import HotkeyManager
 from common.library import Library
 from common.os_utils import moveToTrash
 from common.signal_bus import signalBus
@@ -57,6 +58,7 @@ class MainWindow(FramelessWindow):
         self.setObjectName("mainWindow")
         self.createWidgets()
         self.initWidget()
+        self.initHotkey()
 
     def createWidgets(self):
         """ create widgets """
@@ -153,26 +155,21 @@ class MainWindow(FramelessWindow):
         # create state tooltip
         self.scanInfoTooltip = None
 
-        # create hot keys
-        self.togglePlayPauseAct_1 = QAction(
-            parent=self, shortcut=Qt.Key_Space, triggered=self.togglePlayState)
-        self.showNormalAct = QAction(
-            parent=self, shortcut=Qt.Key_Escape, triggered=self.exitFullScreen)
-        self.lastSongAct = QAction(
-            parent=self, shortcut=Qt.Key_MediaPrevious, triggered=self.mediaPlaylist.previous)
-        self.nextSongAct = QAction(
-            parent=self, shortcut=Qt.Key_MediaNext, triggered=self.mediaPlaylist.next)
-        self.togglePlayPauseAct_2 = QAction(
-            parent=self, shortcut=Qt.Key_MediaPlay, triggered=self.togglePlayState)
-        self.addActions([
-            self.togglePlayPauseAct_1,
-            self.showNormalAct,
-            self.nextSongAct,
-            self.lastSongAct,
-            self.togglePlayPauseAct_2,
-        ])
-
         self.songTabSongListWidget = self.myMusicInterface.songListWidget
+
+    def initHotkey(self):
+        self.hotkeyManager = HotkeyManager()
+        self.hotkeyManager.register(
+            self.winId(), Qt.Key_MediaPlay, self.togglePlayState)
+        self.hotkeyManager.register(
+            self.winId(), Qt.Key_MediaNext, self.mediaPlaylist.next)
+        self.hotkeyManager.register(
+            self.winId(), Qt.Key_MediaPrevious, self.mediaPlaylist.previous)
+
+        self.addActions([
+            QAction(self, shortcut=Qt.Key_Escape, triggered=self.exitFullScreen),
+            QAction(self, shortcut=Qt.Key_Space, triggered=self.togglePlayState),
+        ])
 
     def initLibrary(self):
         """ initialize song library """
@@ -1189,6 +1186,7 @@ class MainWindow(FramelessWindow):
         })
         self.mediaPlaylist.save()
         self.systemTrayIcon.hide()
+        self.hotkeyManager.clear(self.winId())
 
         # close database
         QSqlDatabase.database(DBInitializer.connectionName).close()
