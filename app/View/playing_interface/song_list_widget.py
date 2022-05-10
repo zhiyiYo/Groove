@@ -40,7 +40,6 @@ class SongListWidget(ListWidget):
         self.resize(1150 + 60, 800)
         self.setViewportMargins(30, 0, 30, 0)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.setUniformItemSizes(True)
         self.__setQss()
 
     def createSongCards(self):

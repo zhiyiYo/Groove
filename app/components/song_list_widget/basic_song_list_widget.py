@@ -58,7 +58,6 @@ class BasicSongListWidget(ListWidget):
 
         self.setAlternatingRowColors(True)
         self.setViewportMargins(viewportMargins)
-        self.setUniformItemSizes(True)
 
         signalBus.playBySongInfoSig.connect(self.setPlayBySongInfo)
         signalBus.clearPlayingPlaylistSig.connect(self.cancelState)
@@ -90,8 +89,7 @@ class BasicSongListWidget(ListWidget):
         QApplication.sendEvent(songCard, QResizeEvent(size, songCard.size()))
         QApplication.processEvents()
         songCard.resize(size)
-
-        item.setSizeHint(QSize(songCard.width(), 60))
+        item.setSizeHint(size)
 
         self.addItem(item)
         self.setItemWidget(item, songCard)
@@ -303,9 +301,7 @@ class BasicSongListWidget(ListWidget):
         """
         self.__removePaddingBottomItem()
 
-        # cancel the current song card playback status
-        if self.songCards and self.currentIndex is not None:
-            self.songCards[self.currentIndex].setPlay(False)
+        playingSongInfo = self.playingSongInfo
 
         newSongNum = len(songInfos)
         oldSongNum = len(self.songCards)
@@ -332,12 +328,9 @@ class BasicSongListWidget(ListWidget):
         n = min(oldSongNum, newSongNum)
         for songInfo, songCard in zip(songInfos[:n], self.songCards[:n]):
             songCard.updateSongCard(songInfo)
+            QApplication.processEvents()
 
-        self.currentIndex = None
-        self.playingIndex = None
-        for songCard in self.songCards:
-            songCard.setPlay(False)
-
+        self.setPlayBySongInfo(playingSongInfo)
         self.__createPaddingBottomItem()
 
         if oldSongNum != newSongNum:

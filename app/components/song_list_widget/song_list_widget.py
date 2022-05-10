@@ -126,8 +126,8 @@ class SongListWidget(NoScrollSongListWidget):
             self.setPlay(self.songInfos.index(playingSongInfo))
 
     def updateAllSongCards(self, songInfos: List[SongInfo]):
+        self.guideLabel.setHidden(bool(songInfos))
         super().updateAllSongCards(songInfos)
-        self.guideLabel.setHidden(bool(self.songInfos))
 
     def __showDeleteCardDialog(self):
         index = self.currentRow()
