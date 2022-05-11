@@ -20,6 +20,7 @@ class SongInfoCardChute(QWidget):
     showPlayBarSignal = pyqtSignal()
     hidePlayBarSignal = pyqtSignal()
     currentIndexChanged = pyqtSignal([int], [str])
+    aniFinished=pyqtSignal()
 
     def __init__(self, playlist: List[SongInfo] = None, parent=None):
         """
@@ -175,6 +176,8 @@ class SongInfoCardChute(QWidget):
             index = self.unFinishedAnis.pop()
             self.__cycleShift(index)
             self.unFinishedAnis.clear()
+
+        self.aniFinished.emit()
 
     def __updateSongInfoCards(self):
         """ update song information cards """

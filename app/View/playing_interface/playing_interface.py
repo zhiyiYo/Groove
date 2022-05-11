@@ -277,7 +277,6 @@ class PlayingInterface(QWidget):
             return
 
         self.currentIndex = index
-        self.__getLyric()
         self.songListWidget.setCurrentIndex(index)
         # background cover will be updated by songInfoCardChute's signal
         self.songInfoCardChute.setCurrentIndex(index)
@@ -302,10 +301,6 @@ class PlayingInterface(QWidget):
         self.songListWidget.updateSongCards(self.playlist, isResetIndex, index)
         self.albumCoverLabel.setCover(
             self.songInfoCardChute.cards[1].coverPath)
-
-        if self.playlist:
-            self.__getLyric()
-
         self.__setGuideLabelHidden(
             bool(playlist) and not self.songListWidget.isVisible())
 
@@ -557,6 +552,7 @@ class PlayingInterface(QWidget):
             self.albumCoverLabel.setCover)
         self.songInfoCardChute.showPlayBarSignal.connect(self.showPlayBar)
         self.songInfoCardChute.hidePlayBarSignal.connect(self.hidePlayBar)
+        self.songInfoCardChute.aniFinished.connect(self.__getLyric)
 
         # play bar signal
         self.playBar.volumeSliderWidget.volumeSlider.valueChanged.connect(
