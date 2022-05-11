@@ -1,6 +1,6 @@
 # coding:utf-8
 from pathlib import Path
-from typing import List
+from typing import List, Union
 
 from common.meta_data.reader import SongInfoReader
 from PyQt5.QtSql import QSqlDatabase
@@ -130,3 +130,8 @@ class SongInfoController:
     def updateMultiSongInfos(self, songInfos: List[SongInfo]):
         """ update multi song information """
         return self.songInfoService.modifyByIds(songInfos)
+
+    def getSongInfosFromFile(self, files: List[Union[str, Path]]):
+        """ get song information from files and do not operate the database """
+        reader = SongInfoReader()
+        return [reader.read(i) for i in files]

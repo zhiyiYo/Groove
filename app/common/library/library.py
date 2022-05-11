@@ -1,6 +1,6 @@
 # coding:utf-8
 from pathlib import Path
-from typing import List
+from typing import List, Union
 
 from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtSql import QSqlDatabase
@@ -19,6 +19,7 @@ class Library(QObject):
     reloadFinished = pyqtSignal()
     fileAdded = pyqtSignal(list)
     fileRemoved = pyqtSignal(list)
+    loadFromFilesFinished = pyqtSignal(list)
 
     cacheFile = 'cache/cache.db'
 
@@ -68,6 +69,12 @@ class Library(QObject):
         self.playlists = self.playlistController.getAllPlaylists()
 
         self.loadFinished.emit()
+
+    def loadFromFiles(self, files: List[Union[Path, str]]):
+        """ load song information from files """
+        songInfos = self.songInfoController.getSongInfosFromFile(files)
+        self.albumCoverController.getAlbumCovers(songInfos)
+        self.loadFromFilesFinished.emit(songInfos)
 
     def setDirectories(self, directories: List[str]):
         """ set the audio directories """

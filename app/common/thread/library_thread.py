@@ -10,6 +10,7 @@ class LibraryThread(QThread):
     """ Song library thread """
 
     reloadFinished = pyqtSignal()
+    loadFromFilesFinished = pyqtSignal(list)
 
     def __init__(self, directories: List[Directory] = None, parent=None):
         super().__init__(parent=parent)
@@ -19,6 +20,7 @@ class LibraryThread(QThread):
         self.params = {}
 
         self.library.reloadFinished.connect(self.reloadFinished)
+        self.library.loadFromFilesFinished.connect(self.loadFromFilesFinished)
 
     def run(self):
         """ executive song library task """

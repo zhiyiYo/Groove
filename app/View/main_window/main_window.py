@@ -10,7 +10,7 @@ from common.crawler import CrawlerBase
 from common.database import DBInitializer
 from common.database.entity import AlbumInfo, Playlist, SongInfo
 from common.hotkey_manager import HotkeyManager
-from common.library import Library
+from common.library import Directory, Library
 from common.os_utils import moveToTrash
 from common.signal_bus import signalBus
 from common.thread.get_online_song_url_thread import GetOnlineSongUrlThread
@@ -27,8 +27,9 @@ from components.widgets.label import PixmapLabel
 from components.widgets.stacked_widget import (OpacityAniStackedWidget,
                                                PopUpAniStackedWidget)
 from components.widgets.state_tooltip import StateTooltip
-from PyQt5.QtCore import QEasingCurve, QEvent, QEventLoop, QFile, Qt, QTimer
-from PyQt5.QtGui import QColor, QIcon, QPixmap
+from PyQt5.QtCore import (QEasingCurve, QEvent, QEventLoop, QFile, QFileInfo,
+                          Qt, QTimer)
+from PyQt5.QtGui import QColor, QDragEnterEvent, QDropEvent, QIcon, QPixmap
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist
 from PyQt5.QtSql import QSqlDatabase
 from PyQt5.QtWidgets import QAction, QApplication, QHBoxLayout, QWidget, qApp
@@ -213,6 +214,7 @@ class MainWindow(FramelessWindow):
 
     def initWidget(self):
         """ initialize widgets """
+        self.setAcceptDrops(True)
         QApplication.setQuitOnLastWindowClosed(not config['minimize-to-tray'])
 
         desktop = QApplication.desktop().availableGeometry()
@@ -348,6 +350,35 @@ class MainWindow(FramelessWindow):
             self.smallestPlayInterface.hide()
 
         super().showEvent(e)
+
+    def dragEnterEvent(self, e: QDragEnterEvent):
+        if not e.mimeData().hasUrls():
+            return e.ignore()
+
+        e.acceptProposedAction()
+
+    def dropEvent(self, e: QDropEvent):
+        files = []
+        formats = tuple(Directory.audio_formats)
+
+        for url in e.mimeData().urls():
+            fileInfo = QFileInfo(url.toLocalFile())
+            path = fileInfo.absoluteFilePath()
+
+            if fileInfo.isFile() and path.endswith(formats):
+                files.append(path)
+            elif fileInfo.isDir():
+                files.extend(Directory(path).glob())
+
+        if not files:
+            return
+
+        if len(files) > 10:
+            self.showScanInfoTooltip()
+
+        self.libraryThread.setTask(
+            self.libraryThread.library.loadFromFiles, files=files)
+        self.libraryThread.start()
 
     def initPlaylist(self):
         """ initialize playlist """
@@ -1199,14 +1230,16 @@ class MainWindow(FramelessWindow):
             self.subStackWidget.previousWidget)
         self.navigationHistories.pop()
 
-    def onSelectedFolderChanged(self, directories: List[str]):
-        """ selected music folders changed slot """
+    def showScanInfoTooltip(self):
         title = self.tr("Scanning song information")
         content = self.tr("Please wait patiently")
         self.scanInfoTooltip = StateTooltip(title, content, self.window())
         self.scanInfoTooltip.move(self.scanInfoTooltip.getSuitablePos())
         self.scanInfoTooltip.show()
 
+    def onSelectedFolderChanged(self, directories: List[str]):
+        """ selected music folders changed slot """
+        self.showScanInfoTooltip()
         self.libraryThread.setTask(
             self.libraryThread.library.setDirectories, directories=directories)
         self.libraryThread.start()
@@ -1216,6 +1249,14 @@ class MainWindow(FramelessWindow):
         self.libraryThread.library.copyTo(self.library)
         self.myMusicInterface.updateWindow()
 
+        if self.scanInfoTooltip:
+            self.scanInfoTooltip.setState(True)
+
+        self.scanInfoTooltip = None
+
+    def onLoadFromFilesFinished(self, songInfos: List[SongInfo]):
+        """ load song information form files finished slot """
+        self.setPlaylist(songInfos)
         if self.scanInfoTooltip:
             self.scanInfoTooltip.setState(True)
 
@@ -1444,6 +1485,8 @@ class MainWindow(FramelessWindow):
 
         # library thread signal
         self.libraryThread.reloadFinished.connect(self.onReloadFinished)
+        self.libraryThread.loadFromFilesFinished.connect(
+            self.onLoadFromFilesFinished)
 
         # library signal
         self.library.fileAdded.connect(self.onFileAdded)
