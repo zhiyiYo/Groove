@@ -10,11 +10,11 @@ from .circle_button import CircleButton
 class SelectableButton(CircleButton):
     """ Selectable button """
 
-    def __init__(self, iconPath_list: list, parent=None, iconSize=(47, 47), buttonSize=(47, 47)):
-        super().__init__(iconPath_list[0], parent, iconSize, buttonSize)
-        self.iconPath_list = iconPath_list
+    def __init__(self, iconPaths: list, parent=None, iconSize=(47, 47), buttonSize=(47, 47)):
+        super().__init__(iconPaths[0], parent, iconSize, buttonSize)
+        self.iconPaths = iconPaths
         self.isSelected = False
-        self.selectableTime = len(self.iconPath_list)
+        self.selectableTime = len(self.iconPaths)
         self.clickedTime = 0
 
     def mouseReleaseEvent(self, e):
@@ -26,9 +26,9 @@ class SelectableButton(CircleButton):
         if self.clickedTime == self.selectableTime + 1:
             self.isSelected = False
             self.clickedTime = 0
-            self.iconPixmap = QPixmap(self.iconPath_list[0])
+            self.iconPixmap = QPixmap(self.iconPaths[0])
         else:
-            self.iconPixmap = QPixmap(self.iconPath_list[self.clickedTime - 1])
+            self.iconPixmap = QPixmap(self.iconPaths[self.clickedTime - 1])
 
         self.update()
         super().mouseReleaseEvent(e)
@@ -83,8 +83,9 @@ class SelectableButton(CircleButton):
 class RandomPlayButton(SelectableButton):
     """ Random play button """
 
-    def __init__(self, iconPath_list: list, parent=None, iconSize=(47, 47), buttonSize=(47, 47)):
-        super().__init__(iconPath_list, parent, iconSize, buttonSize)
+    def __init__(self, parent=None):
+        iconPaths = [":/images/playing_interface/randomPlay_47_47.png"]
+        super().__init__(iconPaths, parent, (47, 47), (47, 47))
         self.setToolTip(self.tr('Random play: off'))
 
     def setRandomPlay(self, isRandomPlay: bool):
@@ -107,10 +108,14 @@ class RandomPlayButton(SelectableButton):
 class LoopModeButton(SelectableButton):
     """ Loop mode button """
 
-    def __init__(self, iconPath_list: list, parent=None, iconSize=(47, 47), buttonSize=(47, 47)):
-        super().__init__(iconPath_list, parent, iconSize, buttonSize)
+    def __init__(self, parent=None):
+        iconPaths = [
+            ":/images/playing_interface/RepeatAll.png",
+            ":/images/playing_interface/RepeatOne.png",
+        ]
+        super().__init__(iconPaths, parent, (47, 47), (47, 47))
         self.loopMode = QMediaPlaylist.Sequential
-        self.__loopMode_list = [
+        self.__loopModes = [
             QMediaPlaylist.Sequential,
             QMediaPlaylist.Loop,
             QMediaPlaylist.CurrentItemInLoop,
@@ -119,7 +124,7 @@ class LoopModeButton(SelectableButton):
 
     def mouseReleaseEvent(self, e):
         super().mouseReleaseEvent(e)
-        self.loopMode = self.__loopMode_list[self.clickedTime]
+        self.loopMode = self.__loopModes[self.clickedTime]
         signalBus.loopModeChanged.emit(self.loopMode)
 
     def setLoopMode(self, loopMode: QMediaPlaylist.PlaybackMode):
@@ -130,12 +135,12 @@ class LoopModeButton(SelectableButton):
         self.loopMode = loopMode
         self.isSelected = self.loopMode in [
             QMediaPlaylist.Loop, QMediaPlaylist.CurrentItemInLoop]
-        self.clickedTime = self.__loopMode_list.index(loopMode)
+        self.clickedTime = self.__loopModes.index(loopMode)
 
         if self.clickedTime == 2:
-            self.iconPixmap = QPixmap(self.iconPath_list[1])
+            self.iconPixmap = QPixmap(self.iconPaths[1])
         else:
-            self.iconPixmap = QPixmap(self.iconPath_list[0])
+            self.iconPixmap = QPixmap(self.iconPaths[0])
 
         self.update()
 
@@ -158,8 +163,9 @@ class LoopModeButton(SelectableButton):
 class PullUpArrow(CircleButton):
     """ Pull up arrow button """
 
-    def __init__(self, iconPath, parent=None, iconSize=(27, 27), buttonSize=(27, 27)):
-        super().__init__(iconPath, parent, iconSize, buttonSize)
+    def __init__(self, parent=None):
+        iconPath = ":/images/playing_interface/ChevronUp.png"
+        super().__init__(iconPath, parent, (27, 27), (27, 27))
         # the direction of rotation: 1 clockwise and -1 counterclockwise.
         self.rotateDirection = 1
         self.deltaAngleStep = 9
@@ -221,12 +227,11 @@ class PullUpArrow(CircleButton):
 class TwoStateButton(CircleButton):
     """ Two state button """
 
-    def __init__(self, iconPath_list, parent=None, isState_1=True):
-        self.iconPath_list = iconPath_list
-        super().__init__(self.iconPath_list[isState_1], parent)
+    def __init__(self, iconPaths, parent=None, isState_1=True):
+        self.iconPaths = iconPaths
+        super().__init__(self.iconPaths[isState_1], parent)
         self._isState_1 = isState_1
-        self.pixmap_list = [QPixmap(iconPath)
-                            for iconPath in self.iconPath_list]
+        self.pixmaps = [QPixmap(iconPath) for iconPath in self.iconPaths]
         self._pixPos_list = [(0, 0), (2, 2)]
 
     def mouseReleaseEvent(self, e):
@@ -238,8 +243,9 @@ class TwoStateButton(CircleButton):
         """ set the state of button """
         if self._isState_1 == isState_1:
             return
+
         self._isState_1 = isState_1
-        self.iconPixmap = self.pixmap_list[self._isState_1]
+        self.iconPixmap = self.pixmaps[self._isState_1]
         self.update()
 
 
@@ -247,11 +253,11 @@ class PlayButton(TwoStateButton):
     """ Play button """
 
     def __init__(self, parent=None):
-        self.iconPath_list = [
+        self.iconPaths = [
             ":/images/playing_interface/Pause_47_47.png",
             ":/images/playing_interface/Play_47_47.png",
         ]
-        super().__init__(self.iconPath_list, parent)
+        super().__init__(self.iconPaths, parent)
         self.isPlay = False
         self.setToolTip(self.tr('Play'))
 
@@ -310,7 +316,7 @@ class VolumeButton(CircleButton):
             ":/images/playing_interface/Volume3.png",
             ":/images/playing_interface/volume_white_level_mute_47_47.png",
         ]
-        self.pixmap_list = [QPixmap(i) for i in self.__iconPaths]
+        self.pixmaps = [QPixmap(i) for i in self.__iconPaths]
         super().__init__(self.__iconPaths[0], parent)
         self.isMute = False
         self.__volumeLevel = 0
@@ -323,7 +329,7 @@ class VolumeButton(CircleButton):
 
         self.isMute = isMute
         index = -1 if isMute else self.__volumeLevel
-        self.iconPixmap = self.pixmap_list[index]
+        self.iconPixmap = self.pixmaps[index]
         self.update()
 
     def setVolumeLevel(self, volume: int):
@@ -341,5 +347,5 @@ class VolumeButton(CircleButton):
         """ update icon """
         self.__volumeLevel = iconIndex
         if not self.isMute:
-            self.iconPixmap = self.pixmap_list[iconIndex]
+            self.iconPixmap = self.pixmaps[iconIndex]
             self.update()

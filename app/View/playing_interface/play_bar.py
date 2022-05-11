@@ -32,21 +32,13 @@ class PlayBar(QWidget):
         self.volumeSliderWidget = VolumeSliderWidget(self.window())
         self.fullScreenButton = FullScreenButton(self)
         self.playProgressBar = PlayProgressBar(parent=self)
-        self.pullUpArrowButton = PullUpArrow(
-            ":/images/playing_interface/ChevronUp.png", self)
+        self.pullUpArrowButton = PullUpArrow(self)
         self.lastSongButton = CircleButton(
             ":/images/playing_interface/Previous.png", self)
         self.nextSongButton = CircleButton(
             ":/images/playing_interface/Next.png", self)
-        self.randomPlayButton = RandomPlayButton(
-            [":/images/playing_interface/randomPlay_47_47.png"], self)
-        self.loopModeButton = LoopModeButton(
-            [
-                ":/images/playing_interface/RepeatAll.png",
-                ":/images/playing_interface/RepeatOne.png",
-            ],
-            self,
-        )
+        self.randomPlayButton = RandomPlayButton(self)
+        self.loopModeButton = LoopModeButton(self)
         self.moreActionsButton = CircleButton(
             ":/images/playing_interface/More.png", self)
         self.showPlaylistButton = CircleButton(

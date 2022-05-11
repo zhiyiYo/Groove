@@ -351,7 +351,7 @@ class VolumeButton(TooltipButton):
         self.isEnter = False
         self.isPressed = False
         self.isMute = False
-        self.currentVolumeLevel = 1
+        self.volumeLevel = 1
         self.iconPixmaps = [
             QPixmap(':/images/play_bar/Volume0.png'),
             QPixmap(':/images/play_bar/Volume1.png'),
@@ -422,7 +422,7 @@ class VolumeButton(TooltipButton):
         self.setToolTip(text)
 
         self.isMute = isMute
-        index = -1 if isMute else self.currentVolumeLevel
+        index = -1 if isMute else self.volumeLevel
         self.iconPixmap = self.iconPixmaps[index]
         self.update()
 
@@ -439,7 +439,10 @@ class VolumeButton(TooltipButton):
 
     def __updateIcon(self, iconIndex):
         """ update icon """
-        self.currentVolumeLevel = iconIndex
+        if self.volumeLevel == iconIndex:
+            return
+
+        self.volumeLevel = iconIndex
         if not self.isMute:
             self.iconPixmap = self.iconPixmaps[iconIndex]
             self.update()

@@ -35,13 +35,7 @@ class SmallestPlayInterface(FramelessWindow):
         self.__unCompleteShift_list = []
         self.albumCoverLabel = BlurCoverLabel(35, (350, 350), self)
 
-        self.playButton = PlayButton(
-            [
-                ":/images/smallest_play_interface/Pause.png",
-                ":/images/smallest_play_interface/Play.png",
-            ],
-            self,
-        )
+        self.playButton = PlayButton(self)
         self.lastSongButton = SmallestPlayModeButton(
             ":/images/smallest_play_interface/Previous.png", self)
         self.nextSongButton = SmallestPlayModeButton(

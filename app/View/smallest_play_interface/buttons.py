@@ -64,8 +64,12 @@ class SmallestPlayModeButton(QToolButton):
 class PlayButton(SmallestPlayModeButton):
     """ Play button """
 
-    def __init__(self, iconPaths: list, parent=None, buttonSize=(45, 45), isPause=True):
-        super().__init__(iconPaths[isPause], parent, buttonSize)
+    def __init__(self, parent=None, isPause=True):
+        iconPaths = [
+            ":/images/smallest_play_interface/Pause.png",
+            ":/images/smallest_play_interface/Play.png",
+        ]
+        super().__init__(iconPaths[isPause], parent, (45, 45))
         self.__isPause = isPause
         self.iconPixmaps = [QPixmap(iconPath) for iconPath in iconPaths]
         self._pixPos_list = [(0, 0), (2, 2)]

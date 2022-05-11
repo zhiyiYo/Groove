@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QWidget, QLabel
 
 
 class VolumeSliderWidget(QWidget):
-    """ 音量滑动条 """
+    """ Volume slider widget """
 
     muteStateChanged = pyqtSignal(bool)
     volumeLevelChanged = pyqtSignal(int)
@@ -20,7 +20,7 @@ class VolumeSliderWidget(QWidget):
         self.__initWidget()
 
     def __initWidget(self):
-        """ 初始化小部件 """
+        """ initialize widgets """
         self.setFixedSize(345, 78)
         self.volumeButton.move(25, 15)
         self.volumeSlider.move(90, 25)
@@ -34,7 +34,7 @@ class VolumeSliderWidget(QWidget):
         self.__connectSignalToSlot()
 
     def __setQss(self):
-        """ 设置层叠样式 """
+        """ set style sheet """
         self.volumeSlider.setObjectName('volumeSlider')
 
         f = QFile(":/qss/volume_slider_widget.qss")
@@ -43,7 +43,6 @@ class VolumeSliderWidget(QWidget):
         f.close()
 
     def paintEvent(self, e):
-        """ 绘制背景 """
         painter = QPainter(self)
         painter.setRenderHints(QPainter.Antialiasing)
         painter.setPen(QPen(QColor(25, 25, 25)))
@@ -51,67 +50,65 @@ class VolumeSliderWidget(QWidget):
         painter.drawRoundedRect(self.rect(), 10, 10)
 
     def setVolume(self, volume: int):
-        """ 设置音量 """
+        """ set volume """
         self.volumeSlider.setValue(volume)
         self.__onVolumeChanged(volume)
 
     def __onVolumeChanged(self, volume: int):
-        """ 音量改变槽函数 """
+        """ volume changed slot """
         self.volumeButton.setVolumeLevel(volume)
         self.volumeLabel.setText(str(volume))
         self.volumeLabel.adjustSize()
 
     def __connectSignalToSlot(self):
-        """ 信号连接到槽 """
+        """ connect signal to slot """
         self.volumeSlider.valueChanged.connect(self.__onVolumeChanged)
         self.volumeButton.muteStateChanged.connect(self.muteStateChanged)
         self.volumeButton.volumeLevelChanged.connect(self.volumeLevelChanged)
 
 
 class VolumeButton(CircleButton):
-    """ 音量按钮 """
+    """ Volume button """
 
-    # 静音状态改变信号
     muteStateChanged = pyqtSignal(bool)
     volumeLevelChanged = pyqtSignal(int)
 
     def __init__(self, parent=None):
-        # 按钮图标地址列表
-        self.__iconPath_list = [
+        self.__iconPaths = [
             ":/images/video_window/Volume0.png",
             ":/images/video_window/Volume1.png",
             ":/images/video_window/Volume2.png",
             ":/images/video_window/Volume3.png",
             ":/images/video_window/Volumex.png",
         ]
-        self.pixmap_list = [QPixmap(i) for i in self.__iconPath_list]
-        super().__init__(self.__iconPath_list[0], parent)
-        # 初始化标志位
+        self.pixmaps = [QPixmap(i) for i in self.__iconPaths]
+        super().__init__(self.__iconPaths[0], parent)
         self.isMute = False
         self.__volumeLevel = 0
 
-    def setVolumeLevel(self, volume):
-        """ 根据音量来设置对应图标 """
+    def setVolumeLevel(self, volume: int):
+        """ set volume level and update icon """
         if volume == 0:
             self.updateIcon(0)
-        elif 0 < volume <= 32 and self.__volumeLevel != 1:
+        elif 0 < volume <= 32:
             self.updateIcon(1)
-        elif 32 < volume <= 65 and self.__volumeLevel != 2:
+        elif 32 < volume <= 65:
             self.updateIcon(2)
-        elif volume > 65 and self.__volumeLevel != 3:
+        elif volume > 65:
             self.updateIcon(3)
 
     def updateIcon(self, iconIndex: int):
-        """ 更新图标 """
+        """ update icon """
+        if self.__volumeLevel == iconIndex:
+            return
+
         self.__volumeLevel = iconIndex
         self.volumeLevelChanged.emit(iconIndex)
-        # 静音时不更新图标
         if not self.isMute:
-            self.iconPixmap = self.pixmap_list[iconIndex]
+            self.iconPixmap = self.pixmaps[iconIndex]
             self.update()
 
     def eventFilter(self, obj, e):
-        """ 安装监听 """
         if obj == self:
             if e.type() in [QEvent.Enter, QEvent.Leave]:
                 self.isEnter = not self.isEnter
@@ -125,10 +122,11 @@ class VolumeButton(CircleButton):
         return False
 
     def setMute(self, isMute: bool):
-        """ 设置静音 """
+        """ set mute """
         if self.isMute == isMute:
             return
+
         self.isMute = isMute
         index = -1 if isMute else self.__volumeLevel
-        self.iconPixmap = self.pixmap_list[index]
+        self.iconPixmap = self.pixmaps[index]
         self.update()
