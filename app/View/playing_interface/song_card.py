@@ -1,11 +1,12 @@
 # coding:utf-8
+from common.icon import Icon
 from common.database.entity import SongInfo
 from common.signal_bus import signalBus
 from components.widgets.label import ClickableLabel, PixmapLabel
 from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
                           QParallelAnimationGroup, QPoint, QPropertyAnimation,
                           QSize, Qt, pyqtSignal)
-from PyQt5.QtGui import QFont, QFontMetrics, QIcon, QMouseEvent, QPixmap
+from PyQt5.QtGui import QFont, QFontMetrics, QMouseEvent, QPixmap
 from PyQt5.QtWidgets import (QApplication, QCheckBox, QLabel, QToolButton,
                              QWidget)
 
@@ -323,13 +324,13 @@ class ToolButton(QToolButton):
         self.isPlaying = False
         self.setFixedSize(60, 60)
         self.setIconSize(QSize(60, 60))
-        self.setIcon(QIcon(self.iconPaths[self.isPlaying]))
+        self.setIcon(Icon(self.iconPaths[self.isPlaying]))
         self.setStyleSheet("QToolButton{border:none;margin:0}")
 
     def setPlay(self, isPlay: bool):
         """ set play state """
         self.isPlaying = isPlay
-        self.setIcon(QIcon(self.iconPaths[self.isPlaying]))
+        self.setIcon(Icon(self.iconPaths[self.isPlaying]))
 
 
 class ButtonGroup(QWidget):

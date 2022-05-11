@@ -1,9 +1,9 @@
 # coding:utf-8
+from common.icon import Icon
 from common.os_utils import getPlaylistNames
 from common.window_effect import WindowEffect
 from PyQt5.QtCore import (QEasingCurve, QEvent, QFile, QPropertyAnimation,
                           QRect, Qt, pyqtSignal)
-from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction, QApplication, QMenu
 
 
@@ -107,14 +107,14 @@ class AddToMenu(DWMMenu):
     def createActions(self):
         """ create actions """
         self.playingAct = QAction(
-            QIcon(":/images/menu/Playing.png"), self.tr("Now playing"), self)
+            Icon(":/images/menu/Playing.png"), self.tr("Now playing"), self)
         self.newPlaylistAct = QAction(
-            QIcon(":/images/menu/Add.png"), self.tr("New playlist"), self)
+            Icon(":/images/menu/Add.png"), self.tr("New playlist"), self)
 
         # create actions according to playlists
         names = getPlaylistNames()
         self.playlistNameActs = [
-            QAction(QIcon(":/images/menu/Album.png"), i, self) for i in names]
+            QAction(Icon(":/images/menu/Album.png"), i, self) for i in names]
         self.action_list = [self.playingAct,
                             self.newPlaylistAct] + self.playlistNameActs
         self.addAction(self.playingAct)
@@ -164,28 +164,28 @@ class LineEditMenu(DWMMenu):
 
     def createActions(self):
         self.cutAct = QAction(
-            QIcon(":/images/menu/Cut.png"),
+            Icon(":/images/menu/Cut.png"),
             self.tr("Cut"),
             self,
             shortcut="Ctrl+X",
             triggered=self.parent().cut,
         )
         self.copyAct = QAction(
-            QIcon(":/images/menu/Copy.png"),
+            Icon(":/images/menu/Copy.png"),
             self.tr("Copy"),
             self,
             shortcut="Ctrl+C",
             triggered=self.parent().copy,
         )
         self.pasteAct = QAction(
-            QIcon(":/images/menu/Paste.png"),
+            Icon(":/images/menu/Paste.png"),
             self.tr("Paste"),
             self,
             shortcut="Ctrl+V",
             triggered=self.parent().paste,
         )
         self.cancelAct = QAction(
-            QIcon(":/images/menu/Cancel.png"),
+            Icon(":/images/menu/Cancel.png"),
             self.tr("Cancel"),
             self,
             shortcut="Ctrl+Z",
@@ -267,13 +267,13 @@ class PlayBarMoreActionsMenu(MoreActionsMenu):
 
     def _createActions(self):
         self.savePlayListAct = QAction(
-            QIcon(":/images/menu/Add.png"), self.tr("Save as a playlist"), self)
+            Icon(":/images/menu/Add.png"), self.tr("Save as a playlist"), self)
         self.clearPlayListAct = QAction(
-            QIcon(":/images/menu/Clear.png"), self.tr('Clear now playing'), self)
+            Icon(":/images/menu/Clear.png"), self.tr('Clear now playing'), self)
         self.showPlayListAct = QAction(
-            QIcon(":/images/menu/Playlist.png"), self.tr("Show now playing list"), self)
+            Icon(":/images/menu/Playlist.png"), self.tr("Show now playing list"), self)
         self.fullScreenAct = QAction(
-            QIcon(":/images/menu/FullScreen.png"), self.tr("Go full screen"), self)
+            Icon(":/images/menu/FullScreen.png"), self.tr("Go full screen"), self)
         self.action_list = [self.showPlayListAct, self.fullScreenAct,
                             self.savePlayListAct, self.clearPlayListAct]
         self.addActions(self.action_list)
@@ -301,13 +301,13 @@ class PlayingInterfaceMoreActionsMenu(MoreActionsMenu):
 
     def _createActions(self):
         self.savePlayListAct = QAction(
-            QIcon(":/images/menu/Add.png"), self.tr("Save as a playlist"), self)
+            Icon(":/images/menu/Add.png"), self.tr("Save as a playlist"), self)
         self.clearPlayListAct = QAction(
-            QIcon(":/images/menu/Clear.png"), self.tr('Clear now playing'), self)
+            Icon(":/images/menu/Clear.png"), self.tr('Clear now playing'), self)
         self.lyricAct = QAction(
-            QIcon(':/images/menu/Lyric.png'), self.tr('Hide lyric'), self)
+            Icon(':/images/menu/Lyric.png'), self.tr('Hide lyric'), self)
         self.movieAct = QAction(
-            QIcon(':/images/menu/Movie.png'), self.tr('Watch MV'), self)
+            Icon(':/images/menu/Movie.png'), self.tr('Watch MV'), self)
         self.action_list = [
             self.savePlayListAct,
             self.clearPlayListAct,

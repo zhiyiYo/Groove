@@ -1,8 +1,9 @@
 # coding:utf-8
+from common.icon import Icon
 from components.buttons.three_state_button import ThreeStateButton
 from components.widgets.menu import LineEditMenu
 from PyQt5.QtCore import QEvent, Qt
-from PyQt5.QtGui import QIcon, QKeyEvent
+from PyQt5.QtGui import QKeyEvent
 from PyQt5.QtWidgets import QLineEdit
 
 
@@ -76,7 +77,7 @@ class SearchLineEdit(QLineEdit):
                 return True
         elif obj == self.searchButton:
             if e.type() == QEvent.MouseButtonRelease and e.button() == Qt.LeftButton:
-                self.searchButton.setIcon(QIcon(self.__searchIcons["hover"]))
+                self.searchButton.setIcon(Icon(self.__searchIcons["hover"]))
                 return False
 
         return super().eventFilter(obj, e)

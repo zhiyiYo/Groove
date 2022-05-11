@@ -1,5 +1,6 @@
 # coding:utf-8
 from common.database.entity import SongInfo
+from common.icon import Icon
 from common.signal_bus import signalBus
 from components.widgets.menu import DWMMenu
 from PyQt5.QtCore import Qt, pyqtSignal
@@ -44,10 +45,10 @@ class SystemTrayIcon(QSystemTrayIcon):
 
         self.isPlay = isPlay
         if isPlay:
-            self.menu.playAct.setIcon(QIcon(':/images/system_tray/Pause.png'))
+            self.menu.playAct.setIcon(Icon(':/images/system_tray/Pause.png'))
             self.menu.playAct.setText(self.tr('Pause'))
         else:
-            self.menu.playAct.setIcon(QIcon(':/images/system_tray/Play.png'))
+            self.menu.playAct.setIcon(Icon(':/images/system_tray/Play.png'))
             self.menu.playAct.setText(self.tr('Play'))
 
     def __onPlayActionTriggered(self):
@@ -75,17 +76,17 @@ class SystemTrayMenu(DWMMenu):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.songAct = QAction(
-            QIcon(':/images/system_tray/Music.png'), '', self)
+            Icon(':/images/system_tray/Music.png'), '', self)
         self.playAct = QAction(
-            QIcon(':/images/system_tray/Play.png'), self.tr('Play'), self)
+            Icon(':/images/system_tray/Play.png'), self.tr('Play'), self)
         self.lastSongAct = QAction(
-            QIcon(':/images/system_tray/Previous.png'), self.tr('Last song'), self)
+            Icon(':/images/system_tray/Previous.png'), self.tr('Last song'), self)
         self.nextSongAct = QAction(
-            QIcon(':/images/system_tray/Next.png'), self.tr('Next song'), self)
+            Icon(':/images/system_tray/Next.png'), self.tr('Next song'), self)
         self.settingsAct = QAction(
-            QIcon(':/images/system_tray/Settings.png'), self.tr('Settings'), self)
+            Icon(':/images/system_tray/Settings.png'), self.tr('Settings'), self)
         self.exitAct = QAction(
-            QIcon(':/images/system_tray/SignOut.png'), self.tr('Exit'), self)
+            Icon(':/images/system_tray/SignOut.png'), self.tr('Exit'), self)
         self.addActions([
             self.songAct, self.playAct, self.lastSongAct, self.nextSongAct])
         self.addSeparator()

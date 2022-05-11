@@ -1,9 +1,9 @@
 # coding:utf-8
+from common.icon import Icon
 from common.library import Library
 from components.buttons.three_state_button import ThreeStatePushButton
 from PyQt5.QtCore import (QEasingCurve, QFile, QParallelAnimationGroup,
                           QPropertyAnimation, QSize, Qt, pyqtSignal)
-from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (QGraphicsOpacityEffect, QPushButton, QScrollArea,
                              QToolButton, QWidget)
 
@@ -65,9 +65,9 @@ class GroupBox(QScrollArea):
         self.scrollLeftButton.setIconSize(QSize(15, 15))
         self.scrollRightButton.setIconSize(QSize(15, 15))
         self.scrollLeftButton.setIcon(
-            QIcon(':/images/search_result_interface/ChevronLeft.png'))
+            Icon(':/images/search_result_interface/ChevronLeft.png'))
         self.scrollRightButton.setIcon(
-            QIcon(':/images/search_result_interface/ChevronRight.png'))
+            Icon(':/images/search_result_interface/ChevronRight.png'))
         self.scrollLeftButton.setGraphicsEffect(self.leftOpacityEffect)
         self.scrollRightButton.setGraphicsEffect(self.rightOpacityEffect)
         self.scrollLeftButton.hide()

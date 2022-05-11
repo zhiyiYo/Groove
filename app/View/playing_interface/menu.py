@@ -1,7 +1,7 @@
 # coding:utf-8
+from common.icon import Icon
 from common.os_utils import getPlaylistNames
 from PyQt5.QtCore import QFile, Qt, pyqtSignal
-from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction, QMenu
 
 
@@ -54,11 +54,11 @@ class AddToMenu(QMenu):
         super().__init__(title, parent)
 
         self.playingAct = QAction(
-            QIcon(':/images/playing_interface/Playing_white.png'), self.tr('Now playing'), self)
+            Icon(':/images/playing_interface/Playing_white.png'), self.tr('Now playing'), self)
         self.newPlaylistAct = QAction(
-            QIcon(':/images/playing_interface/Add_20_20.png'), self.tr('New playlist'), self)
+            Icon(':/images/playing_interface/Add_20_20.png'), self.tr('New playlist'), self)
         names = getPlaylistNames()
-        self.playlistActs = [QAction(QIcon(
+        self.playlistActs = [QAction(Icon(
             ":/images/playing_interface/Album.png"), i, self) for i in names]
 
         self.addAction(self.playingAct)

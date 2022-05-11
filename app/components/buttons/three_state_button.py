@@ -1,4 +1,5 @@
 # coding:utf-8
+from common.icon import Icon
 from PyQt5.QtCore import QEvent, QSize, Qt
 from PyQt5.QtGui import QIcon, QPainter, QPixmap
 from PyQt5.QtWidgets import QPushButton, QToolButton
@@ -22,18 +23,18 @@ class ThreeStatePushButton(QPushButton):
         """
         super().__init__(text, parent)
         self.iconPaths = iconPaths
-        self.setIcon(QIcon(self.iconPaths['normal']))
+        self.setIcon(Icon(self.iconPaths['normal']))
         self.setIconSize(QSize(*iconSize))
         self.installEventFilter(self)
 
     def eventFilter(self, obj, e):
         if obj is self:
             if e.type() in [QEvent.Enter, QEvent.HoverMove]:
-                self.setIcon(QIcon(self.iconPaths['hover']))
+                self.setIcon(Icon(self.iconPaths['hover']))
             elif e.type() in [QEvent.Leave, QEvent.MouseButtonRelease]:
-                self.setIcon(QIcon(self.iconPaths['normal']))
+                self.setIcon(Icon(self.iconPaths['normal']))
             elif e.type() == QEvent.MouseButtonPress:
-                self.setIcon(QIcon(self.iconPaths['pressed']))
+                self.setIcon(Icon(self.iconPaths['pressed']))
 
         return False
 
