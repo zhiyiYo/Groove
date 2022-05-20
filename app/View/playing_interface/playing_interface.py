@@ -131,6 +131,8 @@ class PlayingInterface(QWidget):
         self.showPlaylistTimer.timeout.connect(self.showPlaylistTimerSlot)
         self.hidePlaylistTimer.timeout.connect(self.hidePlaylistTimerSlot)
 
+        self.__getLyric()
+
     def __setQss(self):
         """ set style sheet """
         self.setObjectName("playingInterface")
@@ -276,6 +278,8 @@ class PlayingInterface(QWidget):
         if index >= len(self.playlist):
             return
 
+        self.lyricWidget.setLoadingState(True)
+
         self.currentIndex = index
         self.songListWidget.setCurrentIndex(index)
         # background cover will be updated by songInfoCardChute's signal
@@ -303,6 +307,7 @@ class PlayingInterface(QWidget):
             self.songInfoCardChute.cards[1].coverPath)
         self.__setGuideLabelHidden(
             bool(playlist) and not self.songListWidget.isVisible())
+        self.__getLyric()
 
     def setPlay(self, isPlay: bool):
         """ set play state """
@@ -502,6 +507,9 @@ class PlayingInterface(QWidget):
 
     def __getLyric(self):
         """ get lyrics of currently played song """
+        if not self.playlist:
+            return
+
         if self.getLyricThread.songInfo == self.playlist[self.currentIndex]:
             return
 

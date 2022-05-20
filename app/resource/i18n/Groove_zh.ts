@@ -2176,9 +2176,19 @@
         <source>Play</source>
         <translation>播放</translation>
     </message>
+    <message>
+        <location filename="../../components/system_tray_icon/system_tray_icon.py" line="74"/>
+        <source>No songs are playing</source>
+        <translation>当前没有正在播放的歌曲</translation>
+    </message>
 </context>
 <context>
     <name>SystemTrayMenu</name>
+    <message>
+        <location filename="../../components/system_tray_icon/system_tray_icon.py" line="85" />
+        <source>No songs are playing</source>
+        <translation>当前没有正在播放的歌曲</translation>
+    </message>
     <message>
         <location filename="../../components/system_tray_icon/system_tray_icon.py" line="83"/>
         <source>Play</source>

@@ -20,6 +20,7 @@ class SystemTrayIcon(QSystemTrayIcon):
         self.menu = SystemTrayMenu(parent)
         self.setContextMenu(self.menu)
         self.setIcon(QIcon(':/images/logo/logo_small.png'))
+        self.clearPlaylist()
         self.__connectSignalToSlot()
 
     def __connectSignalToSlot(self):
@@ -69,6 +70,12 @@ class SystemTrayIcon(QSystemTrayIcon):
         self.menu.songAct.setText(
             fontMetric.elidedText(text, Qt.ElideRight, 235))
 
+    def clearPlaylist(self):
+        """ clear playlist """
+        text = self.tr('No songs are playing')
+        self.setToolTip(text)
+        self.menu.songAct.setText(text)
+
 
 class SystemTrayMenu(DWMMenu):
     """ System tray menu """
@@ -76,7 +83,7 @@ class SystemTrayMenu(DWMMenu):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.songAct = QAction(
-            Icon(':/images/system_tray/Music.png'), '', self)
+            Icon(':/images/system_tray/Music.png'), self.tr('No songs are playing'), self)
         self.playAct = QAction(
             Icon(':/images/system_tray/Play.png'), self.tr('Play'), self)
         self.lastSongAct = QAction(

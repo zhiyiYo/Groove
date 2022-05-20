@@ -393,17 +393,8 @@ class MainWindow(FramelessWindow):
                 self.systemTrayIcon.updateWindow(songInfos[0])
 
         if self.mediaPlaylist.lastSongInfo in self.mediaPlaylist.playlist:
-            index = self.mediaPlaylist.playlist.index(
-                self.mediaPlaylist.lastSongInfo)
-            self.mediaPlaylist.setCurrentIndex(index)
-            self.playingInterface.setCurrentIndex(index)
-            self.smallestPlayInterface.setCurrentIndex(index)
-            self.systemTrayIcon.updateWindow(self.mediaPlaylist.lastSongInfo)
-
-            index = self.songTabSongListWidget.index(
-                self.mediaPlaylist.lastSongInfo)
-            if index is not None:
-                self.songTabSongListWidget.setPlay(index)
+            self.mediaPlaylist.setCurrentSong(self.mediaPlaylist.lastSongInfo)
+            self.updateWindow(self.mediaPlaylist.currentIndex())
 
         # pause player
         self.pause()
@@ -824,6 +815,7 @@ class MainWindow(FramelessWindow):
         self.mediaPlaylist.clear()
         self.playingInterface.clearPlaylist()
         self.smallestPlayInterface.clearPlaylist()
+        self.systemTrayIcon.clearPlaylist()
         self.playBar.songInfoCard.hide()
         self.playBar.setTotalTime(0)
         self.playBar.progressSlider.setRange(0, 0)

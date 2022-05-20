@@ -19,6 +19,7 @@ class LyricWidget(ScrollArea):
         self.currentIndex = -1
         self.lyricLabels = []  # type:List[LyricLabel]
         self.__unusedlyricLabels = []  # type:List[LyricLabel]
+        self.__isUpdating = False
 
         self.scrollAni = QPropertyAnimation(
             self.verticalScrollBar(), b'value', self)
@@ -49,12 +50,12 @@ class LyricWidget(ScrollArea):
             self.setLoadingState(False)
             return
 
+        self.__isUpdating = True
+        self.scrollAni.stop()
+
         self.lyric = lyric
         self.times = list(self.lyric.keys())
         self.currentIndex = -1
-
-        self.scrollAni.stop()
-        self.verticalScrollBar().setValue(0)
 
         # update lyrics
         N = len(self.lyricLabels)
@@ -87,8 +88,10 @@ class LyricWidget(ScrollArea):
         self.setStyle(QApplication.style())
         QApplication.processEvents()
         self.scrollWidget.adjustSize()
-        self.__adjustTextColor()
+        self.verticalScrollBar().setValue(0)
         self.setLoadingState(False)
+
+        self.__isUpdating = False
 
     def setCurrentTime(self, time: int):
         """ set current time
@@ -98,6 +101,9 @@ class LyricWidget(ScrollArea):
         time: int
             time in milliseconds
         """
+        if self.__isUpdating:
+            return
+
         time = str(time/1000)
         if not self.times:
             return
