@@ -17,6 +17,7 @@ class GetLyricThread(QThread):
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
+        self.songInfo = None
         self.singer = ''
         self.songName = ''
         self.crawlers = [
@@ -58,5 +59,6 @@ class GetLyricThread(QThread):
 
     def setSongInfo(self, songInfo: SongInfo):
         """ set song information for searching lyrics """
+        self.songInfo = songInfo
         self.singer = songInfo.singer
         self.songName = songInfo.title

@@ -502,6 +502,9 @@ class PlayingInterface(QWidget):
 
     def __getLyric(self):
         """ get lyrics of currently played song """
+        if self.getLyricThread.songInfo == self.playlist[self.currentIndex]:
+            return
+
         self.lyricWidget.setLoadingState(True)
         self.getLyricThread.setSongInfo(self.playlist[self.currentIndex])
         self.getLyricThread.start()

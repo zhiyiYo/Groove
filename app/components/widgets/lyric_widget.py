@@ -46,6 +46,7 @@ class LyricWidget(ScrollArea):
     def setLyric(self, lyric: Dict[str, List[str]]):
         """ set lyrics """
         if self.lyric == lyric:
+            self.setLoadingState(False)
             return
 
         self.lyric = lyric
@@ -53,10 +54,7 @@ class LyricWidget(ScrollArea):
         self.currentIndex = -1
 
         self.scrollAni.stop()
-        self.scrollAni.setDuration(200)
-        self.scrollAni.setStartValue(self.verticalScrollBar().value())
-        self.scrollAni.setEndValue(0)
-        self.scrollAni.start()
+        self.verticalScrollBar().setValue(0)
 
         # update lyrics
         N = len(self.lyricLabels)

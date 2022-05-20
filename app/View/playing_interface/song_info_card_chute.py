@@ -20,7 +20,7 @@ class SongInfoCardChute(QWidget):
     showPlayBarSignal = pyqtSignal()
     hidePlayBarSignal = pyqtSignal()
     currentIndexChanged = pyqtSignal([int], [str])
-    aniFinished=pyqtSignal()
+    aniFinished = pyqtSignal()
 
     def __init__(self, playlist: List[SongInfo] = None, parent=None):
         """
@@ -91,7 +91,7 @@ class SongInfoCardChute(QWidget):
         dt = QDateTime.currentDateTime().toMSecsSinceEpoch()-self.mousePressedTime
 
         # record the mouse movement distance, dx > 0 represents the mouse move to the right
-        dx  = self.lastMousePosX - self.mousePressedPosX
+        dx = self.lastMousePosX - self.mousePressedPosX
 
         # start the shift animation
         n = len(self.playlist)
