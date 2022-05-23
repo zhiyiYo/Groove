@@ -5,9 +5,11 @@ from ctypes.wintypes import MSG
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QCursor
 from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWinExtras import QtWin
 from win32 import win32api, win32gui
 from win32.lib import win32con
 
+from common.os_utils import getWindowsVersion
 from common.window_effect import WindowEffect
 from common.window_effect.c_structures import MINMAXINFO, NCCALCSIZE_PARAMS
 
@@ -27,8 +29,8 @@ class FramelessWindow(QWidget):
                             Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint)
 
         # add DWM shadow and window animation
-        self.windowEffect.addShadowEffect(self.winId())
         self.windowEffect.addWindowAnimation(self.winId())
+        # self.windowEffect.addShadowEffect(self.winId())
 
         # handle multi screen with different dpi
         self.windowHandle().screenChanged.connect(self.__onScreenChanged)
@@ -128,3 +130,25 @@ class FramelessWindow(QWidget):
         hWnd = int(self.windowHandle().winId())
         win32gui.SetWindowPos(hWnd, None, 0, 0, 0, 0, win32con.SWP_NOMOVE |
                               win32con.SWP_NOSIZE | win32con.SWP_FRAMECHANGED)
+
+
+class AcrylicWindow(FramelessWindow):
+    """ A frameless window with acrylic effect """
+
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        QtWin.enableBlurBehindWindow(self)
+        self.setWindowFlags(Qt.FramelessWindowHint |
+                            Qt.WindowMinMaxButtonsHint)
+        self.windowEffect.addWindowAnimation(self.winId())
+
+        version = getWindowsVersion()
+        if version == 7:
+            self.windowEffect.addShadowEffect(self.winId())
+            self.windowEffect.setAeroEffect(self.winId())
+        else:
+            self.windowEffect.setAcrylicEffect(self.winId())
+            if version == 11:
+                self.windowEffect.addShadowEffect(self.winId())
+
+        self.setStyleSheet("background:transparent")

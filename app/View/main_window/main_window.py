@@ -11,13 +11,13 @@ from common.database import DBInitializer
 from common.database.entity import AlbumInfo, Playlist, SongInfo
 from common.hotkey_manager import HotkeyManager
 from common.library import Directory, Library
-from common.os_utils import moveToTrash
+from common.os_utils import moveToTrash, getWindowsVersion
 from common.signal_bus import signalBus
 from common.thread.get_online_song_url_thread import GetOnlineSongUrlThread
 from common.thread.library_thread import LibraryThread
 from components.dialog_box.create_playlist_dialog import CreatePlaylistDialog
 from components.dialog_box.message_dialog import MessageDialog
-from components.frameless_window import FramelessWindow
+from components.frameless_window import AcrylicWindow
 from components.label_navigation_interface import LabelNavigationInterface
 from components.media_player import MediaPlaylist, PlaylistType
 from components.system_tray_icon import SystemTrayIcon
@@ -33,7 +33,6 @@ from PyQt5.QtGui import QColor, QDragEnterEvent, QDropEvent, QIcon, QPixmap
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist
 from PyQt5.QtSql import QSqlDatabase
 from PyQt5.QtWidgets import QAction, QApplication, QHBoxLayout, QWidget, qApp
-from PyQt5.QtWinExtras import QtWin
 from View.album_interface import AlbumInterface
 from View.more_search_result_interface import MoreSearchResultInterface
 from View.my_music_interface import MyMusicInterface
@@ -49,7 +48,7 @@ from View.smallest_play_interface import SmallestPlayInterface
 from View.video_interface import VideoInterface
 
 
-class MainWindow(FramelessWindow):
+class MainWindow(AcrylicWindow):
     """ Main window """
 
     def __init__(self, parent=None):
@@ -203,11 +202,6 @@ class MainWindow(FramelessWindow):
         self.setWindowTitle(self.tr("Groove Music"))
         self.setWindowIcon(QIcon(":/images/logo/logo_small.png"))
 
-        QtWin.enableBlurBehindWindow(self)
-        self.setWindowFlags(Qt.FramelessWindowHint |
-                            Qt.WindowMinMaxButtonsHint)
-        self.windowEffect.addWindowAnimation(self.winId())
-
         self.move(w//2 - self.width()//2, h//2 - self.height()//2)
         self.show()
         QApplication.processEvents()
@@ -242,7 +236,6 @@ class MainWindow(FramelessWindow):
 
         # Set the interval that the player sends update position signal
         self.player.setNotifyInterval(1000)
-
         self.updateLyricPosTimer.setInterval(200)
 
         self.initPlaylist()
@@ -267,8 +260,10 @@ class MainWindow(FramelessWindow):
     def setWindowEffect(self, isEnableAcrylic: bool):
         """ set window effect """
         if isEnableAcrylic:
-            self.windowEffect.setAcrylicEffect(self.winId(), "F2F2F299", True)
+            self.windowEffect.setAcrylicEffect(self.winId(), "F2F2F299")
             self.setStyleSheet("#mainWindow{background:transparent}")
+            if getWindowsVersion() != 10:
+                self.windowEffect.addShadowEffect(self.winId())
         else:
             self.setStyleSheet("#mainWindow{background:#F2F2F2}")
             self.windowEffect.addShadowEffect(self.winId())

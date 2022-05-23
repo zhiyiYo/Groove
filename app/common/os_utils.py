@@ -1,14 +1,16 @@
 # coding:utf-8
 import re
+import sys
 from pathlib import Path
+from platform import platform
 
 from PyQt5.QtSql import QSqlDatabase
-from common.database.service import PlaylistService
-
+from win32com.shell import shell, shellcon
+from win32con import DESKTOPHORZRES, HORZRES
 from win32gui import GetDC, ReleaseDC
 from win32print import GetDeviceCaps
-from win32con import DESKTOPHORZRES, HORZRES
-from win32com.shell import shell, shellcon
+
+from common.database.service import PlaylistService
 
 
 def moveToTrash(path: str):
@@ -132,3 +134,12 @@ def getDevicePixelRatio():
     d = GetDeviceCaps(hdc, HORZRES)
     ReleaseDC(None, hdc)
     return t / d
+
+
+def getWindowsVersion():
+    if "Windows-7" in platform():
+        return 7
+
+    build = sys.getwindowsversion().build
+    version = 10 if build < 22000 else 11
+    return version
