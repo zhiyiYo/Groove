@@ -6,7 +6,7 @@ from typing import List
 
 from common.database.entity import SongInfo
 from common.library import Library
-from PyQt5.QtCore import QUrl
+from common.url import url
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlaylist
 
 
@@ -45,7 +45,7 @@ class MediaPlaylist(QMediaPlaylist):
             return
 
         self.playlist.append(songInfo)
-        super().addMedia(QMediaContent(QUrl(songInfo.file)))
+        super().addMedia(QMediaContent(url(songInfo.file)))
 
     def addSongs(self, songInfos: list):
         """ append multi songs to playlist """
@@ -54,11 +54,11 @@ class MediaPlaylist(QMediaPlaylist):
 
         self.playlist.extend(songInfos)
         for songInfo in songInfos:
-            super().addMedia(QMediaContent(QUrl(songInfo.file)))
+            super().addMedia(QMediaContent(url(songInfo.file)))
 
     def insertSong(self, index: int, songInfo: SongInfo):
         """ insert song to playlist  """
-        super().insertMedia(index, QMediaContent(QUrl(songInfo.file)))
+        super().insertMedia(index, QMediaContent(url(songInfo.file)))
         self.playlist.insert(index, songInfo)
 
     def insertSongs(self, index: int, songInfos: List[SongInfo]):
@@ -69,7 +69,7 @@ class MediaPlaylist(QMediaPlaylist):
         self.playlist = self.playlist[:index] + \
             songInfos + self.playlist[index:]
 
-        medias = [QMediaContent(QUrl(i.file)) for i in songInfos]
+        medias = [QMediaContent(url(i.file)) for i in songInfos]
         super().insertMedia(index, medias)
 
     def clear(self):
@@ -168,7 +168,7 @@ class MediaPlaylist(QMediaPlaylist):
             last) or SongInfo()
 
         for songInfo in self.playlist:
-            super().addMedia(QMediaContent(QUrl(songInfo.file)))
+            super().addMedia(QMediaContent(url(songInfo.file)))
 
     def removeSong(self, index):
         """ remove song from playlist """

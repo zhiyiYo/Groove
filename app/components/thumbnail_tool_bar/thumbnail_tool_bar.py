@@ -4,23 +4,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWinExtras import QWinThumbnailToolBar, QWinThumbnailToolButton
 
 
-class ThumbnailPlayButton(QWinThumbnailToolButton):
-    """ Thumbnail play button"""
-
-    def __init__(self, parent=None):
-        super().__init__(parent=parent)
-        self.setPlay(False)
-
-    def setPlay(self, isPlay: bool):
-        """ set play state """
-        self.isPlaying = isPlay
-        if self.isPlaying:
-            self.setIcon(QIcon(":/images/thumbnail_tool_bar/播放_32_32_2.png"))
-        else:
-            self.setIcon(QIcon(":/images/thumbnail_tool_bar/暂停_32_32_2.png"))
-
-
-class ThumbnailToolBar(QWinThumbnailToolBar):
+class WindowsThumbnailToolBar(QWinThumbnailToolBar):
     """ Thumbail tool bar """
 
     def __init__(self, parent=None):
@@ -55,3 +39,22 @@ class ThumbnailToolBar(QWinThumbnailToolBar):
     def setPlay(self, isPlay: bool):
         """ set play state """
         self.playButton.setPlay(isPlay)
+
+
+class ThumbnailPlayButton(QWinThumbnailToolButton):
+    """ Thumbnail play button"""
+
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self.setPlay(False)
+
+    def setPlay(self, isPlay: bool):
+        """ set play state """
+        self.isPlaying = isPlay
+        if self.isPlaying:
+            self.setIcon(QIcon(":/images/thumbnail_tool_bar/播放_32_32_2.png"))
+        else:
+            self.setIcon(QIcon(":/images/thumbnail_tool_bar/暂停_32_32_2.png"))
+
+
+

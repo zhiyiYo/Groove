@@ -1,28 +1,45 @@
 # coding:utf-8
+import sys
 from ctypes import POINTER, cast
-from ctypes.wintypes import MSG
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QCursor
+from PyQt5.QtCore import QCoreApplication, QEvent, Qt
+from PyQt5.QtGui import QCursor, QMouseEvent
 from PyQt5.QtWidgets import QWidget
-from PyQt5.QtWinExtras import QtWin
-from win32 import win32api, win32gui
-from win32.lib import win32con
+
+if sys.platform == "win32":
+    from ctypes.wintypes import MSG
+
+    from common.window_effect.c_structures import MINMAXINFO, NCCALCSIZE_PARAMS
+    from PyQt5.QtWinExtras import QtWin
+    from win32 import win32api, win32gui
+    from win32.lib import win32con
+else:
+    from common.linux_utils import LinuxMoveResize
 
 from common.os_utils import getWindowsVersion
 from common.window_effect import WindowEffect
-from common.window_effect.c_structures import MINMAXINFO, NCCALCSIZE_PARAMS
 
 
-class FramelessWindow(QWidget):
+class FramelessWindowBase(QWidget):
     """ Frameless window """
 
     BORDER_WIDTH = 5
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.__monitorInfo = None
         self.windowEffect = WindowEffect()
+
+    def _isWindowMaximized(self, hWnd):
+        """ Determine whether the window is maximized """
+        return self.isMaximized()
+
+
+class WindowsFramelessWindow(FramelessWindowBase):
+    """ Frameless window """
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.__monitorInfo = None
 
         # remove window border
         self.setWindowFlags(Qt.FramelessWindowHint |
@@ -109,7 +126,7 @@ class FramelessWindow(QWidget):
 
         return windowPlacement[1] == win32con.SW_MAXIMIZE
 
-    def __monitorNCCALCSIZE(self, msg: MSG):
+    def __monitorNCCALCSIZE(self, msg):
         """ Adjust the size of window """
         monitor = win32api.MonitorFromWindow(msg.hWnd)
 
@@ -132,7 +149,7 @@ class FramelessWindow(QWidget):
                               win32con.SWP_NOSIZE | win32con.SWP_FRAMECHANGED)
 
 
-class AcrylicWindow(FramelessWindow):
+class AcrylicWindow(WindowsFramelessWindow):
     """ A frameless window with acrylic effect """
 
     def __init__(self, parent=None):
@@ -152,3 +169,46 @@ class AcrylicWindow(FramelessWindow):
                 self.windowEffect.addShadowEffect(self.winId())
 
         self.setStyleSheet("background:transparent")
+
+
+class UnixFramelessWindow(FramelessWindowBase):
+    """ Frameless window for Unix system """
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint)
+        QCoreApplication.instance().installEventFilter(self)
+
+    def eventFilter(self, obj, event):
+        et = event.type()
+        if et != QEvent.MouseButtonPress and et != QEvent.MouseMove:
+            return False
+
+        edges = Qt.Edges()
+        pos = QMouseEvent(event).windowPos().toPoint()
+        if pos.x() < self.BORDER_WIDTH:
+            edges |= Qt.LeftEdge
+        if pos.x() >= self.width()-self.BORDER_WIDTH:
+            edges |= Qt.RightEdge
+        if pos.y() < self.BORDER_WIDTH:
+            edges |= Qt.TopEdge
+        if pos.y() >= self.height()-self.BORDER_WIDTH:
+            edges |= Qt.BottomEdge
+
+        # change cursor
+        if et == QEvent.MouseMove and self.windowState() == Qt.WindowNoState:
+            if edges in (Qt.LeftEdge | Qt.TopEdge, Qt.RightEdge | Qt.BottomEdge):
+                self.setCursor(Qt.SizeFDiagCursor)
+            elif edges in (Qt.RightEdge | Qt.TopEdge, Qt.LeftEdge | Qt.BottomEdge):
+                self.setCursor(Qt.SizeBDiagCursor)
+            elif edges in (Qt.TopEdge, Qt.BottomEdge):
+                self.setCursor(Qt.SizeVerCursor)
+            elif edges in (Qt.LeftEdge, Qt.RightEdge):
+                self.setCursor(Qt.SizeHorCursor)
+            else:
+                self.setCursor(Qt.ArrowCursor)
+
+        elif et == QEvent.MouseButtonPress and edges:
+            LinuxMoveResize.starSystemResize(self, event.globalPos(), edges)
+
+        return super().eventFilter(obj, event)

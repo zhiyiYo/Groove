@@ -1,17 +1,26 @@
 # coding:utf-8
-from win32.lib import win32con
-from win32.win32api import SendMessage
-from win32.win32gui import ReleaseCapture
+import sys
 
-from PyQt5.QtCore import QFile, Qt, QEvent
+if sys.platform == "win32":
+    from win32.lib import win32con
+    from win32.win32api import SendMessage
+    from win32.win32gui import ReleaseCapture
+else:
+    from common.linux_utils import LinuxMoveResize
+
+from PyQt5.QtCore import QEvent, QFile, Qt
 from PyQt5.QtGui import QResizeEvent
 from PyQt5.QtWidgets import QLabel, QWidget
 
-from .title_bar_buttons import TitleBarButton, MaximizeButton
+from .title_bar_buttons import MaximizeButton, TitleBarButton
 
 
 class TitleBar(QWidget):
     """ Title bar """
+
+    def __new__(cls, *args, **kwargs):
+        cls = WindowsTitleBar if sys.platform == "win32" else UnixTitleBar
+        return super().__new__(cls, *args, **kwargs)
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -62,19 +71,6 @@ class TitleBar(QWidget):
     def mouseDoubleClickEvent(self, e):
         self.__showRestoreWindow()
 
-    def mousePressEvent(self, e):
-        if self.childAt(e.pos()):
-            return
-
-        ReleaseCapture()
-        SendMessage(
-            int(self.window().winId()),
-            win32con.WM_SYSCOMMAND,
-            win32con.SC_MOVE + win32con.HTCAPTION,
-            0,
-        )
-        e.ignore()
-
     def __showRestoreWindow(self):
         """ show restored window """
         if self.window().isMaximized():
@@ -103,3 +99,38 @@ class TitleBar(QWidget):
                     self.returnButton.width() + self.titleLabel.y(), self.titleLabel.y())
 
         return super().eventFilter(obj, e)
+
+    def _isDragRegion(self, pos):
+        """ Check whether the pressed point belongs to the area where dragging is allowed """
+        left = self.returnButton.isVisible() * 60
+        right = self.width() - 46 - 92 * self.minButton.isVisible()
+        return left < pos.x() < right
+
+
+class WindowsTitleBar(TitleBar):
+    """ Title bar for Windows system """
+
+    def mousePressEvent(self, event):
+        """ Move the window """
+        if not self._isDragRegion(event.pos()):
+            return
+
+        ReleaseCapture()
+        SendMessage(
+            int(self.window().winId()),
+            win32con.WM_SYSCOMMAND,
+            win32con.SC_MOVE + win32con.HTCAPTION,
+            0,
+        )
+        event.ignore()
+
+
+class UnixTitleBar(TitleBar):
+    """ Title bar for Unix system """
+
+    def mousePressEvent(self, event):
+        if event.button() != Qt.LeftButton or not self._isDragRegion(event.pos()):
+            return
+
+        pos = event.globalPos()
+        LinuxMoveResize.startSystemMove(self.window(), pos)

@@ -7,9 +7,13 @@ QLabel#titleLabel {
     /* padding: 10px 15px 10px 15px; */
 }
 
-QWidget,QScrollArea {
+QWidget, QScrollArea {
     background-color: transparent;
     border: none;
+}
+
+NavigationMenu[win32=false]{
+    background-color: #f2f2f2;
 }
 
 /*滚动条*/

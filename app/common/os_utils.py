@@ -5,18 +5,13 @@ from pathlib import Path
 from platform import platform
 
 from PyQt5.QtSql import QSqlDatabase
-from win32com.shell import shell, shellcon
-from win32con import DESKTOPHORZRES, HORZRES
-from win32gui import GetDC, ReleaseDC
-from win32print import GetDeviceCaps
+
+if sys.platform == "win32":
+    from win32con import DESKTOPHORZRES, HORZRES
+    from win32gui import GetDC, ReleaseDC
+    from win32print import GetDeviceCaps
 
 from common.database.service import PlaylistService
-
-
-def moveToTrash(path: str):
-    """ move file to system recycle bin """
-    shell.SHFileOperation((0, shellcon.FO_DELETE, path, None, shellcon.FOF_SILENT |
-                           shellcon.FOF_ALLOWUNDO | shellcon.FOF_NOCONFIRMATION, None, None))
 
 
 def adjustName(name: str):
@@ -129,6 +124,9 @@ def getPlaylistNames():
 
 def getDevicePixelRatio():
     """ get dpi scale ratio """
+    if sys.platform != "win32":
+        return 1
+
     hdc = GetDC(None)
     t = GetDeviceCaps(hdc, DESKTOPHORZRES)
     d = GetDeviceCaps(hdc, HORZRES)

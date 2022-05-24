@@ -1,19 +1,108 @@
 # coding:utf-8
+import sys
 
-from ctypes import POINTER, WinDLL, byref, c_bool, c_int, pointer, sizeof
-from ctypes.wintypes import DWORD, LONG, LPCVOID
+if sys.platform == "win32":
+    from ctypes import POINTER, WinDLL, byref, c_bool, c_int, pointer, sizeof
+    from ctypes.wintypes import DWORD, LONG, LPCVOID
 
-from win32 import win32api, win32gui
-from win32.lib import win32con
+    from win32 import win32api, win32gui
+    from win32.lib import win32con
 
-from .c_structures import (ACCENT_POLICY, ACCENT_STATE, DWMNCRENDERINGPOLICY,
-                           DWMWINDOWATTRIBUTE, MARGINS,
-                           WINDOWCOMPOSITIONATTRIB,
-                           WINDOWCOMPOSITIONATTRIBDATA)
+    from .c_structures import (ACCENT_POLICY, ACCENT_STATE, DWMNCRENDERINGPOLICY,
+                               DWMWINDOWATTRIBUTE, MARGINS,
+                               WINDOWCOMPOSITIONATTRIB,
+                               WINDOWCOMPOSITIONATTRIBDATA)
 
 
 class WindowEffect:
-    """ Window effect of Win10 | Win11 system """
+    """ Window effect base class """
+
+    def __new__(cls, *args, **kwargs):
+        cls = WindowsEffect if sys.platform == "win32" else WindowEffect
+        return super().__new__(cls, *args, **kwargs)
+
+    def setAcrylicEffect(self, hWnd, gradientColor="F2F2F230", isEnableShadow=True, animationId=0):
+        """ set acrylic effect for window
+
+        Parameter
+        ----------
+        hWnd: int or `sip.voidptr`
+            window handle
+
+        gradientColor: str
+            hexadecimal acrylic mixed color, corresponding to RGBA components
+
+        isEnableShadow: bool
+            whether to enable window shadow
+
+        animationId: int
+            turn on blur animation or not
+        """
+        pass
+
+    def setAeroEffect(self, hWnd):
+        """ add the aero effect to the window
+
+        Parameter
+        ----------
+        hWnd: int or `sip.voidptr`
+            Window handle
+        """
+        pass
+
+    def setTransparentEffect(self, hWnd):
+        """ set transparent effect for window """
+        pass
+
+    def removeBackgroundEffect(self, hWnd):
+        """ Remove background effect """
+        pass
+
+    def addShadowEffect(self, hWnd):
+        """ add DWM shadow to window
+
+        Parameter
+        ----------
+        hWnd: int or `sip.voidptr`
+            Window handle
+        """
+        pass
+
+    def addMenuShadowEffect(self, hWnd):
+        """ add DWM shadow to menu
+
+        Parameter
+        ----------
+        hWnd: int or `sip.voidptr`
+            Window handle
+        """
+        pass
+
+    @staticmethod
+    def addWindowAnimation(hWnd):
+        """ Enables the maximize and minimize animation of the window
+
+        Parameters
+        ----------
+        hWnd : int or `sip.voidptr`
+            Window handle
+        """
+        pass
+
+    @staticmethod
+    def setWindowStayOnTop(hWnd, isStayOnTop: bool):
+        """ set whether the window is topped
+
+        Parameters
+        ----------
+        hWnd : int or `sip.voidptr`
+            Window handle
+        """
+        pass
+
+
+class WindowsEffect(WindowEffect):
+    """ Window effect of Windows system """
 
     def __init__(self):
         # call API
@@ -40,22 +129,6 @@ class WindowEffect:
         self.winCompAttrData.Data = pointer(self.accentPolicy)
 
     def setAcrylicEffect(self, hWnd, gradientColor: str = "F2F2F230", isEnableShadow: bool = True, animationId: int = 0):
-        """ set acrylic effect for window
-
-        Parameter
-        ----------
-        hWnd: int or `sip.voidptr`
-            window handle
-
-        gradientColor: str
-            hexadecimal acrylic mixed color, corresponding to RGBA components
-
-        isEnableShadow: bool
-            whether to enable window shadow
-
-        animationId: int
-            turn on blur animation or not
-        """
         # Acrylic mixed color
         gradientColor = (
             gradientColor[6:]
@@ -74,62 +147,30 @@ class WindowEffect:
         self.accentPolicy.AccentFlags = accentFlags
         self.accentPolicy.AnimationId = animationId
         # enable acrylic effect
-        self.SetWindowCompositionAttribute(int(hWnd), pointer(self.winCompAttrData))
+        self.SetWindowCompositionAttribute(
+            int(hWnd), pointer(self.winCompAttrData))
 
     def setAeroEffect(self, hWnd):
-        """ add the aero effect to the window
-
-        Parameter
-        ----------
-        hWnd: int or `sip.voidptr`
-            Window handle
-        """
         self.accentPolicy.AccentState = ACCENT_STATE.ACCENT_ENABLE_BLURBEHIND.value
-        self.SetWindowCompositionAttribute(int(hWnd), pointer(self.winCompAttrData))
+        self.SetWindowCompositionAttribute(
+            int(hWnd), pointer(self.winCompAttrData))
 
     def setTransparentEffect(self, hWnd):
-        """ set transparent effect for window """
         self.accentPolicy.AccentState = ACCENT_STATE.ACCENT_ENABLE_TRANSPARENTGRADIENT.value
-        self.SetWindowCompositionAttribute(int(hWnd), pointer(self.winCompAttrData))
+        self.SetWindowCompositionAttribute(
+            int(hWnd), pointer(self.winCompAttrData))
 
     def removeBackgroundEffect(self, hWnd):
-        """ Remove background effect """
         self.accentPolicy.AccentState = ACCENT_STATE.ACCENT_DISABLED.value
-        self.SetWindowCompositionAttribute(int(hWnd), pointer(self.winCompAttrData))
-
-    def moveWindow(self, hWnd):
-        """ move the window
-
-        Parameter
-        ----------
-        hWnd: int or `sip.voidptr`
-            Window handle
-        """
-        win32gui.ReleaseCapture()
-        win32api.SendMessage(
-            int(hWnd), win32con.WM_SYSCOMMAND, win32con.SC_MOVE + win32con.HTCAPTION, 0
-        )
+        self.SetWindowCompositionAttribute(
+            int(hWnd), pointer(self.winCompAttrData))
 
     def addShadowEffect(self, hWnd):
-        """ add DWM shadow to window
-
-        Parameter
-        ----------
-        hWnd: int or `sip.voidptr`
-            Window handle
-        """
         hWnd = int(hWnd)
         margins = MARGINS(-1, -1, -1, -1)
         self.DwmExtendFrameIntoClientArea(hWnd, byref(margins))
 
     def addMenuShadowEffect(self, hWnd):
-        """ add DWM shadow to menu
-
-        Parameter
-        ----------
-        hWnd: int or `sip.voidptr`
-            Window handle
-        """
         hWnd = int(hWnd)
         self.DwmSetWindowAttribute(
             hWnd,
@@ -142,13 +183,6 @@ class WindowEffect:
 
     @staticmethod
     def addWindowAnimation(hWnd):
-        """ Enables the maximize and minimize animation of the window
-
-        Parameters
-        ----------
-        hWnd : int or `sip.voidptr`
-            Window handle
-        """
         style = win32gui.GetWindowLong(hWnd, win32con.GWL_STYLE)
         win32gui.SetWindowLong(
             int(hWnd),
@@ -162,13 +196,6 @@ class WindowEffect:
 
     @staticmethod
     def setWindowStayOnTop(hWnd, isStayOnTop: bool):
-        """ set whether the window is topped
-
-        Parameters
-        ----------
-        hWnd : int or `sip.voidptr`
-            Window handle
-        """
         flag = win32con.HWND_TOPMOST if isStayOnTop else win32con.HWND_NOTOPMOST
         win32gui.SetWindowPos(int(hWnd), flag, 0, 0, 0, 0,
                               win32con.SWP_NOMOVE |

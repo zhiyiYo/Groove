@@ -11,7 +11,7 @@ from common.database import DBInitializer
 from common.database.entity import AlbumInfo, Playlist, SongInfo
 from common.hotkey_manager import HotkeyManager
 from common.library import Directory, Library
-from common.os_utils import moveToTrash, getWindowsVersion
+from common.os_utils import getWindowsVersion
 from common.signal_bus import signalBus
 from common.thread.get_online_song_url_thread import GetOnlineSongUrlThread
 from common.thread.library_thread import LibraryThread
@@ -305,7 +305,7 @@ class MainWindow(AcrylicWindow):
         f.close()
 
     def eventFilter(self, obj, e: QEvent):
-        if obj == self.navigationInterface.navigationMenu:
+        if hasattr(self, "navigationInterface") and obj is self.navigationInterface.navigationMenu:
             # 显示导航菜单是更改标题栏返回按钮和标题的父级为导航菜单
             isVisible = self.titleBar.returnButton.isVisible()
 
@@ -491,9 +491,7 @@ class MainWindow(AcrylicWindow):
         self.playingInterface.playBar.playButton.setEnabled(isEnabled)
         self.playingInterface.playBar.nextSongButton.setEnabled(isEnabled)
         self.playingInterface.playBar.lastSongButton.setEnabled(isEnabled)
-        self.thumbnailToolBar.playButton.setEnabled(isEnabled)
-        self.thumbnailToolBar.nextSongButton.setEnabled(isEnabled)
-        self.thumbnailToolBar.lastSongButton.setEnabled(isEnabled)
+        self.thumbnailToolBar.setButtonsEnabled(isEnabled)
         self.smallestPlayInterface.playButton.setEnabled(isEnabled)
         self.smallestPlayInterface.lastSongButton.setEnabled(isEnabled)
         self.smallestPlayInterface.nextSongButton.setEnabled(isEnabled)
@@ -1181,7 +1179,7 @@ class MainWindow(AcrylicWindow):
     def deleteSongs(self, songPaths: List[str]):
         """ delete songs from local """
         for songPath in songPaths:
-            moveToTrash(songPath)
+            QFile.moveToTrash(songPath)
 
     def onUpdateLyricPosTimeOut(self):
         """ update lyric postion timer time out """

@@ -143,9 +143,10 @@ class SmallestPlayInterface(FramelessWindow):
 
     def eventFilter(self, obj, e: QEvent):
         """ 过滤事件 """
-        if obj == self.progressBar:
+        if hasattr(self, "progressBar") and obj is self.progressBar:
             if e.type() in [QEvent.MouseButtonPress, QEvent.MouseButtonDblClick]:
                 return True
+
         return super().eventFilter(obj, e)
 
     def __cycleLeftShift(self):
