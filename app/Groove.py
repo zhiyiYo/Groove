@@ -20,6 +20,7 @@ QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
 app = QApplication(sys.argv)
 app.setAttribute(Qt.AA_DontCreateNativeWidgetSiblings)
+app.setStyle("Windows")
 
 # Internationalization
 translator = QTranslator()

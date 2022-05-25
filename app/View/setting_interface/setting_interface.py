@@ -1,4 +1,6 @@
 # coding:utf-8
+import sys
+
 from common.config import config
 from common.thread.get_meta_data_thread import GetFolderMetaDataThread
 from components.buttons.switch_button import SwitchButton
@@ -123,6 +125,7 @@ class SettingInterface(ScrollArea):
         self.acrylicSwitchButton.setChecked(enableAcrylic)
         self.acrylicSwitchButton.setText(
             self.tr('On') if enableAcrylic else self.tr('Off'))
+        self.acrylicSwitchButton.setEnabled(sys.platform == "win32")
 
         # set cursor
         self.selectMusicFolderLabel.setCursor(Qt.PointingHandCursor)

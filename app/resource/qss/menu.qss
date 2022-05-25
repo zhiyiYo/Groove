@@ -5,7 +5,7 @@ QMenu {
     font: 18px 'Segoe UI', 'Microsoft YaHei';
     padding: 5px 0px 16px 0px;
     border: 1px solid rgb(200, 200, 200);
-    border-radius: 5px;
+    /* border-radius: 5px; */
 }
 
 QMenu::right-arrow {

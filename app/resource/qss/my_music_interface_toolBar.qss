@@ -29,14 +29,10 @@ QLabel#myMusicLabel {
 }
 
 
-/*设置按钮的样式*/
-QPushButton {
-    background-color: transparent;
-    color: black;
-}
-
 QPushButton#sortModeButton {
     color: rgb(0, 107, 131);
+    padding-top: 3px;
+    padding-bottom: 3px;
 }
 
 QPushButton#sortModeButton:hover {

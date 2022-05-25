@@ -1,6 +1,7 @@
 # coding:utf-8
 import json
 import os
+import sys
 from pathlib import Path
 
 from .singleton import Singleton
@@ -42,6 +43,9 @@ class Config(Singleton):
                 Path('download').absolute()).replace("\\", '/')
 
         os.makedirs(self.__config['download-folder'], exist_ok=True)
+
+        if sys.platform != "win32":
+            self["enable-acrylic-background"] = False
 
     def __setitem__(self, key, value):
         if key not in self.__config:

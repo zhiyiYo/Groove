@@ -1,4 +1,5 @@
 # coding:utf-8
+import sys
 from copy import deepcopy
 from pathlib import Path
 from random import shuffle
@@ -555,19 +556,21 @@ class MainWindow(AcrylicWindow):
 
         self.pause()
 
+        decoder = "LAV filters" if sys.platform == "win32" else "GStreamer"
+        hint = self.tr("please check if") + f" {decoder} " + self.tr("is installed.")
+
         messageMap = {
             QMediaPlayer.ResourceError: self.tr(
-                "The media resource couldn't be resolved, please check if LAV filters is installed."),
+                "The media resource couldn't be resolved") + ", " + hint,
             QMediaPlayer.FormatError: self.tr(
                 "The format of a media resource isn't supported."),
             QMediaPlayer.NetworkError: self.tr("A network error occurred."),
             QMediaPlayer.AccessDeniedError: self.tr(
                 "There are not the appropriate permissions to play the media resource."),
             QMediaPlayer.ServiceMissingError: self.tr(
-                "A valid playback service was not found, please check if LAV filters is installed.")
+                "A valid playback service was not found") + ", " + hint
         }
-        w = MessageDialog(self.tr('An error occurred'),
-                          messageMap[error], self)
+        w = MessageDialog(self.tr('An error occurred'), messageMap[error], self)
         w.cancelButton.setText(self.tr('Close'))
         w.yesButton.hide()
         w.exec()

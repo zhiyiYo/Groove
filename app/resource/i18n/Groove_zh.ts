@@ -649,32 +649,42 @@
         <translation>正在扫描歌曲信息</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="555"/>
-        <source>The media resource couldn&apos;t be resolved, please check if LAV filters is installed.</source>
-        <translation>无法解析此音频，请检查是否安装了 LAV Filters。</translation>
+        <location filename="../../View/main_window/main_window.py" line="560"/>
+        <source>please check if</source>
+        <translation>请检查</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="557"/>
+        <location filename="../../View/main_window/main_window.py" line="560"/>
+        <source>is installed.</source>
+        <translation>是否已正确安装</translation>
+    </message>
+    <message>
+        <location filename="../../View/main_window/main_window.py" line="564"/>
+        <source>The media resource couldn&apos;t be resolved</source>
+        <translation>无法解析此音频</translation>
+    </message>
+    <message>
+        <location filename="../../View/main_window/main_window.py" line="566"/>
         <source>The format of a media resource isn&apos;t supported.</source>
         <translation>暂不支持播放该格式的音频。</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="558"/>
+        <location filename="../../View/main_window/main_window.py" line="567"/>
         <source>A network error occurred.</source>
         <translation>发生了网络错误。</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="560"/>
+        <location filename="../../View/main_window/main_window.py" line="569"/>
         <source>There are not the appropriate permissions to play the media resource.</source>
         <translation>没有权限播放该音频。</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="562"/>
-        <source>A valid playback service was not found, please check if LAV filters is installed.</source>
-        <translation>音频服务不存在，无法继续播放，请检查是否安装了 LAV Filters。</translation>
+        <location filename="../../View/main_window/main_window.py" line="571"/>
+        <source>A valid playback service was not found</source>
+        <translation>音频服务不存在</translation>
     </message>
     <message>
-        <location filename="../../View/main_window/main_window.py" line="564"/>
+        <location filename="../../View/main_window/main_window.py" line="573"/>
         <source>An error occurred</source>
         <translation>发生了错误</translation>
     </message>
