@@ -108,6 +108,9 @@ QPushButton {
     font-size: 16px;
     background-color: transparent;
     font-family: 'Segoe UI', 'Microsoft YaHei';
+    margin: 0;
+    padding-top: 4px;
+    padding-bottom: 3px;
 }
 
 QPushButton#sortModeButton {

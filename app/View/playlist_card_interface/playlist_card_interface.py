@@ -80,8 +80,8 @@ class PlaylistCardInterface(PlaylistSelectionModeInterface):
         self.playlistLabel.move(30, 54)
         self.createPlaylistButton.move(30, 131)
         self.sortModeLabel.move(
-            self.createPlaylistButton.geometry().right()+30, 130)
-        self.sortModeButton.move(self.sortModeLabel.geometry().right()+7, 130)
+            self.createPlaylistButton.geometry().right()+30, 133)
+        self.sortModeButton.move(self.sortModeLabel.geometry().right()+7, 132)
 
     def __setQss(self):
         """ set style sheet """
