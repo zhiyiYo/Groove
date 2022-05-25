@@ -62,6 +62,19 @@
     </message>
 </context>
 <context>
+    <name>SingerInterfaceAlbumCard</name>
+    <message>
+        <location filename="../../components/album_card/album_card_base.py" line="50"/>
+        <source>Add to</source>
+        <translation>添加到</translation>
+    </message>
+    <message>
+        <location filename="../../components/album_card/album_card_base.py" line="43"/>
+        <source>Play</source>
+        <translation>播放</translation>
+    </message>
+</context>
+<context>
     <name>AlbumCardContextMenu</name>
     <message>
         <location filename="../../components/album_card/album_card.py" line="115"/>

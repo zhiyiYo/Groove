@@ -1,7 +1,6 @@
 # coding:utf-8
-from components.buttons.tooltip_button import TooltipPushButton
 from PyQt5.QtCore import QPoint, Qt
-from PyQt5.QtGui import QBrush, QColor, QPainter, QPen, QPolygon, QPixmap, QFont
+from PyQt5.QtGui import QBrush, QColor, QPainter, QPen, QPolygon, QPixmap
 from PyQt5.QtWidgets import QPushButton
 
 from common.get_pressed_pos import getPressedPos
@@ -230,7 +229,8 @@ class PushButton(NavigationButton):
         painter.setPen(QPen(Qt.black))
         painter.setFont(self.font())
         text = painter.fontMetrics().elidedText(self.text(), Qt.ElideRight, 320)
-        if self.objectName() not in ["myLoveButton", "playListButton"]:
+        names = ["myMusicButton", "historyButton", "playingButton", "settingButton"]
+        if self.objectName() in names:
             painter.drawText(textX, textY + 16, text)
         else:
             painter.drawText(textX, textY + 18, text)

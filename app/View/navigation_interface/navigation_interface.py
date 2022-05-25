@@ -23,8 +23,8 @@ class NavigationInterface(QWidget):
         self.navigationBar = NavigationBar(self)
         self.navigationWidget = NavigationWidget(self)
         self.navigationMenu = NavigationMenu(self)
-        self.__navigation_list = [self.navigationBar,
-                                  self.navigationWidget, self.navigationMenu]
+        self.__navigations = [self.navigationBar,
+                              self.navigationWidget, self.navigationMenu]
         self.__displayMode = self.COMPACT
         self.__isExpanded = False
         self.__isOverlay = False
@@ -34,9 +34,9 @@ class NavigationInterface(QWidget):
         """ initialize widgets """
         self.resize(self.navigationBar.width(), 800)
         self.setCurrentIndex(0)
+        # must hide menu
+        self.navigationMenu.hide()
         self.navigationWidget.hide()
-        # self.navigationWidget.showBarButton.setToolTip(
-        #     self.tr('Minimize navigation pane'))
         self.__connectSignalToSlot()
         self.navigationMenu.installEventFilter(self)
 
@@ -66,7 +66,7 @@ class NavigationInterface(QWidget):
         self.navigationMenu.playingButton.clicked.connect(
             self.__collapseWindow)
         self.navigationMenu.searchSig.connect(self.__collapseWindow)
-        for widget in self.__navigation_list:
+        for widget in self.__navigations:
             widget.playingButton.clicked.connect(
                 signalBus.showPlayingInterfaceSig)
             widget.settingButton.clicked.connect(
@@ -95,6 +95,7 @@ class NavigationInterface(QWidget):
     def __expandNavigationWindow(self):
         """ expand navigation window """
         self.__isExpanded = True
+
         if not self.__isOverlay:
             # show navigation widget
             self.__displayMode = self.IN_LINE
@@ -102,7 +103,6 @@ class NavigationInterface(QWidget):
             self.navigationWidget.updateWindow()
             self.displayModeChanged.emit(self.IN_LINE)
             self.navigationWidget.show()
-            self.navigationBar.hide()
         else:
             # show navigation menu
             self.__displayMode = self.OVERLAY
@@ -110,7 +110,8 @@ class NavigationInterface(QWidget):
             self.navigationMenu.updateWindow()
             self.navigationMenu.aniShow()
             self.displayModeChanged.emit(self.OVERLAY)
-            self.navigationBar.hide()
+
+        self.navigationBar.hide()
 
     def __collapseWindow(self):
         """ collapese navigation window """
@@ -133,13 +134,13 @@ class NavigationInterface(QWidget):
 
     def __onSelectedButtonChanged(self, name):
         """ selected button changed slot """
-        for widget in self.__navigation_list:
+        for widget in self.__navigations:
             if widget is not self.sender():
                 widget.setSelectedButton(name)
 
     def setCurrentIndex(self, index: int):
         """ set selected button """
-        for widget in self.__navigation_list:
+        for widget in self.__navigations:
             widget.setCurrentIndex(index)
 
     def updateWindow(self):

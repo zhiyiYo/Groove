@@ -17,7 +17,6 @@ class NavigationWidget(NavigationWidgetBase):
     """ Navigation widget """
 
     searchSig = pyqtSignal(str)
-    playlistFolder = Path('cache/Playlists')
 
     def __init__(self, parent):
         super().__init__(parent)

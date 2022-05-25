@@ -30,6 +30,7 @@ class AppBarButton(QPushButton):
         }
         """
         self.setStyleSheet(styleSheet)
+        self.setFocusPolicy(Qt.NoFocus)
         self.adjustSize()
 
     def sizeHint(self):

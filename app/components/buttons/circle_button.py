@@ -2,7 +2,6 @@
 from .tooltip_button import TooltipButton
 from PyQt5.QtCore import Qt, QEvent
 from PyQt5.QtGui import QPainter, QPixmap, QBrush, QColor
-from PyQt5.QtWidgets import QToolButton
 
 
 class CircleButton(TooltipButton):
