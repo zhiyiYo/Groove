@@ -2247,6 +2247,22 @@
     </message>
 </context>
 <context>
+    <name>WindowsTitleBar</name>
+    <message>
+        <location filename="../../components/title_bar/title_bar.py" line="20"/>
+        <source>Groove Music</source>
+        <translation>Groove 音乐</translation>
+    </message>
+</context>
+<context>
+    <name>UnixTitleBar</name>
+    <message>
+        <location filename="../../components/title_bar/title_bar.py" line="20"/>
+        <source>Groove Music</source>
+        <translation>Groove 音乐</translation>
+    </message>
+</context>
+<context>
     <name>ToolBar</name>
     <message>
         <location filename="../../View/my_music_interface/tool_bar.py" line="23"/>
