@@ -88,15 +88,12 @@ class TitleBar(QWidget):
     def eventFilter(self, obj, e: QEvent):
         if obj == self.returnButton:
             if e.type() == QEvent.Hide:
-                cond = self.titleLabel.parent() is not self
-                self.titleLabel.move(15 * cond, 10 * cond)
+                self.titleLabel.move(0, 0)
             elif e.type() == QEvent.Show:
-                self.titleLabel.move(
-                    self.returnButton.width() + self.titleLabel.x(), self.titleLabel.y())
+                self.titleLabel.move(60, 0)
         elif obj == self.titleLabel:
-            if e.type() == QEvent.Show and self.returnButton.isVisible():
-                self.titleLabel.move(
-                    self.returnButton.width() + self.titleLabel.y(), self.titleLabel.y())
+            if e.type() == QEvent.Show:
+                self.titleLabel.move(60*self.returnButton.isVisible(), 0)
 
         return super().eventFilter(obj, e)
 

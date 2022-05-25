@@ -35,8 +35,8 @@ class NavigationInterface(QWidget):
         self.resize(self.navigationBar.width(), 800)
         self.setCurrentIndex(0)
         self.navigationWidget.hide()
-        self.navigationWidget.showBarButton.setToolTip(
-            self.tr('Minimize navigation pane'))
+        # self.navigationWidget.showBarButton.setToolTip(
+        #     self.tr('Minimize navigation pane'))
         self.__connectSignalToSlot()
         self.navigationMenu.installEventFilter(self)
 

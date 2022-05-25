@@ -3,8 +3,8 @@ QLabel {
 }
 
 QLabel#titleLabel {
-    font: 14px 'Microsoft YaHei Light';
-    /* padding: 10px 15px 10px 15px; */
+    font: 14px 'Segoe UI Semilight', 'Microsoft YaHei Light';
+    padding: 10px 15px 10px 15px;
 }
 
 QWidget, QScrollArea {

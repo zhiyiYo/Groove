@@ -307,7 +307,7 @@ class MainWindow(AcrylicWindow):
 
     def eventFilter(self, obj, e: QEvent):
         if hasattr(self, "navigationInterface") and obj is self.navigationInterface.navigationMenu:
-            # 显示导航菜单是更改标题栏返回按钮和标题的父级为导航菜单
+            # 显示导航菜单时更改标题栏返回按钮和标题的父级为导航菜单
             isVisible = self.titleBar.returnButton.isVisible()
 
             if e.type() == QEvent.Show:
@@ -315,7 +315,8 @@ class MainWindow(AcrylicWindow):
 
                 # show title
                 self.titleBar.titleLabel.setParent(obj)
-                self.titleBar.titleLabel.move(15, 10)
+                self.titleBar.titleLabel.setText(self.tr('Groove Music'))
+                self.titleBar.titleLabel.move(60*isVisible, 0)
                 self.titleBar.titleLabel.show()
 
                 # shorten the navigation menu if the play bar is visible
