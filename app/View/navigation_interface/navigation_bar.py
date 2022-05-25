@@ -56,13 +56,13 @@ class NavigationBar(NavigationWidgetBase):
         self.setSelectedButton(self.myMusicButton.property('name'))
         self._connectButtonClickedSigToSlot()
         self.__initLayout()
-        self.showMenuButton.setToolTip(self.tr('Maximize navigation pane'))
-        self.myMusicButton.setToolTip(self.tr('My music'))
-        self.historyButton.setToolTip(self.tr('Recently played'))
-        self.playingButton.setToolTip(self.tr('Now playing'))
-        self.playlistButton.setToolTip(self.tr('Playlist'))
-        self.settingButton.setToolTip(self.tr('Settings'))
-        self.searchButton.setToolTip(self.tr('Search'))
+        # self.showMenuButton.setToolTip(self.tr('Maximize navigation pane'))
+        # self.myMusicButton.setToolTip(self.tr('My music'))
+        # self.historyButton.setToolTip(self.tr('Recently played'))
+        # self.playingButton.setToolTip(self.tr('Now playing'))
+        # self.playlistButton.setToolTip(self.tr('Playlist'))
+        # self.settingButton.setToolTip(self.tr('Settings'))
+        # self.searchButton.setToolTip(self.tr('Search'))
 
     def __initLayout(self):
         """ initialize layout """

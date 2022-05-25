@@ -5,7 +5,7 @@
   Groove Music
 </h1>
 <p align="center">
-  A music player based on PyQt5 and LAV Filters.
+  A cross-platform music player based on PyQt5.
 </p>
 
 <p align="center">
@@ -19,11 +19,7 @@
   </a>
 
   <a style="text-decoration:none">
-    <img src="https://img.shields.io/badge/LAV%20Filters-0.74.1-blue?color=00B16A" alt="LAV Filters 0.74.1"/>
-  </a>
-
-  <a style="text-decoration:none">
-    <img src="https://img.shields.io/badge/OS-Win%2010%20|%20Win%2011-blue?color=00B16A" alt="OS Win10 | Win11"/>
+    <img src="https://img.shields.io/badge/Platform-Win32%20|%20Unix-blue?color=00B16A" alt="Platform Win32 | Unix"/>
   </a>
 </p>
 
@@ -67,7 +63,10 @@ English | <a href="docs/README_zh.md">简体中文</a>
     pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
     ```
 
-2. Download and install [LAV Filters](https://github.com/Nevcairiel/LAVFilters/releases/download/0.74/LAVFilters-0.74-Installer.exe).
+2. Download decoder:
+   * For the Win32 platform, you should install [LAV Filters](https://github.com/Nevcairiel/LAVFilters/releases/download/0.74/LAVFilters-0.74-Installer.exe).
+   * For the Unix platform, you should install GStreamer.
+
 3. Open Groove music:
 
     ```shell
@@ -89,7 +88,7 @@ English | <a href="docs/README_zh.md">简体中文</a>
 
   Because the interface background uses acrylic effect, this problem will occur for some versions of win10. There are three solutions:
 
-  * Upgrade win10 to the latest version.
+  * Upgrade Win10 to Win11.
   * Uncheck the check box of **Advanced system settings --> Performance --> Show window contents when dragging**.
   * Turn off the option to enable acrylic background in the setting interface.
 
@@ -100,6 +99,9 @@ English | <a href="docs/README_zh.md">简体中文</a>
   * flac
   * mp4/m4a
 
+* **Why did GStreamer report this error: Warning: "No decoder available for type blah blah?**
+
+  I solved this problem on Ubuntu 20.04 by `sudo apt-get install gstreamer1.0-libav`.
 
 ## License
 ```

@@ -6,11 +6,6 @@ from platform import platform
 
 from PyQt5.QtSql import QSqlDatabase
 
-if sys.platform == "win32":
-    from win32con import DESKTOPHORZRES, HORZRES
-    from win32gui import GetDC, ReleaseDC
-    from win32print import GetDeviceCaps
-
 from common.database.service import PlaylistService
 
 
@@ -120,18 +115,6 @@ def getPlaylistNames():
     db = QSqlDatabase.database('main')
     service = PlaylistService(db)
     return [i.name for i in service.listAll()]
-
-
-def getDevicePixelRatio():
-    """ get dpi scale ratio """
-    if sys.platform != "win32":
-        return 1
-
-    hdc = GetDC(None)
-    t = GetDeviceCaps(hdc, DESKTOPHORZRES)
-    d = GetDeviceCaps(hdc, HORZRES)
-    ReleaseDC(None, hdc)
-    return t / d
 
 
 def getWindowsVersion():

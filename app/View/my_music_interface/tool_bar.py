@@ -95,7 +95,7 @@ class ToolBar(QWidget):
         self.albumTabButton.move(
             self.singerTabButton.geometry().right()+55, 136)
 
-        self.randomPlayAllButton.move(31, 200)
+        self.randomPlayAllButton.move(31, 198)
         self.sortModeLabel.move(
             self.randomPlayAllButton.geometry().right()+50, 200)
         self.songSortModeButton.move(
