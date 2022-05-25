@@ -99,7 +99,7 @@ English | <a href="docs/README_zh.md">简体中文</a>
   * flac
   * mp4/m4a
 
-* **Why did GStreamer report this error: Warning: "No decoder available for type blah blah?**
+* **Why did GStreamer report this error: Warning: "No decoder available for type blah blah"?**
 
   I solved this problem on Ubuntu 20.04 by `sudo apt-get install gstreamer1.0-libav`.
 

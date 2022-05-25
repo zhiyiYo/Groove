@@ -5,7 +5,7 @@
   Groove 音乐
 </h1>
 <p align="center">
-  一个基于 PyQt5 和 LAV Filters 的音乐播放器.
+  一个基于 PyQt5 的跨平台音乐播放器.
 </p>
 
 <p align="center">
@@ -19,11 +19,7 @@
   </a>
 
   <a style="text-decoration:none">
-    <img src="https://img.shields.io/badge/LAV%20Filters-0.74.1-blue?color=00B16A" alt="LAV Filters 0.74.1"/>
-  </a>
-
-  <a style="text-decoration:none">
-    <img src="https://img.shields.io/badge/OS-Win%2010%20|%20Win%2011-blue?color=00B16A" alt="OS Win10 | Win11"/>
+    <img src="https://img.shields.io/badge/Platform-Win32%20|%20Unix-blue?color=00B16A" alt="Platform Win32 | Unix"/>
   </a>
 </p>
 
@@ -66,7 +62,11 @@
     pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
     ```
 
-2. 下载并安装 [LAV Filters](https://github.com/Nevcairiel/LAVFilters/releases/download/0.74/LAVFilters-0.74-Installer.exe).
+2. 下载解码器：
+   * 对于 Win32 平台，安装 [LAV Filters](https://github.com/Nevcairiel/LAVFilters/releases/download/0.74/LAVFilters-0.74-Installer.exe)
+   * 对于 Unix 平台，安装 GStreamer
+
+
 3. 打开 Groove 音乐:
 
     ```shell
@@ -100,6 +100,9 @@
   * flac
   * mp4/m4a
 
+* **为什么运行的时候 GStreamer 报错：Warning: "No decoder available for type ..."?**
+
+  可以尝试 `sudo apt-get install gstreamer1.0-libav` 来解决该问题，Ubuntu 20.04 亲测有效。
 
 ## 许可证
 ```txt
