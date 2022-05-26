@@ -180,6 +180,9 @@ class UnixFramelessWindow(FramelessWindowBase):
         QCoreApplication.instance().installEventFilter(self)
 
     def eventFilter(self, obj, event):
+        if obj is not self:
+            return False
+
         et = event.type()
         if et != QEvent.MouseButtonPress and et != QEvent.MouseMove:
             return False
