@@ -1,4 +1,6 @@
 # coding:utf-8
+import sys
+
 from common.auto_wrap import autoWrap
 from common.database.entity import AlbumInfo
 from common.os_utils import getCoverPath
@@ -8,8 +10,8 @@ from components.widgets.check_box import CheckBox
 from components.widgets.label import AlbumCover, ClickableLabel
 from components.widgets.menu import AddToMenu
 from components.widgets.perspective_widget import PerspectiveWidget
-from PyQt5.QtCore import QPoint, QPropertyAnimation, Qt, pyqtSignal
-from PyQt5.QtGui import QFont, QFontMetrics
+from PyQt5.QtCore import QEvent, QPoint, QPropertyAnimation, Qt, pyqtSignal
+from PyQt5.QtGui import QContextMenuEvent, QFont, QFontMetrics, QMouseEvent
 from PyQt5.QtWidgets import (QApplication, QGraphicsOpacityEffect, QVBoxLayout,
                              QWidget)
 
@@ -146,6 +148,20 @@ class AlbumCardBase(PerspectiveWidget):
             else:
                 signalBus.switchToAlbumInterfaceSig.emit(
                     self.singer, self.album)
+
+    def contextMenuEvent(self, e: QContextMenuEvent):
+        if sys.platform == "win32":
+            return super().contextMenuEvent(e)
+
+        event = QMouseEvent(
+            QEvent.MouseButtonRelease,
+            e.pos(),
+            Qt.RightButton,
+            Qt.RightButton,
+            Qt.NoModifier
+        )
+        QApplication.sendEvent(self, event)
+        return super().contextMenuEvent(e)
 
     def showAlbumInfoEditDialog(self):
         """ show album information edit dialog """

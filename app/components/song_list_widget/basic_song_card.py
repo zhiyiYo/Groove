@@ -1,5 +1,6 @@
 # coding:utf-8
 import os
+import sys
 
 from common.database.entity import SongInfo
 from common.signal_bus import signalBus
@@ -7,7 +8,7 @@ from components.widgets.menu import AddToMenu
 from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
                           QParallelAnimationGroup, QPoint, QPropertyAnimation,
                           Qt, pyqtSignal)
-from PyQt5.QtGui import QFont, QFontMetrics, QMouseEvent
+from PyQt5.QtGui import QContextMenuEvent, QFont, QFontMetrics, QMouseEvent
 from PyQt5.QtWidgets import QApplication, QWidget
 
 from .song_card_type import SongCardType
@@ -47,6 +48,7 @@ class BasicSongCard(QWidget):
         self.isChecked = False
         self.isInSelectionMode = False
         self.isDoubleClicked = False
+        self.isPressed = False
 
         # the index of item corresponding to songCard
         self.itemIndex = None
@@ -240,7 +242,8 @@ class BasicSongCard(QWidget):
         # clear animations
         self.__anis.clear()
         self.__aniGroup.clear()
-        self.__anis = [QPropertyAnimation(w, b"pos") for w in self.__aniWidgets]
+        self.__anis = [QPropertyAnimation(w, b"pos")
+                       for w in self.__aniWidgets]
 
         # initialize animation
         for ani in self.__anis:
@@ -257,40 +260,45 @@ class BasicSongCard(QWidget):
             self.__aniTargetXs.append(deltaX + widget.x())
 
     def eventFilter(self, obj, e: QEvent):
-        if obj == self:
-            if e.type() == QEvent.Enter:
-                self.songNameCard.checkBox.show()
-                self.songNameCard.buttonGroup.setHidden(self.isInSelectionMode)
-                state = "selected-enter" if self.isSelected else "notSelected-enter"
-                self.setWidgetState(state)
-                self.setStyle(QApplication.style())
+        if obj is not self:
+            return super().eventFilter(obj, e)
 
-            elif e.type() == QEvent.Leave:
-                # When not in selection mode, hide the check box and button group
-                # if the song card is not selected and the mouse leaves song card
-                if not self.isSelected:
-                    self.songNameCard.buttonGroup.hide()
-                    self.songNameCard.checkBox.setHidden(
-                        not self.isInSelectionMode)
+        if e.type() == QEvent.Enter:
+            self.songNameCard.checkBox.show()
+            self.songNameCard.buttonGroup.setHidden(self.isInSelectionMode)
+            state = "selected-enter" if self.isSelected else "notSelected-enter"
+            self.setWidgetState(state)
+            self.setStyle(QApplication.style())
 
-                state = "selected-leave" if self.isSelected else "notSelected-leave"
-                self.setWidgetState(state)
-                self.setStyle(QApplication.style())
+        elif e.type() == QEvent.Leave:
+            # When not in selection mode, hide the check box and button group
+            # if the song card is not selected and the mouse leaves song card
+            if not self.isSelected:
+                self.songNameCard.buttonGroup.hide()
+                self.songNameCard.checkBox.setHidden(
+                    not self.isInSelectionMode)
 
-            elif e.type() == QEvent.MouseButtonPress:
-                state = "selected-pressed" if self.isSelected else "notSelected-pressed"
-                if e.button() == Qt.LeftButton:
-                    self.isSelected = True
-                self.setWidgetState(state)
-                self.setStyle(QApplication.style())
+            state = "selected-leave" if self.isSelected else "notSelected-leave"
+            self.setWidgetState(state)
+            self.setStyle(QApplication.style())
 
-            elif e.type() == QEvent.MouseButtonRelease and e.button() == Qt.LeftButton:
-                self.setWidgetState("selected-leave")
-                self.setCheckBoxBtLabelState("selected")
-                self.setStyle(QApplication.style())
+        elif e.type() == QEvent.MouseButtonPress:
+            self.isPressed = True
+            state = "selected-pressed" if self.isSelected else "notSelected-pressed"
+            if e.button() == Qt.LeftButton:
+                self.isSelected = True
 
-            elif e.type() == QEvent.MouseButtonDblClick:
-                self.isDoubleClicked = True
+            self.setWidgetState(state)
+            self.setStyle(QApplication.style())
+
+        elif e.type() == QEvent.MouseButtonRelease and e.button() == Qt.LeftButton:
+            self.setWidgetState("selected-leave")
+            self.setCheckBoxBtLabelState("selected")
+            self.setStyle(QApplication.style())
+
+        elif e.type() == QEvent.MouseButtonDblClick:
+            self.isDoubleClicked = True
+            self.isPressed = True
 
         return super().eventFilter(obj, e)
 
@@ -307,6 +315,10 @@ class BasicSongCard(QWidget):
                 w.move(x, w.y())
 
     def mouseReleaseEvent(self, e: QMouseEvent):
+        if not self.isPressed:
+            return
+
+        self.isPressed = False
         for ani, w, dx in zip(self.__anis, self.__aniWidgets, self.__deltaXs):
             ani.setStartValue(w.pos())
             ani.setEndValue(QPoint(w.x() - dx, w.y()))
@@ -320,6 +332,20 @@ class BasicSongCard(QWidget):
             self.isDoubleClicked = False
             if not self.isPlaying:
                 self.__aniGroup.finished.connect(self.__onAniFinished)
+
+    def contextMenuEvent(self, e: QContextMenuEvent):
+        if sys.platform == "win32":
+            return super().contextMenuEvent(e)
+
+        event = QMouseEvent(
+            QEvent.MouseButtonRelease,
+            e.pos(),
+            Qt.RightButton,
+            Qt.RightButton,
+            Qt.NoModifier
+        )
+        QApplication.sendEvent(self, event)
+        return super().contextMenuEvent(e)
 
     def __onAniFinished(self):
         """ animation finished slot """

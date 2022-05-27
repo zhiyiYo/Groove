@@ -17,6 +17,7 @@ class PerspectiveWidget(QWidget):
         self.__screenshotPix = None
         self.__pressedPix = None
         self.__pressedPos = None
+        self.__isPressed = False
 
     @property
     def pressedPos(self) -> str:
@@ -26,6 +27,8 @@ class PerspectiveWidget(QWidget):
         super().mousePressEvent(e)
         if self.__pressedPos:
             return
+
+        self.__isPressed = True
 
         # grab screen
         self.grabMouse()
@@ -53,6 +56,11 @@ class PerspectiveWidget(QWidget):
     def mouseReleaseEvent(self, e):
         super().mouseReleaseEvent(e)
         self.releaseMouse()
+
+        if not self.__isPressed:
+            return
+
+        self.__isPressed = False
         self.__pressedPos = None
         self.update()
 

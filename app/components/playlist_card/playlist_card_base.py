@@ -1,4 +1,6 @@
 # coding:utf-8
+import sys
+
 from common.auto_wrap import autoWrap
 from common.database.entity import Playlist
 from common.image_process_utils import DominantColor
@@ -10,8 +12,9 @@ from components.widgets.menu import AddToMenu
 from components.widgets.perspective_widget import PerspectiveWidget
 from PIL import Image
 from PIL.ImageFilter import GaussianBlur
-from PyQt5.QtCore import QPoint, QPropertyAnimation, Qt, pyqtSignal
-from PyQt5.QtGui import QBrush, QColor, QLinearGradient, QPainter, QPixmap
+from PyQt5.QtCore import QEvent, QPoint, QPropertyAnimation, Qt, pyqtSignal
+from PyQt5.QtGui import (QBrush, QColor, QContextMenuEvent, QLinearGradient,
+                         QMouseEvent, QPainter, QPixmap)
 from PyQt5.QtWidgets import (QApplication, QGraphicsOpacityEffect, QLabel,
                              QVBoxLayout, QWidget)
 
@@ -153,6 +156,20 @@ class PlaylistCardBase(PerspectiveWidget):
                 self.setChecked(not self.isChecked)
             else:
                 signalBus.switchToPlaylistInterfaceSig.emit(self.name)
+
+    def contextMenuEvent(self, e: QContextMenuEvent):
+        if sys.platform == "win32":
+            return super().contextMenuEvent(e)
+
+        event = QMouseEvent(
+            QEvent.MouseButtonRelease,
+            e.pos(),
+            Qt.RightButton,
+            Qt.RightButton,
+            Qt.NoModifier
+        )
+        QApplication.sendEvent(self, event)
+        return super().contextMenuEvent(e)
 
     def updateWindow(self, playlist: Playlist):
         """ update playlist card """

@@ -19,6 +19,7 @@ class SingerCard(SingerCardBase):
     """ Singer card """
 
     def contextMenuEvent(self, event):
+        super().contextMenuEvent(event)
         menu = SingerCardContextMenu(parent=self)
         menu.playAct.triggered.connect(lambda: self.playSignal.emit(self.singer))
         menu.nextToPlayAct.triggered.connect(
@@ -39,6 +40,7 @@ class LocalSearchedSingerCard(SingerCardBase):
     """ Singer card in local search result """
 
     def contextMenuEvent(self, event):
+        super().contextMenuEvent(event)
         menu = LocalSearchedSingerCardContextMenu(parent=self)
         menu.playAct.triggered.connect(lambda: self.playSignal.emit(self.singer))
         menu.nextToPlayAct.triggered.connect(

@@ -1,4 +1,6 @@
 # coding:utf-8
+import sys
+
 from common.database.entity import SingerInfo
 from common.os_utils import getSingerAvatarPath
 from common.signal_bus import signalBus
@@ -7,8 +9,9 @@ from components.widgets.check_box import CheckBox
 from components.widgets.label import ClickableLabel
 from components.widgets.menu import AddToMenu
 from components.widgets.perspective_widget import PerspectiveWidget
-from PyQt5.QtCore import QPoint, QPropertyAnimation, Qt, pyqtSignal
-from PyQt5.QtGui import QBrush, QColor, QImage, QImageReader, QPainter, QPen
+from PyQt5.QtCore import QEvent, QPoint, QPropertyAnimation, Qt, pyqtSignal
+from PyQt5.QtGui import (QBrush, QColor, QContextMenuEvent, QImage,
+                         QImageReader, QMouseEvent, QPainter, QPen)
 from PyQt5.QtWidgets import QApplication, QGraphicsOpacityEffect, QWidget
 
 
@@ -203,6 +206,20 @@ class SingerCardBase(PerspectiveWidget):
                 self.setChecked(not self.isChecked)
             else:
                 signalBus.switchToSingerInterfaceSig.emit(self.singer)
+
+    def contextMenuEvent(self, e: QContextMenuEvent):
+        if sys.platform == "win32":
+            return super().contextMenuEvent(e)
+
+        event = QMouseEvent(
+            QEvent.MouseButtonRelease,
+            e.pos(),
+            Qt.RightButton,
+            Qt.RightButton,
+            Qt.NoModifier
+        )
+        QApplication.sendEvent(self, event)
+        return super().contextMenuEvent(e)
 
     def updateAvatar(self, imagePath: str):
         """ update avatar """

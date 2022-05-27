@@ -22,6 +22,7 @@ class AlbumCard(AlbumCardBase):
     """ Album card """
 
     def contextMenuEvent(self, event: QContextMenuEvent):
+        super().contextMenuEvent(event)
         menu = AlbumCardContextMenu(parent=self)
         menu.playAct.triggered.connect(
             lambda: signalBus.playAlbumSig.emit(self.singer, self.album))
@@ -48,6 +49,7 @@ class LocalSearchedAlbumCard(AlbumCardBase):
     """ Album card in local search result """
 
     def contextMenuEvent(self, event: QContextMenuEvent):
+        super().contextMenuEvent(event)
         menu = LocalSearchedAlbumCardContextMenu(parent=self)
         menu.playAct.triggered.connect(
             lambda: signalBus.playAlbumSig.emit(self.singer, self.album))
@@ -79,6 +81,7 @@ class SingerInterfaceAlbumCard(AlbumCardBase):
         self.contentLabel.setText(self.year)
 
     def contextMenuEvent(self, e):
+        super().contextMenuEvent(e)
         menu = SingerInterfaceAlbumCardContextMenu(parent=self)
         menu.playAct.triggered.connect(
             lambda: signalBus.playAlbumSig.emit(self.singer, self.album))

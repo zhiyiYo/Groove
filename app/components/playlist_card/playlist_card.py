@@ -19,6 +19,7 @@ class PlaylistCard(PlaylistCardBase):
     """ Playlist card """
 
     def contextMenuEvent(self, e):
+        super().contextMenuEvent(e)
         menu = PlaylistCardContextMenu(parent=self)
 
         menu.playAct.triggered.connect(lambda: self.playSig.emit(self.name))
@@ -43,6 +44,7 @@ class LocalSearchedPlaylistCard(PlaylistCardBase):
     """ Playlist card in local search result """
 
     def contextMenuEvent(self, e):
+        super().contextMenuEvent(e)
         menu = LocalSearchedPlaylistCardContextMenu(self)
         menu.playAct.triggered.connect(
             lambda: self.playSig.emit(self.name))
