@@ -76,12 +76,19 @@
     ```
 
 ## 安装
-1. 下载并安装 [LAV Filters](https://github.com/Nevcairiel/LAVFilters/releases/download/0.74/LAVFilters-0.74-Installer.exe).
-2. 从 [Release](https://github.com/zhiyiYo/Groove/releases) 页面下载 `Groove_v*.*.*_windows_x64.zip`.
+### Win32
+1. 下载并安装 [LAV Filters](https://github.com/Nevcairiel/LAVFilters/releases/download/0.74/LAVFilters-0.74-Installer.exe)
+2. 从 [Release](https://github.com/zhiyiYo/Groove/releases) 页面下载 `Groove_v*.*.*_windows_x64.zip`
 3. 解压 `Groove_v*.*.*_windows_x64.zip`
 4. 在解压出来的 `Groove` 文件夹中，找到并双击运行 **Groove.exe**
 5. 开启你的音乐之旅 😊~~
 
+### Linux
+1. 安装 GStreamer
+2. 从 [Release](https://github.com/zhiyiYo/Groove/releases) 页面下载 `Groove_v*.*.*_linux_x64.zip`
+3. 解压 `Groove_v*.*.*_linux_x64.zip`
+4. 在解压出来的 `Groove` 文件夹中，找到并双击运行 **Groove** 可执行文件
+5. 开启你的音乐之旅 😊~~
 
 
 ## 常见问题
