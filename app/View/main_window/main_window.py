@@ -258,6 +258,9 @@ class MainWindow(AcrylicWindow):
         self.systemTrayIcon.show()
         self.setWindowEffect(config["enable-acrylic-background"])
 
+        if len(sys.argv) > 1:
+            self.play()
+
     def setWindowEffect(self, isEnableAcrylic: bool):
         """ set window effect """
         if isEnableAcrylic:
@@ -381,6 +384,13 @@ class MainWindow(AcrylicWindow):
         """ initialize playlist """
         self.player.setPlaylist(self.mediaPlaylist)
 
+        if len(sys.argv) > 1:
+            songInfos = self.library.loadFromFiles([sys.argv[1]])
+            self.setPlaylist(songInfos)
+            self.updateWindow(self.mediaPlaylist.currentIndex())
+            self.pause()
+            return
+
         if not self.mediaPlaylist.playlist:
             songInfos = self.songTabSongListWidget.songInfos
             self.setPlaylist(songInfos)
@@ -471,6 +481,7 @@ class MainWindow(AcrylicWindow):
         else:
             self.player.play()
             self.setPlayButtonState(True)
+            self.setPlayButtonEnabled(True)
             self.playBar.songInfoCard.show()
 
     def pause(self):
@@ -1313,6 +1324,16 @@ class MainWindow(AcrylicWindow):
         self.library.load()
         self.myMusicInterface.updateWindow()
 
+    def onAppMessage(self, message: str):
+        if message == "show":
+            if self.windowState() & Qt.WindowMinimized:
+                self.showNormal()
+            else:
+                self.show()
+        else:
+            self.setPlaylist(self.library.loadFromFiles([message]))
+            self.show()
+
     def connectSignalToSlot(self):
         """ connect signal to slot """
 
@@ -1352,6 +1373,8 @@ class MainWindow(AcrylicWindow):
             lambda: self.showCreatePlaylistDialog(self.mediaPlaylist.playlist))
 
         # signal bus signal
+        signalBus.appMessageSig.connect(self.onAppMessage)
+
         signalBus.nextSongSig.connect(self.mediaPlaylist.next)
         signalBus.lastSongSig.connect(self.mediaPlaylist.previous)
         signalBus.togglePlayStateSig.connect(self.togglePlayState)

@@ -75,6 +75,7 @@ class Library(QObject):
         songInfos = self.songInfoController.getSongInfosFromFile(files)
         self.albumCoverController.getAlbumCovers(songInfos)
         self.loadFromFilesFinished.emit(songInfos)
+        return songInfos
 
     def setDirectories(self, directories: List[str]):
         """ set the audio directories """

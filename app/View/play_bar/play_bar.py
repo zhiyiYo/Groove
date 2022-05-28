@@ -27,6 +27,7 @@ class PlayBar(QWidget):
         self.__color = color
         self.aniGroup = QParallelAnimationGroup(self)
         self.colorAni = QPropertyAnimation(self, b'color', self)
+        self.aniDuration = 200
 
         self.playProgressBar = PlayProgressBar(songInfo.duration, self)
         self.songInfoCard = SongInfoCard(songInfo, self)
@@ -153,16 +154,17 @@ class PlayBar(QWidget):
         r, g, b = DominantColor.getDominantColor(albumPath)
         self.colorChanged.emit(QColor(r, g, b))
 
+        t = self.aniDuration
         self.colorAni.setStartValue(self.getColor())
         self.colorAni.setEndValue(QColor(r, g, b))
         self.colorAni.setEasingCurve(QEasingCurve.OutCubic)
-        self.colorAni.setDuration(200)
+        self.colorAni.setDuration(t)
 
         self.songInfoCard.albumCoverLabel.ani.setStartValue(0)
         self.songInfoCard.albumCoverLabel.ani.setEndValue(1)
         self.songInfoCard.albumCoverLabel.ani.setEasingCurve(
             QEasingCurve.OutCubic)
-        self.songInfoCard.albumCoverLabel.ani.setDuration(200)
+        self.songInfoCard.albumCoverLabel.ani.setDuration(t)
 
         self.aniGroup.start()
 

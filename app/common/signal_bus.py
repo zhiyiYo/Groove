@@ -8,6 +8,7 @@ from .singleton import Singleton
 
 class SignalBus(Singleton, QObject):
     """ Signal bus in Groove Music """
+    appMessageSig = pyqtSignal(object)          # APP 发来消息
 
     randomPlayAllSig = pyqtSignal()             # 无序播放所有
     playCheckedSig = pyqtSignal(list)           # 播放选中的歌曲
