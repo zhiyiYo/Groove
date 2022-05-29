@@ -3,8 +3,8 @@ import sys
 from ctypes import POINTER, cast
 
 from PyQt5.QtCore import QCoreApplication, QEvent, Qt
-from PyQt5.QtGui import QCursor, QMouseEvent
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtGui import QCursor, QMouseEvent, QCloseEvent
+from PyQt5.QtWidgets import QApplication, QWidget
 
 if sys.platform == "win32":
     from ctypes.wintypes import MSG
@@ -154,6 +154,8 @@ class AcrylicWindow(WindowsFramelessWindow):
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
+        self.__closeByKey = False
+
         QtWin.enableBlurBehindWindow(self)
         self.setWindowFlags(Qt.FramelessWindowHint |
                             Qt.WindowMinMaxButtonsHint)
@@ -169,6 +171,26 @@ class AcrylicWindow(WindowsFramelessWindow):
                 self.windowEffect.addShadowEffect(self.winId())
 
         self.setStyleSheet("background:transparent")
+
+    def nativeEvent(self, eventType, message):
+        """ Handle the Windows message """
+        msg = MSG.from_address(message.__int__())
+        if msg.message == win32con.WM_SYSKEYDOWN:
+            if msg.wParam == win32con.VK_F4:
+                self.__closeByKey = True
+                QApplication.sendEvent(self, QCloseEvent())
+                return False, 0
+
+        return super().nativeEvent(eventType, message)
+
+    def closeEvent(self, e):
+        quitOnClose = QApplication.quitOnLastWindowClosed()
+        if not self.__closeByKey or quitOnClose:
+            self.__closeByKey = False
+            return super().closeEvent(e)
+
+        self.__closeByKey = False
+        self.hide()
 
 
 class UnixFramelessWindow(FramelessWindowBase):

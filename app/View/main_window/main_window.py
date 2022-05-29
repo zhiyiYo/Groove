@@ -201,7 +201,7 @@ class MainWindow(AcrylicWindow):
         self.setMinimumSize(w*r*1030/1920, h*r*780/1080)
 
         self.setWindowTitle(self.tr("Groove Music"))
-        self.setWindowIcon(QIcon(":/images/logo/logo_small.png"))
+        self.setWindowIcon(QIcon(":/images/logo/logo.ico"))
 
         self.move(w//2 - self.width()//2, h//2 - self.height()//2)
         self.show()
