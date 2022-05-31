@@ -247,11 +247,7 @@ class DaoBase:
         if len(self.fields) <= 1:
             return False
 
-        if self.connectionName:
-            db = QSqlDatabase.database(self.connectionName)
-        else:
-            db = QSqlDatabase.database()
-
+        db = self.getDatabase()
         db.transaction()
 
         id_ = self.fields[0]
@@ -304,11 +300,7 @@ class DaoBase:
         if not entities:
             return True
 
-        if self.connectionName:
-            db = QSqlDatabase.database(self.connectionName)
-        else:
-            db = QSqlDatabase.database()
-
+        db = self.getDatabase()
         db.transaction()
 
         values = ','.join([f':{i}' for i in self.fields])
@@ -320,6 +312,31 @@ class DaoBase:
             self.query.exec()
 
         return db.commit()
+
+    @finishQuery
+    def insertOrUpdate(self, entity: Entity):
+        """ insert a new record or update the record if it already exists
+
+        Parameters
+        ----------
+        entity: Entity
+            entity instance
+
+        Returns
+        -------
+        success: bool
+            is the insert successful
+        """
+        # insert a new record or ignore it if the primary key already exists
+        values = ','.join([f':{i}' for i in self.fields])
+        sql = f"INSERT OR IGNORE INTO {self.table} VALUES ({values})"
+        self.query.prepare(sql)
+        self.bindEntityToQuery(entity)
+        success = self.query.exec()
+
+        # update record
+        success &= self.updateById(entity)
+        return success
 
     @finishQuery
     def deleteById(self, id) -> bool:
@@ -374,7 +391,7 @@ class DaoBase:
         return self.deleteByFields(self.fields[0], ids)
 
     def clearTable(self):
-        """ 清空表格数据 """
+        """ clear all data from table """
         return self.query.exec(f"DELETE FROM {self.table}")
 
     @classmethod
@@ -414,3 +431,10 @@ class DaoBase:
         self.connectionName = db.connectionName() if db else ''
         self.query = SqlQuery(db) if db else SqlQuery()
         self.query.setForwardOnly(True)
+
+    def getDatabase(self):
+        """ get connected database """
+        if self.connectionName:
+            return QSqlDatabase.database(self.connectionName)
+
+        return QSqlDatabase.database()

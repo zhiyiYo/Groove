@@ -17,6 +17,10 @@ class ServiceBase:
         """ create table """
         raise NotADirectoryError
 
+    def clearTable(self)-> bool:
+        """ clear all data from relative tables """
+        raise NotImplementedError
+
     def findBy(self, **condition) -> Entity:
         """ query a record that meets the condition
 

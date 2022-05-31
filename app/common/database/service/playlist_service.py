@@ -26,7 +26,7 @@ class PlaylistService(ServiceBase):
         return s1 and s2
 
     def findByName(self, name: str) -> Playlist:
-        """ 通过名字查询单张播放列表，没找到返回 None """
+        """ list a playlists by name, return `None` if no one match """
         playlist = self.playlistDao.selectBy(name=name)  # type:Playlist
         if not playlist:
             return None
@@ -38,8 +38,8 @@ class PlaylistService(ServiceBase):
 
         return playlist
 
-    def listByNames(self, names: str) -> List[Playlist]:
-        """ 通过名字查询多张播放列表 """
+    def listByNames(self, names: List[str]) -> List[Playlist]:
+        """ list multi playlists by their names """
         playlists = self.playlistDao.listByIds(names)  # type:Playlist
 
         for playlist in playlists:
@@ -51,14 +51,14 @@ class PlaylistService(ServiceBase):
         return playlists
 
     def listAll(self) -> List[Playlist]:
-        """ 查询所有播放列表，不会查询出歌曲信息，只有歌曲文件位置 """
+        """ list all playlists without detailed song information """
         return self.playlistDao.listAll()
 
     def listLike(self, **condition) -> List[Playlist]:
         return self.playlistDao.listLike(**condition)
 
     def modifyName(self, old: str, new: str) -> bool:
-        """ 修改播放列表的名字 """
+        """ modify the name of playlist """
         s1 = self.playlistDao.update(old, 'name', new)
         if not s1:
             return False
@@ -70,7 +70,7 @@ class PlaylistService(ServiceBase):
         return self.songPlaylistDao.updateByIds(songPlaylists)
 
     def add(self, playlist: Playlist) -> bool:
-        """ 创建一个播放列表 """
+        """ create a new playlist """
         songInfo = playlist.songInfos[0] if playlist.songInfos else SongInfo()
         playlist.singer = songInfo.singer
         playlist.album = songInfo.album
@@ -86,7 +86,7 @@ class PlaylistService(ServiceBase):
         return self.songPlaylistDao.insertBatch(songPlaylists)
 
     def addSongs(self, name: str, songInfos: List[SongInfo]) -> bool:
-        """ 添加歌曲到指定的播放列表中 """
+        """ add songs to a playlist """
         if not songInfos:
             return False
 
@@ -111,7 +111,7 @@ class PlaylistService(ServiceBase):
         return self.songPlaylistDao.insertBatch(songPlaylists)
 
     def remove(self, name: str) -> bool:
-        """ 移除一个播放列表 """
+        """ remove a playlist """
         s1 = self.playlistDao.deleteById(name)
         if not s1:
             return False
@@ -120,7 +120,7 @@ class PlaylistService(ServiceBase):
         return self.songPlaylistDao.deleteByIds([i.id for i in songPlaylists])
 
     def removeBatch(self, names: List[str]) -> bool:
-        """ 移除多张播放列表 """
+        """ remove multi playlists """
         s1 = self.playlistDao.deleteByIds(names)
         if not s1:
             return False
@@ -129,7 +129,7 @@ class PlaylistService(ServiceBase):
         return self.songPlaylistDao.deleteByIds([i.id for i in songPlaylists])
 
     def removeSongs(self, name: str, songInfos: List[str]):
-        """ 从指定的播放列表中移除歌曲 """
+        """ remove songs from playlist """
         ids = [i['id'] for i in songInfos]
         s1 = self.songPlaylistDao.deleteByIds(ids)
         if not s1:

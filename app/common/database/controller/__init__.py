@@ -1,5 +1,6 @@
 from .album_cover_controller import AlbumCoverController
 from .album_info_controller import AlbumInfoController
 from .playlist_controller import PlaylistController
+from .recent_play_controller import RecentPlayController
 from .singer_info_controller import SingerInfoController
 from .song_info_controller import SongInfoController

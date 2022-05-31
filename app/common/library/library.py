@@ -6,8 +6,8 @@ from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtSql import QSqlDatabase
 
 from ..database.controller import (AlbumCoverController, AlbumInfoController,
-                                   PlaylistController, SingerInfoController,
-                                   SongInfoController)
+                                   PlaylistController, RecentPlayController,
+                                   SingerInfoController, SongInfoController)
 from ..database.entity import SongInfo
 from .file_system import FileSystem
 
@@ -52,6 +52,7 @@ class Library(QObject):
         self.albumCoverController = AlbumCoverController()
         self.singerInfoController = SingerInfoController(db)
         self.playlistController = PlaylistController(db)
+        self.recentPlayController = RecentPlayController(db)
 
         if watch:
             self.fileSystem.added.connect(self.__onFileAdded)
@@ -67,6 +68,7 @@ class Library(QObject):
         self.singerInfos = self.singerInfoController.getSingerInfosFromCache(
             self.albumInfos)
         self.playlists = self.playlistController.getAllPlaylists()
+        self.recentPlaySongInfos = self.recentPlayController.getRecentPlays()
 
         self.loadFinished.emit()
 
@@ -97,6 +99,7 @@ class Library(QObject):
         self.songInfoController.songInfoService.setDatabase(db)
         self.albumInfoController.albumInfoService.setDatabase(db)
         self.singerInfoController.singerInfoService.setDatabase(db)
+        self.playlistController.playlistService.setDatabase(db)
 
     def copyTo(self, library):
         """ copy data to another library """

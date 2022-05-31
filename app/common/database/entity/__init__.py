@@ -2,34 +2,36 @@ from .entity import Entity
 from .song_info import SongInfo
 from .album_info import AlbumInfo
 from .singer_info import SingerInfo
+from .recent_play import RecentPlay
 from .playlist import Playlist, SongPlaylist
 
 
 class EntityFactory:
-    """ 实体类工厂 """
+    """ Entity factory """
 
     @staticmethod
     def create(table: str):
-        """ 创建一个实体类对象
+        """ create an entity instance
 
         Parameters
         ----------
         table: str
-            实体类对应的表名
+            database table name corresponding to entity
 
         Returns
         -------
         entity:
-            实体类对象
+            entity instance
         """
         tables = {
             "tbl_song_info": SongInfo,
             "tbl_album_info": AlbumInfo,
             "tbl_singer_info": SingerInfo,
             "tbl_playlist": Playlist,
-            "tbl_song_playlist": SongPlaylist
+            "tbl_song_playlist": SongPlaylist,
+            "tbl_recent_play": RecentPlay,
         }
         if table not in tables:
-            raise ValueError(f"表名 `{table}` 非法")
+            raise ValueError(f"Table name `{table}` is illegal")
 
         return tables[table]()

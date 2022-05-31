@@ -46,6 +46,9 @@ class SongInfoService(ServiceBase):
         repeat: bool
             allow song information to repeat or not
         """
+        if not files:
+            return []
+
         songInfos = self.songInfoDao.listByIds(files)
         k = self.songInfoDao.fields[0]
         songInfos.sort(key=lambda i: files.index(i[k]))
