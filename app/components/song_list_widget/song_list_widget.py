@@ -55,7 +55,12 @@ class SongListWidget(NoScrollSongListWidget):
         """
         super().__init__(songInfos, SongCardType.SONG_TAB_SONG_CARD, parent)
         self.resize(1150, 758)
-        self.sortMode = "createTime"
+        self.sortMode = "Date added"
+        self.sortModeMap = {
+            "Date added": "createTime",
+            "A to Z": "title",
+            "Artist": "singer"
+        }
 
         self.createSongCards()
         self.guideLabel = QLabel(
@@ -71,7 +76,7 @@ class SongListWidget(NoScrollSongListWidget):
         self.guideLabel.move(35, 40)
         self.guideLabel.setHidden(bool(self.songInfos))
 
-    def __playButtonSlot(self, index: int):
+    def __onPlayButtonClicked(self, index: int):
         """ play button clicked slot """
         self.playSignal.emit(self.songCards[index].songInfo)
 
@@ -114,12 +119,7 @@ class SongListWidget(NoScrollSongListWidget):
 
         playingSongInfo = self.playingSongInfo
         self.sortMode = sortMode
-        key = {
-            "Date added": "createTime",
-            "A to Z": "title",
-            "Artist": "singer"
-        }[sortMode]
-        songInfos = self.sortSongInfo(key)
+        songInfos = self.sortSongInfo(self.sortModeMap[sortMode])
         self.updateAllSongCards(songInfos)
 
         if playingSongInfo in self.songInfos:
@@ -129,7 +129,7 @@ class SongListWidget(NoScrollSongListWidget):
         self.guideLabel.setHidden(bool(songInfos))
         super().updateAllSongCards(songInfos)
 
-    def __showDeleteCardDialog(self):
+    def _showDeleteCardDialog(self):
         index = self.currentRow()
         songInfo = self.songInfos[index]
 
@@ -145,7 +145,7 @@ class SongListWidget(NoScrollSongListWidget):
 
     def __connectMenuSignalToSlot(self, menu: SongCardListContextMenu):
         """ connect context menu signal to slot """
-        menu.deleteAct.triggered.connect(self.__showDeleteCardDialog)
+        menu.deleteAct.triggered.connect(self._showDeleteCardDialog)
         menu.editInfoAct.triggered.connect(self.showSongInfoEditDialog)
         menu.showPropertyAct.triggered.connect(self.showSongPropertyDialog)
         menu.playAct.triggered.connect(
@@ -169,7 +169,7 @@ class SongListWidget(NoScrollSongListWidget):
 
     def _connectSongCardSignalToSlot(self, songCard: SongTabSongCard):
         songCard.doubleClicked.connect(self.__onSongCardDoubleClicked)
-        songCard.playButtonClicked.connect(self.__playButtonSlot)
+        songCard.playButtonClicked.connect(self.__onPlayButtonClicked)
         songCard.clicked.connect(self.setCurrentIndex)
         songCard.checkedStateChanged.connect(
             self.onSongCardCheckedStateChanged)

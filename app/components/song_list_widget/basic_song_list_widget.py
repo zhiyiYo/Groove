@@ -54,7 +54,7 @@ class BasicSongListWidget(ListWidget):
 
         self.item_list = []
         self.songCards = []  # type:List[BasicSongCard]
-        self.checkedSongCards = []
+        self.checkedSongCards = []  # type:List[BasicSongCard]
 
         self.setAlternatingRowColors(True)
         self.setViewportMargins(viewportMargins)
@@ -98,6 +98,35 @@ class BasicSongListWidget(ListWidget):
 
         self._connectSongCardSignalToSlot(songCard)
 
+    def prependOneSongCard(self, songInfo: SongInfo):
+        """ prepend a song card to list widget, this does not change `songInfos` property
+
+        Parameters
+        ----------
+        songInfo: SongInfo
+            song information
+        """
+        item = QListWidgetItem()
+        songCard = SongCardFactory.create(self.songCardType, songInfo, self)
+        songCard.itemIndex = 0
+
+        # adjust song card width
+        margin = self.viewportMargins()
+        size = QSize(self.width()-margin.left()-margin.right(), 60)
+        QApplication.sendEvent(songCard, QResizeEvent(size, songCard.size()))
+        QApplication.processEvents()
+        songCard.resize(size)
+        item.setSizeHint(size)
+
+        self.insertItem(0, item)
+        self.setItemWidget(item, songCard)
+        self.songCards.insert(0, songCard)
+        self.item_list.insert(0, item)
+        for card in self.songCards[1:]:
+            card.itemIndex += 1
+
+        self._connectSongCardSignalToSlot(songCard)
+
     def appendSongCards(self, songInfos: List[SongInfo]):
         """ append song cards to list widget, this does not change `songInfos` property
 
@@ -130,12 +159,16 @@ class BasicSongListWidget(ListWidget):
 
         self.currentIndex = index
 
-    def removeSongCard(self, index: int):
+    def removeSongCard(self, index: int, emit=True):
         """ remove a song card """
         if not self.songCards:
             return
 
         songCard = self.songCards.pop(index)
+
+        if songCard in self.checkedSongCards:
+            self.checkedSongCards.remove(songCard)
+
         songCard.deleteLater()
         self.item_list.pop(index)
         self.songInfos.pop(index)
@@ -147,9 +180,12 @@ class BasicSongListWidget(ListWidget):
 
         if self.currentIndex is not None and self.currentIndex >= index:
             self.currentIndex -= 1
+        if self.playingIndex is not None and self.playingIndex >= index:
             self.playingIndex -= 1
 
-        self.songCardNumChanged.emit(len(self.songCards))
+        if emit:
+            self.songCardNumChanged.emit(len(self.songCards))
+
         self.update()
 
     def removeSongCards(self, songPaths: List[str]):
@@ -291,6 +327,8 @@ class BasicSongListWidget(ListWidget):
         for songCard in self.checkedSongCards.copy():
             songCard.setChecked(False)
 
+        self.checkedNumChanged.emit(0, False)
+
     def updateAllSongCards(self, songInfos: List[SongInfo]):
         """ update all song cards
 
@@ -394,10 +432,12 @@ class BasicSongListWidget(ListWidget):
         self.addItem(self.paddingBottomItem)
 
     def __removePaddingBottomItem(self):
-        """ create the padding item in bottom """
-        if self.paddingBottomHeight:
-            self.removeItemWidget(self.paddingBottomItem)
-            self.takeItem(len(self.songCards))
+        """ remove the padding item in bottom """
+        if not self.paddingBottomHeight:
+            return
+
+        self.removeItemWidget(self.paddingBottomItem)
+        self.takeItem(len(self.songCards))
 
     @property
     def songCardType(self) -> SongCardType:
@@ -407,6 +447,7 @@ class BasicSongListWidget(ListWidget):
         """ connect song card signal to slot """
         raise NotImplementedError
 
+    @property
     def songCardNum(self) -> int:
         return len(self.songCards)
 

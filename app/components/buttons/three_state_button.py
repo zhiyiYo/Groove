@@ -97,3 +97,22 @@ class ThreeStateButton(QToolButton):
             QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
         painter.setPen(Qt.NoPen)
         painter.drawPixmap(self.rect(), QPixmap(self.iconPaths[self.__state]))
+
+
+class RandomPlayAllButton(ThreeStatePushButton):
+    """ Random play all button """
+
+    def __init__(self, parent=None):
+        iconPaths = {
+            "normal": ":/images/random_play_all/Shuffle_normal.png",
+            "hover": ":/images/random_play_all/Shuffle_hover.png",
+            "pressed": ":/images/random_play_all/Shuffle_pressed.png",
+        }
+        super().__init__(iconPaths, " Shuffle all (0)", (20, 20), parent)
+        self.setText(" " + self.tr("Shuffle all") + ' (0)')
+        self.setObjectName("randomPlayButton")
+
+    def setNumber(self, number: int):
+        """ set random played number """
+        self.setText(" " + self.tr("Shuffle all") + f' ({number})')
+        self.adjustSize()

@@ -1,6 +1,6 @@
 # coding:utf-8
 from common.get_pressed_pos import getPressedPos
-from components.buttons.three_state_button import ThreeStatePushButton
+from components.buttons.three_state_button import RandomPlayAllButton
 from components.widgets.menu import AeroMenu
 from PyQt5.QtCore import QFile, QPoint, Qt, pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QFont, QPainter, QPen, QPolygon
@@ -24,16 +24,7 @@ class ToolBar(QWidget):
         self.singerTabButton = TabButton(self.tr("Artists"), self, 1)
         self.albumTabButton = TabButton(self.tr("Albums"), self, 2)
 
-        self.randomPlayAllButton = ThreeStatePushButton(
-            {
-                "normal": ":/images/random_play_all/Shuffle_normal.png",
-                "hover": ":/images/random_play_all/Shuffle_hover.png",
-                "pressed": ":/images/random_play_all/Shuffle_pressed.png",
-            },
-            parent=self,
-            text=self.tr(" Shuffle all")+' (0)',
-            iconSize=(20, 20),
-        )
+        self.randomPlayAllButton = RandomPlayAllButton(parent=self)
         self.sortModeLabel = QLabel(self.tr("Sort by:"), self)
         self.songSortModeButton = QPushButton(self.tr("Date added"), self)
         self.singerSortModeButton = QPushButton(self.tr("A to Z"), self)
@@ -119,7 +110,6 @@ class ToolBar(QWidget):
         self.songSortModeButton.setObjectName("sortModeButton")
         self.singerSortModeButton.setObjectName("sortModeButton")
         self.albumSortModeButton.setObjectName("sortModeButton")
-        self.randomPlayAllButton.setObjectName("randomPlayButton")
         self.albumSortModeMenu.setProperty("modeNumber", "4")
 
         f = QFile(":/qss/my_music_interface_toolBar.qss")

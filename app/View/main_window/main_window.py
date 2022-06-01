@@ -42,6 +42,7 @@ from View.play_bar import PlayBar
 from View.playing_interface import PlayingInterface
 from View.playlist_card_interface import PlaylistCardInterface
 from View.playlist_interface import PlaylistInterface
+from View.recent_play_interface import RecentPlayInterface
 from View.search_result_interface import SearchResultInterface
 from View.setting_interface import SettingInterface
 from View.singer_interface import SingerInterface
@@ -131,6 +132,10 @@ class MainWindow(AcrylicWindow):
             self.library, self.subMainWindow)
         self.playlistInterface = PlaylistInterface(self.library, parent=self)
 
+        # create recent play interface
+        self.recentPlayInterface = RecentPlayInterface(
+            self.library, self.subMainWindow)
+
         # create navigation interface
         self.navigationInterface = NavigationInterface(self.subMainWindow)
 
@@ -187,10 +192,7 @@ class MainWindow(AcrylicWindow):
         self.libraryThread.start()
         eventLoop.exec()
 
-        self.library.songInfos = self.libraryThread.library.songInfos
-        self.library.albumInfos = self.libraryThread.library.albumInfos
-        self.library.singerInfos = self.libraryThread.library.singerInfos
-        self.library.playlists = self.libraryThread.library.playlists
+        self.libraryThread.library.copyTo(self.library)
 
     def initWindow(self):
         """ initialize window """
@@ -219,6 +221,7 @@ class MainWindow(AcrylicWindow):
 
         # add sub interface to stacked Widget
         self.subStackWidget.addWidget(self.myMusicInterface, 0, 70)
+        self.subStackWidget.addWidget(self.recentPlayInterface, 0, 120)
         self.subStackWidget.addWidget(self.playlistCardInterface, 0, 120)
         self.subStackWidget.addWidget(self.settingInterface, 0, 120)
         self.subStackWidget.addWidget(self.albumInterface, 0, 70)
@@ -243,7 +246,7 @@ class MainWindow(AcrylicWindow):
         self.connectSignalToSlot()
         self.initPlayBar()
 
-        self.setPlayButtonEnabled(self.songTabSongListWidget.songCardNum() > 0)
+        self.setPlayButtonEnabled(self.songTabSongListWidget.songCardNum > 0)
 
         self.navigationInterface.navigationMenu.installEventFilter(self)
         self.updateLyricPosTimer.start()
@@ -342,8 +345,6 @@ class MainWindow(AcrylicWindow):
     def resizeEvent(self, e):
         super().resizeEvent(e)
         self.adjustWidgetGeometry()
-        self.titleBar.maxButton.setMaxState(
-            self._isWindowMaximized(int(self.winId())))
 
     def showEvent(self, e):
         if hasattr(self, 'smallestPlayInterface'):
@@ -569,7 +570,8 @@ class MainWindow(AcrylicWindow):
         self.pause()
 
         decoder = "LAV filters" if sys.platform == "win32" else "GStreamer"
-        hint = self.tr("please check if") + f" {decoder} " + self.tr("is installed.")
+        hint = self.tr("please check if") + \
+            f" {decoder} " + self.tr("is installed.")
 
         messageMap = {
             QMediaPlayer.ResourceError: self.tr(
@@ -582,7 +584,8 @@ class MainWindow(AcrylicWindow):
             QMediaPlayer.ServiceMissingError: self.tr(
                 "A valid playback service was not found") + ", " + hint
         }
-        w = MessageDialog(self.tr('An error occurred'), messageMap[error], self)
+        w = MessageDialog(self.tr('An error occurred'),
+                          messageMap[error], self)
         w.cancelButton.setText(self.tr('Close'))
         w.yesButton.hide()
         w.exec()
@@ -946,6 +949,10 @@ class MainWindow(AcrylicWindow):
         """ switch to playlist card interface """
         self.switchToSubInterface(self.playlistCardInterface)
 
+    def switchToRecentPlayInterface(self):
+        """ switch to recent play interface """
+        self.switchToSubInterface(self.recentPlayInterface)
+
     def switchToSearchResultInterface(self, keyWord: str):
         """ switch to search result interface """
         self.searchResultInterface.search(keyWord)
@@ -1158,6 +1165,12 @@ class MainWindow(AcrylicWindow):
     def playLocalMoreSearchedSong(self, songInfo: SongInfo):
         """ play selected local more searched song """
         songInfos = self.moreSearchResultInterface.localSongListWidget.songInfos
+        index = songInfos.index(songInfo)
+        self.playCustomPlaylistSong(songInfos, index)
+
+    def playRecentPlaySong(self, songInfo: SongInfo):
+        """ play recent played song """
+        songInfos = self.recentPlayInterface.songListWidget.songInfos
         index = songInfos.index(songInfo)
         self.playCustomPlaylistSong(songInfos, index)
 
@@ -1421,6 +1434,8 @@ class MainWindow(AcrylicWindow):
             self.switchToMyMusicInterface)
         signalBus.switchToPlaylistInterfaceSig.connect(
             self.switchToPlaylistInterface)
+        signalBus.switchToRecentPlayInterfaceSig.connect(
+            self.switchToRecentPlayInterface)
         signalBus.switchToPlaylistCardInterfaceSig.connect(
             self.switchToPlaylistCardInterface)
         signalBus.switchToSettingInterfaceSig.connect(
@@ -1456,6 +1471,9 @@ class MainWindow(AcrylicWindow):
         # album interface signal
         self.albumInterface.songCardPlaySig.connect(
             self.playAbumSong)
+
+        # recent play signal
+        self.recentPlayInterface.playSongCardSig.connect(self.playRecentPlaySong)
 
         # playlist interface signal
         self.playlistInterface.songCardPlaySig.connect(

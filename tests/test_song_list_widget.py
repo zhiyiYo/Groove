@@ -7,8 +7,7 @@ from unittest import TestCase
 
 from app.common import resource
 from app.common.database.entity import SongInfo
-from app.View.my_music_interface.song_tab_interface import \
-    SongListWidget as SongTabListWidget
+from app.components.song_list_widget import SongListWidget as SongTabListWidget
 from app.View.playing_interface.song_list_widget import \
     SongListWidget as PlayingSongListWidget
 from PyQt5.QtWidgets import QApplication

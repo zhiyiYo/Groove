@@ -25,7 +25,6 @@ class RecentPlayService(ServiceBase):
     def insertOrUpdate(self, file: str) -> bool:
         """ insert or update a recent played song record """
         recentPlay = self.recentPlayDao.selectBy(file=file)  # type:RecentPlay
-        print(recentPlay)
         if not recentPlay:
             recentPlay = RecentPlay(
                 file, QDateTime.currentDateTime().toSecsSinceEpoch())
@@ -42,6 +41,12 @@ class RecentPlayService(ServiceBase):
 
     def listAll(self) -> List[RecentPlay]:
         return self.recentPlayDao.listAll()
+
+    def removeById(self, file: str) -> bool:
+        return self.recentPlayDao.deleteById(file)
+
+    def removeByIds(self, files: List[str]) -> bool:
+        return self.recentPlayDao.deleteByIds(files)
 
     def setDatabase(self, db: QSqlDatabase):
         self.recentPlayDao.setDatabase(db)

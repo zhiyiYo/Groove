@@ -106,11 +106,25 @@ class DaoBase:
         if not condition:
             raise ValueError("At least one condition must be passed in")
 
-        placeholders = [f'{k} = ?' for k in condition.keys()]
-        sql = f"SELECT * FROM {self.table} WHERE {' AND '.join(placeholders)}"
+        commands = ['orderBy', 'limit', 'desc']
+        sql = f"SELECT * FROM {self.table}"
+
+        keys = [i for i in condition.keys() if i not in commands]
+        if keys:
+            where = [f'{k} = ?' for k in keys]
+            sql += f" WHERE  {' AND '.join(where)}"
+
+        if 'orderBy' in condition:
+            sql += f" ORDER BY {condition['orderBy']}"
+            if 'desc' in condition and condition['desc']:
+                sql += ' DESC'
+
+        if 'limit' in condition:
+            sql += f" LIMIT {condition['limit']}"
+
         self.query.prepare(sql)
-        for v in condition.values():
-            self.query.addBindValue(v)
+        for k in keys:
+            self.query.addBindValue(condition[k])
 
     def _prepareSelectLike(self, condition: dict):
         """ prepare sql fuzzy select statement

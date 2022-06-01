@@ -15,8 +15,9 @@ class NavigationWidgetBase(QWidget):
         self.playlistNameButtons = []
         self.__buttonIndexes = {
             'myMusicButton': 0,
-            'playlistButton': 1,
-            'settingButton': 2
+            'historyButton': 1,
+            'playlistButton': 2,
+            'settingButton': 3
         }
         self.currentButton = None
         self.__setQss()

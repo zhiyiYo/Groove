@@ -26,7 +26,6 @@
         <file>qss/setting_interface.qss</file>
         <file>qss/singer_interface.qss</file>
         <file>qss/smallest_play_interface.qss</file>
-        <file>qss/songer_tab_interface.qss</file>
         <file>qss/song_group_box.qss</file>
         <file>qss/song_info_edit_dialog.qss</file>
         <file>qss/song_property_dialog.qss</file>
@@ -40,6 +39,7 @@
         <file>qss/title_bar.qss</file>
         <file>qss/singer_card_interface.qss</file>
         <file>qss/singer_group_box.qss</file>
+        <file>qss/recent_play_interface.qss</file>
 
         <file>images/logo/logo.png</file>
         <file>images/logo/logo.ico</file>

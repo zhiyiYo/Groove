@@ -1,0 +1,54 @@
+QWidget {
+    background-color: white;
+}
+
+/*设置标签文本左对齐*/
+QLabel,
+QPushButton {
+    text-align: left;
+    color: rgb(75, 75, 75);
+    font-size: 16px;
+    background-color: transparent;
+    font-family: 'Segoe UI', 'Microsoft YaHei';
+}
+
+QLabel#sortModeLabel {
+    color: black;
+    font: 16px 'Segoe UI', 'Microsoft YaHei';
+}
+
+QLabel#recentPlayLabel {
+    font-family: 'Microsoft YaHei Light';
+    font-size: 43px;
+    padding: 0px;
+}
+
+
+QPushButton#sortModeButton {
+    color: rgb(0, 107, 131);
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+QPushButton#sortModeButton:hover {
+    color: rgb(59, 165, 194);
+}
+
+QPushButton#randomPlayButton,
+QPushButton#sortModeButton {
+    font-size: 16px;
+}
+
+QPushButton#randomPlayButton {
+    font: 15px 'Segoe UI', 'Microsoft YaHei';
+    padding-bottom: 1px;
+    color: black;
+}
+
+QPushButton#randomPlayButton:hover {
+    color: rgba(0, 0, 0, 0.8);
+}
+
+QPushButton#randomPlayButton:pressed {
+    color: rgba(0, 0, 0, 0.4);
+}

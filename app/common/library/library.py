@@ -54,6 +54,12 @@ class Library(QObject):
         self.playlistController = PlaylistController(db)
         self.recentPlayController = RecentPlayController(db)
 
+        self.songInfos = []
+        self.albumInfos = []
+        self.singerInfos = []
+        self.playlists = []
+        self.recentPlaySongInfos = []
+
         if watch:
             self.fileSystem.added.connect(self.__onFileAdded)
             self.fileSystem.removed.connect(self.__onFileRemoved)
@@ -107,6 +113,7 @@ class Library(QObject):
         library.albumInfos = self.albumInfos
         library.singerInfos = self.singerInfos
         library.playlists = self.playlists
+        library.recentPlaySongInfos = self.recentPlaySongInfos
         library.directories = self.directories.copy()
         library.fileSystem.setDirs(self.directories)
 

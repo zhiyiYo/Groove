@@ -17,7 +17,6 @@ class PlaylistCardInterface(PlaylistSelectionModeInterface):
 
     def __init__(self, library: Library, parent=None):
         self.sortMode = "modifiedTime"
-        self.library = library
         self.playlists = library.playlists
 
         view = GridPlaylistCardView(

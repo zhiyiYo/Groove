@@ -48,6 +48,7 @@ class TitleBar(QWidget):
 
         self.returnButton.installEventFilter(self)
         self.titleLabel.installEventFilter(self)
+        self.window().installEventFilter(self)
 
     def __setQss(self):
         """ set style sheet """
@@ -75,10 +76,8 @@ class TitleBar(QWidget):
         """ show restored window """
         if self.window().isMaximized():
             self.window().showNormal()
-            self.maxButton.setMaxState(False)
         else:
             self.window().showMaximized()
-            self.maxButton.setMaxState(True)
 
     def setWhiteIcon(self, isWhiteIcon: bool):
         """ set icon color """
@@ -86,14 +85,18 @@ class TitleBar(QWidget):
             button.setWhiteIcon(isWhiteIcon)
 
     def eventFilter(self, obj, e: QEvent):
-        if obj == self.returnButton:
+        if obj is self.returnButton:
             if e.type() == QEvent.Hide:
                 self.titleLabel.move(0, 0)
             elif e.type() == QEvent.Show:
                 self.titleLabel.move(60, 0)
-        elif obj == self.titleLabel:
+        elif obj is self.titleLabel:
             if e.type() == QEvent.Show:
                 self.titleLabel.move(60*self.returnButton.isVisible(), 0)
+        elif obj is self.window():
+            if e.type() == QEvent.WindowStateChange:
+                self.maxButton.setMaxState(self.window().isMaximized())
+                return False
 
         return super().eventFilter(obj, e)
 

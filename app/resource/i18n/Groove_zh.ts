@@ -1321,6 +1321,80 @@
     </message>
 </context>
 <context>
+    <name>RandomPlayAllButton</name>
+    <message>
+        <location filename="../../components/buttons/three_state_button.py" line="112" />
+        <source>Shuffle all</source>
+        <translation>无序播放所有</translation>
+    </message>
+</context>
+<context>
+    <name>RecentPlayInterface</name>
+    <message>
+        <location filename="../../View/recent_play_interface/recent_play_interface.py" line="24" />
+        <source>Recent Plays</source>
+        <translation>最近播放</translation>
+    </message>
+    <message>
+        <location filename="../../View/recent_play_interface/recent_play_interface.py" line="25" />
+        <source>Sort by:</source>
+        <translation>排序依据:</translation>
+    </message>
+    <message>
+        <location filename="../../View/recent_play_interface/recent_play_interface.py" line="26" />
+        <source>Last Played Time</source>
+        <translation>最近播放时间</translation>
+    </message>
+    <message>
+        <location filename="../../View/recent_play_interface/recent_play_interface.py" line="79" />
+        <source>Are you sure you want to delete these?</source>
+        <translation>是否确定删除这些项？</translation>
+    </message>
+    <message>
+        <location filename="../../View/recent_play_interface/recent_play_interface.py" line="81" />
+        <source>If you delete these songs, they will no longer in the list, but won&apos;t be deleted.</source>
+        <translation>如果你删除这些歌曲，他们将不会再出现在此列表中，但不会被删除。</translation>
+    </message>
+    <message>
+        <location filename="../../View/recent_play_interface/recent_play_interface.py" line="84" />
+        <source>Are you sure you want to delete this?</source>
+        <translation>是否确定删除此项？</translation>
+    </message>
+    <message>
+        <location filename="../../View/recent_play_interface/recent_play_interface.py" line="85" />
+        <source>If you delete</source>
+        <translation>如果删除</translation>
+    </message>
+    <message>
+        <location filename="../../View/recent_play_interface/recent_play_interface.py" line="86" />
+        <source>it will no longer in the list, but won&apos;t be deleted.</source>
+        <translation>，它将不会再出现在此列表中，当不会被删除。</translation>
+    </message>
+</context>
+<context>
+    <name>RecentSongListWidget</name>
+    <message>
+        <location filename="../../View/my_music_interface/song_tab_interface/song_list_widget.py" line="70" />
+        <source>There is nothing to display here. Try a different filter.</source>
+        <translation>这里没有可显示的内容。请尝试其他筛选器。</translation>
+    </message>
+    <message>
+        <location filename="../../View/recent_play_interface/song_list_widget.py" line="27" />
+        <source>Are you sure you want to delete this?</source>
+        <translation>是否确定删除此项？</translation>
+    </message>
+    <message>
+        <location filename="../../View/recent_play_interface/song_list_widget.py" line="28" />
+        <source>If you delete</source>
+        <translation>如果删除</translation>
+    </message>
+    <message>
+        <location filename="../../View/recent_play_interface/song_list_widget.py" line="29" />
+        <source>it will no longer in the list, but won&apos;t be deleted.</source>
+        <translation>，它将不会再出现在此列表中，当不会被删除。</translation>
+    </message>
+</context>
+<context>
     <name>RenamePlaylistDialog</name>
     <message>
         <location filename="../../components/dialog_box/rename_playlist_dialog.py" line="26"/>

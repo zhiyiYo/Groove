@@ -22,7 +22,8 @@ class Config(Singleton):
             "minimize-to-tray": True,
             "volume": 30,
             "playBar-color": [34, 92, 127],
-            'download-folder': str(Path('download').absolute()).replace("\\", '/')
+            'download-folder': str(Path('download').absolute()).replace("\\", '/'),
+            'recent-plays-number': 300
         }
         self.__readConfig()
 

@@ -73,6 +73,8 @@ class NavigationInterface(QWidget):
                 signalBus.switchToSettingInterfaceSig)
             widget.myMusicButton.clicked.connect(
                 signalBus.switchToMyMusicInterfaceSig)
+            widget.historyButton.clicked.connect(
+                signalBus.switchToRecentPlayInterfaceSig)
             widget.playlistButton.clicked.connect(
                 signalBus.switchToPlaylistCardInterfaceSig)
             widget.createPlaylistButton.clicked.connect(

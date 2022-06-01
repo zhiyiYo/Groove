@@ -39,6 +39,7 @@ class SignalBus(Singleton, QObject):
     switchToSingerInterfaceSig = pyqtSignal(str)             # 切换到歌手界面
     switchToAlbumInterfaceSig = pyqtSignal(str, str)         # 切换到专辑界面
     switchToMyMusicInterfaceSig = pyqtSignal()               # 切换到我的音乐界面
+    switchToRecentPlayInterfaceSig = pyqtSignal()            # 切换到最近播放界面
     switchToPlaylistInterfaceSig = pyqtSignal(str)           # 切换到播放列表界面信号
     switchToPlaylistCardInterfaceSig = pyqtSignal()          # 切换到播放列表卡界面
     showLabelNavigationInterfaceSig = pyqtSignal(list, str)  # 显示标签导航界面

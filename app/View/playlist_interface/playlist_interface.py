@@ -129,7 +129,7 @@ class PlaylistInterface(SongSelectionModeInterface):
         self.playlistInfoBar.updateWindow(self.playlist)
         self.adjustScrollHeight()
         self.removeSongSig.emit(self.playlistName, songInfos)
-        self.__onSongListWidgetEmptyChanged(self.songListWidget.songCardNum() == 0)
+        self.__onSongListWidgetEmptyChanged(self.songListWidget.songCardNum == 0)
 
     def __onScrollBarValueChanged(self, value):
         """ change the height of playlist information bar when scrolling """
@@ -165,7 +165,7 @@ class PlaylistInterface(SongSelectionModeInterface):
         self.playlistInfoBar.updateWindow(self.playlist)
         self.removeSongSig.emit(self.playlistName, [songInfo])
         self.adjustScrollHeight()
-        self.__onSongListWidgetEmptyChanged(self.songListWidget.songCardNum() == 0)
+        self.__onSongListWidgetEmptyChanged(self.songListWidget.songCardNum == 0)
 
     def __onSongListWidgetEmptyChanged(self, isEmpty):
         """ song list widget empty changed slot """

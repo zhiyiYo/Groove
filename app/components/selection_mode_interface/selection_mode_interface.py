@@ -109,6 +109,8 @@ class SelectionModeInterface(ScrollArea):
         elif n == 0 and self.isInSelectionMode:
             self.isInSelectionMode = False
             signalBus.selectionModeStateChanged.emit(False)
+        elif n == 0 and not self.isInSelectionMode:
+            return
 
         self.selectionModeBar.setVisible(self.isInSelectionMode)
         self.selectionModeBar.setPartButtonHidden(n > 1)
@@ -271,10 +273,10 @@ class SongSelectionModeInterface(SelectionModeInterface):
                 self.tr("it won't be on be this device anymore.")
 
         w = MessageDialog(title, content, self.window())
-        w.yesSignal.connect(self.__onDeleteConfirmed)
+        w.yesSignal.connect(self._onDeleteConfirmed)
         w.exec()
 
-    def __onDeleteConfirmed(self):
+    def _onDeleteConfirmed(self):
         """ delete confirmed slot """
         songPaths = [i.songPath for i in self.songListWidget.checkedSongCards]
 

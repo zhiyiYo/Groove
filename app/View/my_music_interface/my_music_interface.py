@@ -50,9 +50,8 @@ class MyMusicInterface(QWidget):
         self.stackedWidget.addWidget(self.albumTabInterface, 0, 30)
         self.songTabButton.setSelected(True)
 
-        text = self.tr(" Shuffle all")
-        self.toolBar.randomPlayAllButton.setText(
-            text+f" ({self.songListWidget.songCardNum()})")
+        self.toolBar.randomPlayAllButton.setNumber(
+            self.songListWidget.songCardNum)
         self.toolBar.randomPlayAllButton.adjustSize()
 
         # set background color
@@ -70,18 +69,13 @@ class MyMusicInterface(QWidget):
         self.toolBar.singerSortModeButton.setVisible(index == 1)
         self.toolBar.albumSortModeButton.setVisible(index == 2)
 
-        text = self.tr(" Shuffle all")
+        randomPlayButton = self.toolBar.randomPlayAllButton
         if index == 0:
-            self.toolBar.randomPlayAllButton.setText(
-                text+f" ({self.songListWidget.songCardNum()})")
+            randomPlayButton.setNumber(self.songListWidget.songCardNum)
         elif index == 1:
-            self.toolBar.randomPlayAllButton.setText(
-                text+f" ({len(self.singerCardView.singerCards)})")
+            randomPlayButton.setNumber(len(self.singerCardView.singerCards))
         elif index == 2:
-            self.toolBar.randomPlayAllButton.setText(
-                text+f" ({len(self.albumCardView.albumCards)})")
-
-        self.toolBar.randomPlayAllButton.adjustSize()
+            randomPlayButton.setNumber(len(self.albumCardView.albumCards))
 
     def deleteSongs(self, songPaths: List[str]):
         """ delete songs """

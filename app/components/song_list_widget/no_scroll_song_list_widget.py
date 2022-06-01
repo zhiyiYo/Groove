@@ -44,6 +44,10 @@ class NoScrollSongListWidget(BasicSongListWidget):
         super().appendOneSongCard(songInfo)
         self.__adjustHeight()
 
+    def prependOneSongCard(self, songInfo: SongInfo):
+        super().prependOneSongCard(songInfo)
+        self.__adjustHeight()
+
     def appendSongCards(self, songInfos: List[SongInfo]):
         super().appendSongCards(songInfos)
         self.__adjustHeight()
@@ -52,8 +56,8 @@ class NoScrollSongListWidget(BasicSongListWidget):
         super().updateAllSongCards(songInfos)
         self.__adjustHeight()
 
-    def removeSongCard(self, index):
-        super().removeSongCard(index)
+    def removeSongCard(self, index, emit=True):
+        super().removeSongCard(index, emit)
         self.__adjustHeight()
 
     def clearSongCards(self):
