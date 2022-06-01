@@ -36,6 +36,7 @@ class RecentPlayInterface(SongSelectionModeInterface):
 
     def __initWidget(self):
         """ initialize widgets """
+        self.resize(1300, 970)
         self.randomPlayAllButton.setNumber(self.songListWidget.songCardNum)
         self.__setQss()
 

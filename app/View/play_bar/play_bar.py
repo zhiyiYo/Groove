@@ -7,7 +7,7 @@ from components.widgets.menu import PlayBarMoreActionsMenu
 from components.widgets.slider import HollowHandleStyle, Slider
 from PyQt5.QtCore import (QEasingCurve, QParallelAnimationGroup, QPoint,
                           QPropertyAnimation, Qt, pyqtProperty, pyqtSignal)
-from PyQt5.QtGui import QColor, QPalette, QResizeEvent
+from PyQt5.QtGui import QColor, QPainter, QResizeEvent
 from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
 from View.play_bar.song_info_card import SongInfoCard
 
@@ -46,7 +46,6 @@ class PlayBar(QWidget):
         self.aniGroup.addAnimation(self.songInfoCard.albumCoverLabel.ani)
 
         # set background color
-        self.setAutoFillBackground(True)
         self.setColor(self.__color)
 
         self.__referenceWidgets()
@@ -172,12 +171,16 @@ class PlayBar(QWidget):
         """ set loop mode """
         self.loopModeButton.setLoopMode(loopMode)
 
+    def paintEvent(self, e):
+        painter = QPainter(self)
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(self.__color)
+        painter.drawRect(self.rect())
+
     def setColor(self, color: QColor):
         """ set background color """
         self.__color = color
-        palette = QPalette()
-        palette.setColor(self.backgroundRole(), color)
-        self.setPalette(palette)
+        self.update()
 
     def getColor(self):
         return self.__color
