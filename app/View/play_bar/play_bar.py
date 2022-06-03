@@ -41,14 +41,15 @@ class PlayBar(QWidget):
         """ initialize widgets """
         self.resize(1280, 115)
         self.setFixedHeight(115)
+        self.__referenceWidgets()
 
         self.aniGroup.addAnimation(self.colorAni)
         self.aniGroup.addAnimation(self.songInfoCard.albumCoverLabel.ani)
 
         # set background color
         self.setColor(self.__color)
+        self.updateVolumeSliderColor(self.__color)
 
-        self.__referenceWidgets()
         self.__adjustWidgetPos()
         self.__connectSignalToSlot()
 
@@ -151,11 +152,12 @@ class PlayBar(QWidget):
     def __onAlbumChanged(self, albumPath: str):
         """ album changed slot """
         r, g, b = DominantColor.getDominantColor(albumPath)
-        self.colorChanged.emit(QColor(r, g, b))
+        color = QColor(r, g, b)
+        self.colorChanged.emit(color)
 
         t = self.aniDuration
         self.colorAni.setStartValue(self.getColor())
-        self.colorAni.setEndValue(QColor(r, g, b))
+        self.colorAni.setEndValue(color)
         self.colorAni.setEasingCurve(QEasingCurve.OutCubic)
         self.colorAni.setDuration(t)
 
@@ -166,6 +168,23 @@ class PlayBar(QWidget):
         self.songInfoCard.albumCoverLabel.ani.setDuration(t)
 
         self.aniGroup.start()
+        self.updateVolumeSliderColor(color)
+
+    def updateVolumeSliderColor(self, color: QColor):
+        """ update the sub-page color of volume slider
+
+        Parameters
+        ----------
+        color: QColor
+            background color of play bar
+        """
+        if color.lightness() >= 127:
+            subPageColor = QColor(70, 23, 180)
+        else:
+            subPageColor = QColor(255, 255, 255)
+
+        self.volumeSlider.setStyle(HollowHandleStyle(
+            {"sub-page.color": subPageColor}))
 
     def setLoopMode(self, loopMode):
         """ set loop mode """
@@ -250,7 +269,7 @@ class RightWidgetGroup(QWidget):
         self.setFixedSize(301, 16 + 67)
         self.volumeSlider.setRange(0, 100)
         self.volumeSlider.setStyle(HollowHandleStyle(
-            {"sub-page.color": QColor(70, 23, 180)}))
+            {"sub-page.color": QColor(255, 255, 255)}))
         self.volumeSlider.setFixedHeight(28)
         self.volumeSlider.setValue(20)
         self.smallPlayModeButton.setToolTip(self.tr('Smallest play mode'))
