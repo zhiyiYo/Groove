@@ -117,33 +117,35 @@ class Library(QObject):
         library.directories = self.directories.copy()
         library.fileSystem.setDirs(self.directories)
 
-    def updateSongInfo(self, songInfo: SongInfo):
+    def updateSongInfo(self, oldSongInfo: SongInfo, newSongInfo: SongInfo):
         """ update one song information """
-        self.songInfoController.updateSongInfo(songInfo)
+        self.songInfoController.updateSongInfo(newSongInfo)
 
         for i, songInfo_ in enumerate(self.songInfos):
-            if songInfo.file == songInfo_.file:
-                self.songInfos[i] = songInfo
+            if newSongInfo.file == songInfo_.file:
+                self.songInfos[i] = newSongInfo
                 break
 
-        self.albumInfos = self.albumInfoController.getAlbumInfosFromCache(
-            self.songInfos)
+        self.albumInfos = self.albumInfoController.updateBySongInfo(
+            oldSongInfo, newSongInfo)
         self.singerInfos = self.singerInfoController.getSingerInfosFromCache(
             self.albumInfos)
+        self.albumCoverController.getAlbumCover(newSongInfo)
 
-    def updateMultiSongInfos(self, songInfos: List[SongInfo]):
+    def updateMultiSongInfos(self, olds, news: List[SongInfo]):
         """ update multi song information """
-        self.songInfoController.updateMultiSongInfos(songInfos)
+        self.songInfoController.updateMultiSongInfos(news)
 
-        songInfoMap = {i.file: i for i in songInfos}
+        songInfoMap = {i.file: i for i in news}
         for i, songInfo_ in enumerate(self.songInfos):
             if songInfo_.file in songInfoMap:
                 self.songInfos[i] = songInfoMap[songInfo_.file]
 
-        self.albumInfos = self.albumInfoController.getAlbumInfosFromCache(
-            self.songInfos)
+        self.albumInfos = self.albumInfoController.updateBySongInfos(
+            olds, news)
         self.singerInfos = self.singerInfoController.getSingerInfosFromCache(
             self.albumInfos)
+        self.albumCoverController.getAlbumCovers(news)
 
     def __onFileAdded(self, files: List[Path]):
         """ file added to file system slot """

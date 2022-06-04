@@ -13,3 +13,6 @@ class AlbumCoverController:
 
     def getAlbumCovers(self, songInfos: List[SongInfo]):
         self.albumCoverReader.getAlbumCovers(songInfos)
+
+    def getAlbumCover(self, songInfo: SongInfo):
+        self.albumCoverReader.getAlbumCover(songInfo)

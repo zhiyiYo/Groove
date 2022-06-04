@@ -1,7 +1,7 @@
 # coding:utf-8
 from typing import Dict, List
 
-from common.singleton import Singleton
+from common.meta_data.reader import SongInfoReader
 from PyQt5.QtSql import QSqlDatabase
 
 from ..entity import AlbumInfo, SongInfo
@@ -34,6 +34,7 @@ class AlbumInfoController:
             (i.singer+'_'+i.album): i for i in self.albumInfoService.listAll()
         }
 
+        reader = SongInfoReader()
         addedAlbumInfos = []    # type: List[AlbumInfo]
         expiredAlbumInfos = {}  # type:Dict[str, AlbumInfo]
         currentAlbumInfos = {}  # type:Dict[str, AlbumInfo]
@@ -41,44 +42,39 @@ class AlbumInfoController:
             key = songInfo.singer + '_' + songInfo.album
             year = songInfo.year
             genre = songInfo.genre
-            t = songInfo.modifiedTime
+            t = songInfo.createTime
 
             if key in cacheAlbumInfos:
-                currentAlbumInfos[key] = cacheAlbumInfos[key]
+                albumInfo = currentAlbumInfos[key] = cacheAlbumInfos[key]
 
-                if currentAlbumInfos[key].modifiedTime < t:
-                    currentAlbumInfos[key].modifiedTime = t
+                if albumInfo.modifiedTime < t:
+                    albumInfo.modifiedTime = t
                     expiredAlbumInfos[key] = cacheAlbumInfos[key]
 
-                if not currentAlbumInfos[key].year and year:
-                    currentAlbumInfos[key].year = year
+                if not albumInfo.year and year:
+                    albumInfo.year = year
                     expiredAlbumInfos[key] = cacheAlbumInfos[key]
 
-                if not currentAlbumInfos[key].genre and genre:
-                    currentAlbumInfos[key].genre = genre
+                if (not albumInfo.genre and genre) or (albumInfo.genre == reader.genre and genre != reader.genre):
+                    albumInfo.genre = genre
                     expiredAlbumInfos[key] = cacheAlbumInfos[key]
 
+            # create new album info
             elif key not in currentAlbumInfos:
-                albumInfo = AlbumInfo(
-                    id=UUIDUtils.getUUID(),
-                    singer=songInfo.singer,
-                    album=songInfo.album,
-                    year=songInfo.year,
-                    genre=songInfo.genre,
-                    modifiedTime=t
-                )
+                albumInfo = self.__createAlbumInfo(songInfo)
                 currentAlbumInfos[key] = albumInfo
                 addedAlbumInfos.append(albumInfo)
 
             else:
-                if currentAlbumInfos[key].modifiedTime < t:
-                    currentAlbumInfos[key].modifiedTime = t
+                albumInfo = currentAlbumInfos[key]
+                if albumInfo.modifiedTime < t:
+                    albumInfo.modifiedTime = t
 
-                if not currentAlbumInfos[key].year and year:
-                    currentAlbumInfos[key].year = year
+                if not albumInfo.year and year:
+                    albumInfo.year = year
 
-                if not currentAlbumInfos[key].genre and genre:
-                    currentAlbumInfos[key].genre = genre
+                if (not albumInfo.genre and genre) or (albumInfo.genre == reader.genre and genre != reader.genre):
+                    albumInfo.genre = genre
 
         removedIds = []
         for i in set(cacheAlbumInfos.keys())-set(currentAlbumInfos.keys()):
@@ -145,55 +141,134 @@ class AlbumInfoController:
         """ fuzzy search album information """
         return self.albumInfoService.listLike(**condition)
 
-    def getAlbumInfos(self, songInfos: List[SongInfo]) -> List[AlbumInfo]:
-        """ get album information from new song information and update the database
+    def updateBySongInfo(self, old: SongInfo, new: SongInfo):
+        """ update album information by song information, you should call
+        this function after updating song info table
 
         Parameters
         ----------
-        songInfos: List[SongInfo]
-            song information list
+        old: SongInfo
+            old song information
+
+        new: SongInfo
+            new song information
 
         Returns
         -------
         albumInfos: List[AlbumInfo]
             album information list, not contain song information
         """
-        albumInfos = {}  # type:Dict[str, AlbumInfo]
+        oldKey = old.singer + '_' + old.album
+        newKey = new.singer + '_' + new.album
+        reader = SongInfoReader()
 
-        for songInfo in songInfos:
-            key = songInfo.singer + '_' + songInfo.album
-            year = songInfo.year
-            genre = songInfo.genre
-            t = songInfo.modifiedTime
+        if oldKey == newKey:
+            albumInfo = self.albumInfoService.findBy(
+                singer=old.singer, album=old.album)
+            if albumInfo:
+                albumInfo.year = new.year
+                albumInfo.genre = new.genre
+                self.albumInfoService.modifyById(albumInfo)
+        else:
+            # remove empty album info or update its modified time
+            albumInfo = self.getAlbumInfo(old.singer, old.album)
+            if albumInfo:
+                if len(albumInfo.songInfos) == 0:
+                    self.albumInfoService.removeById(albumInfo.id)
+                else:
+                    albumInfo.modifiedTime = max(
+                        i.createTime for i in albumInfo.songInfos)
+                    self.albumInfoService.modifyById(albumInfo)
 
-            if key not in albumInfos:
-                albumInfos[key] = AlbumInfo(
-                    id=UUIDUtils.getUUID(),
-                    singer=songInfo.singer,
-                    album=songInfo.album,
-                    year=songInfo.year,
-                    genre=songInfo.genre,
-                    modifiedTime=t
-                )
+            # create new album info or add song info to existing album
+            albumInfo = self.albumInfoService.findBy(
+                singer=new.singer, album=new.album)
+            if not albumInfo:
+                self.albumInfoService.add(self.__createAlbumInfo(new))
             else:
-                if albumInfos[key].modifiedTime < t:
-                    albumInfos[key].modifiedTime = t
+                albumInfo.modifiedTime = max(
+                    albumInfo.modifiedTime, new.createTime)
+                if albumInfo.year == reader.year and new.year != reader.year:
+                    albumInfo.year = new.year
+                if albumInfo.genre == reader.genre and new.genre != reader.genre:
+                    albumInfo.genre = new.genre
 
-                if not albumInfos[key].year and year:
-                    albumInfos[key].year = year
+                self.albumInfoService.modifyById(albumInfo)
 
-                if not albumInfos[key].genre and genre:
-                    albumInfos[key].genre = genre
-
-        # sort album information
         albumInfos = sorted(
-            albumInfos.values(),
+            self.albumInfoService.listAll(),
             key=lambda i: i.modifiedTime,
             reverse=True
         )
+        return albumInfos
+
+    def updateBySongInfos(self, olds: List[SongInfo], news: List[SongInfo]):
+        """ update album information by multi song information, you should call
+        this function after updating song info table
+
+        Parameters
+        ----------
+        olds: List[SongInfo]
+            old song information
+
+        news: List[SongInfo]
+            new song information
+
+        Returns
+        -------
+        albumInfos: List[AlbumInfo]
+            album information list, not contain song information
+        """
+        # remove old album information
+        singers = [i.singer for i in olds]
+        albums = [i.album for i in olds]
+        oldAlbumIds = [
+            i.id for i in self.albumInfoService.listBySingerAlbums(singers, albums)]
+        self.albumInfoService.removeByIds(oldAlbumIds)
+
+        # insert new album information
+        newAlbumInfos = {}  # type:Dict[str, AlbumInfo]
+        reader = SongInfoReader()
+
+        for songInfo in news:
+            key = songInfo.singer + '_' + songInfo.album
+            year = songInfo.year
+            genre = songInfo.genre
+            t = songInfo.createTime
+
+            if key not in newAlbumInfos:
+                newAlbumInfos[key] = self.__createAlbumInfo(songInfo)
+            else:
+                albumInfo = newAlbumInfos[key]
+                if albumInfo.modifiedTime < t:
+                    albumInfo.modifiedTime = t
+
+                if not albumInfo.year and year:
+                    albumInfo.year = year
+
+                if (not albumInfo.genre and genre) or (
+                        albumInfo.genre == reader.genre and genre != reader.genre):
+                    albumInfo.genre = genre
 
         # update database
-        self.albumInfoService.clearTable()
-        self.albumInfoService.addBatch(albumInfos)
+        singers = [i.singer for i in news]
+        albums = [i.album for i in news]
+        self.albumInfoService.removeBySingerAlbums(singers, albums)
+        self.albumInfoService.addBatch(list(newAlbumInfos.values()))
 
+        albumInfos = sorted(
+            self.albumInfoService.listAll(),
+            key=lambda i: i.modifiedTime,
+            reverse=True
+        )
         return albumInfos
+
+    def __createAlbumInfo(self, songInfo: SongInfo):
+        return AlbumInfo(
+            id=UUIDUtils.getUUID(),
+            singer=songInfo.singer,
+            album=songInfo.album,
+            year=songInfo.year,
+            genre=songInfo.genre,
+            modifiedTime=songInfo.createTime
+        )

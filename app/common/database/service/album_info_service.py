@@ -34,6 +34,10 @@ class AlbumInfoService(ServiceBase):
     def listByIds(self, ids: List[str]) -> List[AlbumInfo]:
         return self.albumInfoDao.listByIds(ids)
 
+    def listBySingerAlbums(self, singers: List[str], albums: List[str]) -> List[AlbumInfo]:
+        """ list album information by singer names and album names """
+        return self.albumInfoDao.listBySingerAlbums(singers, albums)
+
     def modify(self, id: str, field: str, value) -> bool:
         return self.albumInfoDao.update(id, field, value)
 
@@ -54,6 +58,10 @@ class AlbumInfoService(ServiceBase):
 
     def removeByIds(self, ids: List[str]) -> bool:
         return self.albumInfoDao.deleteByIds(ids)
+
+    def removeBySingerAlbums(self, singers: List[str], albums: List[str]) -> bool:
+        """ list album information by singer names and album names """
+        return self.albumInfoDao.deleteBySingerAlbums(singers, albums)
 
     def clearTable(self) -> bool:
         return self.albumInfoDao.clearTable()

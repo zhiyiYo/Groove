@@ -1183,7 +1183,7 @@ class MainWindow(AcrylicWindow):
 
     def onEditSongInfo(self, oldSongInfo: SongInfo, newSongInfo: SongInfo):
         """ edit song information slot """
-        self.library.updateSongInfo(newSongInfo)
+        self.library.updateSongInfo(oldSongInfo, newSongInfo)
         self.mediaPlaylist.updateSongInfo(newSongInfo)
         self.playingInterface.updateSongInfo(newSongInfo)
         self.myMusicInterface.updateSongInfo(newSongInfo)
@@ -1195,7 +1195,7 @@ class MainWindow(AcrylicWindow):
     def onEditAlbumInfo(self, oldAlbumInfo: AlbumInfo, newAlbumInfo: AlbumInfo, coverPath: str):
         """ edit album information slot """
         songInfos = newAlbumInfo.songInfos
-        self.library.updateMultiSongInfos(songInfos)
+        self.library.updateMultiSongInfos(oldAlbumInfo.songInfos, songInfos)
         self.mediaPlaylist.updateMultiSongInfos(songInfos)
         self.myMusicInterface.updateMultiSongInfos(songInfos)
         self.playingInterface.updateMultiSongInfos(songInfos)

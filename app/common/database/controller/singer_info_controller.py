@@ -1,6 +1,7 @@
 # coding:utf-8
-from typing import List, Dict
+from typing import Dict, List
 
+from common.meta_data.reader import SongInfoReader
 from PyQt5.QtSql import QSqlDatabase
 
 from ..entity import AlbumInfo, SingerInfo
@@ -31,19 +32,22 @@ class SingerInfoController:
             i.singer: i for i in self.singerInfoService.listAll()
         }
 
+        reader = SongInfoReader()
         addedSingerInfos = []    # type: List[SingerInfo]
-        expiredAlbumInfos = {}  # type: Dict[str, SingerInfo]
+        expiredSingerInfos = {}  # type: Dict[str, SingerInfo]
         currentSingerInfos = {}  # type: Dict[str, SingerInfo]
+
         for albumInfo in albumInfos:
             singer = albumInfo.singer
             genre = albumInfo.genre
 
             if singer in cacheSingerInfos:
-                currentSingerInfos[singer] = cacheSingerInfos[singer]
+                singerInfo = currentSingerInfos[singer] = cacheSingerInfos[singer]
 
-                if not currentSingerInfos[singer].genre and genre:
-                    currentSingerInfos[singer].genre = genre
-                    expiredAlbumInfos[singer] = cacheSingerInfos[singer]
+                if (not singerInfo.genre and genre) or (
+                        singerInfo.genre == reader.genre and genre != reader.genre):
+                    singerInfo.genre = genre
+                    expiredSingerInfos[singer] = cacheSingerInfos[singer]
 
             elif singer not in currentSingerInfos:
                 singerInfo = SingerInfo(
@@ -60,7 +64,7 @@ class SingerInfoController:
 
         # update database
         self.singerInfoService.removeByIds(removedIds)
-        self.singerInfoService.modifyByIds(list(expiredAlbumInfos.values()))
+        self.singerInfoService.modifyByIds(list(expiredSingerInfos.values()))
         self.singerInfoService.addBatch(addedSingerInfos)
 
         return list(currentSingerInfos.values())
@@ -79,6 +83,7 @@ class SingerInfoController:
             singer information list
         """
         singerInfos = {}  # type:Dict[str, SingerInfo]
+        reader = SongInfoReader()
 
         for albumInfo in albumInfos:
             singer = albumInfo.singer
@@ -90,7 +95,8 @@ class SingerInfoController:
                     singer=singer,
                     genre=genre
                 )
-            elif not singerInfos[singer].genre and genre:
+            elif (not singerInfos[singer].genre and genre) or (
+                    singerInfos[singer].genre == reader.genre and genre != reader.genre):
                 singerInfos[singer].genre = genre
 
         singerInfos = list(singerInfos.values())

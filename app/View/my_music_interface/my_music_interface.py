@@ -114,11 +114,13 @@ class MyMusicInterface(QWidget):
         """ update song information """
         self.songListWidget.updateOneSongCard(newSongInfo)
         self.albumTabInterface.updateWindow(self.library.albumInfos)
+        self.singerTabInterface.updateWindow(self.library.singerInfos)
 
     def updateMultiSongInfos(self, songInfos: List[SongInfo]):
         """ update multi song information """
         self.songListWidget.updateMultiSongCards(songInfos)
         self.albumTabInterface.updateWindow(self.library.albumInfos)
+        self.singerTabInterface.updateWindow(self.library.singerInfos)
 
     def __showSortModeMenu(self):
         """ show sort mode menu """

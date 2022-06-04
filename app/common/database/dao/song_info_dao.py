@@ -67,7 +67,7 @@ class SongInfoDao(DaoBase):
         return self.listBy(singer=singer, album=album)
 
     def listBySingerAlbums(self, singers: List[str], albums: List[str]) -> List[SongInfo]:
-        """ ist song information by singer names and album names """
+        """ list song information by singer names and album names """
         if len(singers) != len(albums):
             raise ValueError('歌手和专辑列表的长度必须相同')
 
