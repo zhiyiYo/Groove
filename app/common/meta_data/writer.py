@@ -1,4 +1,5 @@
 # coding:utf-8
+import base64
 import imghdr
 import os
 from pathlib import Path
@@ -11,6 +12,7 @@ from mutagen.flac import FLAC, Picture
 from mutagen.id3 import APIC, TALB, TCON, TDRC, TIT2, TPE1, TPE2, TPOS, TRCK
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
+from mutagen.oggvorbis import OggVorbis
 
 
 class MetaDataWriterBase:
@@ -151,6 +153,43 @@ class FLACWriter(MetaDataWriterBase):
         return True
 
 
+class OGGWriter(MetaDataWriterBase):
+    """ OGG meta data writer class """
+
+    def __init__(self, songPath: Union[str, Path]):
+        self.audio = OggVorbis(songPath)
+
+    @saveExceptionHandler
+    def writeSongInfo(self, songInfo: SongInfo):
+        self.audio['title'] = [songInfo.title]
+        self.audio['artist'] = [songInfo.singer]
+        self.audio['album'] = [songInfo.album]
+        self.audio['genre'] = [songInfo.genre]
+        if songInfo.disc:
+            self.audio['discnumber'] = [str(songInfo.disc)]
+            self.audio['tracknumber'] = [str(songInfo.track)]
+        if songInfo.year:
+            self.audio['year'] = [str(songInfo.year)]
+            self.audio['date'] = [str(songInfo.year)]
+
+        self.audio.save()
+        return True
+
+    @saveExceptionHandler
+    def writeAlbumCover(self, picData: bytes, mimeType: str):
+        picture = Picture()
+        picture.mime = mimeType
+        picture.data = picData
+        picture.type = 3
+
+        picData = picture.write()
+        picData = base64.b64encode(picData).decode("ascii")
+
+        self.audio["metadata_block_picture"] = [picData]
+        self.audio.save()
+        return True
+
+
 class MP4Writer(MetaDataWriterBase):
     """ MP4/M4A meta data writer class """
 
@@ -200,11 +239,12 @@ def writeSongInfo(songInfo: SongInfo) -> bool:
     success: bool
         whether write song information successfully
     """
-    fileType = type(File(songInfo.file, options=[MP3, FLAC, MP4]))
+    fileType = type(File(songInfo.file, options=[MP3, FLAC, MP4, OggVorbis]))
     writerMap = {
         MP3: MP3Writer,
         FLAC: FLACWriter,
-        MP4: MP4Writer
+        MP4: MP4Writer,
+        OggVorbis: OGGWriter
     }
     if fileType not in writerMap:
         logger.info(f'The format of {songInfo.file} is not supported')
@@ -247,11 +287,12 @@ def writeAlbumCover(songPath: Union[str, Path], coverPath: str, picData: bytes =
     except:
         mimeType = "image/jpeg"
 
-    fileType = type(File(songPath, options=[MP3, FLAC, MP4]))
+    fileType = type(File(songPath, options=[MP3, FLAC, MP4, OggVorbis]))
     writerMap = {
         MP3: MP3Writer,
         FLAC: FLACWriter,
-        MP4: MP4Writer
+        MP4: MP4Writer,
+        OggVorbis: OGGWriter
     }
     if fileType not in writerMap:
         logger.info(f'The format of {songPath} is not supported')

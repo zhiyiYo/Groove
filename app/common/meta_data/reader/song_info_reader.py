@@ -2,18 +2,45 @@
 from pathlib import Path
 from typing import Union
 
+from common.database.entity import SongInfo
+from common.logger import Logger
 from mutagen import File
 from mutagen.flac import FLAC
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
+from mutagen.oggflac import OggFLAC
+from mutagen.oggspeex import OggSpeex
+from mutagen.oggvorbis import OggVorbis
 from PyQt5.QtCore import QObject
 from tinytag import TinyTag
 
-from common.database.entity import SongInfo
+
+logger = Logger("meta_data_reader")
 
 
-class SongInfoReader(QObject):
-    """ Song information reader """
+def exceptionHandler(func):
+    """ decorator for exception handling
+
+    Parameters
+    ----------
+    *default:
+        the default value returned when an exception occurs
+    """
+
+    def wrapper(reader, *args, **kwargs):
+        try:
+            return func(reader, *args, **kwargs)
+        except Exception as e:
+            logger.error(e)
+            return SongInfoReaderBase().read(*args, **kwargs)
+
+    return wrapper
+
+
+class SongInfoReaderBase(QObject):
+    """ Song information reader base class """
+
+    formats = []
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -27,7 +54,15 @@ class SongInfoReader(QObject):
         self.disc = 1
         self.discTotal = 1
 
-    def read(self, file: Union[str, Path]):
+    @classmethod
+    def canRead(cls, file: Union[str, Path]) -> bool:
+        """ determine whether song information of the file can be read """
+        if not isinstance(file, Path):
+            file = Path(file)
+
+        return file.suffix.lower() in cls.formats
+
+    def read(self, file: Union[str, Path]) -> SongInfo:
         """ read song information from audio file
 
         Parameters
@@ -43,6 +78,50 @@ class SongInfoReader(QObject):
         if not isinstance(file, Path):
             file = Path(file)
 
+        return SongInfo(
+            file=str(file).replace('\\', '/'),
+            title=file.stem,
+            singer=self.singer,
+            album=self.album,
+            genre=self.genre,
+            track=self.track,
+            trackTotal=self.trackTotal,
+            disc=self.disc,
+            discTotal=self.discTotal,
+            createTime=int(file.stat().st_ctime),
+            modifiedTime=int(file.stat().st_mtime)
+        )
+
+    def _parseTrack(self, track):
+        """ parse track number """
+        track = str(track)
+
+        # handle a/b
+        track = track.split('/')[0]
+
+        # handle An
+        if track[0].upper() == 'A':
+            track = track[1:]
+
+        return int(track)
+
+    @staticmethod
+    def getModifiedTime(file: str):
+        """ get modified time of audio file """
+        path = Path(file)
+        return int(path.stat().st_mtime)
+
+
+class GeneralSongInfoReader(SongInfoReaderBase):
+    """ General song information reader """
+
+    formats = [".mp3", ".flac", ".m4a", ".mp4"]
+
+    @exceptionHandler
+    def read(self, file: Union[str, Path]):
+        if not isinstance(file, Path):
+            file = Path(file)
+
         tag = TinyTag.get(file)
 
         file_ = str(file).replace('\\', '/')
@@ -52,7 +131,7 @@ class SongInfoReader(QObject):
         year = self.__getYear(tag, file)
         genre = tag.genre or self.genre
         duration = int(tag.duration)
-        track = self.__getTrack(tag)
+        track = self._parseTrack(tag.track or self.track)
         trackTotal = tag.track_total or self.trackTotal
         disc = int(tag.disc or self.disc)
         discTotal = tag.disc_total or self.discTotal
@@ -96,21 +175,69 @@ class SongInfoReader(QObject):
 
         return self.year
 
-    def __getTrack(self, tag: TinyTag):
-        """ get track number of song """
-        track = str(tag.track or self.track)
 
-        # handle a/b
-        track = track.split('/')[0]
+class OGGSongInfoReader(SongInfoReaderBase):
+    """ Ogg song information reader """
 
-        # handle An
-        if track[0].upper() == 'A':
-            track = track[1:]
+    formats = [".ogg"]
 
-        return int(track)
+    @exceptionHandler
+    def read(self, file: Union[str, Path]) -> SongInfo:
+        if not isinstance(file, Path):
+            file = Path(file)
 
-    @staticmethod
-    def getModifiedTime(file: str):
-        """ get modified time of audio file """
-        path = Path(file)
-        return int(path.stat().st_mtime)
+        audio = File(file, [OggVorbis, OggFLAC, OggSpeex])
+
+        file_ = str(file).replace('\\', '/')
+        title = self.__tag(audio, "title", file.stem)
+        singer = self.__tag(audio, "artist", self.singer)
+        album = self.__tag(audio, "album", self.album)
+        year = self.__tag(audio, "date") or self.__tag(audio, "year")
+        genre = self.__tag(audio, "genre", self.genre)
+        duration = int(audio.info.length)
+        track = self._parseTrack(self.__tag(audio, "tracknumber", self.track))
+        trackTotal = self.trackTotal
+        disc = int(self.__tag(audio, "discnumber", self.disc))
+        discTotal = self.discTotal
+        createTime = int(file.stat().st_ctime)
+        modifiedTime = int(file.stat().st_mtime)
+
+        return SongInfo(
+            file=file_,
+            title=title,
+            singer=singer,
+            album=album,
+            year=year,
+            genre=genre,
+            duration=duration,
+            track=track,
+            trackTotal=trackTotal,
+            disc=disc,
+            discTotal=discTotal,
+            createTime=createTime,
+            modifiedTime=modifiedTime
+        )
+
+    def __tag(self, audio, key, default=None):
+        return audio.get(key, [default])[0]
+
+
+class SongInfoReader(SongInfoReaderBase):
+    """ Song information reader """
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.__readers = [
+            GeneralSongInfoReader(parent),
+            OGGSongInfoReader(parent)
+        ]
+
+    def read(self, file: Union[str, Path]) -> SongInfo:
+        if not isinstance(file, Path):
+            file = Path(file)
+
+        for reader in self.__readers:
+            if reader.canRead(file):
+                return reader.read(file)
+
+        return super().read(file)

@@ -1,4 +1,5 @@
 # coding:utf-8
+import base64
 from pathlib import Path
 from shutil import rmtree
 from typing import List
@@ -7,9 +8,11 @@ from common.database.entity import SongInfo
 from common.image_process_utils import getPicSuffix
 from common.os_utils import getCoverName
 from mutagen import File, FileType
-from mutagen.flac import FLAC
+from mutagen.flac import FLAC, Picture
+from mutagen.flac import error as FLACError
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
+from mutagen.oggvorbis import OggVorbis
 
 
 class AlbumCoverReaderBase:
@@ -53,6 +56,18 @@ class FLACAlbumCoverReader(AlbumCoverReaderBase):
         return audio.pictures[0].data
 
 
+class OGGAlbumCoverReader(AlbumCoverReaderBase):
+    """ OGG album cover reader """
+
+    @staticmethod
+    def getAlbumCover(audio: OggVorbis) -> bytes:
+        for base64Data in audio.get("metadata_block_picture", []):
+            try:
+                return Picture(base64.b64decode(base64Data)).data
+            except (TypeError, ValueError, FLACError):
+                continue
+
+
 class MP4AlbumCoverReader(AlbumCoverReaderBase):
     """ MP4/M4A album cover reader """
 
@@ -85,12 +100,13 @@ class AlbumCoverReader:
         if isExists:
             return
 
-        audio = File(songInfo.file, options=[MP3, FLAC, MP4])
+        audio = File(songInfo.file, options=[MP3, FLAC, MP4, OggVorbis])
         AudioType = type(audio)
         readerMap = {
             MP3: MP3AlbumCoverReader,
             FLAC: FLACAlbumCoverReader,
-            MP4: MP4AlbumCoverReader
+            MP4: MP4AlbumCoverReader,
+            OggVorbis: OGGAlbumCoverReader
         }
 
         if AudioType not in readerMap:

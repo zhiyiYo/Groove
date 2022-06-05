@@ -105,6 +105,7 @@ English | <a href="docs/README_zh.md">简体中文</a>
   Currently, the following audio files are supported:
   * mp3
   * flac
+  * ogg
   * mp4/m4a
 
 * **Why did GStreamer report this error: Warning: "No decoder available for type blah blah"?**
