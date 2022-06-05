@@ -2,7 +2,7 @@
 from common.thread.download_mv_thread import DownloadMvThread
 from components.dialog_box.message_dialog import MessageDialog
 from components.widgets.state_tooltip import DownloadStateTooltip
-from PyQt5.QtCore import QSizeF, Qt, QTimer, QUrl, pyqtSignal
+from PyQt5.QtCore import QSizeF, Qt, QUrl, pyqtSignal, QEvent
 from PyQt5.QtGui import QPainter
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QGraphicsVideoItem
@@ -27,7 +27,6 @@ class VideoInterface(QGraphicsView):
         self.videoItem = GraphicsVideoItem()
         self.player = QMediaPlayer(self)
         self.playBar = PlayBar(self)
-        self.hidePlayBarTimer = QTimer(self)
         self.toggleFullScreenAct = QAction(
             self, shortcut=Qt.Key_F11, triggered=self.__toggleFullScreen)
         self.__initWidget()
@@ -38,7 +37,6 @@ class VideoInterface(QGraphicsView):
         self.setMouseTracking(True)
         self.setScene(self.graphicsScene)
         self.addActions([self.toggleFullScreenAct])
-        self.hidePlayBarTimer.setSingleShot(True)
 
         # set the widget to play video
         self.graphicsScene.addItem(self.videoItem)
@@ -54,6 +52,8 @@ class VideoInterface(QGraphicsView):
         self.player.setVolume(30)
         self.playBar.volumeSliderWidget.setVolume(30)
 
+        self.playBar.installEventFilter(self)
+
         self.__setQss()
         self.__connectSignalToSlot()
 
@@ -62,6 +62,15 @@ class VideoInterface(QGraphicsView):
         self.fitInView(self.videoItem, Qt.KeepAspectRatio)
         self.playBar.move(0, self.height()-self.playBar.height())
         self.playBar.setFixedSize(self.width(), self.playBar.height())
+
+    def eventFilter(self, obj, e: QEvent):
+        if obj is self.playBar:
+            if e.type() == QEvent.Hide:
+                self.setCursor(Qt.BlankCursor)
+            elif e.type() == QEvent.Show:
+                self.setCursor(Qt.ArrowCursor)
+
+        return super().eventFilter(obj, e)
 
     def setVideo(self, url: str, videoName: str):
         """ set the video to play """
@@ -111,15 +120,12 @@ class VideoInterface(QGraphicsView):
         self.playBar.setTotalTime(duration)
 
     def mouseMoveEvent(self, e):
-        self.hidePlayBarTimer.stop()
         self.playBar.show()
-        self.setCursor(Qt.ArrowCursor)
-        self.hidePlayBarTimer.start(1500)
+        self.playBar.timer.stop()
+        self.playBar.timer.start(3000)
 
     def mousePressEvent(self, e):
         self.playBar.setVisible(not self.playBar.isVisible())
-        if self.playBar.isVisible():
-            self.hidePlayBarTimer.start(1500)
 
     def __enterFullScreen(self):
         """ enter full screen """
@@ -211,10 +217,6 @@ class VideoInterface(QGraphicsView):
         self.playBar.fullScreenButton.setToolTip(text)
         self.fullScreenChanged.emit(isFullScreen)
 
-    def __onHideTimeOut(self):
-        self.playBar.hide()
-        self.setCursor(Qt.BlankCursor)
-
     def __connectSignalToSlot(self):
         """ connect signal to slot """
         self.player.error.connect(self.__onPlayerError)
@@ -234,8 +236,6 @@ class VideoInterface(QGraphicsView):
             self.__onFullScreenChanged)
         self.playBar.downloadButton.clicked.connect(
             self.__onDownloadButtonClicked)
-
-        self.hidePlayBarTimer.timeout.connect(self.__onHideTimeOut)
 
 
 class GraphicsVideoItem(QGraphicsVideoItem):

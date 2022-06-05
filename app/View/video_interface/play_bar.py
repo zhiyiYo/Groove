@@ -3,7 +3,7 @@ from components.buttons.play_bar_buttons import (CircleButton,
                                                  FullScreenButton, PlayButton,
                                                  VolumeButton)
 from components.widgets.slider import HollowHandleStyle, Slider
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal, QTimer
 from PyQt5.QtGui import QColor, QLinearGradient, QPainter
 from PyQt5.QtWidgets import QLabel, QWidget
 
@@ -30,6 +30,7 @@ class PlayBar(QWidget):
         self.downloadButton = CircleButton(
             ":/images/video_window/Download.png", self)
         self.volumeSliderWidget = VolumeSliderWidget(self.window())
+        self.timer = QTimer(self)
 
         self.__initWidget()
 
@@ -38,6 +39,7 @@ class PlayBar(QWidget):
         self.__setQss()
         self.resize(600, 250)
         self.setAttribute(Qt.WA_TranslucentBackground)
+        self.timer.setSingleShot(True)
         self.setMouseTracking(True)
 
         # set the style of slider
@@ -83,6 +85,16 @@ class PlayBar(QWidget):
         """
         self.setStyleSheet(styleSheet)
         self.totalTimeLabel.adjustSize()
+
+    def mouseMoveEvent(self, e):
+        self.timer.stop()
+        self.timer.start(3000)
+        super().mouseMoveEvent(e)
+
+    def showEvent(self, e):
+        super().showEvent(e)
+        self.timer.stop()
+        self.timer.start(3000)
 
     def paintEvent(self, e):
         """ paint play bar """
@@ -164,3 +176,4 @@ class PlayBar(QWidget):
             self.volumeButton.updateIcon)
         self.volumeSliderWidget.muteStateChanged.connect(
             self.volumeButton.setMute)
+        self.timer.timeout.connect(self.hide)
