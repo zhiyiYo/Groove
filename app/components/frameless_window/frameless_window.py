@@ -3,7 +3,7 @@ import sys
 from ctypes import POINTER, cast
 
 from PyQt5.QtCore import QCoreApplication, QEvent, Qt
-from PyQt5.QtGui import QCursor, QMouseEvent, QCloseEvent
+from PyQt5.QtGui import QCloseEvent, QCursor, QMouseEvent
 from PyQt5.QtWidgets import QApplication, QWidget
 
 if sys.platform == "win32":
@@ -18,6 +18,8 @@ else:
 
 from common.os_utils import getWindowsVersion
 from common.window_effect import WindowEffect
+
+from ..title_bar import TitleBar
 
 
 class FramelessWindowBase(QWidget):
@@ -207,7 +209,7 @@ class UnixFramelessWindow(FramelessWindowBase):
             return False
 
         edges = Qt.Edges()
-        pos = QMouseEvent(event).windowPos().toPoint()
+        pos = QMouseEvent(event).globalPos() - self.pos()
         if pos.x() < self.BORDER_WIDTH:
             edges |= Qt.LeftEdge
         if pos.x() >= self.width()-self.BORDER_WIDTH:
@@ -230,7 +232,7 @@ class UnixFramelessWindow(FramelessWindowBase):
             else:
                 self.setCursor(Qt.ArrowCursor)
 
-        elif obj is self and et == QEvent.MouseButtonPress and edges:
+        elif (obj is self or isinstance(obj, TitleBar)) and et == QEvent.MouseButtonPress and edges:
             LinuxMoveResize.starSystemResize(self, event.globalPos(), edges)
 
         return super().eventFilter(obj, event)
