@@ -5,16 +5,17 @@ from typing import Union
 from common.database.entity import SongInfo
 from common.logger import Logger
 from mutagen import File
+from mutagen.aac import AAC
+from mutagen.aiff import AIFF
 from mutagen.flac import FLAC
+from mutagen.id3 import ID3
+from mutagen.monkeysaudio import MonkeysAudio
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
-from mutagen.aiff import AIFF
-from mutagen.aac import AAC
-from mutagen.id3 import ID3
 from mutagen.oggflac import OggFLAC
+from mutagen.oggopus import OggOpus
 from mutagen.oggspeex import OggSpeex
 from mutagen.oggvorbis import OggVorbis
-from mutagen.oggopus import OggOpus
 from PyQt5.QtCore import QObject
 from tinytag import TinyTag
 
@@ -183,11 +184,21 @@ class GeneralSongInfoReader(SongInfoReaderBase):
         return self.year
 
 
-class OGGSongInfoReader(SongInfoReaderBase):
-    """ Ogg song information reader """
+class MutagenSongInfoReader(SongInfoReaderBase):
+    """ Mutagen song information reader """
 
-    formats = [".ogg"]
-    options = [OggVorbis, OggFLAC, OggSpeex]
+    _Tag = None
+    frameMap = {
+        "title": "title",
+        "singer": "artist",
+        "album": "album",
+        "year": "year",
+        "genre": "genre",
+        "track": "tracknumber",
+        "trackTotal": "tracktotal",
+        "disc": "discnumber",
+        "discTotal": "discTotal"
+    }
 
     @exceptionHandler
     def read(self, file: Union[str, Path]) -> SongInfo:
@@ -195,21 +206,38 @@ class OGGSongInfoReader(SongInfoReaderBase):
             file = Path(file)
 
         audio = File(file, self.options)
+        if self._Tag is not None:
+            try:
+                tag = self._Tag(file)
+            except:
+                tag = self._Tag()
+        else:
+            tag = audio
 
         file_ = str(file).replace('\\', '/')
-        title = self.__tag(audio, "title", file.stem)
-        singer = self.__tag(audio, "artist", self.singer)
-        album = self.__tag(audio, "album", self.album)
-        year = self.__tag(audio, "date") or self.__tag(audio, "year")
-        year = int(year) if year is not None else year
-        genre = self.__tag(audio, "genre", self.genre)
+        title = self._v(tag, self.frameMap['title'], file.stem)
+        singer = self._v(tag, self.frameMap['singer'], self.singer)
+        album = self._v(tag, self.frameMap['album'], self.album)
+        genre = self._v(tag, self.frameMap['genre'], self.genre)
+        track = self._v(tag, self.frameMap['track'], self.track)
+        track = self._parseTrack(track)
+        trackTotal = int(
+            self._v(tag, self.frameMap['trackTotal'], self.trackTotal))
+        disc = int(self._v(tag, self.frameMap['disc'], self.trackTotal))
+        discTotal = int(
+            self._v(tag, self.frameMap['discTotal'], self.trackTotal))
         duration = int(audio.info.length)
-        track = self._parseTrack(self.__tag(audio, "tracknumber", self.track))
-        trackTotal = self.trackTotal
-        disc = int(self.__tag(audio, "discnumber", self.disc))
-        discTotal = self.discTotal
         createTime = int(file.stat().st_ctime)
         modifiedTime = int(file.stat().st_mtime)
+
+        year = None
+        if isinstance(self.frameMap['year'], list):
+            for k in self.frameMap['year']:
+                year = year or self._v(tag, k)
+        else:
+            year = self._v(tag, self.frameMap['year'])
+
+        year = int(year) if year and str(year).isdigit() else self.year
 
         return SongInfo(
             file=file_,
@@ -227,8 +255,30 @@ class OGGSongInfoReader(SongInfoReaderBase):
             modifiedTime=modifiedTime
         )
 
-    def __tag(self, audio, key, default=None):
-        return audio.get(key, [default])[0]
+    def _v(self, tag, key: str, default=None):
+        """ get the value of frame """
+        return str(tag.get(key, default))
+
+
+class OGGSongInfoReader(MutagenSongInfoReader):
+    """ Ogg song information reader """
+
+    formats = [".ogg"]
+    options = [OggVorbis, OggFLAC, OggSpeex]
+    frameMap = {
+        "title": "title",
+        "singer": "artist",
+        "album": "album",
+        "year": ["date", "year"],
+        "genre": "genre",
+        "track": "tracknumber",
+        "trackTotal": "tracktotal",
+        "disc": "discnumber",
+        "discTotal": "discTotal"
+    }
+
+    def _v(self, tag, key, default=None):
+        return tag.get(key, [default])[0]
 
 
 class OPUSSongInfoReader(OGGSongInfoReader):
@@ -238,57 +288,42 @@ class OPUSSongInfoReader(OGGSongInfoReader):
     options = [OggOpus]
 
 
-class ID3SongInfoReader(SongInfoReaderBase):
+class ID3SongInfoReader(MutagenSongInfoReader):
     """ ID3 song information reader """
 
     formats = [".aac"]
     options = [AAC]
+    _Tag = ID3
+    frameMap = {
+        "title": "TIT2",
+        "singer": "TPE1",
+        "album": "TALB",
+        "year": "TDRC",
+        "genre": "TCON",
+        "track": "TRCK",
+        "disc": "TPOS",
+        "trackTotal": "tracktotal",
+        "discTotal": "discTotal"
+    }
 
-    @exceptionHandler
-    def read(self, file: Union[str, Path]) -> SongInfo:
-        if not isinstance(file, Path):
-            file = Path(file)
 
-        audio = File(file, options=self.options)
+class APESongInfoReader(MutagenSongInfoReader):
+    """ APE song information reader """
 
-        try:
-            tag = ID3(file)
-        except:
-            tag = ID3()
-
-        file_ = str(file).replace('\\', '/')
-        title = self.__tag(tag, 'TIT2', file.stem)
-        singer = self.__tag(tag, 'TPE1', self.singer)
-        album = self.__tag(tag, 'TALB', self.album)
-        year = self.__tag(tag, 'TDRC')
-        year = int(year) if year else self.year
-        genre = self.__tag(tag, 'TCON', self.genre)
-        duration = int(audio.info.length)
-        track = self._parseTrack(self.__tag(tag, 'TRCK', self.track))
-        trackTotal = self.trackTotal
-        disc = int(self.__tag(tag, 'TPOS', self.disc))
-        discTotal = self.discTotal
-        createTime = int(file.stat().st_ctime)
-        modifiedTime = int(file.stat().st_mtime)
-
-        return SongInfo(
-            file=file_,
-            title=title,
-            singer=singer,
-            album=album,
-            year=year,
-            genre=genre,
-            duration=duration,
-            track=track,
-            trackTotal=trackTotal,
-            disc=disc,
-            discTotal=discTotal,
-            createTime=createTime,
-            modifiedTime=modifiedTime
-        )
-
-    def __tag(self, tag, key, default=None):
-        return str(tag.get(key, default))
+    formats = [".ape"]
+    options = [MonkeysAudio]
+    # refer to: https://picard-docs.musicbrainz.org/en/appendices/tag_mapping.html
+    frameMap = {
+        "title": "Title",
+        "singer": "Artist",
+        "album": "Album",
+        "year": "Year",
+        "genre": "Genre",
+        "track": "Track",
+        "disc": "Disc",
+        "trackTotal": "Track",
+        "discTotal": "Disc"
+    }
 
 
 class SongInfoReader(SongInfoReaderBase):
@@ -300,7 +335,8 @@ class SongInfoReader(SongInfoReaderBase):
             GeneralSongInfoReader(parent),
             OGGSongInfoReader(parent),
             OPUSSongInfoReader(parent),
-            ID3SongInfoReader(parent)
+            ID3SongInfoReader(parent),
+            APESongInfoReader(parent)
         ]
 
     def read(self, file: Union[str, Path]) -> SongInfo:

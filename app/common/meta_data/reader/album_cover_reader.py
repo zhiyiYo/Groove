@@ -16,7 +16,8 @@ from mutagen.flac import error as FLACError
 from mutagen.id3 import ID3
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
-from mutagen.oggflac import OggFLAC, OggFLACVComment
+from mutagen.monkeysaudio import MonkeysAudio
+from mutagen.oggflac import OggFLAC
 from mutagen.oggopus import OggOpus
 from mutagen.oggspeex import OggSpeex
 from mutagen.oggvorbis import OggVorbis
@@ -101,7 +102,7 @@ class AIFFAlbumCoverReader(ID3AlbumCoverReader):
 
     @classmethod
     def getAlbumCover(cls, file: Union[Path, str]) -> bytes:
-        return cls._read(File(file, options=cls.options))
+        return cls._read(AIFF(file))
 
 
 class FLACAlbumCoverReader(AlbumCoverReaderBase):
@@ -112,7 +113,7 @@ class FLACAlbumCoverReader(AlbumCoverReaderBase):
 
     @classmethod
     def getAlbumCover(cls, file: Union[Path, str]) -> bytes:
-        audio = File(file, options=cls.options)
+        audio = FLAC(file)
         if not audio.pictures:
             return None
 
@@ -143,12 +144,27 @@ class MP4AlbumCoverReader(AlbumCoverReaderBase):
 
     @classmethod
     def getAlbumCover(cls, file: Union[Path, str]) -> bytes:
-        audio = File(file, options=cls.options)
+        audio = MP4(file)
         if not audio.get("covr"):
             return None
 
         return bytes(audio["covr"][0])
 
+
+class APEAlbumCoverReader(AlbumCoverReaderBase):
+    """ APE album cover reader """
+
+    formats = [".ape"]
+    options = [MonkeysAudio]
+
+    @classmethod
+    def getAlbumCover(cls, file: Union[Path, str]) -> bytes:
+        audio = MonkeysAudio(file)
+        picture = audio.get("Cover Art (Front)", None)
+        if picture is None:
+            return None
+
+        return picture.value
 
 class AlbumCoverReader:
     """ Read and save album cover class """
@@ -157,7 +173,7 @@ class AlbumCoverReader:
     readers = [
         ID3AlbumCoverReader, FLACAlbumCoverReader,
         MP4AlbumCoverReader, OGGAlbumCoverReader,
-        AIFFAlbumCoverReader
+        AIFFAlbumCoverReader, APEAlbumCoverReader
     ]
 
     @classmethod

@@ -105,6 +105,7 @@ English | <a href="docs/README_zh.md">简体中文</a>
   Currently, the following formats are supported:
   * MP3
   * AAC
+  * APE
   * AIFF
   * FLAC
   * OGG

@@ -8,11 +8,13 @@ from common.database.entity import SongInfo
 from common.image_process_utils import getPicMimeType
 from common.logger import Logger
 from mutagen import File
-from mutagen.id3 import ID3
 from mutagen.aac import AAC
 from mutagen.aiff import AIFF
 from mutagen.flac import FLAC, Picture
-from mutagen.id3 import APIC, TALB, TCON, TDRC, TIT2, TPE1, TPE2, TPOS, TRCK
+from mutagen.apev2 import APETextValue, APEBinaryValue
+from mutagen.id3 import (APIC, ID3, TALB, TCON, TDRC, TIT2, TPE1, TPE2, TPOS,
+                         TRCK)
+from mutagen.monkeysaudio import MonkeysAudio
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
 from mutagen.oggflac import OggFLAC
@@ -254,10 +256,38 @@ class MP4Writer(MetaDataWriterBase):
         return True
 
 
+class APEWriter(MetaDataWriterBase):
+    """ APE meta data writer """
+
+    formats = [".ape"]
+    options = [MonkeysAudio]
+
+    @saveExceptionHandler
+    def writeSongInfo(self, songInfo: SongInfo):
+        self.audio['Title'] = APETextValue(songInfo.title)
+        self.audio['Artist'] = APETextValue(songInfo.singer)
+        self.audio['Album'] = APETextValue(songInfo.album)
+        self.audio['Genre'] = APETextValue(songInfo.genre)
+        self.audio['Track'] = APETextValue(str(songInfo.track))
+        if songInfo.disc:
+            self.audio['Disc'] = APETextValue(str(songInfo.disc))
+        if songInfo.year:
+            self.audio['Year'] = APETextValue(str(songInfo.year))
+
+        self.audio.save(songInfo.file)
+        return True
+
+    @saveExceptionHandler
+    def writeAlbumCover(self, file: Union[Path, str], picData: bytes, mimeType: str):
+        self.audio['Cover Art (Front)'] = APEBinaryValue(picData)
+        self.audio.save(file)
+        return True
+
+
 class MetaDataWriter:
     """ Meta data writer """
 
-    writers = [ID3Writer, FLACWriter, MP4Writer, OGGWriter, AACWriter]
+    writers = [ID3Writer, FLACWriter, MP4Writer, OGGWriter, AACWriter, APEWriter]
 
     def writeSongInfo(self, songInfo: SongInfo) -> bool:
         """ write song information

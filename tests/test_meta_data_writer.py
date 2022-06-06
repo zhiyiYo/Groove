@@ -141,9 +141,26 @@ class TestMetaDataWriter(TestCase):
             trackTotal=13,
             disc=1,
             discTotal=1,
-            createTime=1654071063,
-            modifiedTime=1600442181
         )
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
             songInfo.file, 'app/cache/Album_Cover/RADWIMPS_アルトコロニーの定理/cover.png'))
+
+    def test_write_ape(self):
+        """ 测试写入 APE 元数据 """
+        songInfo = SongInfo(
+            file='app/resource/test_audio/aiko - 何時何分.ape',
+            title='何時何分',
+            singer='aiko',
+            album='May Dream',
+            year=2016,
+            genre='Pop',
+            duration=357,
+            track=1,
+            trackTotal=3,
+            disc=1,
+            discTotal=1,
+        )
+        self.assertTrue(self.writer.writeSongInfo(songInfo))
+        self.assertTrue(self.writer.writeAlbumCover(
+            songInfo.file, 'app/cache/Album_Cover/aiko_May Dream/cover.jpg'))
