@@ -104,10 +104,11 @@ English | <a href="docs/README_zh.md">简体中文</a>
 
   Currently, the following formats are supported:
   * MP3
+  * AAC
+  * AIFF
   * FLAC
   * OGG
   * OPUS
-  * AIFF
   * MP4/M4A
 
 * **Why did GStreamer report this error: Warning: "No decoder available for type blah blah"?**

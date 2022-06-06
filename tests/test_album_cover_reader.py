@@ -28,6 +28,13 @@ class TestAlbumCoverReader(TestCase):
         print(songInfo)
         self.assertTrue(self.albumInfoReader.getAlbumCover(songInfo))
 
+    def test_read_aac(self):
+        """ 测试读取 AAC 封面 """
+        songInfo = self.songInfoReader.read(
+            "app/resource/test_audio/aiko - 磁石.aac")
+        print(songInfo)
+        self.assertTrue(self.albumInfoReader.getAlbumCover(songInfo))
+
     def test_read_flac(self):
         """ 测试读取 FLAC 封面 """
         songInfo = self.songInfoReader.read(

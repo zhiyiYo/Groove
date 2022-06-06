@@ -49,7 +49,26 @@ class TestMetaDataWriter(TestCase):
         )
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
-            songInfo.file, 'app/cache/Album_Cover/Maroon 5_Ⅴ/cover.jpg'))
+            songInfo.file, 'app/cache/Album_Cover/aiko_暁のラブレター/cover.jpg'))
+
+    def test_write_aac(self):
+        """ 测试写入 AAC 元数据 """
+        songInfo = SongInfo(
+            file='app/resource/test_audio/aiko - 磁石.aac',
+            title='磁石',
+            singer='aiko',
+            album='どうしたって伝えられないから',
+            year=2021,
+            genre='Pop',
+            duration=264,
+            track=7,
+            trackTotal=1,
+            disc=1,
+            discTotal=1
+        )
+        self.assertTrue(self.writer.writeSongInfo(songInfo))
+        self.assertTrue(self.writer.writeAlbumCover(
+            songInfo.file, 'app/cache/Album_Cover/aiko_どうしたって伝えられないから/cover.jpg'))
 
     def test_write_flac(self):
         """ 测试写入 FLAC 元数据 """

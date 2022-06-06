@@ -4,17 +4,19 @@ from pathlib import Path
 from shutil import rmtree
 from typing import List, Union
 
-from common.logger import Logger
 from common.database.entity import SongInfo
 from common.image_process_utils import getPicSuffix
+from common.logger import Logger
 from common.os_utils import getCoverName
 from mutagen import File, FileType
+from mutagen.aac import AAC
+from mutagen.aiff import AIFF
 from mutagen.flac import FLAC, Picture
 from mutagen.flac import error as FLACError
+from mutagen.id3 import ID3
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
-from mutagen.aiff import AIFF
-from mutagen.oggflac import OggFLAC
+from mutagen.oggflac import OggFLAC, OggFLACVComment
 from mutagen.oggopus import OggOpus
 from mutagen.oggspeex import OggSpeex
 from mutagen.oggvorbis import OggVorbis
@@ -73,15 +75,33 @@ class AlbumCoverReaderBase:
 class ID3AlbumCoverReader(AlbumCoverReaderBase):
     """ MP3 album cover reader """
 
-    formats = [".mp3", ".aiff"]
-    options = [MP3, AIFF]
+    formats = [".mp3", ".aac"]
+    options = [MP3, AAC]
 
     @classmethod
     def getAlbumCover(cls, file: Union[Path, str]) -> bytes:
-        audio = File(file, options=cls.options)
-        for k in audio.tags.keys():
+        try:
+            return cls._read(ID3(file))
+        except:
+            return None
+
+    @classmethod
+    def _read(cls, tag):
+        """ read cover from tag """
+        for k in tag.keys():
             if k.startswith("APIC"):
-                return audio[k].data
+                return tag[k].data
+
+
+class AIFFAlbumCoverReader(ID3AlbumCoverReader):
+    """ MP3 album cover reader """
+
+    formats = [".aiff"]
+    options = [AIFF]
+
+    @classmethod
+    def getAlbumCover(cls, file: Union[Path, str]) -> bytes:
+        return cls._read(File(file, options=cls.options))
 
 
 class FLACAlbumCoverReader(AlbumCoverReaderBase):
@@ -134,8 +154,11 @@ class AlbumCoverReader:
     """ Read and save album cover class """
 
     coverFolder = Path("cache/Album_Cover")
-    readers = [ID3AlbumCoverReader, FLACAlbumCoverReader,
-               MP4AlbumCoverReader, OGGAlbumCoverReader]
+    readers = [
+        ID3AlbumCoverReader, FLACAlbumCoverReader,
+        MP4AlbumCoverReader, OGGAlbumCoverReader,
+        AIFFAlbumCoverReader
+    ]
 
     @classmethod
     def getAlbumCovers(cls, songInfos: List[SongInfo]):

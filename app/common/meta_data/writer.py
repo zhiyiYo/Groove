@@ -4,15 +4,17 @@ import os
 from pathlib import Path
 from typing import Union
 
-from common.image_process_utils import getPicMimeType
 from common.database.entity import SongInfo
+from common.image_process_utils import getPicMimeType
 from common.logger import Logger
 from mutagen import File
+from mutagen.id3 import ID3
+from mutagen.aac import AAC
+from mutagen.aiff import AIFF
 from mutagen.flac import FLAC, Picture
 from mutagen.id3 import APIC, TALB, TCON, TDRC, TIT2, TPE1, TPE2, TPOS, TRCK
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
-from mutagen.aiff import AIFF
 from mutagen.oggflac import OggFLAC
 from mutagen.oggopus import OggOpus
 from mutagen.oggspeex import OggSpeex
@@ -25,19 +27,19 @@ class MetaDataWriterBase:
     formats = []
     options = []
 
-    def __init__(self, songPath: Union[str, Path]):
+    def __init__(self, file: Union[str, Path]):
         """
         Parameters
         ----------
-        songPath: str or Path
+        file: str or Path
             audio file path
         """
-        self.audio = File(songPath, options=self.options)
+        self.audio = File(file, options=self.options)
 
     @classmethod
-    def canWrite(cls, songPath: Union[str, Path]):
+    def canWrite(cls, file: Union[str, Path]):
         """ determine whether information can be written to the file """
-        return str(songPath).lower().endswith(tuple(cls.formats))
+        return str(file).lower().endswith(tuple(cls.formats))
 
     def writeSongInfo(self, songInfo: SongInfo):
         """ write song information
@@ -54,7 +56,7 @@ class MetaDataWriterBase:
         """
         raise NotImplementedError
 
-    def writeAlbumCover(self, picData: bytes, mimeType: str):
+    def writeAlbumCover(self, file: Union[Path, str], picData: bytes, mimeType: str):
         """ write album cover
 
         Parameters
@@ -107,16 +109,16 @@ class ID3Writer(MetaDataWriterBase):
         if songInfo.year:
             self.audio['TDRC'] = TDRC(encoding=3, text=str(songInfo.year))
 
-        self.audio.save()
+        self.audio.save(songInfo.file)
         return True
 
     @saveExceptionHandler
-    def writeAlbumCover(self, picData: bytes, mimeType: str):
+    def writeAlbumCover(self, file: Union[Path, str], picData: bytes, mimeType: str):
         keyName = 'APIC:'
         keyNames = []
 
         # get cover keys which may already exist
-        for key in self.audio.tags.keys():
+        for key in self.audio.keys():
             if key.startswith('APIC'):
                 keyName = key
                 keyNames.append(key)
@@ -128,8 +130,22 @@ class ID3Writer(MetaDataWriterBase):
         self.audio[keyName] = APIC(
             encoding=0, mime=mimeType, type=3, desc='', data=picData)
 
-        self.audio.save()
+        self.audio.save(file)
         return True
+
+
+class AACWriter(ID3Writer):
+    """ AAC meta data writer """
+
+    formats = [".aac"]
+    options = [AAC]
+
+    def __init__(self, file: Union[str, Path]):
+        self.audio = ID3()
+        try:
+            self.audio.load(file)
+        except:
+            pass
 
 
 class FLACWriter(MetaDataWriterBase):
@@ -150,18 +166,18 @@ class FLACWriter(MetaDataWriterBase):
         if songInfo.year:
             self.audio['year'] = str(songInfo.year)
 
-        self.audio.save()
+        self.audio.save(songInfo.file)
         return True
 
     @saveExceptionHandler
-    def writeAlbumCover(self, picData: bytes, mimeType: str):
+    def writeAlbumCover(self, file: Union[Path, str], picData: bytes, mimeType: str):
         picture = Picture()
         picture.mime = mimeType
         picture.data = picData
         picture.type = 0
         self.audio.clear_pictures()
         self.audio.add_picture(picture)
-        self.audio.save()
+        self.audio.save(file)
         return True
 
 
@@ -184,11 +200,11 @@ class OGGWriter(MetaDataWriterBase):
             self.audio['year'] = [str(songInfo.year)]
             self.audio['date'] = [str(songInfo.year)]
 
-        self.audio.save()
+        self.audio.save(songInfo.file)
         return True
 
     @saveExceptionHandler
-    def writeAlbumCover(self, picData: bytes, mimeType: str):
+    def writeAlbumCover(self, file: Union[Path, str], picData: bytes, mimeType: str):
         picture = Picture()
         picture.mime = mimeType
         picture.data = picData
@@ -198,7 +214,7 @@ class OGGWriter(MetaDataWriterBase):
         picData = base64.b64encode(picData).decode("ascii")
 
         self.audio["metadata_block_picture"] = [picData]
-        self.audio.save()
+        self.audio.save(file)
         return True
 
 
@@ -228,20 +244,20 @@ class MP4Writer(MetaDataWriterBase):
         if songInfo.year:
             self.audio['©day'] = str(songInfo.year)
 
-        self.audio.save()
+        self.audio.save(songInfo.file)
         return True
 
     @saveExceptionHandler
-    def writeAlbumCover(self, picData: bytes, mimeType: str):
+    def writeAlbumCover(self, file: Union[Path, str], picData: bytes, mimeType: str):
         self.audio['covr'] = [picData]
-        self.audio.save()
+        self.audio.save(file)
         return True
 
 
 class MetaDataWriter:
     """ Meta data writer """
 
-    writers = [ID3Writer, FLACWriter, MP4Writer, OGGWriter]
+    writers = [ID3Writer, FLACWriter, MP4Writer, OGGWriter, AACWriter]
 
     def writeSongInfo(self, songInfo: SongInfo) -> bool:
         """ write song information
@@ -257,15 +273,15 @@ class MetaDataWriter:
             whether write song information successfully
         """
         # select available writer to write song information
-        songPath = songInfo.file
+        file = songInfo.file
         for Writer in self.writers:
-            if Writer.canWrite(songPath):
-                return Writer(songPath).writeSongInfo(songInfo)
+            if Writer.canWrite(file):
+                return Writer(file).writeSongInfo(songInfo)
 
         logger.error(f'The format of `{songInfo.file}` is not supported')
         return False
 
-    def writeAlbumCover(self, songPath: Union[str, Path], coverPath: str, picData: bytes = None) -> bool:
+    def writeAlbumCover(self, file: Union[str, Path], coverPath: str, picData: bytes = None) -> bool:
         """ write album cover
 
         Parameters
@@ -297,8 +313,8 @@ class MetaDataWriter:
         # select available writer to write album cover
         mimeType = getPicMimeType(picData)
         for Writer in self.writers:
-            if Writer.canWrite(songPath):
-                return Writer(songPath).writeAlbumCover(picData, mimeType)
+            if Writer.canWrite(file):
+                return Writer(file).writeAlbumCover(file, picData, mimeType)
 
-        logger.info(f'The format of {songPath} is not supported')
+        logger.info(f'The format of {file} is not supported')
         return False

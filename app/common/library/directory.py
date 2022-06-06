@@ -6,7 +6,11 @@ from pathlib import Path
 class Directory:
     """ Audio directory class """
 
-    audio_formats = ['.mp3', '.flac', '.mp4', '.m4a', '.ogg', '.opus', ".aiff"]
+    audio_formats = [
+        '.mp3', '.flac', '.mp4',
+        '.m4a', '.ogg', '.opus',
+        ".aiff", ".aac"
+    ]
 
     def __init__(self, path: str):
         """

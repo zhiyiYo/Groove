@@ -9,6 +9,8 @@ from mutagen.flac import FLAC
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
 from mutagen.aiff import AIFF
+from mutagen.aac import AAC
+from mutagen.id3 import ID3
 from mutagen.oggflac import OggFLAC
 from mutagen.oggspeex import OggSpeex
 from mutagen.oggvorbis import OggVorbis
@@ -166,7 +168,7 @@ class GeneralSongInfoReader(SongInfoReaderBase):
 
         audio = File(file, self.options)
 
-        if isinstance(audio, MP3):
+        if isinstance(audio, (MP3, AIFF)):
             year = [str(audio.get("TDRC", 0))]
         elif isinstance(audio, MP4):
             year = audio.get('©day', ['0'])
@@ -236,6 +238,59 @@ class OPUSSongInfoReader(OGGSongInfoReader):
     options = [OggOpus]
 
 
+class ID3SongInfoReader(SongInfoReaderBase):
+    """ ID3 song information reader """
+
+    formats = [".aac"]
+    options = [AAC]
+
+    @exceptionHandler
+    def read(self, file: Union[str, Path]) -> SongInfo:
+        if not isinstance(file, Path):
+            file = Path(file)
+
+        audio = File(file, options=self.options)
+
+        try:
+            tag = ID3(file)
+        except:
+            tag = ID3()
+
+        file_ = str(file).replace('\\', '/')
+        title = self.__tag(tag, 'TIT2', file.stem)
+        singer = self.__tag(tag, 'TPE1', self.singer)
+        album = self.__tag(tag, 'TALB', self.album)
+        year = self.__tag(tag, 'TDRC')
+        year = int(year) if year else self.year
+        genre = self.__tag(tag, 'TCON', self.genre)
+        duration = int(audio.info.length)
+        track = self._parseTrack(self.__tag(tag, 'TRCK', self.track))
+        trackTotal = self.trackTotal
+        disc = int(self.__tag(tag, 'TPOS', self.disc))
+        discTotal = self.discTotal
+        createTime = int(file.stat().st_ctime)
+        modifiedTime = int(file.stat().st_mtime)
+
+        return SongInfo(
+            file=file_,
+            title=title,
+            singer=singer,
+            album=album,
+            year=year,
+            genre=genre,
+            duration=duration,
+            track=track,
+            trackTotal=trackTotal,
+            disc=disc,
+            discTotal=discTotal,
+            createTime=createTime,
+            modifiedTime=modifiedTime
+        )
+
+    def __tag(self, tag, key, default=None):
+        return str(tag.get(key, default))
+
+
 class SongInfoReader(SongInfoReaderBase):
     """ Song information reader """
 
@@ -244,7 +299,8 @@ class SongInfoReader(SongInfoReaderBase):
         self.__readers = [
             GeneralSongInfoReader(parent),
             OGGSongInfoReader(parent),
-            OPUSSongInfoReader(parent)
+            OPUSSongInfoReader(parent),
+            ID3SongInfoReader(parent)
         ]
 
     def read(self, file: Union[str, Path]) -> SongInfo:
