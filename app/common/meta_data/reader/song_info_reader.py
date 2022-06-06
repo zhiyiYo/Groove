@@ -11,6 +11,7 @@ from mutagen.mp4 import MP4
 from mutagen.oggflac import OggFLAC
 from mutagen.oggspeex import OggSpeex
 from mutagen.oggvorbis import OggVorbis
+from mutagen.oggopus import OggOpus
 from PyQt5.QtCore import QObject
 from tinytag import TinyTag
 
@@ -41,6 +42,7 @@ class SongInfoReaderBase(QObject):
     """ Song information reader base class """
 
     formats = []
+    options = []
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -84,6 +86,7 @@ class SongInfoReaderBase(QObject):
             singer=self.singer,
             album=self.album,
             genre=self.genre,
+            duration=0,
             track=self.track,
             trackTotal=self.trackTotal,
             disc=self.disc,
@@ -116,6 +119,7 @@ class GeneralSongInfoReader(SongInfoReaderBase):
     """ General song information reader """
 
     formats = [".mp3", ".flac", ".m4a", ".mp4"]
+    options = [MP3, FLAC, MP4]
 
     @exceptionHandler
     def read(self, file: Union[str, Path]):
@@ -132,9 +136,9 @@ class GeneralSongInfoReader(SongInfoReaderBase):
         genre = tag.genre or self.genre
         duration = int(tag.duration)
         track = self._parseTrack(tag.track or self.track)
-        trackTotal = tag.track_total or self.trackTotal
+        trackTotal = int(tag.track_total or self.trackTotal)
         disc = int(tag.disc or self.disc)
-        discTotal = tag.disc_total or self.discTotal
+        discTotal = int(tag.disc_total or self.discTotal)
         createTime = int(file.stat().st_ctime)
         modifiedTime = int(file.stat().st_mtime)
 
@@ -159,7 +163,7 @@ class GeneralSongInfoReader(SongInfoReaderBase):
         if tag.year and tag.year[0] != '0':
             return int(tag.year[:4])
 
-        audio = File(file, [MP3, FLAC, MP4])
+        audio = File(file, self.options)
 
         if isinstance(audio, MP3):
             year = [str(audio.get("TDRC", 0))]
@@ -180,19 +184,21 @@ class OGGSongInfoReader(SongInfoReaderBase):
     """ Ogg song information reader """
 
     formats = [".ogg"]
+    options = [OggVorbis, OggFLAC, OggSpeex]
 
     @exceptionHandler
     def read(self, file: Union[str, Path]) -> SongInfo:
         if not isinstance(file, Path):
             file = Path(file)
 
-        audio = File(file, [OggVorbis, OggFLAC, OggSpeex])
+        audio = File(file, self.options)
 
         file_ = str(file).replace('\\', '/')
         title = self.__tag(audio, "title", file.stem)
         singer = self.__tag(audio, "artist", self.singer)
         album = self.__tag(audio, "album", self.album)
         year = self.__tag(audio, "date") or self.__tag(audio, "year")
+        year = int(year) if year is not None else year
         genre = self.__tag(audio, "genre", self.genre)
         duration = int(audio.info.length)
         track = self._parseTrack(self.__tag(audio, "tracknumber", self.track))
@@ -222,6 +228,13 @@ class OGGSongInfoReader(SongInfoReaderBase):
         return audio.get(key, [default])[0]
 
 
+class OPUSSongInfoReader(OGGSongInfoReader):
+    """ Opus song information reader """
+
+    formats = [".opus"]
+    options = [OggOpus]
+
+
 class SongInfoReader(SongInfoReaderBase):
     """ Song information reader """
 
@@ -229,7 +242,8 @@ class SongInfoReader(SongInfoReaderBase):
         super().__init__(parent)
         self.__readers = [
             GeneralSongInfoReader(parent),
-            OGGSongInfoReader(parent)
+            OGGSongInfoReader(parent),
+            OPUSSongInfoReader(parent)
         ]
 
     def read(self, file: Union[str, Path]) -> SongInfo:

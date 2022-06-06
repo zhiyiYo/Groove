@@ -2,8 +2,9 @@
 import base64
 from pathlib import Path
 from shutil import rmtree
-from typing import List
+from typing import List, Union
 
+from common.logger import Logger
 from common.database.entity import SongInfo
 from common.image_process_utils import getPicSuffix
 from common.os_utils import getCoverName
@@ -12,14 +13,47 @@ from mutagen.flac import FLAC, Picture
 from mutagen.flac import error as FLACError
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
+from mutagen.oggflac import OggFLAC
+from mutagen.oggopus import OggOpus
+from mutagen.oggspeex import OggSpeex
 from mutagen.oggvorbis import OggVorbis
+
+
+logger = Logger("meta_data_reader")
+
+
+def exceptionHandler(func):
+    """ decorator for exception handling
+
+    Parameters
+    ----------
+    *default:
+        the default value returned when an exception occurs
+    """
+
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.error(e)
+            return False
+
+    return wrapper
 
 
 class AlbumCoverReaderBase:
     """ Album cover reader base class """
 
-    @staticmethod
-    def getAlbumCover(audio: FileType) -> bytes:
+    formats = []
+    options = []
+
+    @classmethod
+    def canRead(cls, file: Union[Path, str]) -> bool:
+        """ determine whether song information of the file can be read """
+        return str(file).lower().endswith(tuple(cls.formats))
+
+    @classmethod
+    def getAlbumCover(cls, audio: FileType) -> bytes:
         """ extract binary data of album cover from audio file
 
         Parameters
@@ -38,8 +72,12 @@ class AlbumCoverReaderBase:
 class MP3AlbumCoverReader(AlbumCoverReaderBase):
     """ MP3 album cover reader """
 
-    @staticmethod
-    def getAlbumCover(audio: MP3) -> bytes:
+    formats = [".mp3"]
+    options = [MP3]
+
+    @classmethod
+    def getAlbumCover(cls, file: Union[Path, str]) -> bytes:
+        audio = File(file, options=cls.options)
         for k in audio.tags.keys():
             if k.startswith("APIC"):
                 return audio[k].data
@@ -48,8 +86,12 @@ class MP3AlbumCoverReader(AlbumCoverReaderBase):
 class FLACAlbumCoverReader(AlbumCoverReaderBase):
     """ FLAC album cover reader """
 
-    @staticmethod
-    def getAlbumCover(audio: FLAC) -> bytes:
+    formats = [".flac"]
+    options = [FLAC]
+
+    @classmethod
+    def getAlbumCover(cls, file: Union[Path, str]) -> bytes:
+        audio = File(file, options=cls.options)
         if not audio.pictures:
             return None
 
@@ -59,8 +101,12 @@ class FLACAlbumCoverReader(AlbumCoverReaderBase):
 class OGGAlbumCoverReader(AlbumCoverReaderBase):
     """ OGG album cover reader """
 
-    @staticmethod
-    def getAlbumCover(audio: OggVorbis) -> bytes:
+    formats = [".ogg", ".opus"]
+    options = [OggVorbis, OggFLAC, OggSpeex, OggOpus]
+
+    @classmethod
+    def getAlbumCover(cls, file: Union[Path, str]) -> bytes:
+        audio = File(file, options=cls.options)
         for base64Data in audio.get("metadata_block_picture", []):
             try:
                 return Picture(base64.b64decode(base64Data)).data
@@ -71,8 +117,12 @@ class OGGAlbumCoverReader(AlbumCoverReaderBase):
 class MP4AlbumCoverReader(AlbumCoverReaderBase):
     """ MP4/M4A album cover reader """
 
-    @staticmethod
-    def getAlbumCover(audio: MP4) -> bytes:
+    formats = [".m4a", ".mp4"]
+    options = [MP4]
+
+    @classmethod
+    def getAlbumCover(cls, file: Union[Path, str]) -> bytes:
+        audio = File(file, options=cls.options)
         if not audio.get("covr"):
             return None
 
@@ -83,6 +133,8 @@ class AlbumCoverReader:
     """ Read and save album cover class """
 
     coverFolder = Path("cache/Album_Cover")
+    readers = [MP3AlbumCoverReader, FLACAlbumCoverReader,
+               MP4AlbumCoverReader, OGGAlbumCoverReader]
 
     @classmethod
     def getAlbumCovers(cls, songInfos: List[SongInfo]):
@@ -92,29 +144,25 @@ class AlbumCoverReader:
             cls.getAlbumCover(songInfo)
 
     @classmethod
-    def getAlbumCover(cls, songInfo: SongInfo):
+    @exceptionHandler
+    def getAlbumCover(cls, songInfo: SongInfo) -> bool:
         """ Read and save an album cover from audio file """
         cls.coverFolder.mkdir(exist_ok=True, parents=True)
 
-        isExists = cls.__isCoverExists(songInfo.singer, songInfo.album)
-        if isExists:
-            return
+        if cls.__isCoverExists(songInfo.singer, songInfo.album):
+            return True
 
-        audio = File(songInfo.file, options=[MP3, FLAC, MP4, OggVorbis])
-        AudioType = type(audio)
-        readerMap = {
-            MP3: MP3AlbumCoverReader,
-            FLAC: FLACAlbumCoverReader,
-            MP4: MP4AlbumCoverReader,
-            OggVorbis: OGGAlbumCoverReader
-        }
+        file = songInfo.file
+        for Reader in cls.readers:
+            if not Reader.canRead(file):
+                continue
 
-        if AudioType not in readerMap:
-            return
+            picData = Reader.getAlbumCover(file)
+            if picData:
+                cls.__save(songInfo.singer, songInfo.album, picData)
+                return True
 
-        picData = readerMap[AudioType].getAlbumCover(audio)
-        if picData:
-            cls.__save(songInfo.singer, songInfo.album, picData)
+        return False
 
     @classmethod
     def __isCoverExists(cls, singer: str, album: str) -> bool:

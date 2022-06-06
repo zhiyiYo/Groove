@@ -2,7 +2,7 @@
 from common.auto_wrap import autoWrap
 from common.database.entity import SongInfo
 from common.meta_data.reader import AlbumCoverReader, SongInfoReader
-from common.meta_data.writer import writeAlbumCover, writeSongInfo
+from common.meta_data.writer import MetaDataWriter
 from common.thread.get_meta_data_thread import GetSongMetaDataThread
 from components.buttons.perspective_button import PerspectivePushButton
 from components.buttons.switch_button import SwitchButton
@@ -27,6 +27,7 @@ class SongInfoEditDialog(MaskDialogBase):
         super().__init__(parent)
         self.songInfo = songInfo.copy()
         self.oldSongInfo = songInfo
+        self.writer = MetaDataWriter()
         self.__createWidgets()
         self.__initWidget()
         self.__initLayout()
@@ -214,14 +215,14 @@ class SongInfoEditDialog(MaskDialogBase):
         self.songInfo.singer = self.singerNameLineEdit.text()
 
         # write album cover
-        isOk = True
+        success = True
         if self.songInfo.get('coverPath'):
-            isOk = writeAlbumCover(self.songInfo.file,
-                                   self.songInfo['coverPath'])
+            success = self.writer.writeAlbumCover(
+                self.songInfo.file, self.songInfo['coverPath'])
             AlbumCoverReader.getAlbumCover(self.songInfo)
 
         # write other meta data
-        if not (isOk and writeSongInfo(self.songInfo)):
+        if not (success and self.writer.writeSongInfo(self.songInfo)):
             self.bottomErrorLabel.setText(
                 self.tr("An unknown error was encountered. Please try again later"))
             self.bottomErrorLabel.adjustSize()

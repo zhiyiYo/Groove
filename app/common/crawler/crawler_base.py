@@ -7,7 +7,7 @@ import requests
 from common.database.entity import SongInfo
 from common.image_process_utils import getPicSuffix
 from common.meta_data.reader import AlbumCoverReader
-from common.meta_data.writer import writeAlbumCover, writeSongInfo
+from common.meta_data.writer import MetaDataWriter
 from common.os_utils import adjustName, getCoverName
 
 from .exception_handler import exceptionHandler
@@ -256,8 +256,9 @@ class CrawlerBase:
             song_info_.disc = song_info.disc
             song_info_.discTotal = song_info_.discTotal
 
-        writeSongInfo(song_info_)
-        writeAlbumCover(song_path, cover_path)
+        writer = MetaDataWriter()
+        writer.writeSongInfo(song_info_)
+        writer.writeAlbumCover(song_path, cover_path)
 
         return song_path
 

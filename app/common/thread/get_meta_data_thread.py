@@ -5,7 +5,7 @@ from typing import List
 from common.crawler.qq_music_crawler import QQMusicCrawler
 from common.database.entity import SongInfo
 from common.library import Directory
-from common.meta_data.writer import writeAlbumCover, writeSongInfo
+from common.meta_data.writer import MetaDataWriter
 from common.os_utils import getCoverName
 from PyQt5.QtCore import QThread, pyqtSignal
 
@@ -31,6 +31,7 @@ class GetFolderMetaDataThread(QThread):
         for directory in self.diretories:
             songPaths.extend(directory.glob())
 
+        writer = MetaDataWriter()
         for i, songPath in enumerate(songPaths):
             if self.__isStopped:
                 break
@@ -39,7 +40,7 @@ class GetFolderMetaDataThread(QThread):
             if songInfo:
                 # modify song information
                 songInfo.file = songPath
-                writeSongInfo(songInfo)
+                writer.writeSongInfo(songInfo)
                 key = getCoverName(songInfo.singer, songInfo.album)
 
                 # search album cover in local or online
@@ -49,10 +50,10 @@ class GetFolderMetaDataThread(QThread):
                         songInfo["albummid"], coverPath)
                     if url:
                         albumCovers[key] = coverPath
-                        writeAlbumCover(songPath, coverPath)
+                        writer.writeAlbumCover(songPath, coverPath)
                 else:
                     coverPath = albumCovers[key]
-                    writeAlbumCover(songPath, coverPath)
+                    writer.writeAlbumCover(songPath, coverPath)
 
             # emit progress signal
             text = self.tr("Current progress: ")

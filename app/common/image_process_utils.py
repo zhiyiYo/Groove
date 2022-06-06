@@ -222,6 +222,16 @@ def getPicSuffix(pic_data: bytes) -> str:
     return suffix
 
 
+def getPicMimeType(pic_data: bytes) -> str:
+    """ determine the mime type of binary image data """
+    try:
+        mimeType = "image/" + imghdr.what(None, pic_data)
+    except:
+        mimeType = "image/jpeg"
+
+    return mimeType
+
+
 class PixmapPerspectiveTransform:
     """ Pixmap perspective transform class """
 

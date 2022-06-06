@@ -1,6 +1,6 @@
 # coding:utf-8
-from common.database.entity import AlbumInfo, SongInfo
-from common.meta_data.writer import writeSongInfo, writeAlbumCover
+from common.database.entity import AlbumInfo
+from common.meta_data.writer import MetaDataWriter
 from common.meta_data.reader import SongInfoReader
 from PyQt5.QtCore import QThread, pyqtSignal
 
@@ -14,6 +14,7 @@ class SaveAlbumInfoThread(QThread):
         super().__init__(parent=parent)
         self.oldAlbumInfo = AlbumInfo()
         self.newAlbumInfo = AlbumInfo()
+        self.writer = MetaDataWriter()
         self.coverPath = ''
 
     def setAlbumInfo(self, oldAlbumInfo: AlbumInfo, newAlbumInfo: AlbumInfo, coverPath: str):
@@ -26,10 +27,10 @@ class SaveAlbumInfoThread(QThread):
         """ start to save information """
         for i, songInfo in enumerate(self.newAlbumInfo.songInfos):
             # modify album cover
-            writeAlbumCover(songInfo.file, self.coverPath)
+            self.writer.writeAlbumCover(songInfo.file, self.coverPath)
 
             # rollback when writing song information fails
-            if not writeSongInfo(songInfo):
+            if not self.writer.writeSongInfo(songInfo):
                 self.newAlbumInfo.songInfos[i] = self.oldAlbumInfo.songInfos[i]
 
             # update the modified time of audio file

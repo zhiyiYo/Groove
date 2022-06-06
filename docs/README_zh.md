@@ -106,6 +106,7 @@
   * mp3
   * flac
   * ogg
+  * opus
   * mp4/m4a
 
 * **为什么运行的时候 GStreamer 报错：Warning: "No decoder available for type ..."?**

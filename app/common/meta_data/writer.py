@@ -1,22 +1,28 @@
 # coding:utf-8
 import base64
-import imghdr
 import os
 from pathlib import Path
 from typing import Union
 
+from common.image_process_utils import getPicMimeType
 from common.database.entity import SongInfo
 from common.logger import Logger
-from mutagen import File, MutagenError
+from mutagen import File
 from mutagen.flac import FLAC, Picture
 from mutagen.id3 import APIC, TALB, TCON, TDRC, TIT2, TPE1, TPE2, TPOS, TRCK
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
+from mutagen.oggflac import OggFLAC
+from mutagen.oggopus import OggOpus
+from mutagen.oggspeex import OggSpeex
 from mutagen.oggvorbis import OggVorbis
 
 
 class MetaDataWriterBase:
     """ Song meta data writer base class """
+
+    formats = []
+    options = []
 
     def __init__(self, songPath: Union[str, Path]):
         """
@@ -25,7 +31,12 @@ class MetaDataWriterBase:
         songPath: str or Path
             audio file path
         """
-        self.audio = None
+        self.audio = File(songPath, options=self.options)
+
+    @classmethod
+    def canWrite(cls, songPath: Union[str, Path]):
+        """ determine whether information can be written to the file """
+        return str(songPath).lower().endswith(tuple(cls.formats))
 
     def writeSongInfo(self, songInfo: SongInfo):
         """ write song information
@@ -69,7 +80,7 @@ def saveExceptionHandler(func):
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
-        except MutagenError as e:
+        except Exception as e:
             logger.error(e)
             return False
 
@@ -79,8 +90,8 @@ def saveExceptionHandler(func):
 class MP3Writer(MetaDataWriterBase):
     """ MP3 meta data writer class """
 
-    def __init__(self, songPath: Union[str, Path]):
-        self.audio = MP3(songPath)
+    formats = [".mp3"]
+    options = [MP3]
 
     @saveExceptionHandler
     def writeSongInfo(self, songInfo: SongInfo):
@@ -123,8 +134,8 @@ class MP3Writer(MetaDataWriterBase):
 class FLACWriter(MetaDataWriterBase):
     """ FLAC meta data writer class """
 
-    def __init__(self, songPath: Union[str, Path]):
-        self.audio = FLAC(songPath)
+    formats = [".flac"]
+    options = [FLAC]
 
     @saveExceptionHandler
     def writeSongInfo(self, songInfo: SongInfo):
@@ -154,10 +165,10 @@ class FLACWriter(MetaDataWriterBase):
 
 
 class OGGWriter(MetaDataWriterBase):
-    """ OGG meta data writer class """
+    """ Ogg/Opus meta data writer class """
 
-    def __init__(self, songPath: Union[str, Path]):
-        self.audio = OggVorbis(songPath)
+    formats = [".ogg", ".opus"]
+    options = [OggVorbis, OggFLAC, OggSpeex, OggOpus]
 
     @saveExceptionHandler
     def writeSongInfo(self, songInfo: SongInfo):
@@ -193,8 +204,8 @@ class OGGWriter(MetaDataWriterBase):
 class MP4Writer(MetaDataWriterBase):
     """ MP4/M4A meta data writer class """
 
-    def __init__(self, songPath: Union[str, Path]):
-        self.audio = MP4(songPath)
+    formats = [".m4a", ".mp4"]
+    options = [MP4]
 
     @saveExceptionHandler
     def writeSongInfo(self, songInfo: SongInfo):
@@ -226,77 +237,67 @@ class MP4Writer(MetaDataWriterBase):
         return True
 
 
-def writeSongInfo(songInfo: SongInfo) -> bool:
-    """ write song information
+class MetaDataWriter:
+    """ Meta data writer """
 
-    Parameters
-    ----------
-    songInfo: SongInfo
-        song information
+    writers = [MP3Writer, FLACWriter, MP4Writer, OGGWriter]
 
-    Returns
-    -------
-    success: bool
-        whether write song information successfully
-    """
-    fileType = type(File(songInfo.file, options=[MP3, FLAC, MP4, OggVorbis]))
-    writerMap = {
-        MP3: MP3Writer,
-        FLAC: FLACWriter,
-        MP4: MP4Writer,
-        OggVorbis: OGGWriter
-    }
-    if fileType not in writerMap:
-        logger.info(f'The format of {songInfo.file} is not supported')
+    def writeSongInfo(self, songInfo: SongInfo) -> bool:
+        """ write song information
+
+        Parameters
+        ----------
+        songInfo: SongInfo
+            song information
+
+        Returns
+        -------
+        success: bool
+            whether write song information successfully
+        """
+        # select available writer to write song information
+        songPath = songInfo.file
+        for Writer in self.writers:
+            if Writer.canWrite(songPath):
+                return Writer(songPath).writeSongInfo(songInfo)
+
+        logger.error(f'The format of `{songInfo.file}` is not supported')
         return False
 
-    writer = writerMap[fileType](songInfo.file)  # type:MetaDataWriterBase
-    return writer.writeSongInfo(songInfo)
+    def writeAlbumCover(self, songPath: Union[str, Path], coverPath: str, picData: bytes = None) -> bool:
+        """ write album cover
 
+        Parameters
+        ----------
+        songPath : str or Path
+            audio file path
 
-def writeAlbumCover(songPath: Union[str, Path], coverPath: str, picData: bytes = None) -> bool:
-    """ write album cover
+        coverPath : str
+            album cover path
 
-    Parameters
-    ----------
-    songPath : str or Path
-        audio file path
+        picData : bytes
+            binary data of album cover image
 
-    coverPath : str
-        album cover path
+        Returns
+        -------
+        success: bool
+            whether write album cover successfully
+        """
+        if not os.path.exists(coverPath) and not picData:
+            logger.error(
+                f'Unable to read the data of `{coverPath}`, please check whether the cover path is correct.')
+            return False
 
-    picData : bytes
-        binary data of album cover image
+        # read binary data of album cover
+        if not picData:
+            with open(coverPath, 'rb') as f:
+                picData = f.read()
 
-    Returns
-    -------
-    success: bool
-        whether write album cover successfully
-    """
-    if not os.path.exists(coverPath) and not picData:
-        return False
+        # select available writer to write album cover
+        mimeType = getPicMimeType(picData)
+        for Writer in self.writers:
+            if Writer.canWrite(songPath):
+                return Writer(songPath).writeAlbumCover(picData, mimeType)
 
-    # read binary data of album cover
-    if not picData:
-        with open(coverPath, 'rb') as f:
-            picData = f.read()
-
-    # determine the mime type of binary data
-    try:
-        mimeType = "image/" + imghdr.what(None, picData)
-    except:
-        mimeType = "image/jpeg"
-
-    fileType = type(File(songPath, options=[MP3, FLAC, MP4, OggVorbis]))
-    writerMap = {
-        MP3: MP3Writer,
-        FLAC: FLACWriter,
-        MP4: MP4Writer,
-        OggVorbis: OGGWriter
-    }
-    if fileType not in writerMap:
         logger.info(f'The format of {songPath} is not supported')
         return False
-
-    writer = writerMap[fileType](songPath)  # type:MetaDataWriterBase
-    return writer.writeAlbumCover(picData, mimeType)
