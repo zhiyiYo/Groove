@@ -21,6 +21,13 @@ class TestAlbumCoverReader(TestCase):
             "app/resource/test_audio/Maroon 5 - Sugar.mp3")
         self.assertTrue(self.albumInfoReader.getAlbumCover(songInfo))
 
+    def test_read_aiff(self):
+        """ 测试读取 AIFF 封面 """
+        songInfo = self.songInfoReader.read(
+            "app/resource/test_audio/aiko - 彼の落書き.aiff")
+        print(songInfo)
+        self.assertTrue(self.albumInfoReader.getAlbumCover(songInfo))
+
     def test_read_flac(self):
         """ 测试读取 FLAC 封面 """
         songInfo = self.songInfoReader.read(

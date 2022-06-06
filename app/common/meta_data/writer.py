@@ -12,6 +12,7 @@ from mutagen.flac import FLAC, Picture
 from mutagen.id3 import APIC, TALB, TCON, TDRC, TIT2, TPE1, TPE2, TPOS, TRCK
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
+from mutagen.aiff import AIFF
 from mutagen.oggflac import OggFLAC
 from mutagen.oggopus import OggOpus
 from mutagen.oggspeex import OggSpeex
@@ -87,11 +88,11 @@ def saveExceptionHandler(func):
     return wrapper
 
 
-class MP3Writer(MetaDataWriterBase):
-    """ MP3 meta data writer class """
+class ID3Writer(MetaDataWriterBase):
+    """ ID3 meta data writer class """
 
-    formats = [".mp3"]
-    options = [MP3]
+    formats = [".mp3", ".aiff"]
+    options = [MP3, AIFF]
 
     @saveExceptionHandler
     def writeSongInfo(self, songInfo: SongInfo):
@@ -240,7 +241,7 @@ class MP4Writer(MetaDataWriterBase):
 class MetaDataWriter:
     """ Meta data writer """
 
-    writers = [MP3Writer, FLACWriter, MP4Writer, OGGWriter]
+    writers = [ID3Writer, FLACWriter, MP4Writer, OGGWriter]
 
     def writeSongInfo(self, songInfo: SongInfo) -> bool:
         """ write song information

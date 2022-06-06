@@ -102,12 +102,13 @@
 
 * **支持哪些格式的音频文件呀？**
 
-  目前支持以下几种音频文件:
-  * mp3
-  * flac
-  * ogg
-  * opus
-  * mp4/m4a
+  目前支持下述格式的音频文件:
+  * MP3
+  * FLAC
+  * OGG
+  * OPUS
+  * AIFF
+  * MP4/M4A
 
 * **为什么运行的时候 GStreamer 报错：Warning: "No decoder available for type ..."?**
 

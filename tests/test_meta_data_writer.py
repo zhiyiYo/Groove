@@ -32,6 +32,25 @@ class TestMetaDataWriter(TestCase):
         self.assertTrue(self.writer.writeAlbumCover(
             songInfo.file, 'app/cache/Album_Cover/Maroon 5_Ⅴ/cover.jpg'))
 
+    def test_write_aiff(self):
+        """ 测试写入 AIFF 元数据 """
+        songInfo = SongInfo(
+            file='app/resource/test_audio/aiko - 彼の落書き.aiff',
+            title='彼の落書き',
+            singer='aiko',
+            album='暁のラブレター',
+            year=2003,
+            genre='Pop',
+            duration=260,
+            track=2,
+            trackTotal=1,
+            disc=1,
+            discTotal=1
+        )
+        self.assertTrue(self.writer.writeSongInfo(songInfo))
+        self.assertTrue(self.writer.writeAlbumCover(
+            songInfo.file, 'app/cache/Album_Cover/Maroon 5_Ⅴ/cover.jpg'))
+
     def test_write_flac(self):
         """ 测试写入 FLAC 元数据 """
         songInfo = SongInfo(

@@ -13,6 +13,7 @@ from mutagen.flac import FLAC, Picture
 from mutagen.flac import error as FLACError
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
+from mutagen.aiff import AIFF
 from mutagen.oggflac import OggFLAC
 from mutagen.oggopus import OggOpus
 from mutagen.oggspeex import OggSpeex
@@ -69,11 +70,11 @@ class AlbumCoverReaderBase:
         raise NotImplementedError
 
 
-class MP3AlbumCoverReader(AlbumCoverReaderBase):
+class ID3AlbumCoverReader(AlbumCoverReaderBase):
     """ MP3 album cover reader """
 
-    formats = [".mp3"]
-    options = [MP3]
+    formats = [".mp3", ".aiff"]
+    options = [MP3, AIFF]
 
     @classmethod
     def getAlbumCover(cls, file: Union[Path, str]) -> bytes:
@@ -133,7 +134,7 @@ class AlbumCoverReader:
     """ Read and save album cover class """
 
     coverFolder = Path("cache/Album_Cover")
-    readers = [MP3AlbumCoverReader, FLACAlbumCoverReader,
+    readers = [ID3AlbumCoverReader, FLACAlbumCoverReader,
                MP4AlbumCoverReader, OGGAlbumCoverReader]
 
     @classmethod

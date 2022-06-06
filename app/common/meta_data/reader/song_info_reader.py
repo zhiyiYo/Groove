@@ -8,6 +8,7 @@ from mutagen import File
 from mutagen.flac import FLAC
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
+from mutagen.aiff import AIFF
 from mutagen.oggflac import OggFLAC
 from mutagen.oggspeex import OggSpeex
 from mutagen.oggvorbis import OggVorbis
@@ -118,8 +119,8 @@ class SongInfoReaderBase(QObject):
 class GeneralSongInfoReader(SongInfoReaderBase):
     """ General song information reader """
 
-    formats = [".mp3", ".flac", ".m4a", ".mp4"]
-    options = [MP3, FLAC, MP4]
+    formats = [".mp3", ".flac", ".m4a", ".mp4", ".aiff"]
+    options = [MP3, FLAC, MP4, AIFF]
 
     @exceptionHandler
     def read(self, file: Union[str, Path]):

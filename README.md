@@ -102,12 +102,13 @@ English | <a href="docs/README_zh.md">简体中文</a>
 
 * **What formats of audio files are supported?**
 
-  Currently, the following audio files are supported:
-  * mp3
-  * flac
-  * ogg
-  * opus
-  * mp4/m4a
+  Currently, the following formats are supported:
+  * MP3
+  * FLAC
+  * OGG
+  * OPUS
+  * AIFF
+  * MP4/M4A
 
 * **Why did GStreamer report this error: Warning: "No decoder available for type blah blah"?**
 
