@@ -15,14 +15,14 @@ from mutagen.apev2 import APEv2
 from mutagen.flac import FLAC, Picture
 from mutagen.flac import error as FLACError
 from mutagen.id3 import ID3
+from mutagen.monkeysaudio import MonkeysAudio
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
-from mutagen.monkeysaudio import MonkeysAudio
 from mutagen.oggflac import OggFLAC
 from mutagen.oggopus import OggOpus
 from mutagen.oggspeex import OggSpeex
 from mutagen.oggvorbis import OggVorbis
-
+from mutagen.trueaudio import TrueAudio
 
 logger = Logger("meta_data_reader")
 
@@ -77,8 +77,8 @@ class AlbumCoverReaderBase:
 class ID3AlbumCoverReader(AlbumCoverReaderBase):
     """ MP3 album cover reader """
 
-    formats = [".mp3", ".aac"]
-    options = [MP3, AAC]
+    formats = [".mp3", ".aac", ".tta"]
+    options = [MP3, AAC, TrueAudio]
 
     @classmethod
     def getAlbumCover(cls, file: Union[Path, str]) -> bytes:

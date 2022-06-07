@@ -18,6 +18,7 @@ from mutagen.oggflac import OggFLAC
 from mutagen.oggopus import OggOpus
 from mutagen.oggspeex import OggSpeex
 from mutagen.oggvorbis import OggVorbis
+from mutagen.trueaudio import TrueAudio
 from PyQt5.QtCore import QObject
 from tinytag import TinyTag
 
@@ -308,6 +309,14 @@ class ID3SongInfoReader(MutagenSongInfoReader):
     }
 
 
+class TrueAudioSongInfoReader(ID3SongInfoReader):
+    """ True audio song information reader """
+
+    formats = [".tta"]
+    options = [TrueAudio]
+    _Tag = None
+
+
 class APESongInfoReader(MutagenSongInfoReader):
     """ APEv2 song information reader """
 
@@ -346,8 +355,9 @@ class SongInfoReader(SongInfoReaderBase):
             OGGSongInfoReader(parent),
             OPUSSongInfoReader(parent),
             ID3SongInfoReader(parent),
+            TrueAudioSongInfoReader(parent),
             MonkeysAudioSongInfoReader(parent),
-            APESongInfoReader(parent)
+            APESongInfoReader(parent),
         ]
 
     def read(self, file: Union[str, Path]) -> SongInfo:

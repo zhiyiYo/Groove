@@ -109,6 +109,7 @@ English | <a href="docs/README_zh.md">简体中文</a>
   * APE
   * AIFF
   * FLAC
+  * TTA
   * OGG
   * OPUS
   * MP4/M4A

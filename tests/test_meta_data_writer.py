@@ -183,3 +183,22 @@ class TestMetaDataWriter(TestCase):
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
             songInfo.file, "app/cache/Album_Cover/B.o.B_Nothin' On You/cover.jpg"))
+
+    def test_write_tta(self):
+        """ 测试写入 TTA 元数据 """
+        songInfo = SongInfo(
+            file="app/resource/test_audio/aiko - 夜の風邪.tta",
+            title='夜の風邪',
+            singer='aiko',
+            album='ストロー',
+            year=2018,
+            genre='Pop',
+            duration=336,
+            track=3,
+            trackTotal=1,
+            disc=1,
+            discTotal=1
+        )
+        self.assertTrue(self.writer.writeSongInfo(songInfo))
+        self.assertTrue(self.writer.writeAlbumCover(
+            songInfo.file, "app/cache/Album_Cover/aiko_ストロー/cover.jpg"))

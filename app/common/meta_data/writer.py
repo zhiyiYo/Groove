@@ -18,6 +18,7 @@ from mutagen.id3 import (APIC, ID3, TALB, TCON, TDRC, TIT2, TPE1, TPE2, TPOS,
 from mutagen.monkeysaudio import MonkeysAudio
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
+from mutagen.trueaudio import TrueAudio
 from mutagen.oggflac import OggFLAC
 from mutagen.oggopus import OggOpus
 from mutagen.oggspeex import OggSpeex
@@ -96,8 +97,8 @@ def saveExceptionHandler(func):
 class ID3Writer(MetaDataWriterBase):
     """ ID3 meta data writer class """
 
-    formats = [".mp3", ".aiff"]
-    options = [MP3, AIFF]
+    formats = [".mp3", ".aiff", ".tta"]
+    options = [MP3, AIFF, TrueAudio]
 
     @saveExceptionHandler
     def writeSongInfo(self, songInfo: SongInfo):

@@ -70,3 +70,9 @@ class TestAlbumCoverReader(TestCase):
         songInfo = self.songInfoReader.read(
             "app/resource/test_audio/B.o.B - Nothin' on You.ac3")
         self.assertTrue(self.albumInfoReader.getAlbumCover(songInfo))
+
+    def test_read_tta(self):
+        """ 测试读取 TTA 封面 """
+        songInfo = self.songInfoReader.read(
+            "app/resource/test_audio/aiko - 夜の風邪.tta")
+        self.assertTrue(self.albumInfoReader.getAlbumCover(songInfo))

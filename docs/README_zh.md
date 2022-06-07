@@ -109,6 +109,7 @@
   * APE
   * AIFF
   * FLAC
+  * TTA
   * OGG
   * OPUS
   * MP4/M4A
