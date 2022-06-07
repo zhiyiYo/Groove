@@ -18,7 +18,7 @@ cache
 
 # 忽略音频文件
 app/resource/test_audio
-app/download
+download
 
 # 忽略测试文件
 test.py

@@ -9,9 +9,10 @@ from common.image_process_utils import getPicMimeType
 from common.logger import Logger
 from mutagen import File
 from mutagen.aac import AAC
+from mutagen.apev2 import APEv2
 from mutagen.aiff import AIFF
+from mutagen.apev2 import APEBinaryValue, APETextValue
 from mutagen.flac import FLAC, Picture
-from mutagen.apev2 import APETextValue, APEBinaryValue
 from mutagen.id3 import (APIC, ID3, TALB, TCON, TDRC, TIT2, TPE1, TPE2, TPOS,
                          TRCK)
 from mutagen.monkeysaudio import MonkeysAudio
@@ -136,8 +137,8 @@ class ID3Writer(MetaDataWriterBase):
         return True
 
 
-class AACWriter(ID3Writer):
-    """ AAC meta data writer """
+class PureID3Writer(ID3Writer):
+    """ Pure ID3 meta data writer """
 
     formats = [".aac"]
     options = [AAC]
@@ -284,10 +285,28 @@ class APEWriter(MetaDataWriterBase):
         return True
 
 
+class PureAPEWriter(APEWriter):
+    """ Pure APEv2 meta data writer """
+
+    formats = [".ac3"]
+    options = [APEv2]
+
+    def __init__(self, file: Union[str, Path]):
+        self.audio = APEv2()
+        try:
+            self.audio.load(file)
+        except:
+            pass
+
+
 class MetaDataWriter:
     """ Meta data writer """
 
-    writers = [ID3Writer, FLACWriter, MP4Writer, OGGWriter, AACWriter, APEWriter]
+    writers = [
+        ID3Writer, FLACWriter, MP4Writer,
+        OGGWriter, PureID3Writer, APEWriter,
+        PureAPEWriter
+    ]
 
     def writeSongInfo(self, songInfo: SongInfo) -> bool:
         """ write song information

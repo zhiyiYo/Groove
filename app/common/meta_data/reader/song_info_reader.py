@@ -6,7 +6,9 @@ from common.database.entity import SongInfo
 from common.logger import Logger
 from mutagen import File
 from mutagen.aac import AAC
+from mutagen.ac3 import AC3
 from mutagen.aiff import AIFF
+from mutagen.apev2 import APEv2
 from mutagen.flac import FLAC
 from mutagen.id3 import ID3
 from mutagen.monkeysaudio import MonkeysAudio
@@ -18,7 +20,6 @@ from mutagen.oggspeex import OggSpeex
 from mutagen.oggvorbis import OggVorbis
 from PyQt5.QtCore import QObject
 from tinytag import TinyTag
-
 
 logger = Logger("meta_data_reader")
 
@@ -308,10 +309,11 @@ class ID3SongInfoReader(MutagenSongInfoReader):
 
 
 class APESongInfoReader(MutagenSongInfoReader):
-    """ APE song information reader """
+    """ APEv2 song information reader """
 
-    formats = [".ape"]
-    options = [MonkeysAudio]
+    formats = [".ac3"]
+    options = [AC3]
+    _Tag = APEv2
     # refer to: https://picard-docs.musicbrainz.org/en/appendices/tag_mapping.html
     frameMap = {
         "title": "Title",
@@ -326,6 +328,14 @@ class APESongInfoReader(MutagenSongInfoReader):
     }
 
 
+class MonkeysAudioSongInfoReader(APESongInfoReader):
+    """ Monkey's Audio song information reader """
+
+    formats = [".ape"]
+    options = [MonkeysAudio]
+    _Tag = None
+
+
 class SongInfoReader(SongInfoReaderBase):
     """ Song information reader """
 
@@ -336,6 +346,7 @@ class SongInfoReader(SongInfoReaderBase):
             OGGSongInfoReader(parent),
             OPUSSongInfoReader(parent),
             ID3SongInfoReader(parent),
+            MonkeysAudioSongInfoReader(parent),
             APESongInfoReader(parent)
         ]
 
@@ -347,4 +358,5 @@ class SongInfoReader(SongInfoReaderBase):
             if reader.canRead(file):
                 return reader.read(file)
 
+        logger.warning(f"No song information reader available for `{file}`")
         return super().read(file)

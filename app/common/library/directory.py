@@ -9,7 +9,8 @@ class Directory:
     audio_formats = [
         '.mp3', '.flac', '.mp4',
         '.m4a', '.ogg', '.opus',
-        ".aiff", ".aac", ".ape"
+        ".aiff", ".aac", ".ape",
+        ".ac3"
     ]
 
     def __init__(self, path: str):

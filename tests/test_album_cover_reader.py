@@ -64,3 +64,9 @@ class TestAlbumCoverReader(TestCase):
         songInfo = self.songInfoReader.read(
             "app/resource/test_audio/aiko - 何時何分.ape")
         self.assertTrue(self.albumInfoReader.getAlbumCover(songInfo))
+
+    def test_read_ac3(self):
+        """ 测试读取 AC3 封面 """
+        songInfo = self.songInfoReader.read(
+            "app/resource/test_audio/B.o.B - Nothin' on You.ac3")
+        self.assertTrue(self.albumInfoReader.getAlbumCover(songInfo))

@@ -105,6 +105,7 @@
   目前支持下述格式的音频文件:
   * MP3
   * AAC
+  * AC3
   * APE
   * AIFF
   * FLAC

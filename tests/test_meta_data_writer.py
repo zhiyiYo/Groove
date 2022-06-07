@@ -164,3 +164,22 @@ class TestMetaDataWriter(TestCase):
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
             songInfo.file, 'app/cache/Album_Cover/aiko_May Dream/cover.jpg'))
+
+    def test_write_ac3(self):
+        """ 测试写入 AC3 元数据 """
+        songInfo = SongInfo(
+            file="app/resource/test_audio/B.o.B - Nothin' on You.ac3",
+            title="Nothin' on You",
+            singer='B.o.B',
+            album="Nothin' On You",
+            year=2010,
+            genre='Pop',
+            duration=269,
+            track=6,
+            trackTotal=1,
+            disc=1,
+            discTotal=1,
+        )
+        self.assertTrue(self.writer.writeSongInfo(songInfo))
+        self.assertTrue(self.writer.writeAlbumCover(
+            songInfo.file, "app/cache/Album_Cover/B.o.B_Nothin' On You/cover.jpg"))

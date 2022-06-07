@@ -55,9 +55,10 @@ class SingerAvatarDownloader:
         singerMap = {adjustName(i): i for i in singers}
 
         # get singers that haven't been downloaded yet
-        singerSet = {adjustName(i) for i in singers}
-        downloaded = {i.stem for i in cls.saveDir.glob('*') if i.is_dir()}
+        singerSet = set(singerMap.keys())
+        downloaded = {i.name for i in cls.saveDir.glob('*') if i.is_dir()}
         toDownload = [singerMap[i] for i in singerSet-downloaded]
+        toDownload.sort(key=lambda i: singers.index(i))
 
         # divide singers
         n = QThread.idealThreadCount()

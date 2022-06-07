@@ -113,8 +113,7 @@ class MainWindow(AcrylicWindow):
             self.mediaPlaylist.lastSongInfo, QColor(*config['playBar-color']), self)
 
         # create playing interface
-        self.playingInterface = PlayingInterface(
-            self.mediaPlaylist.playlist, self)
+        self.playingInterface = PlayingInterface(parent=self)
 
         # create video interface
         self.videoInterface = VideoInterface(self)
@@ -396,9 +395,13 @@ class MainWindow(AcrylicWindow):
             songInfos = self.songTabSongListWidget.songInfos
             self.setPlaylist(songInfos)
             self.mediaPlaylist.playlistType = PlaylistType.ALL_SONG_PLAYLIST
-            self.songTabSongListWidget.setPlay(0)
-            if songInfos:
-                self.systemTrayIcon.updateWindow(songInfos[0])
+        else:
+            songInfos = self.mediaPlaylist.playlist
+            self.setPlaylist(self.mediaPlaylist.playlist)
+
+        self.songTabSongListWidget.setPlay(0)
+        if songInfos:
+            self.systemTrayIcon.updateWindow(songInfos[0])
 
         if self.mediaPlaylist.lastSongInfo in self.mediaPlaylist.playlist:
             self.mediaPlaylist.setCurrentSong(self.mediaPlaylist.lastSongInfo)

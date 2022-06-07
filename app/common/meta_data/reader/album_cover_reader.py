@@ -11,6 +11,7 @@ from common.os_utils import getCoverName
 from mutagen import File, FileType
 from mutagen.aac import AAC
 from mutagen.aiff import AIFF
+from mutagen.apev2 import APEv2
 from mutagen.flac import FLAC, Picture
 from mutagen.flac import error as FLACError
 from mutagen.id3 import ID3
@@ -152,19 +153,39 @@ class MP4AlbumCoverReader(AlbumCoverReaderBase):
 
 
 class APEAlbumCoverReader(AlbumCoverReaderBase):
-    """ APE album cover reader """
+    """ APEv2 album cover reader """
+
+    formats = [".ac3"]
+    options = [APEv2]
+
+    @classmethod
+    def getAlbumCover(cls, file: Union[Path, str]) -> bytes:
+        try:
+            return cls._read(APEv2(file))
+        except:
+            return None
+
+    @classmethod
+    def _read(cls, tag):
+        """ read cover from tag """
+        picture = tag.get("Cover Art (Front)", None)
+        if picture is None:
+            return None
+
+        return picture.value
+
+
+class MonkeysAudioAlbumCoverReader(APEAlbumCoverReader):
+    """ Monkey's Audio album cover reader """
 
     formats = [".ape"]
     options = [MonkeysAudio]
 
     @classmethod
     def getAlbumCover(cls, file: Union[Path, str]) -> bytes:
-        audio = MonkeysAudio(file)
-        picture = audio.get("Cover Art (Front)", None)
-        if picture is None:
-            return None
+        return cls._read(File(file, options=cls.options))
 
-        return picture.value
+
 
 class AlbumCoverReader:
     """ Read and save album cover class """
@@ -173,7 +194,8 @@ class AlbumCoverReader:
     readers = [
         ID3AlbumCoverReader, FLACAlbumCoverReader,
         MP4AlbumCoverReader, OGGAlbumCoverReader,
-        AIFFAlbumCoverReader, APEAlbumCoverReader
+        AIFFAlbumCoverReader, MonkeysAudioAlbumCoverReader,
+        APEAlbumCoverReader
     ]
 
     @classmethod
