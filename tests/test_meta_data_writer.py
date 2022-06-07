@@ -221,3 +221,22 @@ class TestMetaDataWriter(TestCase):
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
             songInfo.file, "app/cache/Album_Cover/aiko_もっと/cover.jpg"))
+
+    def test_write_wma(self):
+        """ 测试写入 WMA 元数据 """
+        songInfo = SongInfo(
+            file="app/resource/test_audio/BEYOND - 海阔天空.wma",
+            title='海阔天空',
+            singer='BEYOND',
+            album='海阔天空',
+            year=1993,
+            genre='POP流行',
+            duration=320,
+            track=5,
+            trackTotal=5,
+            disc=1,
+            discTotal=1
+        )
+        self.assertTrue(self.writer.writeSongInfo(songInfo))
+        self.assertTrue(self.writer.writeAlbumCover(
+            songInfo.file, "app/cache/Album_Cover/BEYOND_海阔天空/cover.jpg"))

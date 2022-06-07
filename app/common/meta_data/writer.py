@@ -373,7 +373,7 @@ class PureAPEWriter(APEWriter):
 class ASFWriter(MetaDataWriterBase):
     """ ASF meta data writer """
 
-    formats = [".asf"]
+    formats = [".asf", ".wma"]
     options = [ASF]
 
     @save

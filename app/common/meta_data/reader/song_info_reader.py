@@ -125,7 +125,7 @@ class SongInfoReaderBase(QObject):
 class SongInfoReader(SongInfoReaderBase):
     """ Song information reader """
 
-    _readers = []
+    readers = []
 
     @classmethod
     def register(cls, reader):
@@ -136,9 +136,9 @@ class SongInfoReader(SongInfoReaderBase):
         reader:
             song information reader class
         """
-        if reader not in cls._readers:
+        if reader not in cls.readers:
             # shouldn't instantiate directly, or tr() will not work
-            cls._readers.append(reader)
+            cls.readers.append(reader)
 
         return reader
 
@@ -146,7 +146,7 @@ class SongInfoReader(SongInfoReaderBase):
         if not isinstance(file, Path):
             file = Path(file)
 
-        for reader in self._readers:
+        for reader in self.readers:
             if reader.canRead(file):
                 return reader().read(file)
 
@@ -389,7 +389,7 @@ class MonkeysAudioSongInfoReader(APESongInfoReader):
 class ASFSongInfoReader(MutagenSongInfoReader):
     """ ASF song information reader """
 
-    formats = [".asf"]
+    formats = [".asf", ".wma"]
     options = [ASF]
     frameMap = {
         "title": "Title",

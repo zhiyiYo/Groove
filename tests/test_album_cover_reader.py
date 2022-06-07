@@ -82,3 +82,9 @@ class TestAlbumCoverReader(TestCase):
         songInfo = self.songInfoReader.read(
             "app/resource/test_audio/aiko - もっと.asf")
         self.assertTrue(self.albumInfoReader.getAlbumCover(songInfo))
+
+    def test_read_wma(self):
+        """ 测试读取 WMA 封面 """
+        songInfo = self.songInfoReader.read(
+            "app/resource/test_audio/BEYOND - 海阔天空.wma")
+        self.assertTrue(self.albumInfoReader.getAlbumCover(songInfo))

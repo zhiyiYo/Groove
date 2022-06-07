@@ -275,7 +275,7 @@ class MonkeysAudioAlbumCoverReader(APEAlbumCoverReader):
 class ASFAlbumCoverReader(AlbumCoverReaderBase):
     """ ASF album cover reader """
 
-    formats = [".asf"]
+    formats = [".asf", ".wma"]
     options = [ASF]
 
     @classmethod

@@ -1,17 +1,15 @@
 # coding: utf-8
 from typing import Union
 from pathlib import Path
+from itertools import chain
+from common.meta_data.reader import SongInfoReader
 
 
 class Directory:
     """ Audio directory class """
 
-    audio_formats = [
-        '.mp3', '.flac', '.mp4',
-        '.m4a', '.ogg', '.opus',
-        ".aiff", ".aac", ".ape",
-        ".ac3", ".tta", ".asf"
-    ]
+    audio_formats = list(chain.from_iterable(
+        [r.formats for r in SongInfoReader.readers]))
 
     def __init__(self, path: str):
         """

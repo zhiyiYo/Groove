@@ -103,16 +103,17 @@
 * **支持哪些格式的音频文件呀？**
 
   目前支持下述格式的音频文件:
-  * MP3
-  * AAC
-  * AC3
-  * APE
-  * AIFF
-  * FLAC
-  * TTA
-  * OGG
-  * OPUS
-  * MP4/M4A
+  * True Audio File(*.tta)
+  * Opus Audio File(*.opus)
+  * Audio Codec 3 File(*.ac3)
+  * Ogg Vorbis Audio File(*.ogg)
+  * MPEG File(*.mp3, *.m4a, *.mp4)
+  * Windows Media Audio File(*.wma)
+  * Advanced Audio Coding File(*.aac)
+  * Advanced Systems Format File(*.asf)
+  * Audio Interchange File Format(*.aiff)
+  * Free Lossless Audio Codec File(*.flac)
+  * Monkey's Audio Lossless Audio File(*.ape)
 
 * **为什么运行的时候 GStreamer 报错：Warning: "No decoder available for type ..."?**
 
