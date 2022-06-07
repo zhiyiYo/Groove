@@ -105,6 +105,7 @@
   目前支持下述格式的音频文件:
   * True Audio File(*.tta)
   * Opus Audio File(*.opus)
+  * WavPack Audio File(*.wv)
   * Audio Codec 3 File(*.ac3)
   * Ogg Vorbis Audio File(*.ogg)
   * MPEG File(*.mp3, *.m4a, *.mp4)

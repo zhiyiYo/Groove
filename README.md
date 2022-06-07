@@ -105,6 +105,7 @@ English | <a href="docs/README_zh.md">简体中文</a>
   Currently, the following formats are supported:
   * True Audio File(*.tta)
   * Opus Audio File(*.opus)
+  * WavPack Audio File(*.wv)
   * Audio Codec 3 File(*.ac3)
   * Ogg Vorbis Audio File(*.ogg)
   * MPEG File(*.mp3, *.m4a, *.mp4)

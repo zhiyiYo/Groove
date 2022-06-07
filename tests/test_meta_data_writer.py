@@ -240,3 +240,22 @@ class TestMetaDataWriter(TestCase):
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
             songInfo.file, "app/cache/Album_Cover/BEYOND_海阔天空/cover.jpg"))
+
+    def test_write_wv(self):
+        """ 测试写入 WavPack 元数据 """
+        songInfo = SongInfo(
+            file="app/resource/test_audio/Bruno Mars - Treasure.wv",
+            title='Treasure',
+            singer='Bruno Mars',
+            album='Unorthodox Jukebox',
+            year=2012,
+            genre='POP流行',
+            duration=176,
+            track=0,
+            trackTotal=1,
+            disc=1,
+            discTotal=1,
+        )
+        self.assertTrue(self.writer.writeSongInfo(songInfo))
+        self.assertTrue(self.writer.writeAlbumCover(
+            songInfo.file, "app/cache/Album_Cover/Bruno Mars_Unorthodox Jukebox/cover.jpg"))

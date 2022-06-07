@@ -239,7 +239,7 @@ class AIFFAlbumCoverReader(ID3AlbumCoverReader):
 class APEAlbumCoverReader(AlbumCoverReaderBase):
     """ APEv2 album cover reader """
 
-    formats = [".ac3"]
+    formats = [".ac3", ".ape", ".wv"]
     options = [APEv2]
 
     @classmethod
@@ -254,21 +254,10 @@ class APEAlbumCoverReader(AlbumCoverReaderBase):
         """ read cover from tag """
         picture = tag.get("Cover Art (Front)", None)
         if picture is None:
+            print('直接返回')
             return None
 
         return picture.value
-
-
-@AlbumCoverReader.register
-class MonkeysAudioAlbumCoverReader(APEAlbumCoverReader):
-    """ Monkey's Audio album cover reader """
-
-    formats = [".ape"]
-    options = [MonkeysAudio]
-
-    @classmethod
-    def getAlbumCover(cls, file: Union[Path, str]) -> bytes:
-        return cls._read(File(file, options=cls.options))
 
 
 @AlbumCoverReader.register

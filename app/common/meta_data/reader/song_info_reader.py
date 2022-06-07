@@ -9,19 +9,23 @@ from mutagen.aac import AAC
 from mutagen.ac3 import AC3
 from mutagen.aiff import AIFF
 from mutagen.apev2 import APEv2
+from mutagen.asf import ASF
 from mutagen.flac import FLAC
 from mutagen.id3 import ID3
 from mutagen.monkeysaudio import MonkeysAudio
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
-from mutagen.asf import ASF
 from mutagen.oggflac import OggFLAC
 from mutagen.oggopus import OggOpus
 from mutagen.oggspeex import OggSpeex
 from mutagen.oggvorbis import OggVorbis
 from mutagen.trueaudio import TrueAudio
+from mutagen.wavpack import WavPack
 from PyQt5.QtCore import QObject
 from tinytag import TinyTag
+
+from ..frame_map import (APEV2_FRAME_MAP, ASF_FRAME_MAP, ID3_FRAME_MAP,
+                         VORBIS_FRAME_MAP)
 
 logger = Logger("meta_data_reader")
 
@@ -302,17 +306,7 @@ class OGGSongInfoReader(MutagenSongInfoReader):
 
     formats = [".ogg"]
     options = [OggVorbis, OggFLAC, OggSpeex]
-    frameMap = {
-        "title": "title",
-        "singer": "artist",
-        "album": "album",
-        "year": ["date", "year"],
-        "genre": "genre",
-        "track": "tracknumber",
-        "trackTotal": "tracktotal",
-        "disc": "discnumber",
-        "discTotal": "discTotal"
-    }
+    frameMap = VORBIS_FRAME_MAP
 
     def _v(self, tag, key, default=None):
         return tag.get(key, [default])[0]
@@ -333,17 +327,7 @@ class ID3SongInfoReader(MutagenSongInfoReader):
     formats = [".aac"]
     options = [AAC]
     _Tag = ID3
-    frameMap = {
-        "title": "TIT2",
-        "singer": "TPE1",
-        "album": "TALB",
-        "year": "TDRC",
-        "genre": "TCON",
-        "track": "TRCK",
-        "disc": "TPOS",
-        "trackTotal": "tracktotal",
-        "discTotal": "discTotal"
-    }
+    frameMap = ID3_FRAME_MAP
 
 
 @SongInfoReader.register
@@ -362,18 +346,7 @@ class APESongInfoReader(MutagenSongInfoReader):
     formats = [".ac3"]
     options = [AC3]
     _Tag = APEv2
-    # refer to: https://picard-docs.musicbrainz.org/en/appendices/tag_mapping.html
-    frameMap = {
-        "title": "Title",
-        "singer": "Artist",
-        "album": "Album",
-        "year": "Year",
-        "genre": "Genre",
-        "track": "Track",
-        "disc": "Disc",
-        "trackTotal": "Track",
-        "discTotal": "Disc"
-    }
+    frameMap = APEV2_FRAME_MAP
 
 
 @SongInfoReader.register
@@ -386,22 +359,21 @@ class MonkeysAudioSongInfoReader(APESongInfoReader):
 
 
 @SongInfoReader.register
+class WavPackSongInfoReader(APESongInfoReader):
+    """ WavPack song information reader """
+
+    formats = [".wv"]
+    options = [WavPack]
+    _Tag = None
+
+
+@SongInfoReader.register
 class ASFSongInfoReader(MutagenSongInfoReader):
     """ ASF song information reader """
 
     formats = [".asf", ".wma"]
     options = [ASF]
-    frameMap = {
-        "title": "Title",
-        "singer": "Author",
-        "album": "WM/AlbumTitle",
-        "year": "WM/Year",
-        "genre": "WM/Genre",
-        "track": "WM/TrackNumber",
-        "disc": "WM/PartOfSet",
-        "trackTotal": "WM/TrackNumber",
-        "discTotal": "WM/PartOfSet"
-    }
+    frameMap = ASF_FRAME_MAP
 
     def _v(self, tag, key, default=None):
         return str(tag.get(key, [default])[0])

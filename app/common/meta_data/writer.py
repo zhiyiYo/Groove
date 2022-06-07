@@ -2,7 +2,7 @@
 import base64
 import os
 from pathlib import Path
-from typing import Union, List
+from typing import List, Union
 
 from common.database.entity import SongInfo
 from common.image_utils import getPicMimeType
@@ -11,7 +11,7 @@ from mutagen import File
 from mutagen.aac import AAC
 from mutagen.aiff import AIFF
 from mutagen.apev2 import APEBinaryValue, APETextValue, APEv2
-from mutagen.asf import ASF, ASFUnicodeAttribute, ASFByteArrayAttribute
+from mutagen.asf import ASF, ASFByteArrayAttribute, ASFUnicodeAttribute
 from mutagen.flac import FLAC, Picture
 from mutagen.id3 import (APIC, ID3, TALB, TCON, TDRC, TIT2, TPE1, TPE2, TPOS,
                          TRCK)
@@ -23,9 +23,10 @@ from mutagen.oggopus import OggOpus
 from mutagen.oggspeex import OggSpeex
 from mutagen.oggvorbis import OggVorbis
 from mutagen.trueaudio import TrueAudio
+from mutagen.wavpack import WavPack
 
-from .reader.song_info_reader import ASFSongInfoReader
-
+from .frame_map import (APEV2_FRAME_MAP, ASF_FRAME_MAP, MP4_FRAME_MAP,
+                        VORBIS_FRAME_MAP)
 
 logger = Logger('meta_data_writer')
 
@@ -39,7 +40,7 @@ def save(func):
             writer.audio.save(writer.file)
             return True
         except Exception as e:
-            logger.error(e)
+            logger.error(e, True)
             return False
 
     return wrapper
@@ -50,6 +51,9 @@ class MetaDataWriterBase:
 
     formats = []
     options = []
+    _Tag = None
+    frameMap = {}
+    excludeFrames = ['trackTotal', "discTotal"]
 
     def __init__(self, file: Union[str, Path]):
         """
@@ -59,13 +63,20 @@ class MetaDataWriterBase:
             audio file path
         """
         self.file = file
-        self.audio = File(file, options=self.options)
+        if not self._Tag:
+            self.audio = File(file, options=self.options)
+        else:
+            try:
+                self.audio = self._Tag(file)
+            except:
+                self.audio = self._Tag()
 
     @classmethod
     def canWrite(cls, file: Union[str, Path]):
         """ determine whether information can be written to the file """
         return str(file).lower().endswith(tuple(cls.formats))
 
+    @save
     def writeSongInfo(self, songInfo: SongInfo):
         """ write song information
 
@@ -79,7 +90,13 @@ class MetaDataWriterBase:
         success: bool
             whether write song information successfully
         """
-        raise NotImplementedError
+        for k, value in self.frameMap.items():
+            if not isinstance(value, list):
+                value = [value]
+
+            for v in value:
+                if k not in self.excludeFrames and songInfo[k] is not None:
+                    self.audio[v] = self._v(songInfo, k)
 
     def writeAlbumCover(self, picData: bytes, mimeType: str):
         """ write album cover
@@ -98,6 +115,10 @@ class MetaDataWriterBase:
             whether write album cover successfully
         """
         raise NotImplementedError
+
+    def _v(self, songInfo: SongInfo, key: str):
+        """ get the value of frame """
+        return str(songInfo[key])
 
 
 class MetaDataWriter:
@@ -184,8 +205,9 @@ class MetaDataWriter:
 class ID3Writer(MetaDataWriterBase):
     """ ID3 meta data writer class """
 
-    formats = [".mp3", ".aiff", ".tta"]
-    options = [MP3, AIFF, TrueAudio]
+    formats = [".mp3", ".tta", ".aac"]
+    options = [MP3, TrueAudio, AAC]
+    _Tag = ID3
 
     @save
     def writeSongInfo(self, songInfo: SongInfo):
@@ -220,19 +242,12 @@ class ID3Writer(MetaDataWriterBase):
 
 
 @MetaDataWriter.register
-class PureID3Writer(ID3Writer):
-    """ Pure ID3 meta data writer """
+class AIFFWriter(ID3Writer):
+    """ AIFF meta data writer """
 
-    formats = [".aac"]
-    options = [AAC]
-
-    def __init__(self, file: Union[str, Path]):
-        self.file = file
-        self.audio = ID3()
-        try:
-            self.audio.load(file)
-        except:
-            pass
+    formats = [".aiff"]
+    options = [AIFF]
+    _Tag = None
 
 
 @MetaDataWriter.register
@@ -241,18 +256,8 @@ class FLACWriter(MetaDataWriterBase):
 
     formats = [".flac"]
     options = [FLAC]
-
-    @save
-    def writeSongInfo(self, songInfo: SongInfo):
-        self.audio['title'] = songInfo.title
-        self.audio['artist'] = songInfo.singer
-        self.audio['album'] = songInfo.album
-        self.audio['genre'] = songInfo.genre
-        if songInfo.disc:
-            self.audio['discnumber'] = str(songInfo.disc)
-            self.audio['tracknumber'] = str(songInfo.track)
-        if songInfo.year:
-            self.audio['year'] = str(songInfo.year)
+    frameMap = VORBIS_FRAME_MAP
+    excludeFrames = []
 
     @save
     def writeAlbumCover(self, picData: bytes, mimeType: str):
@@ -270,19 +275,11 @@ class OGGWriter(MetaDataWriterBase):
 
     formats = [".ogg", ".opus"]
     options = [OggVorbis, OggFLAC, OggSpeex, OggOpus]
+    frameMap = VORBIS_FRAME_MAP
+    excludeFrames = []
 
-    @save
-    def writeSongInfo(self, songInfo: SongInfo):
-        self.audio['title'] = [songInfo.title]
-        self.audio['artist'] = [songInfo.singer]
-        self.audio['album'] = [songInfo.album]
-        self.audio['genre'] = [songInfo.genre]
-        if songInfo.disc:
-            self.audio['discnumber'] = [str(songInfo.disc)]
-            self.audio['tracknumber'] = [str(songInfo.track)]
-        if songInfo.year:
-            self.audio['year'] = [str(songInfo.year)]
-            self.audio['date'] = [str(songInfo.year)]
+    def _v(self, songInfo, key):
+        return [str(songInfo[key])]
 
     @save
     def writeAlbumCover(self, picData: bytes, mimeType: str):
@@ -303,26 +300,18 @@ class MP4Writer(MetaDataWriterBase):
 
     formats = [".m4a", ".mp4"]
     options = [MP4]
+    frameMap = MP4_FRAME_MAP
 
-    @save
-    def writeSongInfo(self, songInfo: SongInfo):
-        # write track number
-        trackTotal = max(songInfo.track, songInfo.trackTotal)
-        self.audio['trkn'] = [(songInfo.track, trackTotal)]
+    def _v(self, songInfo, key):
+        if key not in ['track', 'disc']:
+            return str(songInfo[key])
 
-        # writer disc
-        if songInfo.disc:
-            discTotal = max(songInfo.disc, songInfo.discTotal)
-            self.audio['disk'] = [(songInfo.disc, discTotal)]
+        if key == "track":
+            total = max(songInfo.track, songInfo.trackTotal)
+        else:
+            total = max(songInfo.disc, songInfo.discTotal)
 
-        self.audio['©nam'] = songInfo.title
-        self.audio['©ART'] = songInfo.singer
-        self.audio['aART'] = songInfo.singer
-        self.audio['©alb'] = songInfo.album
-        self.audio['©gen'] = songInfo.genre
-
-        if songInfo.year:
-            self.audio['©day'] = str(songInfo.year)
+        return [(songInfo[key], total)]
 
     @save
     def writeAlbumCover(self, picData: bytes, mimeType: str):
@@ -331,42 +320,19 @@ class MP4Writer(MetaDataWriterBase):
 
 @MetaDataWriter.register
 class APEWriter(MetaDataWriterBase):
-    """ APE meta data writer """
+    """ APEv2 meta data writer """
 
-    formats = [".ape"]
-    options = [MonkeysAudio]
+    formats = [".ape", ".ac3", ".wv"]
+    options = [MonkeysAudio, AAC, WavPack]
+    _Tag = APEv2
+    frameMap = APEV2_FRAME_MAP
 
-    @save
-    def writeSongInfo(self, songInfo: SongInfo):
-        self.audio['Title'] = APETextValue(songInfo.title)
-        self.audio['Artist'] = APETextValue(songInfo.singer)
-        self.audio['Album'] = APETextValue(songInfo.album)
-        self.audio['Genre'] = APETextValue(songInfo.genre)
-        self.audio['Track'] = APETextValue(str(songInfo.track))
-        if songInfo.disc:
-            self.audio['Disc'] = APETextValue(str(songInfo.disc))
-        if songInfo.year:
-            self.audio['Year'] = APETextValue(str(songInfo.year))
+    def _v(self, songInfo, key):
+        return APETextValue(str(songInfo[key]))
 
     @save
     def writeAlbumCover(self, picData: bytes, mimeType: str):
         self.audio['Cover Art (Front)'] = APEBinaryValue(picData)
-
-
-@MetaDataWriter.register
-class PureAPEWriter(APEWriter):
-    """ Pure APEv2 meta data writer """
-
-    formats = [".ac3"]
-    options = [APEv2]
-
-    def __init__(self, file: Union[str, Path]):
-        self.file = file
-        self.audio = APEv2()
-        try:
-            self.audio.load(file)
-        except:
-            pass
 
 
 @MetaDataWriter.register
@@ -375,12 +341,10 @@ class ASFWriter(MetaDataWriterBase):
 
     formats = [".asf", ".wma"]
     options = [ASF]
+    frameMap = ASF_FRAME_MAP
 
-    @save
-    def writeSongInfo(self, songInfo: SongInfo):
-        for k, v in ASFSongInfoReader.frameMap.items():
-            if songInfo[k] is not None:
-                self.audio[v] = ASFUnicodeAttribute(str(songInfo[k]))
+    def _v(self, songInfo, key):
+        return ASFUnicodeAttribute(str(songInfo[key]))
 
     @save
     def writeAlbumCover(self, picData: bytes, mimeType: str):
