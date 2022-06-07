@@ -1,7 +1,7 @@
 # coding:utf-8
 from typing import List, Union
 
-from common.image_process_utils import DominantColor
+from common.image_utils import DominantColor
 from components.widgets.label import AvatarLabel
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QColor, QPainter, QFont, QFontMetrics, QResizeEvent, QPalette

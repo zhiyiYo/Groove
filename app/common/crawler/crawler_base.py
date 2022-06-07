@@ -5,7 +5,7 @@ from typing import List, Tuple, Union
 
 import requests
 from common.database.entity import SongInfo
-from common.image_process_utils import getPicSuffix
+from common.image_utils import getPicSuffix
 from common.meta_data.reader import AlbumCoverReader
 from common.meta_data.writer import MetaDataWriter
 from common.os_utils import adjustName, getCoverName

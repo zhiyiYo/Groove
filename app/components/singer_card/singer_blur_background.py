@@ -1,4 +1,5 @@
 # coding:utf-8
+from common.image_utils import readImage
 from components.widgets.label import FadeInLabel
 from PIL import Image, ImageDraw
 from PIL.ImageFilter import GaussianBlur
@@ -32,12 +33,7 @@ class SingerBlurBackground(FadeInLabel):
         if not imagePath:
             return
 
-        if not imagePath.startswith(':'):
-            avatar = Image.open(imagePath)
-        else:
-            avatar = Image.fromqpixmap(QPixmap(imagePath))
-
-        avatar = avatar.resize(imageSize)
+        avatar = readImage(imagePath).resize(imageSize)
 
         # create a new image
         blurAvatar = Image.new(

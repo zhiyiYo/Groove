@@ -1,5 +1,5 @@
 # coding:utf-8
-from common.image_process_utils import getBlurPixmap
+from common.image_utils import getBlurPixmap
 from common.os_utils import getSingerAvatarPath
 from components.app_bar import (AppBarButton, CollapsingAppBarBase,
                                 MoreActionsMenu)

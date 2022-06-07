@@ -1,5 +1,5 @@
 # coding:utf-8
-from common.image_process_utils import DominantColor, getBlurPixmap
+from common.image_utils import DominantColor, getBlurPixmap
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtGui import QColor, QPixmap
 

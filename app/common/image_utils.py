@@ -9,6 +9,32 @@ from PIL import Image
 from PyQt5.QtGui import QImage, QPixmap
 from scipy.ndimage.filters import gaussian_filter
 
+from .exception_handler import exceptionHandler
+from .logger import Logger
+
+
+def readImage(imagePath: str):
+    """ read image
+
+    Parameters
+    ----------
+    imagePath: str
+        image file path
+
+    Returns
+    -------
+    image: `~PIL.Image`
+        image instance
+    """
+    try:
+        if not imagePath.startswith(':'):
+            return Image.open(imagePath)
+    except Exception as e:
+        Logger("image").error(e)
+        imagePath = ":/images/default_covers/album_200_200.png"
+
+    return Image.fromqpixmap(QPixmap(imagePath))
+
 
 def gaussianBlur(imagePath: str, blurRadius=18, brightFactor=1, blurPicSize: tuple = None) -> np.ndarray:
     """ apply Gaussian blur to image
@@ -33,10 +59,7 @@ def gaussianBlur(imagePath: str, blurRadius=18, brightFactor=1, blurPicSize: tup
     image: `~np.ndarray` of shape `(w, h, c)`
         the image after blurring
     """
-    if not imagePath.startswith(':'):
-        image = Image.open(imagePath)
-    else:
-        image = Image.fromqpixmap(QPixmap(imagePath))
+    image = readImage(imagePath)
 
     if blurPicSize:
         # scale image to speed up the computation speed
@@ -92,6 +115,7 @@ class DominantColor:
     """ Dominant color class """
 
     @classmethod
+    @exceptionHandler("image", (24, 24, 24))
     def getDominantColor(cls, imagePath: str):
         """ extract dominant color from image
 

@@ -14,6 +14,7 @@ from mutagen.id3 import ID3
 from mutagen.monkeysaudio import MonkeysAudio
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
+from mutagen.asf import ASF
 from mutagen.oggflac import OggFLAC
 from mutagen.oggopus import OggOpus
 from mutagen.oggspeex import OggSpeex
@@ -50,8 +51,8 @@ class SongInfoReaderBase(QObject):
     formats = []
     options = []
 
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self):
+        super().__init__()
         # default values of song information
         self.singer = self.tr('Unknown artist')
         self.album = self.tr("Unknown album")
@@ -121,6 +122,39 @@ class SongInfoReaderBase(QObject):
         return int(path.stat().st_mtime)
 
 
+class SongInfoReader(SongInfoReaderBase):
+    """ Song information reader """
+
+    _readers = []
+
+    @classmethod
+    def register(cls, reader):
+        """ register song information reader
+
+        Parameters
+        ----------
+        reader:
+            song information reader class
+        """
+        if reader not in cls._readers:
+            # shouldn't instantiate directly, or tr() will not work
+            cls._readers.append(reader)
+
+        return reader
+
+    def read(self, file: Union[str, Path]) -> SongInfo:
+        if not isinstance(file, Path):
+            file = Path(file)
+
+        for reader in self._readers:
+            if reader.canRead(file):
+                return reader().read(file)
+
+        logger.warning(f"No song information reader available for `{file}`")
+        return super().read(file)
+
+
+@SongInfoReader.register
 class GeneralSongInfoReader(SongInfoReaderBase):
     """ General song information reader """
 
@@ -181,7 +215,7 @@ class GeneralSongInfoReader(SongInfoReaderBase):
             year = ['0']
 
         if year and year[0] != '0':
-            return int(year[0])
+            return int(year[0][:4])
 
         return self.year
 
@@ -262,6 +296,7 @@ class MutagenSongInfoReader(SongInfoReaderBase):
         return str(tag.get(key, default))
 
 
+@SongInfoReader.register
 class OGGSongInfoReader(MutagenSongInfoReader):
     """ Ogg song information reader """
 
@@ -283,6 +318,7 @@ class OGGSongInfoReader(MutagenSongInfoReader):
         return tag.get(key, [default])[0]
 
 
+@SongInfoReader.register
 class OPUSSongInfoReader(OGGSongInfoReader):
     """ Opus song information reader """
 
@@ -290,6 +326,7 @@ class OPUSSongInfoReader(OGGSongInfoReader):
     options = [OggOpus]
 
 
+@SongInfoReader.register
 class ID3SongInfoReader(MutagenSongInfoReader):
     """ ID3 song information reader """
 
@@ -309,6 +346,7 @@ class ID3SongInfoReader(MutagenSongInfoReader):
     }
 
 
+@SongInfoReader.register
 class TrueAudioSongInfoReader(ID3SongInfoReader):
     """ True audio song information reader """
 
@@ -317,6 +355,7 @@ class TrueAudioSongInfoReader(ID3SongInfoReader):
     _Tag = None
 
 
+@SongInfoReader.register
 class APESongInfoReader(MutagenSongInfoReader):
     """ APEv2 song information reader """
 
@@ -337,6 +376,7 @@ class APESongInfoReader(MutagenSongInfoReader):
     }
 
 
+@SongInfoReader.register
 class MonkeysAudioSongInfoReader(APESongInfoReader):
     """ Monkey's Audio song information reader """
 
@@ -345,28 +385,23 @@ class MonkeysAudioSongInfoReader(APESongInfoReader):
     _Tag = None
 
 
-class SongInfoReader(SongInfoReaderBase):
-    """ Song information reader """
+@SongInfoReader.register
+class ASFSongInfoReader(MutagenSongInfoReader):
+    """ ASF song information reader """
 
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.__readers = [
-            GeneralSongInfoReader(parent),
-            OGGSongInfoReader(parent),
-            OPUSSongInfoReader(parent),
-            ID3SongInfoReader(parent),
-            TrueAudioSongInfoReader(parent),
-            MonkeysAudioSongInfoReader(parent),
-            APESongInfoReader(parent),
-        ]
+    formats = [".asf"]
+    options = [ASF]
+    frameMap = {
+        "title": "Title",
+        "singer": "Author",
+        "album": "WM/AlbumTitle",
+        "year": "WM/Year",
+        "genre": "WM/Genre",
+        "track": "WM/TrackNumber",
+        "disc": "WM/PartOfSet",
+        "trackTotal": "WM/TrackNumber",
+        "discTotal": "WM/PartOfSet"
+    }
 
-    def read(self, file: Union[str, Path]) -> SongInfo:
-        if not isinstance(file, Path):
-            file = Path(file)
-
-        for reader in self.__readers:
-            if reader.canRead(file):
-                return reader.read(file)
-
-        logger.warning(f"No song information reader available for `{file}`")
-        return super().read(file)
+    def _v(self, tag, key, default=None):
+        return str(tag.get(key, [default])[0])

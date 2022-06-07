@@ -1,10 +1,11 @@
 # coding:utf-8
 from PIL import Image
 from PIL.ImageFilter import GaussianBlur
-from PyQt5.QtCore import QEasingCurve, QPropertyAnimation, Qt, pyqtProperty
+from PyQt5.QtCore import QPropertyAnimation, Qt, pyqtProperty
 from PyQt5.QtGui import QBrush, QEnterEvent, QPainter, QPixmap
 
 from .tooltip_button import TooltipButton
+from common.image_utils import readImage
 
 
 class BlurButton(TooltipButton):
@@ -64,16 +65,14 @@ class BlurButton(TooltipButton):
 
     def __blur(self):
         """ do blur action """
-        if not self.blurPicPath.startswith(':'):
-            img = Image.open(self.blurPicPath)
-        else:
-            img = Image.fromqpixmap(QPixmap(self.blurPicPath))
-
-        img = img.convert('RGB').resize((200, 200))
-        img = img.crop((self.cropX, self.cropY,
-                        self.width() + self.cropX, self.height() + self.cropY))
-        img = img.filter(GaussianBlur(self.blurRadius)
-                         ).point(lambda x: int(x * 0.7))
+        img = readImage(self.blurPicPath).convert('RGB').resize((200, 200))
+        img = img.crop((
+            self.cropX,
+            self.cropY,
+            self.width() + self.cropX,
+            self.height() + self.cropY
+        ))
+        img = img.filter(GaussianBlur(self.blurRadius)).point(lambda x: int(x * 0.7))
         self.blurPix = img.toqpixmap()
 
         self.update()

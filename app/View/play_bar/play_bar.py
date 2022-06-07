@@ -1,6 +1,6 @@
 # coding:utf-8
 from common.database.entity import SongInfo
-from common.image_process_utils import DominantColor
+from common.image_utils import DominantColor
 from common.signal_bus import signalBus
 from components.widgets.label import TimeLabel
 from components.widgets.menu import PlayBarMoreActionsMenu

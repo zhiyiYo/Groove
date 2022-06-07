@@ -3,7 +3,7 @@ import sys
 
 from common.auto_wrap import autoWrap
 from common.database.entity import Playlist
-from common.image_process_utils import DominantColor
+from common.image_utils import DominantColor, readImage
 from common.os_utils import getCoverPath
 from common.signal_bus import signalBus
 from components.buttons.blur_button import BlurButton
@@ -254,13 +254,7 @@ class PlaylistCover(QWidget):
 
         # blur cover
         self.coverPath = picPath
-
-        if not picPath.startswith(':'):
-            img = Image.open(picPath)
-        else:
-            img = Image.fromqpixmap(QPixmap(picPath))
-
-        img = img.resize((288, 288)).crop((0, 46, 288, 242))
+        img = readImage(picPath).resize((288, 288)).crop((0, 46, 288, 242))
         self.__blurPix = img.filter(GaussianBlur(40)).toqpixmap()
         self.__playlistCoverPix = QPixmap(picPath).scaled(
             135, 135, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)  # type:QPixmap
@@ -277,7 +271,8 @@ class PlaylistCover(QWidget):
 
         painter = QPainter(self)
         painter.setPen(Qt.NoPen)
-        painter.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
+        painter.setRenderHints(QPainter.Antialiasing |
+                               QPainter.SmoothPixmapTransform)
 
         # paint blurred cover
         painter.drawPixmap(0, 0, self.__blurPix)

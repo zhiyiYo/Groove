@@ -10,7 +10,7 @@ class Directory:
         '.mp3', '.flac', '.mp4',
         '.m4a', '.ogg', '.opus',
         ".aiff", ".aac", ".ape",
-        ".ac3", ".tta"
+        ".ac3", ".tta", ".asf"
     ]
 
     def __init__(self, path: str):

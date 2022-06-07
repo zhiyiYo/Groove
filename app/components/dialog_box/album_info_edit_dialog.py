@@ -3,7 +3,7 @@ from copy import deepcopy
 from pathlib import Path
 
 from common.database.entity import AlbumInfo, SongInfo
-from common.image_process_utils import getPicSuffix
+from common.image_utils import getPicSuffix
 from common.os_utils import getCoverName, getCoverPath
 from components.buttons.perspective_button import PerspectivePushButton
 from components.widgets.label import ErrorIcon, PixmapLabel

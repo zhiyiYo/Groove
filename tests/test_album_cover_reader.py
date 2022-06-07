@@ -76,3 +76,9 @@ class TestAlbumCoverReader(TestCase):
         songInfo = self.songInfoReader.read(
             "app/resource/test_audio/aiko - 夜の風邪.tta")
         self.assertTrue(self.albumInfoReader.getAlbumCover(songInfo))
+
+    def test_read_afs(self):
+        """ 测试读取 ASF 封面 """
+        songInfo = self.songInfoReader.read(
+            "app/resource/test_audio/aiko - もっと.asf")
+        self.assertTrue(self.albumInfoReader.getAlbumCover(songInfo))

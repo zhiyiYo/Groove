@@ -202,3 +202,22 @@ class TestMetaDataWriter(TestCase):
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
             songInfo.file, "app/cache/Album_Cover/aiko_ストロー/cover.jpg"))
+
+    def test_write_asf(self):
+        """ 测试写入 ASF 元数据 """
+        songInfo = SongInfo(
+            file="app/resource/test_audio/aiko - もっと.asf",
+            title='もっと',
+            singer='aiko',
+            album='もっと',
+            year=2016,
+            genre='Pop',
+            duration=290,
+            track=0,
+            trackTotal=1,
+            disc=1,
+            discTotal=1
+        )
+        self.assertTrue(self.writer.writeSongInfo(songInfo))
+        self.assertTrue(self.writer.writeAlbumCover(
+            songInfo.file, "app/cache/Album_Cover/aiko_もっと/cover.jpg"))

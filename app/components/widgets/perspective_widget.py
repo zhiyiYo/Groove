@@ -1,6 +1,6 @@
 # coding:utf-8
 from common.get_pressed_pos import getPressedPos
-from common.image_process_utils import PixmapPerspectiveTransform
+from common.image_utils import PixmapPerspectiveTransform
 from PyQt5.QtCore import QPoint, Qt
 from PyQt5.QtGui import QPainter, QPixmap, QScreen
 from PyQt5.QtWidgets import QApplication, QWidget

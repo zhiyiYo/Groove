@@ -5,13 +5,14 @@ from shutil import rmtree
 from typing import List, Union
 
 from common.database.entity import SongInfo
-from common.image_process_utils import getPicSuffix
+from common.image_utils import getPicSuffix
 from common.logger import Logger
 from common.os_utils import getCoverName
 from mutagen import File, FileType
 from mutagen.aac import AAC
 from mutagen.aiff import AIFF
 from mutagen.apev2 import APEv2
+from mutagen.asf import ASF, ASFByteArrayAttribute
 from mutagen.flac import FLAC, Picture
 from mutagen.flac import error as FLACError
 from mutagen.id3 import ID3
@@ -46,6 +47,83 @@ def exceptionHandler(func):
     return wrapper
 
 
+class AlbumCoverReader:
+    """ Read and save album cover class """
+
+    coverFolder = Path("cache/Album_Cover")
+    _readers = []
+
+    @classmethod
+    def register(cls, reader):
+        """ register album cover reader
+
+        Parameters
+        ----------
+        reader:
+            album cover reader class
+        """
+        if reader not in cls._readers:
+            cls._readers.append(reader)
+
+        return reader
+
+    @classmethod
+    def getAlbumCovers(cls, songInfos: List[SongInfo]):
+        """ Read and save album covers from audio files """
+        cls.coverFolder.mkdir(exist_ok=True, parents=True)
+        for songInfo in songInfos:
+            cls.getAlbumCover(songInfo)
+
+    @classmethod
+    @exceptionHandler
+    def getAlbumCover(cls, songInfo: SongInfo) -> bool:
+        """ Read and save an album cover from audio file """
+        cls.coverFolder.mkdir(exist_ok=True, parents=True)
+
+        if cls.__isCoverExists(songInfo.singer, songInfo.album):
+            return True
+
+        file = songInfo.file
+        for Reader in cls._readers:
+            if not Reader.canRead(file):
+                continue
+
+            picData = Reader.getAlbumCover(file)
+            if picData:
+                cls.__save(songInfo.singer, songInfo.album, picData)
+                return True
+
+        return False
+
+    @classmethod
+    def __isCoverExists(cls, singer: str, album: str) -> bool:
+        """ Check whether the cover exists """
+        folder = cls.coverFolder / getCoverName(singer, album)
+
+        isExists = False
+        if folder.exists():
+            files = list(folder.glob('*'))
+
+            if files:
+                suffix = files[0].suffix.lower()
+                if suffix in [".png", ".jpg", ".jpeg", ".jiff", ".gif"]:
+                    isExists = True
+                else:
+                    rmtree(folder)
+
+        return isExists
+
+    @classmethod
+    def __save(cls, singer: str, album: str, picData: bytes):
+        """ save album cover """
+        folder = cls.coverFolder / getCoverName(singer, album)
+        folder.mkdir(exist_ok=True, parents=True)
+
+        suffix = getPicSuffix(picData)
+        with open(folder/("cover" + suffix), "wb") as f:
+            f.write(picData)
+
+
 class AlbumCoverReaderBase:
     """ Album cover reader base class """
 
@@ -74,6 +152,7 @@ class AlbumCoverReaderBase:
         raise NotImplementedError
 
 
+@AlbumCoverReader.register
 class ID3AlbumCoverReader(AlbumCoverReaderBase):
     """ MP3 album cover reader """
 
@@ -95,17 +174,7 @@ class ID3AlbumCoverReader(AlbumCoverReaderBase):
                 return tag[k].data
 
 
-class AIFFAlbumCoverReader(ID3AlbumCoverReader):
-    """ MP3 album cover reader """
-
-    formats = [".aiff"]
-    options = [AIFF]
-
-    @classmethod
-    def getAlbumCover(cls, file: Union[Path, str]) -> bytes:
-        return cls._read(AIFF(file))
-
-
+@AlbumCoverReader.register
 class FLACAlbumCoverReader(AlbumCoverReaderBase):
     """ FLAC album cover reader """
 
@@ -121,6 +190,23 @@ class FLACAlbumCoverReader(AlbumCoverReaderBase):
         return audio.pictures[0].data
 
 
+@AlbumCoverReader.register
+class MP4AlbumCoverReader(AlbumCoverReaderBase):
+    """ MP4/M4A album cover reader """
+
+    formats = [".m4a", ".mp4"]
+    options = [MP4]
+
+    @classmethod
+    def getAlbumCover(cls, file: Union[Path, str]) -> bytes:
+        audio = MP4(file)
+        if not audio.get("covr"):
+            return None
+
+        return bytes(audio["covr"][0])
+
+
+@AlbumCoverReader.register
 class OGGAlbumCoverReader(AlbumCoverReaderBase):
     """ OGG album cover reader """
 
@@ -137,21 +223,19 @@ class OGGAlbumCoverReader(AlbumCoverReaderBase):
                 continue
 
 
-class MP4AlbumCoverReader(AlbumCoverReaderBase):
-    """ MP4/M4A album cover reader """
+@AlbumCoverReader.register
+class AIFFAlbumCoverReader(ID3AlbumCoverReader):
+    """ MP3 album cover reader """
 
-    formats = [".m4a", ".mp4"]
-    options = [MP4]
+    formats = [".aiff"]
+    options = [AIFF]
 
     @classmethod
     def getAlbumCover(cls, file: Union[Path, str]) -> bytes:
-        audio = MP4(file)
-        if not audio.get("covr"):
-            return None
-
-        return bytes(audio["covr"][0])
+        return cls._read(AIFF(file))
 
 
+@AlbumCoverReader.register
 class APEAlbumCoverReader(AlbumCoverReaderBase):
     """ APEv2 album cover reader """
 
@@ -175,6 +259,7 @@ class APEAlbumCoverReader(AlbumCoverReaderBase):
         return picture.value
 
 
+@AlbumCoverReader.register
 class MonkeysAudioAlbumCoverReader(APEAlbumCoverReader):
     """ Monkey's Audio album cover reader """
 
@@ -186,96 +271,18 @@ class MonkeysAudioAlbumCoverReader(APEAlbumCoverReader):
         return cls._read(File(file, options=cls.options))
 
 
+@AlbumCoverReader.register
+class ASFAlbumCoverReader(AlbumCoverReaderBase):
+    """ ASF album cover reader """
 
-class AlbumCoverReader:
-    """ Read and save album cover class """
-
-    coverFolder = Path("cache/Album_Cover")
-    readers = [
-        ID3AlbumCoverReader, FLACAlbumCoverReader,
-        MP4AlbumCoverReader, OGGAlbumCoverReader,
-        AIFFAlbumCoverReader, MonkeysAudioAlbumCoverReader,
-        APEAlbumCoverReader
-    ]
+    formats = [".asf"]
+    options = [ASF]
 
     @classmethod
-    def getAlbumCovers(cls, songInfos: List[SongInfo]):
-        """ Read and save album covers from audio files """
-        cls.coverFolder.mkdir(exist_ok=True, parents=True)
-        for songInfo in songInfos:
-            cls.getAlbumCover(songInfo)
+    def getAlbumCover(cls, file: Union[Path, str]) -> bytes:
+        audio = ASF(file)
+        picture = audio.get('WM/Picture')  # type:List[ASFByteArrayAttribute]
+        if not picture:
+            return None
 
-    @classmethod
-    @exceptionHandler
-    def getAlbumCover(cls, songInfo: SongInfo) -> bool:
-        """ Read and save an album cover from audio file """
-        cls.coverFolder.mkdir(exist_ok=True, parents=True)
-
-        if cls.__isCoverExists(songInfo.singer, songInfo.album):
-            return True
-
-        file = songInfo.file
-        for Reader in cls.readers:
-            if not Reader.canRead(file):
-                continue
-
-            picData = Reader.getAlbumCover(file)
-            if picData:
-                cls.__save(songInfo.singer, songInfo.album, picData)
-                return True
-
-        return False
-
-    @classmethod
-    def __isCoverExists(cls, singer: str, album: str) -> bool:
-        """ Check whether the cover exists
-
-        Parameters
-        ----------
-        singer: str
-            singer name
-
-        album: str
-            album name
-
-        Returns
-        -------
-        isExists: bool
-            whether the cover exists
-        """
-        folder = cls.coverFolder / getCoverName(singer, album)
-
-        isExists = False
-        if folder.exists():
-            files = list(folder.glob('*'))
-
-            if files:
-                suffix = files[0].suffix.lower()
-                if suffix in [".png", ".jpg", ".jpeg", ".jiff", ".gif"]:
-                    isExists = True
-                else:
-                    rmtree(folder)
-
-        return isExists
-
-    @classmethod
-    def __save(cls, singer: str, album: str, picData: bytes):
-        """ save album cover
-
-        Parameters
-        ----------
-        singer: str
-            singer name
-
-        album: str
-            album name
-
-        picData: bytes
-            binary data of album cover
-        """
-        folder = cls.coverFolder / getCoverName(singer, album)
-        folder.mkdir(exist_ok=True, parents=True)
-
-        suffix = getPicSuffix(picData)
-        with open(folder/("cover" + suffix), "wb") as f:
-            f.write(picData)
+        return picture[0].value

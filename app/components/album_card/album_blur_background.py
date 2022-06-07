@@ -1,4 +1,5 @@
 # coding:utf-8
+from common.image_utils import readImage
 from components.widgets.label import FadeInLabel
 from PIL import Image
 from PIL.ImageFilter import GaussianBlur
@@ -32,12 +33,7 @@ class AlbumBlurBackground(FadeInLabel):
         if not imagePath:
             return
 
-        if not imagePath.startswith(':'):
-            albumCover = Image.open(imagePath)
-        else:
-            albumCover = Image.fromqpixmap(QPixmap(imagePath))
-
-        albumCover = albumCover.resize(imageSize)
+        albumCover = readImage(imagePath).resize(imageSize)
 
         # create a new image
         blurAlbumCover = Image.new(
