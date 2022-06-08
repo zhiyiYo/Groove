@@ -1,9 +1,10 @@
 # coding:utf-8
 from components.buttons.three_state_button import ThreeStateButton
+from components.widgets.label import ErrorIcon
 from components.widgets.menu import LineEditMenu
-from PyQt5.QtCore import QEvent, Qt
-from PyQt5.QtGui import QContextMenuEvent
-from PyQt5.QtWidgets import QLineEdit
+from PyQt5.QtCore import QEvent, Qt, QRegExp
+from PyQt5.QtGui import QContextMenuEvent, QRegExpValidator
+from PyQt5.QtWidgets import QApplication, QLineEdit
 
 
 class LineEdit(QLineEdit):
@@ -73,3 +74,31 @@ class LineEdit(QLineEdit):
                 return True
 
         return super().eventFilter(obj, e)
+
+
+class VLineEdit(LineEdit):
+    """ Line edit with a validator """
+
+    def __init__(self, regex: str, errorMessage: str, text=None, parent=None):
+        super().__init__(text, parent, True)
+        self.errorMessage = errorMessage
+        self.setValidator(QRegExpValidator(QRegExp(regex), self))
+        self.errorIcon = ErrorIcon(parent)
+        self.errorIcon.hide()
+
+    def validate(self) -> bool:
+        """ validate the text """
+        state = self.validator().validate(self.text(), 0)[0]
+        illegal = state != QRegExpValidator.Acceptable
+
+        # set the visibility error icon
+        x = self.pos().x()-25
+        y = self.pos().y()+self.height()//2-self.errorIcon.height()//2
+        self.errorIcon.move(x, y)
+        self.errorIcon.setVisible(illegal)
+
+        # update style sheet
+        self.setProperty('error', illegal)
+        self.setStyle(QApplication.style())
+
+        return not illegal

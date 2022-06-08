@@ -2308,9 +2308,19 @@
         <translation>遇到未知错误，请稍后再试</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="248"/>
+        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="70"/>
         <source>The track must be a number below 1000</source>
-        <translation>The track must be a number below 1000</translation>
+        <translation>曲目必须是 1000 以下的数字</translation>
+    </message>
+    <message>
+        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="76"/>
+        <source>The disc must be a number below 1000</source>
+        <translation>光盘必须是 1000 以下的数字</translation>
+    </message>
+    <message>
+        <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="82"/>
+        <source>The year must be a number between 1 and 9999</source>
+        <translation>年份必须在 1 到 9999 之间</translation>
     </message>
     <message>
         <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="310"/>
@@ -2354,8 +2364,8 @@
     </message>
     <message>
         <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="305"/>
-        <source>Don&apos;t mind</source>
-        <translation>假如生活欺骗了你</translation>
+        <source>Please check your network</source>
+        <translation>前辈的网络可能出了点小问题哦~</translation>
     </message>
     <message>
         <location filename="../../components/dialog_box/song_info_edit_dialog.py" line="50"/>

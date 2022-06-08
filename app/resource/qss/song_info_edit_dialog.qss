@@ -39,7 +39,7 @@ QLineEdit:focus {
     border: 1px solid rgb(0, 153, 188);
 }
 
-QLineEdit[hasText='false'] {
+QLineEdit[error=true] {
     border: 1px solid rgb(197, 5, 0);
 }
 

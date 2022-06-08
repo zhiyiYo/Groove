@@ -7,7 +7,7 @@ from common.thread.get_meta_data_thread import GetSongMetaDataThread
 from components.buttons.perspective_button import PerspectivePushButton
 from components.buttons.switch_button import SwitchButton
 from components.widgets.label import ErrorIcon
-from components.widgets.line_edit import LineEdit
+from components.widgets.line_edit import LineEdit, VLineEdit
 from components.widgets.state_tooltip import StateTooltip
 from mutagen.id3 import TCON
 from PyQt5.QtCore import QFile, QRegExp, Qt, pyqtSignal
@@ -55,20 +55,33 @@ class SongInfoEditDialog(MaskDialogBase):
         self.songPath = QLabel(self.songInfo.file, self.widget)
         self.getMetaDataLabel = QLabel(
             self.tr('Automatically retrieve metadata'), self.widget)
-        self.emptyTrackErrorIcon = ErrorIcon(self.widget)
         self.bottomErrorIcon = ErrorIcon(self.widget)
         self.bottomErrorLabel = QLabel(self.widget)
 
         # line edits
         self.genreLineEdit = LineEdit(self.songInfo.genre, self.widget)
         self.songNameLineEdit = LineEdit(self.songInfo.title, self.widget)
-        self.discLineEdit = LineEdit(str(self.songInfo.disc), self.widget)
         self.albumNameLineEdit = LineEdit(self.songInfo.album, self.widget)
-        self.trackLineEdit = LineEdit(str(self.songInfo.track), self.widget)
         self.singerNameLineEdit = LineEdit(self.songInfo.singer, self.widget)
         self.albumSingerLineEdit = LineEdit(self.songInfo.singer, self.widget)
-        self.yearLineEdit = LineEdit(
-            str(self.songInfo.year if self.songInfo.year else ''), self.widget)
+        self.trackLineEdit = VLineEdit(
+            r"(\d)|([1-9]\d{1,2})",
+            self.tr("The track must be a number below 1000"),
+            str(self.songInfo.track),
+            self.widget
+        )
+        self.discLineEdit = VLineEdit(
+            r"\d{1,4}",
+            self.tr("The disc must be a number below 1000"),
+            str(self.songInfo.disc),
+            self.widget
+        )
+        self.yearLineEdit = VLineEdit(
+            r"\d{1,4}",
+            self.tr("The year must be a number between 1 and 9999"),
+            str(self.songInfo.year or ''),
+            self.widget
+        )
 
         # state tooltip
         self.stateToolTip = None
@@ -89,18 +102,15 @@ class SongInfoEditDialog(MaskDialogBase):
         self.songNameLineEdit.setFocus()
         self.songNameLineEdit.clearButton.show()
 
-        self.bottomErrorLabel.setMinimumWidth(100)
-        self.emptyTrackErrorIcon.move(7, 227)
+        self.bottomErrorLabel.setFixedWidth(self.widget.width()-60)
         self.bottomErrorIcon.hide()
         self.bottomErrorLabel.hide()
-        self.emptyTrackErrorIcon.hide()
-
-        # install validator for line edit
-        self.__installValidator()
+        self.bottomErrorLabel.setWordWrap(True)
 
         # connect signal to slot
-        self.trackLineEdit.textChanged.connect(
-            self.__onTrackLineEditTextChanged)
+        self.trackLineEdit.textChanged.connect(self.__validate)
+        self.discLineEdit.textChanged.connect(self.__validate)
+        self.yearLineEdit.textChanged.connect(self.__validate)
         self.getMetaDataSwitchButton.checkedChanged.connect(
             self.__onGetMetaDataCheckedChanged)
         self.saveButton.clicked.connect(self.__saveInfo)
@@ -170,17 +180,6 @@ class SongInfoEditDialog(MaskDialogBase):
         self.vBoxLayout.setContentsMargins(
             30, 87, 30, self.widget.height()-87-335)
 
-    def __installValidator(self):
-        """ install validator for line edit """
-        trackReg = QRegExp(r"(\d)|([1-9]\d{1,2})")
-        yearReg = QRegExp(r"\d{4}")
-        trackValidator = QRegExpValidator(trackReg, self.trackLineEdit)
-        disValidator = QRegExpValidator(trackReg, self.discLineEdit)
-        yearValidator = QRegExpValidator(yearReg, self.yearLineEdit)
-        self.trackLineEdit.setValidator(trackValidator)
-        self.discLineEdit.setValidator(disValidator)
-        self.yearLineEdit.setValidator(yearValidator)
-
     def __setQss(self):
         """ set style sheet """
         self.editInfoLabel.setObjectName("editSongInfo")
@@ -202,9 +201,8 @@ class SongInfoEditDialog(MaskDialogBase):
 
     def __saveInfo(self):
         """ save song information """
-        for lineEdit in [self.yearLineEdit, self.discLineEdit, self.trackLineEdit]:
-            if not lineEdit.text():
-                return
+        if not self.__validate():
+            return
 
         self.songInfo.genre = self.genreLineEdit.text()
         self.songInfo.title = self.songNameLineEdit.text()
@@ -223,37 +221,36 @@ class SongInfoEditDialog(MaskDialogBase):
 
         # write other meta data
         if not (success and self.writer.writeSongInfo(self.songInfo)):
-            self.bottomErrorLabel.setText(
-                self.tr("An unknown error was encountered. Please try again later"))
-            self.bottomErrorLabel.adjustSize()
-            self.bottomErrorLabel.show()
-            self.bottomErrorIcon.show()
-        else:
-            self.setEnabled(False)
-            QApplication.processEvents()
-            self.songInfo.modifiedTime = SongInfoReader.getModifiedTime(
-                self.songInfo.file)
-            self.saveInfoSig.emit(self.oldSongInfo, self.songInfo)
-            self.close()
+            self.__setErrorMessageVisible(
+                self.tr("An unknown error was encountered. Please try again later"), True)
+            return
 
-    def __onTrackLineEditTextChanged(self):
-        """ track number line edit text changed slot """
-        isEmpty = not bool(self.genreLineEdit.text())
+        self.setEnabled(False)
+        QApplication.processEvents()
+        self.songInfo.modifiedTime = SongInfoReader.getModifiedTime(
+            self.songInfo.file)
+        self.saveInfoSig.emit(self.oldSongInfo, self.songInfo)
+        self.close()
 
-        if isEmpty:
-            self.bottomErrorLabel.setText(
-                self.tr("The track must be a number below 1000"))
-            self.bottomErrorLabel.adjustSize()
+    def __validate(self) -> bool:
+        """ validate the text of line edits """
+        illegal = False
+        message = ''
+        for lineEdit in self.findChildren(VLineEdit):
+            if not lineEdit.validate():
+                illegal = True
+                message = message or lineEdit.errorMessage
 
-        self.saveButton.setDisabled(isEmpty)
-        self.bottomErrorLabel.setVisible(isEmpty)
-        self.bottomErrorIcon.setVisible(isEmpty)
-        self.emptyTrackErrorIcon.setVisible(isEmpty)
+        self.__setErrorMessageVisible(message, illegal)
+        return not illegal
 
-        # update style
-        self.trackLineEdit.setProperty(
-            'hasText', 'false' if isEmpty else 'true')
-        self.trackLineEdit.setStyle(QApplication.style())
+    def __setErrorMessageVisible(self, message: str, isVisible: bool):
+        """ show error message at the bottom """
+        self.bottomErrorLabel.setText(message)
+        self.bottomErrorLabel.adjustSize()
+        self.saveButton.setDisabled(isVisible)
+        self.bottomErrorLabel.setVisible(isVisible)
+        self.bottomErrorIcon.setVisible(isVisible)
 
     def __onGetMetaDataCheckedChanged(self, isChecked: bool):
         """ get meta data checked state changed """
@@ -297,7 +294,7 @@ class SongInfoEditDialog(MaskDialogBase):
         else:
             self.stateToolTip.setTitle(
                 self.tr('Failed to retrieve metadata'))
-            self.stateToolTip.setContent(self.tr("Don't mind"))
+            self.stateToolTip.setContent(self.tr("Please check your network"))
 
         self.stateToolTip.setState(True)
         self.stateToolTip = None
