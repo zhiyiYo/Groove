@@ -6,6 +6,7 @@ from platform import platform
 
 from PyQt5.QtSql import QSqlDatabase
 
+from common.database import DBInitializer
 from common.database.service import PlaylistService
 
 
@@ -112,7 +113,7 @@ def getSingerAvatarPath(singer: str, size='small'):
 
 def getPlaylistNames():
     """ get all playlist names in database """
-    db = QSqlDatabase.database('main')
+    db = QSqlDatabase.database(DBInitializer.connectionName)
     service = PlaylistService(db)
     return [i.name for i in service.listAll()]
 

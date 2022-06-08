@@ -385,8 +385,10 @@ class PlayingInterface(QWidget):
 
         # update album cover
         index_ = self.songInfoCardChute.currentIndex
+        isDefaultCover = self.albumCoverLabel.coverPath == getCoverPath(
+            '', '', "album_big")
         if self.currentIndex != index_ and index == index_ or \
-                self.currentIndex == index_ and index_ == 0:
+                self.currentIndex == index_ and index_ == 0 or isDefaultCover:
             self.songInfoCardChute.cards[1].updateCard(songInfo)
             self.albumCoverLabel.setCover(getCoverPath(
                 songInfo.singer, songInfo.album, "album_big"))
