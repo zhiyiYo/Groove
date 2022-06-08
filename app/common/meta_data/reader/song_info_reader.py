@@ -20,6 +20,7 @@ from mutagen.oggopus import OggOpus
 from mutagen.oggspeex import OggSpeex
 from mutagen.oggvorbis import OggVorbis
 from mutagen.trueaudio import TrueAudio
+from mutagen.wave import WAVE
 from mutagen.wavpack import WavPack
 from PyQt5.QtCore import QObject
 from tinytag import TinyTag
@@ -336,6 +337,15 @@ class TrueAudioSongInfoReader(ID3SongInfoReader):
 
     formats = [".tta"]
     options = [TrueAudio]
+    _Tag = None
+
+
+@SongInfoReader.register
+class WAVSongInfoReader(ID3SongInfoReader):
+    """ Waveform song information reader """
+
+    formats = [".wav"]
+    options = [WAVE]
     _Tag = None
 
 

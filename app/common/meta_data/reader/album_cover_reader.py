@@ -16,7 +16,6 @@ from mutagen.asf import ASF, ASFByteArrayAttribute
 from mutagen.flac import FLAC, Picture
 from mutagen.flac import error as FLACError
 from mutagen.id3 import ID3
-from mutagen.monkeysaudio import MonkeysAudio
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
 from mutagen.oggflac import OggFLAC
@@ -24,6 +23,7 @@ from mutagen.oggopus import OggOpus
 from mutagen.oggspeex import OggSpeex
 from mutagen.oggvorbis import OggVorbis
 from mutagen.trueaudio import TrueAudio
+from mutagen.wave import WAVE
 
 logger = Logger("meta_data_reader")
 
@@ -88,7 +88,7 @@ class AlbumCoverReader:
             if not Reader.canRead(file):
                 continue
 
-            picData = Reader.getAlbumCover(file)
+            picData = Reader.read(file)
             if picData:
                 cls.__save(songInfo.singer, songInfo.album, picData)
                 return True
@@ -124,19 +124,19 @@ class AlbumCoverReader:
             f.write(picData)
 
 
-class AlbumCoverReaderBase:
-    """ Album cover reader base class """
+class CoverDataReaderBase:
+    """ Album cover data reader base class """
 
     formats = []
     options = []
 
     @classmethod
     def canRead(cls, file: Union[Path, str]) -> bool:
-        """ determine whether song information of the file can be read """
+        """ determine whether cover data of the file can be read """
         return str(file).lower().endswith(tuple(cls.formats))
 
     @classmethod
-    def getAlbumCover(cls, audio: FileType) -> bytes:
+    def read(cls, audio: FileType) -> bytes:
         """ extract binary data of album cover from audio file
 
         Parameters
@@ -153,21 +153,21 @@ class AlbumCoverReaderBase:
 
 
 @AlbumCoverReader.register
-class ID3AlbumCoverReader(AlbumCoverReaderBase):
-    """ MP3 album cover reader """
+class ID3CoverDataReader(CoverDataReaderBase):
+    """ MP3 album cover data reader """
 
     formats = [".mp3", ".aac", ".tta"]
     options = [MP3, AAC, TrueAudio]
 
     @classmethod
-    def getAlbumCover(cls, file: Union[Path, str]) -> bytes:
+    def read(cls, file: Union[Path, str]) -> bytes:
         try:
-            return cls._read(ID3(file))
+            return cls._readFromTag(ID3(file))
         except:
             return None
 
     @classmethod
-    def _read(cls, tag):
+    def _readFromTag(cls, tag):
         """ read cover from tag """
         for k in tag.keys():
             if k.startswith("APIC"):
@@ -175,14 +175,14 @@ class ID3AlbumCoverReader(AlbumCoverReaderBase):
 
 
 @AlbumCoverReader.register
-class FLACAlbumCoverReader(AlbumCoverReaderBase):
-    """ FLAC album cover reader """
+class FLACCoverDataReader(CoverDataReaderBase):
+    """ FLAC album cover data reader """
 
     formats = [".flac"]
     options = [FLAC]
 
     @classmethod
-    def getAlbumCover(cls, file: Union[Path, str]) -> bytes:
+    def read(cls, file: Union[Path, str]) -> bytes:
         audio = FLAC(file)
         if not audio.pictures:
             return None
@@ -191,14 +191,14 @@ class FLACAlbumCoverReader(AlbumCoverReaderBase):
 
 
 @AlbumCoverReader.register
-class MP4AlbumCoverReader(AlbumCoverReaderBase):
-    """ MP4/M4A album cover reader """
+class MP4CoverDataReader(CoverDataReaderBase):
+    """ MP4/M4A album cover data reader """
 
     formats = [".m4a", ".mp4"]
     options = [MP4]
 
     @classmethod
-    def getAlbumCover(cls, file: Union[Path, str]) -> bytes:
+    def read(cls, file: Union[Path, str]) -> bytes:
         audio = MP4(file)
         if not audio.get("covr"):
             return None
@@ -207,14 +207,14 @@ class MP4AlbumCoverReader(AlbumCoverReaderBase):
 
 
 @AlbumCoverReader.register
-class OGGAlbumCoverReader(AlbumCoverReaderBase):
-    """ OGG album cover reader """
+class OGGCoverDataReader(CoverDataReaderBase):
+    """ OGG album cover data reader """
 
     formats = [".ogg", ".opus"]
     options = [OggVorbis, OggFLAC, OggSpeex, OggOpus]
 
     @classmethod
-    def getAlbumCover(cls, file: Union[Path, str]) -> bytes:
+    def read(cls, file: Union[Path, str]) -> bytes:
         audio = File(file, options=cls.options)
         for base64Data in audio.get("metadata_block_picture", []):
             try:
@@ -224,51 +224,50 @@ class OGGAlbumCoverReader(AlbumCoverReaderBase):
 
 
 @AlbumCoverReader.register
-class AIFFAlbumCoverReader(ID3AlbumCoverReader):
-    """ MP3 album cover reader """
+class SuperID3CoverDataReader(ID3CoverDataReader):
+    """ Super ID3 album cover data reader """
 
-    formats = [".aiff"]
-    options = [AIFF]
+    formats = [".aiff", ".wav"]
+    options = [AIFF, WAVE]
 
     @classmethod
-    def getAlbumCover(cls, file: Union[Path, str]) -> bytes:
-        return cls._read(AIFF(file))
+    def read(cls, file: Union[Path, str]) -> bytes:
+        return cls._readFromTag(File(file, options=cls.options))
 
 
 @AlbumCoverReader.register
-class APEAlbumCoverReader(AlbumCoverReaderBase):
-    """ APEv2 album cover reader """
+class APECoverDataReader(CoverDataReaderBase):
+    """ APEv2 album cover data reader """
 
     formats = [".ac3", ".ape", ".wv"]
     options = [APEv2]
 
     @classmethod
-    def getAlbumCover(cls, file: Union[Path, str]) -> bytes:
+    def read(cls, file: Union[Path, str]) -> bytes:
         try:
-            return cls._read(APEv2(file))
+            return cls._readFromTag(APEv2(file))
         except:
             return None
 
     @classmethod
-    def _read(cls, tag):
+    def _readFromTag(cls, tag):
         """ read cover from tag """
         picture = tag.get("Cover Art (Front)", None)
         if picture is None:
-            print('直接返回')
             return None
 
         return picture.value
 
 
 @AlbumCoverReader.register
-class ASFAlbumCoverReader(AlbumCoverReaderBase):
-    """ ASF album cover reader """
+class ASFCoverDataReader(CoverDataReaderBase):
+    """ ASF album cover data reader """
 
     formats = [".asf", ".wma"]
     options = [ASF]
 
     @classmethod
-    def getAlbumCover(cls, file: Union[Path, str]) -> bytes:
+    def read(cls, file: Union[Path, str]) -> bytes:
         audio = ASF(file)
         picture = audio.get('WM/Picture')  # type:List[ASFByteArrayAttribute]
         if not picture:

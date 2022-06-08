@@ -23,6 +23,7 @@ from mutagen.oggopus import OggOpus
 from mutagen.oggspeex import OggSpeex
 from mutagen.oggvorbis import OggVorbis
 from mutagen.trueaudio import TrueAudio
+from mutagen.wave import WAVE
 from mutagen.wavpack import WavPack
 
 from .frame_map import (APEV2_FRAME_MAP, ASF_FRAME_MAP, MP4_FRAME_MAP,
@@ -40,7 +41,7 @@ def save(func):
             writer.audio.save(writer.file)
             return True
         except Exception as e:
-            logger.error(e, True)
+            logger.error(e)
             return False
 
     return wrapper
@@ -247,6 +248,15 @@ class AIFFWriter(ID3Writer):
 
     formats = [".aiff"]
     options = [AIFF]
+    _Tag = None
+
+
+@MetaDataWriter.register
+class WAVWriter(ID3Writer):
+    """ Waveform meta data writer """
+
+    formats = [".wav"]
+    options = [WAVE]
     _Tag = None
 
 

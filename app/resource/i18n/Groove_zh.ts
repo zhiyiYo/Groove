@@ -2210,6 +2210,24 @@
     </message>
 </context>
 <context>
+    <name>WAVSongInfoReader</name>
+    <message>
+        <location filename="../../common/meta_data/reader/song_info_reader.py" line="57"/>
+        <source>Unknown artist</source>
+        <translation>未知歌手</translation>
+    </message>
+    <message>
+        <location filename="../../common/meta_data/reader/song_info_reader.py" line="58"/>
+        <source>Unknown album</source>
+        <translation>未知专辑</translation>
+    </message>
+    <message>
+        <location filename="../../common/meta_data/reader/song_info_reader.py" line="59"/>
+        <source>Unknown genre</source>
+        <translation>未知流派</translation>
+    </message>
+</context>
+<context>
     <name>ASFSongInfoReader</name>
     <message>
         <location filename="../../common/meta_data/reader/song_info_reader.py" line="57"/>

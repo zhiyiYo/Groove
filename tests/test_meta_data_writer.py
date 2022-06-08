@@ -259,3 +259,22 @@ class TestMetaDataWriter(TestCase):
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
             songInfo.file, "app/cache/Album_Cover/Bruno Mars_Unorthodox Jukebox/cover.jpg"))
+
+    def test_write_wav(self):
+        """ 测试写入 Waveform 元数据 """
+        songInfo = SongInfo(
+            file="app/resource/test_audio/Charli XCX - Boom Clap.wav",
+            title='Boom Clap',
+            singer='Charli XCX',
+            album='Sucker',
+            year=2014,
+            genre='SOUNDTRACK原声',
+            duration=169,
+            track=0,
+            trackTotal=1,
+            disc=1,
+            discTotal=1
+        )
+        self.assertTrue(self.writer.writeSongInfo(songInfo))
+        self.assertTrue(self.writer.writeAlbumCover(
+            songInfo.file, "app/cache/Album_Cover/Charli XCX_Sucker/cover.jpg"))
