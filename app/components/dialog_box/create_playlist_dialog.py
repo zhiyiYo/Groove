@@ -1,6 +1,7 @@
 # coding:utf-8
 from common.database.entity import Playlist
 from common.library import Library
+from common.style_sheet import setStyleSheet
 from components.buttons.three_state_button import ThreeStateButton
 from components.dialog_box.mask_dialog_base import MaskDialogBase
 from components.widgets.label import ClickableLabel, PixmapLabel
@@ -52,10 +53,7 @@ class CreatePlaylistDialog(MaskDialogBase):
     def __setQss(self):
         """ set style sheet """
         self.cancelLabel.setObjectName("cancelLabel")
-        f = QFile(":/qss/create_playlist_dialog.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
+        setStyleSheet(self, 'create_playlist_dialog')
 
     def __initLayout(self):
         """ initialize layout """
@@ -204,8 +202,4 @@ class LineEdit(QLineEdit):
     def __setQss(self):
         """ set style sheet """
         self.setObjectName("createPlaylistPanelLineEdit")
-
-        f = QFile(":/qss/line_edit.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
+        setStyleSheet(self, 'line_edit')

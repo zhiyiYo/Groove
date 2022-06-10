@@ -1,7 +1,7 @@
 # coding:utf-8
 from common.thread.download_mv_thread import DownloadMvThread
 from components.dialog_box.message_dialog import MessageDialog
-from components.widgets.state_tooltip import DownloadStateTooltip
+from components.widgets.tooltip import DownloadStateTooltip
 from PyQt5.QtCore import QSizeF, Qt, QUrl, pyqtSignal, QEvent
 from PyQt5.QtGui import QPainter
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
@@ -205,8 +205,6 @@ class VideoInterface(QGraphicsView):
         self.downloadMvThread.downloadOneMvFinished.connect(
             self.downloadStateTooltip.completeOneDownloadTask)
 
-        pos = self.downloadStateTooltip.getSuitablePos()
-        self.downloadStateTooltip.move(pos)
         self.downloadStateTooltip.show()
         self.downloadMvThread.start()
 

@@ -1,0 +1,150 @@
+QListWidget {
+    border: transparent;
+    outline: none;
+    background-color: white;
+    padding: 0px;
+}
+
+QListWidget::item:!alternate {
+    background-color: rgb(242, 242, 242);
+}
+
+QListWidget::item:alternate {
+    background: white;
+}
+
+/*歌曲卡样式*/
+
+QWidget#songNameCard {
+    background: transparent;
+}
+
+QWidget[state='notSelected-leave'] {
+    background-color: transparent;
+}
+
+QWidget[state='notSelected-enter'] {
+    background-color: rgb(217, 217, 217);
+}
+
+QWidget[state='notSelected-pressed'] {
+    background-color: rgb(174, 174, 174);
+}
+
+QWidget[state='selected-leave'] {
+    background-color: rgb(0, 153, 188);
+}
+
+QWidget[state='selected-enter'] {
+    background-color: rgb(0, 107, 131);
+}
+
+QWidget[state='selected-pressed'] {
+    background-color: rgb(0, 86, 105);
+}
+
+QLabel {
+    font-family: 'Segoe UI', 'Microsoft YaHei';
+    font-size: 15px;
+    background-color: transparent;
+}
+
+QLabel#songNameLabel {
+    font-size: 16px;
+}
+
+QLabel#trackLabel {
+    font-size: 17px;
+}
+
+QLabel[state='notSelected-notPlay'] {
+    color: rgb(48, 48, 48);
+}
+
+QLabel[state='notSelected-play'] {
+    color: rgb(0, 107, 131);
+}
+
+QLabel[state='selected'] {
+    color: white;
+}
+
+QLabel#clickableLabel[state='notSelected-notPlay']:hover {
+    color: rgb(78, 78, 78);
+}
+
+QLabel#clickableLabel[state='selected']:hover {
+    color: rgb(204, 225, 230);
+}
+
+
+/*复选框样式*/
+QCheckBox {
+    background-color: transparent;
+    spacing: 0px
+}
+
+QCheckBox::indicator {
+    /*需要减去边框的宽度*/
+    width: 23px;
+    height: 23px;
+    background-color: transparent;
+}
+
+QCheckBox::indicator[state='selected'] {
+    border: 1px solid white;
+}
+
+QCheckBox::indicator[state='selected']:pressed {
+    border: 1px solid rgb(102, 166, 181);
+}
+
+QCheckBox::indicator[state='notSelected-notPlay'] {
+    border: 1px solid black;
+}
+
+QCheckBox::indicator[state='notSelected-notPlay']:pressed {
+    border: 1px solid rgb(130, 130, 130);
+}
+
+QCheckBox::indicator[state='notSelected-play'] {
+    border: 1px solid rgb(0, 107, 131);
+}
+
+QCheckBox::indicator[state='notSelected-play']:pressed {
+    border: 1px solid rgb(130, 172, 182);
+}
+
+QCheckBox::indicator:checked {
+    border-image: url(:/images/song_tab_interface/CheckMark.png);
+}
+
+QCheckBox::indicator:checked:pressed {
+    border-image: url(:/images/song_tab_interface/CheckMark_pressed.png);
+}
+
+
+/*按钮样式*/
+QToolButton {
+    background-color: transparent;
+    border: none;
+    margin: 0
+}
+
+QToolButton[state='notSelected-notPlay']:hover,
+QToolButton[state='notSelected-play']:hover {
+    background: rgb(196, 196, 196);
+}
+
+QToolButton[state='notSelected-notPlay']:pressed,
+QToolButton[state='notSelected-play']:pressed {
+    background-color: rgb(174, 174, 174);
+}
+
+QToolButton[state='selected']:hover {
+    background-color: rgb(0, 97, 118);
+}
+
+QToolButton[state='selected']:pressed {
+    background-color: rgb(0, 86, 105);
+}

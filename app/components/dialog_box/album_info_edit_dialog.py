@@ -2,6 +2,7 @@
 from copy import deepcopy
 from pathlib import Path
 
+from common.style_sheet import setStyleSheet
 from common.database.entity import AlbumInfo, SongInfo
 from common.image_utils import getPicSuffix
 from common.os_utils import getCoverName, getCoverPath
@@ -131,10 +132,7 @@ class AlbumInfoEditDialog(MaskDialogBase):
         self.scrollArea.setObjectName("infoEditScrollArea")
         self.editAlbumInfoLabel.setObjectName("editAlbumInfo")
 
-        f = QFile(":/qss/album_info_edit_dialog.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
+        setStyleSheet(self, 'album_info_edit_dialog')
 
         self.saveButton.adjustSize()
         self.cancelButton.adjustSize()

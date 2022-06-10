@@ -3,6 +3,7 @@ from typing import List, Dict
 import bisect
 
 from common.auto_wrap import autoWrap
+from common.style_sheet import setStyleSheet
 from components.widgets.scroll_area import ScrollArea
 from PyQt5.QtCore import Qt, QFile, QPropertyAnimation, QEventLoop
 from PyQt5.QtGui import QColor, QLinearGradient, QPalette, QBrush
@@ -181,12 +182,7 @@ class LyricWidget(ScrollArea):
     def __setQss(self):
         """ set style sheet """
         self.loadingLabel.setObjectName('loadingLabel')
-
-        f = QFile(":/qss/lyric_widget.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
-
+        setStyleSheet(self, 'lyric_widget')
         self.loadingLabel.adjustSize()
         self.loadingLabel.move(
             self.width()//2-self.loadingLabel.width()//2, 160)

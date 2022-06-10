@@ -1,0 +1,53 @@
+VolumeSliderWidget{
+    background-color: rgb(217,217,217);
+}
+
+QLabel{
+    font: 14px 'Microsoft YaHei';
+    color: white;
+}
+
+/*音量滑动条*/
+QSlider#volumeSlider:horizontal {
+    height: 26px;
+    width: 188px;
+    background-color: transparent;
+}
+
+
+QSlider#volumeSlider::groove:horizontal {
+    width: 188px;
+    border: none;
+    background-color: transparent;
+}
+
+QSlider#volumeSlider::handle:horizontal {
+    width: 26px;
+    height: 26px;
+    border-radius: 13px;
+    background-color: rgb(0, 153, 188);
+}
+
+QSlider#volumeSlider::handle:horizontal:hover {
+    background-color: rgb(72, 210, 242);
+}
+
+QSlider#volumeSlider::handle:horizontal:pressed {
+    background-color: rgb(0, 107, 131);
+}
+
+
+QSlider#volumeSlider::sub-page:horizontal {
+    /*已划过部分的颜色*/
+    background: rgb(0, 153, 187);
+    margin-top: 11px;
+    margin-bottom: 11px;
+    border-radius: 2px;
+}
+
+QSlider#volumeSlider::add-page:horizontal {
+    background-color: rgb(130, 131, 134);
+    margin-top: 11px;
+    margin-bottom: 11px;
+    border-radius: 2px;
+}

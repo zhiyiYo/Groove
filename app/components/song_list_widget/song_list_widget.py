@@ -3,6 +3,7 @@ from typing import List
 
 from common.database.entity import SongInfo
 from common.signal_bus import signalBus
+from common.style_sheet import setStyleSheet
 from components.dialog_box.message_dialog import MessageDialog
 from components.widgets.menu import AddToMenu, DWMMenu
 from PyQt5.QtCore import QFile, Qt, pyqtSignal
@@ -98,12 +99,7 @@ class SongListWidget(NoScrollSongListWidget):
     def __setQss(self):
         """ set style sheet """
         self.guideLabel.setObjectName('guideLabel')
-
-        f = QFile(":/qss/song_tab_interface_song_list_widget.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
-
+        setStyleSheet(self, 'song_tab_interface_song_list_widget')
         self.guideLabel.adjustSize()
 
     def setSortMode(self, sortMode: str):

@@ -1,4 +1,5 @@
 # coding:utf-8
+from common.config import config
 from components.widgets.tooltip import Tooltip
 from PyQt5.QtCore import QEvent, QObject, QPoint
 from PyQt5.QtWidgets import QToolButton, QPushButton
@@ -10,7 +11,7 @@ class TooltipButton(QToolButton):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.__tooltip = None
-        self.__darkTooltip = False
+        self.__darkTooltip = config.theme == 'dark'
         self.installEventFilter(self)
 
     def eventFilter(self, obj: QObject, e: QEvent) -> bool:

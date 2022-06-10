@@ -4,6 +4,7 @@ from typing import Dict, List
 from common.database.entity import SongInfo
 from common.os_utils import getCoverPath
 from common.signal_bus import signalBus
+from common.style_sheet import setStyleSheet
 from common.thread.get_lyric_thread import GetLyricThread
 from common.thread.get_mv_url_thread import GetMvUrlThread
 from components.buttons.three_state_button import ThreeStatePushButton
@@ -138,10 +139,7 @@ class PlayingInterface(QWidget):
         self.setObjectName("playingInterface")
         self.guideLabel.setObjectName("guideLabel")
         self.randomPlayAllButton.setObjectName("randomPlayAllButton")
-        f = QFile(":/qss/playing_interface.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
+        setStyleSheet(self, 'playing_interface')
 
     def resizeEvent(self, e):
         super().resizeEvent(e)

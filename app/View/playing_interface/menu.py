@@ -1,6 +1,7 @@
 # coding:utf-8
 from common.icon import Icon
 from common.os_utils import getPlaylistNames
+from common.style_sheet import setStyleSheet
 from PyQt5.QtCore import QFile, Qt, pyqtSignal
 from PyQt5.QtWidgets import QAction, QMenu
 
@@ -35,14 +36,7 @@ class Menu(QMenu):
 
         self.setObjectName('playingInterfaceMenu')
         self.addToMenu.setObjectName('blackAddToMenu')
-        self.__setQss()
-
-    def __setQss(self):
-        """ set style sheet """
-        f = QFile(":/qss/menu.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
+        setStyleSheet(self, 'menu')
 
 
 class AddToMenu(QMenu):
@@ -75,15 +69,7 @@ class AddToMenu(QMenu):
             act.triggered.connect(
                 lambda checked, playlistName=name: self.addSongsToPlaylistSig.emit(playlistName))
 
-        self.__setQss()
+        setStyleSheet(self, 'menu')
 
     def actionCount(self):
         return len(self.action_list)
-
-    def __setQss(self):
-        """ set style sheet """
-        self.setObjectName('blackAddToMenu')
-        f = QFile(":/qss/menu.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()

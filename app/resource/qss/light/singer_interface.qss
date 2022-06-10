@@ -1,0 +1,104 @@
+QWidget#albumCard[isChecked='True'] {
+    background: rgb(0, 107, 131);
+}
+
+QWidget#albumCard[isChecked='False'] {
+    background: transparent;
+}
+
+QScrollArea {
+    background-color: white;
+    border: none;
+}
+
+QWidget#scrollWidget {
+    background-color: white;
+}
+
+/*滚动条*/
+QScrollBar {
+    background: transparent;
+    width: 5px;
+    margin-top: 40px;
+    margin-bottom: 133px;
+    padding-right: 2px;
+}
+
+/*隐藏上箭头*/
+QScrollBar::sub-line {
+    background: transparent;
+}
+
+/*隐藏下箭头*/
+QScrollBar::add-line {
+    background: transparent;
+}
+
+QScrollBar::handle {
+    background: rgb(128, 128, 128);
+    border: 2px solid rgb(128, 128, 128);
+    border-radius: 1px;
+    min-height: 40px;
+}
+
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical {
+    background: none;
+}
+
+
+/*标签*/
+QLabel {
+    font: 17px 'Microsoft YaHei Light';
+    background-color: transparent;
+}
+
+QLabel#albumLabel[isChecked='False'] {
+    color: black;
+    font-family: 'Segoe UI', 'Microsoft YaHei';
+    font-weight: bold;
+}
+
+QLabel#albumLabel[isChecked='True'] {
+    color: white;
+    font-family: 'Segoe UI', 'Microsoft YaHei';
+    font-weight: bold;
+}
+
+QLabel#contentLabel {
+    font: 16px 'Segoe UI', 'Microsoft YaHei';
+    color: rgba(0, 0, 0, 0.6);
+}
+
+QLabel#contentLabel[isChecked='True'] {
+    color: rgb(153, 196, 205);
+}
+
+QLabel#inYourMusicLabel {
+    font: 22px 'Segoe UI', 'Microsoft YaHei';
+    margin: 0;
+    padding: 0;
+}
+
+
+/*复选框样式*/
+QCheckBox {
+    background-color: transparent;
+    spacing: 0px
+}
+
+QCheckBox::indicator {
+    width: 23px;
+    height: 23px;
+    background-color: white;
+    border: 1px solid rgb(217, 217, 217);
+}
+
+QCheckBox::indicator:unchecked:pressed {
+    background-color: rgb(217, 217, 217);
+}
+
+QCheckBox::indicator:checked {
+    background: rgb(0, 107, 131);
+    border-image: url(:/images/album_tab_interface/CheckMark.png);
+}

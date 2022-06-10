@@ -16,3 +16,4 @@ tinytag==1.7.0
 pinyin==0.4.0
 pycryptodome==3.9.8
 pyqtkeybind==0.0.9
+darkdetect

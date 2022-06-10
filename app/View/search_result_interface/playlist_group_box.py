@@ -12,7 +12,7 @@ from .group_box import GroupBox
 class PlaylistGroupBox(GroupBox):
     """ Playlist card group  """
 
-    qss = 'playlist_group_box.qss'
+    qss = 'playlist_group_box'
 
     def __init__(self, library: Library, parent=None):
         self.playlists = []

@@ -1,0 +1,55 @@
+QLabel {
+    background-color: transparent;
+}
+
+QLabel#songNameLabel {
+    color: white;
+    font: 12pt 'Segoe UI', 'Microsoft YaHei';
+    font-weight: bold;
+}
+
+QLabel#singerNameLabel {
+    color: white;
+    font: 11pt 'Segoe UI', 'Microsoft YaHei';
+}
+
+QSlider {
+    height: 5px;
+    background: transparent;
+}
+
+QSlider::groove:horizontal {
+    border: none;
+    background-color: transparent;
+}
+
+QSlider::handle:horizontal {
+    width: 0px;
+    height: 0px;
+}
+
+QSlider::sub-page:horizontal {
+    /*已划过部分的颜色*/
+    background: white;
+}
+
+QSlider::add-page:horizontal {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+TitleBarButton {
+    border: none;
+    margin: 0px;
+}
+
+#closeButton {
+    border-image: url(:/images/title_bar/透明白色关闭按钮_57_40.png)
+}
+
+#closeButton:hover {
+    border-image: url(:/images/title_bar/关闭按钮_hover_57_40.png)
+}
+
+#closeButton:pressed {
+    border-image: url(:/images/title_bar/关闭按钮_pressed_57_40.png)
+}

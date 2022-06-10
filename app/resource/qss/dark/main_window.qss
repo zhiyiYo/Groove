@@ -1,0 +1,28 @@
+QWidget#mainWindow,
+QWidget#subMainWindow{
+    background-color: transparent;
+}
+
+QWidget#subStackWidget{
+    background-color: black;
+}
+
+QLabel{
+    background-color: transparent;
+}
+
+/*隐藏下箭头*/
+QScrollBar::add-line {
+    background: transparent;
+}
+
+QScrollBar::handle {
+    background: rgb(139, 139, 139);
+    border: 2px solid rgb(139, 139, 139);
+    border-radius: 1px;
+}
+
+QScrollArea {
+    background: transparent;
+    border: none;
+}

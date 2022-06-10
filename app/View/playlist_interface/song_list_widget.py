@@ -3,6 +3,7 @@ from typing import List
 
 from common.database.entity import SongInfo
 from common.signal_bus import signalBus
+from common.style_sheet import setStyleSheet
 from components.song_list_widget import NoScrollSongListWidget, SongCardType
 from components.song_list_widget.song_card import PlaylistInterfaceSongCard
 from components.widgets.menu import AddToMenu, DWMMenu
@@ -51,7 +52,7 @@ class SongListWidget(NoScrollSongListWidget):
         super().__init__(songInfos, SongCardType.PLAYLIST_INTERFACE_SONG_CARD, parent)
         self.resize(1150, 758)
         self.createSongCards()
-        self.__setQss()
+        setStyleSheet(self, 'song_tab_interface_song_list_widget')
 
     def contextMenuEvent(self, e: QContextMenuEvent):
         hitIndex = self.indexAt(e.pos()).column()
@@ -59,13 +60,6 @@ class SongListWidget(NoScrollSongListWidget):
             contextMenu = SongCardListContextMenu(self)
             self.__connectMenuSignalToSlot(contextMenu)
             contextMenu.exec(self.cursor().pos())
-
-    def __setQss(self):
-        """ set style sheet """
-        f = QFile(":/qss/song_tab_interface_song_list_widget.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
 
     def __onPlayButtonClicked(self, index):
         """ play button clicked slot """

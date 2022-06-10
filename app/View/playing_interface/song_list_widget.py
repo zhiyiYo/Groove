@@ -3,6 +3,7 @@ from typing import List
 
 from common.signal_bus import signalBus
 from common.database.entity import SongInfo
+from common.style_sheet import setStyleSheet
 from components.dialog_box.song_property_dialog import SongPropertyDialog
 from components.widgets.list_widget import ListWidget
 from PyQt5.QtCore import QFile, QSize, Qt, pyqtSignal
@@ -40,7 +41,7 @@ class SongListWidget(ListWidget):
         self.resize(1150 + 60, 800)
         self.setViewportMargins(30, 0, 30, 0)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.__setQss()
+        setStyleSheet(self, 'playing_interface_song_list_widget')
 
     def createSongCards(self):
         """ create song cards """
@@ -52,13 +53,6 @@ class SongListWidget(ListWidget):
             self.songCards[self.currentIndex].setPlay(True)
 
         self.resize(1200, 800)
-
-    def __setQss(self):
-        """ set style sheet """
-        f = QFile(":/qss/playing_interface_song_list_widget.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
 
     def resizeEvent(self, e):
         """ 更新item的尺寸 """

@@ -5,6 +5,7 @@ import pinyin
 from common.database.entity import AlbumInfo
 from common.library import Library
 from common.signal_bus import signalBus
+from common.style_sheet import setStyleSheet
 from components.album_card import (AlbumBlurBackground, AlbumCard,
                                    AlbumCardType, GridAlbumCardView)
 from PyQt5.QtCore import QFile, QParallelAnimationGroup, QPoint, Qt, pyqtSignal
@@ -252,12 +253,7 @@ class AlbumCardView(QWidget):
     def __setQss(self):
         """ set style sheet """
         self.guideLabel.setObjectName('guideLabel')
-
-        f = QFile(":/qss/album_card_interface.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
-
+        setStyleSheet(self, 'album_card_interface')
         self.guideLabel.adjustSize()
 
     def __onAlbumCardCheckedStateChanged(self, albumCard: AlbumCard, isChecked: bool):

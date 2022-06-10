@@ -1,7 +1,8 @@
 # coding:utf-8
 from common.auto_wrap import autoWrap
+from common.style_sheet import setStyleSheet
 from components.buttons.perspective_button import PerspectivePushButton
-from PyQt5.QtCore import pyqtSignal, QFile
+from PyQt5.QtCore import QFile, pyqtSignal
 from PyQt5.QtWidgets import QLabel
 
 from .mask_dialog_base import MaskDialogBase
@@ -63,7 +64,4 @@ class MessageDialog(MaskDialogBase):
         self.windowMask.setObjectName('windowMask')
         self.titleLabel.setObjectName('titleLabel')
         self.contentLabel.setObjectName('contentLabel')
-        f = QFile(":/qss/message_dialog.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
+        setStyleSheet(self, 'message_dialog')

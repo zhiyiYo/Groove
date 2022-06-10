@@ -4,6 +4,8 @@ import os
 import sys
 from pathlib import Path
 
+import darkdetect
+
 from .singleton import Singleton
 
 
@@ -22,9 +24,11 @@ class Config(Singleton):
             "minimize-to-tray": True,
             "volume": 30,
             "playBar-color": [34, 92, 127],
-            'download-folder': str(Path('download').absolute()).replace("\\", '/'),
-            'recent-plays-number': 300
+            "download-folder": str(Path('download').absolute()).replace("\\", '/'),
+            "recent-plays-number": 300,
+            "mode": "Light",
         }
+        self.__theme = "Light"
         self.__readConfig()
 
     def __readConfig(self):
@@ -47,6 +51,11 @@ class Config(Singleton):
 
         if sys.platform != "win32":
             self["enable-acrylic-background"] = False
+
+        if self["mode"] == "Auto":
+            self.__theme = darkdetect.theme() or "Light"
+        else:
+            self.__theme = self["mode"]
 
     def __setitem__(self, key, value):
         if key not in self.__config:
@@ -71,6 +80,11 @@ class Config(Singleton):
         self.folder.mkdir(parents=True, exist_ok=True)
         with open(self.folder/"config.json", "w", encoding="utf-8") as f:
             json.dump(self.__config, f)
+
+    @property
+    def theme(self):
+        """ get theme mode, can be `light` or `dark` """
+        return self.__theme.lower()
 
 
 config = Config()

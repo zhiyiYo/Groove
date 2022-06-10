@@ -2,6 +2,7 @@
 from common.database.entity import SongInfo
 from common.os_utils import getCoverPath
 from common.signal_bus import signalBus
+from common.style_sheet import setStyleSheet
 from components.widgets.label import ClickableLabel, AlbumCover
 from PyQt5.QtCore import QEvent, QFile, Qt, QTimer, pyqtSignal
 from PyQt5.QtWidgets import QApplication, QWidget
@@ -71,11 +72,7 @@ class SongInfoCard(QWidget):
         self.singerAlbumLabel.setObjectName("singerAlbumLabel")
         self.songNameLabel.setProperty("state", "normal")
         self.singerAlbumLabel.setProperty("state", "normal")
-
-        f = QFile(":/qss/playing_interface_song_info_card.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
+        setStyleSheet(self, 'playing_interface_song_info_card')
 
     def eventFilter(self, obj, e: QEvent):
         if obj in [self.songNameLabel, self.singerAlbumLabel]:

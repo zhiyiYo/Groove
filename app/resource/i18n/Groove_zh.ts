@@ -356,22 +356,22 @@
 <context>
     <name>DownloadStateTooltip</name>
     <message>
-        <location filename="../../components/widgets/state_tooltip.py" line="178"/>
+        <location filename="../../components/widgets/tooltip.py" line="178"/>
         <source>There are</source>
         <translation>还剩</translation>
     </message>
     <message>
-        <location filename="../../components/widgets/state_tooltip.py" line="179"/>
+        <location filename="../../components/widgets/tooltip.py" line="179"/>
         <source>left. Please wait patiently</source>
         <translation>首，要耐心等待哦~</translation>
     </message>
     <message>
-        <location filename="../../components/widgets/state_tooltip.py" line="171"/>
+        <location filename="../../components/widgets/tooltip.py" line="171"/>
         <source>Download complete</source>
         <translation>下载完成</translation>
     </message>
     <message>
-        <location filename="../../components/widgets/state_tooltip.py" line="172"/>
+        <location filename="../../components/widgets/tooltip.py" line="172"/>
         <source>Download completed, please check</source>
         <translation>下载完成啦，请查收~</translation>
     </message>
@@ -1730,6 +1730,36 @@
         <location filename="../../View/setting_interface/setting_interface.py" line="98"/>
         <source>Quit Groove Music</source>
         <translation>退出 Groove 音乐</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="100"/>
+        <source>Mode</source>
+        <translation>主题</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="102"/>
+        <source>Light</source>
+        <translation>浅色</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="103"/>
+        <source>Dark</source>
+        <translation>深色</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="105"/>
+        <source>Use system setting</source>
+        <translation>跟随系统设置</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="418"/>
+        <source>Change mode successful</source>
+        <translation>主题修改成功</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="419"/>
+        <source>Configuration takes effect after restart</source>
+        <translation>配置在重启 Groove 后生效</translation>
     </message>
 </context>
 <context>

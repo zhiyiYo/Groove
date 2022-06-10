@@ -1,5 +1,6 @@
 # coding:utf-8
 from common.library import Library
+from common.style_sheet import setStyleSheet
 from components.buttons.three_state_button import ThreeStateButton
 from components.dialog_box.mask_dialog_base import MaskDialogBase
 from components.widgets.label import ClickableLabel, PixmapLabel
@@ -50,10 +51,7 @@ class RenamePlaylistDialog(MaskDialogBase):
     def __setQss(self):
         """ set style sheet """
         self.cancelLabel.setObjectName("cancelLabel")
-        f = QFile(":/qss/rename_playlist_dialog.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
+        setStyleSheet(self, 'rename_playlist_dialog')
 
     def __initLayout(self):
         """ 初始化布局 """
@@ -115,13 +113,12 @@ class LineEdit(QLineEdit):
         self.pencilPic = PixmapLabel(self)
         self.menu = LineEditMenu(self)
 
-        self.initWidget()
-        self.setQss()
+        self.__initWidget()
 
-    def initWidget(self):
+    def __initWidget(self):
         """ initialize widgets """
         self.setFixedSize(484, 70)
-        self.adjustButtonPos()
+        self.__adjustButtonPos()
         self.textChanged.connect(self.__onTextChanged)
         self.setObjectName("createPlaylistPanelLineEdit")
 
@@ -133,6 +130,8 @@ class LineEdit(QLineEdit):
         # prevent text and icon overlapping
         self.setTextMargins(
             0, 0, self.clearButton.width() + self.pencilPic.pixmap().width() + 1, 0)
+
+        setStyleSheet(self, 'line_edit')
 
     def __onTextChanged(self):
         self.clearButton.setVisible(bool(self.text()))
@@ -180,7 +179,7 @@ class LineEdit(QLineEdit):
         self.menu.exec_(e.globalPos())
 
     def resizeEvent(self, e):
-        self.adjustButtonPos()
+        self.__adjustButtonPos()
 
     def eventFilter(self, obj, e):
         if obj is self.clearButton:
@@ -191,14 +190,7 @@ class LineEdit(QLineEdit):
 
         return super().eventFilter(obj, e)
 
-    def adjustButtonPos(self):
+    def __adjustButtonPos(self):
         """ adjust button position """
         self.clearButton.move(self.width() - 101, 10)
         self.pencilPic.move(self.width() - 51, 10)
-
-    def setQss(self):
-        """ set style sheet """
-        f = QFile(":/qss/line_edit.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()

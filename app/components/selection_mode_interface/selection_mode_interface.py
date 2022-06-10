@@ -4,6 +4,7 @@ from typing import List, Tuple
 from common.database.entity import Playlist, SongInfo
 from common.library import Library
 from common.signal_bus import signalBus
+from common.style_sheet import setStyleSheet
 from PyQt5.QtCore import QFile, QPoint, Qt, pyqtSignal
 from PyQt5.QtWidgets import QVBoxLayout, QWidget
 
@@ -80,10 +81,7 @@ class SelectionModeInterface(ScrollArea):
 
     def _setQss(self):
         """ set style sheet """
-        f = QFile(":/qss/selection_mode_interface.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
+        setStyleSheet(self, 'selection_mode_interface')
 
     def exitSelectionMode(self):
         """ exit selection mode """

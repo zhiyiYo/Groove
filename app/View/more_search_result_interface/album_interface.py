@@ -3,11 +3,12 @@ from typing import List
 
 from common.database.entity import AlbumInfo
 from common.library import Library
+from common.style_sheet import setStyleSheet
 from components.album_card import (AlbumBlurBackground, AlbumCardType,
                                    GridAlbumCardView)
 from components.selection_mode_interface import (AlbumSelectionModeInterface,
                                                  SelectionModeBarType)
-from PyQt5.QtCore import QPoint, QFile, QMargins
+from PyQt5.QtCore import QFile, QMargins, QPoint
 
 
 class AlbumInterface(AlbumSelectionModeInterface):
@@ -26,7 +27,7 @@ class AlbumInterface(AlbumSelectionModeInterface):
         self.albumBlurBackground.lower()
         self.albumBlurBackground.hide()
 
-        self.__setQss()
+        setStyleSheet(self, 'album_card_interface')
         self.__connectSignalToSlot()
 
     def updateWindow(self, albumInfos: List[AlbumInfo]):
@@ -37,13 +38,6 @@ class AlbumInterface(AlbumSelectionModeInterface):
     def showEvent(self, e):
         self.albumBlurBackground.hide()
         super().showEvent(e)
-
-    def __setQss(self):
-        """ set style sheet """
-        f = QFile(":/qss/album_card_interface.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
 
     def __showBlurAlbumBackground(self, pos: QPoint, picPath: str):
         """ show blur album background """

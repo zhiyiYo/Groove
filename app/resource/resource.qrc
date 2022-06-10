@@ -1,45 +1,86 @@
 <RCC>
     <qresource prefix="/">
-        <file>qss/album_card_interface.qss</file>
-        <file>qss/album_group_box.qss</file>
-        <file>qss/album_info_edit_dialog.qss</file>
-        <file>qss/album_interface_song_list_widget.qss</file>
-        <file>qss/create_playlist_dialog.qss</file>
-        <file>qss/dialog.qss</file>
-        <file>qss/folder_list_dialog.qss</file>
-        <file>qss/label_navigation_interface.qss</file>
-        <file>qss/line_edit.qss</file>
-        <file>qss/main_window.qss</file>
-        <file>qss/menu.qss</file>
-        <file>qss/message_dialog.qss</file>
-        <file>qss/my_music_interface_toolBar.qss</file>
-        <file>qss/navigation.qss</file>
-        <file>qss/playing_interface.qss</file>
-        <file>qss/playing_interface_song_info_card.qss</file>
-        <file>qss/playing_interface_song_list_widget.qss</file>
-        <file>qss/playlist_card_interface.qss</file>
-        <file>qss/playlist_group_box.qss</file>
-        <file>qss/playlist_interface.qss</file>
-        <file>qss/rename_playlist_dialog.qss</file>
-        <file>qss/search_result_interface.qss</file>
-        <file>qss/more_search_result_interface.qss</file>
-        <file>qss/setting_interface.qss</file>
-        <file>qss/singer_interface.qss</file>
-        <file>qss/smallest_play_interface.qss</file>
-        <file>qss/song_group_box.qss</file>
-        <file>qss/song_info_edit_dialog.qss</file>
-        <file>qss/song_property_dialog.qss</file>
-        <file>qss/song_tab_interface_song_list_widget.qss</file>
-        <file>qss/state_tooltip.qss</file>
-        <file>qss/switch_button.qss</file>
-        <file>qss/volume_slider_widget.qss</file>
-        <file>qss/lyric_widget.qss</file>
-        <file>qss/tooltip.qss</file>
-        <file>qss/selection_mode_interface.qss</file>
-        <file>qss/title_bar.qss</file>
-        <file>qss/singer_card_interface.qss</file>
-        <file>qss/singer_group_box.qss</file>
-        <file>qss/recent_play_interface.qss</file>
+        <file>qss/light/album_card_interface.qss</file>
+        <file>qss/light/album_group_box.qss</file>
+        <file>qss/light/album_info_edit_dialog.qss</file>
+        <file>qss/light/album_interface_song_list_widget.qss</file>
+        <file>qss/light/create_playlist_dialog.qss</file>
+        <file>qss/light/dialog.qss</file>
+        <file>qss/light/folder_list_dialog.qss</file>
+        <file>qss/light/label_navigation_interface.qss</file>
+        <file>qss/light/line_edit.qss</file>
+        <file>qss/light/main_window.qss</file>
+        <file>qss/light/menu.qss</file>
+        <file>qss/light/message_dialog.qss</file>
+        <file>qss/light/my_music_interface_toolBar.qss</file>
+        <file>qss/light/navigation.qss</file>
+        <file>qss/light/playing_interface.qss</file>
+        <file>qss/light/playing_interface_song_info_card.qss</file>
+        <file>qss/light/playing_interface_song_list_widget.qss</file>
+        <file>qss/light/playlist_card_interface.qss</file>
+        <file>qss/light/playlist_group_box.qss</file>
+        <file>qss/light/playlist_interface.qss</file>
+        <file>qss/light/rename_playlist_dialog.qss</file>
+        <file>qss/light/search_result_interface.qss</file>
+        <file>qss/light/more_search_result_interface.qss</file>
+        <file>qss/light/setting_interface.qss</file>
+        <file>qss/light/singer_interface.qss</file>
+        <file>qss/light/smallest_play_interface.qss</file>
+        <file>qss/light/song_group_box.qss</file>
+        <file>qss/light/song_info_edit_dialog.qss</file>
+        <file>qss/light/song_property_dialog.qss</file>
+        <file>qss/light/song_tab_interface_song_list_widget.qss</file>
+        <file>qss/light/state_tooltip.qss</file>
+        <file>qss/light/switch_button.qss</file>
+        <file>qss/light/volume_slider_widget.qss</file>
+        <file>qss/light/lyric_widget.qss</file>
+        <file>qss/light/tooltip.qss</file>
+        <file>qss/light/selection_mode_interface.qss</file>
+        <file>qss/light/title_bar.qss</file>
+        <file>qss/light/singer_card_interface.qss</file>
+        <file>qss/light/singer_group_box.qss</file>
+        <file>qss/light/recent_play_interface.qss</file>
+
+        <file>qss/dark/album_card_interface.qss</file>
+        <file>qss/dark/album_group_box.qss</file>
+        <file>qss/dark/album_info_edit_dialog.qss</file>
+        <file>qss/dark/album_interface_song_list_widget.qss</file>
+        <file>qss/dark/create_playlist_dialog.qss</file>
+        <file>qss/dark/dialog.qss</file>
+        <file>qss/dark/folder_list_dialog.qss</file>
+        <file>qss/dark/label_navigation_interface.qss</file>
+        <file>qss/dark/line_edit.qss</file>
+        <file>qss/dark/main_window.qss</file>
+        <file>qss/dark/menu.qss</file>
+        <file>qss/dark/message_dialog.qss</file>
+        <file>qss/dark/my_music_interface_toolBar.qss</file>
+        <file>qss/dark/navigation.qss</file>
+        <file>qss/dark/playing_interface.qss</file>
+        <file>qss/dark/playing_interface_song_info_card.qss</file>
+        <file>qss/dark/playing_interface_song_list_widget.qss</file>
+        <file>qss/dark/playlist_card_interface.qss</file>
+        <file>qss/dark/playlist_group_box.qss</file>
+        <file>qss/dark/playlist_interface.qss</file>
+        <file>qss/dark/rename_playlist_dialog.qss</file>
+        <file>qss/dark/search_result_interface.qss</file>
+        <file>qss/dark/more_search_result_interface.qss</file>
+        <file>qss/dark/setting_interface.qss</file>
+        <file>qss/dark/singer_interface.qss</file>
+        <file>qss/dark/smallest_play_interface.qss</file>
+        <file>qss/dark/song_group_box.qss</file>
+        <file>qss/dark/song_info_edit_dialog.qss</file>
+        <file>qss/dark/song_property_dialog.qss</file>
+        <file>qss/dark/song_tab_interface_song_list_widget.qss</file>
+        <file>qss/dark/state_tooltip.qss</file>
+        <file>qss/dark/switch_button.qss</file>
+        <file>qss/dark/volume_slider_widget.qss</file>
+        <file>qss/dark/lyric_widget.qss</file>
+        <file>qss/dark/tooltip.qss</file>
+        <file>qss/dark/selection_mode_interface.qss</file>
+        <file>qss/dark/title_bar.qss</file>
+        <file>qss/dark/singer_card_interface.qss</file>
+        <file>qss/dark/singer_group_box.qss</file>
+        <file>qss/dark/recent_play_interface.qss</file>
 
         <file>images/logo/logo.png</file>
         <file>images/logo/logo.ico</file>
@@ -73,9 +114,13 @@
         <file>images/title_bar/黑色返回按钮_60_40.png</file>
         <file>images/title_bar/黑色返回按钮_hover_60_40.png</file>
         <file>images/title_bar/黑色返回按钮_pressed_60_40.png</file>
+        <file>images/title_bar/透明白色返回按钮_60_40.png</file>
+        <file>images/title_bar/透明白色返回按钮_hover_60_40.png</file>
+        <file>images/title_bar/透明白色返回按钮_pressed_60_40.png</file>
         <file>images/state_tooltip/close_hover.png</file>
         <file>images/state_tooltip/close_normal.png</file>
         <file>images/state_tooltip/completed.png</file>
+        <file>images/state_tooltip/info.png</file>
         <file>images/state_tooltip/running.png</file>
         <file>images/thumbnail_tool_bar/上一首_32_32.png</file>
         <file>images/thumbnail_tool_bar/上一首_32_32_2.png</file>
@@ -127,21 +172,30 @@
         <file>images/menu/Playlist.png</file>
         <file>images/menu/Lyric.png</file>
         <file>images/menu/Movie.png</file>
-        <file>images/navigation_interface/Add.png</file>
-        <file>images/navigation_interface/Album.png</file>
         <file>images/navigation_interface/clear_hover.png</file>
         <file>images/navigation_interface/clear_normal.png</file>
         <file>images/navigation_interface/clear_pressed.png</file>
-        <file>images/navigation_interface/GlobalNavButton.png</file>
-        <file>images/navigation_interface/MusicInCollection.png</file>
-        <file>images/navigation_interface/Playing.png</file>
-        <file>images/navigation_interface/Playlist.png</file>
-        <file>images/navigation_interface/Recent.png</file>
-        <file>images/navigation_interface/Search.png</file>
+        <file>images/navigation_interface/Add_black.png</file>
+        <file>images/navigation_interface/Album_black.png</file>
+        <file>images/navigation_interface/GlobalNavButton_black.png</file>
+        <file>images/navigation_interface/MusicInCollection_black.png</file>
+        <file>images/navigation_interface/Playing_black.png</file>
+        <file>images/navigation_interface/Playlist_black.png</file>
+        <file>images/navigation_interface/Recent_black.png</file>
+        <file>images/navigation_interface/Search_black.png</file>
+        <file>images/navigation_interface/Settings_black.png</file>
+        <file>images/navigation_interface/Add_white.png</file>
+        <file>images/navigation_interface/Album_white.png</file>
+        <file>images/navigation_interface/GlobalNavButton_white.png</file>
+        <file>images/navigation_interface/MusicInCollection_white.png</file>
+        <file>images/navigation_interface/Playing_white.png</file>
+        <file>images/navigation_interface/Playlist_white.png</file>
+        <file>images/navigation_interface/Recent_white.png</file>
+        <file>images/navigation_interface/Search_white.png</file>
+        <file>images/navigation_interface/Settings_white.png</file>
         <file>images/navigation_interface/search_hover_46_45.png</file>
         <file>images/navigation_interface/search_normal_46_45.png</file>
         <file>images/navigation_interface/search_pressed_46_45.png</file>
-        <file>images/navigation_interface/Settings.png</file>
         <file>images/play_bar/More.png</file>
         <file>images/play_bar/Next.png</file>
         <file>images/play_bar/Pause.png</file>
@@ -201,9 +255,12 @@
         <file>images/playlist_interface/Delete_black.png</file>
         <file>images/playlist_interface/Delete_green.png</file>
         <file>images/playlist_interface/Delete_white.png</file>
-        <file>images/random_play_all/Shuffle_hover.png</file>
-        <file>images/random_play_all/Shuffle_normal.png</file>
-        <file>images/random_play_all/Shuffle_pressed.png</file>
+        <file>images/random_play_all/Shuffle_black_hover.png</file>
+        <file>images/random_play_all/Shuffle_black_normal.png</file>
+        <file>images/random_play_all/Shuffle_black_pressed.png</file>
+        <file>images/random_play_all/Shuffle_white_hover.png</file>
+        <file>images/random_play_all/Shuffle_white_normal.png</file>
+        <file>images/random_play_all/Shuffle_white_pressed.png</file>
         <file>images/search_result_interface/ChevronLeft.png</file>
         <file>images/search_result_interface/ChevronRight.png</file>
         <file>images/search_result_interface/Download_black.png</file>

@@ -1,0 +1,26 @@
+QLabel {
+    background-color: transparent;
+}
+
+QLabel[state='normal'] {
+    color: white;
+}
+
+QLabel[state='hover'] {
+    color: rgb(223, 223, 223);
+}
+
+QLabel[state='pressed'] {
+    color: rgba(223, 223, 223, 0.7);
+}
+
+QLabel#songNameLabel {
+    font-size: 34px;
+    font-family: 'Segoe UI', 'Microsoft YaHei';
+    font-weight: bold;
+}
+
+QLabel#singerAlbumLabel {
+    font: 22px 'Segoe UI', 'Microsoft YaHei';
+    font-weight: 400;
+}

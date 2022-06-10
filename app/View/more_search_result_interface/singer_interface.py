@@ -3,6 +3,7 @@ from typing import List
 
 from common.database.entity import SingerInfo
 from common.library import Library
+from common.style_sheet import setStyleSheet
 from components.selection_mode_interface import (SelectionModeBarType,
                                                  SingerSelectionModeInterface)
 from components.singer_card import (GridSingerCardView, SingerBlurBackground,
@@ -26,7 +27,7 @@ class SingerInterface(SingerSelectionModeInterface):
         self.singerBlurBackground.lower()
         self.singerBlurBackground.hide()
 
-        self.__setQss()
+        setStyleSheet(self, 'singer_card_interface')
         self.__connectSignalToSlot()
 
     def updateWindow(self, singerInfos: List[SingerInfo]):
@@ -37,13 +38,6 @@ class SingerInterface(SingerSelectionModeInterface):
     def showEvent(self, e):
         self.singerBlurBackground.hide()
         super().showEvent(e)
-
-    def __setQss(self):
-        """ set style sheet """
-        f = QFile(":/qss/singer_card_interface.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
 
     def __showBlurSingerBackground(self, pos: QPoint, picPath: str):
         """ show blur singer background """

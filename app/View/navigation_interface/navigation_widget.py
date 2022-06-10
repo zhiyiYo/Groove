@@ -1,6 +1,5 @@
 # coding:utf-8
-from pathlib import Path
-
+from common.config import config
 from common.os_utils import getPlaylistNames
 from common.signal_bus import signalBus
 from components.widgets.scroll_area import ScrollArea
@@ -28,19 +27,20 @@ class NavigationWidget(NavigationWidgetBase):
 
     def __createButtons(self):
         """ create buttons """
+        color = "white" if config.theme == 'dark' else 'black'
         self.showBarButton = ToolButton(
-            ":/images/navigation_interface/GlobalNavButton.png", parent=self)
+            f":/images/navigation_interface/GlobalNavButton_{color}.png", parent=self)
         self.myMusicButton = PushButton(
-            ":/images/navigation_interface/MusicInCollection.png", self.tr("My music"), (400, 60), self.scrollWidget)
+            f":/images/navigation_interface/MusicInCollection_{color}.png", self.tr("My music"), (400, 60), self.scrollWidget)
         self.historyButton = PushButton(
-            ":/images/navigation_interface/Recent.png", self.tr("Recent plays"), (400, 62), self.scrollWidget)
+            f":/images/navigation_interface/Recent_{color}.png", self.tr("Recent plays"), (400, 62), self.scrollWidget)
         self.playingButton = PushButton(
-            ":/images/navigation_interface/Playing.png", self.tr("Now playing"), (400, 62), self.scrollWidget)
+            f":/images/navigation_interface/Playing_{color}.png", self.tr("Now playing"), (400, 62), self.scrollWidget)
         self.playlistButton = PushButton(
-            ":/images/navigation_interface/Playlist.png", self.tr("Playlists"), (340, 60), self.scrollWidget)
+            f":/images/navigation_interface/Playlist_{color}.png", self.tr("Playlists"), (340, 60), self.scrollWidget)
         self.createPlaylistButton = CreatePlaylistButton(self.scrollWidget)
         self.settingButton = PushButton(
-            ":/images/navigation_interface/Settings.png", self.tr("Settings"), (400, 62), self)
+            f":/images/navigation_interface/Settings_{color}.png", self.tr("Settings"), (400, 62), self)
 
         self.__createPlaylistNameButtons(getPlaylistNames())
 
@@ -141,10 +141,14 @@ class NavigationWidget(NavigationWidgetBase):
 
     def __createPlaylistNameButtons(self, playlistNames: list):
         """ create playlist name buttons """
+        c = "white" if config.theme == 'dark' else 'black'
         self.playlistNames = playlistNames
         self.playlistNameButtons = [
-            PushButton(":/images/navigation_interface/Album.png",
-                       i, (400, 62), self.scrollWidget)
+            PushButton(
+                f":/images/navigation_interface/Album_{c}.png",
+                i, (400, 62),
+                self.scrollWidget
+            )
             for i in playlistNames
         ]
 

@@ -3,6 +3,7 @@ from typing import List
 
 from common.database.entity import AlbumInfo, Playlist, SingerInfo, SongInfo
 from common.library import Library
+from common.style_sheet import setStyleSheet
 from PyQt5.QtCore import QFile, pyqtSignal
 from PyQt5.QtWidgets import QLabel, QStackedWidget, QWidget
 
@@ -109,11 +110,7 @@ class MoreSearchResultInterface(QWidget):
     def __setQss(self):
         """ set style sheet """
         self.titleLabel.setObjectName('titleLabel')
-
-        f = QFile(":/qss/more_search_result_interface.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
+        setStyleSheet(self, 'more_search_result_interface')
 
     def __connectSignalToSlot(self):
         """ connect signal to slot """

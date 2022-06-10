@@ -7,6 +7,7 @@ from unittest import TestCase
 
 from app.common import resource
 from app.common.database.entity import SongInfo
+from app.common.style_sheet import setStyleSheet
 from app.components.song_list_widget.song_card import (
     AlbumInterfaceSongCard, NoCheckBoxSongCard, OnlineSongCard,
     PlaylistInterfaceSongCard, SongTabSongCard)
@@ -38,8 +39,7 @@ class TestSongCard(TestCase):
         """ 测试我的音乐歌曲界面的歌曲卡 """
         app = QApplication(sys.argv)
         w = SongTabSongCard(self.songInfo)
-        w.setStyleSheet(self.getStyleSheet(
-            'app/resource/qss/song_tab_interface_song_list_widget.qss'))
+        setStyleSheet(w, 'song_tab_interface_song_list_widget')
         w.show()
         app.exec_()
 
@@ -47,8 +47,7 @@ class TestSongCard(TestCase):
         """ 测试专辑界面歌曲卡 """
         app = QApplication(sys.argv)
         w = AlbumInterfaceSongCard(self.songInfo)
-        w.setStyleSheet(self.getStyleSheet(
-            'app/resource/qss/album_interface_song_list_widget.qss'))
+        setStyleSheet(w, 'album_interface_song_list_widget')
         w.show()
         app.exec_()
 
@@ -56,8 +55,7 @@ class TestSongCard(TestCase):
         """ 测试播放列表界面歌曲卡 """
         app = QApplication(sys.argv)
         w = PlaylistInterfaceSongCard(self.songInfo)
-        w.setStyleSheet(self.getStyleSheet(
-            'app/resource/qss/song_tab_interface_song_list_widget.qss'))
+        setStyleSheet(w, 'song_tab_interface_song_list_widget')
         w.show()
         app.exec_()
 
@@ -65,8 +63,7 @@ class TestSongCard(TestCase):
         """ 测试没有复选框的歌曲卡 """
         app = QApplication(sys.argv)
         w = NoCheckBoxSongCard(self.songInfo)
-        w.setStyleSheet(self.getStyleSheet(
-            'app/resource/qss/song_tab_interface_song_list_widget.qss'))
+        setStyleSheet(w, 'song_tab_interface_song_list_widget')
         w.show()
         app.exec_()
 
@@ -74,12 +71,6 @@ class TestSongCard(TestCase):
         """ 测试在线歌曲卡 """
         app = QApplication(sys.argv)
         w = OnlineSongCard(self.songInfo)
-        w.setStyleSheet(self.getStyleSheet(
-            'app/resource/qss/song_tab_interface_song_list_widget.qss'))
+        setStyleSheet(w, 'song_tab_interface_song_list_widget')
         w.show()
         app.exec_()
-
-    def getStyleSheet(self, file:str):
-        """ 获取样式表 """
-        with open(file, encoding='utf-8') as f:
-            return f.read()

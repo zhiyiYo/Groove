@@ -1,5 +1,6 @@
 # coding:utf-8
 from common.auto_wrap import autoWrap
+from common.style_sheet import setStyleSheet
 from common.database.entity import SongInfo
 from common.meta_data.reader import AlbumCoverReader, SongInfoReader
 from common.meta_data.writer import MetaDataWriter
@@ -8,7 +9,7 @@ from components.buttons.perspective_button import PerspectivePushButton
 from components.buttons.switch_button import SwitchButton
 from components.widgets.label import ErrorIcon
 from components.widgets.line_edit import LineEdit, VLineEdit
-from components.widgets.state_tooltip import StateTooltip
+from components.widgets.tooltip import StateTooltip
 from mutagen.id3 import TCON
 from PyQt5.QtCore import QFile, QRegExp, Qt, pyqtSignal
 from PyQt5.QtGui import QRegExpValidator
@@ -188,10 +189,7 @@ class SongInfoEditDialog(MaskDialogBase):
         self.songPath.setObjectName("songPath")
         self.bottomErrorLabel.setObjectName("bottomErrorLabel")
 
-        f = QFile(":/qss/song_info_edit_dialog.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
+        setStyleSheet(self, 'song_info_edit_dialog')
 
         self.saveButton.adjustSize()
         self.cancelButton.adjustSize()
@@ -265,7 +263,6 @@ class SongInfoEditDialog(MaskDialogBase):
         # create state tooltip
         self.stateToolTip = StateTooltip(self.tr('Retrieve metadata...'),
                                          self.tr('Please wait patiently'), self)
-        self.stateToolTip.move(self.stateToolTip.getSuitablePos())
         self.stateToolTip.show()
 
         # create crawler thread

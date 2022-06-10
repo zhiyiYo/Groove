@@ -3,10 +3,11 @@ from typing import List
 
 from common.database.entity import Playlist
 from common.library import Library
+from common.style_sheet import setStyleSheet
 from components.playlist_card import GridPlaylistCardView, PlaylistCardType
 from components.selection_mode_interface import (PlaylistSelectionModeInterface,
                                                  SelectionModeBarType)
-from PyQt5.QtCore import QFile, QMargins, QPoint
+from PyQt5.QtCore import QFile, QMargins
 
 
 class PlaylistInterface(PlaylistSelectionModeInterface):
@@ -21,16 +22,9 @@ class PlaylistInterface(PlaylistSelectionModeInterface):
         )
         self.playlistCards = self.playlistCardView.playlistCards
         self.vBox.setContentsMargins(0, 145, 0, 120)
-        self.__setQss()
+        setStyleSheet(self, 'playlist_card_interface')
 
     def updateWindow(self, playlists: List[Playlist]):
         """ update window """
         self.playlistCardView.updateAllCards(playlists)
         self.adjustScrollHeight()
-
-    def __setQss(self):
-        """ set style sheet """
-        f = QFile(":/qss/playlist_card_interface.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()

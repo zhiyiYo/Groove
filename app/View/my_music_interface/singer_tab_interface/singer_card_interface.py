@@ -5,6 +5,7 @@ import pinyin
 from common.database.entity import SingerInfo
 from common.library import Library
 from common.signal_bus import signalBus
+from common.style_sheet import setStyleSheet
 from common.thread.singer_avatar_downloader import SingerAvatarDownloader
 from components.singer_card import (GridSingerCardView, SingerBlurBackground,
                                     SingerCard, SingerCardType)
@@ -93,12 +94,7 @@ class SingerCardView(QWidget):
     def __setQss(self):
         """ set style sheet """
         self.guideLabel.setObjectName('guideLabel')
-
-        f = QFile(":/qss/singer_card_interface.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
-
+        setStyleSheet(self, 'singer_card_interface')
         self.guideLabel.adjustSize()
 
     def resizeEvent(self, e):

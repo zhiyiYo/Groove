@@ -1,6 +1,7 @@
 # coding:utf-8
 from common.database.entity import Playlist
 from common.library import Library
+from common.style_sheet import setStyleSheet
 from components.buttons.three_state_button import ThreeStatePushButton
 from components.playlist_card import GridPlaylistCardView, PlaylistCardType
 from components.selection_mode_interface import (
@@ -93,12 +94,7 @@ class PlaylistCardInterface(PlaylistSelectionModeInterface):
         self.sortModeMenu.setObjectName("sortModeMenu")
         self.sortModeMenu.setProperty("modeNumber", "2")
         self.guideLabel.setObjectName('guideLabel')
-
-        f = QFile(":/qss/playlist_card_interface.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
-
+        setStyleSheet(self, 'playlist_card_interface')
         self.createPlaylistButton.adjustSize()
         self.sortModeLabel.adjustSize()
         self.guideLabel.adjustSize()

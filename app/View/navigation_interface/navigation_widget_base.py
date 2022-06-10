@@ -1,4 +1,5 @@
 # coding:utf-8
+from common.style_sheet import setStyleSheet
 from PyQt5.QtCore import QFile, pyqtSignal
 from PyQt5.QtWidgets import QWidget
 
@@ -20,7 +21,8 @@ class NavigationWidgetBase(QWidget):
             'settingButton': 3
         }
         self.currentButton = None
-        self.__setQss()
+
+        setStyleSheet(self, 'navigation')
 
     def _connectButtonClickedSigToSlot(self):
         """ _connect button clicked signal to slot """
@@ -66,10 +68,3 @@ class NavigationWidgetBase(QWidget):
             index = self._selectableButtonNames.index(buttonName)
             self.currentButton = self._selectableButtons[index]
             self.currentButton.setSelected(True)
-
-    def __setQss(self):
-        """ set style sheet """
-        f = QFile(":/qss/navigation.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()

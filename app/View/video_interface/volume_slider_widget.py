@@ -1,4 +1,5 @@
 # coding:utf-8
+from common.style_sheet import setStyleSheet
 from components.buttons.circle_button import CircleButton
 from components.widgets.slider import Slider
 from PyQt5.QtCore import QEvent, QFile, Qt, pyqtSignal
@@ -36,11 +37,7 @@ class VolumeSliderWidget(QWidget):
     def __setQss(self):
         """ set style sheet """
         self.volumeSlider.setObjectName('volumeSlider')
-
-        f = QFile(":/qss/volume_slider_widget.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
+        setStyleSheet(self, 'volume_slider_widget')
 
     def paintEvent(self, e):
         painter = QPainter(self)

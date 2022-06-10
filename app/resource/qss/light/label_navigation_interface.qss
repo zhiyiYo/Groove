@@ -1,0 +1,49 @@
+QWidget {
+    background-color: white;
+}
+
+QScrollArea {
+    background-color: white
+}
+
+QLabel {
+    color: rgb(0, 107, 131);
+    font: 39px 'Segoe UI', 'Microsoft YaHei';
+    font-weight: 300;
+}
+
+QLabel:disabled {
+    color: rgb(102, 102, 102);
+    font: 39px 'Segoe UI', 'Microsoft YaHei';
+    font-weight: 300;
+}
+
+/*滚动条*/
+QScrollBar {
+    background: transparent;
+    width: 5px;
+    margin-top: 40px;
+    padding-right: 2px;
+}
+
+/*隐藏上箭头*/
+QScrollBar::sub-line {
+    background: transparent;
+}
+
+/*隐藏下箭头*/
+QScrollBar::add-line {
+    background: transparent;
+}
+
+QScrollBar::handle {
+    background: rgb(128, 128, 128);
+    border: 2px solid rgb(128, 128, 128);
+    border-radius: 1px;
+    min-height: 40px;
+}
+
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical {
+    background: none;
+}

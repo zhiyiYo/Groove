@@ -1,4 +1,5 @@
 # coding:utf-8
+from common.config import config
 from PyQt5.QtCore import QPoint, Qt
 from PyQt5.QtGui import QBrush, QColor, QPainter, QPen, QPolygon, QPixmap
 from PyQt5.QtWidgets import QPushButton
@@ -198,7 +199,7 @@ class PushButton(NavigationButton):
                 Qt.KeepAspectRatio,
                 Qt.SmoothTransformation,
             )
-            self.drawTextIcon(painter, image, 0, 0, 7, 2, 63, 21)
+            self.drawTextIcon(painter, image, 0, 0, 7, 2, 63)
         elif self.pressedPos == "right-top":
             self.drawTextIcon(painter, self.image, -0.02, 0)
         elif self.pressedPos == "right":
@@ -208,7 +209,7 @@ class PushButton(NavigationButton):
                 Qt.KeepAspectRatio,
                 Qt.SmoothTransformation,
             )
-            self.drawTextIcon(painter, image, 0, 0, 3, 1, 61, 21)
+            self.drawTextIcon(painter, image, 0, 0, 3, 1, 61)
         elif self.pressedPos == "right-bottom":
             image = self.image.scaled(
                 self.image.width() - 2,
@@ -218,20 +219,22 @@ class PushButton(NavigationButton):
             )
             self.drawTextIcon(painter, image, -0.02, 0, 0, 1)
 
-    def drawTextIcon(self, painter, image, shearX=0, shearY=0, iconX=0, iconY=0, textX=60, textY=21):
+    def drawTextIcon(self, painter, image, shearX=0, shearY=0, iconX=0, iconY=0, textX=60, textY=20):
         """ draw text and icon """
         painter.shear(shearX, shearY)
-        painter.drawPixmap(iconX, iconY, image.width(), image.height(), image)
+        painter.drawPixmap(iconX, iconY+1, image.width(), image.height(), image)
 
         if not self.text():
             return
 
-        painter.setPen(QPen(Qt.black))
+        color = Qt.white if config.theme == 'dark' else Qt.black
+        painter.setPen(color)
         painter.setFont(self.font())
         text = painter.fontMetrics().elidedText(self.text(), Qt.ElideRight, 320)
-        names = ["myMusicButton", "historyButton", "playingButton", "settingButton"]
+        names = ["myMusicButton", "historyButton",
+                 "playingButton", "settingButton"]
         if self.objectName() in names:
-            painter.drawText(textX, textY + 16, text)
+            painter.drawText(textX, textY + 14, text)
         else:
             painter.drawText(textX, textY + 18, text)
 
@@ -249,7 +252,8 @@ class CreatePlaylistButton(NavigationButton):
     """ Create playlist button """
 
     def __init__(self, parent):
-        self.iconPath = ":/images/navigation_interface/Add.png"
+        color = "white" if config.theme == 'dark' else 'black'
+        self.iconPath = f":/images/navigation_interface/Add_{color}.png"
         super().__init__(self.iconPath, parent=parent)
         self.setToolTip(self.tr('Create playlist'))
 

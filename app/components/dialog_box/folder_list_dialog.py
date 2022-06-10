@@ -1,13 +1,14 @@
 # coding:utf-8
 import os
 
+from common.style_sheet import setStyleSheet
 from components.buttons.perspective_button import PerspectivePushButton
 from components.widgets.scroll_area import ScrollArea
 from PyQt5.QtCore import QFile, Qt, pyqtSignal
 from PyQt5.QtGui import (QBrush, QColor, QFont, QFontMetrics, QMouseEvent,
                          QPainter, QPen, QPixmap)
 from PyQt5.QtWidgets import (QApplication, QFileDialog, QHBoxLayout, QLabel,
-                             QVBoxLayout, QWidget, QScrollBar)
+                             QVBoxLayout, QWidget)
 
 from .dialog import Dialog
 from .mask_dialog_base import MaskDialogBase
@@ -148,12 +149,9 @@ class FolderListDialog(MaskDialogBase):
         self.completeButton.setObjectName('completeButton')
         self.scrollWidget.setObjectName('scrollWidget')
 
-        f = QFile(":/qss/folder_list_dialog.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
-
+        setStyleSheet(self, 'folder_list_dialog')
         self.setStyle(QApplication.style())
+
         self.titleLabel.adjustSize()
         self.contentLabel.adjustSize()
         self.completeButton.adjustSize()

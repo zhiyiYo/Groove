@@ -5,6 +5,7 @@ from common.database.entity import Playlist, SongInfo
 from common.library import Library
 from common.os_utils import getCoverPath
 from common.signal_bus import signalBus
+from common.style_sheet import setStyleSheet
 from components.buttons.three_state_button import ThreeStatePushButton
 from components.dialog_box.message_dialog import MessageDialog
 from components.dialog_box.rename_playlist_dialog import RenamePlaylistDialog
@@ -108,10 +109,7 @@ class PlaylistInterface(SongSelectionModeInterface):
     def __setQss(self):
         """ set style sheet """
         self.setObjectName("playlistInterface")
-        f = QFile(":/qss/playlist_interface.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
+        setStyleSheet(self, 'playlist_interface')
 
     def __getPlaylistInfo(self, playlist: Playlist):
         """ get playlist information """

@@ -1,0 +1,37 @@
+QWidget#centerWidget {
+    background-color: white;
+    border: 1px solid rgb(0, 153, 188);
+}
+
+QLabel {
+    margin: 0;
+    font: 18px 'Segoe UI', 'Microsoft YaHei';
+    selection-background-color: rgb(0, 153, 188);
+    border: none;
+}
+
+QLabel#propertyTitleLabel {
+    font: 21px 'Segoe UI', 'Microsoft YaHei';
+}
+
+QLabel#valueLabel {
+    font-size: 17px;
+}
+
+QPushButton {
+    background-color: rgb(204, 204, 204);
+    padding: 9px 65px 9px 65px;
+    font: 18px 'Segoe UI', 'Microsoft YaHei';
+    border: transparent;
+    border-radius: 4px;
+}
+
+QPushButton:pressed:hover {
+    background-color: rgb(153, 153, 153);
+}
+
+QPushButton:hover {
+    background-color: rgb(230, 230, 230);
+    border-radius: 4px;
+    padding: 7px 64px 7px 64px;
+}

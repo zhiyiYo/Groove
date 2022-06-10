@@ -13,7 +13,7 @@ from .group_box import GroupBox
 class AlbumGroupBox(GroupBox):
     """ Album card group box """
 
-    qss = 'album_group_box.qss'
+    qss = 'album_group_box'
 
     def __init__(self, library: Library, parent=None):
         self.albumCardView = HorizonAlbumCardView(

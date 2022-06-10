@@ -1,9 +1,10 @@
 # coding:utf-8
-from common.database.entity import SongInfo
 from common.auto_wrap import autoWrap
+from common.database.entity import SongInfo
+from common.style_sheet import setStyleSheet
 from components.buttons.perspective_button import PerspectivePushButton
 from PyQt5.QtCore import QFile, Qt
-from PyQt5.QtWidgets import QLabel, QVBoxLayout, QGridLayout, QHBoxLayout
+from PyQt5.QtWidgets import QGridLayout, QHBoxLayout, QLabel, QVBoxLayout
 
 from .mask_dialog_base import MaskDialogBase
 
@@ -159,10 +160,7 @@ class SongPropertyDialog(MaskDialogBase):
         self.songPathLabel.setObjectName("valueLabel")
         self.propertyTitleLabel.setObjectName("propertyTitleLabel")
 
-        f = QFile(":/qss/song_property_dialog.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
+        setStyleSheet(self, 'song_property_dialog')
 
         self.closeButton.adjustSize()
         for label in self.findChildren(QLabel):

@@ -8,6 +8,7 @@ if sys.platform == "win32":
 else:
     from common.linux_utils import LinuxMoveResize
 
+from common.style_sheet import setStyleSheet
 from PyQt5.QtCore import QEvent, QFile, Qt
 from PyQt5.QtGui import QResizeEvent
 from PyQt5.QtWidgets import QLabel, QWidget
@@ -57,11 +58,7 @@ class TitleBar(QWidget):
         self.maxButton.setObjectName("maxButton")
         self.closeButton.setObjectName("closeButton")
         self.returnButton.setObjectName("returnButton")
-
-        f = QFile(":/qss/title_bar.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
+        setStyleSheet(self, 'title_bar')
 
     def resizeEvent(self, e: QResizeEvent):
         self.titleLabel.move(self.returnButton.isVisible() * 60, 0)
@@ -96,6 +93,7 @@ class TitleBar(QWidget):
         elif obj is self.window():
             if e.type() == QEvent.WindowStateChange:
                 self.maxButton.setMaxState(self.window().isMaximized())
+                self.maxButton.setAttribute(Qt.WA_UnderMouse, False)
                 return False
 
         return super().eventFilter(obj, e)

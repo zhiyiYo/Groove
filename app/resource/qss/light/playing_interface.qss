@@ -1,0 +1,33 @@
+QWidget#playingInterface {
+    background-color: black;
+}
+
+QLabel {
+    background-color: transparent;
+}
+
+QLabel#timeLabel {
+    color: white;
+    font: 14px 'Microsoft YaHei';
+    background-color: transparent;
+}
+
+QLabel#guideLabel {
+    color: white;
+    font: 25px 'Segoe UI', 'Microsoft YaHei';
+}
+
+QPushButton#randomPlayAllButton {
+    color: rgb(72, 210, 242);
+    font: 23px 'Segoe UI', 'Microsoft YaHei';
+    background-color: transparent;
+}
+
+QPushButton#randomPlayAllButton:hover {
+    color: rgb(57, 168, 193);
+}
+
+QPushButton#randomPlayAllButton:pressed {
+    color: rgb(28, 84, 96);
+}
+

@@ -2,13 +2,14 @@
 import sys
 
 from common.config import config
+from common.style_sheet import setStyleSheet
 from common.thread.get_meta_data_thread import GetFolderMetaDataThread
 from components.buttons.switch_button import SwitchButton
 from components.dialog_box.folder_list_dialog import FolderListDialog
 from components.widgets.label import ClickableLabel
 from components.widgets.scroll_area import ScrollArea
 from components.widgets.slider import Slider
-from components.widgets.state_tooltip import StateTooltip
+from components.widgets.tooltip import StateTooltip, ToastTooltip
 from PyQt5.QtCore import QEvent, QFile, Qt, QUrl, pyqtSignal
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import (QButtonGroup, QFileDialog, QLabel, QLineEdit,
@@ -19,12 +20,9 @@ class SettingInterface(ScrollArea):
     """ Setting interface """
 
     crawlFinished = pyqtSignal()
-    pageSizeChanged = pyqtSignal(int)
-    mvQualityChanged = pyqtSignal(str)
     acrylicEnableChanged = pyqtSignal(bool)
     downloadFolderChanged = pyqtSignal(str)
     minimizeToTrayChanged = pyqtSignal(bool)
-    onlinePlayQualityChanged = pyqtSignal(str)
     selectedMusicFoldersChanged = pyqtSignal(list)
 
     def __init__(self, parent=None):
@@ -92,6 +90,15 @@ class SettingInterface(ScrollArea):
         self.quitGrooveMusicButton = QRadioButton(
             self.tr('Quit Groove Music'), self.scrollwidget)
 
+        # theme mode
+        self.modeGroup = QButtonGroup(self)
+        self.modeLabel = QLabel(self.tr('Mode'), self.scrollwidget)
+        self.lightModeButton = QRadioButton(
+            self.tr('Light'), self.scrollwidget)
+        self.darkModeButton = QRadioButton(self.tr('Dark'), self.scrollwidget)
+        self.autoModeButton = QRadioButton(
+            self.tr('Use system setting'), self.scrollwidget)
+
         # download folder
         self.downloadFolderHintLabel = QLabel('')
         self.downloadFolderButton = QPushButton(
@@ -115,7 +122,7 @@ class SettingInterface(ScrollArea):
         self.downloadFolderLineEdit.resize(313, 42)
         self.downloadFolderLineEdit.setReadOnly(True)
         self.downloadFolderLineEdit.setCursorPosition(0)
-        self.scrollwidget.resize(self.width(), 1360)
+        self.scrollwidget.resize(self.width(), 1580)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setViewportMargins(0, 120, 0, 0)
         self.setWidget(self.scrollwidget)
@@ -158,6 +165,15 @@ class SettingInterface(ScrollArea):
         self.minimizeToTrayButton.setProperty('minimize-to-tray', True)
         self.quitGrooveMusicButton.setProperty('minimize-to-tray', False)
         self.__setCheckedCloseWindowRadioButton()
+
+        # set theme mode
+        self.modeGroup.addButton(self.lightModeButton)
+        self.modeGroup.addButton(self.darkModeButton)
+        self.modeGroup.addButton(self.autoModeButton)
+        self.lightModeButton.setProperty('mode', "Light")
+        self.darkModeButton.setProperty('mode', "Dark")
+        self.autoModeButton.setProperty('mode', "Auto")
+        self.__setCheckedModeRadioButton()
 
         # set slider
         pageSize = self.config['online-music-page-size']
@@ -220,10 +236,16 @@ class SettingInterface(ScrollArea):
         self.minimizeToTrayButton.move(30, 1022)
         self.quitGrooveMusicButton.move(30, 1062)
 
+        # theme mode
+        self.modeLabel.move(30, 1124)
+        self.lightModeButton.move(30, 1174)
+        self.darkModeButton.move(30, 1214)
+        self.autoModeButton.move(30, 1254)
+
         # download folder
-        self.downloadFolderLabel.move(30, 1124)
-        self.downloadFolderLineEdit.move(30, 1174)
-        self.downloadFolderButton.move(350, 1174)
+        self.downloadFolderLabel.move(30, 1314)
+        self.downloadFolderLineEdit.move(30, 1364)
+        self.downloadFolderButton.move(350, 1364)
 
         # application
         self.appLabel.move(self.width() - 400, 18)
@@ -254,7 +276,6 @@ class SettingInterface(ScrollArea):
 
         stateToolTip = StateTooltip(
             self.tr("Crawling metadata"), self.tr("Current progress: ")+f"{0:>3.0%}", self.window())
-        stateToolTip.move(stateToolTip.getSuitablePos())
         stateToolTip.show()
 
         # connect signal to slot
@@ -288,12 +309,10 @@ class SettingInterface(ScrollArea):
         self.closeWindowLabel.setObjectName('titleLabel')
         self.helpLabel.setObjectName("clickableLabel")
         self.issueLabel.setObjectName("clickableLabel")
+        self.modeLabel.setObjectName("titleLabel")
         self.musicInThisPCLabel.setObjectName("titleLabel")
         self.selectMusicFolderLabel.setObjectName("clickableLabel")
-        f = QFile(":/qss/setting_interface.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
+        setStyleSheet(self, 'setting_interface')
 
     def resizeEvent(self, e):
         self.appLabel.move(self.width() - 400, self.appLabel.y())
@@ -357,39 +376,49 @@ class SettingInterface(ScrollArea):
         else:
             self.quitGrooveMusicButton.setChecked(True)
 
+    def __setCheckedModeRadioButton(self):
+        """ set checked theme mode radio button """
+        mode = self.config['mode']
+        if mode == "Light":
+            self.lightModeButton.setChecked(True)
+        elif mode == "Dark":
+            self.darkModeButton.setChecked(True)
+        else:
+            self.autoModeButton.setChecked(True)
+
     def __onPageSliderValueChanged(self, value: int):
         """ page slider value changed slot """
         self.pageSizeValueLabel.setNum(value)
         self.pageSizeValueLabel.adjustSize()
         self.config['online-music-page-size'] = value
-        self.pageSizeChanged.emit(value)
 
-    def __onOnlinePlayQualityChanged(self):
+    def __onOnlinePlayQualityChanged(self, button: QRadioButton):
         """ online play quality changed slot """
-        quality = self.sender().property('quality')
-        if self.config['online-play-quality'] == quality:
-            return
+        self.config['online-play-quality'] = button.property('quality')
 
-        self.config['online-play-quality'] = quality
-        self.onlinePlayQualityChanged.emit(quality)
-
-    def __onMvQualityChanged(self):
+    def __onMvQualityChanged(self, button: QRadioButton):
         """ MV quality changed slot """
-        quality = self.sender().property('quality')
-        if self.config['mv-quality'] == quality:
-            return
+        self.config['mv-quality'] = button.property('quality')
 
-        self.config['mv-quality'] = quality
-        self.mvQualityChanged.emit(quality)
-
-    def __onMinimizeToTrayChanged(self):
+    def __onMinimizeToTrayChanged(self, button: QRadioButton):
         """ minimize to tray changed slot """
-        minimize = self.sender().property('minimize-to-tray')
+        minimize = button.property('minimize-to-tray')
         if self.config['minimize-to-tray'] == minimize:
             return
 
         self.config['minimize-to-tray'] = minimize
         self.minimizeToTrayChanged.emit(minimize)
+
+    def __onThemeModeChanged(self, button: QRadioButton):
+        """ theme mode changed slot """
+        self.config["mode"] = button.property("mode")
+        w = ToastTooltip(
+            self.tr('Change mode successful'),
+            self.tr('Configuration takes effect after restart'),
+            'info',
+            self.window()
+        )
+        w.show()
 
     def __onDownloadFolderButtonClicked(self):
         """ download folder button clicked slot """
@@ -409,27 +438,19 @@ class SettingInterface(ScrollArea):
 
     def __connectSignalToSlot(self):
         """ connect signal to slot """
-        self.hDButton.clicked.connect(self.__onMvQualityChanged)
-        self.sDButton.clicked.connect(self.__onMvQualityChanged)
-        self.lDButton.clicked.connect(self.__onMvQualityChanged)
-        self.fullHDButton.clicked.connect(self.__onMvQualityChanged)
+        self.mvQualityGroup.buttonClicked.connect(self.__onMvQualityChanged)
+        self.modeGroup.buttonClicked.connect(self.__onThemeModeChanged)
         self.getMetaDataSwitchButton.checkedChanged.connect(
             self.__onGetMetaDataSwitchButtonCheckedChanged)
         self.selectMusicFolderLabel.clicked.connect(
             self.__showSongFolderListDialog)
         self.pageSizeSlider.valueChanged.connect(
             self.__onPageSliderValueChanged)
-        self.standardQualityButton.clicked.connect(
-            self.__onOnlinePlayQualityChanged)
-        self.highQualityButton.clicked.connect(
-            self.__onOnlinePlayQualityChanged)
-        self.superQualityButton.clicked.connect(
-            self.__onOnlinePlayQualityChanged)
         self.downloadFolderButton.clicked.connect(
             self.__onDownloadFolderButtonClicked)
-        self.minimizeToTrayButton.clicked.connect(
-            self.__onMinimizeToTrayChanged)
-        self.quitGrooveMusicButton.clicked.connect(
+        self.onlinePlayQualityGroup.buttonClicked.connect(
+            self.__onOnlinePlayQualityChanged)
+        self.closeWindowGroup.buttonClicked.connect(
             self.__onMinimizeToTrayChanged)
         self.acrylicSwitchButton.checkedChanged.connect(
             self.__onAcrylicCheckedChanged)

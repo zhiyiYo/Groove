@@ -5,6 +5,7 @@ from typing import List
 from common.database.entity import SongInfo
 from common.os_utils import getCoverPath
 from common.signal_bus import signalBus
+from common.style_sheet import setStyleSheet
 from components.buttons.circle_button import CircleButton
 from components.frameless_window import FramelessWindow
 from components.widgets.label import BlurCoverLabel
@@ -57,7 +58,7 @@ class SmallestPlayInterface(FramelessWindow):
         self.windowEffect.addMenuShadowEffect(int(self.winId()))
         self.albumCoverLabel.setScaledContents(True)
         self.progressBar.installEventFilter(self)
-        self.__setQss()
+        setStyleSheet(self, 'smallest_play_interface')
         self.exitButton.setToolTip(self.tr('Exit smallest mode'))
 
         # connect signal to slot
@@ -133,13 +134,6 @@ class SmallestPlayInterface(FramelessWindow):
                 self.currentCard.show()
             self.lastCard.show()
             self.nextCard.show()
-
-    def __setQss(self):
-        """ set style sheet """
-        f = QFile(":/qss/smallest_play_interface.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
 
     def eventFilter(self, obj, e: QEvent):
         """ 过滤事件 """

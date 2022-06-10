@@ -1,5 +1,4 @@
 # coding:utf-8
-import os
 from math import ceil
 
 from common.config import config
@@ -7,10 +6,11 @@ from common.crawler import KuWoMusicCrawler
 from common.database.entity import SongInfo
 from common.library import Library
 from common.signal_bus import signalBus
+from common.style_sheet import setStyleSheet
 from common.thread.download_song_thread import DownloadSongThread
 from components.widgets.label import PixmapLabel
 from components.widgets.scroll_area import ScrollArea
-from components.widgets.state_tooltip import DownloadStateTooltip
+from components.widgets.tooltip import DownloadStateTooltip
 from PyQt5.QtCore import QFile, Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget
@@ -114,12 +114,7 @@ class SearchResultInterface(ScrollArea):
         self.titleLabel.setObjectName('titleLabel')
         self.checkSpellLabel.setObjectName('checkSpellLabel')
         self.searchOthersLabel.setObjectName('searchOthersLabel')
-
-        f = QFile(":/qss/search_result_interface.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
-
+        setStyleSheet(self, 'search_result_interface')
         self.checkSpellLabel.adjustSize()
         self.searchOthersLabel.adjustSize()
 
@@ -144,8 +139,6 @@ class SearchResultInterface(ScrollArea):
         self.downloadSongThread.downloadOneSongFinished.connect(
             self.downloadStateTooltip.completeOneDownloadTask)
 
-        pos = self.downloadStateTooltip.getSuitablePos()
-        self.downloadStateTooltip.move(pos)
         self.downloadStateTooltip.show()
         self.downloadSongThread.start()
 

@@ -7,6 +7,7 @@ from common.database.entity import SingerInfo
 from common.library import Library
 from common.os_utils import adjustName
 from common.signal_bus import signalBus
+from common.style_sheet import setStyleSheet
 from common.thread.get_singer_avatar_thread import GetSingerAvatarThread
 from components.album_card import (AlbumBlurBackground, AlbumCardType,
                                    GridAlbumCardView)
@@ -102,12 +103,7 @@ class SingerInterface(AlbumSelectionModeInterface):
         """ set style sheet """
         self.inYourMusicLabel.setMinimumSize(140, 25)
         self.inYourMusicLabel.setObjectName('inYourMusicLabel')
-
-        f = QFile(":/qss/singer_interface.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
-
+        setStyleSheet(self, 'singer_interface')
         self.inYourMusicLabel.adjustSize()
 
     def __showBlurAlbumBackground(self, pos: QPoint, picPath: str):

@@ -4,6 +4,7 @@ from random import shuffle
 from common.database.entity import SongInfo
 from common.library import Library
 from common.signal_bus import signalBus
+from common.style_sheet import getStyleSheet
 from components.buttons.three_state_button import RandomPlayAllButton
 from components.dialog_box.message_dialog import MessageDialog
 from components.selection_mode_interface import (SelectionModeBarType,
@@ -55,11 +56,8 @@ class RecentPlayInterface(SongSelectionModeInterface):
         self.sortModeLabel.setObjectName("sortModeLabel")
         self.sortModeButton.setObjectName("sortModeButton")
 
-        f = QFile(":/qss/recent_play_interface.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(self.styleSheet() +
-                           str(f.readAll(), encoding='utf-8'))
-        f.close()
+        qss = getStyleSheet('recent_play_interface')
+        self.setStyleSheet(self.styleSheet()+qss)
 
         self.randomPlayAllButton.adjustSize()
         self.sortModeLabel.adjustSize()

@@ -1,0 +1,120 @@
+QWidget#singerCard[isChecked='True'] {
+    background: rgb(0, 107, 131);
+}
+
+QWidget#singerCard[isChecked='False'] {
+    background: transparent;
+}
+
+QWidget {
+    background-color: transparent;
+}
+
+
+QScrollArea {
+    background-color: white;
+    border: none;
+}
+
+QGroupBox {
+    background-color: transparent;
+    font: 21px 'Segoe UI', 'Microsoft YaHei';
+    color: rgb(0, 107, 131);
+    border: none;
+    /*改标题懒到组内小部件的垂直距离*/
+    margin-top: 30px;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding-left: 10px;
+}
+
+QGridLayout {
+    background-color: transparent;
+}
+
+
+/*滚动条*/
+QScrollBar {
+    background: transparent;
+    width: 5px;
+    margin-top: 40px;
+    margin-bottom: 133px;
+    padding-right: 2px;
+}
+
+/*隐藏上箭头*/
+QScrollBar::sub-line {
+    background: transparent;
+}
+
+/*隐藏下箭头*/
+QScrollBar::add-line {
+    background: transparent;
+}
+
+QScrollBar::handle {
+    background: rgb(128, 128, 128);
+    border: 2px solid rgb(128, 128, 128);
+    border-radius: 1px;
+    min-height: 40px;
+}
+
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical {
+    background: none;
+}
+
+
+/*标签*/
+QLabel {
+    font: 17px 'Segoe UI Semilight', 'Microsoft YaHei Light';
+    background-color: transparent;
+}
+
+QLabel#viewTitleLabel {
+    font: 21px 'Segoe UI', 'Microsoft YaHei';
+    color: rgb(0, 107, 131);
+}
+
+QLabel#guideLabel {
+    color: black;
+    font: 25px 'Segoe UI', 'Microsoft YaHei'
+}
+
+QLabel#singerLabel[isChecked='False'] {
+    color: black;
+    font-family: 'Segoe UI', 'Microsoft YaHei';
+    font-weight: bold;
+}
+
+QLabel#singerLabel[isChecked='True'] {
+    color: white;
+    font-family: 'Segoe UI', 'Microsoft YaHei';
+    font-weight: bold;
+}
+
+
+/*复选框样式*/
+QCheckBox {
+    background-color: transparent;
+    spacing: 0px
+}
+
+QCheckBox::indicator {
+    width: 23px;
+    height: 23px;
+    background-color: white;
+    border: 1px solid rgb(217, 217, 217);
+}
+
+QCheckBox::indicator:unchecked:pressed {
+    background-color: rgb(217, 217, 217);
+}
+
+QCheckBox::indicator:checked {
+    background: rgb(0, 107, 131);
+    border-image: url(:/images/album_tab_interface/CheckMark.png);
+}

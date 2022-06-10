@@ -1,5 +1,6 @@
 # coding:utf-8
 from common.auto_wrap import autoWrap
+from common.style_sheet import setStyleSheet
 from PyQt5.QtCore import QFile, Qt, pyqtSignal
 from PyQt5.QtWidgets import QDialog, QLabel, QPushButton
 
@@ -59,10 +60,7 @@ class Dialog(QDialog):
         self.titleLabel.setObjectName("titleLabel")
         self.contentLabel.setObjectName("contentLabel")
 
-        f = QFile(":/qss/dialog.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
+        setStyleSheet(self, 'dialog')
 
         self.yesButton.adjustSize()
         self.cancelButton.adjustSize()

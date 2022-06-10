@@ -1,6 +1,7 @@
 # coding:utf-8
 from common.icon import Icon
 from common.library import Library
+from common.style_sheet import setStyleSheet
 from components.buttons.three_state_button import ThreeStatePushButton
 from PyQt5.QtCore import (QEasingCurve, QFile, QParallelAnimationGroup,
                           QPropertyAnimation, QSize, Qt, pyqtSignal)
@@ -12,7 +13,7 @@ class GroupBox(QScrollArea):
     """ Group box """
 
     switchToMoreSearchResultInterfaceSig = pyqtSignal()
-    qss = 'album_group_box.qss'
+    qss = 'album_group_box'
 
     def __init__(self, library: Library, view, parent=None):
         super().__init__(parent=parent)
@@ -83,12 +84,7 @@ class GroupBox(QScrollArea):
         self.rightMask.setObjectName('rightMask')
         self.titleButton.setObjectName('titleButton')
         self.showAllButton.setObjectName('showAllButton')
-
-        f = QFile(f":/qss/{self.qss}")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
-
+        setStyleSheet(self, self.qss)
         self.titleButton.adjustSize()
         self.showAllButton.adjustSize()
 

@@ -1,4 +1,5 @@
 # coding: utf-8
+from common.style_sheet import setStyleSheet
 from PyQt5.QtCore import QFile, Qt, QTimer, pyqtProperty, pyqtSignal
 from PyQt5.QtGui import QColor, QPainter
 from PyQt5.QtWidgets import QHBoxLayout, QLabel, QToolButton, QWidget
@@ -138,10 +139,7 @@ class SwitchButton(QWidget):
         self.hBox.setContentsMargins(0, 0, 0, 0)
 
         # set default style sheet
-        f = QFile(':/qss/switch_button.qss')
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
+        setStyleSheet(self, 'switch_button')
 
         # connect signal to slot
         self.indicator.checkedChanged.connect(self.checkedChanged)

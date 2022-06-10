@@ -1,5 +1,6 @@
 # coding:utf-8
 from common.signal_bus import signalBus
+from common.style_sheet import setStyleSheet
 from components.buttons.circle_button import CircleButton
 from components.widgets.slider import Slider
 from PyQt5.QtCore import QEvent, QFile, Qt, pyqtSignal
@@ -29,19 +30,12 @@ class VolumeSliderWidget(QWidget):
             Qt.FramelessWindowHint | Qt.Popup | Qt.NoDropShadowWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.volumeSlider.setObjectName('volumeSlider')
-        self.__setQss()
+        setStyleSheet(self, 'volume_slider_widget')
 
         # connect signal to slot
         self.volumeButton.volumeLevelChanged.connect(self.volumeLevelChanged)
         self.volumeSlider.valueChanged.connect(
             self.volumeButton.setVolumeLevel)
-
-    def __setQss(self):
-        """ set style sheet """
-        f = QFile(":/qss/volume_slider_widget.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
 
     def paintEvent(self, e):
         """ paint widgets """

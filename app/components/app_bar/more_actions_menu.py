@@ -1,6 +1,7 @@
 # coding:utf-8
 from typing import List
 
+from common.style_sheet import setStyleSheet
 from common.window_effect import WindowEffect
 from PyQt5.QtCore import (QEasingCurve, QEvent, QFile, QPoint,
                           QPropertyAnimation, QRect, Qt)
@@ -24,19 +25,12 @@ class MoreActionsMenu(QMenu):
         self.setObjectName("appBarMoreActionsMenu")
         self.animation.setDuration(300)
         self.animation.setEasingCurve(QEasingCurve.OutQuad)
-        self.__setQss()
+        setStyleSheet(self, 'menu')
 
     def event(self, e: QEvent):
         if e.type() == QEvent.WinIdChange:
             self.windowEffect.addMenuShadowEffect(self.winId())
         return QMenu.event(self, e)
-
-    def __setQss(self):
-        """ set style sheet """
-        f = QFile(":/qss/menu.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
 
     def addActions(self, actions):
         super().addActions(actions)

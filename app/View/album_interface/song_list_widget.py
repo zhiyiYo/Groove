@@ -3,6 +3,7 @@ from typing import List
 
 from common.database.entity import SongInfo
 from common.signal_bus import signalBus
+from common.style_sheet import setStyleSheet
 from components.dialog_box.message_dialog import MessageDialog
 from components.song_list_widget import NoScrollSongListWidget, SongCardType
 from components.song_list_widget.song_card import AlbumInterfaceSongCard
@@ -50,7 +51,7 @@ class SongListWidget(NoScrollSongListWidget):
         """
         super().__init__(songInfos, SongCardType.ALBUM_INTERFACE_SONG_CARD, parent)
         self.createSongCards()
-        self.__setQss()
+        setStyleSheet(self, 'album_interface_song_list_widget')
 
     def __showMaskDialog(self):
         index = self.currentRow()
@@ -76,13 +77,6 @@ class SongListWidget(NoScrollSongListWidget):
             return
 
         self.playSignal.emit(index)
-
-    def __setQss(self):
-        """ set style sheet """
-        f = QFile(":/qss/album_interface_song_list_widget.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
 
     def __connectMenuSignalToSlot(self, menu: SongCardListContextMenu):
         """ connect context menu signal to slot """

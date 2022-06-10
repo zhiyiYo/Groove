@@ -14,6 +14,7 @@ from common.hotkey_manager import HotkeyManager
 from common.library import Directory, Library
 from common.os_utils import getWindowsVersion
 from common.signal_bus import signalBus
+from common.style_sheet import setStyleSheet
 from common.thread.get_online_song_url_thread import GetOnlineSongUrlThread
 from common.thread.library_thread import LibraryThread
 from components.dialog_box.create_playlist_dialog import CreatePlaylistDialog
@@ -27,7 +28,7 @@ from components.title_bar import TitleBar
 from components.widgets.label import PixmapLabel
 from components.widgets.stacked_widget import (OpacityAniStackedWidget,
                                                PopUpAniStackedWidget)
-from components.widgets.state_tooltip import StateTooltip
+from components.widgets.tooltip import StateTooltip
 from PyQt5.QtCore import (QEasingCurve, QEvent, QEventLoop, QFile, QFileInfo,
                           Qt, QTimer)
 from PyQt5.QtGui import QColor, QDragEnterEvent, QDropEvent, QIcon, QPixmap
@@ -172,8 +173,10 @@ class MainWindow(AcrylicWindow):
             self.winId(), Qt.Key_MediaPrevious, self.mediaPlaylist.previous)
 
         self.addActions([
-            QAction(self, shortcut=Qt.Key_Escape, triggered=self.exitFullScreen),
-            QAction(self, shortcut=Qt.Key_Space, triggered=self.togglePlayState),
+            QAction(self, shortcut=Qt.Key_Escape,
+                    triggered=self.exitFullScreen),
+            QAction(self, shortcut=Qt.Key_Space,
+                    triggered=self.togglePlayState),
         ])
 
     def initLibrary(self):
@@ -265,13 +268,14 @@ class MainWindow(AcrylicWindow):
 
     def setWindowEffect(self, isEnableAcrylic: bool):
         """ set window effect """
+        c = '2B2B2B' if config.theme == 'dark' else 'F2F2F2'
         if isEnableAcrylic:
-            self.windowEffect.setAcrylicEffect(self.winId(), "F2F2F299")
+            self.windowEffect.setAcrylicEffect(self.winId(), c+"99")
             self.setStyleSheet("#mainWindow{background:transparent}")
             if getWindowsVersion() != 10:
                 self.windowEffect.addShadowEffect(self.winId())
         else:
-            self.setStyleSheet("#mainWindow{background:#F2F2F2}")
+            self.setStyleSheet(f"#mainWindow{{background:#{c}}}")
             self.windowEffect.addShadowEffect(self.winId())
             self.windowEffect.removeBackgroundEffect(self.winId())
 
@@ -304,11 +308,7 @@ class MainWindow(AcrylicWindow):
         self.subMainWindow.setObjectName("subMainWindow")
         self.subStackWidget.setObjectName("subStackWidget")
         self.playingInterface.setObjectName("playingInterface")
-
-        f = QFile(":/qss/main_window.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
+        setStyleSheet(self, 'main_window')
 
     def eventFilter(self, obj, e: QEvent):
         if hasattr(self, "navigationInterface") and obj is self.navigationInterface.navigationMenu:
@@ -1250,7 +1250,6 @@ class MainWindow(AcrylicWindow):
         title = self.tr("Scanning song information")
         content = self.tr("Please wait patiently")
         self.scanInfoTooltip = StateTooltip(title, content, self.window())
-        self.scanInfoTooltip.move(self.scanInfoTooltip.getSuitablePos())
         self.scanInfoTooltip.show()
 
     def onSelectedFolderChanged(self, directories: List[str]):
@@ -1476,7 +1475,8 @@ class MainWindow(AcrylicWindow):
             self.playAbumSong)
 
         # recent play signal
-        self.recentPlayInterface.playSongCardSig.connect(self.playRecentPlaySong)
+        self.recentPlayInterface.playSongCardSig.connect(
+            self.playRecentPlaySong)
 
         # playlist interface signal
         self.playlistInterface.songCardPlaySig.connect(
@@ -1536,4 +1536,5 @@ class SplashScreen(QWidget):
         self.logo.setPixmap(QPixmap(":/images/logo/splash_screen_logo.png"))
         self.hBoxLayout.addWidget(self.logo, 0, Qt.AlignCenter)
         self.setAttribute(Qt.WA_StyledBackground)
-        self.setStyleSheet('background:white')
+        color = '2b2b2b' if config.theme=='dark' else 'ffffff'
+        self.setStyleSheet(f'background:#{color}')

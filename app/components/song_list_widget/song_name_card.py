@@ -1,4 +1,5 @@
 # coding:utf-8
+from common.config import config
 from components.widgets.label import PixmapLabel
 from PyQt5.QtCore import QEvent, QSize, Qt
 from PyQt5.QtGui import QFont, QFontMetrics, QPainter, QPixmap
@@ -44,18 +45,20 @@ class ToolButton(QToolButton):
         painter = QPainter(self)
         painter.setPen(Qt.NoPen)
         painter.setRenderHints(QPainter.Antialiasing |
-                              QPainter.SmoothPixmapTransform)
+                               QPainter.SmoothPixmapTransform)
         pixmap = QPixmap(self.iconPaths[self.state])
         painter.drawPixmap(self.rect(), pixmap)
+
 
 class ButtonGroup(QWidget):
     """ Button group of song name card """
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        color = 'white' if config.theme == 'dark' else 'black'
         self.playButton = ToolButton(
             {
-                "notSelected-notPlay": ":/images/song_tab_interface/Play_black.png",
+                "notSelected-notPlay": f":/images/song_tab_interface/Play_{color}.png",
                 "notSelected-play": ":/images/song_tab_interface/Play_green.png",
                 "selected": ":/images/song_tab_interface/Play_white.png",
             },
@@ -63,7 +66,7 @@ class ButtonGroup(QWidget):
         )
         self.addToButton = ToolButton(
             {
-                "notSelected-notPlay": ":/images/song_tab_interface/Add_black.png",
+                "notSelected-notPlay": f":/images/song_tab_interface/Add_{color}.png",
                 "notSelected-play": ":/images/song_tab_interface/Add_green.png",
                 "selected": ":/images/song_tab_interface/Add_white.png",
             },

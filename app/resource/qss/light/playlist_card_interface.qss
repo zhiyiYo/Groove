@@ -1,0 +1,161 @@
+QWidget {
+    background-color: white;
+}
+
+QWidget#playlistCard[isChecked='True'] {
+    background: rgb(0, 107, 131);
+}
+
+QWidget#playlistCard[isChecked='False'] {
+    background: transparent;
+}
+
+
+QWidget#scrollWidget {
+    background-color: transparent;
+}
+
+QScrollArea {
+    background-color: white;
+    border: none;
+}
+
+QGridLayout {
+    background-color: transparent;
+}
+
+
+
+/*滚动条*/
+QScrollBar {
+    background: transparent;
+    width: 5px;
+    margin-top: 40px;
+    margin-bottom: 115px;
+    padding-right: 2px;
+}
+
+/*隐藏上箭头*/
+QScrollBar::sub-line {
+    background: transparent;
+}
+
+/*隐藏下箭头*/
+QScrollBar::add-line {
+    background: transparent;
+}
+
+QScrollBar::handle {
+    background: rgb(128, 128, 128);
+    border: 2px solid rgb(128, 128, 128);
+    border-radius: 1px;
+    min-height: 40px;
+}
+
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical {
+    background: none;
+}
+
+
+/*标签*/
+QLabel {
+    font: 17px 'Segoe UI Semilight', 'Microsoft YaHei Light';
+    background-color: transparent;
+}
+
+QLabel#sortModeLabel {
+    color: black;
+    font: 16px 'Segoe UI', 'Microsoft YaHei';
+}
+
+QLabel#guideLabel {
+    color: black;
+    font: 25px 'Segoe UI', 'Microsoft YaHei';
+}
+
+QLabel#playlistLabel {
+    font-family: 'Microsoft YaHei Light';
+    font-size: 43px;
+    padding: 0px;
+}
+
+QLabel#nameLabel[isChecked='False'] {
+    color: black;
+    font-family: 'Segoe UI', 'Microsoft YaHei';
+    font-weight: bold;
+}
+
+QLabel#nameLabel[isChecked='True'] {
+    color: white;
+    font-family: 'Segoe UI', 'Microsoft YaHei';
+    font-weight: bold;
+}
+
+QLabel#countLabel {
+    font-size: 16px;
+}
+
+QLabel#countLabel[isChecked='True'] {
+    color: rgb(153, 196, 205);
+}
+
+
+/*设置按钮的样式*/
+QPushButton {
+    text-align: left;
+    color: black;
+    font-size: 16px;
+    background-color: transparent;
+    font-family: 'Segoe UI', 'Microsoft YaHei';
+    margin: 0;
+    padding-top: 4px;
+    padding-bottom: 3px;
+}
+
+QPushButton#sortModeButton {
+    color: rgb(0, 107, 131);
+    font-size: 16px;
+}
+
+QPushButton#sortModeButton:hover {
+    color: rgb(81, 154, 170);
+}
+
+QPushButton#sortModeButton:pressed {
+    color: rgb(153, 195, 205);
+}
+
+QPushButton#createPlaylistButton {
+    padding-bottom: 2px;
+}
+
+QPushButton#createPlaylistButton:hover {
+    color: rgba(0, 0, 0, 0.8);
+}
+
+QPushButton#createPlaylistButton:pressed {
+    color: rgba(0, 0, 0, 0.4);
+}
+
+/*复选框样式*/
+QCheckBox {
+    background-color: transparent;
+    spacing: 0px
+}
+
+QCheckBox::indicator {
+    width: 23px;
+    height: 23px;
+    background-color: white;
+    border: 1px solid rgb(217, 217, 217);
+}
+
+QCheckBox::indicator:unchecked:pressed {
+    background-color: rgb(217, 217, 217);
+}
+
+QCheckBox::indicator:checked {
+    background: rgb(0, 107, 131);
+    border-image: url(:/images/album_tab_interface/CheckMark.png);
+}

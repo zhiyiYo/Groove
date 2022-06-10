@@ -1,0 +1,11 @@
+QWidget {
+    background-color: white;
+}
+
+#titleLabel {
+    font: 43px "Microsoft YaHei Light";
+    background-color: transparent;
+}
+
+
+

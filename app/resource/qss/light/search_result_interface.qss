@@ -1,0 +1,55 @@
+QScrollArea {
+    background-color: white;
+    border: none;
+}
+
+QWidget {
+    background-color: white;
+}
+
+#titleLabel {
+    font: 43px "Microsoft YaHei Light";
+    background-color: transparent;
+}
+
+#searchOthersLabel {
+    color: rgb(81, 81, 81);
+    font: 18px 'Segoe UI', 'Microsoft YaHei';
+    background-color: transparent;
+}
+
+#checkSpellLabel {
+    font: 42px 'Segoe UI', 'Microsoft YaHei';
+    background-color: transparent;
+}
+
+/*滚动条*/
+QScrollBar {
+    background: transparent;
+    width: 5px;
+    margin-top: 40px;
+    margin-bottom: 133px;
+    padding-right: 2px;
+}
+
+/*隐藏上箭头*/
+QScrollBar::sub-line:vertical {
+    background: transparent;
+}
+
+/*隐藏下箭头*/
+QScrollBar::add-line:vertical {
+    background: transparent;
+}
+
+QScrollBar::handle {
+    background: rgb(128, 128, 128);
+    border: 2px solid rgb(128, 128, 128);
+    border-radius: 1px;
+    min-height: 40px;
+}
+
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical {
+    background: none;
+}

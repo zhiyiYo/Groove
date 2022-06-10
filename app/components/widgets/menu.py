@@ -1,6 +1,7 @@
 # coding:utf-8
 from common.icon import Icon
 from common.os_utils import getPlaylistNames
+from common.style_sheet import setStyleSheet
 from common.window_effect import WindowEffect
 from PyQt5.QtCore import (QEasingCurve, QEvent, QFile, QPropertyAnimation,
                           QRect, Qt, pyqtSignal)
@@ -17,7 +18,7 @@ class AeroMenu(QMenu):
             Qt.FramelessWindowHint | Qt.Popup | Qt.NoDropShadowWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground | Qt.WA_StyledBackground)
         self.setObjectName("AeroMenu")
-        self.setQss()
+        setStyleSheet(self, 'menu')
 
     def event(self, e: QEvent):
         if e.type() == QEvent.WinIdChange:
@@ -29,44 +30,6 @@ class AeroMenu(QMenu):
         self.windowEffect.setAeroEffect(self.winId())
         self.windowEffect.addMenuShadowEffect(self.winId())
 
-    def setQss(self):
-        """ set style sheet """
-        f = QFile(":/qss/menu.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
-
-
-class AcrylicMenu(QMenu):
-    """ Acrylic menu """
-
-    def __init__(self, string="", parent=None, acrylicColor="e5e5e5CC"):
-        super().__init__(string, parent)
-        self.acrylicColor = acrylicColor
-        self.windowEffect = WindowEffect()
-        self.__initWidget()
-
-    def event(self, e: QEvent):
-        if e.type() == QEvent.WinIdChange:
-            self.windowEffect.setAcrylicEffect(
-                self.winId(), self.acrylicColor, True)
-        return QMenu.event(self, e)
-
-    def __initWidget(self):
-        """ initialize widgets """
-        self.setAttribute(Qt.WA_StyledBackground)
-        self.setWindowFlags(
-            Qt.FramelessWindowHint | Qt.Popup | Qt.NoDropShadowWindowHint)
-        self.setProperty("effect", "acrylic")
-        self.setObjectName("acrylicMenu")
-        self.setQss()
-
-    def setQss(self):
-        """ set style sheet """
-        f = QFile(":/qss/menu.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
 
 
 class DWMMenu(QMenu):
@@ -87,10 +50,7 @@ class DWMMenu(QMenu):
 
     def setQss(self):
         """ set style sheet """
-        f = QFile(":/qss/menu.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
+        setStyleSheet(self, 'menu')
 
 
 class AddToMenu(DWMMenu):

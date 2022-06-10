@@ -1,5 +1,7 @@
 # coding:utf-8
+from common.config import config
 from common.get_pressed_pos import getPressedPos
+from common.style_sheet import setStyleSheet
 from components.buttons.three_state_button import RandomPlayAllButton
 from components.widgets.menu import AeroMenu
 from PyQt5.QtCore import QFile, QPoint, Qt, pyqtSignal
@@ -98,7 +100,8 @@ class ToolBar(QWidget):
         """ paint horizontal line """
         super().paintEvent(QPaintEvent)
         painter = QPainter(self)
-        painter.setPen(QPen(QColor(229, 229, 229)))
+        r = 46 if config.theme == 'dark' else 229
+        painter.setPen(QColor(r, r, r))
         painter.drawLine(30, 176, self.width()-20, 176)
 
     def __setQss(self):
@@ -111,12 +114,7 @@ class ToolBar(QWidget):
         self.singerSortModeButton.setObjectName("sortModeButton")
         self.albumSortModeButton.setObjectName("sortModeButton")
         self.albumSortModeMenu.setProperty("modeNumber", "4")
-
-        f = QFile(":/qss/my_music_interface_toolBar.qss")
-        f.open(QFile.ReadOnly)
-        self.setStyleSheet(str(f.readAll(), encoding='utf-8'))
-        f.close()
-
+        setStyleSheet(self, 'my_music_interface_toolBar')
         self.randomPlayAllButton.adjustSize()
         self.sortModeLabel.adjustSize()
 
@@ -195,7 +193,7 @@ class TabButton(QPushButton):
         elif self.pressedPos in ["left-bottom", "right-top"]:
             self.__paintLine(painter, 1, h-4, w-1, h-3, w-1, h, 1, h-1)
 
-    def __paintText(self, painter, shearX, shearY, x=1, y=5):
+    def __paintText(self, painter: QPainter, shearX, shearY, x=1, y=5):
         """ paint text """
         painter.shear(shearX, shearY)
         painter.drawText(x, y + 21, self.text)
@@ -211,13 +209,16 @@ class TabButton(QPushButton):
 
     def __paintAllText(self, painter, fontSize=16):
         """ paint all texts """
+        isDark = config.theme == 'dark'
+
         if not self.isSelected:
-            pen = QPen(QColor(102, 102, 102))
-            painter.setPen(pen)
+            r = 153 if isDark else 102
+            painter.setPen(QColor(r, r, r))
 
         if not self.pressedPos:
             if self.isEnter:
-                painter.setPen(QPen(Qt.black))
+                color = Qt.white if isDark else Qt.black
+                painter.setPen(QPen(color))
 
             self.__paintText(painter, 0, 0)
         else:

@@ -1,0 +1,41 @@
+QWidget#centerWidget {
+    background-color: white;
+    border: 1px solid rgb(172, 172, 172);
+}
+
+QPushButton {
+    color: white;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: rgb(0, 107, 131);
+    font: 17px 'Segoe UI', 'Microsoft YaHei';
+    padding: 13px 130px 13px 130px;
+}
+
+QPushButton:hover {
+    color: black;
+    background-color: rgb(230, 230, 230);
+}
+
+QPushButton:pressed {
+    background-color: rgb(153, 153, 153);
+}
+
+QPushButton:disabled {
+    background-color: rgb(204, 204, 204);
+    color: rgb(122, 122, 122);
+}
+
+QLabel {
+    font: 18px 'Segoe UI', 'Microsoft YaHei';
+    background-color: transparent;
+}
+
+QLabel#cancelLabel {
+    color: rgb(0, 107, 131);
+    font: 18px 'Segoe UI', 'Microsoft YaHei';
+}
+
+QLabel#cancelLabel:hover {
+    color: rgb(154, 154, 154);
+}
