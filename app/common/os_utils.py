@@ -5,6 +5,8 @@ from pathlib import Path
 from platform import platform
 
 from PyQt5.QtSql import QSqlDatabase
+from PyQt5.QtGui import QDesktopServices
+from PyQt5.QtCore import QProcess, QFileInfo, QDir, QUrl
 
 from common.database import DBInitializer
 from common.database.service import PlaylistService
@@ -125,3 +127,18 @@ def getWindowsVersion():
     build = sys.getwindowsversion().build
     version = 10 if build < 22000 else 11
     return version
+
+
+def showInFolder(path: str):
+    """ show file in file explorer """
+    info = QFileInfo(path)   # type:QFileInfo
+    if sys.platform == "win32":
+        args = [QDir.toNativeSeparators(path)]
+        if not info.isDir():
+            args.insert(0, '/select,')
+
+        if QProcess.startDetached('explorer', args):
+            return
+    else:
+        url = QUrl.fromLocalFile(path if info.isDir() else info.path())
+        QDesktopServices.openUrl(url)

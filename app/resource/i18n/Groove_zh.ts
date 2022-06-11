@@ -1035,6 +1035,11 @@
         <source>Watch MV</source>
         <translation>观看 MV</translation>
     </message>
+    <message>
+        <location filename="../../components/widgets/menu.py" line="338"/>
+        <source>Locate current song</source>
+        <translation>定位当前歌曲</translation>
+    </message>
 </context>
 <context>
     <name>PlaylistCardBase</name>

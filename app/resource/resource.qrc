@@ -169,6 +169,7 @@
         <file>images/menu/Playlist_black.png</file>
         <file>images/menu/Lyric_black.png</file>
         <file>images/menu/Movie_black.png</file>
+        <file>images/menu/Bullseye_black.png</file>
         <file>images/menu/Add_white.png</file>
         <file>images/menu/Album_white.png</file>
         <file>images/menu/Cancel_white.png</file>
@@ -183,6 +184,7 @@
         <file>images/menu/Playlist_white.png</file>
         <file>images/menu/Lyric_white.png</file>
         <file>images/menu/Movie_white.png</file>
+        <file>images/menu/Bullseye_white.png</file>
         <file>images/navigation_interface/clear_hover.png</file>
         <file>images/navigation_interface/clear_normal.png</file>
         <file>images/navigation_interface/clear_pressed.png</file>

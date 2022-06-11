@@ -1,18 +1,18 @@
 # coding:utf-8
 from common.auto_wrap import autoWrap
 from common.style_sheet import setStyleSheet
+from common.os_utils import showInFolder
 from common.database.entity import SongInfo
 from common.meta_data.reader import AlbumCoverReader, SongInfoReader
 from common.meta_data.writer import MetaDataWriter
 from common.thread.get_meta_data_thread import GetSongMetaDataThread
 from components.buttons.perspective_button import PerspectivePushButton
 from components.buttons.switch_button import SwitchButton
-from components.widgets.label import ErrorIcon
+from components.widgets.label import ErrorIcon, ClickableLabel
 from components.widgets.line_edit import LineEdit, VLineEdit
 from components.widgets.tooltip import StateTooltip
 from mutagen.id3 import TCON
-from PyQt5.QtCore import QFile, QRegExp, Qt, pyqtSignal
-from PyQt5.QtGui import QRegExpValidator
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import (QApplication, QCompleter, QGridLayout, QLabel,
                              QVBoxLayout)
 
@@ -53,7 +53,7 @@ class SongInfoEditDialog(MaskDialogBase):
         self.singerNameLabel = QLabel(self.tr("Song artist"), self.widget)
         self.albumSongerLabel = QLabel(self.tr("Album artist"), self.widget)
         self.editInfoLabel = QLabel(self.tr("Edit Song Info"), self.widget)
-        self.songPath = QLabel(self.songInfo.file, self.widget)
+        self.songPath = ClickableLabel(self.songInfo.file, self.widget)
         self.getMetaDataLabel = QLabel(
             self.tr('Automatically retrieve metadata'), self.widget)
         self.bottomErrorIcon = ErrorIcon(self.widget)
@@ -102,6 +102,7 @@ class SongInfoEditDialog(MaskDialogBase):
 
         self.songNameLineEdit.setFocus()
         self.songNameLineEdit.clearButton.show()
+        self.songPath.setCursor(Qt.PointingHandCursor)
 
         self.bottomErrorLabel.setFixedWidth(self.widget.width()-60)
         self.bottomErrorIcon.hide()
@@ -109,13 +110,7 @@ class SongInfoEditDialog(MaskDialogBase):
         self.bottomErrorLabel.setWordWrap(True)
 
         # connect signal to slot
-        self.trackLineEdit.textChanged.connect(self.__validate)
-        self.discLineEdit.textChanged.connect(self.__validate)
-        self.yearLineEdit.textChanged.connect(self.__validate)
-        self.getMetaDataSwitchButton.checkedChanged.connect(
-            self.__onGetMetaDataCheckedChanged)
-        self.saveButton.clicked.connect(self.__saveInfo)
-        self.cancelButton.clicked.connect(self.close)
+        self.__connectSignalToSlot()
 
     def __initLayout(self):
         """ initialize layout """
@@ -307,3 +302,13 @@ class SongInfoEditDialog(MaskDialogBase):
         self.sender().quit()
         self.sender().wait()
         self.sender().deleteLater()
+
+    def __connectSignalToSlot(self):
+        self.trackLineEdit.textChanged.connect(self.__validate)
+        self.discLineEdit.textChanged.connect(self.__validate)
+        self.yearLineEdit.textChanged.connect(self.__validate)
+        self.getMetaDataSwitchButton.checkedChanged.connect(
+            self.__onGetMetaDataCheckedChanged)
+        self.saveButton.clicked.connect(self.__saveInfo)
+        self.cancelButton.clicked.connect(self.close)
+        self.songPath.clicked.connect(lambda: showInFolder(self.songInfo.file))

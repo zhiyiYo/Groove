@@ -593,6 +593,8 @@ class PlayingInterface(QWidget):
             self.__onLyricVisibleChanged)
         self.playBar.moreActionsMenu.movieAct.triggered.connect(
             self.__searchMV)
+        self.playBar.moreActionsMenu.locateAct.triggered.connect(
+            self.songListWidget.locateCurrentSong)
 
         # song list widget signal
         self.songListWidget.currentIndexChanged.connect(

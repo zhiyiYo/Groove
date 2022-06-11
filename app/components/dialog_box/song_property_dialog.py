@@ -2,8 +2,10 @@
 from common.auto_wrap import autoWrap
 from common.database.entity import SongInfo
 from common.style_sheet import setStyleSheet
+from common.os_utils import showInFolder
+from components.widgets.label import ClickableLabel
 from components.buttons.perspective_button import PerspectivePushButton
-from PyQt5.QtCore import QFile, Qt
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QGridLayout, QHBoxLayout, QLabel, QVBoxLayout
 
 from .mask_dialog_base import MaskDialogBase
@@ -37,8 +39,9 @@ class SongPropertyDialog(MaskDialogBase):
         self.albumSingerLabel = SelectableLabel(songInfo.singer, self.widget)
         self.discLabel = SelectableLabel(str(songInfo.disc or ''), self.widget)
         self.genreLabel = SelectableLabel(songInfo.genre or '', self.widget)
-        self.trackLabel = SelectableLabel(str(songInfo.track or ''), self.widget)
-        self.songPathLabel = SelectableLabel(songInfo.file, self.widget)
+        self.trackLabel = SelectableLabel(
+            str(songInfo.track or ''), self.widget)
+        self.songPathLabel = ClickableLabel(songInfo.file, self.widget)
         self.yearLabel = SelectableLabel(str(songInfo.year or ''), self.widget)
         self.durationLabel = SelectableLabel(
             f"{int(songInfo.duration//60)}:{int(songInfo.duration%60):02}", self.widget)
@@ -52,6 +55,7 @@ class SongPropertyDialog(MaskDialogBase):
         """ initialize widgets """
         self.__setQss()
         self.widget.setFixedWidth(942)
+        self.songPathLabel.setCursor(Qt.PointingHandCursor)
 
         self.songNameLabel.setFixedWidth(523)
         self.trackLabel.setFixedWidth(523)
@@ -64,6 +68,8 @@ class SongPropertyDialog(MaskDialogBase):
         self.__initLayout()
 
         self.closeButton.clicked.connect(self.close)
+        self.songPathLabel.clicked.connect(
+            lambda: showInFolder(self.songInfo.file))
 
     def __initLayout(self):
         """ initialize layout """
@@ -157,7 +163,7 @@ class SongPropertyDialog(MaskDialogBase):
         self.genreLabel.setObjectName('valueLabel')
         self.yearLabel.setObjectName("valueLabel")
         self.durationLabel.setObjectName("valueLabel")
-        self.songPathLabel.setObjectName("valueLabel")
+        self.songPathLabel.setObjectName("songPathLabel")
         self.propertyTitleLabel.setObjectName("propertyTitleLabel")
 
         setStyleSheet(self, 'song_property_dialog')
@@ -167,7 +173,7 @@ class SongPropertyDialog(MaskDialogBase):
             label.adjustSize()
 
 
-class SelectableLabel(QLabel):
+class SelectableLabel(ClickableLabel):
     """ Selectable label """
 
     def __init__(self, text: str, parent=None):

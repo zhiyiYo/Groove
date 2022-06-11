@@ -241,6 +241,10 @@ class SongListWidget(ListWidget):
         for songCard in self.songCards:
             songCard.setChecked(False)
 
+    def locateCurrentSong(self):
+        """ locate current song """
+        self.verticalScrollBar().setValue(60*self.currentIndex)
+
     @property
     def currentSongCard(self):
         return self.songCards[self.currentRow()]

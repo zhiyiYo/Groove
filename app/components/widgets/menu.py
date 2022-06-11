@@ -268,6 +268,8 @@ class PlayingInterfaceMoreActionsMenu(MoreActionsMenu):
             Icon(f":/images/menu/Add_{color}.png"), self.tr("Save as a playlist"), self)
         self.clearPlayListAct = QAction(
             Icon(f":/images/menu/Clear_{color}.png"), self.tr('Clear now playing'), self)
+        self.locateAct = QAction(
+            Icon(f':/images/menu/Bullseye_{color}.png'), self.tr('Locate current song'), self)
         self.lyricAct = QAction(
             Icon(f':/images/menu/Lyric_{color}.png'), self.tr('Hide lyric'), self)
         self.movieAct = QAction(
@@ -275,6 +277,7 @@ class PlayingInterfaceMoreActionsMenu(MoreActionsMenu):
         self.action_list = [
             self.savePlayListAct,
             self.clearPlayListAct,
+            self.locateAct,
             self.lyricAct,
             self.movieAct
         ]

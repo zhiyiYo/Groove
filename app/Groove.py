@@ -24,7 +24,7 @@ os.environ["QT_ENABLE_HIGHDPI_SCALING"] = "0"
 os.environ["QT_SCALE_FACTOR"] = str(max(1, dpi_manager.scale-0.25))
 QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
-app = SingletonApplication(sys.argv, "PyQt-Groove-Music-")
+app = SingletonApplication(sys.argv, "PyQt-Groove-Music")
 app.setAttribute(Qt.AA_DontCreateNativeWidgetSiblings)
 app.setStyle("Windows")
 

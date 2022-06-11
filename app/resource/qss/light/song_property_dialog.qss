@@ -18,6 +18,15 @@ QLabel#valueLabel {
     font-size: 17px;
 }
 
+QLabel#songPathLabel {
+    font-size: 17px;
+}
+
+QLabel#songPathLabel:hover {
+    color: rgb(0, 153, 188);
+}
+
+
 QPushButton {
     background-color: rgb(204, 204, 204);
     padding: 9px 65px 9px 65px;

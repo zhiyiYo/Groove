@@ -14,6 +14,10 @@ QLabel#songPath {
     font: 17px 'Segoe UI', 'Microsoft YaHei';
 }
 
+QLabel#songPath:hover {
+    color: rgb(0, 153, 188);
+}
+
 QLabel#editSongInfo,
 QLabel#editAlbumInfo {
     font: 21px 'Segoe UI', 'Microsoft YaHei';
