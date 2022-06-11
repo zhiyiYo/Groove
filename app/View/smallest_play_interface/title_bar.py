@@ -39,7 +39,7 @@ class TitleBar(QWidget):
 
 class WindowsTitleBar(TitleBar):
 
-    def mousePressEvent(self, event):
+    def mouseMoveEvent(self, event):
         if not self._isDragRegion(event.pos()):
             return
 
