@@ -24,6 +24,7 @@ class SongCardListContextMenu(DWMMenu):
         self.playAct = QAction(self.tr("Play"), self)
         self.nextSongAct = QAction(self.tr("Play next"), self)
         self.showAlbumAct = QAction(self.tr("Show album"), self)
+        self.viewOnlineAct = QAction(self.tr('View online'), self)
         self.editInfoAct = QAction(self.tr("Edit info"), self)
         self.showPropertyAct = QAction(self.tr("Properties"), self)
         self.deleteAct = QAction(self.tr("Delete"), self)
@@ -33,8 +34,10 @@ class SongCardListContextMenu(DWMMenu):
         # add actions to menu
         self.addActions([self.playAct, self.nextSongAct])
         self.addMenu(self.addToMenu)
-        self.addActions(
-            [self.showAlbumAct, self.editInfoAct, self.showPropertyAct, self.deleteAct])
+        self.addActions([
+            self.showAlbumAct, self.viewOnlineAct,
+            self.editInfoAct, self.showPropertyAct, self.deleteAct
+        ])
         self.addSeparator()
         self.addAction(self.selectAct)
 
@@ -148,6 +151,8 @@ class SongListWidget(NoScrollSongListWidget):
             lambda: signalBus.playOneSongCardSig.emit(self.currentSongInfo))
         menu.nextSongAct.triggered.connect(
             lambda: signalBus.nextToPlaySig.emit([self.currentSongInfo]))
+        menu.viewOnlineAct.triggered.connect(
+            lambda: signalBus.getSongDetailsUrlSig.emit(self.currentSongInfo, 'wanyi'))
         menu.showAlbumAct.triggered.connect(
             lambda: signalBus.switchToAlbumInterfaceSig.emit(
                 self.currentSongCard.singer,

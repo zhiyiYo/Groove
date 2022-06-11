@@ -128,12 +128,29 @@ class WanYiMusicCrawler(CrawlerBase):
 
         return play_urls
 
+    @exceptionHandler('')
+    def getSongDetailsUrl(self, key_word: str):
+        # search song information
+        song_infos, _ = self.getSongInfos(key_word, page_size=20)
+        if not song_infos:
+            return ''
+
+        # If the matching degree is less than threshold, return None
+        matches = [fuzz.token_set_ratio(
+            key_word, i.singer+' '+i.title) for i in song_infos]
+        best_match = max(matches)
+        if best_match < 85:
+            return ''
+
+        id = song_infos[matches.index(best_match)]['id']
+        return f'https://music.163.com/#/song?id={id}'
+
     @exceptionHandler()
     def getLyric(self, key_word: str):
         # search song information
         song_infos, _ = self.getSongInfos(key_word, page_size=20)
         if not song_infos:
-            return
+            return None
 
         # return None when the matching degree is less than threshold(100%)
         matches = [key_word == i.singer+' '+i.title for i in song_infos]
@@ -173,7 +190,8 @@ class WanYiMusicCrawler(CrawlerBase):
             return ''
 
         # send request for avatar
-        response = requests.get(data[0]['img1v1Url']+'?param=300y300', headers=self.headers)
+        response = requests.get(
+            data[0]['img1v1Url']+'?param=300y300', headers=self.headers)
         response.raise_for_status()
 
         # save avatar

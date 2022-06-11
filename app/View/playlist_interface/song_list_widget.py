@@ -21,6 +21,7 @@ class SongCardListContextMenu(DWMMenu):
         self.nextSongAct = QAction(self.tr("Play next"), self)
         self.deleteAct = QAction(self.tr("Delete from playlist"), self)
         self.showAlbumAct = QAction(self.tr("Show album"), self)
+        self.viewOnlineAct = QAction(self.tr('View online'), self)
         self.editInfoAct = QAction(self.tr("Edit info"), self)
         self.showPropertyAct = QAction(self.tr("Properties"), self)
         self.selectAct = QAction(self.tr("Select"), self)
@@ -28,7 +29,7 @@ class SongCardListContextMenu(DWMMenu):
 
         self.addActions([self.playAct, self.nextSongAct])
         self.addMenu(self.addToMenu)
-        self.addActions([self.deleteAct, self.showAlbumAct,
+        self.addActions([self.deleteAct, self.showAlbumAct, self.viewOnlineAct,
                         self.editInfoAct, self.showPropertyAct])
         self.addSeparator()
         self.addAction(self.selectAct)
@@ -93,7 +94,8 @@ class SongListWidget(NoScrollSongListWidget):
         """ connect context menu signal to slot """
         menu.editInfoAct.triggered.connect(self.showSongInfoEditDialog)
         menu.showPropertyAct.triggered.connect(self.showSongPropertyDialog)
-
+        menu.viewOnlineAct.triggered.connect(
+            lambda: signalBus.getSongDetailsUrlSig.emit(self.currentSongInfo, 'wanyi'))
         menu.playAct.triggered.connect(
             lambda: signalBus.playOneSongCardSig.emit(self.currentSongInfo))
         menu.nextSongAct.triggered.connect(

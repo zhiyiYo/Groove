@@ -18,9 +18,13 @@ class Menu(QMenu):
         self.moveDownAct = QAction(self.tr('Move down'), self)
         self.showAlbumAct = QAction(self.tr('Show album'), self)
         self.propertyAct = QAction(self.tr('Properties'), self)
+        self.viewOnlineAct = QAction(self.tr('View online'), self)
         self.selectAct = QAction(self.tr('Select'), self)
-        self.action_list = [self.playAct, self.removeAct, self.moveUpAct,
-                            self.moveDownAct, self.showAlbumAct, self.propertyAct, self.selectAct]
+        self.action_list = [
+            self.playAct, self.removeAct, self.moveUpAct,
+            self.moveDownAct, self.showAlbumAct, self.viewOnlineAct,
+            self.propertyAct, self.selectAct
+        ]
         self.__initWidget()
 
     def __initWidget(self):

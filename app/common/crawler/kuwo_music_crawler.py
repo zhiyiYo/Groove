@@ -86,6 +86,14 @@ class KuWoMusicCrawler(CrawlerBase):
         return play_url
 
     @exceptionHandler('')
+    def getSongDetailsUrl(self, key_word: str):
+        song_info = self.__matchSongInfo(key_word)
+        if not song_info:
+            return ''
+
+        return f"http://www.kuwo.cn/play_detail/{song_info['rid']}"
+
+    @exceptionHandler('')
     def downloadSong(self, song_info: SongInfo, save_dir: str, quality='Standard quality') -> str:
         # get play url
         url = self.getSongUrl(song_info, quality)
@@ -140,21 +148,12 @@ class KuWoMusicCrawler(CrawlerBase):
 
     @exceptionHandler()
     def getLyric(self, key_word: str) -> list:
-        song_infos, _ = self.getSongInfos(key_word, page_size=10)
-
-        if not song_infos:
-            return None
-
-        # If the matching degree is less than threshold, return None
-        matches = [fuzz.token_set_ratio(
-            key_word, i.singer+' '+i.title) for i in song_infos]
-        best_match = max(matches)
-        if best_match < 90:
+        song_info = self.__matchSongInfo(key_word)
+        if not song_info:
             return
 
         # send request for lyrics
-        rid = song_infos[matches.index(best_match)]['rid']
-        url = f"https://m.kuwo.cn/newh5/singles/songinfoandlrc?musicId={rid}"
+        url = f"https://m.kuwo.cn/newh5/singles/songinfoandlrc?musicId={song_info['rid']}"
         response = requests.get(url)
         response.raise_for_status()
 
@@ -206,3 +205,32 @@ class KuWoMusicCrawler(CrawlerBase):
         # search the play url of mp4
         match = re.search(r'src:"(.+\.mp4)"', response.text)
         return match.group(1).replace(r'\u002F', '/')
+
+    def __matchSongInfo(self, key_word: str, threshold=90) -> SongInfo:
+        """ Get the most matching song information according to keyword
+
+        Parameters
+        ----------
+        key_word: str
+            search key word
+
+        threshold: int
+            matching threshold
+
+        Returns
+        -------
+        songInfo: SongInfo
+            the most matching song information, `None` if no one match
+        """
+        song_infos, _ = self.getSongInfos(key_word, page_size=10)
+        if not song_infos:
+            return None
+
+        # If the matching degree is less than threshold, return None
+        matches = [fuzz.token_set_ratio(
+            key_word, i.singer+' '+i.title) for i in song_infos]
+        best_match = max(matches)
+        if best_match < threshold:
+            return None
+
+        return song_infos[matches.index(best_match)]

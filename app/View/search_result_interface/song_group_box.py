@@ -156,6 +156,8 @@ class LocalSongListWidget(NoScrollSongListWidget):
             lambda: signalBus.playOneSongCardSig.emit(self.currentSongInfo))
         menu.nextSongAct.triggered.connect(
             lambda: signalBus.nextToPlaySig.emit([self.currentSongInfo]))
+        menu.viewOnlineAct.triggered.connect(
+            lambda: signalBus.getSongDetailsUrlSig.emit(self.currentSongInfo, 'wanyi'))
         menu.showPropertyAct.triggered.connect(self.showSongPropertyDialog)
         menu.showAlbumAct.triggered.connect(
             lambda: signalBus.switchToAlbumInterfaceSig.emit(
@@ -210,6 +212,8 @@ class OnlineSongListWidget(NoScrollSongListWidget):
             lambda: signalBus.nextToPlaySig.emit([self.currentSongInfo]))
         menu.downloadMenu.downloadSig.connect(
             lambda quality: self.downloadSig.emit(self.currentSongInfo, quality))
+        menu.viewOnlineAct.triggered.connect(
+            lambda: signalBus.getSongDetailsUrlSig.emit(self.currentSongInfo, 'kuwo'))
 
 
 class LocalSongListContextMenu(DWMMenu):
@@ -220,12 +224,13 @@ class LocalSongListContextMenu(DWMMenu):
         self.playAct = QAction(self.tr("Play"), self)
         self.nextSongAct = QAction(self.tr("Play next"), self)
         self.showAlbumAct = QAction(self.tr("Show album"), self)
+        self.viewOnlineAct = QAction(self.tr('View online'), self)
         self.showPropertyAct = QAction(self.tr("Properties"), self)
         self.addToMenu = AddToMenu(self.tr("Add to"), self)
         self.addActions([self.playAct, self.nextSongAct])
         self.addMenu(self.addToMenu)
         self.addActions(
-            [self.showAlbumAct, self.showPropertyAct])
+            [self.showAlbumAct, self.viewOnlineAct, self.showPropertyAct])
 
 
 class OnlineSongListContextMenu(DWMMenu):
@@ -236,8 +241,9 @@ class OnlineSongListContextMenu(DWMMenu):
         self.setObjectName('onlineSongListContextMenu')
         self.playAct = QAction(self.tr("Play"), self)
         self.nextSongAct = QAction(self.tr("Play next"), self)
+        self.viewOnlineAct = QAction(self.tr('View online'), self)
         self.showPropertyAct = QAction(self.tr("Properties"), self)
         self.downloadMenu = DownloadMenu(self.tr('Download'), self)
         self.addActions([self.playAct, self.nextSongAct])
         self.addMenu(self.downloadMenu)
-        self.addAction(self.showPropertyAct)
+        self.addActions([self.viewOnlineAct, self.showPropertyAct])

@@ -88,6 +88,23 @@ class CrawlerBase:
         """
         raise NotImplementedError
 
+    def getSongDetailsUrl(self, key_word: str):
+        """ get the url of song details page
+
+        Parameters
+        ----------
+        Parameters
+        ----------
+        key_word: str
+            search key word, the format is `singer title`
+
+        Returns
+        -------
+        url: str
+            the url of song details page
+        """
+        raise NotImplementedError
+
     def downloadSong(self, song_info: SongInfo, save_dir: str, quality: str = 'Standard quality') -> str:
         """ download online music to local
 

@@ -17,6 +17,7 @@ class SignalBus(Singleton, QObject):
     playOneSongCardSig = pyqtSignal(SongInfo)   # 将播放列表重置为一首歌
 
     playBySongInfoSig = pyqtSignal(SongInfo)    # 更新歌曲卡列表控件的正在播放歌曲
+    getSongDetailsUrlSig = pyqtSignal(SongInfo, str) # 在线查看歌曲详细信息
 
     addSongsToPlayingPlaylistSig = pyqtSignal(list)      # 添加到正在播放
     addSongsToNewCustomPlaylistSig = pyqtSignal(list)    # 添加到新建自定义播放列表

@@ -559,6 +559,11 @@
         <source>Add to</source>
         <translation>添加到</translation>
     </message>
+    <message>
+        <location filename="../../View/search_result_interface/song_group_box.py" line="285" />
+        <source>View online</source>
+        <translation>在线查看</translation>
+    </message>
 </context>
 <context>
     <name>LocalSongListWidget</name>
@@ -701,6 +706,16 @@
         <source>An error occurred</source>
         <translation>发生了错误</translation>
     </message>
+    <message>
+        <location filename="../../View/main_window/main_window.py" line="1366"/>
+        <source>Can&apos;t view online</source>
+        <translation>无法在线查看</translation>
+    </message>
+    <message>
+        <location filename="../../View/main_window/main_window.py" line="1367"/>
+        <source>Unable to find a matching online song.</source>
+        <translation>匹配在线歌曲失败，请稍后再试。</translation>
+    </message>
 </context>
 <context>
     <name>Menu</name>
@@ -743,6 +758,11 @@
         <location filename="../../View/playing_interface/menu.py" line="23"/>
         <source>Select</source>
         <translation>选择</translation>
+    </message>
+    <message>
+        <location filename="../../View/playing_interface/menu.py" line="24"/>
+        <source>View online</source>
+        <translation>在线查看</translation>
     </message>
 </context>
 <context>
@@ -889,6 +909,11 @@
         <location filename="../../View/search_result_interface/song_group_box.py" line="304"/>
         <source>Download</source>
         <translation>下载</translation>
+    </message>
+    <message>
+        <location filename="../../View/search_result_interface/song_group_box.py" line="305"/>
+        <source>View online</source>
+        <translation>在线查看</translation>
     </message>
 </context>
 <context>
@@ -1978,12 +2003,12 @@
 <context>
     <name>SongCardListContextMenu</name>
     <message>
-        <location filename="../../View/my_music_interface/song_tab_interface/song_list_widget.py" line="20"/>
+        <location filename="../../components/song_list_widget/song_list_widget.py" line="20"/>
         <source>Play</source>
         <translation>播放</translation>
     </message>
     <message>
-        <location filename="../../View/my_music_interface/song_tab_interface/song_list_widget.py" line="21"/>
+        <location filename="../../components/song_list_widget/song_list_widget.py" line="21"/>
         <source>Play next</source>
         <translation>下一首播放</translation>
     </message>
@@ -1993,22 +2018,27 @@
         <translation>从播放列表中删除</translation>
     </message>
     <message>
-        <location filename="../../View/my_music_interface/song_tab_interface/song_list_widget.py" line="22"/>
+        <location filename="../../components/song_list_widget/song_list_widget.py" line="22"/>
         <source>Show album</source>
         <translation>显示专辑</translation>
     </message>
     <message>
-        <location filename="../../View/my_music_interface/song_tab_interface/song_list_widget.py" line="23"/>
+        <location filename="../../components/song_list_widget/song_list_widget.py" line="23"/>
+        <source>View online</source>
+        <translation>在线查看</translation>
+    </message>
+    <message>
+        <location filename="../../components/song_list_widget/song_list_widget.py" line="23"/>
         <source>Edit info</source>
         <translation>编辑信息</translation>
     </message>
     <message>
-        <location filename="../../View/my_music_interface/song_tab_interface/song_list_widget.py" line="24"/>
+        <location filename="../../components/song_list_widget/song_list_widget.py" line="24"/>
         <source>Properties</source>
         <translation>属性</translation>
     </message>
     <message>
-        <location filename="../../View/my_music_interface/song_tab_interface/song_list_widget.py" line="26"/>
+        <location filename="../../components/song_list_widget/song_list_widget.py" line="26"/>
         <source>Select</source>
         <translation>选择</translation>
     </message>

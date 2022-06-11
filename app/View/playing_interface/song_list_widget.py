@@ -268,6 +268,8 @@ class SongListWidget(ListWidget):
                 self.currentSongCard.album
             )
         )
+        menu.viewOnlineAct.triggered.connect(
+            lambda: signalBus.getSongDetailsUrlSig.emit(self.currentSongInfo, 'wanyi'))
 
         menu.addToMenu.addSongsToPlaylistSig.connect(
             lambda name: signalBus.addSongsToCustomPlaylistSig.emit(name, [self.currentSongInfo]))

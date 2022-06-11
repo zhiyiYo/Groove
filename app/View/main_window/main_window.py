@@ -16,6 +16,7 @@ from common.os_utils import getWindowsVersion
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
 from common.thread.get_online_song_url_thread import GetOnlineSongUrlThread
+from common.thread.get_song_details_url_thread import GetSongDetailsUrlThread
 from common.thread.library_thread import LibraryThread
 from components.dialog_box.create_playlist_dialog import CreatePlaylistDialog
 from components.dialog_box.message_dialog import MessageDialog
@@ -30,8 +31,9 @@ from components.widgets.stacked_widget import (OpacityAniStackedWidget,
                                                PopUpAniStackedWidget)
 from components.widgets.tooltip import StateTooltip
 from PyQt5.QtCore import (QEasingCurve, QEvent, QEventLoop, QFile, QFileInfo,
-                          Qt, QTimer)
-from PyQt5.QtGui import QColor, QDragEnterEvent, QDropEvent, QIcon, QPixmap
+                          Qt, QTimer, QUrl)
+from PyQt5.QtGui import (QColor, QDesktopServices, QDragEnterEvent, QDropEvent,
+                         QIcon, QPixmap)
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist
 from PyQt5.QtSql import QSqlDatabase
 from PyQt5.QtWidgets import QAction, QApplication, QHBoxLayout, QWidget, qApp
@@ -87,6 +89,9 @@ class MainWindow(AcrylicWindow):
 
         # get online music url thread
         self.getOnlineSongUrlThread = GetOnlineSongUrlThread(self)
+
+        # get song details url thread
+        self.getSongDetailsUrlThread = GetSongDetailsUrlThread(self)
 
         # create setting interface
         self.settingInterface = SettingInterface(self.subMainWindow)
@@ -590,11 +595,7 @@ class MainWindow(AcrylicWindow):
             QMediaPlayer.ServiceMissingError: self.tr(
                 "A valid playback service was not found") + ", " + hint
         }
-        w = MessageDialog(self.tr('An error occurred'),
-                          messageMap[error], self)
-        w.cancelButton.setText(self.tr('Close'))
-        w.yesButton.hide()
-        w.exec()
+        self.showMessageBox(self.tr('An error occurred'), messageMap[error])
 
     def onProgressSliderMoved(self, position):
         """ progress slider moved slot """
@@ -691,8 +692,14 @@ class MainWindow(AcrylicWindow):
         self.pause()
 
         # pop up message dialog
-        w = MessageDialog(self.tr("Can't play this song"), self.tr(
-            "It's not on this device or somewhere we can stream from."), self)
+        self.showMessageBox(
+            self.tr("Can't play this song"),
+            self.tr("It's not on this device or somewhere we can stream from.")
+        )
+
+    def showMessageBox(self, title: str, content: str):
+        """ show message box """
+        w = MessageDialog(title, content, self)
         w.cancelButton.setText(self.tr('Close'))
         w.yesButton.hide()
         w.exec()
@@ -1352,6 +1359,17 @@ class MainWindow(AcrylicWindow):
             self.setPlaylist(self.library.loadFromFiles([message]))
             self.show()
 
+    def onCrawlSongDetailsUrlFinished(self, url: str):
+        """ crawl song details url finished thread """
+        if not url:
+            self.showMessageBox(
+                self.tr("Can't view online"),
+                self.tr('Unable to find a matching online song.')
+            )
+            return
+
+        QDesktopServices.openUrl(QUrl(url))
+
     def connectSignalToSlot(self):
         """ connect signal to slot """
 
@@ -1414,6 +1432,8 @@ class MainWindow(AcrylicWindow):
 
         signalBus.editSongInfoSig.connect(self.onEditSongInfo)
         signalBus.editAlbumInfoSig.connect(self.onEditAlbumInfo)
+        signalBus.getSongDetailsUrlSig.connect(
+            self.getSongDetailsUrlThread.get)
 
         signalBus.addSongsToPlayingPlaylistSig.connect(
             self.addSongsToPlayingPlaylist)
@@ -1528,6 +1548,10 @@ class MainWindow(AcrylicWindow):
         self.library.fileAdded.connect(self.onFileAdded)
         self.library.fileRemoved.connect(self.onFileRemoved)
 
+        # get song details url thread signal
+        self.getSongDetailsUrlThread.crawlFinished.connect(
+            self.onCrawlSongDetailsUrlFinished)
+
 
 class SplashScreen(QWidget):
     """ Splash screen """
@@ -1539,5 +1563,5 @@ class SplashScreen(QWidget):
         self.logo.setPixmap(QPixmap(":/images/logo/splash_screen_logo.png"))
         self.hBoxLayout.addWidget(self.logo, 0, Qt.AlignCenter)
         self.setAttribute(Qt.WA_StyledBackground)
-        color = '2b2b2b' if config.theme=='dark' else 'ffffff'
+        color = '2b2b2b' if config.theme == 'dark' else 'ffffff'
         self.setStyleSheet(f'background:#{color}')
