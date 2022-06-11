@@ -3,6 +3,7 @@ from common.auto_wrap import autoWrap
 from common.database.entity import SongInfo
 from common.style_sheet import setStyleSheet
 from common.os_utils import showInFolder
+from common.crawler import CrawlerBase
 from components.widgets.label import ClickableLabel
 from components.buttons.perspective_button import PerspectivePushButton
 from PyQt5.QtCore import Qt
@@ -134,12 +135,12 @@ class SongPropertyDialog(MaskDialogBase):
     def __adjustText(self):
         """ adjust text if it's too long """
         songName, isSongNameWrap = autoWrap(self.songNameLabel.text(), 57)
-        singer, isSingerWrap = autoWrap(self.singerLabel.text(), 33)
+        singer, isSingerWrap = autoWrap(self.singerLabel.text(), 38)
         albumName, isAlbumNameWrap = autoWrap(
             self.albumNameLabel.text(), 57)
         albumSinger, isAlbumSingerWrap = autoWrap(
-            self.albumSingerLabel.text(), 33)
-        songPath, isSongPathWrap = autoWrap(self.songPathLabel.text(), 110)
+            self.albumSingerLabel.text(), 38)
+        songPath, isSongPathWrap = autoWrap(self.songPathLabel.text(), 105)
 
         if isSongNameWrap or isSingerWrap:
             self.songNameLabel.setText(songName)
@@ -151,6 +152,10 @@ class SongPropertyDialog(MaskDialogBase):
 
         if isSongPathWrap:
             self.songPathLabel.setText(songPath)
+
+        if songPath == CrawlerBase.song_url_mark:
+            self.songPathLabel.setText('')
+            self.songPathLabel.setCursor(Qt.ArrowCursor)
 
     def __setQss(self):
         """ set style sheet """

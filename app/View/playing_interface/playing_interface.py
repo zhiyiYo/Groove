@@ -303,8 +303,7 @@ class PlayingInterface(QWidget):
         self.songListWidget.updateSongCards(self.playlist, isResetIndex, index)
         self.albumCoverLabel.setCover(
             self.songInfoCardChute.cards[1].coverPath)
-        self.__setGuideLabelHidden(
-            bool(playlist) and not self.songListWidget.isVisible())
+        self.__setGuideLabelHidden(len(playlist) > 0)
         self.__getLyric()
 
     def setPlay(self, isPlay: bool):

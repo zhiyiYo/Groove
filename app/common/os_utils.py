@@ -131,14 +131,20 @@ def getWindowsVersion():
 
 def showInFolder(path: str):
     """ show file in file explorer """
+    if not path or path.lower() == 'http':
+        return
+
+    if path.startswith('http'):
+        QDesktopServices.openUrl(QUrl(path))
+        return
+
     info = QFileInfo(path)   # type:QFileInfo
     if sys.platform == "win32":
         args = [QDir.toNativeSeparators(path)]
         if not info.isDir():
             args.insert(0, '/select,')
 
-        if QProcess.startDetached('explorer', args):
-            return
+        QProcess.startDetached('explorer', args)
     else:
         url = QUrl.fromLocalFile(path if info.isDir() else info.path())
         QDesktopServices.openUrl(url)
