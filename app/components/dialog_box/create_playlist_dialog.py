@@ -4,9 +4,9 @@ from common.library import Library
 from common.style_sheet import setStyleSheet
 from components.buttons.three_state_button import ThreeStateButton
 from components.dialog_box.mask_dialog_base import MaskDialogBase
-from components.widgets.label import ClickableLabel, PixmapLabel
+from components.widgets.label import ClickableLabel, PixmapLabel, PlaylistLabel
 from components.widgets.menu import LineEditMenu
-from PyQt5.QtCore import QEvent, QFile, Qt, pyqtSignal
+from PyQt5.QtCore import QEvent, Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import (QApplication, QLabel, QLineEdit, QPushButton,
                              QVBoxLayout)
@@ -22,7 +22,7 @@ class CreatePlaylistDialog(MaskDialogBase):
         self.library = library
         self.songInfos = songInfos or []
         self.vBoxLayout = QVBoxLayout(self.widget)
-        self.iconLabel = PixmapLabel(self.widget)
+        self.iconLabel = PlaylistLabel(self.widget)
         self.lineEdit = LineEdit(parent=self.widget)
         self.cancelLabel = ClickableLabel(self.tr("Cancel"), self.widget)
         self.yourCreationLabel = QLabel(self.tr("Created by you"), self.widget)
@@ -36,8 +36,6 @@ class CreatePlaylistDialog(MaskDialogBase):
         """ initialize widgets """
         self.widget.setFixedSize(586, 644)
         self.playlistExistedLabel.hide()
-        self.iconLabel.setPixmap(
-            QPixmap(":/images/create_playlist_dialog/playlist.png"))
 
         self.__setQss()
         self.__initLayout()
@@ -137,7 +135,6 @@ class LineEdit(QLineEdit):
             0, 0, self.clearButton.width() + self.pencilLabel.pixmap().width() + 1, 0)
 
     def __onTextChanged(self):
-        """ 编辑框的文本改变时选择是否显示清空按钮 """
         self.clearButton.setVisible(bool(self.text()))
 
     def enterEvent(self, e):
@@ -179,14 +176,12 @@ class LineEdit(QLineEdit):
                 self.clearButton.show()
 
     def contextMenuEvent(self, e):
-        """ show context menu """
         self.menu.exec_(e.globalPos())
 
     def resizeEvent(self, e):
         self.__adjustButtonPos()
 
     def eventFilter(self, obj, e):
-        """ 过滤事件 """
         if obj == self.clearButton:
             if e.type() == QEvent.MouseButtonRelease and e.button() == Qt.LeftButton:
                 self.clear()

@@ -1,4 +1,5 @@
 # coding:utf-8
+from common.config import config
 from PyQt5.QtCore import QEasingCurve, QPropertyAnimation, Qt
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import (QDialog, QGraphicsDropShadowEffect,
@@ -19,8 +20,9 @@ class MaskDialogBase(QDialog):
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setGeometry(0, 0, parent.width(), parent.height())
 
+        c = 0 if config.theme == 'dark' else 255
         self.windowMask.resize(self.size())
-        self.windowMask.setStyleSheet('background:rgba(255, 255, 255, 0.6)')
+        self.windowMask.setStyleSheet(f'background:rgba({c}, {c}, {c}, 0.6)')
         self.__hBoxLayout.addWidget(self.widget)
         self.__setShadowEffect()
 

@@ -1,5 +1,5 @@
 QWidget {
-    background-color: white;
+    background-color: rgb(15, 15, 15);
 }
 
 QWidget#playlistCard[isChecked='True'] {
@@ -16,7 +16,7 @@ QWidget#scrollWidget {
 }
 
 QScrollArea {
-    background-color: white;
+    background-color: rgb(15, 15, 15);
     border: none;
 }
 
@@ -62,15 +62,16 @@ QScrollBar::sub-page:vertical {
 QLabel {
     font: 17px 'Segoe UI Semilight', 'Microsoft YaHei Light';
     background-color: transparent;
+    color: white;
 }
 
 QLabel#sortModeLabel {
-    color: black;
+    color: white;
     font: 16px 'Segoe UI', 'Microsoft YaHei';
 }
 
 QLabel#guideLabel {
-    color: black;
+    color: white;
     font: 25px 'Segoe UI', 'Microsoft YaHei';
 }
 
@@ -81,7 +82,7 @@ QLabel#playlistLabel {
 }
 
 QLabel#nameLabel[isChecked='False'] {
-    color: black;
+    color: white;
     font-family: 'Segoe UI', 'Microsoft YaHei';
     font-weight: bold;
 }
@@ -104,7 +105,7 @@ QLabel#countLabel[isChecked='True'] {
 /*设置按钮的样式*/
 QPushButton {
     text-align: left;
-    color: black;
+    color: white;
     font-size: 16px;
     background-color: transparent;
     font-family: 'Segoe UI', 'Microsoft YaHei';
@@ -114,7 +115,7 @@ QPushButton {
 }
 
 QPushButton#sortModeButton {
-    color: rgb(0, 107, 131);
+    color: rgb(0, 153, 188);
     font-size: 16px;
 }
 
@@ -131,11 +132,11 @@ QPushButton#createPlaylistButton {
 }
 
 QPushButton#createPlaylistButton:hover {
-    color: rgba(0, 0, 0, 0.8);
+    color: rgba(255, 255, 255, 0.8);
 }
 
 QPushButton#createPlaylistButton:pressed {
-    color: rgba(0, 0, 0, 0.4);
+    color: rgba(255, 255, 255, 0.4);
 }
 
 /*复选框样式*/

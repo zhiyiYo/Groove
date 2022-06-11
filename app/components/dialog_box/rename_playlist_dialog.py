@@ -3,9 +3,9 @@ from common.library import Library
 from common.style_sheet import setStyleSheet
 from components.buttons.three_state_button import ThreeStateButton
 from components.dialog_box.mask_dialog_base import MaskDialogBase
-from components.widgets.label import ClickableLabel, PixmapLabel
+from components.widgets.label import ClickableLabel, PixmapLabel, PlaylistLabel
 from components.widgets.menu import LineEditMenu
-from PyQt5.QtCore import QEvent, QFile, Qt, pyqtSignal
+from PyQt5.QtCore import QEvent, Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import (QApplication, QLabel, QLineEdit, QPushButton,
                              QVBoxLayout)
@@ -21,7 +21,7 @@ class RenamePlaylistDialog(MaskDialogBase):
         self.oldName = name
         self.library = library
         self.vBoxLayout = QVBoxLayout(self.widget)
-        self.iconLabel = PixmapLabel(self.widget)
+        self.iconLabel = PlaylistLabel(self.widget)
         self.lineEdit = LineEdit(self.oldName, self.widget)
         self.cancelLabel = ClickableLabel(self.tr("Cancel"), self.widget)
         self.renamePlaylistButton = QPushButton(self.tr('Rename'), self.widget)
@@ -35,8 +35,6 @@ class RenamePlaylistDialog(MaskDialogBase):
         self.renamePlaylistButton.setEnabled(False)
         self.playlistExistedLabel.hide()
         self.lineEdit.selectAll()
-        self.iconLabel.setPixmap(
-            QPixmap(":/images/create_playlist_dialog/playlist.png"))
         self.__setQss()
         self.__initLayout()
 

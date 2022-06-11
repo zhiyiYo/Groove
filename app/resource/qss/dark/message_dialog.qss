@@ -1,16 +1,16 @@
 QWidget {
-    background-color: white;
-    border: 1px solid rgb(200, 200, 200);
+    background-color: rgb(23, 23, 23);
+    border: 1px solid rgb(55, 55, 55);
 }
 
 QWidget#windowMask {
-    background-color: rgba(255, 255, 255, 0.6);
+    background-color: rgba(0, 0, 0, 0.6);
     border: none;
 }
 
 QLabel {
     background-color: transparent;
-    color: black;
+    color: white;
     font-family: 'Segoe UI', 'Microsoft YaHei';
     border: none;
 }
@@ -24,20 +24,21 @@ QLabel#contentLabel {
 }
 
 QPushButton {
-    background-color: rgb(204, 204, 204);
+    background-color: rgb(51, 51, 51);
     font: 19px 'Segoe UI', 'Microsoft YaHei';
     border: transparent;
+    color: white;
 }
 
 QPushButton:pressed:hover {
-    background-color: rgb(153, 153, 153);
+    background-color: rgb(102, 102, 102);
 }
 
 QPushButton:hover {
-    background-color: rgb(230, 230, 230);
+    background-color: rgb(35, 35, 35);
 }
 
 QPushButton:disabled {
-    background-color: rgb(204, 204, 204);
-    color: rgb(122, 122, 122);
+    background-color: rgb(51, 51, 51);
+    color: rgb(133, 133, 133);
 }

@@ -2,6 +2,7 @@
 import os
 from pathlib import Path
 
+from common.config import config
 from common.crawler import KuWoMusicCrawler
 from common.database.entity import SingerInfo
 from common.library import Library
@@ -54,11 +55,12 @@ class SingerInterface(AlbumSelectionModeInterface):
         self.albumBlurBackground = AlbumBlurBackground(self.scrollWidget)
         self.inYourMusicLabel = QLabel(
             self.tr('In your music'), self.scrollWidget)
+        c = 'white' if config.theme == 'dark' else 'black'
         self.playButton = ThreeStateButton(
             {
-                "normal": ":/images/singer_interface/Play_normal.png",
-                "hover": ":/images/singer_interface/Play_hover.png",
-                "pressed": ":/images/singer_interface/Play_pressed.png",
+                "normal": f":/images/singer_interface/Play_{c}_normal.png",
+                "hover": f":/images/singer_interface/Play_{c}_hover.png",
+                "pressed": f":/images/singer_interface/Play_{c}_pressed.png",
             },
             self.scrollWidget,
             (20, 20)

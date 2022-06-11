@@ -224,7 +224,12 @@ class SongNameCard(QWidget):
 
         # update icon
         if isSongExit:
-            color = "white" if state == "selected" else "green"
+            if state == "selected":
+                color = "white"
+            elif config.theme == "dark":
+                color = "green_"
+            else:
+                color = "green"
             path = f":/images/song_tab_interface/Playing_{color}.png"
         else:
             color = "white" if state == "selected" else "red"
@@ -308,8 +313,9 @@ class PlaylistSongNameCard(SongNameCard):
 
     def __init__(self, songName, parent):
         super().__init__(songName, parent=parent)
+        c = "white" if config.theme == 'dark' else 'black'
         self.addToButton.setIconPaths({
-            "notSelected-notPlay": ":/images/playlist_interface/Delete_black.png",
+            "notSelected-notPlay": f":/images/playlist_interface/Delete_{c}.png",
             "notSelected-play": ":/images/playlist_interface/Delete_green.png",
             "selected": ":/images/playlist_interface/Delete_white.png",
         })
@@ -343,8 +349,9 @@ class OnlineSongNameCard(SongNameCard):
         self.playingLabel.move(15, 22)
         self.checkBox.setFixedWidth(0)
         self.checkBox.lower()
+        c = "white" if config.theme == 'dark' else 'black'
         self.addToButton.setIconPaths({
-            "notSelected-notPlay": ":/images/search_result_interface/Download_black.png",
+            "notSelected-notPlay": f":/images/search_result_interface/Download_{c}.png",
             "notSelected-play": ":/images/search_result_interface/Download_green.png",
             "selected": ":/images/search_result_interface/Download_white.png",
         })

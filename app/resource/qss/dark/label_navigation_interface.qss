@@ -1,19 +1,19 @@
 QWidget {
-    background-color: white;
+    background-color: rgb(15, 15, 15);
 }
 
 QScrollArea {
-    background-color: white
+    background-color: rgb(15, 15, 15)
 }
 
 QLabel {
-    color: rgb(0, 107, 131);
+    color: rgb(0, 153, 188);
     font: 39px 'Segoe UI', 'Microsoft YaHei';
     font-weight: 300;
 }
 
 QLabel:disabled {
-    color: rgb(102, 102, 102);
+    color: rgb(153, 153, 153);
     font: 39px 'Segoe UI', 'Microsoft YaHei';
     font-weight: 300;
 }

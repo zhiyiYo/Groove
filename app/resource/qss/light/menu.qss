@@ -12,7 +12,7 @@ QMenu::right-arrow {
     width: 16px;
     height: 16px;
     right: 16px;
-    border-image: url(:/images/menu/ChevronRight.png);
+    border-image: url(:/images/menu/ChevronRight_black.png);
 
 }
 

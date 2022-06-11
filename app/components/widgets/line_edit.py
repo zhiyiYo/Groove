@@ -1,4 +1,5 @@
 # coding:utf-8
+from common.config import config
 from components.buttons.three_state_button import ThreeStateButton
 from components.widgets.label import ErrorIcon
 from components.widgets.menu import LineEditMenu
@@ -14,10 +15,11 @@ class LineEdit(QLineEdit):
         super().__init__(string, parent)
         self.needClearBtn = needClearBtn
         self.clickedTime = 0
+        color = "white" if config.theme == "dark" else "black"
         iconPaths = {
-            "normal": ":/images/line_edit/close_normal.png",
+            "normal": f":/images/line_edit/close_{color}_normal.png",
             "hover": ":/images/line_edit/close_hover.png",
-            "pressed": ":/images/line_edit/clear_pressed.png",
+            "pressed": ":/images/line_edit/close_pressed.png",
         }
         self.clearButton = ThreeStateButton(iconPaths, self)
         self.menu = LineEditMenu(self)

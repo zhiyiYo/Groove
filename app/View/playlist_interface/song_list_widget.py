@@ -52,7 +52,7 @@ class SongListWidget(NoScrollSongListWidget):
         super().__init__(songInfos, SongCardType.PLAYLIST_INTERFACE_SONG_CARD, parent)
         self.resize(1150, 758)
         self.createSongCards()
-        setStyleSheet(self, 'song_tab_interface_song_list_widget')
+        setStyleSheet(self, 'song_list_widget')
 
     def contextMenuEvent(self, e: QContextMenuEvent):
         hitIndex = self.indexAt(e.pos()).column()

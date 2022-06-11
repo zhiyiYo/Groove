@@ -266,16 +266,16 @@ class MainWindow(AcrylicWindow):
         if len(sys.argv) > 1:
             self.play()
 
-    def setWindowEffect(self, isEnableAcrylic: bool):
+    def setWindowEffect(self, enableAcrylic: bool):
         """ set window effect """
-        c = '2B2B2B' if config.theme == 'dark' else 'F2F2F2'
-        if isEnableAcrylic:
+        self.setProperty('useAcrylic', enableAcrylic)
+        self.setStyle(QApplication.style())
+        if enableAcrylic:
+            c = '2B2B2B' if config.theme == 'dark' else 'F2F2F2'
             self.windowEffect.setAcrylicEffect(self.winId(), c+"99")
-            self.setStyleSheet("#mainWindow{background:transparent}")
             if getWindowsVersion() != 10:
                 self.windowEffect.addShadowEffect(self.winId())
         else:
-            self.setStyleSheet(f"#mainWindow{{background:#{c}}}")
             self.windowEffect.addShadowEffect(self.winId())
             self.windowEffect.removeBackgroundEffect(self.winId())
 
@@ -305,9 +305,12 @@ class MainWindow(AcrylicWindow):
     def setQss(self):
         """ set style sheet """
         self.setObjectName("mainWindow")
+        self.setProperty('useAcrylic', True)
         self.subMainWindow.setObjectName("subMainWindow")
         self.subStackWidget.setObjectName("subStackWidget")
+        self.totalStackWidget.setObjectName('totalStackWidget')
         self.playingInterface.setObjectName("playingInterface")
+        self.myMusicInterface.setObjectName('myMusicInterface')
         setStyleSheet(self, 'main_window')
 
     def eventFilter(self, obj, e: QEvent):

@@ -1,16 +1,16 @@
 QListWidget {
     border: transparent;
     outline: none;
-    background-color: white;
+    background-color: rgb(15, 15, 15);
     padding: 0px;
 }
 
 QListWidget::item:!alternate {
-    background-color: rgb(242, 242, 242);
+    background-color: rgb(30, 30, 30);
 }
 
 QListWidget::item:alternate {
-    background: white;
+    background: rgb(15, 15, 15);
 }
 
 /*歌曲卡样式*/
@@ -24,11 +24,11 @@ QWidget[state='notSelected-leave'] {
 }
 
 QWidget[state='notSelected-enter'] {
-    background-color: rgb(217, 217, 217);
+    background-color: rgb(51, 51, 51);
 }
 
 QWidget[state='notSelected-pressed'] {
-    background-color: rgb(174, 174, 174);
+    background-color: rgb(92, 92, 92);
 }
 
 QWidget[state='selected-leave'] {
@@ -47,18 +47,23 @@ QLabel {
     font-family: 'Segoe UI', 'Microsoft YaHei';
     font-size: 15px;
     background-color: transparent;
+    color: white;
 }
 
 QLabel#songNameLabel {
     font-size: 16px;
 }
 
+QLabel#trackLabel {
+    font-size: 17px;
+}
+
 QLabel[state='notSelected-notPlay'] {
-    color: rgb(48, 48, 48);
+    color: rgb(207, 207, 207);
 }
 
 QLabel[state='notSelected-play'] {
-    color: rgb(0, 107, 131);
+    color: rgb(0, 153, 188);
 }
 
 QLabel[state='selected'] {
@@ -74,7 +79,7 @@ QLabel#clickableLabel[state='selected']:hover {
 }
 
 QLabel#guideLabel{
-    color: black;
+    color: white;
     font: 25px 'Segoe UI', 'Microsoft YaHei';
 }
 
@@ -101,7 +106,7 @@ QCheckBox::indicator[state='selected']:pressed {
 }
 
 QCheckBox::indicator[state='notSelected-notPlay'] {
-    border: 1px solid black;
+    border: 1px solid white;
 }
 
 QCheckBox::indicator[state='notSelected-notPlay']:pressed {
@@ -109,7 +114,7 @@ QCheckBox::indicator[state='notSelected-notPlay']:pressed {
 }
 
 QCheckBox::indicator[state='notSelected-play'] {
-    border: 1px solid rgb(0, 107, 131);
+    border: 1px solid rgb(0, 153, 188);
 }
 
 QCheckBox::indicator[state='notSelected-play']:pressed {
@@ -134,12 +139,12 @@ QToolButton {
 
 QToolButton[state='notSelected-notPlay']:hover,
 QToolButton[state='notSelected-play']:hover {
-    background: rgb(196, 196, 196);
+    background: rgb(59, 59, 59);
 }
 
 QToolButton[state='notSelected-notPlay']:pressed,
 QToolButton[state='notSelected-play']:pressed {
-    background-color: rgb(174, 174, 174);
+    background-color: rgb(81, 81, 81);
 }
 
 QToolButton[state='selected']:hover {
@@ -148,37 +153,4 @@ QToolButton[state='selected']:hover {
 
 QToolButton[state='selected']:pressed {
     background-color: rgb(0, 86, 105);
-}
-
-
-
-/*滚动条*/
-QScrollBar {
-    background: transparent;
-    width: 5px;
-    margin-top: 40px;
-    margin-bottom: 133px;
-    padding-right: 2px;
-}
-
-/*隐藏上箭头*/
-QScrollBar::sub-line:vertical {
-    background: transparent;
-}
-
-/*隐藏下箭头*/
-QScrollBar::add-line:vertical {
-    background: transparent;
-}
-
-QScrollBar::handle {
-    background: rgb(128, 128, 128);
-    border: 2px solid rgb(128, 128, 128);
-    border-radius: 1px;
-    min-height: 40px;
-}
-
-QScrollBar::add-page:vertical,
-QScrollBar::sub-page:vertical {
-    background: none;
 }

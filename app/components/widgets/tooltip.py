@@ -1,10 +1,11 @@
 # coding:utf-8
 from common.style_sheet import setStyleSheet
-from PyQt5.QtCore import (QEasingCurve, QFile, QPoint, QPropertyAnimation, Qt,
-                          QTimer, pyqtSignal)
+from PyQt5.QtCore import (QEasingCurve, QPoint, QPropertyAnimation, Qt, QTimer,
+                          pyqtSignal)
 from PyQt5.QtGui import QColor, QPainter, QPixmap
 from PyQt5.QtWidgets import (QApplication, QFrame, QGraphicsDropShadowEffect,
-                             QHBoxLayout, QLabel, QToolButton, QWidget, QGraphicsOpacityEffect)
+                             QGraphicsOpacityEffect, QHBoxLayout, QLabel,
+                             QToolButton, QWidget)
 
 
 class Tooltip(QFrame):
@@ -79,7 +80,8 @@ class StateTooltip(QWidget):
         self.rotateTimer = QTimer(self)
         self.closeTimer = QTimer(self)
         self.opacityEffect = QGraphicsOpacityEffect(self)
-        self.animation = QPropertyAnimation(self.opacityEffect, b"opacity")
+        self.slideAni = QPropertyAnimation(self, b'pos')
+        self.opacityAni = QPropertyAnimation(self.opacityEffect, b"opacity")
         self.busyImage = QPixmap(":/images/state_tooltip/running.png")
         self.doneImage = QPixmap(":/images/state_tooltip/completed.png")
         self.closeButton = QToolButton(self)
@@ -154,12 +156,12 @@ class StateTooltip(QWidget):
     def __slowlyClose(self):
         """ fade out """
         self.rotateTimer.stop()
-        self.animation.setEasingCurve(QEasingCurve.Linear)
-        self.animation.setDuration(500)
-        self.animation.setStartValue(1)
-        self.animation.setEndValue(0)
-        self.animation.finished.connect(self.deleteLater)
-        self.animation.start()
+        self.opacityAni.setEasingCurve(QEasingCurve.Linear)
+        self.opacityAni.setDuration(300)
+        self.opacityAni.setStartValue(1)
+        self.opacityAni.setEndValue(0)
+        self.opacityAni.finished.connect(self.deleteLater)
+        self.opacityAni.start()
 
     def __rotateTimerFlowSlot(self):
         """ rotate timer time out slot """
@@ -180,7 +182,12 @@ class StateTooltip(QWidget):
         return pos
 
     def showEvent(self, e):
-        self.move(self.getSuitablePos())
+        pos = self.getSuitablePos()
+        self.slideAni.setDuration(200)
+        self.slideAni.setEasingCurve(QEasingCurve.OutQuad)
+        self.slideAni.setStartValue(QPoint(self.window().width(), pos.y()))
+        self.slideAni.setEndValue(pos)
+        self.slideAni.start()
         super().showEvent(e)
 
     def paintEvent(self, e):
@@ -260,6 +267,7 @@ class ToastTooltip(QWidget):
         self.closeTimer = QTimer(self)
         self.opacityEffect = QGraphicsOpacityEffect(self)
         self.opacityAni = QPropertyAnimation(self.opacityEffect, b"opacity")
+        self.slideAni = QPropertyAnimation(self, b'pos')
 
         self.__initWidget()
 
@@ -301,7 +309,7 @@ class ToastTooltip(QWidget):
 
     def __fadeOut(self):
         """ fade out """
-        self.opacityAni.setDuration(500)
+        self.opacityAni.setDuration(300)
         self.opacityAni.setStartValue(1)
         self.opacityAni.setEndValue(0)
         self.opacityAni.finished.connect(self.deleteLater)
@@ -321,6 +329,11 @@ class ToastTooltip(QWidget):
         return pos
 
     def showEvent(self, e):
-        self.move(self.getSuitablePos())
+        pos = self.getSuitablePos()
+        self.slideAni.setDuration(200)
+        self.slideAni.setEasingCurve(QEasingCurve.OutQuad)
+        self.slideAni.setStartValue(QPoint(self.window().width(), pos.y()))
+        self.slideAni.setEndValue(pos)
+        self.slideAni.start()
         super().showEvent(e)
         self.closeTimer.start()

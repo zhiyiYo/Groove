@@ -32,7 +32,8 @@ class SongGroupBox(QWidget):
         """
         super().__init__(parent=parent)
         if song_type not in ['Online songs', 'Local songs']:
-            raise ValueError("Song type must be 'Online songs' or 'Local songs'")
+            raise ValueError(
+                "Song type must be 'Online songs' or 'Local songs'")
 
         self.songType = song_type
         self.songInfos = []
@@ -67,7 +68,8 @@ class SongGroupBox(QWidget):
         self.loadMoreLabel.setCursor(Qt.PointingHandCursor)
         self.showAllButton.setHidden(self.songType == 'Online songs')
         self.titleButton.clicked.connect(self.__showMoreSearchResultInterface)
-        self.showAllButton.clicked.connect(self.__showMoreSearchResultInterface)
+        self.showAllButton.clicked.connect(
+            self.__showMoreSearchResultInterface)
         self.loadMoreLabel.clicked.connect(self.__onLoadMoreLabelClicked)
         self.__setQss()
 
@@ -140,7 +142,7 @@ class LocalSongListWidget(NoScrollSongListWidget):
     def __init__(self, parent=None):
         super().__init__(None, SongCardType.NO_CHECKBOX_SONG_CARD,
                          parent, QMargins(30, 0, 30, 0), 0)
-        setStyleSheet(self, 'song_tab_interface_song_list_widget')
+        setStyleSheet(self, 'song_list_widget')
 
     def contextMenuEvent(self, e):
         hitIndex = self.indexAt(e.pos()).column()
@@ -184,7 +186,7 @@ class OnlineSongListWidget(NoScrollSongListWidget):
     def __init__(self, parent=None):
         super().__init__(None, SongCardType.ONLINE_SONG_CARD,
                          parent, QMargins(30, 0, 30, 0), 0)
-        setStyleSheet(self, 'song_tab_interface_song_list_widget')
+        setStyleSheet(self, 'song_list_widget')
 
     def contextMenuEvent(self, e):
         hitIndex = self.indexAt(e.pos()).column()

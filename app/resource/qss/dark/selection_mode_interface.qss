@@ -1,13 +1,14 @@
 SelectionModeInterface {
-    background-color: black;
+    background-color: rgb(15, 15, 15);
 }
 
 #scrollWidget {
-    background-color: black;
+    background-color: rgb(15, 15, 15);
 }
 
 QScrollArea {
     border: none;
+    background-color: rgb(15, 15, 15);
 }
 
 /*滚动条*/

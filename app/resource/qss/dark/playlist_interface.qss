@@ -1,9 +1,9 @@
 #playlistInterface {
-    background-color: white;
+    background-color: rgb(15, 15, 15);
 }
 
 #scrollWidget {
-    background-color: white;
+    background-color: rgb(15, 15, 15);
 }
 
 QScrollArea {
@@ -11,22 +11,22 @@ QScrollArea {
 }
 
 QLabel {
-    color: black;
+    color: white;
     font: 25px 'Segoe UI', 'Microsoft YaHei';
 }
 
 ThreeStatePushButton {
-    color: black;
+    color: white;
     font: 18px 'Segoe UI', 'Microsoft YaHei';
     border: none;
 }
 
 ThreeStatePushButton:hover {
-    color: rgba(0, 0, 0, 0.8);
+    color: rgba(255, 255, 255, 0.8);
 }
 
 ThreeStatePushButton:pressed {
-    color: rgba(0, 0, 0, 0.4);
+    color: rgba(255, 255, 255, 0.4);
 }
 
 /*滚动条*/

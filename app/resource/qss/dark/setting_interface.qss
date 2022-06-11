@@ -1,9 +1,9 @@
 QWidget {
-    background-color: black;
+    background-color: rgb(15, 15, 15);
 }
 
 QScrollArea {
-    background-color: black;
+    background-color: rgb(15, 15, 15);
     border: none;
 }
 
@@ -24,7 +24,7 @@ QLabel#titleLabel {
 }
 
 QLabel#clickableLabel {
-    color: rgb(0, 107, 131);
+    color: rgb(0, 153, 188);
     font-family: 'Segoe UI', 'Microsoft YaHei';
     font-size: 18px;
 }

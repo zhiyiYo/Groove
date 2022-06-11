@@ -1,9 +1,9 @@
 # coding:utf-8
+from common.config import config
 from common.image_utils import readImage
 from components.widgets.label import FadeInLabel
 from PIL import Image, ImageDraw
 from PIL.ImageFilter import GaussianBlur
-from PyQt5.QtGui import QPixmap
 
 
 class SingerBlurBackground(FadeInLabel):
@@ -36,8 +36,9 @@ class SingerBlurBackground(FadeInLabel):
         avatar = readImage(imagePath).resize(imageSize)
 
         # create a new image
+        r = 0 if config.theme == 'dark' else 255
         blurAvatar = Image.new(
-            'RGBA', (imageSize[0]+2*blurRadius, imageSize[1]+2*blurRadius), (255, 255, 255, 0))
+            'RGBA', (imageSize[0]+2*blurRadius, imageSize[1]+2*blurRadius), (r, r, r, 0))
         mask = Image.new('L', imageSize, 0)
         draw = ImageDraw.Draw(mask)
         draw.pieslice([(0, 0), imageSize], 0, 360, fill=255)

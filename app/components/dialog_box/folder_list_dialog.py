@@ -1,10 +1,11 @@
 # coding:utf-8
 import os
 
+from common.config import config
 from common.style_sheet import setStyleSheet
 from components.buttons.perspective_button import PerspectivePushButton
 from components.widgets.scroll_area import ScrollArea
-from PyQt5.QtCore import QFile, Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import (QBrush, QColor, QFont, QFontMetrics, QMouseEvent,
                          QPainter, QPen, QPixmap)
 from PyQt5.QtWidgets import (QApplication, QFileDialog, QHBoxLayout, QLabel,
@@ -207,20 +208,26 @@ class ClickableWindow(QWidget):
         """ paint window """
         painter = QPainter(self)
         painter.setRenderHints(QPainter.Antialiasing)
-        brush = QBrush(QColor(204, 204, 204))
+
+        isDark = config.theme == 'dark'
+        bg = 51 if isDark else 204
+        brush = QBrush(QColor(bg, bg, bg))
         painter.setPen(Qt.NoPen)
+
         if not self._isEnter:
             painter.setBrush(brush)
             painter.drawRoundedRect(self.rect(), 5, 5)
         else:
-            painter.setPen(QPen(QColor(204, 204, 204), 2))
+            painter.setPen(QPen(QColor(bg, bg, bg), 2))
             painter.drawRect(1, 1, self.width() - 2, self.height() - 2)
             painter.setPen(Qt.NoPen)
             if not self._isPressed:
-                brush.setColor(QColor(230, 230, 230))
+                bg = 24 if isDark else 230
+                brush.setColor(QColor(bg, bg, bg))
                 painter.setBrush(brush)
                 painter.drawRect(2, 2, self.width() - 4, self.height() - 4)
             else:
+                bg = 102 if isDark else 230
                 brush.setColor(QColor(153, 153, 153))
                 painter.setBrush(brush)
                 painter.drawRoundedRect(
@@ -234,16 +241,19 @@ class FolderCard(ClickableWindow):
         super().__init__(parent)
         self.folderPath = folderPath
         self.folderName = os.path.basename(folderPath)
-        self.__closeIcon = QPixmap(":/images/setting_interface/Close.png")
+        c = 'white' if config.theme == 'dark' else 'black'
+        self.__closeIcon = QPixmap(f":/images/setting_interface/Close_{c}.png")
 
     def paintEvent(self, e):
         """ paint card """
         super().paintEvent(e)
         painter = QPainter(self)
         painter.setRenderHints(
-            QPainter.TextAntialiasing | QPainter.SmoothPixmapTransform)
+            QPainter.TextAntialiasing | QPainter.SmoothPixmapTransform | QPainter.Antialiasing)
 
         # paint text and icon
+        color = Qt.white if config.theme == 'dark' else Qt.black
+        painter.setPen(color)
         if self._isPressed:
             self.__drawText(painter, 15, 10, 15, 9)
             painter.drawPixmap(self.width() - 33, 23, self.__closeIcon)
@@ -273,7 +283,8 @@ class AddFolderCard(ClickableWindow):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.__iconPix = QPixmap(":/images/setting_interface/Add.png")
+        c = 'white' if config.theme == 'dark' else 'black'
+        self.__iconPix = QPixmap(f":/images/setting_interface/Add_{c}.png")
 
     def paintEvent(self, e):
         """ paint card """

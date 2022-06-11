@@ -99,7 +99,7 @@ class SongListWidget(NoScrollSongListWidget):
     def __setQss(self):
         """ set style sheet """
         self.guideLabel.setObjectName('guideLabel')
-        setStyleSheet(self, 'song_tab_interface_song_list_widget')
+        setStyleSheet(self, 'song_list_widget')
         self.guideLabel.adjustSize()
 
     def setSortMode(self, sortMode: str):

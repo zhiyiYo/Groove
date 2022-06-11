@@ -1,11 +1,9 @@
 QWidget {
-    background-color: white;
+    background-color: rgb(15, 15, 15);
 }
 
 #titleLabel {
     font: 43px "Microsoft YaHei Light";
     background-color: transparent;
+    color: white;
 }
-
-
-

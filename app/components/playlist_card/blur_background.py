@@ -1,9 +1,9 @@
 # coding:utf-8
+from common.config import config
 from common.image_utils import readImage
 from components.widgets.label import FadeInLabel
 from PIL import Image
 from PIL.ImageFilter import GaussianBlur
-from PyQt5.QtGui import QPixmap
 
 
 class BlurBackground(FadeInLabel):
@@ -22,8 +22,9 @@ class BlurBackground(FadeInLabel):
         cover = readImage(imagePath).resize((288, 288)).crop((0, 92, 288, 288))
 
         # create a new image
+        r = 0 if config.theme == 'dark' else 255
         blurImage = Image.new(
-            'RGBA', (288 + 2 * blurRadius, 196 + 2 * blurRadius), (255, 255, 255, 0))
+            'RGBA', (288 + 2 * blurRadius, 196 + 2 * blurRadius), (r, r, r, 0))
         blurImage.paste(cover, (blurRadius, blurRadius))
 
         # apply Gaussian blur to image

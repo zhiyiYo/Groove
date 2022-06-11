@@ -1,4 +1,5 @@
 # coding:utf-8
+from common.config import config
 from common.icon import Icon
 from common.os_utils import getPlaylistNames
 from common.style_sheet import setStyleSheet
@@ -29,7 +30,6 @@ class AeroMenu(QMenu):
         """ set menu effect """
         self.windowEffect.setAeroEffect(self.winId())
         self.windowEffect.addMenuShadowEffect(self.winId())
-
 
 
 class DWMMenu(QMenu):
@@ -66,15 +66,16 @@ class AddToMenu(DWMMenu):
 
     def createActions(self):
         """ create actions """
+        color = "white" if config.theme == 'dark' else 'black'
         self.playingAct = QAction(
-            Icon(":/images/menu/Playing.png"), self.tr("Now playing"), self)
+            Icon(f":/images/menu/Playing_{color}.png"), self.tr("Now playing"), self)
         self.newPlaylistAct = QAction(
-            Icon(":/images/menu/Add.png"), self.tr("New playlist"), self)
+            Icon(f":/images/menu/Add_{color}.png"), self.tr("New playlist"), self)
 
         # create actions according to playlists
         names = getPlaylistNames()
         self.playlistNameActs = [
-            QAction(Icon(":/images/menu/Album.png"), i, self) for i in names]
+            QAction(Icon(f":/images/menu/Album_{color}.png"), i, self) for i in names]
         self.action_list = [self.playingAct,
                             self.newPlaylistAct] + self.playlistNameActs
         self.addAction(self.playingAct)
@@ -123,29 +124,30 @@ class LineEditMenu(DWMMenu):
         self.setQss()
 
     def createActions(self):
+        color = "white" if config.theme == 'dark' else 'black'
         self.cutAct = QAction(
-            Icon(":/images/menu/Cut.png"),
+            Icon(f":/images/menu/Cut_{color}.png"),
             self.tr("Cut"),
             self,
             shortcut="Ctrl+X",
             triggered=self.parent().cut,
         )
         self.copyAct = QAction(
-            Icon(":/images/menu/Copy.png"),
+            Icon(f":/images/menu/Copy_{color}.png"),
             self.tr("Copy"),
             self,
             shortcut="Ctrl+C",
             triggered=self.parent().copy,
         )
         self.pasteAct = QAction(
-            Icon(":/images/menu/Paste.png"),
+            Icon(f":/images/menu/Paste_{color}.png"),
             self.tr("Paste"),
             self,
             shortcut="Ctrl+V",
             triggered=self.parent().paste,
         )
         self.cancelAct = QAction(
-            Icon(":/images/menu/Cancel.png"),
+            Icon(f":/images/menu/Cancel_{color}.png"),
             self.tr("Cancel"),
             self,
             shortcut="Ctrl+Z",
@@ -226,14 +228,15 @@ class PlayBarMoreActionsMenu(MoreActionsMenu):
     """ Play bar more actions menu """
 
     def _createActions(self):
+        color = "white" if config.theme == 'dark' else 'black'
         self.savePlayListAct = QAction(
-            Icon(":/images/menu/Add.png"), self.tr("Save as a playlist"), self)
+            Icon(f":/images/menu/Add_{color}.png"), self.tr("Save as a playlist"), self)
         self.clearPlayListAct = QAction(
-            Icon(":/images/menu/Clear.png"), self.tr('Clear now playing'), self)
+            Icon(f":/images/menu/Clear_{color}.png"), self.tr('Clear now playing'), self)
         self.showPlayListAct = QAction(
-            Icon(":/images/menu/Playlist.png"), self.tr("Show now playing list"), self)
+            Icon(f":/images/menu/Playlist_{color}.png"), self.tr("Show now playing list"), self)
         self.fullScreenAct = QAction(
-            Icon(":/images/menu/FullScreen.png"), self.tr("Go full screen"), self)
+            Icon(f":/images/menu/FullScreen_{color}.png"), self.tr("Go full screen"), self)
         self.action_list = [self.showPlayListAct, self.fullScreenAct,
                             self.savePlayListAct, self.clearPlayListAct]
         self.addActions(self.action_list)
@@ -260,14 +263,15 @@ class PlayingInterfaceMoreActionsMenu(MoreActionsMenu):
         self.lyricVisibleChanged.emit(not isVisible)
 
     def _createActions(self):
+        color = "white" if config.theme == 'dark' else 'black'
         self.savePlayListAct = QAction(
-            Icon(":/images/menu/Add.png"), self.tr("Save as a playlist"), self)
+            Icon(f":/images/menu/Add_{color}.png"), self.tr("Save as a playlist"), self)
         self.clearPlayListAct = QAction(
-            Icon(":/images/menu/Clear.png"), self.tr('Clear now playing'), self)
+            Icon(f":/images/menu/Clear_{color}.png"), self.tr('Clear now playing'), self)
         self.lyricAct = QAction(
-            Icon(':/images/menu/Lyric.png'), self.tr('Hide lyric'), self)
+            Icon(f':/images/menu/Lyric_{color}.png'), self.tr('Hide lyric'), self)
         self.movieAct = QAction(
-            Icon(':/images/menu/Movie.png'), self.tr('Watch MV'), self)
+            Icon(f':/images/menu/Movie_{color}.png'), self.tr('Watch MV'), self)
         self.action_list = [
             self.savePlayListAct,
             self.clearPlayListAct,

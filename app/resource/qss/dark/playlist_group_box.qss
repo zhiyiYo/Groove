@@ -4,35 +4,37 @@ QWidget {
 
 QWidget#leftMask,
 QWidget#rightMask {
-    background-color: white;
+    background-color: rgb(15, 15, 15);
 }
 
 QScrollArea {
-    background-color: white;
+    background-color: rgb(15, 15, 15);
     border: none;
 }
 
 QLabel {
     font: 17px 'Microsoft YaHei Light';
     background-color: transparent;
+    color: white;
 }
 
 #titleButton {
     font: 24px 'Segoe UI', 'Microsoft YaHei';
     padding: 0;
     background-color: transparent;
+    color: white;
 }
 
 #titleButton:hover {
-    color: rgba(0, 0, 0, 0.8);
+    color: rgba(255, 255, 255, 0.8);
 }
 
 #titleButton:pressed {
-    color: rgba(0, 0, 0, 0.4);
+    color: rgba(255, 255, 255, 0.4);
 }
 
 QLabel#titleLabel {
-    color: black;
+    color: white;
 }
 
 QLabel#playlistLabel {
@@ -42,7 +44,7 @@ QLabel#playlistLabel {
 }
 
 QLabel#nameLabel[isChecked='False'] {
-    color: black;
+    color: white;
     font-family: 'Segoe UI', 'Microsoft YaHei';
     font-weight: bold;
 }
@@ -63,15 +65,16 @@ QLabel#countLabel[isChecked='True'] {
 
 QToolButton {
     margin: 0;
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgba(255, 255, 255, 0.4);
+    border: transparent;
 }
 
 QToolButton:hover {
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(255, 255, 255, 0.5);
 }
 
 QToolButton:pressed {
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(255, 255, 255, 0.6);
 }
 
 QPushButton#showAllButton {

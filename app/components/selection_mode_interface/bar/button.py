@@ -1,4 +1,5 @@
 # coding:utf-8
+from common.config import config
 from PyQt5.QtCore import QEvent, QObject, QRect, Qt, pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QPainter, QPen, QPixmap
 from PyQt5.QtWidgets import QPushButton
@@ -67,10 +68,13 @@ class Button(QPushButton):
         painter = QPainter(self)
         painter.setRenderHints(QPainter.Antialiasing |
                                QPainter.SmoothPixmapTransform)
+
+        isDark = config.theme == 'dark'
         if self.__isEnter:
             # paint background and border
-            painter.setPen(QPen(QColor(170, 170, 170)))
-            painter.setBrush(QBrush(QColor(0, 0, 0, 17)))
+            bc = 85 if isDark else 170
+            painter.setPen(QColor(bc, bc, bc))
+            painter.setBrush(QColor(0, 0, 0, 17))
             painter.drawRect(self.rect())
 
         # paint icon
@@ -78,7 +82,7 @@ class Button(QPushButton):
                            self.__iconPixmap.height(), self.__iconPixmap)
 
         # paint text
-        painter.setPen(QPen(Qt.black))
+        painter.setPen(Qt.white if isDark else Qt.black)
         painter.setFont(self.font())
         painter.drawText(
             self.__textRect, Qt.AlignHCenter, self.buttonText)
@@ -165,55 +169,53 @@ class ButtonFactory(QObject):
     DELETE = 12
     CHECK_ALL = 13
 
-    def __init__(self) -> None:
-        super().__init__()
-
     def create(self, buttonType: int) -> Button:
         """ create a button """
+        c = 'white' if config.theme == 'dark' else 'black'
         if buttonType == self.CANCEL:
             button = Button(
-                ":/images/selection_mode_bar/Cancel.png", self.tr("Cancel"), objectName='cancelButton')
+                f":/images/selection_mode_bar/Cancel_{c}.png", self.tr("Cancel"), objectName='cancelButton')
         elif buttonType == self.PLAY:
             button = Button(
-                ":/images/selection_mode_bar/Play.png", self.tr("Play"), objectName='playButton')
+                f":/images/selection_mode_bar/Play_{c}.png", self.tr("Play"), objectName='playButton')
         elif buttonType == self.NEXT_TO_PLAY:
             button = Button(
-                ":/images/selection_mode_bar/NextToPlay.png", self.tr("Play next"), objectName='nextToPlayButton')
+                f":/images/selection_mode_bar/NextToPlay_{c}.png", self.tr("Play next"), objectName='nextToPlayButton')
         elif buttonType == self.ADD_TO:
             button = Button(
-                ":/images/selection_mode_bar/Add.png", self.tr("Add to"), objectName='addToButton')
+                f":/images/selection_mode_bar/Add_{c}.png", self.tr("Add to"), objectName='addToButton')
         elif buttonType == self.SINGER:
             button = Button(
-                ":/images/selection_mode_bar/Contact.png", self.tr("Show artist"), objectName='singerButton')
+                f":/images/selection_mode_bar/Contact_{c}.png", self.tr("Show artist"), objectName='singerButton')
         elif buttonType == self.ALBUM:
             button = Button(
-                ":/images/selection_mode_bar/ShowAlbum.png", self.tr("Show album"), objectName='albumButton')
+                f":/images/selection_mode_bar/ShowAlbum_{c}.png", self.tr("Show album"), objectName='albumButton')
         elif buttonType == self.PROPERTY:
             button = Button(
-                ":/images/selection_mode_bar/Property.png", self.tr("Properties"), objectName='propertyButton')
+                f":/images/selection_mode_bar/Property_{c}.png", self.tr("Properties"), objectName='propertyButton')
         elif buttonType == self.EDIT_INFO:
             button = Button(
-                ":/images/selection_mode_bar/Edit.png", self.tr("Edit info"), objectName='editInfoButton')
+                f":/images/selection_mode_bar/Edit_{c}.png", self.tr("Edit info"), objectName='editInfoButton')
         elif buttonType == self.PIN_TO_START:
             button = Button(
-                ":/images/selection_mode_bar/Pin.png", self.tr('Pin to Start'), objectName='pinToStartButton')
+                f":/images/selection_mode_bar/Pin_{c}.png", self.tr('Pin to Start'), objectName='pinToStartButton')
         elif buttonType == self.RENAME:
             button = Button(
-                ":/images/selection_mode_bar/Edit.png", self.tr("Rename"), objectName='renameButton')
+                f":/images/selection_mode_bar/Edit_{c}.png", self.tr("Rename"), objectName='renameButton')
         elif buttonType == self.MOVE_UP:
             button = Button(
-                ":/images/selection_mode_bar/Up.png", self.tr("Move up"), objectName='moveUpButton')
+                f":/images/selection_mode_bar/Up_{c}.png", self.tr("Move up"), objectName='moveUpButton')
         elif buttonType == self.MOVE_DOWN:
             button = Button(
-                ":/images/selection_mode_bar/Down.png", self.tr("Move down"), objectName='moveDownButton')
+                f":/images/selection_mode_bar/Down_{c}.png", self.tr("Move down"), objectName='moveDownButton')
         elif buttonType == self.DELETE:
             button = Button(
-                ":/images/selection_mode_bar/Delete.png", self.tr("Delete"), objectName='deleteButton')
+                f":/images/selection_mode_bar/Delete_{c}.png", self.tr("Delete"), objectName='deleteButton')
         elif buttonType == self.CHECK_ALL:
             button = CheckAllButton(
                 [
-                    ":/images/selection_mode_bar/SelectAll.png",
-                    ":/images/selection_mode_bar/CancelSelectAll.png",
+                    f":/images/selection_mode_bar/SelectAll_{c}.png",
+                    f":/images/selection_mode_bar/CancelSelectAll_{c}.png",
                 ],
                 [self.tr("Select all"), self.tr("Deselect all")],
             )

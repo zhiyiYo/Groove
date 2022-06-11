@@ -2,7 +2,7 @@
 from common.thread.blur_cover_thread import BlurCoverThread
 from PyQt5.QtCore import QPropertyAnimation, Qt, pyqtProperty, pyqtSignal
 from PyQt5.QtGui import (QBrush, QColor, QImage, QImageReader, QMouseEvent,
-                         QPainter, QPixmap)
+                         QPainter, QPixmap, QLinearGradient)
 from PyQt5.QtWidgets import QLabel, QWidget
 
 
@@ -24,7 +24,6 @@ class ClickableLabel(QLabel):
             super().mouseReleaseEvent(event)
         if event.button() == Qt.LeftButton:
             self.clicked.emit()
-
 
 
 class AvatarLabel(QLabel):
@@ -363,3 +362,30 @@ class AlbumCover(QWidget):
                                QPainter.SmoothPixmapTransform)
         painter.setPen(Qt.NoPen)
         painter.drawImage(self.rect(), self.__image)
+
+
+class PlaylistLabel(QLabel):
+    """ Playlist label """
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setFixedSize(210, 210)
+        self.__pixmap = QPixmap(
+            ":/images/create_playlist_dialog/Playlist_white.png")
+        self.setAttribute(Qt.WA_TranslucentBackground)
+
+    def paintEvent(self, e):
+        painter = QPainter(self)
+        painter.setRenderHints(QPainter.Antialiasing |
+                               QPainter.SmoothPixmapTransform)
+        painter.setPen(Qt.NoPen)
+
+        # draw background color
+        gradientColor = QLinearGradient(0, 0, 0, self.height())
+        gradientColor.setColorAt(0, QColor(0, 107, 131))
+        gradientColor.setColorAt(1, QColor(0, 153, 188))
+        painter.setBrush(QBrush(gradientColor))
+        painter.drawRoundedRect(self.rect(), 8, 8)
+
+        # draw icon
+        painter.drawPixmap(self.rect(), self.__pixmap)

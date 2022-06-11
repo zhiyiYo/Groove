@@ -1,6 +1,7 @@
 # coding:utf-8
 from typing import List
 
+from common.config import config
 from common.database.entity import Playlist, SongInfo
 from common.library import Library
 from common.os_utils import getCoverPath
@@ -11,7 +12,7 @@ from components.dialog_box.message_dialog import MessageDialog
 from components.dialog_box.rename_playlist_dialog import RenamePlaylistDialog
 from components.selection_mode_interface import (SelectionModeBarType,
                                                  SongSelectionModeInterface)
-from PyQt5.QtCore import QFile, pyqtSignal
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QLabel
 
 from .playlist_info_bar import PlaylistInfoBar
@@ -48,11 +49,12 @@ class PlaylistInterface(SongSelectionModeInterface):
 
         self.playlistInfoBar = PlaylistInfoBar(self.playlist, self)
         self.noMusicLabel = QLabel(self.tr("No music in playlist?"), self)
+        c = 'white' if config.theme == 'dark' else 'black'
         self.addMusicButton = ThreeStatePushButton(
             {
-                "normal": ":/images/playlist_interface/album_normal.png",
-                "hover": ":/images/playlist_interface/album_hover.png",
-                "pressed": ":/images/playlist_interface/album_pressed.png",
+                "normal": f":/images/playlist_interface/album_{c}_normal.png",
+                "hover": f":/images/playlist_interface/album_{c}_hover.png",
+                "pressed": f":/images/playlist_interface/album_{c}_pressed.png",
             },
             self.tr(" Add songs from my collection"),
             (29, 29),
@@ -127,7 +129,8 @@ class PlaylistInterface(SongSelectionModeInterface):
         self.playlistInfoBar.updateWindow(self.playlist)
         self.adjustScrollHeight()
         self.removeSongSig.emit(self.playlistName, songInfos)
-        self.__onSongListWidgetEmptyChanged(self.songListWidget.songCardNum == 0)
+        self.__onSongListWidgetEmptyChanged(
+            self.songListWidget.songCardNum == 0)
 
     def __onScrollBarValueChanged(self, value):
         """ change the height of playlist information bar when scrolling """
@@ -163,7 +166,8 @@ class PlaylistInterface(SongSelectionModeInterface):
         self.playlistInfoBar.updateWindow(self.playlist)
         self.removeSongSig.emit(self.playlistName, [songInfo])
         self.adjustScrollHeight()
-        self.__onSongListWidgetEmptyChanged(self.songListWidget.songCardNum == 0)
+        self.__onSongListWidgetEmptyChanged(
+            self.songListWidget.songCardNum == 0)
 
     def __onSongListWidgetEmptyChanged(self, isEmpty):
         """ song list widget empty changed slot """

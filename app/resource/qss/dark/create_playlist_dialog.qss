@@ -1,6 +1,6 @@
 QWidget#centerWidget {
-    background-color: white;
-    border: 1px solid rgb(172, 172, 172);
+    background-color: rgb(23, 23, 23);
+    border: 1px solid rgb(83, 83, 83);
 }
 
 QPushButton {
@@ -29,6 +29,7 @@ QPushButton:disabled {
 QLabel {
     font: 18px 'Segoe UI', 'Microsoft YaHei';
     background-color: transparent;
+    color: white;
 }
 
 QLabel#cancelLabel {

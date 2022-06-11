@@ -1,4 +1,5 @@
 # coding:utf-8
+from common.config import config
 from common.database.entity import SongInfo
 from common.icon import Icon
 from common.signal_bus import signalBus
@@ -45,11 +46,12 @@ class SystemTrayIcon(QSystemTrayIcon):
             return
 
         self.isPlay = isPlay
+        c = 'white' if config.theme == 'dark' else 'black'
         if isPlay:
-            self.menu.playAct.setIcon(Icon(':/images/system_tray/Pause.png'))
+            self.menu.playAct.setIcon(Icon(f':/images/system_tray/Pause_{c}.png'))
             self.menu.playAct.setText(self.tr('Pause'))
         else:
-            self.menu.playAct.setIcon(Icon(':/images/system_tray/Play.png'))
+            self.menu.playAct.setIcon(Icon(f':/images/system_tray/Play_{c}.png'))
             self.menu.playAct.setText(self.tr('Play'))
 
     def __onPlayActionTriggered(self):
@@ -82,18 +84,19 @@ class SystemTrayMenu(DWMMenu):
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
+        c = 'white' if config.theme == 'dark' else 'black'
         self.songAct = QAction(
-            Icon(':/images/system_tray/Music.png'), self.tr('No songs are playing'), self)
+            Icon(f':/images/system_tray/Music_{c}.png'), self.tr('No songs are playing'), self)
         self.playAct = QAction(
-            Icon(':/images/system_tray/Play.png'), self.tr('Play'), self)
+            Icon(f':/images/system_tray/Play_{c}.png'), self.tr('Play'), self)
         self.lastSongAct = QAction(
-            Icon(':/images/system_tray/Previous.png'), self.tr('Last song'), self)
+            Icon(f':/images/system_tray/Previous_{c}.png'), self.tr('Last song'), self)
         self.nextSongAct = QAction(
-            Icon(':/images/system_tray/Next.png'), self.tr('Next song'), self)
+            Icon(f':/images/system_tray/Next_{c}.png'), self.tr('Next song'), self)
         self.settingsAct = QAction(
-            Icon(':/images/system_tray/Settings.png'), self.tr('Settings'), self)
+            Icon(f':/images/system_tray/Settings_{c}.png'), self.tr('Settings'), self)
         self.exitAct = QAction(
-            Icon(':/images/system_tray/SignOut.png'), self.tr('Exit'), self)
+            Icon(f':/images/system_tray/SignOut_{c}.png'), self.tr('Exit'), self)
         self.addActions([
             self.songAct, self.playAct, self.lastSongAct, self.nextSongAct])
         self.addSeparator()

@@ -2650,7 +2650,7 @@
     <message>
         <location filename="../../View/video_interface/video_interface.py" line="170"/>
         <source>The media resource couldn&apos;t be resolved.</source>
-        <translation>无效视频源。</translation>
+        <translation>视频源无法被正确解析，请稍后再试。</translation>
     </message>
     <message>
         <location filename="../../View/video_interface/video_interface.py" line="172"/>

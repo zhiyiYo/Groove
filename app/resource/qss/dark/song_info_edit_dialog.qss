@@ -1,5 +1,5 @@
 QWidget#centerWidget {
-    background-color: white;
+    background-color: rgb(23, 23, 23);
     border: 1px solid rgb(0, 153, 188);
 }
 
@@ -7,6 +7,7 @@ QWidget#centerWidget {
 QLabel {
     font: 18px 'Segoe UI', 'Microsoft YaHei';
     border: none;
+    color: white;
 }
 
 QLabel#songPath {
@@ -29,6 +30,8 @@ QLineEdit {
     font: 17px 'Segoe UI', 'Microsoft YaHei';
     selection-background-color: rgb(0, 153, 188);
     border: 1px solid rgb(102, 102, 102);
+    background-color: rgb(43, 43, 43);
+    color: white;
 }
 
 QLineEdit[hasClearBt='false'] {
@@ -37,6 +40,7 @@ QLineEdit[hasClearBt='false'] {
 
 QLineEdit:focus {
     border: 1px solid rgb(0, 153, 188);
+    background-color: rgb(34, 34, 34);
 }
 
 QLineEdit[error=true] {
@@ -53,7 +57,8 @@ QLineEdit:disabled {
 
 /*按钮*/
 QPushButton {
-    background-color: rgb(204, 204, 204);
+    background-color: rgb(51, 51, 51);
+    color: white;
     font: 18px 'Segoe UI', 'Microsoft YaHei';
     border: none;
     border-radius: 4px;
@@ -62,11 +67,11 @@ QPushButton {
 }
 
 QPushButton:pressed:hover {
-    background-color: rgb(153, 153, 153);
+    background-color: rgb(102, 102, 102);
 }
 
 QPushButton:hover {
-    background-color: rgb(230, 230, 230);
+    background-color: rgb(35, 35, 35);
 }
 
 QToolButton {

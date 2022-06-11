@@ -51,7 +51,7 @@ class SongListWidget(NoScrollSongListWidget):
         """
         super().__init__(songInfos, SongCardType.ALBUM_INTERFACE_SONG_CARD, parent)
         self.createSongCards()
-        setStyleSheet(self, 'album_interface_song_list_widget')
+        setStyleSheet(self, 'song_list_widget')
 
     def __showMaskDialog(self):
         index = self.currentRow()

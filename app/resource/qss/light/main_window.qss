@@ -1,13 +1,24 @@
-QWidget#mainWindow,
-QWidget#subMainWindow{
+#subMainWindow {
     background-color: transparent;
 }
 
-QWidget#subStackWidget{
+#mainWindow[useAcrylic=false] {
+    background-color: #f2f2f2;
+}
+
+#mainWindow[useAcrylic=true] {
+    background-color: transparent;
+}
+
+#subStackWidget {
     background-color: white;
 }
 
-QLabel{
+#myMusicInterface {
+    background-color: white;
+}
+
+QLabel {
     background-color: transparent;
 }
 

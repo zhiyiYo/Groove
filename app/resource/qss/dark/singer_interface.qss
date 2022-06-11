@@ -7,12 +7,12 @@ QWidget#albumCard[isChecked='False'] {
 }
 
 QScrollArea {
-    background-color: white;
+    background-color: rgb(15, 15, 15);
     border: none;
 }
 
 QWidget#scrollWidget {
-    background-color: white;
+    background-color: rgb(15, 15, 15);
 }
 
 /*滚动条*/
@@ -51,10 +51,11 @@ QScrollBar::sub-page:vertical {
 QLabel {
     font: 17px 'Microsoft YaHei Light';
     background-color: transparent;
+    color: white;
 }
 
 QLabel#albumLabel[isChecked='False'] {
-    color: black;
+    color: white;
     font-family: 'Segoe UI', 'Microsoft YaHei';
     font-weight: bold;
 }
@@ -67,7 +68,7 @@ QLabel#albumLabel[isChecked='True'] {
 
 QLabel#contentLabel {
     font: 16px 'Segoe UI', 'Microsoft YaHei';
-    color: rgba(0, 0, 0, 0.6);
+    color: rgba(255, 255, 255, 0.6);
 }
 
 QLabel#contentLabel[isChecked='True'] {

@@ -12,7 +12,7 @@ QWidget {
 
 
 QScrollArea {
-    background-color: white;
+    background-color: rgb(15, 15, 15);
     border: none;
 }
 
@@ -72,6 +72,7 @@ QScrollBar::sub-page:vertical {
 QLabel {
     font: 17px 'Segoe UI Semilight', 'Microsoft YaHei Light';
     background-color: transparent;
+    color: white;
 }
 
 QLabel#viewTitleLabel {
@@ -80,12 +81,12 @@ QLabel#viewTitleLabel {
 }
 
 QLabel#guideLabel {
-    color: black;
+    color: white;
     font: 25px 'Segoe UI', 'Microsoft YaHei'
 }
 
 QLabel#singerLabel[isChecked='False'] {
-    color: black;
+    color: white;
     font-family: 'Segoe UI', 'Microsoft YaHei';
     font-weight: bold;
 }

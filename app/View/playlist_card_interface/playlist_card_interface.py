@@ -1,4 +1,5 @@
 # coding:utf-8
+from common.config import config
 from common.database.entity import Playlist
 from common.library import Library
 from common.style_sheet import setStyleSheet
@@ -39,11 +40,12 @@ class PlaylistCardInterface(PlaylistSelectionModeInterface):
         self.playlistLabel = QLabel(self.tr("Playlist"), self)
         self.sortModeLabel = QLabel(self.tr("Sort by:"), self)
         self.sortModeButton = QPushButton(self.tr("Date modified"), self)
+        c = "white" if config.theme == 'dark' else 'black'
         self.createPlaylistButton = ThreeStatePushButton(
             {
-                "normal": ":/images/playlist_card_interface/Add_normal.png",
-                "hover": ":/images/playlist_card_interface/Add_hover.png",
-                "pressed": ":/images/playlist_card_interface/Add_pressed.png",
+                "normal": f":/images/playlist_card_interface/Add_{c}_normal.png",
+                "hover": f":/images/playlist_card_interface/Add_{c}_hover.png",
+                "pressed": f":/images/playlist_card_interface/Add_{c}_pressed.png",
             },
             self.tr(" New playlist"),
             (19, 19),

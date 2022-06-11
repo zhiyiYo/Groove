@@ -1,10 +1,14 @@
 QScrollArea {
-    background-color: white;
+    background-color: rgb(15, 15, 15);
     border: none;
 }
 
 QWidget {
-    background-color: white;
+    background-color: rgb(15, 15, 15);
+}
+
+QLabel {
+    color: white;
 }
 
 #titleLabel {
@@ -13,7 +17,7 @@ QWidget {
 }
 
 #searchOthersLabel {
-    color: rgb(81, 81, 81);
+    color: rgb(174, 174, 174);
     font: 18px 'Segoe UI', 'Microsoft YaHei';
     background-color: transparent;
 }
