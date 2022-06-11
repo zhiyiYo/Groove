@@ -100,3 +100,9 @@ class TestAlbumCoverReader(TestCase):
         songInfo = self.songInfoReader.read(
             "app/resource/test_audio/Charli XCX - Boom Clap.wav")
         self.assertTrue(self.albumInfoReader.getAlbumCover(songInfo))
+
+    def test_read_mpc(self):
+        """ 测试读取 Musepack 封面 """
+        songInfo = self.songInfoReader.read(
+            "app/resource/test_audio/rsrc/full.mpc")
+        self.assertTrue(self.albumInfoReader.getAlbumCover(songInfo))

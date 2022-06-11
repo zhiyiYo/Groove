@@ -278,3 +278,22 @@ class TestMetaDataWriter(TestCase):
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
             songInfo.file, "app/cache/Album_Cover/Charli XCX_Sucker/cover.jpg"))
+
+    def test_write_mpc(self):
+        """ 测试写入 Musepack 元数据 """
+        songInfo = SongInfo(
+            file="app/resource/test_audio/rsrc/full.mpc",
+            title='irony',
+            singer='ClariS',
+            album='BIRTHDAY',
+            year=2012,
+            genre='Blues',
+            duration=260,
+            track=0,
+            trackTotal=1,
+            disc=1,
+            discTotal=1
+        )
+        self.assertTrue(self.writer.writeSongInfo(songInfo))
+        self.assertTrue(self.writer.writeAlbumCover(
+            songInfo.file, "app/cache/Album_Cover/ClariS_BIRTHDAY/cover.jpg"))

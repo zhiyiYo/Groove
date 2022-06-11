@@ -21,6 +21,7 @@ from mutagen.oggspeex import OggSpeex
 from mutagen.oggvorbis import OggVorbis
 from mutagen.trueaudio import TrueAudio
 from mutagen.wave import WAVE
+from mutagen.musepack import Musepack
 from mutagen.wavpack import WavPack
 from PyQt5.QtCore import QObject
 from tinytag import TinyTag
@@ -262,8 +263,8 @@ class MutagenSongInfoReader(SongInfoReaderBase):
         genre = self._v(tag, self.frameMap['genre'], self.genre)
         track = self._v(tag, self.frameMap['track'], self.track)
         track = self._parseTrack(track)
-        trackTotal = int(
-            self._v(tag, self.frameMap['trackTotal'], self.trackTotal))
+        trackTotal = self._v(tag, self.frameMap['trackTotal'], self.trackTotal)
+        trackTotal = self._parseTrack(trackTotal)
         disc = int(self._v(tag, self.frameMap['disc'], self.trackTotal))
         discTotal = int(
             self._v(tag, self.frameMap['discTotal'], self.trackTotal))
@@ -365,6 +366,15 @@ class MonkeysAudioSongInfoReader(APESongInfoReader):
 
     formats = [".ape"]
     options = [MonkeysAudio]
+    _Tag = None
+
+
+@SongInfoReader.register
+class MusepackAudioSongInfoReader(APESongInfoReader):
+    """ Musepack Audio song information reader """
+
+    formats = [".mpc"]
+    options = [Musepack]
     _Tag = None
 
 

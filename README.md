@@ -115,6 +115,7 @@ English | <a href="docs/README_zh.md">简体中文</a>
   * Advanced Systems Format File(*.asf)
   * Audio Interchange File Format(*.aiff)
   * Free Lossless Audio Codec File(*.flac)
+  * Musepack Compressed Audio File(*.mpc)
   * Monkey's Audio Lossless Audio File(*.ape)
 
 * **Why did GStreamer report this error: Warning: "No decoder available for type blah blah"?**

@@ -18,6 +18,7 @@ from mutagen.id3 import (APIC, ID3, TALB, TCON, TDRC, TIT2, TPE1, TPE2, TPOS,
 from mutagen.monkeysaudio import MonkeysAudio
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
+from mutagen.musepack import Musepack
 from mutagen.oggflac import OggFLAC
 from mutagen.oggopus import OggOpus
 from mutagen.oggspeex import OggSpeex
@@ -332,8 +333,8 @@ class MP4Writer(MetaDataWriterBase):
 class APEWriter(MetaDataWriterBase):
     """ APEv2 meta data writer """
 
-    formats = [".ape", ".ac3", ".wv"]
-    options = [MonkeysAudio, AAC, WavPack]
+    formats = [".ape", ".ac3", ".wv", ".mpc"]
+    options = [MonkeysAudio, AAC, WavPack, Musepack]
     _Tag = APEv2
     frameMap = APEV2_FRAME_MAP
 

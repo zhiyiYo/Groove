@@ -239,7 +239,7 @@ class SuperID3CoverDataReader(ID3CoverDataReader):
 class APECoverDataReader(CoverDataReaderBase):
     """ APEv2 album cover data reader """
 
-    formats = [".ac3", ".ape", ".wv"]
+    formats = [".ac3", ".ape", ".wv", ".mpc"]
     options = [APEv2]
 
     @classmethod
