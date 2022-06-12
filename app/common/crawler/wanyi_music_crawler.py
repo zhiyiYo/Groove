@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import List, Tuple, Union
 
 import requests
-from common.database.entity import AlbumInfo, SongInfo
+from common.database.entity import AlbumInfo, SingerInfo, SongInfo
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
 from fuzzywuzzy import fuzz
@@ -126,7 +126,7 @@ class WanYiMusicCrawler(CrawlerBase):
         if not song_infos:
             return ''
 
-        # If the matching degree is less than threshold, return None
+        # If the matching degree is less than threshold, return ''
         matches = [fuzz.token_set_ratio(
             key_word, i.singer+' '+i.title) for i in song_infos]
         best_match = max(matches)
@@ -162,7 +162,7 @@ class WanYiMusicCrawler(CrawlerBase):
         if not album_infos:
             return ''
 
-        # If the matching degree is less than threshold, return None
+        # If the matching degree is less than threshold, return ''
         matches = [fuzz.token_set_ratio(
             key_word, i.singer+' '+i.album) for i in album_infos]
         best_match = max(matches)
@@ -171,6 +171,38 @@ class WanYiMusicCrawler(CrawlerBase):
 
         id = album_infos[matches.index(best_match)]['id']
         return f'https://music.163.com/#/album?id={id}'
+
+    @exceptionHandler([], 0)
+    def getSingerInfos(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[SingerInfo], int]:
+        # send request for singer information
+        text = self.__cloudSearch(key_word, 'singer', page_num, page_size)
+
+        # parse the response data
+        singer_infos = []
+        data = json.loads(text)['result']
+        for info in data['artists']:
+            singer_info = SingerInfo()
+            singer_info.id = info['id']
+            singer_info.singer = info['name']
+            singer_info['coverPath'] = info['picUrl']
+            singer_infos.append(singer_info)
+
+        return singer_infos, data['artistCount']
+
+    @exceptionHandler('')
+    def getSingerDetailsUrl(self, key_word: str):
+        singer_infos, _ = self.getSingerInfos(key_word, 1, 20)
+        if not singer_infos:
+            return ''
+
+        # If the matching degree is less than threshold, return ''
+        matches = [fuzz.token_set_ratio(key_word, i.singer) for i in singer_infos]
+        best_match = max(matches)
+        if best_match < 85:
+            return ''
+
+        id = singer_infos[matches.index(best_match)]['id']
+        return f'https://music.163.com/#/artist?id={id}'
 
     @exceptionHandler()
     def getLyric(self, key_word: str):

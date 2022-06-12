@@ -18,6 +18,7 @@ from common.style_sheet import setStyleSheet
 from common.thread.get_online_song_url_thread import GetOnlineSongUrlThread
 from common.thread.get_song_details_url_thread import GetSongDetailsUrlThread
 from common.thread.get_album_details_url_thread import GetAlbumDetailsUrlThread
+from common.thread.get_singer_details_url_thread import GetSingerDetailsUrlThread
 from common.thread.library_thread import LibraryThread
 from components.dialog_box.create_playlist_dialog import CreatePlaylistDialog
 from components.dialog_box.message_dialog import MessageDialog
@@ -96,6 +97,9 @@ class MainWindow(AcrylicWindow):
 
         # get album details url thread
         self.getAlbumDetailsUrlThread = GetAlbumDetailsUrlThread(self)
+
+        # get album details url thread
+        self.getSingerDetailsUrlThread = GetSingerDetailsUrlThread(self)
 
         # create setting interface
         self.settingInterface = SettingInterface(self.subMainWindow)
@@ -1365,20 +1369,20 @@ class MainWindow(AcrylicWindow):
 
     def onCrawlDetailsUrlFinished(self, url: str):
         """ crawl song details url finished thread """
+        if url:
+            QDesktopServices.openUrl(QUrl(url))
+            return
+
         contentMap = {
             self.getSongDetailsUrlThread: self.tr(
                 'Unable to find a matching online song.'),
             self.getAlbumDetailsUrlThread: self.tr(
                 'Unable to find a matching online album.'),
+            self.getSingerDetailsUrlThread: self.tr(
+                'Unable to find a matching online singer.'),
         }
-        if not url:
-            self.showMessageBox(
-                self.tr("Can't view online"),
-                contentMap[self.sender()]
-            )
-            return
-
-        QDesktopServices.openUrl(QUrl(url))
+        content = contentMap[self.sender()]
+        self.showMessageBox(self.tr("Can't view online"), content)
 
     def connectSignalToSlot(self):
         """ connect signal to slot """
@@ -1446,6 +1450,8 @@ class MainWindow(AcrylicWindow):
             self.getSongDetailsUrlThread.get)
         signalBus.getAlbumDetailsUrlSig.connect(
             self.getAlbumDetailsUrlThread.get)
+        signalBus.getSingerDetailsUrlSig.connect(
+            self.getSingerDetailsUrlThread.get)
 
         signalBus.addSongsToPlayingPlaylistSig.connect(
             self.addSongsToPlayingPlaylist)
@@ -1564,6 +1570,8 @@ class MainWindow(AcrylicWindow):
         self.getSongDetailsUrlThread.crawlFinished.connect(
             self.onCrawlDetailsUrlFinished)
         self.getAlbumDetailsUrlThread.crawlFinished.connect(
+            self.onCrawlDetailsUrlFinished)
+        self.getSingerDetailsUrlThread.crawlFinished.connect(
             self.onCrawlDetailsUrlFinished)
 
 

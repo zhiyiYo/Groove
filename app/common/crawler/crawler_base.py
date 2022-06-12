@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import List, Tuple, Union
 
 import requests
-from common.database.entity import AlbumInfo, SongInfo
+from common.database.entity import AlbumInfo, SingerInfo, SongInfo
 from common.image_utils import getPicSuffix
 from common.meta_data.reader import AlbumCoverReader
 from common.meta_data.writer import MetaDataWriter
@@ -71,6 +71,30 @@ class CrawlerBase:
 
         total: int
             total number of albums in the database that match the search key word
+        """
+        raise NotImplementedError
+
+    def getSingerInfos(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[SingerInfo], int]:
+        """ search singer information
+
+        Parameters
+        ----------
+        key_word: str
+            search key word
+
+        page_num: int
+            current page number
+
+        page_size: int
+            maximum number of entries per page
+
+        Returns
+        -------
+        singer_infos: List[SingerInfo]
+            singer information list, empty when no singers are found
+
+        total: int
+            total number of singers in the database that match the search key word
         """
         raise NotImplementedError
 
@@ -257,8 +281,6 @@ class CrawlerBase:
 
         Parameters
         ----------
-        Parameters
-        ----------
         key_word: str
             search key word, the format is `singer album`
 
@@ -266,6 +288,21 @@ class CrawlerBase:
         -------
         url: str
             the url of album details page
+        """
+        raise NotImplementedError
+
+    def getSingerDetailsUrl(self, key_word: str):
+        """ get the url of singer details page
+
+        Parameters
+        ----------
+        key_word: str
+            search key word
+
+        Returns
+        -------
+        url: str
+            the url of singer details page
         """
         raise NotImplementedError
 

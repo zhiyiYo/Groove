@@ -21,9 +21,12 @@ class SingerCard(SingerCardBase):
     def contextMenuEvent(self, event):
         super().contextMenuEvent(event)
         menu = SingerCardContextMenu(parent=self)
-        menu.playAct.triggered.connect(lambda: self.playSignal.emit(self.singer))
+        menu.playAct.triggered.connect(
+            lambda: self.playSignal.emit(self.singer))
         menu.nextToPlayAct.triggered.connect(
             lambda: self.nextPlaySignal.emit(self.singer))
+        menu.viewOnlineAct.triggered.connect(
+            lambda: signalBus.getSingerDetailsUrlSig.emit(self.singerInfo))
         menu.selectAct.triggered.connect(self._onSelectActionTriggered)
 
         menu.addToMenu.playingAct.triggered.connect(
@@ -42,9 +45,12 @@ class LocalSearchedSingerCard(SingerCardBase):
     def contextMenuEvent(self, event):
         super().contextMenuEvent(event)
         menu = LocalSearchedSingerCardContextMenu(parent=self)
-        menu.playAct.triggered.connect(lambda: self.playSignal.emit(self.singer))
+        menu.playAct.triggered.connect(
+            lambda: self.playSignal.emit(self.singer))
         menu.nextToPlayAct.triggered.connect(
             lambda: self.nextPlaySignal.emit(self.singer))
+        menu.viewOnlineAct.triggered.connect(
+            lambda: signalBus.getSingerDetailsUrlSig.emit(self.singerInfo))
 
         menu.addToMenu.playingAct.triggered.connect(
             lambda: self.addToPlayingSignal.emit(self.singer))
@@ -69,13 +75,14 @@ class SingerCardContextMenu(DWMMenu):
         self.playAct = QAction(self.tr("Play"), self)
         self.selectAct = QAction(self.tr("Select"), self)
         self.nextToPlayAct = QAction(self.tr("Play next"), self)
+        self.viewOnlineAct = QAction(self.tr("View online"), self)
         self.pinToStartMenuAct = QAction(self.tr('Pin to Start'), self)
         self.addToMenu = AddToMenu(self.tr("Add to"), self)
 
         # add actions to menu
         self.addActions([self.playAct, self.nextToPlayAct])
         self.addMenu(self.addToMenu)
-        self.addAction(self.pinToStartMenuAct)
+        self.addActions([self.viewOnlineAct, self.pinToStartMenuAct])
         self.addSeparator()
         self.addAction(self.selectAct)
 
@@ -93,13 +100,14 @@ class LocalSearchedSingerCardContextMenu(DWMMenu):
         # create actions
         self.playAct = QAction(self.tr("Play"), self)
         self.nextToPlayAct = QAction(self.tr("Play next"), self)
+        self.viewOnlineAct = QAction(self.tr("View online"), self)
         self.pinToStartMenuAct = QAction(self.tr('Pin to Start'), self)
         self.addToMenu = AddToMenu(self.tr("Add to"), self)
 
         # add actions to menu
         self.addActions([self.playAct, self.nextToPlayAct])
         self.addMenu(self.addToMenu)
-        self.addAction(self.pinToStartMenuAct)
+        self.addActions([self.viewOnlineAct, self.pinToStartMenuAct])
 
 
 class SingerCardFactory:

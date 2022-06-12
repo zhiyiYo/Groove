@@ -731,6 +731,11 @@
         <source>Unable to find a matching online album.</source>
         <translation>匹配在线专辑失败，请稍后再试。</translation>
     </message>
+    <message>
+        <location filename="../../View/main_window/main_window.py" line="1369"/>
+        <source>Unable to find a matching online singer.</source>
+        <translation>匹配在线歌手失败，请稍后再试。</translation>
+    </message>
 </context>
 <context>
     <name>Menu</name>
@@ -1873,6 +1878,11 @@
         <source>Add to</source>
         <translation>添加到</translation>
     </message>
+    <message>
+        <location filename="../../components/singer_card/singer_card.py" line="72"/>
+        <source>View online</source>
+        <translation>在线查看</translation>
+    </message>
 </context>
 <context>
     <name>LocalSearchedSingerCardContextMenu</name>
@@ -1895,6 +1905,11 @@
         <location filename="../../components/singer_card/singer_card.py" line="95"/>
         <source>Add to</source>
         <translation>添加到</translation>
+    </message>
+    <message>
+        <location filename="../../components/singer_card/singer_card.py" line="96" />
+        <source>View online</source>
+        <translation>在线查看</translation>
     </message>
 </context>
 <context>
