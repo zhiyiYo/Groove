@@ -9,19 +9,19 @@ from mutagen.aac import AAC
 from mutagen.ac3 import AC3
 from mutagen.aiff import AIFF
 from mutagen.apev2 import APEv2
-from mutagen.asf import ASF
+from mutagen.asf import ASF, ASFUnicodeAttribute
 from mutagen.flac import FLAC
 from mutagen.id3 import ID3
 from mutagen.monkeysaudio import MonkeysAudio
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
+from mutagen.musepack import Musepack
 from mutagen.oggflac import OggFLAC
 from mutagen.oggopus import OggOpus
 from mutagen.oggspeex import OggSpeex
 from mutagen.oggvorbis import OggVorbis
 from mutagen.trueaudio import TrueAudio
 from mutagen.wave import WAVE
-from mutagen.musepack import Musepack
 from mutagen.wavpack import WavPack
 from PyQt5.QtCore import QObject
 from tinytag import TinyTag
@@ -111,6 +111,8 @@ class SongInfoReaderBase(QObject):
     def _parseTrack(self, track):
         """ parse track number """
         track = str(track)
+        if not track:
+            return self.track
 
         # handle a/b
         track = track.split('/')[0]
@@ -299,7 +301,8 @@ class MutagenSongInfoReader(SongInfoReaderBase):
 
     def _v(self, tag, key: str, default=None):
         """ get the value of frame """
-        return str(tag.get(key, default))
+        v = tag.get(key)
+        return str(v) if v else str(default)
 
 
 @SongInfoReader.register
@@ -311,7 +314,8 @@ class OGGSongInfoReader(MutagenSongInfoReader):
     frameMap = VORBIS_FRAME_MAP
 
     def _v(self, tag, key, default=None):
-        return tag.get(key, [default])[0]
+        v = tag.get(key, [None])[0]
+        return v or default
 
 
 @SongInfoReader.register
@@ -396,4 +400,9 @@ class ASFSongInfoReader(MutagenSongInfoReader):
     frameMap = ASF_FRAME_MAP
 
     def _v(self, tag, key, default=None):
-        return str(tag.get(key, [default])[0])
+        v = tag.get(key, [None])[0]  # type:ASFUnicodeAttribute
+
+        if v and not v.value or v is None:
+            return str(default)
+
+        return str(v)
