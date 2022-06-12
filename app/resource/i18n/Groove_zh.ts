@@ -116,6 +116,11 @@
         <source>Show artist</source>
         <translation>显示歌手</translation>
     </message>
+    <message>
+        <location filename="../../components/album_card/album_card.py" line="122" />
+        <source>View online</source>
+        <translation>在线查看</translation>
+    </message>
 </context>
 <context>
     <name>AlbumCardView</name>
@@ -493,6 +498,11 @@
         <source>Add to</source>
         <translation>添加到</translation>
     </message>
+    <message>
+        <location filename="../../components/album_card/album_card.py" line="151" />
+        <source>View online</source>
+        <translation>在线查看</translation>
+    </message>
 </context>
 <context>
     <name>LocalSearchedPlaylistCardContextMenu</name>
@@ -715,6 +725,11 @@
         <location filename="../../View/main_window/main_window.py" line="1367"/>
         <source>Unable to find a matching online song.</source>
         <translation>匹配在线歌曲失败，请稍后再试。</translation>
+    </message>
+    <message>
+        <location filename="../../View/main_window/main_window.py" line="1368"/>
+        <source>Unable to find a matching online album.</source>
+        <translation>匹配在线专辑失败，请稍后再试。</translation>
     </message>
 </context>
 <context>
@@ -1977,6 +1992,11 @@
         <location filename="../../components/album_card/album_card.py" line="178"/>
         <source>Add to</source>
         <translation>添加到</translation>
+    </message>
+    <message>
+        <location filename="../../components/album_card/album_card.py" line="179"/>
+        <source>View online</source>
+        <translation>在线查看</translation>
     </message>
 </context>
 <context>

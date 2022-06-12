@@ -34,6 +34,8 @@ class AlbumCard(AlbumCardBase):
         menu.selectAct.triggered.connect(self._onSelectActionTriggered)
         menu.showSingerAct.triggered.connect(
             lambda: signalBus.switchToSingerInterfaceSig.emit(self.singer))
+        menu.viewOnlineAct.triggered.connect(
+            lambda: signalBus.getAlbumDetailsUrlSig.emit(self.albumInfo))
 
         menu.addToMenu.playingAct.triggered.connect(
             lambda: self.addToPlayingSignal.emit(self.singer, self.album))
@@ -57,6 +59,8 @@ class LocalSearchedAlbumCard(AlbumCardBase):
             lambda: self.nextPlaySignal.emit(self.singer, self.album))
         menu.showSingerAct.triggered.connect(
             lambda: signalBus.switchToSingerInterfaceSig.emit(self.singer))
+        menu.viewOnlineAct.triggered.connect(
+            lambda: signalBus.getAlbumDetailsUrlSig.emit(self.albumInfo))
 
         menu.addToMenu.playingAct.triggered.connect(
             lambda: self.addToPlayingSignal.emit(self.singer, self.album))
@@ -89,6 +93,8 @@ class SingerInterfaceAlbumCard(AlbumCardBase):
             lambda: self.nextPlaySignal.emit(self.singer, self.album))
         menu.addToMenu.playingAct.triggered.connect(
             lambda: self.addToPlayingSignal.emit(self.singer, self.album))
+        menu.viewOnlineAct.triggered.connect(
+            lambda: signalBus.getAlbumDetailsUrlSig.emit(self.albumInfo))
         menu.editInfoAct.triggered.connect(self.showAlbumInfoEditDialog)
         menu.selectAct.triggered.connect(self._onSelectActionTriggered)
         menu.addToMenu.addSongsToPlaylistSig.connect(
@@ -118,13 +124,16 @@ class AlbumCardContextMenu(DWMMenu):
         self.deleteAct = QAction(self.tr("Delete"), self)
         self.editInfoAct = QAction(self.tr("Edit info"), self)
         self.showSingerAct = QAction(self.tr("Show artist"), self)
+        self.viewOnlineAct = QAction(self.tr("View online"), self)
         self.addToMenu = AddToMenu(self.tr("Add to"), self)
 
         # add actions to menu
         self.addActions([self.playAct, self.nextToPlayAct])
         self.addMenu(self.addToMenu)
-        self.addActions(
-            [self.showSingerAct, self.pinToStartMenuAct, self.editInfoAct, self.deleteAct])
+        self.addActions([
+            self.showSingerAct, self.viewOnlineAct,
+            self.pinToStartMenuAct, self.editInfoAct, self.deleteAct
+        ])
         self.addSeparator()
         self.addAction(self.selectAct)
 
@@ -144,13 +153,14 @@ class LocalSearchedAlbumCardContextMenu(DWMMenu):
         self.nextToPlayAct = QAction(self.tr("Play next"), self)
         self.pinToStartMenuAct = QAction(self.tr('Pin to Start'), self)
         self.showSingerAct = QAction(self.tr("Show artist"), self)
+        self.viewOnlineAct = QAction(self.tr("View online"), self)
         self.addToMenu = AddToMenu(self.tr("Add to"), self)
 
         # add actions to menu
         self.addActions([self.playAct, self.nextToPlayAct])
         self.addMenu(self.addToMenu)
         self.addActions(
-            [self.showSingerAct, self.pinToStartMenuAct])
+            [self.showSingerAct, self.viewOnlineAct, self.pinToStartMenuAct])
 
 
 class SingerInterfaceAlbumCardContextMenu(DWMMenu):
@@ -167,6 +177,7 @@ class SingerInterfaceAlbumCardContextMenu(DWMMenu):
         self.playAct = QAction(self.tr("Play"), self)
         self.selectAct = QAction(self.tr("Select"), self)
         self.nextToPlayAct = QAction(self.tr("Play next"), self)
+        self.viewOnlineAct = QAction(self.tr("View online"), self)
         self.pinToStartMenuAct = QAction(self.tr('Pin to Start'), self)
         self.deleteAct = QAction(self.tr("Delete"), self)
         self.editInfoAct = QAction(self.tr("Edit info"), self)
@@ -175,8 +186,10 @@ class SingerInterfaceAlbumCardContextMenu(DWMMenu):
         # add actions to menu
         self.addActions([self.playAct, self.nextToPlayAct])
         self.addMenu(self.addToMenu)
-        self.addActions(
-            [self.pinToStartMenuAct, self.editInfoAct, self.deleteAct])
+        self.addActions([
+            self.viewOnlineAct, self.pinToStartMenuAct,
+            self.editInfoAct, self.deleteAct
+        ])
         self.addSeparator()
         self.addAction(self.selectAct)
 

@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import List, Tuple, Union
 
 import requests
-from common.database.entity import SongInfo
+from common.database.entity import AlbumInfo, SongInfo
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
 from fuzzywuzzy import fuzz
@@ -47,16 +47,7 @@ class WanYiMusicCrawler(CrawlerBase):
     @exceptionHandler([], 0)
     def getSongInfos(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[SongInfo], int]:
         # send request for song information
-        url = 'https://music.163.com/weapi/cloudsearch/get/web'
-        form_data = {
-            "s": key_word,
-            "type": self.types['song'],    # 单曲
-            "offset": str((page_num-1)*page_size),
-            "total": "true",
-            "limit": str(page_size),
-            "more": "true"
-        }
-        text = self.send(url, form_data)
+        text = self.__cloudSearch(key_word, 'song', page_num, page_size)
 
         # parse the response data
         song_infos = []
@@ -145,6 +136,42 @@ class WanYiMusicCrawler(CrawlerBase):
         id = song_infos[matches.index(best_match)]['id']
         return f'https://music.163.com/#/song?id={id}'
 
+    @exceptionHandler([], 0)
+    def getAlbumInfos(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[AlbumInfo], int]:
+        # send request for album information
+        text = self.__cloudSearch(key_word, 'album', page_num, page_size)
+
+        # parse the response data
+        album_infos = []
+        data = json.loads(text)['result']
+        for info in data['albums']:
+            album_info = AlbumInfo()
+            album_info.id = info['id']
+            album_info.singer = info['artist']['name']
+            album_info.album = info['name']
+            album_info.year = datetime.fromtimestamp(
+                info['publishTime']/1000).year
+            album_info['coverPath'] = info['picUrl']
+            album_infos.append(album_info)
+
+        return album_infos, data['albumCount']
+
+    @exceptionHandler('')
+    def getAlbumDetailsUrl(self, key_word: str):
+        album_infos, _ = self.getAlbumInfos(key_word, 1, 20)
+        if not album_infos:
+            return ''
+
+        # If the matching degree is less than threshold, return None
+        matches = [fuzz.token_set_ratio(
+            key_word, i.singer+' '+i.album) for i in album_infos]
+        best_match = max(matches)
+        if best_match < 85:
+            return ''
+
+        id = album_infos[matches.index(best_match)]['id']
+        return f'https://music.163.com/#/album?id={id}'
+
     @exceptionHandler()
     def getLyric(self, key_word: str):
         # search song information
@@ -199,16 +226,7 @@ class WanYiMusicCrawler(CrawlerBase):
 
     @exceptionHandler([], 0)
     def getMvInfos(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[dict], int]:
-        # send request for MV information
-        url = "https://music.163.com/weapi/cloudsearch/get/web"
-        form_data = {
-            "s": key_word,
-            "type": self.types['video'],
-            "offset": str((page_num-1)*page_size),
-            "total": "true",
-            "limit": str(page_size),
-        }
-        text = self.send(url, form_data)
+        text = self.__cloudSearch(key_word, 'video', page_num, page_size)
 
         # parse response data
         data = json.loads(text)['result']
@@ -305,6 +323,40 @@ class WanYiMusicCrawler(CrawlerBase):
         text = self.send(url, form_data)
         play_url = [i['url'] for i in json.loads(text)['urls']][0]
         return play_url
+
+    def __cloudSearch(self, key_word: str, search_type: str, page_num: int, page_size: int):
+        """ search matching items in wanyi cloud music
+
+        Parameters
+        ----------
+        Parameters
+        ----------
+        key_word: str
+            search key word
+
+        search_type: str
+            search type, including `song`, `singer`, `album`, `lyric` or `video`
+
+        page_num: int
+            current page number
+
+        page_size: int
+            maximum number of entries per page
+
+        Returns
+        -------
+        text: str
+           text data of response
+        """
+        url = 'https://music.163.com/weapi/cloudsearch/get/web'
+        form_data = {
+            "s": key_word,
+            "type": self.types[search_type],
+            "offset": str((page_num-1)*page_size),
+            "total": "true",
+            "limit": str(page_size),
+        }
+        return self.send(url, form_data)
 
     def send(self, url: str, form_data: dict, headers=None) -> str:
         """ send a request of post method
