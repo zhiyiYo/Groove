@@ -13,16 +13,15 @@ QPushButton {
 }
 
 QPushButton:hover {
-    color: black;
-    background-color: rgb(230, 230, 230);
+    background-color: rgb(40, 40, 40);
 }
 
 QPushButton:pressed {
-    background-color: rgb(153, 153, 153);
+    background-color: rgb(30, 30, 30);
 }
 
 QPushButton:disabled {
-    background-color: rgb(204, 204, 204);
+    background-color: rgb(51, 51, 51);
     color: rgb(122, 122, 122);
 }
 

@@ -3,24 +3,26 @@ QLineEdit#createPlaylistPanelLineEdit {
     padding: 11px 5px 11px 23px;
     font: 37px 'Microsoft YaHei Light';
     selection-background-color: rgb(0, 153, 188);
+    background-color: rgb(43, 43, 43);
+    color: white;
 }
 
 QLineEdit#createPlaylistPanelLineEdit:focus {
-    background: rgb(250,250,250);
+    background: rgb(15, 15, 15);
 }
 
 QLineEdit#createPlaylistPanelLineEdit:!focus {
-    background: rgb(230,230,230);
+    background: rgb(32, 32, 32);
 }
 
 QLineEdit#createPlaylistPanelLineEdit:hover:!focus {
-    background: rgb(215,215,215);
+    background: rgb(40, 40, 40);
 }
 
 QLineEdit#createPlaylistPanelLineEdit[noText='true']:!focus {
-    color: rgb(138,138,138);
+    color: rgb(117, 117, 117);
 }
 
 QLineEdit#createPlaylistPanelLineEdit[noText='true']:hover:!focus {
-    color: rgb(86,86,86);
+    color: rgb(169, 169, 169);
 }

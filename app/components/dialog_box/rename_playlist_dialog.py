@@ -1,4 +1,5 @@
 # coding:utf-8
+from common.config import config
 from common.library import Library
 from common.style_sheet import setStyleSheet
 from components.buttons.three_state_button import ThreeStateButton
@@ -101,14 +102,15 @@ class LineEdit(QLineEdit):
 
     def __init__(self, text="", parent=None):
         super().__init__(text, parent)
-        iconPath_dict = {
-            "normal": ":/images/create_playlist_dialog/clear_normal_50_50.png",
+        self.color = 'white' if config.theme == 'dark' else 'black'
+        iconPaths = {
+            "normal": f":/images/create_playlist_dialog/clear_{self.color}_normal_50_50.png",
             "hover": ":/images/create_playlist_dialog/clear_hover_50_50.png",
             "pressed": ":/images/create_playlist_dialog/clear_pressed_50_50.png",
         }
 
-        self.clearButton = ThreeStateButton(iconPath_dict, self, (50, 50))
-        self.pencilPic = PixmapLabel(self)
+        self.clearButton = ThreeStateButton(iconPaths, self, (50, 50))
+        self.pencilLabel = PixmapLabel(self)
         self.menu = LineEditMenu(self)
 
         self.__initWidget()
@@ -118,17 +120,17 @@ class LineEdit(QLineEdit):
         self.setFixedSize(484, 70)
         self.__adjustButtonPos()
         self.textChanged.connect(self.__onTextChanged)
-        self.setObjectName("createPlaylistPanelLineEdit")
 
         self.clearButton.hide()
         self.clearButton.installEventFilter(self)
-        self.pencilPic.setPixmap(
-            QPixmap(":/images/create_playlist_dialog/pencil_50_50.png"))
+        self.pencilLabel.setPixmap(
+            QPixmap(f":/images/create_playlist_dialog/pencil_{self.color}_50_50.png"))
 
         # prevent text and icon overlapping
         self.setTextMargins(
-            0, 0, self.clearButton.width() + self.pencilPic.pixmap().width() + 1, 0)
+            0, 0, self.clearButton.width() + self.pencilLabel.pixmap().width() + 1, 0)
 
+        self.setObjectName("createPlaylistPanelLineEdit")
         setStyleSheet(self, 'line_edit')
 
     def __onTextChanged(self):
@@ -136,13 +138,13 @@ class LineEdit(QLineEdit):
 
     def enterEvent(self, e):
         if not self.text():
-            self.pencilPic.setPixmap(
-                QPixmap(":/images/create_playlist_dialog/pencil_noFocus_hover_50_50.png"))
+            self.pencilLabel.setPixmap(QPixmap(
+                f":/images/create_playlist_dialog/pencil_{self.color}_noFocus_hover_50_50.png"))
 
     def leaveEvent(self, e):
         if not self.text():
-            self.pencilPic.setPixmap(
-                QPixmap(":/images/create_playlist_dialog/pencil_noFocus_50_50.png"))
+            self.pencilLabel.setPixmap(QPixmap(
+                f":/images/create_playlist_dialog/pencil_{self.color}_noFocus_50_50.png"))
 
     def focusOutEvent(self, e):
         super().focusOutEvent(e)
@@ -152,8 +154,9 @@ class LineEdit(QLineEdit):
             self.setStyle(QApplication.style())
 
         self.clearButton.hide()
-        self.pencilPic.setPixmap(
-            QPixmap(":/images/create_playlist_dialog/pencil_noFocus_50_50.png"))
+        self.pencilLabel.setPixmap(QPixmap(
+            f":/images/create_playlist_dialog/pencil_{self.color}_noFocus_50_50.png"))
+
 
     def focusInEvent(self, e):
         super().focusInEvent(e)
@@ -163,8 +166,8 @@ class LineEdit(QLineEdit):
 
         self.setProperty("noText", "false")
         self.setStyle(QApplication.style())
-        self.pencilPic.setPixmap(
-            QPixmap(":/images/create_playlist_dialog/pencil_50_50.png"))
+        self.pencilLabel.setPixmap(
+            QPixmap(f":/images/create_playlist_dialog/pencil_{self.color}_50_50.png"))
 
     def mousePressEvent(self, e):
         if e.button() == Qt.LeftButton:
@@ -191,4 +194,4 @@ class LineEdit(QLineEdit):
     def __adjustButtonPos(self):
         """ adjust button position """
         self.clearButton.move(self.width() - 101, 10)
-        self.pencilPic.move(self.width() - 51, 10)
+        self.pencilLabel.move(self.width() - 51, 10)

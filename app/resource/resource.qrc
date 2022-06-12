@@ -145,11 +145,15 @@
         <file>images/album_tab_interface/CheckMark.png</file>
         <file>images/album_tab_interface/Play.png</file>
         <file>images/create_playlist_dialog/clear_hover_50_50.png</file>
-        <file>images/create_playlist_dialog/clear_normal_50_50.png</file>
+        <file>images/create_playlist_dialog/clear_black_normal_50_50.png</file>
+        <file>images/create_playlist_dialog/clear_white_normal_50_50.png</file>
         <file>images/create_playlist_dialog/clear_pressed_50_50.png</file>
-        <file>images/create_playlist_dialog/pencil_50_50.png</file>
-        <file>images/create_playlist_dialog/pencil_noFocus_50_50.png</file>
-        <file>images/create_playlist_dialog/pencil_noFocus_hover_50_50.png</file>
+        <file>images/create_playlist_dialog/pencil_black_50_50.png</file>
+        <file>images/create_playlist_dialog/pencil_white_50_50.png</file>
+        <file>images/create_playlist_dialog/pencil_black_noFocus_50_50.png</file>
+        <file>images/create_playlist_dialog/pencil_white_noFocus_50_50.png</file>
+        <file>images/create_playlist_dialog/pencil_black_noFocus_hover_50_50.png</file>
+        <file>images/create_playlist_dialog/pencil_white_noFocus_hover_50_50.png</file>
         <file>images/create_playlist_dialog/Playlist_white.png</file>
         <file>images/line_edit/close_hover.png</file>
         <file>images/line_edit/close_black_normal.png</file>
