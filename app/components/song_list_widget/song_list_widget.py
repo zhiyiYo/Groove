@@ -116,15 +116,17 @@ class SongListWidget(NoScrollSongListWidget):
         if self.sortMode == sortMode:
             return
 
-        playingSongInfo = self.playingSongInfo
         self.sortMode = sortMode
-        songInfos = self.sortSongInfo(self.sortModeMap[sortMode])
+        reverse = sortMode == 'Date added'
+        songInfos = self.sortSongInfo(self.sortModeMap[sortMode], reverse)
         self.updateAllSongCards(songInfos)
 
-        if playingSongInfo in self.songInfos:
-            self.setPlay(self.songInfos.index(playingSongInfo))
-
     def updateAllSongCards(self, songInfos: List[SongInfo]):
+        songInfos = sorted(
+            songInfos,
+            key=lambda i: i[self.sortModeMap[self.sortMode]],
+            reverse=(self.sortMode == 'Date added')
+        )
         self.guideLabel.setHidden(bool(songInfos))
         super().updateAllSongCards(songInfos)
 

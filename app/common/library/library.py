@@ -152,7 +152,7 @@ class Library(QObject):
         songInfos = self.songInfoController.addSongInfos(files)
 
         self.songInfos.extend(songInfos)
-        self.songInfos.sort(key=lambda i: i.modifiedTime, reverse=True)
+        self.songInfos.sort(key=lambda i: i.createTime, reverse=True)
         self.albumInfos = self.albumInfoController.getAlbumInfosFromCache(
             self.songInfos)
         self.singerInfos = self.singerInfoController.getSingerInfosFromCache(
