@@ -36,8 +36,9 @@ class SongGroupBox(QWidget):
                 "Song type must be 'Online songs' or 'Local songs'")
 
         self.songType = song_type
+        self.isOnline = song_type == 'Online songs'
         self.songInfos = []
-        if song_type == 'Local songs':
+        if not self.isOnline:
             self.songListWidget = LocalSongListWidget(self)
             self.titleButton = QPushButton(self.tr('Local songs'), self)
             self.loadMoreLabel = ClickableLabel()
@@ -66,7 +67,7 @@ class SongGroupBox(QWidget):
         self.titleButton.move(35, 0)
         self.songListWidget.move(0, 57)
         self.loadMoreLabel.setCursor(Qt.PointingHandCursor)
-        self.showAllButton.setHidden(self.songType == 'Online songs')
+        self.showAllButton.setHidden(self.isOnline)
         self.titleButton.clicked.connect(self.__showMoreSearchResultInterface)
         self.showAllButton.clicked.connect(
             self.__showMoreSearchResultInterface)
@@ -89,7 +90,7 @@ class SongGroupBox(QWidget):
                                 57+self.songListWidget.height()+17)
 
     def __adjustHeight(self):
-        spacing = 0 if self.loadMoreLabel.isHidden() else 17*2+19
+        spacing = 0 if not self.isOnline else 17*2+19
         self.setFixedHeight(57+self.songListWidget.height()+spacing)
         self.loadMoreLabel.move(self.loadMoreLabel.x(),
                                 57+self.songListWidget.height()+17)
@@ -114,10 +115,12 @@ class SongGroupBox(QWidget):
         if self.songType != 'Online songs':
             return
 
+        self.loadMoreLabel.hide()
         self.songInfos.extend(songInfos)
         self.songListWidget.songInfos = self.songInfos
         self.songListWidget.appendSongCards(songInfos)
         self.__adjustHeight()
+        self.loadMoreLabel.show()
 
     def __onLoadMoreLabelClicked(self):
         """ load more """
