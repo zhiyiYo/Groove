@@ -4,7 +4,6 @@ fuzzywuzzy==0.18.0
 # python-Levenshtein==0.12.0
 requests==2.26.0
 pywin32==227 ; sys_platform=="win32"
-pywin32-ctypes==0.2.0 ; sys_platform=="win32"
 xcffib==0.11.1; sys_platform=="linux"
 PyQt5==5.15.2
 PyQt5-sip==12.8.1
