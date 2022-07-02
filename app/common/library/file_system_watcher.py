@@ -36,7 +36,7 @@ class FileSystemWatcher(QObject):
         """ remove a monitored path """
         self.watcher.removePath(path)
 
-    def removePaths(self, paths: str):
+    def removePaths(self, paths: List[str]):
         """ remove multi monitored paths """
         if not paths:
             return

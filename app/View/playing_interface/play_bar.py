@@ -46,20 +46,6 @@ class PlayBar(QWidget):
         self.smallPlayModeButton = CircleButton(
             ":/images/playing_interface/SmallestPlayMode.png", self)
 
-        self.__widget_list = [
-            self.playButton,
-            self.fullScreenButton,
-            self.playProgressBar.progressSlider,
-            self.pullUpArrowButton,
-            self.lastSongButton,
-            self.nextSongButton,
-            self.randomPlayButton,
-            self.loopModeButton,
-            self.moreActionsButton,
-            self.showPlaylistButton,
-            self.smallPlayModeButton,
-        ]
-
     def __initWidget(self):
         """ initialize widgets """
         self.setFixedHeight(193)
@@ -131,8 +117,9 @@ class PlayBar(QWidget):
         self.volumeButton.clicked.connect(self.__showVolumeSlider)
         self.volumeSliderWidget.volumeLevelChanged.connect(
             self.volumeButton.updateIcon)
-        for widget in self.__widget_list:
-            widget.clicked.connect(self.volumeSliderWidget.hide)
+        for widget in self.findChildren(QWidget):
+            if hasattr(widget, 'clicked'):
+                widget.clicked.connect(self.volumeSliderWidget.hide)
 
 
 class PlayProgressBar(QWidget):
@@ -179,6 +166,7 @@ class PlayProgressBar(QWidget):
     def setTotalTime(self, totalTime):
         """ set total time in milliseconds """
         self.totalTimeLabel.setTime(int(totalTime/1000))
+        self.progressSlider.setRange(0, totalTime)
 
     def resizeEvent(self, e):
         self.progressSlider.resize(self.width() - 146, 24)

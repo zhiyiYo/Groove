@@ -13,7 +13,7 @@ from components.selection_mode_interface.bar import PlayingSelectionModeBar
 from components.widgets.label import BlurCoverLabel, MaskLabel
 from components.widgets.lyric_widget import LyricWidget
 from components.widgets.menu import AddToMenu
-from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QFile,
+from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve,
                           QParallelAnimationGroup, QPoint, QPropertyAnimation,
                           QSize, Qt, QTimer, pyqtSignal)
 from PyQt5.QtGui import QColor
@@ -113,8 +113,7 @@ class PlayingInterface(QWidget):
 
         # start to blur cover
         if self.playlist:
-            self.albumCoverLabel.setCover(
-                self.songInfoCardChute.cards[1].coverPath)
+            self.albumCoverLabel.setCover(self.coverPath)
 
         self.__connectSignalToSlot()
 
@@ -140,6 +139,10 @@ class PlayingInterface(QWidget):
         self.guideLabel.setObjectName("guideLabel")
         self.randomPlayAllButton.setObjectName("randomPlayAllButton")
         setStyleSheet(self, 'playing_interface')
+
+    @property
+    def coverPath(self):
+        return self.songInfoCardChute.cards[1].coverPath
 
     def resizeEvent(self, e):
         super().resizeEvent(e)
@@ -301,8 +304,7 @@ class PlayingInterface(QWidget):
         self.currentIndex = index if isResetIndex else self.currentIndex
         self.songInfoCardChute.setPlaylist(self.playlist, isResetIndex, index)
         self.songListWidget.updateSongCards(self.playlist, isResetIndex, index)
-        self.albumCoverLabel.setCover(
-            self.songInfoCardChute.cards[1].coverPath)
+        self.albumCoverLabel.setCover(self.coverPath)
         self.__setGuideLabelHidden(len(playlist) > 0)
         self.__getLyric()
 

@@ -403,35 +403,30 @@ class MainWindow(AcrylicWindow):
         if len(sys.argv) > 1:
             songInfos = self.library.loadFromFiles([sys.argv[1]])
             self.setPlaylist(songInfos)
-            self.updateWindow(self.mediaPlaylist.currentIndex())
-            self.pause()
-            return
-
-        if not self.mediaPlaylist.playlist:
-            songInfos = self.songTabSongListWidget.songInfos
-            self.setPlaylist(songInfos)
-            self.mediaPlaylist.playlistType = PlaylistType.ALL_SONG_PLAYLIST
+            index = self.mediaPlaylist.currentIndex()
         else:
-            songInfos = self.mediaPlaylist.playlist
-            self.setPlaylist(self.mediaPlaylist.playlist)
+            if not self.mediaPlaylist.playlist:
+                songInfos = self.songTabSongListWidget.songInfos
+                self.mediaPlaylist.playlistType = PlaylistType.ALL_SONG_PLAYLIST
+            else:
+                songInfos = self.mediaPlaylist.playlist
 
-        self.songTabSongListWidget.setPlay(0)
-        if songInfos:
-            self.systemTrayIcon.updateWindow(songInfos[0])
+            songInfo = self.mediaPlaylist.lastSongInfo
+            index = songInfos.index(songInfo) if songInfo in songInfos else 0
+            self.setPlaylist(songInfos, index)
 
-        if self.mediaPlaylist.lastSongInfo in self.mediaPlaylist.playlist:
-            self.mediaPlaylist.setCurrentSong(self.mediaPlaylist.lastSongInfo)
-            self.updateWindow(self.mediaPlaylist.currentIndex())
+            # don't modify the following code
+            self.mediaPlaylist.setCurrentIndex(index)
 
-        # pause player
+        duration = self.mediaPlaylist.getCurrentSong().duration or 0
+        self.setDuration(duration*1000)
+        self.updateWindow(index)
         self.pause()
 
     def initPlayBar(self):
         """ initialize play bar """
         self.playBar.setVolume(config["volume"])
-
         if self.mediaPlaylist.playlist:
-            self.playBar.updateWindow(self.mediaPlaylist.getCurrentSong())
             self.playBar.songInfoCard.albumCoverLabel.setOpacity(1)
 
     def setFullScreen(self, isFullScreen: bool):
@@ -497,7 +492,6 @@ class MainWindow(AcrylicWindow):
             self.setPlayButtonState(False)
             self.setPlayButtonEnabled(False)
             self.playBar.setTotalTime(0)
-            self.playBar.progressSlider.setRange(0, 0)
         else:
             self.player.play()
             self.setPlayButtonState(True)
@@ -561,17 +555,13 @@ class MainWindow(AcrylicWindow):
         self.playingInterface.playBar.progressSlider.setValue(position)
         self.smallestPlayInterface.progressBar.setValue(position)
 
-    def onPlayerDurationChanged(self):
+    def setDuration(self, duration):
         """ player duration changed slot """
-        # the duration is 0 when just switching songs
-        duration = self.player.duration()
         if duration < 1:
             return
 
         self.playBar.setTotalTime(duration)
-        self.playBar.progressSlider.setRange(0, duration)
         self.playingInterface.playBar.setTotalTime(duration)
-        self.playingInterface.playBar.progressSlider.setRange(0, duration)
         self.smallestPlayInterface.progressBar.setRange(0, duration)
 
     def onMediaStatusChanged(self, status: QMediaPlayer.MediaStatus):
@@ -850,7 +840,6 @@ class MainWindow(AcrylicWindow):
         self.systemTrayIcon.clearPlaylist()
         self.playBar.songInfoCard.hide()
         self.playBar.setTotalTime(0)
-        self.playBar.progressSlider.setRange(0, 0)
         self.setPlayButtonState(False)
         self.setPlayButtonEnabled(False)
 
@@ -1389,8 +1378,8 @@ class MainWindow(AcrylicWindow):
 
         # player signal
         self.player.error.connect(self.onPlayerError)
+        self.player.durationChanged.connect(self.setDuration)
         self.player.positionChanged.connect(self.onPlayerPositionChanged)
-        self.player.durationChanged.connect(self.onPlayerDurationChanged)
         self.player.mediaStatusChanged.connect(self.onMediaStatusChanged)
 
         # media playlist signal

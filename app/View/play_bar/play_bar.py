@@ -342,6 +342,7 @@ class PlayProgressBar(QWidget):
     def setTotalTime(self, totalTime: int):
         """ set total time in milliseconds """
         self.totalTimeLabel.setTime(int(totalTime/1000))
+        self.progressSlider.setRange(0, totalTime)
 
     def resizeEvent(self, e):
         self.progressSlider.setFixedWidth(self.width() - 100)
