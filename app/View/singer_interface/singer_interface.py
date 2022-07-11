@@ -167,6 +167,8 @@ class SingerInterface(AlbumSelectionModeInterface):
             lambda: signalBus.addSongsToNewCustomPlaylistSig.emit(self.getAllSongInfos()))
         self.singerInfoBar.addToCustomPlaylistSig.connect(
             lambda n: signalBus.addSongsToCustomPlaylistSig.emit(n, self.getAllSongInfos()))
+        self.singerInfoBar.viewOnlineSig.connect(
+            lambda: signalBus.getSingerDetailsUrlSig.emit(self.singerInfo))
 
         # download avatar thread signal
         self.getAvatarThread.downloadFinished.connect(

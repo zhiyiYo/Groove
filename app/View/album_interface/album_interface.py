@@ -134,6 +134,8 @@ class AlbumInterface(SongSelectionModeInterface):
             lambda: signalBus.addSongsToNewCustomPlaylistSig.emit(self.songInfos))
         self.albumInfoBar.addToCustomPlaylistSig.connect(
             lambda name: signalBus.addSongsToCustomPlaylistSig.emit(name, self.songInfos))
+        self.albumInfoBar.viewOnlineSig.connect(
+            lambda: signalBus.getAlbumDetailsUrlSig.emit(self.albumInfo))
 
         # song list widget signal
         self.songListWidget.playSignal.connect(self.songCardPlaySig)

@@ -19,7 +19,7 @@ class AlbumInfoBar(CollapsingAppBarBase):
             parent
         )
 
-        self.setButtons([BF.PLAY, BF.ADD_TO, BF.SINGER,
+        self.setButtons([BF.PLAY, BF.ADD_TO, BF.SINGER, BF.ONLINE,
                         BF.PIN_TO_START, BF.EDIT_INFO, BF.DELETE])
 
     def setAlbumInfo(self, albumInfo: AlbumInfo):

@@ -2,8 +2,8 @@
 from common.image_utils import getBlurPixmap
 from common.os_utils import getSingerAvatarPath
 from components.app_bar import AppBarButtonFactory as BF
-from components.app_bar import CollapsingAppBarBase, MoreActionsMenu
-from PyQt5.QtCore import QObject, QPoint, Qt, pyqtSignal
+from components.app_bar import CollapsingAppBarBase
+from PyQt5.QtCore import QObject, Qt
 from PyQt5.QtGui import QColor, QPalette, QPixmap
 from PyQt5.QtWidgets import QLabel
 
@@ -17,7 +17,7 @@ class SingerInfoBar(CollapsingAppBarBase):
         self.__getInfo(singerInfo)
         super().__init__(self.singer, self.genre, self.coverPath, 'singer', parent)
 
-        self.setButtons([BF.PLAY, BF.ADD_TO, BF.PIN_TO_START])
+        self.setButtons([BF.PLAY, BF.ADD_TO, BF.ONLINE, BF.PIN_TO_START])
 
         self.blurLabel = BlurLabel(self.coverPath, 8, self)
         self.blurLabel.lower()

@@ -22,6 +22,7 @@ class CollapsingAppBarBase(QWidget):
     editInfoSig = pyqtSignal()
     renameSig = pyqtSignal()
     deleteSig = pyqtSignal()
+    viewOnlineSig = pyqtSignal()
     addToPlayingPlaylistSig = pyqtSignal()
     addToNewCustomPlaylistSig = pyqtSignal()
     addToCustomPlaylistSig = pyqtSignal(str)
@@ -71,6 +72,7 @@ class CollapsingAppBarBase(QWidget):
             'playAllButton': self.playSig,
             'addToButton': self._onAddToButtonClicked,
             'singerButton': self.singerSig,
+            'viewOnlineButton': self.viewOnlineSig,
             'editInfoButton': self.editInfoSig,
             'renameButton': self.renameSig,
             'deleteButton': self.deleteSig,
