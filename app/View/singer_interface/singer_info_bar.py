@@ -1,12 +1,11 @@
 # coding:utf-8
 from common.image_utils import getBlurPixmap
 from common.os_utils import getSingerAvatarPath
-from components.app_bar import (AppBarButton, CollapsingAppBarBase,
-                                MoreActionsMenu)
-from components.widgets.menu import AddToMenu
+from components.app_bar import AppBarButtonFactory as BF
+from components.app_bar import CollapsingAppBarBase, MoreActionsMenu
 from PyQt5.QtCore import QObject, QPoint, Qt, pyqtSignal
 from PyQt5.QtGui import QColor, QPalette, QPixmap
-from PyQt5.QtWidgets import QAction, QLabel
+from PyQt5.QtWidgets import QLabel
 
 
 class SingerInfoBar(CollapsingAppBarBase):
@@ -14,33 +13,16 @@ class SingerInfoBar(CollapsingAppBarBase):
 
     defaultCoverPath = ':/images/default_covers/singer_295_295.png'
 
-    addSongsToPlayingPlaylistSig = pyqtSignal()
-    addSongsToNewCustomPlaylistSig = pyqtSignal()
-    addSongsToCustomPlaylistSig = pyqtSignal(str)
-
     def __init__(self, singerInfo: dict, parent=None):
         self.__getInfo(singerInfo)
         super().__init__(self.singer, self.genre, self.coverPath, 'singer', parent)
 
-        self.playAllButton = AppBarButton(
-            ":/images/album_interface/Play.png", self.tr("Play all"))
-        self.addToButton = AppBarButton(
-            ":/images/album_interface/Add.png", self.tr("Add to"))
-        self.pinToStartMenuButton = AppBarButton(
-            ":/images/album_interface/Pin.png", self.tr('Pin to Start'))
-        self.setButtons([self.playAllButton, self.addToButton,
-                        self.pinToStartMenuButton])
+        self.setButtons([BF.PLAY, BF.ADD_TO, BF.PIN_TO_START])
 
         self.blurLabel = BlurLabel(self.coverPath, 8, self)
         self.blurLabel.lower()
         self.blurLabel.setHidden(self.coverPath == self.defaultCoverPath)
 
-        self.actionNames = [
-            self.tr("Play all"), self.tr("Add to"), self.tr('Pin to Start')]
-        self.action_list = [QAction(i, self) for i in self.actionNames]
-        self.addToButton.clicked.connect(self.__onAddToButtonClicked)
-
-        self.setAttribute(Qt.WA_StyledBackground)
         self.setAutoFillBackground(True)
 
     def __getInfo(self, singerInfo: dict):
@@ -83,30 +65,6 @@ class SingerInfoBar(CollapsingAppBarBase):
         self.blurLabel.resize(self.width(), self.height())
         self.blurLabel.setPixmap(self.blurLabel.pixmap().scaled(
             w, w, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
-
-    def onMoreActionsButtonClicked(self):
-        """ show more actions menu """
-        menu = MoreActionsMenu()
-        index = len(self.buttons)-self.hiddenButtonNum
-        actions = self.action_list[index:]
-        menu.addActions(actions)
-        pos = self.mapToGlobal(self.moreActionsButton.pos())
-        x = pos.x()+self.moreActionsButton.width()+5
-        y = pos.y()+self.moreActionsButton.height()//2-(13+38*len(actions))//2
-        menu.exec(QPoint(x, y))
-
-    def __onAddToButtonClicked(self):
-        """ show add to menu """
-        menu = AddToMenu(parent=self)
-        pos = self.mapToGlobal(self.addToButton.pos())
-        x = pos.x() + self.addToButton.width() + 5
-        y = pos.y() + self.addToButton.height() // 2 - \
-            (13 + 38 * menu.actionCount()) // 2
-        menu.playingAct.triggered.connect(self.addSongsToPlayingPlaylistSig)
-        menu.addSongsToPlaylistSig.connect(self.addSongsToCustomPlaylistSig)
-        menu.newPlaylistAct.triggered.connect(
-            self.addSongsToNewCustomPlaylistSig)
-        menu.exec(QPoint(x, y))
 
 
 class BlurLabel(QLabel):

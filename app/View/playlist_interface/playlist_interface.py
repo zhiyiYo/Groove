@@ -179,7 +179,7 @@ class PlaylistInterface(SongSelectionModeInterface):
         self.addMusicButton.clicked.connect(self.switchToAlbumCardInterfaceSig)
 
         # playlist information bar signal
-        self.playlistInfoBar.playAllButton.clicked.connect(
+        self.playlistInfoBar.playSig.connect(
             lambda: signalBus.playCheckedSig.emit(self.songInfos))
         self.playlistInfoBar.addToPlayingPlaylistSig.connect(
             lambda: signalBus.addSongsToPlayingPlaylistSig.emit(self.songInfos))
@@ -187,9 +187,9 @@ class PlaylistInterface(SongSelectionModeInterface):
             lambda: signalBus.addSongsToNewCustomPlaylistSig.emit(self.songInfos))
         self.playlistInfoBar.addToCustomPlaylistSig.connect(
             lambda name: signalBus.addSongsToCustomPlaylistSig.emit(name, self.songInfos))
-        self.playlistInfoBar.renameButton.clicked.connect(
+        self.playlistInfoBar.renameSig.connect(
             lambda: self.__showRenamePlaylistDialog(self.playlist.name))
-        self.playlistInfoBar.deleteButton.clicked.connect(
+        self.playlistInfoBar.deleteSig.connect(
             self.__showDeletePlaylistDialog)
 
         # song list widget signal

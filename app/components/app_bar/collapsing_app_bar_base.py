@@ -3,15 +3,28 @@ from typing import List, Union
 
 from common.image_utils import DominantColor
 from components.widgets.label import AvatarLabel
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap, QColor, QPainter, QFont, QFontMetrics, QResizeEvent, QPalette
-from PyQt5.QtWidgets import QWidget, QLabel
+from components.widgets.menu import AddToMenu
+from PyQt5.QtCore import QPoint, Qt, pyqtSignal
+from PyQt5.QtGui import (QColor, QFont, QFontMetrics, QPainter, QPalette,
+                         QPixmap, QResizeEvent)
+from PyQt5.QtWidgets import QAction, QLabel, QWidget
 
 from .app_bar_button import AppBarButton
+from .app_bar_button import AppBarButtonFactory as BF
+from .more_actions_menu import MoreActionsMenu
 
 
 class CollapsingAppBarBase(QWidget):
     """ Collapsing app bar base class """
+
+    playSig = pyqtSignal()
+    singerSig = pyqtSignal()
+    editInfoSig = pyqtSignal()
+    renameSig = pyqtSignal()
+    deleteSig = pyqtSignal()
+    addToPlayingPlaylistSig = pyqtSignal()
+    addToNewCustomPlaylistSig = pyqtSignal()
+    addToCustomPlaylistSig = pyqtSignal(str)
 
     def __init__(self, title: str, content: str, coverPath: str, coverType='album', parent=None):
         """
@@ -52,14 +65,25 @@ class CollapsingAppBarBase(QWidget):
         self.__buttons = []         # type:List[AppBarButton]
         self.__nButtons = len(self.__buttons)
         self.hiddenButtonNum = 0
-        self.moreActionsButton = AppBarButton(
-            ":/images/album_interface/More.png", "", self)
+        self.moreActionsButton = BF().create(BF.MORE)
+
+        self.__signalMap = {
+            'playAllButton': self.playSig,
+            'addToButton': self._onAddToButtonClicked,
+            'singerButton': self.singerSig,
+            'editInfoButton': self.editInfoSig,
+            'renameButton': self.renameSig,
+            'deleteButton': self.deleteSig,
+        }
         self.__initWidget()
 
     def __initWidget(self):
         """ initialize widgets """
-        # self.moreActionsButton.hide()
-        self.moreActionsButton.clicked.connect(self.onMoreActionsButtonClicked)
+        self.setAttribute(Qt.WA_StyledBackground)
+
+        self.moreActionsButton.setParent(self)
+        self.moreActionsButton.clicked.connect(
+            self._onMoreActionsButtonClicked)
 
         self.setMinimumHeight(155)
         self.setMaximumHeight(385)
@@ -71,12 +95,23 @@ class CollapsingAppBarBase(QWidget):
 
         self.resize(1300, 385)
 
-    def setButtons(self, buttons: List[AppBarButton]):
+    def setButtons(self, buttons: List[int]):
         """ set buttons on app bar """
-        self.__buttons = buttons.copy()
+        bf = BF()
+        self.__buttons = [bf.create(i) for i in buttons]
         self.__nButtons = len(self.__buttons)
-        for button in buttons:
+        for button in self.__buttons:
+            name = button.objectName()
+            setattr(self, name, button)
             button.setParent(self)
+
+            # create action in more actions menu
+            action = QAction(button.text(), self)
+            self.addAction(action)
+
+            if name in self.__signalMap:
+                button.clicked.connect(self.__signalMap[name])
+                action.triggered.connect(self.__signalMap[name])
 
     def setBackgroundColor(self):
         """ set the background color of app bar """
@@ -223,9 +258,27 @@ class CollapsingAppBarBase(QWidget):
 
         return i
 
-    def onMoreActionsButtonClicked(self):
-        """ show more action menu """
-        raise NotImplementedError
+    def _onMoreActionsButtonClicked(self):
+        menu = MoreActionsMenu()
+        index = len(self.buttons)-self.hiddenButtonNum
+        actions = self.actions()[index:]
+        menu.addActions(actions)
+        pos = self.mapToGlobal(self.moreActionsButton.pos())
+        x = pos.x()+self.moreActionsButton.width()+5
+        y = pos.y()+self.moreActionsButton.height()//2-(13+38*len(actions))//2
+        menu.exec(QPoint(x, y))
+
+    def _onAddToButtonClicked(self):
+        """ show add to menu """
+        menu = AddToMenu(parent=self)
+        pos = self.mapToGlobal(self.addToButton.pos())
+        x = pos.x() + self.addToButton.width() + 5
+        y = pos.y() + self.addToButton.height() // 2 - \
+            (13 + 38 * menu.actionCount()) // 2
+        menu.playingAct.triggered.connect(self.addToPlayingPlaylistSig)
+        menu.addSongsToPlaylistSig.connect(self.addToCustomPlaylistSig)
+        menu.newPlaylistAct.triggered.connect(self.addToNewCustomPlaylistSig)
+        menu.exec(QPoint(x, y))
 
     def updateWindow(self, title: str, content: str, coverPath: str):
         """ update app bar """

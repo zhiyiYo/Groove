@@ -123,7 +123,8 @@ class SingerInterface(AlbumSelectionModeInterface):
 
     def __getSingerAvatar(self, singer: str):
         """ get singer avatar """
-        folders = [i.stem for i in Path('cache/singer_avatar').glob('*') if i.is_dir()]
+        folders = [i.stem for i in Path(
+            'cache/singer_avatar').glob('*') if i.is_dir()]
         if adjustName(singer) not in folders:
             self.singerInfoBar.coverLabel.hide()
             self.getAvatarThread.singer = singer
@@ -158,13 +159,13 @@ class SingerInterface(AlbumSelectionModeInterface):
         self.verticalScrollBar().valueChanged.connect(self.__onScrollBarValueChanged)
 
         # singer information bar signal
-        self.singerInfoBar.playAllButton.clicked.connect(
+        self.singerInfoBar.playSig.connect(
             lambda: signalBus.playCheckedSig.emit(self.getAllSongInfos()))
-        self.singerInfoBar.addSongsToPlayingPlaylistSig.connect(
+        self.singerInfoBar.addToPlayingPlaylistSig.connect(
             lambda: signalBus.addSongsToPlayingPlaylistSig.emit(self.getAllSongInfos()))
-        self.singerInfoBar.addSongsToNewCustomPlaylistSig.connect(
+        self.singerInfoBar.addToNewCustomPlaylistSig.connect(
             lambda: signalBus.addSongsToNewCustomPlaylistSig.emit(self.getAllSongInfos()))
-        self.singerInfoBar.addSongsToCustomPlaylistSig.connect(
+        self.singerInfoBar.addToCustomPlaylistSig.connect(
             lambda n: signalBus.addSongsToCustomPlaylistSig.emit(n, self.getAllSongInfos()))
 
         # download avatar thread signal

@@ -1,19 +1,13 @@
 # coding:utf-8
 from common.database.entity import AlbumInfo
 from common.os_utils import getCoverPath
-from components.app_bar import (AppBarButton, CollapsingAppBarBase,
-                                MoreActionsMenu)
-from components.widgets.menu import AddToMenu
-from PyQt5.QtCore import QPoint, Qt, pyqtSignal
-from PyQt5.QtWidgets import QAction
+from components.app_bar import AppBarButtonFactory as BF
+from components.app_bar import CollapsingAppBarBase
+from PyQt5.QtCore import pyqtSignal
 
 
 class AlbumInfoBar(CollapsingAppBarBase):
     """ Album information bar """
-
-    addToPlayingPlaylistSig = pyqtSignal()
-    addToNewCustomPlaylistSig = pyqtSignal()
-    addToCustomPlaylistSig = pyqtSignal(str)
 
     def __init__(self, albumInfo: AlbumInfo, parent=None):
         self.setAlbumInfo(albumInfo)
@@ -25,29 +19,8 @@ class AlbumInfoBar(CollapsingAppBarBase):
             parent
         )
 
-        self.playAllButton = AppBarButton(
-            ":/images/album_interface/Play.png", self.tr("Play all"))
-        self.addToButton = AppBarButton(
-            ":/images/album_interface/Add.png", self.tr("Add to"))
-        self.showSingerButton = AppBarButton(
-            ":/images/album_interface/Contact.png", self.tr("Show artist"))
-        self.pinToStartMenuButton = AppBarButton(
-            ":/images/album_interface/Pin.png", self.tr('Pin to Start'))
-        self.editInfoButton = AppBarButton(
-            ":/images/album_interface/Edit.png", self.tr("Edit info"))
-        self.deleteButton = AppBarButton(
-            ":/images/album_interface/Delete.png", self.tr("Delete"))
-        self.setButtons([self.playAllButton, self.addToButton, self.showSingerButton,
-                        self.pinToStartMenuButton, self.editInfoButton, self.deleteButton])
-
-        self.actionNames = [
-            self.tr("Play all"), self.tr("Add to"),
-            self.tr("Show artist"), self.tr("Pin to Start"),
-            self.tr("Edit info"), self.tr("Delete")
-        ]
-        self.action_list = [QAction(i, self) for i in self.actionNames]
-        self.setAttribute(Qt.WA_StyledBackground)
-        self.addToButton.clicked.connect(self.__onAddToButtonClicked)
+        self.setButtons([BF.PLAY, BF.ADD_TO, BF.SINGER,
+                        BF.PIN_TO_START, BF.EDIT_INFO, BF.DELETE])
 
     def setAlbumInfo(self, albumInfo: AlbumInfo):
         """ set album information """
@@ -58,28 +31,6 @@ class AlbumInfoBar(CollapsingAppBarBase):
         self.singer = albumInfo.singer or ''
         self.albumCoverPath = getCoverPath(
             self.singer, self.album, 'album_big')
-
-    def onMoreActionsButtonClicked(self):
-        menu = MoreActionsMenu()
-        index = len(self.buttons)-self.hiddenButtonNum
-        actions = self.action_list[index:]
-        menu.addActions(actions)
-        pos = self.mapToGlobal(self.moreActionsButton.pos())
-        x = pos.x()+self.moreActionsButton.width()+5
-        y = pos.y()+self.moreActionsButton.height()//2-(13+38*len(actions))//2
-        menu.exec(QPoint(x, y))
-
-    def __onAddToButtonClicked(self):
-        """ show add to menu """
-        menu = AddToMenu(parent=self)
-        pos = self.mapToGlobal(self.addToButton.pos())
-        x = pos.x() + self.addToButton.width() + 5
-        y = pos.y() + self.addToButton.height() // 2 - \
-            (13 + 38 * menu.actionCount()) // 2
-        menu.playingAct.triggered.connect(self.addToPlayingPlaylistSig)
-        menu.addSongsToPlaylistSig.connect(self.addToCustomPlaylistSig)
-        menu.newPlaylistAct.triggered.connect(self.addToNewCustomPlaylistSig)
-        menu.exec(QPoint(x, y))
 
     def updateWindow(self, albumInfo: AlbumInfo):
         """ update window """

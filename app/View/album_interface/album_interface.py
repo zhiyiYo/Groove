@@ -123,11 +123,10 @@ class AlbumInterface(SongSelectionModeInterface):
     def __connectSignalToSlot(self):
         """ connect signal to slot """
         # album information bar signal
-        self.albumInfoBar.playAllButton.clicked.connect(
+        self.albumInfoBar.playSig.connect(
             lambda: signalBus.playAlbumSig.emit(self.singer, self.album))
-        self.albumInfoBar.editInfoButton.clicked.connect(
-            self.__showAlbumInfoEditDialog)
-        self.albumInfoBar.showSingerButton.clicked.connect(
+        self.albumInfoBar.editInfoSig.connect(self.__showAlbumInfoEditDialog)
+        self.albumInfoBar.singerSig.connect(
             lambda: signalBus.switchToSingerInterfaceSig.emit(self.singer))
         self.albumInfoBar.addToPlayingPlaylistSig.connect(
             lambda: signalBus.addSongsToPlayingPlaylistSig.emit(self.songInfos))
@@ -135,8 +134,6 @@ class AlbumInterface(SongSelectionModeInterface):
             lambda: signalBus.addSongsToNewCustomPlaylistSig.emit(self.songInfos))
         self.albumInfoBar.addToCustomPlaylistSig.connect(
             lambda name: signalBus.addSongsToCustomPlaylistSig.emit(name, self.songInfos))
-        self.albumInfoBar.action_list[-2].triggered.connect(
-            self.__showAlbumInfoEditDialog)
 
         # song list widget signal
         self.songListWidget.playSignal.connect(self.songCardPlaySig)

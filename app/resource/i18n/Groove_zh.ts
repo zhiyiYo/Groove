@@ -236,6 +236,49 @@
     </message>
 </context>
 <context>
+    <name>AppBarButtonFactory</name>
+    <message>
+        <location filename="../../components/app_bar/app_bar_button.py" line="74" />
+        <source>Play all</source>
+        <translation>播放所有</translation>
+    </message>
+    <message>
+        <location filename="../../View/album_interface/album_info_bar.py" line="77"/>
+        <source>Add to</source>
+        <translation>添加到</translation>
+    </message>
+    <message>
+        <location filename="../../View/album_interface/album_info_bar.py" line="80"/>
+        <source>Show artist</source>
+        <translation>显示歌手</translation>
+    </message>
+    <message>
+        <location filename="../../View/album_interface/album_info_bar.py" line="83"/>
+        <source>View online</source>
+        <translation>在线查看</translation>
+    </message>
+    <message>
+        <location filename="../../View/album_interface/album_info_bar.py" line="86"/>
+        <source>Pin to Start</source>
+        <translation>固定到&quot;开始&quot;菜单</translation>
+    </message>
+    <message>
+        <location filename="../../View/album_interface/album_info_bar.py" line="89"/>
+        <source>Edit info</source>
+        <translation>编辑信息</translation>
+    </message>
+    <message>
+        <location filename="../../View/album_interface/album_info_bar.py" line="92"/>
+        <source>Rename</source>
+        <translation>重命名</translation>
+    </message>
+    <message>
+        <location filename="../../View/album_interface/album_info_bar.py" line="95"/>
+        <source>Delete</source>
+        <translation>删除</translation>
+    </message>
+</context>
+<context>
     <name>AlbumInfoEditDialog</name>
     <message>
         <location filename="../../components/dialog_box/album_info_edit_dialog.py" line="48"/>
