@@ -3,7 +3,7 @@ from common.thread.download_mv_thread import DownloadMvThread
 from components.dialog_box.message_dialog import MessageDialog
 from components.widgets.tooltip import DownloadStateTooltip
 from PyQt5.QtCore import QSizeF, Qt, QUrl, pyqtSignal, QEvent
-from PyQt5.QtGui import QPainter
+from PyQt5.QtGui import QPainter, QKeyEvent
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QGraphicsVideoItem
 from PyQt5.QtWidgets import QAction, QFileDialog, QGraphicsScene, QGraphicsView
@@ -127,6 +127,18 @@ class VideoInterface(QGraphicsView):
     def mousePressEvent(self, e):
         self.playBar.setVisible(not self.playBar.isVisible())
 
+    def keyPressEvent(self, e: QKeyEvent):
+        if e.key() == Qt.Key_Left:
+            self.__skipBack()
+        elif e.key() == Qt.Key_Right:
+            self.__skipForward()
+        elif e.key() == Qt.Key_Up:
+            self.playBar.volumeSliderWidget.setVolume(self.player.volume()+1)
+        elif e.key() == Qt.Key_Down:
+            self.playBar.volumeSliderWidget.setVolume(self.player.volume()-1)
+
+        return super().keyPressEvent(e)
+
     def __enterFullScreen(self):
         """ enter full screen """
         self.playBar.fullScreenButton.setFullScreen(True)
@@ -156,12 +168,12 @@ class VideoInterface(QGraphicsView):
     def __skipBack(self):
         """ Back up for 10 seconds. """
         pos = self.player.position()
-        self.player.setPosition(pos-10000)
+        self.player.setPosition(max(pos-10000, 0))
 
     def __skipForward(self):
         """ Fast forward 10 seconds """
         pos = self.player.position()
-        self.player.setPosition(pos+10000)
+        self.player.setPosition(min(pos+10000, self.player.duration()))
 
     def __onPlayerError(self, error: QMediaPlayer.Error):
         """ play error slot """

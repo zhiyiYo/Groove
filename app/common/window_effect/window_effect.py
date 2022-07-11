@@ -189,6 +189,7 @@ class WindowsEffect(WindowEffect):
             win32con.GWL_STYLE,
             style
             | win32con.WS_MAXIMIZEBOX
+            | win32con.WS_MINIMIZEBOX
             | win32con.WS_CAPTION
             | win32con.CS_DBLCLKS
             | win32con.WS_THICKFRAME,

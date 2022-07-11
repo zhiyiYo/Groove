@@ -48,6 +48,7 @@ class VolumeSliderWidget(QWidget):
 
     def setVolume(self, volume: int):
         """ set volume """
+        volume = min(100, max(volume, 0))
         self.volumeSlider.setValue(volume)
         self.__onVolumeChanged(volume)
 

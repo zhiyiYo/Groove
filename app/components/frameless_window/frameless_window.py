@@ -41,8 +41,7 @@ class WindowsFramelessWindow(FramelessWindowBase):
         super().__init__(parent)
 
         # remove window border
-        self.setWindowFlags(Qt.FramelessWindowHint |
-                            Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint)
+        self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint)
 
         # add DWM shadow and window animation
         self.windowEffect.addWindowAnimation(self.winId())
@@ -129,8 +128,7 @@ class AcrylicWindow(WindowsFramelessWindow):
         self.__closeByKey = False
 
         QtWin.enableBlurBehindWindow(self)
-        self.setWindowFlags(Qt.FramelessWindowHint |
-                            Qt.WindowMinMaxButtonsHint)
+        self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint)
         self.windowEffect.addWindowAnimation(self.winId())
 
         version = getWindowsVersion()
