@@ -30,12 +30,6 @@ class MaximizeButton(TitleBarButton):
         self.__isMax = False
         self.setProperty("isMax", False)
 
-    def mouseReleaseEvent(self, e):
-        if e.button() == Qt.LeftButton:
-            self.__updateIcon(not self.__isMax)
-
-        return super().mouseReleaseEvent(e)
-
     def setMaxState(self, isMax: bool):
         """ set maximized state """
         if self.__isMax == isMax:

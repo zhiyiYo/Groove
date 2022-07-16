@@ -95,6 +95,10 @@ class TitleBar(QWidget):
                 self.maxButton.setMaxState(self.window().isMaximized())
                 self.maxButton.setAttribute(Qt.WA_UnderMouse, False)
                 return False
+        elif obj is self.window():
+            if e.type() == QEvent.WindowStateChange:
+                self.maxButton.setMaxState(self.window().isMaximized())
+                return False
 
         return super().eventFilter(obj, e)
 
