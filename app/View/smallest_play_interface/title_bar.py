@@ -34,7 +34,7 @@ class TitleBar(QWidget):
         self.closeButton.move(self.width() - self.closeButton.width(), 0)
 
     def _isDragRegion(self, pos):
-        return 0 < pos.x() < self.closeButton.x()
+        return not self.closeButton.isPressed and 0 < pos.x() < self.closeButton.x()
 
 
 class WindowsTitleBar(TitleBar):

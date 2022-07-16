@@ -104,6 +104,10 @@ class TitleBar(QWidget):
 
     def _isDragRegion(self, pos):
         """ Check whether the pressed point belongs to the area where dragging is allowed """
+        for button in self.findChildren(TitleBarButton):
+            if button.isVisible() and button.isPressed:
+                return False
+
         left = self.returnButton.isVisible() * 60
         right = self.width() - 46 - 92 * self.minButton.isVisible()
         return left < pos.x() < right

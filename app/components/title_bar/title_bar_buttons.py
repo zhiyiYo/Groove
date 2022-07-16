@@ -9,6 +9,7 @@ class TitleBarButton(QToolButton):
     def __init__(self, size=(57, 40), parent=None):
         super().__init__(parent)
         self.resize(*size)
+        self.isPressed = False
         self.__isWhiteIcon = False
         self.setProperty("isWhite", False)
 
@@ -20,6 +21,14 @@ class TitleBarButton(QToolButton):
         self.__isWhiteIcon = isWhite
         self.setProperty("isWhite", isWhite)
         self.setStyle(QApplication.style())
+
+    def mousePressEvent(self, e):
+        self.isPressed = True
+        super().mousePressEvent(e)
+
+    def mouseReleaseEvent(self, e):
+        self.isPressed = False
+        super().mouseReleaseEvent(e)
 
 
 class MaximizeButton(TitleBarButton):
