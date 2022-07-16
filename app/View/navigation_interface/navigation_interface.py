@@ -16,7 +16,7 @@ class NavigationInterface(QWidget):
     IN_LINE = 2     # show navigation widget
     searchSig = pyqtSignal(str)                # 搜索信号
     displayModeChanged = pyqtSignal(int)       # 显示模式改变
-    showCreatePlaylistDialogSig = pyqtSignal() # 显示创建播放列表对话框信号
+    showCreatePlaylistDialogSig = pyqtSignal()  # 显示创建播放列表对话框信号
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -54,6 +54,10 @@ class NavigationInterface(QWidget):
         # search
         self.navigationMenu.searchSig.connect(self.__onSearch)
         self.navigationWidget.searchSig.connect(self.__onSearch)
+        self.navigationMenu.searchLineEdit.textChanged.connect(
+            self.navigationWidget.searchLineEdit.setText)
+        self.navigationWidget.searchLineEdit.textChanged.connect(
+            self.navigationMenu.searchLineEdit.setText)
 
         self.navigationBar.showMenuButton.clicked.connect(
             self.__expandNavigationWindow)
