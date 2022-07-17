@@ -1,10 +1,11 @@
 import sys
 
-from .frameless_window import (AcrylicWindow, UnixFramelessWindow,
-                               WindowsFramelessWindow)
 
 if sys.platform == "win32":
-    FramelessWindow = WindowsFramelessWindow
+    from .win32 import AcrylicWindow, FramelessWindow
+elif sys.platform == "darwin":
+    from .mac import FramelessWindow
+    AcrylicWindow = FramelessWindow
 else:
-    FramelessWindow = UnixFramelessWindow
-    AcrylicWindow = UnixFramelessWindow
+    from .linux import FramelessWindow
+    AcrylicWindow = FramelessWindow

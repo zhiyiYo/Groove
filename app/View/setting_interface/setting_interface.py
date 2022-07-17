@@ -10,7 +10,7 @@ from components.widgets.label import ClickableLabel
 from components.widgets.scroll_area import ScrollArea
 from components.widgets.slider import Slider
 from components.widgets.tooltip import StateTooltip, ToastTooltip
-from PyQt5.QtCore import QEvent, QFile, Qt, QUrl, pyqtSignal
+from PyQt5.QtCore import QEvent, Qt, QUrl, pyqtSignal
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import (QButtonGroup, QFileDialog, QLabel, QLineEdit,
                              QPushButton, QRadioButton, QWidget)

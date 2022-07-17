@@ -19,7 +19,7 @@
   </a>
 
   <a style="text-decoration:none">
-    <img src="https://img.shields.io/badge/Platform-Win32%20|%20Unix-blue?color=00B16A" alt="Platform Win32 | Unix"/>
+    <img src="https://img.shields.io/badge/Platform-Win32%20|%20Linux%20|%20macOS-blue?color=00B16A" alt="Platform Win32 | Linux | macOS"/>
   </a>
 </p>
 
@@ -63,8 +63,8 @@
     ```
 
 2. 下载解码器：
-   * 对于 Win32 平台，安装 [LAV Filters](https://github.com/Nevcairiel/LAVFilters/releases/download/0.74/LAVFilters-0.74-Installer.exe)
-   * 对于 Unix 平台，安装 GStreamer
+   * 对于 Win32，安装 [LAV Filters](https://github.com/Nevcairiel/LAVFilters/releases/download/0.74/LAVFilters-0.74-Installer.exe)
+   * 对于 Linux，安装 GStreamer
 
 
 3. 打开 Groove 音乐:

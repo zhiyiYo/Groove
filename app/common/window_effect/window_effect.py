@@ -5,21 +5,21 @@ if sys.platform == "win32":
     from ctypes import POINTER, WinDLL, byref, c_bool, c_int, pointer, sizeof
     from ctypes.wintypes import DWORD, LONG, LPCVOID
 
-    from win32 import win32api, win32gui
+    from win32 import win32gui
     from win32.lib import win32con
 
-    from .c_structures import (ACCENT_POLICY, ACCENT_STATE, DWMNCRENDERINGPOLICY,
-                               DWMWINDOWATTRIBUTE, MARGINS,
-                               WINDOWCOMPOSITIONATTRIB,
+    from .c_structures import (ACCENT_POLICY, ACCENT_STATE,
+                               DWMNCRENDERINGPOLICY, DWMWINDOWATTRIBUTE,
+                               MARGINS, WINDOWCOMPOSITIONATTRIB,
                                WINDOWCOMPOSITIONATTRIBDATA)
 
 
-class WindowEffect:
+
+class WindowEffectBase:
     """ Window effect base class """
 
-    def __new__(cls, *args, **kwargs):
-        cls = WindowsEffect if sys.platform == "win32" else WindowEffect
-        return super().__new__(cls, *args, **kwargs)
+    def __init__(self, window=None):
+        self.window = window
 
     def setAcrylicEffect(self, hWnd, gradientColor="F2F2F230", isEnableShadow=True, animationId=0):
         """ set acrylic effect for window
@@ -101,10 +101,11 @@ class WindowEffect:
         pass
 
 
-class WindowsEffect(WindowEffect):
+class WindowsEffect(WindowEffectBase):
     """ Window effect of Windows system """
 
-    def __init__(self):
+    def __init__(self, window=None):
+        super().__init__(window)
         # call API
         self.user32 = WinDLL("user32")
         self.dwmapi = WinDLL("dwmapi")
@@ -202,3 +203,11 @@ class WindowsEffect(WindowEffect):
                               win32con.SWP_NOMOVE |
                               win32con.SWP_NOSIZE |
                               win32con.SWP_NOACTIVATE)
+
+
+class MacWindowEffect(WindowEffectBase):
+    """ Window effect of macOS """
+
+
+class LinuxWindowEffect(WindowEffectBase):
+    """ Window effect of Linux system """

@@ -295,7 +295,9 @@ class MainWindow(AcrylicWindow):
     def adjustWidgetGeometry(self):
         """ adjust the geometry of widgets """
         self.titleBar.resize(self.width(), 40)
-        self.splashScreen.resize(self.size())
+
+        if hasattr(self, "splashScreen"):
+            self.splashScreen.resize(self.size())
 
         if not hasattr(self, 'playBar'):
             return

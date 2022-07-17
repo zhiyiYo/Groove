@@ -145,6 +145,13 @@ def showInFolder(path: str):
             args.insert(0, '/select,')
 
         QProcess.startDetached('explorer', args)
+    elif sys.platform == "darwin":
+        args = [
+            "-e", 'tell application "Finder"', "-e", "activate",
+            "-e", f'select POSIX file "{path}"', "-e", "end tell",
+            "-e", "return"
+        ]
+        QProcess.execute("/usr/bin/osascript", args)
     else:
         url = QUrl.fromLocalFile(path if info.isDir() else info.path())
         QDesktopServices.openUrl(url)

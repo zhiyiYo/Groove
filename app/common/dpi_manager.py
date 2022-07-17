@@ -5,6 +5,9 @@ if sys.platform == "win32":
     from win32con import DESKTOPHORZRES, HORZRES
     from win32gui import GetDC, ReleaseDC
     from win32print import GetDeviceCaps
+elif sys.platform == "darwin":
+    from Cocoa import NSScreen, NSDeviceSize, NSDeviceResolution
+    from Quartz import CGDisplayScreenSize
 else:
     import xcffib
     import xcffib.xproto
@@ -17,7 +20,12 @@ class DPIManager:
     """ DPI Manager """
 
     def __new__(cls, *args, **kwargs):
-        cls = WindowsDPIManager if sys.platform == "win32" else UnixDPIManager
+        if sys.platform == "win32":
+            cls = WindowsDPIManager
+        elif sys.platform == "darwin":
+            cls = MacDPIManager
+        else:
+            cls = LinuxDPIManager
         return super().__new__(cls, *args, **kwargs)
 
     def __init__(self):
@@ -39,8 +47,8 @@ class WindowsDPIManager(DPIManager):
         return t / d
 
 
-class UnixDPIManager(DPIManager):
-    """ Unix DPI Manager """
+class LinuxDPIManager(DPIManager):
+    """ Linux DPI Manager """
 
     def _get_scale(self) -> float:
         x = xcffib.connect()
@@ -66,6 +74,15 @@ class UnixDPIManager(DPIManager):
             dpi = (w_dpi + h_dpi) / 2
 
         return dpi/96
+
+
+class MacDPIManager(DPIManager):
+
+    def _get_scale(self) -> float:
+        # for screen in NSScreen.screens():
+        #     return screen.backingScaleFactor() 
+
+        return 1
 
 
 dpi_manager = DPIManager()

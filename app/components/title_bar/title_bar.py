@@ -5,11 +5,13 @@ if sys.platform == "win32":
     from win32.lib import win32con
     from win32.win32api import SendMessage
     from win32.win32gui import ReleaseCapture
+elif sys.platform == "darwin":
+    from common.utils.mac_utils import MacMoveResize
 else:
-    from common.linux_utils import LinuxMoveResize
+    from common.utils.linux_utils import LinuxMoveResize
 
 from common.style_sheet import setStyleSheet
-from PyQt5.QtCore import QEvent, QFile, Qt
+from PyQt5.QtCore import QEvent, Qt
 from PyQt5.QtGui import QResizeEvent
 from PyQt5.QtWidgets import QLabel, QWidget
 
@@ -20,7 +22,12 @@ class TitleBar(QWidget):
     """ Title bar """
 
     def __new__(cls, *args, **kwargs):
-        cls = WindowsTitleBar if sys.platform == "win32" else UnixTitleBar
+        if sys.platform == "win32":
+            cls = WindowsTitleBar
+        elif sys.platform == "darwin":
+            cls = MacTitleBar
+        else:
+            cls = LinuxTitleBar
         return super().__new__(cls, *args, **kwargs)
 
     def __init__(self, parent):
@@ -130,12 +137,21 @@ class WindowsTitleBar(TitleBar):
         event.ignore()
 
 
-class UnixTitleBar(TitleBar):
-    """ Title bar for Unix system """
+class LinuxTitleBar(TitleBar):
+    """ Title bar for Linux system """
 
     def mousePressEvent(self, event):
         if event.button() != Qt.LeftButton or not self._isDragRegion(event.pos()):
             return
 
-        pos = event.globalPos()
-        LinuxMoveResize.startSystemMove(self.window(), pos)
+        LinuxMoveResize.startSystemMove(self.window(), event.globalPos())
+
+
+class MacTitleBar(TitleBar):
+    """ Title bar for Mac OS """
+
+    def mousePressEvent(self, event):
+        if event.button() != Qt.LeftButton or not self._isDragRegion(event.pos()):
+            return
+
+        MacMoveResize.startSystemMove(self.window(), event.globalPos())

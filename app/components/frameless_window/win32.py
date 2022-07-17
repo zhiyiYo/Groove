@@ -1,30 +1,22 @@
 # coding:utf-8
-import sys
 from ctypes import cast
-
-from PyQt5.QtCore import QCoreApplication, QEvent, Qt
-from PyQt5.QtGui import QCloseEvent, QCursor, QMouseEvent
-from PyQt5.QtWidgets import QApplication, QWidget
-
-if sys.platform == "win32":
-    from ctypes.wintypes import MSG, LPRECT
-
-    from common.window_effect.c_structures import LPNCCALCSIZE_PARAMS
-    from common import win_utils
-    from common.win_utils import Taskbar
-    from PyQt5.QtWinExtras import QtWin
-    from win32 import win32gui
-    from win32.lib import win32con
-else:
-    from common.linux_utils import LinuxMoveResize
+from ctypes.wintypes import LPRECT, MSG
 
 from common.os_utils import getWindowsVersion
+from common.utils import win_utils
+from common.utils.win_utils import Taskbar
 from common.window_effect import WindowEffect
+from common.window_effect.c_structures import LPNCCALCSIZE_PARAMS
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QCloseEvent, QCursor
+from PyQt5.QtWidgets import QApplication, QWidget
+from PyQt5.QtWinExtras import QtWin
 
-from ..title_bar import TitleBar
+from win32 import win32gui
+from win32.lib import win32con
 
 
-class FramelessWindowBase(QWidget):
+class FramelessWindow(QWidget):
     """ Frameless window """
 
     BORDER_WIDTH = 5
@@ -32,13 +24,6 @@ class FramelessWindowBase(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.windowEffect = WindowEffect()
-
-
-class WindowsFramelessWindow(FramelessWindowBase):
-    """ Frameless window """
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
 
         # remove window border
         self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint)
@@ -120,7 +105,7 @@ class WindowsFramelessWindow(FramelessWindowBase):
                               win32con.SWP_NOSIZE | win32con.SWP_FRAMECHANGED)
 
 
-class AcrylicWindow(WindowsFramelessWindow):
+class AcrylicWindow(FramelessWindow):
     """ A frameless window with acrylic effect """
 
     def __init__(self, parent=None):
@@ -163,44 +148,3 @@ class AcrylicWindow(WindowsFramelessWindow):
         self.hide()
 
 
-class UnixFramelessWindow(FramelessWindowBase):
-    """ Frameless window for Unix system """
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint)
-        QCoreApplication.instance().installEventFilter(self)
-
-    def eventFilter(self, obj, event):
-        et = event.type()
-        if et != QEvent.MouseButtonPress and et != QEvent.MouseMove:
-            return False
-
-        edges = Qt.Edges()
-        pos = QMouseEvent(event).globalPos() - self.pos()
-        if pos.x() < self.BORDER_WIDTH:
-            edges |= Qt.LeftEdge
-        if pos.x() >= self.width()-self.BORDER_WIDTH:
-            edges |= Qt.RightEdge
-        if pos.y() < self.BORDER_WIDTH:
-            edges |= Qt.TopEdge
-        if pos.y() >= self.height()-self.BORDER_WIDTH:
-            edges |= Qt.BottomEdge
-
-        # change cursor
-        if et == QEvent.MouseMove and self.windowState() == Qt.WindowNoState:
-            if edges in (Qt.LeftEdge | Qt.TopEdge, Qt.RightEdge | Qt.BottomEdge):
-                self.setCursor(Qt.SizeFDiagCursor)
-            elif edges in (Qt.RightEdge | Qt.TopEdge, Qt.LeftEdge | Qt.BottomEdge):
-                self.setCursor(Qt.SizeBDiagCursor)
-            elif edges in (Qt.TopEdge, Qt.BottomEdge):
-                self.setCursor(Qt.SizeVerCursor)
-            elif edges in (Qt.LeftEdge, Qt.RightEdge):
-                self.setCursor(Qt.SizeHorCursor)
-            else:
-                self.setCursor(Qt.ArrowCursor)
-
-        elif (obj is self or isinstance(obj, TitleBar)) and et == QEvent.MouseButtonPress and edges:
-            LinuxMoveResize.starSystemResize(self, event.globalPos(), edges)
-
-        return super().eventFilter(obj, event)

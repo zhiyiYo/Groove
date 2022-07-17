@@ -2,9 +2,28 @@
 from copy import deepcopy
 
 from PyQt5.QtCore import QAbstractEventDispatcher, QAbstractNativeEventFilter
-from pyqtkeybind import keybinder
 
 from .singleton import Singleton
+
+try:
+    from pyqtkeybind import keybinder
+except:
+    class KeyBinder:
+
+        def init(self):
+            pass
+
+        def register_hotkey(self, winId, hotkey, callback):
+            return False
+
+        def unregister_hotkey(winId, hotkey):
+            return False
+
+        def handler(self, eventType, message):
+            return False
+
+    keybinder = KeyBinder()
+
 
 
 def exceptionHandler(*default):

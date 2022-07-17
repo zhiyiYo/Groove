@@ -19,7 +19,7 @@
   </a>
 
   <a style="text-decoration:none">
-    <img src="https://img.shields.io/badge/Platform-Win32%20|%20Unix-blue?color=00B16A" alt="Platform Win32 | Unix"/>
+    <img src="https://img.shields.io/badge/Platform-Win32%20|%20Linux%20|%20macOS-blue?color=00B16A" alt="Platform Win32 | Linux | macOS"/>
   </a>
 </p>
 
@@ -64,8 +64,8 @@ English | <a href="docs/README_zh.md">简体中文</a>
     ```
 
 2. Download decoder:
-   * For the Win32 platform, you should install [LAV Filters](https://github.com/Nevcairiel/LAVFilters/releases/download/0.74/LAVFilters-0.74-Installer.exe).
-   * For the Unix platform, you should install GStreamer.
+   * For the Win32, you should install [LAV Filters](https://github.com/Nevcairiel/LAVFilters/releases/download/0.74/LAVFilters-0.74-Installer.exe).
+   * For the Linux, you should install GStreamer.
 
 3. Open Groove music:
 

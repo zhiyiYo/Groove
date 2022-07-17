@@ -2716,7 +2716,15 @@
     </message>
 </context>
 <context>
-    <name>UnixTitleBar</name>
+    <name>LinuxTitleBar</name>
+    <message>
+        <location filename="../../components/title_bar/title_bar.py" line="20"/>
+        <source>Groove Music</source>
+        <translation>Groove 音乐</translation>
+    </message>
+</context>
+<context>
+    <name>MacTitleBar</name>
     <message>
         <location filename="../../components/title_bar/title_bar.py" line="20"/>
         <source>Groove Music</source>
