@@ -1,16 +1,8 @@
 # coding:utf-8
 import sys
 
-if sys.platform == "win32":
-    from win32.lib import win32con
-    from win32.win32api import SendMessage
-    from win32.win32gui import ReleaseCapture
-elif sys.platform == "darwin":
-    from common.utils.mac_utils import MacMoveResize
-else:
-    from common.utils.linux_utils import LinuxMoveResize
-
 from common.style_sheet import setStyleSheet
+from common.utils import startSystemMove
 from PyQt5.QtCore import QEvent, Qt
 from PyQt5.QtGui import QResizeEvent
 from PyQt5.QtWidgets import QLabel, QWidget
@@ -22,12 +14,7 @@ class TitleBar(QWidget):
     """ Title bar """
 
     def __new__(cls, *args, **kwargs):
-        if sys.platform == "win32":
-            cls = WindowsTitleBar
-        elif sys.platform == "darwin":
-            cls = MacTitleBar
-        else:
-            cls = LinuxTitleBar
+        cls = WindowsTitleBar if sys.platform == "win32" else LinuxTitleBar
         return super().__new__(cls, *args, **kwargs)
 
     def __init__(self, parent):
@@ -127,14 +114,7 @@ class WindowsTitleBar(TitleBar):
         if not self._isDragRegion(event.pos()):
             return
 
-        ReleaseCapture()
-        SendMessage(
-            int(self.window().winId()),
-            win32con.WM_SYSCOMMAND,
-            win32con.SC_MOVE + win32con.HTCAPTION,
-            0,
-        )
-        event.ignore()
+        startSystemMove(self.window(), event.globalPos())
 
 
 class LinuxTitleBar(TitleBar):
@@ -144,14 +124,4 @@ class LinuxTitleBar(TitleBar):
         if event.button() != Qt.LeftButton or not self._isDragRegion(event.pos()):
             return
 
-        LinuxMoveResize.startSystemMove(self.window(), event.globalPos())
-
-
-class MacTitleBar(TitleBar):
-    """ Title bar for Mac OS """
-
-    def mousePressEvent(self, event):
-        if event.button() != Qt.LeftButton or not self._isDragRegion(event.pos()):
-            return
-
-        MacMoveResize.startSystemMove(self.window(), event.globalPos())
+        startSystemMove(self.window(), event.globalPos())

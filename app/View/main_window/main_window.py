@@ -1414,6 +1414,7 @@ class MainWindow(AcrylicWindow):
             lambda: self.showCreatePlaylistDialog(self.mediaPlaylist.playlist))
 
         # signal bus signal
+        signalBus.showMainWindowSig.connect(self.show)
         signalBus.appMessageSig.connect(self.onAppMessage)
 
         signalBus.nextSongSig.connect(self.mediaPlaylist.next)
@@ -1543,7 +1544,6 @@ class MainWindow(AcrylicWindow):
         # system tray icon signal
         qApp.aboutToQuit.connect(self.onExit)
         self.systemTrayIcon.exitSignal.connect(qApp.quit)
-        self.systemTrayIcon.showMainWindowSig.connect(self.show)
 
         # video window signal
         self.videoInterface.fullScreenChanged.connect(self.setVideoFullScreen)

@@ -371,6 +371,14 @@
     </message>
 </context>
 <context>
+    <name>DesktopLyricWidget</name>
+    <message>
+        <location filename="../../View/desktop_lyric_interface/desktop_lyric_interface.py" line="74" />
+        <source>No songs are playing</source>
+        <translation>当前没有正在播放的歌曲</translation>
+    </message>
+</context>
+<context>
     <name>Dialog</name>
     <message>
         <location filename="../../components/dialog_box/dialog.py" line="19"/>

@@ -1,0 +1,1 @@
+from .desktop_lyric_interface import DesktopLyricInterface

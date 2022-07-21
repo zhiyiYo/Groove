@@ -13,7 +13,6 @@ class SystemTrayIcon(QSystemTrayIcon):
     """ System tray icon """
 
     exitSignal = pyqtSignal()
-    showMainWindowSig = pyqtSignal()
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -38,7 +37,7 @@ class SystemTrayIcon(QSystemTrayIcon):
     def __onActivated(self, reason: QSystemTrayIcon.ActivationReason):
         """ system tray icon activated slot """
         if reason == self.Trigger:
-            self.showMainWindowSig.emit()
+            signalBus.showMainWindowSig.emit()
 
     def setPlay(self, isPlay: bool):
         """ set play state """

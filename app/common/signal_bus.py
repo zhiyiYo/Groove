@@ -59,6 +59,7 @@ class SignalBus(Singleton, QObject):
     randomPlayChanged = pyqtSignal(bool)                        # 随机播放
     loopModeChanged = pyqtSignal(QMediaPlaylist.PlaybackMode)   # 循环模式
 
+    showMainWindowSig = pyqtSignal()      # 显示主界面
     fullScreenChanged = pyqtSignal(bool)  # 全屏/退出全屏
 
     downloadAvatarFinished = pyqtSignal(str, str)  # 下载了一个头像

@@ -1,5 +1,4 @@
 # coding:utf-8
-from copy import deepcopy
 from typing import List
 
 from common.database.entity import SongInfo
@@ -9,9 +8,9 @@ from common.style_sheet import setStyleSheet
 from components.buttons.circle_button import CircleButton
 from components.frameless_window import FramelessWindow
 from components.widgets.label import BlurCoverLabel
-from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent, QFile,
+from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
                           QParallelAnimationGroup, QPoint, QPropertyAnimation,
-                          QRect, Qt, pyqtSignal)
+                          Qt, pyqtSignal)
 from PyQt5.QtGui import QFont, QFontMetrics
 from PyQt5.QtWidgets import QGraphicsOpacityEffect, QLabel, QSlider, QWidget
 

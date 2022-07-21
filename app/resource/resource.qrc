@@ -79,8 +79,10 @@
         <file>qss/dark/singer_card_interface.qss</file>
         <file>qss/dark/singer_group_box.qss</file>
         <file>qss/dark/recent_play_interface.qss</file>
+        <file>qss/light/desktop_lyric_interface.qss</file>
 
         <file>images/logo/logo.png</file>
+        <file>images/logo/logo_30_30.png</file>
         <file>images/logo/logo.ico</file>
         <file>images/logo/logo_small.png</file>
         <file>images/logo/splash_screen_logo.png</file>
@@ -372,6 +374,13 @@
         <file>images/video_window/SkipBack.png</file>
         <file>images/video_window/SkipForward.png</file>
         <file>images/video_window/Download.png</file>
+        <file>images/desktop_lyric_interface/Play.png</file>
+        <file>images/desktop_lyric_interface/Pause.png</file>
+        <file>images/desktop_lyric_interface/Next.png</file>
+        <file>images/desktop_lyric_interface/Previous.png</file>
+        <file>images/desktop_lyric_interface/Lock.png</file>
+        <file>images/desktop_lyric_interface/Setting.png</file>
+        <file>images/desktop_lyric_interface/Close.png</file>
 
         <file>i18n/Groove_zh.qm</file>
     </qresource>

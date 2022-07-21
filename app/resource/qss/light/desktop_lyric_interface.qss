@@ -1,0 +1,16 @@
+QFrame#container {
+    background-color: rgba(0, 0, 0, 0.9);
+    border: 1px solid transparent;
+    border-radius: 10px;
+}
+
+QWidget {
+    background-color: rgba(0, 0, 0, 0.01);
+}
+
+QLabel {
+    color: white;
+    padding: 2px 0px;
+    font: 15px 'Segoe UI', 'Microsoft YaHei';
+    background: transparent;
+}
