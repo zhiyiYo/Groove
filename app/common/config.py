@@ -27,9 +27,13 @@ class Config(Singleton):
             "download-folder": str(Path('download').absolute()).replace("\\", '/'),
             "recent-plays-number": 300,
             "mode": "Light",
-            "lyric.color": [0, 153, 188],
-            "lyric.font-size": 40,
-            "lyric.alignment": "center"
+            "lyric.background-color": [255, 255, 255],
+            "lyric.mask-color": [0, 153, 188],
+            "lyric.font-size": 50,
+            "lyric.stroke-size": 5,
+            "lyric.stroke-color": [0, 0, 0],
+            "lyric.font-family": "Microsoft YaHei",
+            "lyric.alignment": "Left"
         }
         self.__theme = "Light"
         self.__readConfig()

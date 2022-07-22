@@ -1227,7 +1227,7 @@ class MainWindow(AcrylicWindow):
             return
 
         t = self.player.position()
-        self.playingInterface.lyricWidget.setCurrentTime(t)
+        self.playingInterface.setLyricCurrentTime(t)
 
     def onPlayingInterfaceCurrentIndexChanged(self, index):
         """ playing interface current index changed slot """
@@ -1375,6 +1375,12 @@ class MainWindow(AcrylicWindow):
         content = contentMap[self.sender()]
         self.showMessageBox(self.tr("Can't view online"), content)
 
+    def onShowMainWindow(self):
+        """ show main window """
+        self.show()
+        if self.isMinimized():
+            self.showNormal()
+
     def connectSignalToSlot(self):
         """ connect signal to slot """
 
@@ -1414,7 +1420,7 @@ class MainWindow(AcrylicWindow):
             lambda: self.showCreatePlaylistDialog(self.mediaPlaylist.playlist))
 
         # signal bus signal
-        signalBus.showMainWindowSig.connect(self.show)
+        signalBus.showMainWindowSig.connect(self.onShowMainWindow)
         signalBus.appMessageSig.connect(self.onAppMessage)
 
         signalBus.nextSongSig.connect(self.mediaPlaylist.next)

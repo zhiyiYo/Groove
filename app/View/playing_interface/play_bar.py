@@ -4,6 +4,7 @@ from components.buttons.play_bar_buttons import (FullScreenButton,
                                                  LoopModeButton, PlayButton,
                                                  PullUpArrow, RandomPlayButton,
                                                  VolumeButton)
+from components.buttons.play_bar_buttons import ButtonFactory as BF
 from components.widgets.label import TimeLabel
 from components.widgets.menu import PlayingInterfaceMoreActionsMenu
 from components.widgets.slider import HollowHandleStyle, Slider
@@ -27,24 +28,20 @@ class PlayBar(QWidget):
     def __createWidget(self):
         """ create widgets """
         self.moreActionsMenu = PlayingInterfaceMoreActionsMenu(self)
-        self.playButton = PlayButton(self)
-        self.volumeButton = VolumeButton(self)
+        self.playButton = BF.create(BF.PLAY, self)
+        self.volumeButton = BF.create(BF.VOLUME, self)
         self.volumeSliderWidget = VolumeSliderWidget(self.window())
-        self.fullScreenButton = FullScreenButton(self)
+        self.fullScreenButton = BF.create(BF.FULL_SCREEN, self)
         self.playProgressBar = PlayProgressBar(parent=self)
-        self.pullUpArrowButton = PullUpArrow(self)
-        self.lastSongButton = CircleButton(
-            ":/images/playing_interface/Previous.png", self)
-        self.nextSongButton = CircleButton(
-            ":/images/playing_interface/Next.png", self)
-        self.randomPlayButton = RandomPlayButton(self)
-        self.loopModeButton = LoopModeButton(self)
-        self.moreActionsButton = CircleButton(
-            ":/images/playing_interface/More.png", self)
-        self.showPlaylistButton = CircleButton(
-            ":/images/playing_interface/Playlist_47_47.png", self)
-        self.smallPlayModeButton = CircleButton(
-            ":/images/playing_interface/SmallestPlayMode.png", self)
+        self.pullUpArrowButton = BF.create(BF.PULL_UP_ARROW, self)
+        self.lastSongButton = BF.create(BF.PREVIOUS, self)
+        self.nextSongButton = BF.create(BF.NEXT, self)
+        self.randomPlayButton = BF.create(BF.RANDOM_PLAY, self)
+        self.loopModeButton = BF.create(BF.LOOP_MODE, self)
+        self.desktopLyricButton = BF.create(BF.DESKTOP_LYRIC, self)
+        self.moreActionsButton = BF.create(BF.MORE, self)
+        self.showPlaylistButton = BF.create(BF.PLAYLIST, self)
+        self.smallPlayModeButton = BF.create(BF.SMALLEST_PLAY_MODE, self)
 
     def __initWidget(self):
         """ initialize widgets """
@@ -56,7 +53,8 @@ class PlayBar(QWidget):
         self.randomPlayButton.move(197, 85)
         self.loopModeButton.move(257, 85)
         self.volumeButton.move(317, 85)
-        self.moreActionsButton.move(387, 85)
+        self.desktopLyricButton.move(377, 85)
+        self.moreActionsButton.move(437, 85)
         self.volumeSliderWidget.hide()
         self.playProgressBar.move(0, 45)
         self.lastSongButton.setToolTip(self.tr('Previous'))
@@ -68,13 +66,13 @@ class PlayBar(QWidget):
         self.__connectSignalToSlot()
         self.__referenceWidget()
 
-    def __showVolumeSlider(self):
+    def __onVolumeButtonClicked(self):
         """ show volume slider """
         if not self.volumeSliderWidget.isVisible():
             pos = self.mapToGlobal(self.volumeButton.pos())
             x = pos.x() + int(
                 self.volumeButton.width() / 2 - self.volumeSliderWidget.width() / 2)
-            y = self.y() + 15
+            y = pos.y()-100
             self.volumeSliderWidget.move(x, y)
             self.volumeSliderWidget.show()
         else:
@@ -114,12 +112,9 @@ class PlayBar(QWidget):
     def __connectSignalToSlot(self):
         """ connect signal to slot """
         self.moreActionsButton.clicked.connect(self.__showMoreActionsMenu)
-        self.volumeButton.clicked.connect(self.__showVolumeSlider)
+        self.volumeButton.clicked.connect(self.__onVolumeButtonClicked)
         self.volumeSliderWidget.volumeLevelChanged.connect(
             self.volumeButton.updateIcon)
-        for widget in self.findChildren(QWidget):
-            if hasattr(widget, 'clicked'):
-                widget.clicked.connect(self.volumeSliderWidget.hide)
 
 
 class PlayProgressBar(QWidget):

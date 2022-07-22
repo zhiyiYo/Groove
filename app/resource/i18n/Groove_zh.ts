@@ -371,11 +371,16 @@
     </message>
 </context>
 <context>
-    <name>DesktopLyricWidget</name>
+    <name>DesktopLyricInterface</name>
     <message>
         <location filename="../../View/desktop_lyric_interface/desktop_lyric_interface.py" line="74" />
         <source>No songs are playing</source>
         <translation>当前没有正在播放的歌曲</translation>
+    </message>
+    <message>
+        <location filename="../../View/desktop_lyric_interface/desktop_lyric_interface.py" line="114" />
+        <source>Loading lyrics...</source>
+        <translation>正在加载歌词...</translation>
     </message>
 </context>
 <context>
@@ -1411,14 +1416,27 @@
 <context>
     <name>RandomPlayButton</name>
     <message>
-        <location filename="../../View/playing_interface/play_bar_buttons.py" line="96"/>
+        <location filename="../../components/buttons/play_bar_buttons.py" line="96"/>
         <source>Random play: on</source>
         <translation>随机播放: 开启</translation>
     </message>
     <message>
-        <location filename="../../View/playing_interface/play_bar_buttons.py" line="96"/>
+        <location filename="../../components/buttons/play_bar_buttons.py" line="89"/>
         <source>Random play: off</source>
         <translation>随机播放: 关闭</translation>
+    </message>
+</context>
+<context>
+    <name>DesktopLyricButton</name>
+    <message>
+        <location filename="../../components/buttons/play_bar_buttons.py" line="121" />
+        <source>Desktop lyric: on</source>
+        <translation>桌面歌词: 开启</translation>
+    </message>
+    <message>
+        <location filename="../../components/buttons/play_bar_buttons.py" line="116" />
+        <source>Desktop lyric: off</source>
+        <translation>桌面歌词: 关闭</translation>
     </message>
 </context>
 <context>

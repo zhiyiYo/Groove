@@ -101,6 +101,7 @@ class VolumeButton(CircleButton):
                     self.setMute(not self.isMute)
                     signalBus.muteStateChanged.emit(self.isMute)
                 self.update()
+
         return False
 
     def setMute(self, isMute: bool):

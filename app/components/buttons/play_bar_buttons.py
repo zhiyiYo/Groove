@@ -90,9 +90,6 @@ class RandomPlayButton(SelectableButton):
 
     def setRandomPlay(self, isRandomPlay: bool):
         """ set whether to play randomly """
-        if self.isSelected == isRandomPlay:
-            return
-
         text = self.tr('Random play: on') if isRandomPlay else self.tr(
             'Random play: off')
         self.setToolTip(text)
@@ -103,6 +100,31 @@ class RandomPlayButton(SelectableButton):
     def mouseReleaseEvent(self, e):
         super().mouseReleaseEvent(e)
         signalBus.randomPlayChanged.emit(self.isSelected)
+
+
+class DesktopLyricButton(SelectableButton):
+    """ Desktop lyric button """
+
+    lyricVisibleChanged = pyqtSignal(bool)
+
+    def __init__(self, parent=None):
+        iconPaths = [":/images/playing_interface/DesktopLyric.png"]
+        super().__init__(iconPaths, parent, (47, 47), (47, 47))
+        self.setToolTip(self.tr('Desktop lyric: off'))
+
+    def setLyricVisible(self, isVisible: bool):
+        """ set the visibility of desktop lyric """
+        text = self.tr('Desktop lyric: on') if isVisible else self.tr(
+            'Desktop lyric: off')
+        self.setToolTip(text)
+        self.isSelected = isVisible
+        self.clickedTime = int(isVisible)
+        self.update()
+
+    def mouseReleaseEvent(self, e):
+        super().mouseReleaseEvent(e)
+        self.setLyricVisible(self.isSelected)
+        self.lyricVisibleChanged.emit(self.isSelected)
 
 
 class LoopModeButton(SelectableButton):
@@ -349,3 +371,50 @@ class VolumeButton(CircleButton):
         if not self.isMute:
             self.iconPixmap = self.pixmaps[iconIndex]
             self.update()
+
+
+class ButtonFactory:
+    """ Play bar button factory """
+
+    PREVIOUS = 0
+    PLAY = 1
+    NEXT = 2
+    RANDOM_PLAY = 3
+    LOOP_MODE = 4
+    VOLUME = 5
+    MORE = 6
+    PLAYLIST = 7
+    SMALLEST_PLAY_MODE = 8
+    FULL_SCREEN = 9
+    PULL_UP_ARROW = 10
+    SKIP_BACK = 11
+    SKIP_FORWARD = 12
+    DOWNLOAD = 13
+    DESKTOP_LYRIC = 14
+
+    @classmethod
+    def create(cls, buttonType: int, parent=None):
+        """ create button """
+        buttonMap = {
+            cls.PLAY: PlayButton,
+            cls.RANDOM_PLAY: RandomPlayButton,
+            cls.LOOP_MODE: LoopModeButton,
+            cls.VOLUME: VolumeButton,
+            cls.FULL_SCREEN: FullScreenButton,
+            cls.PULL_UP_ARROW: PullUpArrow,
+            cls.DESKTOP_LYRIC: DesktopLyricButton
+        }
+        if buttonType in buttonMap:
+            return buttonMap[buttonType](parent)
+
+        iconMap = {
+            cls.PREVIOUS: ":/images/playing_interface/Previous.png",
+            cls.NEXT: ":/images/playing_interface/Next.png",
+            cls.MORE: ":/images/playing_interface/More.png",
+            cls.PLAYLIST: ":/images/playing_interface/Playlist_47_47.png",
+            cls.SMALLEST_PLAY_MODE: ":/images/playing_interface/SmallestPlayMode.png",
+            cls.SKIP_BACK: ":/images/video_window/SkipBack.png",
+            cls.SKIP_FORWARD: ":/images/video_window/SkipForward.png",
+            cls.DOWNLOAD: ":/images/video_window/Download.png",
+        }
+        return CircleButton(iconMap[buttonType], parent)

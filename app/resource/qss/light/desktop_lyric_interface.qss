@@ -1,5 +1,5 @@
 QFrame#container {
-    background-color: rgba(0, 0, 0, 0.9);
+    background-color: rgba(0, 0, 0, 0.85);
     border: 1px solid transparent;
     border-radius: 10px;
 }

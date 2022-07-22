@@ -39,7 +39,6 @@ class Menu(QMenu):
             Qt.FramelessWindowHint | Qt.Popup | Qt.NoDropShadowWindowHint)
 
         self.setObjectName('playingInterfaceMenu')
-        self.addToMenu.setObjectName('blackAddToMenu')
         setStyleSheet(self, 'menu')
 
 
@@ -73,6 +72,7 @@ class AddToMenu(QMenu):
             act.triggered.connect(
                 lambda checked, playlistName=name: self.addSongsToPlaylistSig.emit(playlistName))
 
+        self.setObjectName('blackAddToMenu')
         setStyleSheet(self, 'menu')
 
     def actionCount(self):

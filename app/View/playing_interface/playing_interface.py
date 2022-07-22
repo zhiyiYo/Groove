@@ -19,6 +19,7 @@ from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve,
 from PyQt5.QtGui import QColor
 from PyQt5.QtMultimedia import QMediaPlaylist
 from PyQt5.QtWidgets import QLabel, QWidget
+from View.desktop_lyric_interface import DesktopLyricInterface
 
 from .play_bar import PlayBar
 from .song_info_card_chute import SongInfoCardChute
@@ -62,6 +63,7 @@ class PlayingInterface(QWidget):
         self.maskLabel = MaskLabel(QColor(0, 0, 0, 215), self)
         self.songInfoCardChute = SongInfoCardChute(self.playlist, self)
         self.lyricWidget = LyricWidget(self.songInfoCardChute)
+        self.desktopLyricInterface = DesktopLyricInterface()
         self.parallelAniGroup = QParallelAnimationGroup(self)
         self.playBar = PlayBar(self)
         self.songListWidget = SongListWidget(self.playlist, self)
@@ -311,6 +313,7 @@ class PlayingInterface(QWidget):
     def setPlay(self, isPlay: bool):
         """ set play state """
         self.playBar.playButton.setPlay(isPlay)
+        self.desktopLyricInterface.setPlay(isPlay)
 
     def __settleDownPlayBar(self):
         """ settle down play bar """
@@ -431,6 +434,12 @@ class PlayingInterface(QWidget):
         """ set current time in milliseconds """
         self.playBar.setCurrentTime(currentTime)
 
+    def setLyricCurrentTime(self, currentTime: int):
+        """ set lyric current time in milliseconds """
+        self.lyricWidget.setCurrentTime(currentTime)
+        self.desktopLyricInterface.setCurrentTime(
+            currentTime, self.playBar.progressSlider.maximum())
+
     def setFullScreen(self, isFullScreen: int):
         """ set full screen """
         self.playBar.fullScreenButton.setFullScreen(isFullScreen)
@@ -511,11 +520,13 @@ class PlayingInterface(QWidget):
         if not self.playlist:
             return
 
-        if self.getLyricThread.songInfo == self.playlist[self.currentIndex]:
+        songInfo = self.playlist[self.currentIndex]
+        if self.getLyricThread.songInfo == songInfo:
             return
 
         self.lyricWidget.setLoadingState(True)
-        self.getLyricThread.setSongInfo(self.playlist[self.currentIndex])
+        self.desktopLyricInterface.updateWindow(songInfo)
+        self.getLyricThread.setSongInfo(songInfo)
         self.getLyricThread.start()
 
     def __onCrawlLyricFinished(self, lyric: Dict[str, List[str]]):
@@ -523,8 +534,15 @@ class PlayingInterface(QWidget):
         if self.isLyricVisible:
             self.lyricWidget.show()
 
+        # update lyric
         self.lyricWidget.setLyric(lyric)
-        self.lyricWidget.setCurrentTime(self.playBar.progressSlider.value())
+        self.desktopLyricInterface.setLyric(lyric)
+
+        # update current lyric
+        time = self.playBar.progressSlider.value()
+        self.lyricWidget.setCurrentTime(time)
+        self.desktopLyricInterface.setCurrentTime(
+            time, self.playBar.progressSlider.maximum())
 
     def __onLyricVisibleChanged(self, isVisible: bool):
         """ lyrics visibility changed slot """
@@ -578,6 +596,8 @@ class PlayingInterface(QWidget):
         self.playBar.lastSongButton.clicked.connect(signalBus.lastSongSig)
         self.playBar.nextSongButton.clicked.connect(signalBus.nextSongSig)
         self.playBar.playButton.clicked.connect(signalBus.togglePlayStateSig)
+        self.playBar.desktopLyricButton.lyricVisibleChanged.connect(
+            self.desktopLyricInterface.setVisible)
         self.playBar.pullUpArrowButton.clicked.connect(
             self.__onShowPlaylistButtonClicked)
         self.playBar.showPlaylistButton.clicked.connect(
@@ -624,3 +644,7 @@ class PlayingInterface(QWidget):
             self.__onSelectionModeBarAlbumButtonClicked)
         self.selectionModeBar.addToButton.clicked.connect(
             self.__onSelectionModeBarAddToButtonClicked)
+
+        # desktop lyric interface signal
+        self.desktopLyricInterface.closeButton.clicked.connect(
+            lambda: self.playBar.desktopLyricButton.setLyricVisible(False))

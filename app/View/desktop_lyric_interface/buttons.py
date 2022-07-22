@@ -66,7 +66,6 @@ class PlayButton(Button):
         """ set play state """
         self.isPlaying = play
         self.iconPixmap = QPixmap(self.iconPaths[self.isPlaying])
-        self.setToolTip(self.tr('Pause') if play else self.tr('Play'))
         self.update()
 
 

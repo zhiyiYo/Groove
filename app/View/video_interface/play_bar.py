@@ -2,6 +2,7 @@
 from components.buttons.play_bar_buttons import (CircleButton,
                                                  FullScreenButton, PlayButton,
                                                  VolumeButton)
+from components.buttons.play_bar_buttons import ButtonFactory as BF
 from components.widgets.slider import HollowHandleStyle, Slider
 from PyQt5.QtCore import Qt, pyqtSignal, QTimer
 from PyQt5.QtGui import QColor, QLinearGradient, QPainter
@@ -20,15 +21,12 @@ class PlayBar(QWidget):
         self.progressSlider = Slider(Qt.Horizontal, self)
         self.currentTimeLabel = QLabel('0:00', self)
         self.totalTimeLabel = QLabel('0:00', self)
-        self.volumeButton = VolumeButton(self)
-        self.playButton = PlayButton(self)
-        self.fullScreenButton = FullScreenButton(self)
-        self.skipBackButton = CircleButton(
-            ":/images/video_window/SkipBack.png", self)
-        self.skipForwardButton = CircleButton(
-            ":/images/video_window/SkipForward.png", self)
-        self.downloadButton = CircleButton(
-            ":/images/video_window/Download.png", self)
+        self.volumeButton = BF.create(BF.VOLUME, self)
+        self.playButton = BF.create(BF.PLAY, self)
+        self.fullScreenButton = BF.create(BF.FULL_SCREEN, self)
+        self.skipBackButton = BF.create(BF.SKIP_BACK, self)
+        self.skipForwardButton = BF.create(BF.SKIP_FORWARD, self)
+        self.downloadButton = BF.create(BF.DOWNLOAD, self)
         self.volumeSliderWidget = VolumeSliderWidget(self.window())
         self.timer = QTimer(self)
 
