@@ -1,19 +1,23 @@
 # coding:utf-8
 import bisect
 import sys
-from typing import List, Dict
+from typing import Dict, List
 
-from common.utils import startSystemMove
+from common.config import config
 from common.database.entity import SongInfo
+from common.icon import Icon
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
-from PyQt5.QtCore import Qt, QPropertyAnimation, QPoint, QEasingCurve
+from common.utils import startSystemMove
 from components.frameless_window import FramelessWindow
-from PyQt5.QtWidgets import QFrame, QLabel, QGraphicsOpacityEffect, QApplication
+from components.widgets.menu import DWMMenu
+from PyQt5.QtCore import QEasingCurve, QPoint, QPropertyAnimation, Qt
+from PyQt5.QtWidgets import (QAction, QApplication, QFrame,
+                             QGraphicsOpacityEffect, QLabel)
 
-from .lyric_widget import LyricWidget
 from .buttons import Button
 from .buttons import ButtonFactory as BF
+from .lyric_widget import LyricWidget
 
 
 class DesktopLyricInterface(FramelessWindow):
@@ -23,9 +27,7 @@ class DesktopLyricInterface(FramelessWindow):
         super().__init__(parent=parent)
         self.isPlay = False
         self.isLocked = False
-        self.lyric = None
-        self.times = []
-        self.currentIndex = -1
+        self.__reset()
         self.songInfo = SongInfo()
 
         self.container = QFrame(self)
@@ -37,6 +39,8 @@ class DesktopLyricInterface(FramelessWindow):
         self.lockButton = BF.create(BF.LOCK, self.container)
         self.settingButton = BF.create(BF.SETTING, self.container)
         self.closeButton = BF.create(BF.CLOSE, self.container)
+        self.fontIncreaseButton = BF.create(BF.FONT_INCREASE, self.container)
+        self.fontDecreaseButton = BF.create(BF.FONT_DECREASE, self.container)
         self.lyricWidget = LyricWidget(self)
 
         self.opacityEffect = QGraphicsOpacityEffect(self)
@@ -87,10 +91,13 @@ class DesktopLyricInterface(FramelessWindow):
 
     def resizeEvent(self, e):
         self.container.resize(self.size())
-        self.lyricWidget.resize(self.width()-24, self.height()-self.lyricWidget.y())
+        self.lyricWidget.resize(
+            self.width()-24, self.height()-self.lyricWidget.y())
         self.playButton.move(self.width()//2-self.playButton.width()//2, 12)
         self.lastButton.move(self.playButton.x()-5-self.lastButton.width(), 12)
         self.nextButton.move(self.playButton.x()+5+self.playButton.width(), 12)
+        self.fontDecreaseButton.move(self.width()-182, 12)
+        self.fontIncreaseButton.move(self.width()-147, 12)
         self.lockButton.move(self.width()-112, 12)
         self.settingButton.move(self.width()-77, 12)
         self.closeButton.move(self.width()-42, 12)
@@ -98,7 +105,8 @@ class DesktopLyricInterface(FramelessWindow):
 
     def adjustHeight(self):
         """ adjust the height """
-        self.setFixedHeight(self.lyricWidget.y()+self.lyricWidget.minimumHeight())
+        self.setFixedHeight(self.lyricWidget.y() +
+                            self.lyricWidget.minimumHeight())
 
     def __adjustSongLabel(self):
         """ adjust the text of song label """
@@ -115,18 +123,17 @@ class DesktopLyricInterface(FramelessWindow):
 
     def updateWindow(self, songInfo: SongInfo):
         """ update window """
-        self.lyric = []
-        self.times = []
-        self.currentIndex = -1
+        self.__reset()
         self.songInfo = songInfo
         self.__adjustSongLabel()
-        self.lyricWidget.setLyric([self.tr("Loading lyrics...")], 1)
+        self.lyricWidget.setLyric([self.tr("Loading lyrics...")], 1, True)
 
     def setLyric(self, lyric: Dict[str, List[str]]):
         """ set lyric """
         self.lyric = lyric
         self.times = list(self.lyric.keys())
         self.currentIndex = -1
+        self.lyricWidget.setLyric([""], 1, True)
 
     def setCurrentTime(self, time: int, totalTime: int):
         """ set current time
@@ -182,6 +189,41 @@ class DesktopLyricInterface(FramelessWindow):
 
         startSystemMove(self, e.globalPos())
 
+    def contextMenuEvent(self, e):
+        """ show context menu """
+        menu = DWMMenu(parent=self)
+        menu.setObjectName("deskLyricMenu")
+        c = "white" if config.theme == "dark" else "black"
+        menu.addAction(QAction(
+            Icon(f":/images/menu/Close_{c}.png"),
+            self.tr("Close lyric"),
+            parent=self,
+            triggered=self.closeButton.click
+        ))
+
+        if not self.isLocked:
+            menu.addAction(QAction(
+                Icon(f":/images/menu/Lock_{c}.png"),
+                self.tr("Lock lyric"),
+                parent=self,
+                triggered=lambda: self.setLocked(True)
+            ))
+        else:
+            menu.addAction(QAction(
+                Icon(f":/images/menu/Unlock_{c}.png"),
+                self.tr("Unlock lyric"),
+                parent=self,
+                triggered=lambda: self.setLocked(False)
+            ))
+
+        menu.addAction(QAction(
+            Icon(f":/images/menu/Settings_{c}.png"),
+            self.tr("Setting"),
+            parent=self,
+            triggered=self.__onSettingButtonClicked
+        ))
+        menu.exec(e.globalPos())
+
     def __isDragRegion(self, pos: QPoint):
         return not isinstance(self.childAt(pos), Button)
 
@@ -192,13 +234,34 @@ class DesktopLyricInterface(FramelessWindow):
 
         self.isLocked = isLocked
         self.setAttribute(Qt.WA_TransparentForMouseEvents, isLocked)
-        if isLocked:
-            self.container.hide()
+        self.container.setHidden(isLocked)
+
+    def clear(self):
+        """ clear lyrics """
+        self.setLyric({})
+        self.songInfo = SongInfo()
+        self.__adjustSongLabel()
+
+    def __reset(self):
+        """ reset data """
+        self.lyric = {}
+        self.times = []
+        self.currentIndex = -1
 
     def __onSettingButtonClicked(self):
         """ setting button clicked slot """
         signalBus.showMainWindowSig.emit()
         signalBus.switchToSettingInterfaceSig.emit()
+
+    def __onFontIncreaseButtonClicked(self):
+        """ font size increase button clicked slot """
+        config["lyric.font-size"] += 1
+        self.update()
+
+    def __onFontDecreaseButtonClicked(self):
+        """ font size decrease button clicked slot """
+        config["lyric.font-size"] = max(15, config["lyric.font-size"]-1)
+        self.update()
 
     def __connectSignalToSlot(self):
         self.lockButton.clicked.connect(lambda: self.setLocked(True))
@@ -208,3 +271,5 @@ class DesktopLyricInterface(FramelessWindow):
         self.nextButton.clicked.connect(signalBus.nextSongSig)
         self.playButton.clicked.connect(signalBus.togglePlayStateSig)
         self.settingButton.clicked.connect(self.__onSettingButtonClicked)
+        self.fontDecreaseButton.clicked.connect(self.__onFontDecreaseButtonClicked)
+        self.fontIncreaseButton.clicked.connect(self.__onFontIncreaseButtonClicked)

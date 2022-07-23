@@ -42,7 +42,8 @@ QMenu#addToMenu {
 }
 
 QMenu#addToMenu::item,
-QMenu#blackAddToMenu::item {
+QMenu#blackAddToMenu::item,
+QMenu#deskLyricMenu::item {
     height: 38px;
     /*设置文字边距*/
     padding-left: 20px;
@@ -63,7 +64,8 @@ QMenu#addToMenu::separator {
 
 /*调整图标位置*/
 QMenu#addToMenu::icon,
-QMenu#blackAddToMenu::icon {
+QMenu#blackAddToMenu::icon,
+QMenu#deskLyricMenu::icon {
     position: absolute;
     left: 14px;
 }

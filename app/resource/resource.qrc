@@ -186,8 +186,12 @@
         <file>images/menu/ChevronRight_white.png</file>
         <file>images/menu/Clear_white.png</file>
         <file>images/menu/Contact_white.png</file>
+        <file>images/menu/Close_black.png</file>
+        <file>images/menu/Close_white.png</file>
         <file>images/menu/Copy_white.png</file>
         <file>images/menu/Cut_white.png</file>
+        <file>images/menu/Settings_white.png</file>
+        <file>images/menu/Settings_black.png</file>
         <file>images/menu/FullScreen_white.png</file>
         <file>images/menu/Paste_white.png</file>
         <file>images/menu/Playing_white.png</file>
@@ -195,6 +199,10 @@
         <file>images/menu/Lyric_white.png</file>
         <file>images/menu/Movie_white.png</file>
         <file>images/menu/Bullseye_white.png</file>
+        <file>images/menu/Lock_white.png</file>
+        <file>images/menu/Lock_black.png</file>
+        <file>images/menu/Unlock_white.png</file>
+        <file>images/menu/Unlock_black.png</file>
         <file>images/navigation_interface/clear_hover.png</file>
         <file>images/navigation_interface/clear_normal.png</file>
         <file>images/navigation_interface/clear_pressed.png</file>
@@ -385,6 +393,8 @@
         <file>images/desktop_lyric_interface/Lock.png</file>
         <file>images/desktop_lyric_interface/Setting.png</file>
         <file>images/desktop_lyric_interface/Close.png</file>
+        <file>images/desktop_lyric_interface/FontIncrease.png</file>
+        <file>images/desktop_lyric_interface/FontDecrease.png</file>
         <file>images/color_picker/brightness.png</file>
         <file>images/color_picker/saturation_black.png</file>
         <file>images/color_picker/saturation_white.png</file>

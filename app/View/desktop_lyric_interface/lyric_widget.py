@@ -92,7 +92,7 @@ class LyricWidget(QWidget):
         subPath.addRect(rect)
         return path.intersected(subPath)
 
-    def setLyric(self, lyric: list, duration: int):
+    def setLyric(self, lyric: list, duration: int, update=False):
         """ set lyric
 
         Parameters
@@ -102,6 +102,9 @@ class LyricWidget(QWidget):
 
         duration: int
             lyric duration in milliseconds
+
+        update: bool
+            update immediately or not
         """
         self.lyric = lyric or [""]
         self.duration = max(duration, 1)
@@ -126,19 +129,20 @@ class LyricWidget(QWidget):
         # start foreground color animation
         self.__setAnimation(self.originMaskWidthAni, 0, w)
 
-        if not self.hasTranslation():
-            return
+        if self.hasTranslation():
+            fontMetrics = QFontMetrics(self.translationFont)
+            w = fontMetrics.width(lyric[1])
+            if w > self.width():
+                x = self.width() - w
+                self.__setAnimation(self.translationTextXAni, 0, x)
+            else:
+                self.__translationTextX = self.__getLyricX(w)
+                self.translationTextXAni.setEndValue(None)
 
-        fontMetrics = QFontMetrics(self.translationFont)
-        w = fontMetrics.width(lyric[1])
-        if w > self.width():
-            x = self.width() - w
-            self.__setAnimation(self.translationTextXAni, 0, x)
-        else:
-            self.__translationTextX = self.__getLyricX(w)
-            self.translationTextXAni.setEndValue(None)
+            self.__setAnimation(self.translationMaskWidthAni, 0, w)
 
-        self.__setAnimation(self.translationMaskWidthAni, 0, w)
+        if update:
+            self.update()
 
     def __getLyricX(self, w: float):
         """ get the x coordinate of lyric """

@@ -79,6 +79,8 @@ class ButtonFactory:
     LOCK = 4
     SETTING = 5
     CLOSE = 6
+    FONT_INCREASE = 7
+    FONT_DECREASE = 8
 
     @classmethod
     def create(cls, buttonType: int, parent=None):
@@ -93,6 +95,8 @@ class ButtonFactory:
             ":/images/desktop_lyric_interface/Lock.png",
             ":/images/desktop_lyric_interface/Setting.png",
             ":/images/desktop_lyric_interface/Close.png",
+            ":/images/desktop_lyric_interface/FontIncrease.png",
+            ":/images/desktop_lyric_interface/FontDecrease.png",
         ]
         if not 0 <= buttonType <= len(iconPaths)-1:
             raise ValueError("The buttonType is illegal")

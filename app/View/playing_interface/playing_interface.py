@@ -282,7 +282,7 @@ class PlayingInterface(QWidget):
             return
 
         self.lyricWidget.setLoadingState(True)
-
+        self.desktopLyricInterface.updateWindow(self.playlist[index])
         self.currentIndex = index
         self.songListWidget.setCurrentIndex(index)
         # background cover will be updated by songInfoCardChute's signal
@@ -368,6 +368,7 @@ class PlayingInterface(QWidget):
         """ clear playlist """
         self.playlist.clear()
         self.songListWidget.clearSongCards()
+        self.desktopLyricInterface.clear()
         self.__setGuideLabelHidden(False)
         self.playBar.hide()
         self.currentIndex = 0

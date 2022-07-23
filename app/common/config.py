@@ -34,7 +34,7 @@ class Config(Singleton):
             "lyric.stroke-size": 5,
             "lyric.stroke-color": [0, 0, 0],
             "lyric.font-family": "Microsoft YaHei",
-            "lyric.alignment": "Left"
+            "lyric.alignment": "Center"
         }
         self.__theme = "Light"
         self.__readConfig()
@@ -105,7 +105,7 @@ class Config(Singleton):
     def lyricFont(self, font: QFont):
         dpi = QGuiApplication.primaryScreen().logicalDotsPerInch()
         self["lyric.font-family"] = font.family()
-        self["lyric.font-size"] = int(font.pointSize()*dpi/72)
+        self["lyric.font-size"] = max(15, int(font.pointSize()*dpi/72))
 
 
 config = Config()

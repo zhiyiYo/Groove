@@ -395,6 +395,26 @@
         <source>Loading lyrics...</source>
         <translation>正在加载歌词...</translation>
     </message>
+    <message>
+        <location filename="../../View/desktop_lyric_interface/desktop_lyric_interface.py" line="195" />
+        <source>Close lyric</source>
+        <translation>关闭歌词</translation>
+    </message>
+    <message>
+        <location filename="../../View/desktop_lyric_interface/desktop_lyric_interface.py" line="210" />
+        <source>Unlock lyric</source>
+        <translation>解锁歌词</translation>
+    </message>
+    <message>
+        <location filename="../../View/desktop_lyric_interface/desktop_lyric_interface.py" line="203" />
+        <source>Lock lyric</source>
+        <translation>锁定歌词</translation>
+    </message>
+    <message>
+        <location filename="../../View/desktop_lyric_interface/desktop_lyric_interface.py" line="217" />
+        <source>Setting</source>
+        <translation>设置</translation>
+    </message>
 </context>
 <context>
     <name>Dialog</name>
