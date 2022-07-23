@@ -53,7 +53,7 @@ class GetLyricThread(QThread):
         # cache lyrics to local
         if notEmpty:
             with open(lyricPath, 'w', encoding='utf-8') as f:
-                json.dump(lyric, f)
+                json.dump(lyric, f, ensure_ascii=False, indent=4)
 
         self.crawlFinished.emit(lyric)
 

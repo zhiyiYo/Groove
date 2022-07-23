@@ -52,7 +52,7 @@ class DesktopLyricInterface(FramelessWindow):
 
         self.lyricWidget.move(12, 50)
         self.iconButton.move(12, 12)
-        self.songLabel.move(48, 12)
+        self.songLabel.move(48, 15)
         self.adjustHeight()
         desktop = QApplication.desktop().availableGeometry()
         w, h = desktop.width(), desktop.height()
@@ -158,7 +158,7 @@ class DesktopLyricInterface(FramelessWindow):
         if i < len(self.times)-1:
             duration = 1000*(float(self.times[i+1]) - float(self.times[i]))
         else:
-            duration = 1000*(totalTime - float(self.times[i]))
+            duration = totalTime - 1000*float(self.times[i])
 
         self.lyricWidget.setLyric(self.lyric[self.times[i]], duration)
         self.adjustHeight()

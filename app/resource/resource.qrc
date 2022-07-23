@@ -39,6 +39,8 @@
         <file>qss/light/singer_card_interface.qss</file>
         <file>qss/light/singer_group_box.qss</file>
         <file>qss/light/recent_play_interface.qss</file>
+        <file>qss/light/desktop_lyric_interface.qss</file>
+        <file>qss/light/color_picker.qss</file>
 
         <file>qss/dark/album_card_interface.qss</file>
         <file>qss/dark/album_group_box.qss</file>
@@ -79,7 +81,8 @@
         <file>qss/dark/singer_card_interface.qss</file>
         <file>qss/dark/singer_group_box.qss</file>
         <file>qss/dark/recent_play_interface.qss</file>
-        <file>qss/light/desktop_lyric_interface.qss</file>
+        <file>qss/dark/desktop_lyric_interface.qss</file>
+        <file>qss/dark/color_picker.qss</file>
 
         <file>images/logo/logo.png</file>
         <file>images/logo/logo_30_30.png</file>
@@ -382,6 +385,10 @@
         <file>images/desktop_lyric_interface/Lock.png</file>
         <file>images/desktop_lyric_interface/Setting.png</file>
         <file>images/desktop_lyric_interface/Close.png</file>
+        <file>images/color_picker/brightness.png</file>
+        <file>images/color_picker/saturation_black.png</file>
+        <file>images/color_picker/saturation_white.png</file>
+        <file>images/color_picker/wheel.png</file>
 
         <file>i18n/Groove_zh.qm</file>
     </qresource>

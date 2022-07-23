@@ -1,7 +1,9 @@
 # coding:utf-8
 import sys
+from typing import List
 
 from common.config import config
+from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
 from common.thread.get_meta_data_thread import GetFolderMetaDataThread
 from components.buttons.switch_button import SwitchButton
@@ -10,10 +12,11 @@ from components.widgets.label import ClickableLabel
 from components.widgets.scroll_area import ScrollArea
 from components.widgets.slider import Slider
 from components.widgets.tooltip import StateTooltip, ToastTooltip
+from components.widgets.color_picker import ColorPicker
 from PyQt5.QtCore import QEvent, Qt, QUrl, pyqtSignal
-from PyQt5.QtGui import QDesktopServices
+from PyQt5.QtGui import QDesktopServices, QColor
 from PyQt5.QtWidgets import (QButtonGroup, QFileDialog, QLabel, QLineEdit,
-                             QPushButton, QRadioButton, QWidget)
+                             QPushButton, QRadioButton, QWidget, QFontDialog)
 
 
 class SettingInterface(ScrollArea):
@@ -99,6 +102,39 @@ class SettingInterface(ScrollArea):
         self.autoModeButton = QRadioButton(
             self.tr('Use system setting'), self.scrollwidget)
 
+        # desktop lyric
+        self.desktopLyricLabel = QLabel(
+            self.tr("Desktop Lyric"), self.scrollwidget)
+        self.lyricStyleLabel = QLabel(self.tr("Style"), self.scrollwidget)
+        self.lyricFontLabel = QLabel(self.tr("Font"), self.scrollwidget)
+        self.lyricAlignLabel = QLabel(
+            self.tr("Alignment"), self.scrollwidget)
+        self.lyricFontColorLabel = QLabel(
+            self.tr("Font color"), self.scrollwidget)
+        self.lyricHighlightLabel = QLabel(
+            self.tr("Highlight color"), self.scrollwidget)
+        self.lyricStrokeColorLabel = QLabel(
+            self.tr("Stroke color"), self.scrollwidget)
+        self.lyricStrokeSizeLabel = QLabel(
+            self.tr("Stroke size"), self.scrollwidget)
+        self.lyricFontColorPicker = ColorPicker(
+            config["lyric.font-color"], self.scrollwidget)
+        self.lyricHighlightColorPicker = ColorPicker(
+            config["lyric.highlight-color"], self.scrollwidget)
+        self.lyricStrokeColorPicker = ColorPicker(
+            config["lyric.stroke-color"], self.scrollwidget)
+        self.lyricAlignGroup = QButtonGroup(self)
+        self.lyricCenterAlignButton = QRadioButton(
+            self.tr("Center aligned"), self.scrollwidget)
+        self.lyricLeftAlignButton = QRadioButton(
+            self.tr("Left aligned"), self.scrollwidget)
+        self.lyricRightAlignButton = QRadioButton(
+            self.tr("Right aligned"), self.scrollwidget)
+        self.lyricStrokeSizeSlider = Slider(Qt.Horizontal, self.scrollwidget)
+        self.lyricStrokeSizeValueLabel = QLabel(self.scrollwidget)
+        self.lyricFontButton = QPushButton(
+            self.tr("Choose font"), self.scrollwidget)
+
         # download folder
         self.downloadFolderHintLabel = QLabel('')
         self.downloadFolderButton = QPushButton(
@@ -122,7 +158,7 @@ class SettingInterface(ScrollArea):
         self.downloadFolderLineEdit.resize(313, 42)
         self.downloadFolderLineEdit.setReadOnly(True)
         self.downloadFolderLineEdit.setCursorPosition(0)
-        self.scrollwidget.resize(self.width(), 1580)
+        self.scrollwidget.resize(self.width(), 2100)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setViewportMargins(0, 120, 0, 0)
         self.setWidget(self.scrollwidget)
@@ -146,7 +182,8 @@ class SettingInterface(ScrollArea):
         self.standardQualityButton.setProperty('quality', 'Standard quality')
         self.highQualityButton.setProperty('quality', 'High quality')
         self.superQualityButton.setProperty('quality', 'Super quality')
-        self.__setCheckedOnlineMusicQualityRadioButton()
+        self.__setCheckedRadioButton(
+            "quality", config["online-play-quality"], self.onlinePlayQualityGroup.buttons())
 
         # set MV quality
         self.mvQualityGroup.addButton(self.fullHDButton)
@@ -157,14 +194,16 @@ class SettingInterface(ScrollArea):
         self.hDButton.setProperty('quality', 'HD')
         self.sDButton.setProperty('quality', 'SD')
         self.lDButton.setProperty('quality', 'LD')
-        self.__setCheckedMvQualityRadioButton()
+        self.__setCheckedRadioButton(
+            "quality", config["mv-quality"], self.mvQualityGroup.buttons())
 
         # set the action when closing main window
         self.closeWindowGroup.addButton(self.minimizeToTrayButton)
         self.closeWindowGroup.addButton(self.quitGrooveMusicButton)
         self.minimizeToTrayButton.setProperty('minimize-to-tray', True)
         self.quitGrooveMusicButton.setProperty('minimize-to-tray', False)
-        self.__setCheckedCloseWindowRadioButton()
+        self.__setCheckedRadioButton(
+            "minimize-to-tray", config["minimize-to-tray"], self.closeWindowGroup.buttons())
 
         # set theme mode
         self.modeGroup.addButton(self.lightModeButton)
@@ -173,13 +212,29 @@ class SettingInterface(ScrollArea):
         self.lightModeButton.setProperty('mode', "Light")
         self.darkModeButton.setProperty('mode', "Dark")
         self.autoModeButton.setProperty('mode', "Auto")
-        self.__setCheckedModeRadioButton()
+        self.__setCheckedRadioButton(
+            "mode", config["mode"], self.modeGroup.buttons())
 
         # set slider
         pageSize = self.config['online-music-page-size']
         self.pageSizeSlider.setRange(1, 30)
         self.pageSizeSlider.setValue(pageSize)
+        self.pageSizeSlider.setSingleStep(1)
         self.pageSizeValueLabel.setNum(pageSize)
+
+        # set desktop lyric
+        self.lyricStrokeSizeSlider.setRange(0, 10)
+        self.lyricStrokeSizeSlider.setSingleStep(1)
+        self.lyricStrokeSizeSlider.setValue(config["lyric.stroke-size"])
+        self.lyricStrokeSizeValueLabel.setNum(config["lyric.stroke-size"])
+        self.lyricAlignGroup.addButton(self.lyricCenterAlignButton)
+        self.lyricAlignGroup.addButton(self.lyricLeftAlignButton)
+        self.lyricAlignGroup.addButton(self.lyricRightAlignButton)
+        self.lyricCenterAlignButton.setProperty("align", "Center")
+        self.lyricLeftAlignButton.setProperty("align", "Left")
+        self.lyricRightAlignButton.setProperty("align", "Right")
+        self.__setCheckedRadioButton(
+            "align", config["lyric.alignment"], self.lyricAlignGroup.buttons())
 
         self.__updateMetaDataSwitchButtonEnabled()
 
@@ -242,10 +297,29 @@ class SettingInterface(ScrollArea):
         self.darkModeButton.move(30, 1214)
         self.autoModeButton.move(30, 1254)
 
+        # desktop lyric
+        self.desktopLyricLabel.move(30, 1314)
+        self.lyricStyleLabel.move(30, 1364)
+        self.lyricFontLabel.move(30, 1414)
+        self.lyricFontButton.move(230, 1414)
+        self.lyricFontColorLabel.move(30, 1464)
+        self.lyricFontColorPicker.move(230, 1464)
+        self.lyricHighlightLabel.move(30, 1514)
+        self.lyricHighlightColorPicker.move(230, 1514)
+        self.lyricStrokeColorLabel.move(30, 1564),
+        self.lyricStrokeColorPicker.move(230, 1564)
+        self.lyricStrokeSizeLabel.move(30, 1614)
+        self.lyricStrokeSizeSlider.move(30, 1644)
+        self.lyricStrokeSizeValueLabel.move(230, 1644)
+        self.lyricAlignLabel.move(30, 1684)
+        self.lyricCenterAlignButton.move(30, 1729)
+        self.lyricLeftAlignButton.move(30, 1769)
+        self.lyricRightAlignButton.move(30, 1809)
+
         # download folder
-        self.downloadFolderLabel.move(30, 1314)
-        self.downloadFolderLineEdit.move(30, 1364)
-        self.downloadFolderButton.move(350, 1364)
+        self.downloadFolderLabel.move(30, 1869)
+        self.downloadFolderLineEdit.move(30, 1929)
+        self.downloadFolderButton.move(350, 1929)
 
         # application
         self.appLabel.move(self.width() - 400, 18)
@@ -312,6 +386,9 @@ class SettingInterface(ScrollArea):
         self.modeLabel.setObjectName("titleLabel")
         self.musicInThisPCLabel.setObjectName("titleLabel")
         self.selectMusicFolderLabel.setObjectName("clickableLabel")
+        self.desktopLyricLabel.setObjectName("titleLabel")
+        self.lyricAlignLabel.setObjectName("subTitleLabel")
+        self.lyricStyleLabel.setObjectName("subTitleLabel")
         setStyleSheet(self, 'setting_interface')
 
     def resizeEvent(self, e):
@@ -346,45 +423,10 @@ class SettingInterface(ScrollArea):
         self.__updateMetaDataSwitchButtonEnabled()
         self.selectedMusicFoldersChanged.emit(selectedFolders)
 
-    def __setCheckedOnlineMusicQualityRadioButton(self):
-        """ set checked online music quality radio button """
-        quality = self.config['online-play-quality']
-        if quality == 'Standard quality':
-            self.standardQualityButton.setChecked(True)
-        elif quality == 'High quality':
-            self.highQualityButton.setChecked(True)
-        else:
-            self.superQualityButton.setChecked(True)
-
-    def __setCheckedMvQualityRadioButton(self):
-        """ set checked MV quality radio button """
-        quality = self.config['mv-quality']
-        if quality == 'Full HD':
-            self.fullHDButton.setChecked(True)
-        elif quality == 'HD':
-            self.hDButton.setChecked(True)
-        elif quality == 'SD':
-            self.sDButton.setChecked(True)
-        else:
-            self.lDButton.setChecked(True)
-
-    def __setCheckedCloseWindowRadioButton(self):
-        """ set checked close window radio button """
-        minimize = self.config['minimize-to-tray']
-        if minimize:
-            self.minimizeToTrayButton.setChecked(True)
-        else:
-            self.quitGrooveMusicButton.setChecked(True)
-
-    def __setCheckedModeRadioButton(self):
-        """ set checked theme mode radio button """
-        mode = self.config['mode']
-        if mode == "Light":
-            self.lightModeButton.setChecked(True)
-        elif mode == "Dark":
-            self.darkModeButton.setChecked(True)
-        else:
-            self.autoModeButton.setChecked(True)
+    def __setCheckedRadioButton(self, property: str, value, buttons: List[QRadioButton]):
+        """ set checked radio button """
+        for button in buttons:
+            button.setChecked(button.property(property) == value)
 
     def __onPageSliderValueChanged(self, value: int):
         """ page slider value changed slot """
@@ -436,8 +478,56 @@ class SettingInterface(ScrollArea):
         self.config["enable-acrylic-background"] = isChecked
         self.acrylicEnableChanged.emit(isChecked)
 
+    def __onLyricFontButtonClicked(self):
+        """ desktop lyric font button clicked slot """
+        font, isOk = QFontDialog.getFont(
+            config.lyricFont, self.window(), self.tr("Select Font"))
+        if isOk:
+            config.lyricFont = font
+            signalBus.lyricFontChanged.emit(font)
+
+    def __onLyricAlignmentChanged(self, button: QRadioButton):
+        """ desktop lyric alignment changed slot """
+        config["lyric.alignment"] = button.property("align")
+        signalBus.lyricAlignmentChanged.emit(button.property("align"))
+
+    def __onLyricFontColorChanged(self, color: QColor):
+        """ desktop lyric font color changed slot """
+        config["lyric.font-color"] = [color.red(), color.green(), color.blue()]
+        signalBus.lyricFontColorChanged.emit(color)
+
+    def __onLyricHighlightColorChanged(self, color: QColor):
+        """ desktop lyric highlight color changed slot """
+        config["lyric.highlight-color"] = [color.red(), color.green(),
+                                           color.blue()]
+        signalBus.lyricHighlightColorChanged.emit(color)
+
+    def __onLyricStrokeColorChanged(self, color: QColor):
+        """ desktop lyric stroke color changed slot """
+        config["lyric.stroke-color"] = [color.red(), color.green(),
+                                        color.blue()]
+        signalBus.lyricStrokeColorChanged.emit(color)
+
+    def __onLyricStrokeSizeChanged(self, size: int):
+        """ desktop lyric stroke size changed slot """
+        config["lyric.stroke-size"] = size
+        self.lyricStrokeSizeValueLabel.setNum(size)
+        self.lyricStrokeSizeValueLabel.adjustSize()
+        signalBus.lyricStrokeSizeChanged.emit(size)
+
     def __connectSignalToSlot(self):
         """ connect signal to slot """
+        self.lyricFontButton.clicked.connect(self.__onLyricFontButtonClicked)
+        self.lyricFontColorPicker.colorChanged.connect(
+            self.__onLyricFontColorChanged)
+        self.lyricHighlightColorPicker.colorChanged.connect(
+            self.__onLyricHighlightColorChanged)
+        self.lyricStrokeColorPicker.colorChanged.connect(
+            self.__onLyricStrokeColorChanged)
+        self.lyricStrokeSizeSlider.valueChanged.connect(
+            self.__onLyricStrokeSizeChanged)
+        self.lyricAlignGroup.buttonClicked.connect(
+            self.__onLyricAlignmentChanged)
         self.mvQualityGroup.buttonClicked.connect(self.__onMvQualityChanged)
         self.modeGroup.buttonClicked.connect(self.__onThemeModeChanged)
         self.getMetaDataSwitchButton.checkedChanged.connect(

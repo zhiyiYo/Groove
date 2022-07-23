@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 
 import darkdetect
+from PyQt5.QtGui import QFont, QGuiApplication
 
 from .singleton import Singleton
 
@@ -27,8 +28,8 @@ class Config(Singleton):
             "download-folder": str(Path('download').absolute()).replace("\\", '/'),
             "recent-plays-number": 300,
             "mode": "Light",
-            "lyric.background-color": [255, 255, 255],
-            "lyric.mask-color": [0, 153, 188],
+            "lyric.font-color": [255, 255, 255],
+            "lyric.highlight-color": [0, 153, 188],
             "lyric.font-size": 50,
             "lyric.stroke-size": 5,
             "lyric.stroke-color": [0, 0, 0],
@@ -86,12 +87,25 @@ class Config(Singleton):
         """ save config """
         self.folder.mkdir(parents=True, exist_ok=True)
         with open(self.folder/"config.json", "w", encoding="utf-8") as f:
-            json.dump(self.__config, f)
+            json.dump(self.__config, f, ensure_ascii=False, indent=4)
 
     @property
     def theme(self):
         """ get theme mode, can be `light` or `dark` """
         return self.__theme.lower()
+
+    @property
+    def lyricFont(self):
+        """ get the desktop lyric font """
+        font = QFont(self["lyric.font-family"])
+        font.setPixelSize(self["lyric.font-size"])
+        return font
+
+    @lyricFont.setter
+    def lyricFont(self, font: QFont):
+        dpi = QGuiApplication.primaryScreen().logicalDotsPerInch()
+        self["lyric.font-family"] = font.family()
+        self["lyric.font-size"] = int(font.pointSize()*dpi/72)
 
 
 config = Config()

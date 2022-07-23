@@ -335,6 +335,19 @@
     </message>
 </context>
 <context>
+    <name>ColorPickerPanel</name>
+    <message>
+        <location filename="../../components/widgets/color_picker.py" line="248"/>
+        <source>OK</source>
+        <translation>确定</translation>
+    </message>
+    <message>
+        <location filename="../../components/widgets/color_picker.py" line="249"/>
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+</context>
+<context>
     <name>CreatePlaylistButton</name>
     <message>
         <location filename="../../View/navigation_interface/navigation_button.py" line="279"/>
@@ -1879,6 +1892,86 @@
         <location filename="../../View/setting_interface/setting_interface.py" line="419"/>
         <source>Configuration takes effect after restart</source>
         <translation>配置在重启 Groove 后生效</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="106"/>
+        <source>Desktop Lyric</source>
+        <translation>桌面歌词</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="106"/>
+        <source>Font</source>
+        <translation>字体</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="109"/>
+        <source>Alignment</source>
+        <translation>对齐方式</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="111"/>
+        <source>Font color</source>
+        <translation>背景色</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="113"/>
+        <source>Highlight color</source>
+        <translation>前景色</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="113"/>
+        <source>Stroke color</source>
+        <translation>描边色</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="115"/>
+        <source>Stroke size</source>
+        <translation>描边大小</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="126"/>
+        <source>Center aligned</source>
+        <translation>居中对齐</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="128"/>
+        <source>Left aligned</source>
+        <translation>左对齐</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="130"/>
+        <source>Right aligned</source>
+        <translation>右对齐</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="134"/>
+        <source>Choose font</source>
+        <translation>选择字体</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="135"/>
+        <source>Style</source>
+        <translation>样式</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="482"/>
+        <source>Select Font</source>
+        <translation>选择字体</translation>
+    </message>
+</context>
+<context>
+    <name>QPlatformTheme</name>
+    <message>
+        <source>OK</source>
+        <translation>确认</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <source>Select Font</source>
+        <translation>选择字体</translation>
     </message>
 </context>
 <context>

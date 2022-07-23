@@ -1,0 +1,80 @@
+QWidget {
+  background-color: rgb(17, 34, 49);
+}
+
+QFrame{
+  border-radius: 8px;
+  border: 1px solid rgb(60, 60, 60);
+}
+
+QLabel {
+  border: 0px solid transparent;
+}
+
+QPushButton{
+  margin: 0;
+  border: 0px solid transparent;
+  border-radius: 5px;
+}
+
+QPushButton:hover {
+  border: 2px solid #1dafaf;
+}
+
+#yesButton,
+#cancelButton {
+  background-color: rgb(51, 51, 51);
+  border: transparent;
+}
+
+#yesButton:pressed,
+#cancelButton:pressed {
+  background-color: rgb(102, 102, 102);
+}
+
+#yesButton:hover,
+#cancelButton:hover {
+  background-color: rgb(35, 35, 35);
+}
+
+#saturationIcon {
+  qproperty-icon: url(:/images/color_picker/saturation_white.png);
+  qproperty-iconSize: 25px;
+  border: 2px solid rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  height: 25px;
+  width: 25px;
+  border-radius: 15px;
+}
+
+#brightnessIcon {
+  qproperty-icon: url(:/images/color_picker/brightness.png);
+  qproperty-iconSize: 25px;
+  border: 2px solid rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  height: 25px;
+  width: 25px;
+  border-radius: 15px;
+}
+
+QSlider::groove:horizontal {
+
+  background: white;
+  height: 5px;
+  border-radius: 2px;
+}
+
+QSlider::handle:horizontal {
+  background: #137df7;
+  border: 0px transparent;
+  width: 16px;
+  margin-top: -6px;
+  margin-bottom: -6px;
+  border-radius: 8px;
+}
+
+#mouseDot {
+  background-color: rgba(0, 0, 0, 0);
+  border: 3px solid #1c3f61;
+  border-radius: 15px;
+}

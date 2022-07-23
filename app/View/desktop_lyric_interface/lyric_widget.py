@@ -1,8 +1,9 @@
 # coding:utf-8
 from common.config import config
-from PyQt5.QtCore import (QPointF, QPropertyAnimation, QRectF, Qt,
-                          pyqtProperty, pyqtSignal)
-from PyQt5.QtGui import QColor, QFont, QFontMetrics, QPainter, QPen, QPainterPath
+from common.signal_bus import signalBus
+from PyQt5.QtCore import QPointF, QPropertyAnimation, Qt, pyqtProperty
+from PyQt5.QtGui import (QColor, QFont, QFontMetrics, QPainter, QPainterPath,
+                         QPen)
 from PyQt5.QtWidgets import QWidget
 
 
@@ -27,6 +28,13 @@ class LyricWidget(QWidget):
             self, b'originTextX', self)
         self.translationTextXAni = QPropertyAnimation(
             self, b'translationTextX', self)
+
+        signalBus.lyricAlignmentChanged.connect(self.update)
+        signalBus.lyricFontChanged.connect(self.update)
+        signalBus.lyricFontColorChanged.connect(self.update)
+        signalBus.lyricHighlightColorChanged.connect(self.update)
+        signalBus.lyricStrokeColorChanged.connect(self.update)
+        signalBus.lyricStrokeSizeChanged.connect(self.update)
 
     def paintEvent(self, e):
         if not self.lyric:
@@ -68,12 +76,12 @@ class LyricWidget(QWidget):
         path.addText(QPointF(x, y), font, text)
         painter.strokePath(path, QPen(
             QColor(*config["lyric.stroke-color"]), config["lyric.stroke-size"]))
-        painter.fillPath(path, QColor(*config['lyric.background-color']))
+        painter.fillPath(path, QColor(*config['lyric.font-color']))
 
         # draw foreground text
         painter.fillPath(
             self.__getMaskedLyricPath(path, width),
-            QColor(*config['lyric.mask-color'])
+            QColor(*config['lyric.highlight-color'])
         )
 
     def __getMaskedLyricPath(self, path: QPainterPath, width: float):
@@ -99,6 +107,11 @@ class LyricWidget(QWidget):
         self.duration = max(duration, 1)
         self.__originMaskWidth = 0
         self.__translationMaskWidth = 0
+
+        # stop running animations
+        for ani in self.findChildren(QPropertyAnimation):
+            if ani.state() == ani.Running:
+                ani.stop()
 
         # start scroll animation if text is too long
         fontMetrics = QFontMetrics(self.originFont)
@@ -191,9 +204,7 @@ class LyricWidget(QWidget):
 
     @property
     def originFont(self):
-        font = QFont(config["lyric.font-family"])
-        font.setPixelSize(config["lyric.font-size"])
-        return font
+        return config.lyricFont
 
     @property
     def translationFont(self):

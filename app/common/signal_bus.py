@@ -1,8 +1,9 @@
 # coding:utf-8
 from PyQt5.QtCore import QObject, pyqtSignal
+from PyQt5.QtGui import QColor, QFont
 from PyQt5.QtMultimedia import QMediaPlaylist
 
-from .database.entity import AlbumInfo, SongInfo, SingerInfo
+from .database.entity import AlbumInfo, SingerInfo, SongInfo
 from .singleton import Singleton
 
 
@@ -63,6 +64,13 @@ class SignalBus(Singleton, QObject):
     fullScreenChanged = pyqtSignal(bool)  # 全屏/退出全屏
 
     downloadAvatarFinished = pyqtSignal(str, str)  # 下载了一个头像
+
+    lyricFontChanged = pyqtSignal(QFont)                # 桌面歌词字体改变
+    lyricFontColorChanged = pyqtSignal(QColor)    # 桌面歌词背景色改变
+    lyricHighlightColorChanged = pyqtSignal(QColor)         # 桌面歌词高亮色改变
+    lyricStrokeColorChanged = pyqtSignal(QColor)        # 桌面歌词描边色改变
+    lyricStrokeSizeChanged = pyqtSignal(int)         # 桌面歌词描边大小改变
+    lyricAlignmentChanged = pyqtSignal(str)             # 桌面歌词对齐方式改变
 
 
 signalBus = SignalBus()
