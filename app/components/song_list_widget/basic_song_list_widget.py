@@ -199,12 +199,7 @@ class BasicSongListWidget(ListWidget):
         if not self.songCards:
             return
 
-        if self.currentIndex is not None:
-            self.songCards[self.currentIndex].setSelected(False)
-
-        if self.playingIndex is not None:
-            self.songCards[self.playingIndex].setPlay(False)
-
+        self.cancelState()
         self.currentIndex = index
         self.playingIndex = index
 
@@ -223,7 +218,7 @@ class BasicSongListWidget(ListWidget):
 
     def cancelSelectedState(self):
         """ cancel the selected status """
-        if not self.songCards or self.currentIndex is None:
+        if self.currentIndex is None or len(self.songCards) < self.currentIndex+1:
             return
 
         self.songCards[self.currentIndex].setSelected(False)
@@ -231,7 +226,7 @@ class BasicSongListWidget(ListWidget):
 
     def cancelPlayState(self):
         """ cancel the playback status """
-        if not self.songCards or self.playingIndex is None:
+        if self.playingIndex is None or len(self.songCards) < self.playingIndex+1:
             return
 
         self.songCards[self.playingIndex].setPlay(False)
