@@ -144,7 +144,7 @@ class WanYiLyricParser(LyricParserBase):
 
         lyrics = {}
         for time, v in lyrics_.items():
-            minutes, seconds = time.split(':')
+            minutes, seconds = time.split(':')[:2]
             time = str(float(minutes)*60 + float(seconds))
             lyrics[time] = v
 
@@ -157,6 +157,9 @@ def parse_lyric(lyric) -> Dict[str, List[str]]:
 
     for parser in parsers:
         if parser.can_parse(lyric):
-            return parser.parse(lyric)
+            try:
+                return parser.parse(lyric)
+            except:
+                pass
 
     return LyricParserBase.error_lyric
