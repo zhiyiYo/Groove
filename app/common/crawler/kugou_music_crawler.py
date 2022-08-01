@@ -178,6 +178,7 @@ class KuGouMusicCrawler(CrawlerBase):
         # save audio file
         return self.saveSong(song_info, save_dir, '.mp3', response.content)
 
+    @exceptionHandler('')
     def getLyric(self, key_word: str) -> str:
         song_infos, _ = self.getSongInfos(key_word, page_size=10)
 
