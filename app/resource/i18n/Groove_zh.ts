@@ -825,6 +825,16 @@
         <source>Unable to find a matching online singer.</source>
         <translation>匹配在线歌手失败，请稍后再试。</translation>
     </message>
+    <message>
+        <location filename="../../View/main_window/main_window.py" line="1359"/>
+        <source>Unhandled exception occurred</source>
+        <translation>发生未处理异常</translation>
+    </message>
+    <message>
+        <location filename="../../View/main_window/main_window.py" line="1360"/>
+        <source>The error message has been written to the paste board and log. Do you want to report?</source>
+        <translation>错误信息已写入剪切板和日志，是否立即反馈此 bug？</translation>
+    </message>
 </context>
 <context>
     <name>Menu</name>

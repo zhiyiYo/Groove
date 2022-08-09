@@ -1,5 +1,6 @@
 # coding:utf-8
 import sys
+import traceback
 from typing import List
 
 from PyQt5.QtCore import QIODevice, QSharedMemory, pyqtSignal
@@ -68,3 +69,14 @@ class SingletonApplication(QApplication):
             return
 
         socket.disconnectFromServer()
+
+
+def exception_hook(exception: BaseException, value, tb):
+    """ exception callback function """
+    SingletonApplication.logger.error("Unhandled exception", (exception, value, tb))
+    message = '\n'.join([''.join(traceback.format_tb(tb)),
+                        '{0}: {1}'.format(exception.__name__, value)])
+    signalBus.appErrorSig.emit(message)
+
+
+sys.excepthook = exception_hook

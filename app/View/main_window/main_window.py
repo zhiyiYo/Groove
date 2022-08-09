@@ -697,11 +697,15 @@ class MainWindow(AcrylicWindow):
             self.tr("It's not on this device or somewhere we can stream from.")
         )
 
-    def showMessageBox(self, title: str, content: str):
+    def showMessageBox(self, title: str, content: str, showYesButton=False, yesSlot=None):
         """ show message box """
         w = MessageDialog(title, content, self)
-        w.cancelButton.setText(self.tr('Close'))
-        w.yesButton.hide()
+        w.yesButton.setVisible(showYesButton)
+        if not showYesButton:
+            w.cancelButton.setText(self.tr('Close'))
+        if yesSlot:
+            w.yesSignal.connect(yesSlot)
+
         w.exec()
 
     def onMinimizeToTrayChanged(self, isMinimize: bool):
@@ -1348,6 +1352,17 @@ class MainWindow(AcrylicWindow):
         self.library.load()
         self.myMusicInterface.updateWindow()
 
+    def onAppError(self, message: str):
+        """ app error slot """
+        qApp.clipboard().setText(message)
+        self.showMessageBox(
+            self.tr("Unhandled exception occurred"),
+            self.tr("The error message has been written to the paste board and log. Do you want to report?"),
+            True,
+            lambda: QDesktopServices.openUrl(
+                QUrl('https://github.com/zhiyiYo/Groove/issues'))
+        )
+
     def onAppMessage(self, message: str):
         if message == "show":
             if self.windowState() & Qt.WindowMinimized:
@@ -1422,6 +1437,7 @@ class MainWindow(AcrylicWindow):
         # signal bus signal
         signalBus.showMainWindowSig.connect(self.onShowMainWindow)
         signalBus.appMessageSig.connect(self.onAppMessage)
+        signalBus.appErrorSig.connect(self.onAppError)
 
         signalBus.nextSongSig.connect(self.mediaPlaylist.next)
         signalBus.lastSongSig.connect(self.mediaPlaylist.previous)
