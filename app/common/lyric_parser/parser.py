@@ -53,7 +53,7 @@ class KuWoLyricParser(LyricParserBase):
             if trans:
                 times[i] = times[i-1]
 
-            line = lyric[i]['lineLyric']
+            line = lyric[i]['lineLyric'].replace("&apos;", "'")
 
             if not lyrics.get(times[i]):
                 lyrics[times[i]] = [line]
