@@ -31,18 +31,8 @@ class TooltipButton(QToolButton):
             self.__tooltip.setDarkTheme(self.__darkTooltip)
 
         # update tooltip
-        if self.__tooltip.text != self.toolTip():
-            self.__tooltip.setText(self.toolTip())
-
-        # the tooltip must be moved outside the button area
-        pos = self.mapTo(self.window(), QPoint(0, 0))
-        x = pos.x() + self.width()//2 - self.__tooltip.width()//2
-        y = pos.y() - 2 - self.__tooltip.height()
-
-        # adjust postion to prevent tooltips from appearing outside the window
-        x = min(max(5, x), self.window().width() - self.__tooltip.width() - 5)
-
-        self.__tooltip.move(x, y)
+        self.__tooltip.setText(self.toolTip())
+        self.__tooltip.adjustPos(self.mapTo(self.window(), QPoint()), self.size())
         self.__tooltip.show()
 
     def leaveEvent(self, e):
@@ -91,18 +81,8 @@ class TooltipPushButton(QPushButton):
             self.__tooltip.setDarkTheme(self.__darkTooltip)
 
         # update tooltip
-        if self.__tooltip.text != self.toolTip():
-            self.__tooltip.setText(self.toolTip())
-
-        # the tooltip must be moved outside the button area
-        pos = self.mapTo(self.window(), QPoint(0, 0))
-        x = pos.x() + self.width()//2 - self.__tooltip.width()//2
-        y = pos.y() - 2 - self.__tooltip.height()
-
-        # adjust postion to prevent tooltips from appearing outside the window
-        x = min(max(5, x), self.window().width() - self.__tooltip.width() - 5)
-
-        self.__tooltip.move(x, y)
+        self.__tooltip.setText(self.toolTip())
+        self.__tooltip.adjustPos(self.mapTo(self.window(), QPoint()), self.size())
         self.__tooltip.show()
 
     def leaveEvent(self, e):

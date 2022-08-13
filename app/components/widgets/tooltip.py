@@ -1,7 +1,7 @@
 # coding:utf-8
 from common.style_sheet import setStyleSheet
-from PyQt5.QtCore import (QEasingCurve, QPoint, QPropertyAnimation, Qt, QTimer,
-                          pyqtSignal)
+from PyQt5.QtCore import (QEasingCurve, QPoint, QPropertyAnimation, QSize, Qt,
+                          QTimer, pyqtSignal)
 from PyQt5.QtGui import QColor, QPainter, QPixmap
 from PyQt5.QtWidgets import (QApplication, QFrame, QGraphicsDropShadowEffect,
                              QGraphicsOpacityEffect, QHBoxLayout, QLabel,
@@ -12,7 +12,9 @@ class Tooltip(QFrame):
 
     def __init__(self, text: str, parent=None):
         super().__init__(parent=parent)
-        self.text = text
+        self.__text = text
+        self.__duration = 1000
+        self.timer = QTimer(self)
         self.hBox = QHBoxLayout(self)
         self.label = QLabel(text, self)
         self.ani = QPropertyAnimation(self, b'windowOpacity', self)
@@ -28,16 +30,29 @@ class Tooltip(QFrame):
         self.shadowEffect.setOffset(0, 5)
         self.setGraphicsEffect(self.shadowEffect)
 
+        self.timer.setSingleShot(True)
+        self.timer.timeout.connect(self.hide)
+
         # set style
         self.setDarkTheme(False)
         self.__setQss()
 
+    def text(self):
+        return self.__text
+
     def setText(self, text: str):
         """ set text on tooltip """
-        self.text = text
+        if text == self.__text:
+            return
+
+        self.__text = text
         self.label.setText(text)
         self.label.adjustSize()
         self.adjustSize()
+
+    def setDuration(self, duration: int):
+        """ set tooltip duration in milliseconds """
+        self.__duration = abs(duration)
 
     def __setQss(self):
         """ set style sheet """
@@ -51,6 +66,37 @@ class Tooltip(QFrame):
         self.setProperty('dark', dark)
         self.label.setProperty('dark', dark)
         self.setStyle(QApplication.style())
+
+    def showEvent(self, e):
+        self.timer.stop()
+        self.timer.start(self.__duration)
+        super().showEvent(e)
+
+    def hideEvent(self, e):
+        self.timer.stop()
+        super().hideEvent(e)
+
+    def adjustPos(self, pos: QPoint, size: QSize):
+        """ adjust the position of tooltip relative to widget
+
+        Parameters
+        ----------
+        pos: QPoint
+            the position of widget in main window
+
+        size: QSize
+            size of widget
+        """
+        x = pos.x() + size.width()//2 - self.width()//2
+        y = pos.y() - self.height() -2
+
+        # adjust postion to prevent tooltips from appearing outside the window
+        w = self.window()
+        x = min(max(5, x), w.width() - self.width() - 5)
+        y = min(max(5, y), w.height() - self.height() - 5)
+
+        self.move(x, y)
+
 
 
 class StateTooltip(QWidget):
