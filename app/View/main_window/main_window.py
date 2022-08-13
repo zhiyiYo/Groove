@@ -420,10 +420,14 @@ class MainWindow(AcrylicWindow):
             # don't modify the following code
             self.mediaPlaylist.setCurrentIndex(index)
 
-        duration = self.mediaPlaylist.getCurrentSong().duration or 0
-        self.setDuration(duration*1000)
+        duration = self.mediaPlaylist.getCurrentSong().duration*1000 or 0
+        self.setDuration(duration)
         self.updateWindow(index)
         self.pause()
+
+        # set the playback position
+        pos = 0 if config["position"] > duration else config["position"]
+        self.player.setPosition(max(0, pos))
 
     def initPlayBar(self):
         """ initialize play bar """
@@ -1242,6 +1246,7 @@ class MainWindow(AcrylicWindow):
         """ exit main window """
         config.update({
             "volume": self.playBar.volumeSlider.value(),
+            "position": self.player.position(),
             "playBar-color": list(self.playBar.getColor().getRgb()[:3])
         })
         self.mediaPlaylist.save()

@@ -24,6 +24,7 @@ class Config(Singleton):
             "enable-acrylic-background": False,
             "minimize-to-tray": True,
             "volume": 30,
+            "position": 0,  # 播放器位置
             "playBar-color": [34, 92, 127],
             "download-folder": str(Path('download').absolute()).replace("\\", '/'),
             "recent-plays-number": 300,
