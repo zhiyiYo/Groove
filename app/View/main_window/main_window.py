@@ -420,7 +420,8 @@ class MainWindow(AcrylicWindow):
             # don't modify the following code
             self.mediaPlaylist.setCurrentIndex(index)
 
-        duration = self.mediaPlaylist.getCurrentSong().duration*1000 or 0
+        duration = self.mediaPlaylist.getCurrentSong().duration or 0
+        duration *= 1000
         self.setDuration(duration)
         self.updateWindow(index)
         self.pause()
