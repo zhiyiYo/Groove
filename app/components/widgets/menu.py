@@ -1,12 +1,68 @@
 # coding:utf-8
-from common.config import config
-from common.icon import Icon
+from common.icon import Icon, getIconColor
 from common.os_utils import getPlaylistNames
 from common.style_sheet import setStyleSheet
 from common.window_effect import WindowEffect
-from PyQt5.QtCore import (QEasingCurve, QEvent, QFile, QPropertyAnimation,
-                          QRect, Qt, pyqtSignal)
+from PyQt5.QtCore import (QEasingCurve, QEvent, QPropertyAnimation, QRect, Qt,
+                          pyqtSignal)
 from PyQt5.QtWidgets import QAction, QApplication, QMenu
+
+
+class MenuIconFactory:
+    """ Menu icon factory """
+
+    ADD = 0
+    ALBUM = 1
+    CANCEL = 2
+    CHEVRON_RIGHT = 3
+    CLEAR = 4
+    CONTACT = 5
+    COPY = 6
+    CUT = 7
+    FULL_SCREEN = 8
+    PASTE = 9
+    PLAYING = 10
+    PLAYLIST = 11
+    LYRIC = 12
+    MOVIE = 13
+    BULLSEYE = 14
+    LOCK = 15
+    UNLOCK = 16
+    CLOSE = 17
+    SETTINGS = 18
+
+    @classmethod
+    def create(cls, iconType: int):
+        """ create icon """
+        c = getIconColor()
+        iconMap = {
+            cls.ADD: f":/images/menu/Add_{c}.png",
+            cls.ALBUM: f":/images/menu/Album_{c}.png",
+            cls.CANCEL: f":/images/menu/Cancel_{c}.png",
+            cls.CHEVRON_RIGHT: f":/images/menu/ChevronRight_{c}.png",
+            cls.CLEAR: f":/images/menu/Clear_{c}.png",
+            cls.CONTACT: f":/images/menu/Contact_{c}.png",
+            cls.COPY: f":/images/menu/Copy_{c}.png",
+            cls.CUT: f":/images/menu/Cut_{c}.png",
+            cls.FULL_SCREEN: f":/images/menu/FullScreen_{c}.png",
+            cls.PASTE: f":/images/menu/Paste_{c}.png",
+            cls.PLAYING: f":/images/menu/Playing_{c}.png",
+            cls.PLAYLIST: f":/images/menu/Playlist_{c}.png",
+            cls.LYRIC: f":/images/menu/Lyric_{c}.png",
+            cls.MOVIE: f":/images/menu/Movie_{c}.png",
+            cls.BULLSEYE: f":/images/menu/Bullseye_{c}.png",
+            cls.LOCK: f":/images/menu/Lock_{c}.png",
+            cls.UNLOCK: f":/images/menu/Unlock_{c}.png",
+            cls.CLOSE: f":/images/menu/Close_{c}.png",
+            cls.SETTINGS: f":/images/menu/Settings_{c}.png",
+        }
+        if iconType not in iconMap:
+            raise ValueError(f"The icon type `{iconType}` is illegal.")
+
+        return Icon(iconMap[iconType])
+
+
+MIF = MenuIconFactory
 
 
 class AeroMenu(QMenu):
@@ -66,16 +122,15 @@ class AddToMenu(DWMMenu):
 
     def createActions(self):
         """ create actions """
-        color = "white" if config.theme == 'dark' else 'black'
         self.playingAct = QAction(
-            Icon(f":/images/menu/Playing_{color}.png"), self.tr("Now playing"), self)
+            MIF.create(MIF.PLAYING), self.tr("Now playing"), self)
         self.newPlaylistAct = QAction(
-            Icon(f":/images/menu/Add_{color}.png"), self.tr("New playlist"), self)
+            MIF.create(MIF.ADD), self.tr("New playlist"), self)
 
         # create actions according to playlists
         names = getPlaylistNames()
         self.playlistNameActs = [
-            QAction(Icon(f":/images/menu/Album_{color}.png"), i, self) for i in names]
+            QAction(MIF.create(MIF.ALBUM), i, self) for i in names]
         self.action_list = [self.playingAct,
                             self.newPlaylistAct] + self.playlistNameActs
         self.addAction(self.playingAct)
@@ -124,30 +179,29 @@ class LineEditMenu(DWMMenu):
         self.setQss()
 
     def createActions(self):
-        color = "white" if config.theme == 'dark' else 'black'
         self.cutAct = QAction(
-            Icon(f":/images/menu/Cut_{color}.png"),
+            MIF.create(MIF.CUT),
             self.tr("Cut"),
             self,
             shortcut="Ctrl+X",
             triggered=self.parent().cut,
         )
         self.copyAct = QAction(
-            Icon(f":/images/menu/Copy_{color}.png"),
+            MIF.create(MIF.COPY),
             self.tr("Copy"),
             self,
             shortcut="Ctrl+C",
             triggered=self.parent().copy,
         )
         self.pasteAct = QAction(
-            Icon(f":/images/menu/Paste_{color}.png"),
+            MIF.create(MIF.PASTE),
             self.tr("Paste"),
             self,
             shortcut="Ctrl+V",
             triggered=self.parent().paste,
         )
         self.cancelAct = QAction(
-            Icon(f":/images/menu/Cancel_{color}.png"),
+            MIF.create(MIF.CANCEL),
             self.tr("Cancel"),
             self,
             shortcut="Ctrl+Z",
@@ -228,15 +282,14 @@ class PlayBarMoreActionsMenu(MoreActionsMenu):
     """ Play bar more actions menu """
 
     def _createActions(self):
-        color = "white" if config.theme == 'dark' else 'black'
         self.savePlayListAct = QAction(
-            Icon(f":/images/menu/Add_{color}.png"), self.tr("Save as a playlist"), self)
+            MIF.create(MIF.ADD), self.tr("Save as a playlist"), self)
         self.clearPlayListAct = QAction(
-            Icon(f":/images/menu/Clear_{color}.png"), self.tr('Clear now playing'), self)
+            MIF.create(MIF.CLEAR), self.tr('Clear now playing'), self)
         self.showPlayListAct = QAction(
-            Icon(f":/images/menu/Playlist_{color}.png"), self.tr("Show now playing list"), self)
+            MIF.create(MIF.PLAYLIST), self.tr("Show now playing list"), self)
         self.fullScreenAct = QAction(
-            Icon(f":/images/menu/FullScreen_{color}.png"), self.tr("Go full screen"), self)
+            MIF.create(MIF.FULL_SCREEN), self.tr("Go full screen"), self)
         self.action_list = [self.showPlayListAct, self.fullScreenAct,
                             self.savePlayListAct, self.clearPlayListAct]
         self.addActions(self.action_list)
@@ -263,17 +316,16 @@ class PlayingInterfaceMoreActionsMenu(MoreActionsMenu):
         self.lyricVisibleChanged.emit(not isVisible)
 
     def _createActions(self):
-        color = "white" if config.theme == 'dark' else 'black'
         self.savePlayListAct = QAction(
-            Icon(f":/images/menu/Add_{color}.png"), self.tr("Save as a playlist"), self)
+            MIF.create(MIF.ADD), self.tr("Save as a playlist"), self)
         self.clearPlayListAct = QAction(
-            Icon(f":/images/menu/Clear_{color}.png"), self.tr('Clear now playing'), self)
+            MIF.create(MIF.CLEAR), self.tr('Clear now playing'), self)
         self.locateAct = QAction(
-            Icon(f':/images/menu/Bullseye_{color}.png'), self.tr('Locate current song'), self)
+            MIF.create(MIF.BULLSEYE), self.tr('Locate current song'), self)
         self.lyricAct = QAction(
-            Icon(f':/images/menu/Lyric_{color}.png'), self.tr('Hide lyric'), self)
+            MIF.create(MIF.LYRIC), self.tr('Hide lyric'), self)
         self.movieAct = QAction(
-            Icon(f':/images/menu/Movie_{color}.png'), self.tr('Watch MV'), self)
+            MIF.create(MIF.MOVIE), self.tr('Watch MV'), self)
         self.action_list = [
             self.savePlayListAct,
             self.clearPlayListAct,

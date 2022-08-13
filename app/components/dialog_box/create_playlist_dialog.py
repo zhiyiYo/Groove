@@ -2,7 +2,7 @@
 from common.database.entity import Playlist
 from common.library import Library
 from common.style_sheet import setStyleSheet
-from common.config import config
+from common.icon import getIconColor
 from components.buttons.three_state_button import ThreeStateButton
 from components.dialog_box.mask_dialog_base import MaskDialogBase
 from components.widgets.label import ClickableLabel, PixmapLabel, PlaylistLabel
@@ -106,7 +106,7 @@ class LineEdit(QLineEdit):
 
     def __init__(self, text="", parent=None):
         super().__init__(text, parent)
-        self.color = 'white' if config.theme == 'dark' else 'black'
+        self.color = getIconColor()
         iconPaths = {
             "normal": f":/images/create_playlist_dialog/clear_{self.color}_normal_50_50.png",
             "hover": ":/images/create_playlist_dialog/clear_hover_50_50.png",

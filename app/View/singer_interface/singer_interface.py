@@ -2,7 +2,7 @@
 import os
 from pathlib import Path
 
-from common.config import config
+from common.icon import getIconColor
 from common.crawler import KuWoMusicCrawler
 from common.database.entity import SingerInfo
 from common.library import Library
@@ -15,7 +15,7 @@ from components.album_card import (AlbumBlurBackground, AlbumCardType,
 from components.buttons.three_state_button import ThreeStateButton
 from components.selection_mode_interface import (AlbumSelectionModeInterface,
                                                  SelectionModeBarType)
-from PyQt5.QtCore import QFile, QMargins, QPoint
+from PyQt5.QtCore import QMargins, QPoint
 from PyQt5.QtWidgets import QLabel
 
 from .singer_info_bar import SingerInfoBar
@@ -55,7 +55,7 @@ class SingerInterface(AlbumSelectionModeInterface):
         self.albumBlurBackground = AlbumBlurBackground(self.scrollWidget)
         self.inYourMusicLabel = QLabel(
             self.tr('In your music'), self.scrollWidget)
-        c = 'white' if config.theme == 'dark' else 'black'
+        c = getIconColor()
         self.playButton = ThreeStateButton(
             {
                 "normal": f":/images/singer_interface/Play_{c}_normal.png",

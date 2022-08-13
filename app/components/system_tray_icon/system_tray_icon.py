@@ -1,5 +1,5 @@
 # coding:utf-8
-from common.config import config
+from common.icon import getIconColor
 from common.database.entity import SongInfo
 from common.icon import Icon
 from common.signal_bus import signalBus
@@ -45,7 +45,7 @@ class SystemTrayIcon(QSystemTrayIcon):
             return
 
         self.isPlay = isPlay
-        c = 'white' if config.theme == 'dark' else 'black'
+        c = getIconColor()
         if isPlay:
             self.menu.playAct.setIcon(Icon(f':/images/system_tray/Pause_{c}.png'))
             self.menu.playAct.setText(self.tr('Pause'))
@@ -83,7 +83,7 @@ class SystemTrayMenu(DWMMenu):
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        c = 'white' if config.theme == 'dark' else 'black'
+        c = getIconColor()
         self.songAct = QAction(
             Icon(f':/images/system_tray/Music_{c}.png'), self.tr('No songs are playing'), self)
         self.playAct = QAction(

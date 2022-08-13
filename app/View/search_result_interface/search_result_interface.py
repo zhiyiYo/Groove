@@ -2,6 +2,7 @@
 from math import ceil
 
 from common.config import config
+from common.icon import getIconColor
 from common.crawler import KuWoMusicCrawler
 from common.database.entity import SongInfo
 from common.library import Library
@@ -85,9 +86,8 @@ class SearchResultInterface(ScrollArea):
         self.setWidget(self.scrollWidget)
         self.setViewportMargins(0, 115, 0, 0)
         self.__setQss()
-        c = 'white' if config.theme == 'dark' else 'black'
         self.searchLabel.setPixmap(
-            QPixmap(f":/images/search_result_interface/Search_{c}.png"))
+            QPixmap(f":/images/search_result_interface/Search_{getIconColor()}.png"))
         self.__setHintsLabelVisible(False)
         self.titleLabel.move(30, 55)
         self.titleLabel.raise_()

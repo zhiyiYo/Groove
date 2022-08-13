@@ -5,12 +5,11 @@ from typing import Dict, List
 
 from common.config import config
 from common.database.entity import SongInfo
-from common.icon import Icon
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
 from common.utils import startSystemMove
 from components.frameless_window import FramelessWindow
-from components.widgets.menu import DWMMenu
+from components.widgets.menu import DWMMenu, MIF
 from PyQt5.QtCore import QEasingCurve, QPoint, QPropertyAnimation, Qt
 from PyQt5.QtWidgets import (QAction, QApplication, QFrame,
                              QGraphicsOpacityEffect, QLabel)
@@ -193,9 +192,8 @@ class DesktopLyricInterface(FramelessWindow):
         """ show context menu """
         menu = DWMMenu(parent=self)
         menu.setObjectName("deskLyricMenu")
-        c = "white" if config.theme == "dark" else "black"
         menu.addAction(QAction(
-            Icon(f":/images/menu/Close_{c}.png"),
+            MIF.create(MIF.CLOSE),
             self.tr("Close lyric"),
             parent=self,
             triggered=self.closeButton.click
@@ -203,21 +201,21 @@ class DesktopLyricInterface(FramelessWindow):
 
         if not self.isLocked:
             menu.addAction(QAction(
-                Icon(f":/images/menu/Lock_{c}.png"),
+                MIF.create(MIF.LOCK),
                 self.tr("Lock lyric"),
                 parent=self,
                 triggered=lambda: self.setLocked(True)
             ))
         else:
             menu.addAction(QAction(
-                Icon(f":/images/menu/Unlock_{c}.png"),
+                MIF.create(MIF.UNLOCK),
                 self.tr("Unlock lyric"),
                 parent=self,
                 triggered=lambda: self.setLocked(False)
             ))
 
         menu.addAction(QAction(
-            Icon(f":/images/menu/Settings_{c}.png"),
+            MIF.create(MIF.SETTINGS),
             self.tr("Setting"),
             parent=self,
             triggered=self.__onSettingButtonClicked

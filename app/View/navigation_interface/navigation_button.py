@@ -1,10 +1,48 @@
 # coding:utf-8
 from common.config import config
+from common.icon import getIconColor
 from PyQt5.QtCore import QPoint, Qt
-from PyQt5.QtGui import QBrush, QColor, QPainter, QPen, QPolygon, QPixmap
+from PyQt5.QtGui import QBrush, QColor, QPainter, QPolygon, QPixmap
 from PyQt5.QtWidgets import QPushButton
 
 from common.get_pressed_pos import getPressedPos
+
+
+class NavigationIconFactory:
+    """ Navigation icon factory """
+
+    ADD = 0
+    ALBUM = 1
+    GLOBAL_NAVIGATION = 2
+    MUSIC_IN_COLLECTION = 3
+    PLAYING = 4
+    PLAYLIST = 5
+    RECENT = 6
+    SEARCH = 7
+    SETTINGS = 8
+
+    @classmethod
+    def create(cls, iconType: int):
+        """ create icon """
+        c = getIconColor()
+        iconMap = {
+            cls.ADD: f":/images/navigation_interface/Add_{c}.png",
+            cls.ALBUM: f":/images/navigation_interface/Album_{c}.png",
+            cls.GLOBAL_NAVIGATION: f":/images/navigation_interface/GlobalNavButton_{c}.png",
+            cls.MUSIC_IN_COLLECTION: f":/images/navigation_interface/MusicInCollection_{c}.png",
+            cls.PLAYING: f":/images/navigation_interface/Playing_{c}.png",
+            cls.PLAYLIST: f":/images/navigation_interface/Playlist_{c}.png",
+            cls.RECENT: f":/images/navigation_interface/Recent_{c}.png",
+            cls.SEARCH: f":/images/navigation_interface/Search_{c}.png",
+            cls.SETTINGS: f":/images/navigation_interface/Settings_{c}.png",
+        }
+        if iconType not in iconMap:
+            raise ValueError(f"The icon type `{iconType}` is illegal.")
+
+        return iconMap[iconType]
+
+
+NIF = NavigationIconFactory
 
 
 class NavigationButton(QPushButton):
@@ -222,7 +260,8 @@ class PushButton(NavigationButton):
     def drawTextIcon(self, painter, image, shearX=0, shearY=0, iconX=0, iconY=0, textX=60, textY=20):
         """ draw text and icon """
         painter.shear(shearX, shearY)
-        painter.drawPixmap(iconX, iconY+1, image.width(), image.height(), image)
+        painter.drawPixmap(iconX, iconY+1, image.width(),
+                           image.height(), image)
 
         if not self.text():
             return
@@ -252,10 +291,8 @@ class CreatePlaylistButton(NavigationButton):
     """ Create playlist button """
 
     def __init__(self, parent):
-        color = "white" if config.theme == 'dark' else 'black'
-        self.iconPath = f":/images/navigation_interface/Add_{color}.png"
+        self.iconPath = NIF.create(NIF.ADD)
         super().__init__(self.iconPath, parent=parent)
-        self.setToolTip(self.tr('Create playlist'))
 
     def paintEvent(self, e):
         """ paint icon """

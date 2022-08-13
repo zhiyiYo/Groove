@@ -1,5 +1,6 @@
 # coding:utf-8
 from common.config import config
+from common.icon import getIconColor
 from components.widgets.label import PixmapLabel
 from PyQt5.QtCore import QEvent, QSize, Qt
 from PyQt5.QtGui import QFont, QFontMetrics, QPainter, QPixmap
@@ -55,7 +56,7 @@ class ButtonGroup(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        color = 'white' if config.theme == 'dark' else 'black'
+        color = getIconColor()
         self.playButton = ToolButton(
             {
                 "notSelected-notPlay": f":/images/song_tab_interface/Play_{color}.png",
@@ -313,9 +314,8 @@ class PlaylistSongNameCard(SongNameCard):
 
     def __init__(self, songName, parent):
         super().__init__(songName, parent=parent)
-        c = "white" if config.theme == 'dark' else 'black'
         self.addToButton.setIconPaths({
-            "notSelected-notPlay": f":/images/playlist_interface/Delete_{c}.png",
+            "notSelected-notPlay": f":/images/playlist_interface/Delete_{getIconColor()}.png",
             "notSelected-play": ":/images/playlist_interface/Delete_green.png",
             "selected": ":/images/playlist_interface/Delete_white.png",
         })
@@ -349,9 +349,8 @@ class OnlineSongNameCard(SongNameCard):
         self.playingLabel.move(15, 22)
         self.checkBox.setFixedWidth(0)
         self.checkBox.lower()
-        c = "white" if config.theme == 'dark' else 'black'
         self.addToButton.setIconPaths({
-            "notSelected-notPlay": f":/images/search_result_interface/Download_{c}.png",
+            "notSelected-notPlay": f":/images/search_result_interface/Download_{getIconColor()}.png",
             "notSelected-play": ":/images/search_result_interface/Download_green.png",
             "selected": ":/images/search_result_interface/Download_white.png",
         })

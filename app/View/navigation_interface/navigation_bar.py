@@ -1,9 +1,8 @@
 # coding:utf-8
-from common.config import config
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QVBoxLayout
 
-from .navigation_button import CreatePlaylistButton, ToolButton
+from .navigation_button import CreatePlaylistButton, ToolButton, NIF
 from .navigation_widget_base import NavigationWidgetBase
 
 
@@ -18,22 +17,17 @@ class NavigationBar(NavigationWidgetBase):
 
     def __createButtons(self):
         """create buttons """
-        color = "white" if config.theme == 'dark' else 'black'
         self.showMenuButton = ToolButton(
-            f':/images/navigation_interface/GlobalNavButton_{color}.png', parent=self)
-        self.searchButton = ToolButton(
-            f':/images/navigation_interface/Search_{color}.png', (60, 62), self)
-        self.myMusicButton = ToolButton(
-            f':/images/navigation_interface/MusicInCollection_{color}.png', (60, 62), self)
-        self.historyButton = ToolButton(
-            f':/images/navigation_interface/Recent_{color}.png', (60, 62), self)
+            NIF.create(NIF.GLOBAL_NAVIGATION), parent=self)
+        self.searchButton = ToolButton(NIF.create(NIF.SEARCH), (60, 62), self)
+        self.myMusicButton = ToolButton(NIF.create(
+            NIF.MUSIC_IN_COLLECTION), (60, 62), self)
+        self.historyButton = ToolButton(NIF.create(NIF.RECENT), (60, 62), self)
         self.playingButton = ToolButton(
-            f':/images/navigation_interface/Playing_{color}.png', (60, 62), self)
-        self.playlistButton = ToolButton(
-            f':/images/navigation_interface/Playlist_{color}.png', parent=self)
+            NIF.create(NIF.PLAYING), (60, 62), self)
+        self.playlistButton = ToolButton(NIF.create(NIF.PLAYLIST), parent=self)
         self.createPlaylistButton = CreatePlaylistButton(self)
-        self.settingButton = ToolButton(
-            f':/images/navigation_interface/Settings_{color}.png', parent=self)
+        self.settingButton = ToolButton(NIF.create(NIF.SETTINGS), parent=self)
 
         # selected button
         self.currentButton = self.myMusicButton

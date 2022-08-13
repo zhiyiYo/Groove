@@ -1,6 +1,5 @@
 # coding:utf-8
-from common.config import config
-from common.icon import Icon
+from common.icon import Icon, getIconColor
 from PyQt5.QtCore import QEvent, QSize, Qt
 from PyQt5.QtGui import QPainter, QPixmap
 from PyQt5.QtWidgets import QPushButton, QToolButton
@@ -104,7 +103,7 @@ class RandomPlayAllButton(ThreeStatePushButton):
     """ Random play all button """
 
     def __init__(self, parent=None):
-        color = 'white' if config.theme == 'dark' else 'black'
+        color = getIconColor()
         iconPaths = {
             "normal": f":/images/random_play_all/Shuffle_{color}_normal.png",
             "hover": f":/images/random_play_all/Shuffle_{color}_hover.png",

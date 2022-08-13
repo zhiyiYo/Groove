@@ -1,7 +1,8 @@
 # coding:utf-8
+from common.icon import getIconColor
 from common.config import config
 from PyQt5.QtCore import QEvent, QObject, QRect, Qt, pyqtSignal
-from PyQt5.QtGui import QBrush, QColor, QPainter, QPen, QPixmap
+from PyQt5.QtGui import QColor, QPainter, QPixmap
 from PyQt5.QtWidgets import QPushButton
 
 
@@ -171,7 +172,7 @@ class ButtonFactory(QObject):
 
     def create(self, buttonType: int) -> Button:
         """ create a button """
-        c = 'white' if config.theme == 'dark' else 'black'
+        c = getIconColor()
         if buttonType == self.CANCEL:
             button = Button(
                 f":/images/selection_mode_bar/Cancel_{c}.png", self.tr("Cancel"), objectName='cancelButton')

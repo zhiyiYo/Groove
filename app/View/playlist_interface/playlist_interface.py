@@ -1,7 +1,7 @@
 # coding:utf-8
 from typing import List
 
-from common.config import config
+from common.icon import getIconColor
 from common.database.entity import Playlist, SongInfo
 from common.library import Library
 from common.os_utils import getCoverPath
@@ -49,7 +49,7 @@ class PlaylistInterface(SongSelectionModeInterface):
 
         self.playlistInfoBar = PlaylistInfoBar(self.playlist, self)
         self.noMusicLabel = QLabel(self.tr("No music in playlist?"), self)
-        c = 'white' if config.theme == 'dark' else 'black'
+        c = getIconColor()
         self.addMusicButton = ThreeStatePushButton(
             {
                 "normal": f":/images/playlist_interface/album_{c}_normal.png",

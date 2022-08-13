@@ -1,5 +1,5 @@
 # coding:utf-8
-from common.config import config
+from common.icon import getIconColor
 from common.library import Library
 from common.style_sheet import setStyleSheet
 from components.buttons.three_state_button import ThreeStateButton
@@ -102,7 +102,7 @@ class LineEdit(QLineEdit):
 
     def __init__(self, text="", parent=None):
         super().__init__(text, parent)
-        self.color = 'white' if config.theme == 'dark' else 'black'
+        self.color = getIconColor()
         iconPaths = {
             "normal": f":/images/create_playlist_dialog/clear_{self.color}_normal_50_50.png",
             "hover": ":/images/create_playlist_dialog/clear_hover_50_50.png",

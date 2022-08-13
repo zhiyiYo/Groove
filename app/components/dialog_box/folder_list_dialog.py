@@ -2,6 +2,7 @@
 import os
 
 from common.config import config
+from common.icon import getIconColor
 from common.style_sheet import setStyleSheet
 from components.buttons.perspective_button import PerspectivePushButton
 from components.widgets.scroll_area import ScrollArea
@@ -241,7 +242,7 @@ class FolderCard(ClickableWindow):
         super().__init__(parent)
         self.folderPath = folderPath
         self.folderName = os.path.basename(folderPath)
-        c = 'white' if config.theme == 'dark' else 'black'
+        c = getIconColor()
         self.__closeIcon = QPixmap(f":/images/setting_interface/Close_{c}.png")
 
     def paintEvent(self, e):
@@ -283,7 +284,7 @@ class AddFolderCard(ClickableWindow):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        c = 'white' if config.theme == 'dark' else 'black'
+        c = getIconColor()
         self.__iconPix = QPixmap(f":/images/setting_interface/Add_{c}.png")
 
     def paintEvent(self, e):

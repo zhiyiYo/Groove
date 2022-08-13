@@ -1,5 +1,5 @@
 # coding:utf-8
-from common.config import config
+from common.icon import getIconColor
 from common.database.entity import Playlist
 from common.library import Library
 from common.style_sheet import setStyleSheet
@@ -40,7 +40,7 @@ class PlaylistCardInterface(PlaylistSelectionModeInterface):
         self.playlistLabel = QLabel(self.tr("Playlist"), self)
         self.sortModeLabel = QLabel(self.tr("Sort by:"), self)
         self.sortModeButton = QPushButton(self.tr("Date modified"), self)
-        c = "white" if config.theme == 'dark' else 'black'
+        c = getIconColor()
         self.createPlaylistButton = ThreeStatePushButton(
             {
                 "normal": f":/images/playlist_card_interface/Add_{c}_normal.png",
