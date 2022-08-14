@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 
 from common.database.entity import SongInfo
-from common.crawler import KuWoMusicCrawler, KuGouMusicCrawler, WanYiMusicCrawler
+from common.crawler import KuWoMusicCrawler, KuGouMusicCrawler, WanYiMusicCrawler, QQMusicCrawler
 from common.lyric_parser import parse_lyric
 from common.os_utils import adjustName
 from PyQt5.QtCore import QThread, pyqtSignal
@@ -23,7 +23,8 @@ class GetLyricThread(QThread):
         self.crawlers = [
             KuWoMusicCrawler(),
             WanYiMusicCrawler(),
-            KuGouMusicCrawler()
+            KuGouMusicCrawler(),
+            QQMusicCrawler()
         ]
 
     def run(self):

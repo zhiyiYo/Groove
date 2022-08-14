@@ -9,15 +9,16 @@ from common.image_utils import getPicSuffix
 from common.meta_data.reader import AlbumCoverReader
 from common.meta_data.writer import MetaDataWriter
 from common.os_utils import adjustName, getCoverName
+from fuzzywuzzy import fuzz
 
 from .exception_handler import exceptionHandler
-from .qq_music_crawler import QQMusicCrawler
 
 
 class CrawlerBase:
     """ Crawler abstract class """
 
     song_url_mark = 'http'  # mark that song url has not been obtained
+    meta_data_crawler = None  # type: CrawlerBase
 
     def __init__(self):
         self.qualities = ['Standard quality', 'High quality', 'Super quality']
@@ -344,12 +345,13 @@ class CrawlerBase:
         song_info_ = song_info.copy()
         song_info_.file = song_path
 
-        song_info = QQMusicCrawler().getSongInfo(
-            f"{song_info.singer} - {song_info.title}")
-        if song_info:
-            song_info_.genre = song_info.genre
-            song_info_.disc = song_info.disc
-            song_info_.discTotal = song_info_.discTotal
+        if self.meta_data_crawler:
+            song_info = self.meta_data_crawler.getSongInfo(
+                f"{song_info.singer} - {song_info.title}")
+            if song_info:
+                song_info_.genre = song_info.genre
+                song_info_.disc = song_info.disc
+                song_info_.discTotal = song_info_.discTotal
 
         writer = MetaDataWriter()
         writer.writeSongInfo(song_info_)
@@ -426,6 +428,36 @@ class CrawlerBase:
             f.write(pic_data)
 
         return str(save_path)
+
+    def getSongInfo(self, key_word: str, threshold=90) -> SongInfo:
+        """ get the most matching song information according to keyword
+
+        Parameters
+        ----------
+        key_word: str
+            search key word
+
+        threshold: int
+            matching degree threshold, the song information is returned when the matching degree
+            is greater than threshold
+
+        Returns
+        -------
+        songInfo: SongInfo
+            the most matching song information, `None` if no one match
+        """
+        song_infos, _ = self.getSongInfos(key_word, page_size=10)
+        if not song_infos:
+            return None
+
+        # If the matching degree is less than threshold, return None
+        matches = [fuzz.token_set_ratio(
+            key_word, i.singer+' '+i.title) for i in song_infos]
+        best_match = max(matches)
+        if best_match < threshold:
+            return None
+
+        return song_infos[matches.index(best_match)]
 
 
 class AudioQualityError(Exception):

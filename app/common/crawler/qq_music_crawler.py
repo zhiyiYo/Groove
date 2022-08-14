@@ -1,4 +1,5 @@
 # coding:utf-8
+import base64
 import json
 from pathlib import Path
 from typing import Union
@@ -8,59 +9,29 @@ from common.database.entity import SongInfo
 from fuzzywuzzy import fuzz
 
 from .exception_handler import exceptionHandler
+from .crawler_base import CrawlerBase
 
 
-class QQMusicCrawler:
+class QQMusicCrawler(CrawlerBase):
     """ Crawler of QQ Music """
 
     def __init__(self):
-        self.headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-                        'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'}
+        self.headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+            'Referer': "https://y.qq.com"
+        }
+        self.types = {
+            "song": 0,
+            "singer": 1,
+            "album": 2,
+            "songlist": 3,  # 播放列表
+            "mv": 4
+        }
 
-    @exceptionHandler()
-    def getSongInfo(self, key_word: str, match_thresh=70):
-        """ search song information
-
-        Parameters
-        ----------
-        key_word: str
-            search key word
-
-        match_thresh: int
-            matching degree threshold, the song information is returned when the matching degree
-            is greater than threshold
-
-        Returns
-        -------
-        song_info: SongInfo
-            song information, `None` if search is fails
-        """
-        search_url = f"https://c.y.qq.com/soso/fcgi-bin/client_search_cp?new_json=1&p=1&n=5&w={key_word}"
-        response = requests.get(search_url, headers=self.headers)
-
-        infos = json.loads(response.text[9:-1])["data"]["song"]["list"]
-        if not infos:
-            return None
-
-        # only the first item is taken
-        info = infos[0]
-        match_ratio = fuzz.token_set_ratio(
-            f"{info['singer'][0]['name']} - {info['name']}", key_word)
-        if match_ratio < match_thresh:
-            return
-
-        song_info = SongInfo()
-        song_info.title = info["name"]
-        song_info.album = info["album"]["name"]
-        song_info.year = int(info["time_public"].split('-')[0])
-        song_info.singer = info["singer"][0]["name"]
-        song_info.track = info["index_album"]
-        song_info.trackTotal = info["index_album"]
-        song_info.disc= info['index_cd'] + 1
-        song_info.discTotal = info['index_cd'] + 1
-        song_info["albummid"] = info['album']['mid']
-
-        # genre map of QQ music
+    @exceptionHandler([], 0)
+    def getSongInfos(self, key_word: str, page_num=1, page_size=10):
+        infos = self.__search(key_word, "song", page_num, page_size)
+        song_infos = []
         genres = {
             1: 'Pop',
             2: 'classical',
@@ -77,9 +48,26 @@ class QQMusicCrawler:
             37: 'Soundtrack',
             39: 'World Music'
         }
-        song_info.genre = genres.get(info["genre"], 'Pop')
+        for info in infos:
+            song_info = SongInfo()
+            song_info.title = info["name"]
+            song_info.album = info["album"]["name"]
+            song_info.singer = info["singer"][0]["name"]
+            song_info.track = info["index_album"]
+            song_info.trackTotal = info["index_album"]
+            song_info.disc = info['index_cd'] + 1
+            song_info.discTotal = info['index_cd'] + 1
+            song_info["albummid"] = info['album']['mid']
+            song_info["songmid"] = info['mid']
+            song_info.genre = genres.get(info["genre"], 'Pop')
+            song_info.duration = info["interval"]
+            year = info["time_public"].split('-')[0] #type:str
+            if year.isnumeric():
+                song_info.year = int(year)
 
-        return song_info
+            song_infos.append(song_info)
+
+        return song_infos, len(song_infos)
 
     @exceptionHandler()
     def getAlbumCoverURL(self, albummid: str, save_path: Union[str, Path]):
@@ -100,6 +88,7 @@ class QQMusicCrawler:
         """
         detail_url = f"https://c.y.qq.com/v8/fcg-bin/musicmall.fcg?_=1628997268750&cmd=get_album_buy_page&albummid={albummid}"
         response = requests.get(detail_url, headers=self.headers)
+        response.raise_for_status()
         url = json.loads(response.text[18:-1]
                          )["data"]["headpiclist"][0]["picurl"]
 
@@ -107,3 +96,42 @@ class QQMusicCrawler:
             f.write(requests.get(url, headers=self.headers).content)
 
         return url
+
+    @exceptionHandler('')
+    def getLyric(self, key_word: str):
+        song_info = self.getSongInfo(key_word)
+        if not song_info:
+            return
+
+        url = f"https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg?format=json&songmid={song_info['songmid']}"
+        response = requests.get(url, headers=self.headers)
+        response.raise_for_status()
+        lyric = json.loads(response.text)['lyric']
+        return base64.b64decode(lyric).decode('utf-8')
+
+    @exceptionHandler([])
+    def __search(self, key_word: str, search_type: str, page_num=1, page_size=10):
+        """ search information """
+        url = f"https://u.y.qq.com/cgi-bin/musicu.fcg"
+        data = {
+            "req_1": {
+                "method": "DoSearchForQQMusicDesktop",
+                "module": "music.search.SearchCgiService",
+                "param": {
+                    "search_type": self.types[search_type],
+                    "query": key_word,
+                    "page_num": page_num,
+                    "num_per_page": page_size
+                }
+            }
+        }
+        data = json.dumps(data, ensure_ascii=False).encode('utf-8')
+        response = requests.post(url, data, headers=self.headers)
+        response.raise_for_status()
+        infos = json.loads(response.text)[
+            "req_1"]["data"]["body"][search_type]["list"]
+        return infos or []
+
+
+# solve circular import problem
+CrawlerBase.meta_data_crawler = QQMusicCrawler()

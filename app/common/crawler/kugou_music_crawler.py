@@ -180,17 +180,10 @@ class KuGouMusicCrawler(CrawlerBase):
 
     @exceptionHandler('')
     def getLyric(self, key_word: str) -> str:
-        song_infos, _ = self.getSongInfos(key_word, page_size=10)
-
-        if not song_infos:
-            return None
-
-        # 匹配度小于阈值则返回
-        matches = [key_word == i.singer+' '+i.title for i in song_infos]
-        if not any(matches):
+        song_info = self.getSongInfo(key_word)
+        if not song_info:
             return
 
-        song_info = song_infos[matches.index(True)]
         lyric = self.getSongDetails(
             song_info['fileHash'], song_info['albumID']).get('lyrics')
 

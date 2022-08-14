@@ -3,7 +3,7 @@ import sys
 sys.path.append('./app')
 
 from unittest import TestCase
-from app.common.lyric_parser import KuWoLyricParser, KuGouLyricParser, WanYiLyricParser
+from app.common.lyric_parser import KuWoLyricParser, KuGouLyricParser, WanYiLyricParser, QQLyricParser
 
 
 class TestLyricParser(TestCase):
@@ -123,6 +123,18 @@ class TestLyricParser(TestCase):
         self.assertEqual(KuGouLyricParser.parse(lyric1), lyric1_res)
         self.assertEqual(KuGouLyricParser.parse(None), KuGouLyricParser.none_lyric)
         self.assertEqual(KuGouLyricParser.parse(''), KuGouLyricParser.none_lyric)
+
+    def test_qq_lyric_parser(self):
+        """ 测试QQ音乐歌词解析器 """
+        lyric1 = """[id:$00000000]\n[ar:aiko]\n[offset:0]\n[00:00.15]aiko - 夏バテ\n[00:01.15]词：aiko\n[00:01.80]曲：aiko\n[00:15.81]耳の奥に残ったまま"""
+        lyric1_res = {
+            '0.15': ['aiko - 夏バテ'],
+            '1.15': ['词：aiko'],
+            '1.8': ['曲：aiko']
+        }
+        self.assertEqual(QQLyricParser.parse(lyric1), lyric1_res)
+        self.assertEqual(QQLyricParser.parse(None), QQLyricParser.none_lyric)
+        self.assertEqual(QQLyricParser.parse(''), QQLyricParser.none_lyric)
 
     def test_wanyi_lyric_parser(self):
         """ 测试网易云歌词解析器 """

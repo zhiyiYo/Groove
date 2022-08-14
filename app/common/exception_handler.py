@@ -4,7 +4,7 @@ from .logger import Logger
 
 
 
-def exceptionHandler(log: str,*default):
+def exceptionHandler(log: str, *default):
     """ decorator for exception handling
 
     Parameters
@@ -22,8 +22,7 @@ def exceptionHandler(log: str,*default):
             try:
                 return func(*args, **kwargs)
             except BaseException as e:
-                Logger(log).error(e)
-                
+                Logger(log).error(f"{e.__class__.__name__}: {e}")
                 value = deepcopy(default)
                 if len(value) == 0:
                     return None

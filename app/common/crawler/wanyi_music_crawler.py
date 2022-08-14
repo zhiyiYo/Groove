@@ -196,7 +196,8 @@ class WanYiMusicCrawler(CrawlerBase):
             return ''
 
         # If the matching degree is less than threshold, return ''
-        matches = [fuzz.token_set_ratio(key_word, i.singer) for i in singer_infos]
+        matches = [fuzz.token_set_ratio(key_word, i.singer)
+                   for i in singer_infos]
         best_match = max(matches)
         if best_match < 85:
             return ''
@@ -206,20 +207,14 @@ class WanYiMusicCrawler(CrawlerBase):
 
     @exceptionHandler()
     def getLyric(self, key_word: str):
-        # search song information
-        song_infos, _ = self.getSongInfos(key_word, page_size=20)
-        if not song_infos:
-            return None
-
-        # return None when the matching degree is less than threshold(100%)
-        matches = [key_word == i.singer+' '+i.title for i in song_infos]
-        if not any(matches):
+        song_info = self.getSongInfo(key_word)
+        if not song_info:
             return
 
         # send request for lyrics
         url = 'https://music.163.com/weapi/song/lyric'
         form_data = {
-            "id": song_infos[matches.index(True)]['id'],
+            "id": song_info['id'],
             "lv": -1,
             "tv": -1
         }

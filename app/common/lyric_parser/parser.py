@@ -66,6 +66,8 @@ class KuWoLyricParser(LyricParserBase):
 class KuGouLyricParser(LyricParserBase):
     """ Lyric parser for KuGou Music """
 
+    seperator = "\r\n"
+
     @staticmethod
     def can_parse(lyric) -> bool:
         if lyric is None:
@@ -86,7 +88,7 @@ class KuGouLyricParser(LyricParserBase):
         if not lyric:
             return cls.none_lyric
 
-        lyric = lyric.split('\r\n')[:-1]  # type:list
+        lyric = lyric.split(cls.seperator)[:-1]  # type:list
 
         # make lyrics
         lyrics = {}
@@ -99,6 +101,12 @@ class KuGouLyricParser(LyricParserBase):
                 lyrics[time] = [text]
 
         return lyrics
+
+
+class QQLyricParser(KuGouLyricParser):
+    """ Lyric parser for QQ Music """
+
+    seperator = "\n"
 
 
 class WanYiLyricParser(LyricParserBase):
@@ -153,12 +161,14 @@ class WanYiLyricParser(LyricParserBase):
 
 def parse_lyric(lyric) -> Dict[str, List[str]]:
     """ parse lyrics """
-    parsers = [KuWoLyricParser, WanYiLyricParser, KuGouLyricParser]
+    parsers = [KuWoLyricParser, WanYiLyricParser, KuGouLyricParser, QQLyricParser]
 
     for parser in parsers:
         if parser.can_parse(lyric):
             try:
-                return parser.parse(lyric)
+                parsed_lyric = parser.parse(lyric)
+                if parsed_lyric:
+                    return parsed_lyric
             except:
                 pass
 
