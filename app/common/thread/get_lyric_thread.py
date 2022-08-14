@@ -4,7 +4,7 @@ from pathlib import Path
 
 from common.database.entity import SongInfo
 from common.crawler import KuWoMusicCrawler, KuGouMusicCrawler, WanYiMusicCrawler, QQMusicCrawler
-from common.lyric_parser import parse_lyric
+from common.lyric_parser import parse_lyric, LyricParserBase
 from common.os_utils import adjustName
 from PyQt5.QtCore import QThread, pyqtSignal
 
@@ -21,8 +21,8 @@ class GetLyricThread(QThread):
         self.singer = ''
         self.songName = ''
         self.crawlers = [
-            KuWoMusicCrawler(),
             WanYiMusicCrawler(),
+            KuWoMusicCrawler(),
             KuGouMusicCrawler(),
             QQMusicCrawler()
         ]
@@ -46,7 +46,7 @@ class GetLyricThread(QThread):
         for crawler in self.crawlers:
             lyric = crawler.getLyric(keyWord)
             notEmpty = bool(lyric)
-            if notEmpty:
+            if notEmpty and parse_lyric(lyric) != LyricParserBase.error_lyric:
                 break
 
         lyric = parse_lyric(lyric)
