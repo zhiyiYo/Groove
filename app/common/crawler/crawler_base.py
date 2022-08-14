@@ -263,7 +263,7 @@ class CrawlerBase:
             MV information
 
         quality: str
-            MV quality
+            MV quality, including `LD`, `SD`, `HD` and `Full HD`
 
         Returns
         -------
@@ -458,6 +458,44 @@ class CrawlerBase:
             return None
 
         return song_infos[matches.index(best_match)]
+
+    def getMvInfo(self, key_word: str, threshold=90) -> dict:
+        """ get the most matching mv information according to keyword
+
+        Parameters
+        ----------
+        key_word: str
+            search key word
+
+        threshold: int
+            matching degree threshold, the song information is returned when the matching degree
+            is greater than threshold
+
+        Returns
+        -------
+        mv_info: dict
+            the most matching mv information, `None` if no one match
+        """
+        mv_infos, _ = self.getMvInfos(key_word, page_size=10)
+        if not mv_infos:
+            return None
+
+        # If the matching degree is less than threshold, return None
+        matches = [fuzz.token_set_ratio(
+            key_word, i["singer"]+' '+i["name"]) for i in mv_infos]
+        best_match = max(matches)
+        if best_match < threshold:
+            return None
+
+        # select the better one
+        best_infos = [mv_infos[i]
+                      for i in range(len(matches)) if matches[i] == best_match]
+        if len(best_infos) == 1:
+            return best_infos[0]
+
+        matches = [fuzz.ratio(key_word, i["singer"]+' '+i["name"])
+                   for i in best_infos]
+        return best_infos[matches.index(max(matches))]
 
 
 class AudioQualityError(Exception):

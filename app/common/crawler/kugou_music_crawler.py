@@ -236,7 +236,7 @@ class KuGouMusicCrawler(CrawlerBase):
         """
         if quality not in self.video_qualities:
             raise VideoQualityError(
-                f"`{quality}` is not in supported quality list `{self.qualities}`")
+                f"`{quality}` is not in supported quality list `{list(self.video_qualities.keys())}`")
 
         # send request for available MV qualities
         url = "https://gateway.kugou.com/openapi/kmr/v1/mv"

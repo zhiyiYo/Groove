@@ -6,10 +6,9 @@ from typing import Union
 
 import requests
 from common.database.entity import SongInfo
-from fuzzywuzzy import fuzz
 
 from .exception_handler import exceptionHandler
-from .crawler_base import CrawlerBase
+from .crawler_base import CrawlerBase, VideoQualityError
 
 
 class QQMusicCrawler(CrawlerBase):
@@ -26,6 +25,12 @@ class QQMusicCrawler(CrawlerBase):
             "album": 2,
             "songlist": 3,  # 播放列表
             "mv": 4
+        }
+        self.video_qualities = {
+            "Full HD": 3,
+            "HD": 2,
+            "SD": 1,
+            "LD": 0
         }
 
     @exceptionHandler([], 0)
@@ -61,7 +66,7 @@ class QQMusicCrawler(CrawlerBase):
             song_info["songmid"] = info['mid']
             song_info.genre = genres.get(info["genre"], 'Pop')
             song_info.duration = info["interval"]
-            year = info["time_public"].split('-')[0] #type:str
+            year = info["time_public"].split('-')[0]  # type:str
             if year.isnumeric():
                 song_info.year = int(year)
 
@@ -109,10 +114,56 @@ class QQMusicCrawler(CrawlerBase):
         lyric = json.loads(response.text)['lyric']
         return base64.b64decode(lyric).decode('utf-8')
 
+    @exceptionHandler([], 0)
+    def getMvInfos(self, key_word: str, page_num=1, page_size=10):
+        infos = self.__search(key_word, "mv", page_num, page_size)
+
+        # parse the response data
+        mv_infos = []
+        for info in infos:
+            mv_info = {}
+            mv_info["id"] = info["v_id"]
+            mv_info["name"] = info["mv_name"]
+            mv_info["singer"] = info["singer_list"][0]["name"]
+            mv_info['coverPath'] = info['mv_pic_url']
+            d = info["duration"]
+            mv_info["duration"] = f"{int(d//60)}:{int(d%60):02}"
+            mv_infos.append(mv_info)
+
+        return mv_infos, len(infos)
+
+    @exceptionHandler('')
+    def getMvUrl(self, mv_info: dict, quality: str = 'SD'):
+        if quality not in self.video_qualities:
+            raise VideoQualityError(
+                f"`{quality}` is not in supported quality list `{list(self.video_qualities.keys())}`")
+
+        mv_id = mv_info["id"]
+        data = {
+            "mvUrl": {
+                "module": "music.stream.MvUrlProxy",
+                "method": "GetMvUrls",
+                "param": {
+                    "vids": [
+                        mv_id
+                    ],
+                    "request_type": 10003,
+                    "addrtype": 3,
+                    "format": 264
+                }
+            }
+        }
+        infos = self.__post(data)["mvUrl"]["data"][mv_id]["mp4"][1:]
+        urls = [i["freeflow_url"][0] for i in infos if i["freeflow_url"]]
+        if not urls:
+            return ''
+
+        index = self.video_qualities[quality]
+        return urls[min(index, len(urls)-1)]
+
     @exceptionHandler([])
     def __search(self, key_word: str, search_type: str, page_num=1, page_size=10):
         """ search information """
-        url = f"https://u.y.qq.com/cgi-bin/musicu.fcg"
         data = {
             "req_1": {
                 "method": "DoSearchForQQMusicDesktop",
@@ -125,12 +176,15 @@ class QQMusicCrawler(CrawlerBase):
                 }
             }
         }
+        infos = self.__post(data)["req_1"]["data"]["body"][search_type]["list"]
+        return infos or []
+
+    def __post(self, data: dict):
+        url = f"https://u.y.qq.com/cgi-bin/musicu.fcg"
         data = json.dumps(data, ensure_ascii=False).encode('utf-8')
         response = requests.post(url, data, headers=self.headers)
         response.raise_for_status()
-        infos = json.loads(response.text)[
-            "req_1"]["data"]["body"][search_type]["list"]
-        return infos or []
+        return json.loads(response.text)
 
 
 # solve circular import problem

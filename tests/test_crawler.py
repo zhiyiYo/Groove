@@ -142,11 +142,12 @@ class TestQQMusicCrawler(TestCase):
 
     def test_get_mv_infos(self):
         """ 测试获取 MV 信息 """
-        songInfos, _ = self.crawler.getMvInfos('aiko 食べた愛')
-        self.assertEqual(len(songInfos), 1)
+        mvInfos, _ = self.crawler.getMvInfos('aiko 食べた愛')
+        self.assertEqual(len(mvInfos), 3)
 
     def test_get_mv_url(self):
         """ 测试获取 MV 播放地址 """
-        mvInfos, _ = self.crawler.getMvInfos('aiko 食べた愛')
-        url = self.crawler.getMvUrl(mvInfos[0])
+        mvInfo = self.crawler.getMvInfo('aiko 食べた愛')
+        url = self.crawler.getMvUrl(mvInfo, 'Full HD')
+        self.assertTrue(url)
         print(url)
