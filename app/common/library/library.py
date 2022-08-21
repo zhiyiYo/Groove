@@ -132,7 +132,7 @@ class Library(QObject):
             self.albumInfos)
         self.albumCoverController.getAlbumCover(newSongInfo)
 
-    def updateMultiSongInfos(self, olds, news: List[SongInfo]):
+    def updateMultiSongInfos(self, olds: List[SongInfo], news: List[SongInfo]):
         """ update multi song information """
         self.songInfoController.updateMultiSongInfos(news)
 
@@ -151,12 +151,14 @@ class Library(QObject):
         """ file added to file system slot """
         songInfos = self.songInfoController.addSongInfos(files)
 
-        self.songInfos.extend(songInfos)
+        # don't change to extend() or += which will affect the selected song card
+        self.songInfos = self.songInfos + songInfos
         self.songInfos.sort(key=lambda i: i.createTime, reverse=True)
         self.albumInfos = self.albumInfoController.getAlbumInfosFromCache(
             self.songInfos)
         self.singerInfos = self.singerInfoController.getSingerInfosFromCache(
             self.albumInfos)
+        self.albumCoverController.getAlbumCovers(songInfos)
 
         self.fileAdded.emit(songInfos)
 
