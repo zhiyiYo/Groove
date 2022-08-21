@@ -527,8 +527,15 @@ class PlayingInterface(QWidget):
 
         self.lyricWidget.setLoadingState(True)
         self.desktopLyricInterface.updateWindow(songInfo)
-        self.getLyricThread.setSongInfo(songInfo)
-        self.getLyricThread.start()
+        self.getLyricThread.get(songInfo)
+
+    def __reloadLyric(self):
+        """ reload lyrics """
+        if not self.playlist:
+            return
+
+        self.lyricWidget.setLoadingState(True)
+        self.getLyricThread.reload()
 
     def __onCrawlLyricFinished(self, lyric: Dict[str, List[str]]):
         """ crawl lyrics finished slot """
@@ -611,6 +618,8 @@ class PlayingInterface(QWidget):
             signalBus.clearPlayingPlaylistSig)
         self.playBar.moreActionsMenu.savePlayListAct.triggered.connect(
             lambda: signalBus.addSongsToNewCustomPlaylistSig.emit(self.playlist))
+        self.playBar.moreActionsMenu.reloadLyricAct.triggered.connect(
+            self.__reloadLyric)
         self.playBar.moreActionsMenu.lyricVisibleChanged.connect(
             self.__onLyricVisibleChanged)
         self.playBar.moreActionsMenu.movieAct.triggered.connect(

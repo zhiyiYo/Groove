@@ -139,12 +139,18 @@ QMenu#moreActionsMenu {
     width: 1px;
 }
 
-QMenu#moreActionsMenu::icon {
+QMenu#lyricMenu {
+    border-radius: 0px;
+}
+
+QMenu#moreActionsMenu::icon,
+QMenu#lyricMenu::icon {
     position: absolute;
     left: 14px;
 }
 
-QMenu#moreActionsMenu::item {
+QMenu#moreActionsMenu::item,
+QMenu#lyricMenu::item {
     /*设置文字边距*/
     padding-left: 20px;
     padding-top: 5px;

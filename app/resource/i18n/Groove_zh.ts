@@ -1170,6 +1170,16 @@
         <translation>显示歌词</translation>
     </message>
     <message>
+        <location filename="../../components/widgets/menu.py" line="342"/>
+        <source>Lyric</source>
+        <translation>歌词</translation>
+    </message>
+    <message>
+        <location filename="../../components/widgets/menu.py" line="340"/>
+        <source>Reload lyric</source>
+        <translation>重新载入歌词</translation>
+    </message>
+    <message>
         <location filename="../../components/widgets/menu.py" line="334"/>
         <source>Hide lyric</source>
         <translation>隐藏歌词</translation>

@@ -6,60 +6,40 @@ from common.window_effect import WindowEffect
 from PyQt5.QtCore import (QEasingCurve, QEvent, QPropertyAnimation, QRect, Qt,
                           pyqtSignal)
 from PyQt5.QtWidgets import QAction, QApplication, QMenu
+from PyQt5.QtGui import QIcon
 
 
 class MenuIconFactory:
     """ Menu icon factory """
 
-    ADD = 0
-    ALBUM = 1
-    CANCEL = 2
-    CHEVRON_RIGHT = 3
-    CLEAR = 4
-    CONTACT = 5
-    COPY = 6
-    CUT = 7
-    FULL_SCREEN = 8
-    PASTE = 9
-    PLAYING = 10
-    PLAYLIST = 11
-    LYRIC = 12
-    MOVIE = 13
-    BULLSEYE = 14
-    LOCK = 15
-    UNLOCK = 16
-    CLOSE = 17
-    SETTINGS = 18
+    ADD = "Add"
+    ALBUM = "Album"
+    CANCEL = "Cancel"
+    CHEVRON_RIGHT = "ChevronRight"
+    CLEAR = "Clear"
+    CONTACT = "Contact"
+    COPY = "Copy"
+    CUT = "Cut"
+    FULL_SCREEN = "FullScreen"
+    PASTE = "Paste"
+    PLAYING = "Playing"
+    PLAYLIST = "Playlist"
+    LYRIC = "Lyric"
+    MOVIE = "Movie"
+    BULLSEYE = "Bullseye"
+    LOCK = "Lock"
+    UNLOCK = "Unlock"
+    CLOSE = "Close"
+    SETTINGS = "Settings"
+    RELOAD = "Reload"
+    HIDE = "Hide"
+    VIEW = "View"
 
     @classmethod
-    def create(cls, iconType: int):
+    def create(cls, iconType: str):
         """ create icon """
-        c = getIconColor()
-        iconMap = {
-            cls.ADD: f":/images/menu/Add_{c}.png",
-            cls.ALBUM: f":/images/menu/Album_{c}.png",
-            cls.CANCEL: f":/images/menu/Cancel_{c}.png",
-            cls.CHEVRON_RIGHT: f":/images/menu/ChevronRight_{c}.png",
-            cls.CLEAR: f":/images/menu/Clear_{c}.png",
-            cls.CONTACT: f":/images/menu/Contact_{c}.png",
-            cls.COPY: f":/images/menu/Copy_{c}.png",
-            cls.CUT: f":/images/menu/Cut_{c}.png",
-            cls.FULL_SCREEN: f":/images/menu/FullScreen_{c}.png",
-            cls.PASTE: f":/images/menu/Paste_{c}.png",
-            cls.PLAYING: f":/images/menu/Playing_{c}.png",
-            cls.PLAYLIST: f":/images/menu/Playlist_{c}.png",
-            cls.LYRIC: f":/images/menu/Lyric_{c}.png",
-            cls.MOVIE: f":/images/menu/Movie_{c}.png",
-            cls.BULLSEYE: f":/images/menu/Bullseye_{c}.png",
-            cls.LOCK: f":/images/menu/Lock_{c}.png",
-            cls.UNLOCK: f":/images/menu/Unlock_{c}.png",
-            cls.CLOSE: f":/images/menu/Close_{c}.png",
-            cls.SETTINGS: f":/images/menu/Settings_{c}.png",
-        }
-        if iconType not in iconMap:
-            raise ValueError(f"The icon type `{iconType}` is illegal.")
-
-        return Icon(iconMap[iconType])
+        path = f":/images/menu/{iconType}_{getIconColor()}.png"
+        return Icon(path)
 
 
 MIF = MenuIconFactory
@@ -302,16 +282,20 @@ class PlayingInterfaceMoreActionsMenu(MoreActionsMenu):
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self.lyricAct.setProperty('showLyric', True)
-        self.lyricAct.triggered.connect(self.__onLyricActionTrigger)
+        self.showLyricAct.setProperty('showLyric', True)
+        self.showLyricAct.triggered.connect(self.__onLyricActionTrigger)
         self.adjustSize()
 
     def __onLyricActionTrigger(self):
         """ lyric action triggered slot """
-        isVisible = self.lyricAct.property('showLyric')
-        self.lyricAct.setProperty('showLyric', not isVisible)
-        self.lyricAct.setText(
-            self.tr('Show lyric') if isVisible else self.tr('Hide lyric'))
+        isVisible = self.showLyricAct.property('showLyric')
+        self.showLyricAct.setProperty('showLyric', not isVisible)
+        if isVisible:
+            self.showLyricAct.setText(self.tr("Show lyric"))
+            self.showLyricAct.setIcon(MIF.create(MIF.VIEW))
+        else:
+            self.showLyricAct.setText(self.tr("Hide lyric"))
+            self.showLyricAct.setIcon(MIF.create(MIF.HIDE))
 
         self.lyricVisibleChanged.emit(not isVisible)
 
@@ -322,15 +306,23 @@ class PlayingInterfaceMoreActionsMenu(MoreActionsMenu):
             MIF.create(MIF.CLEAR), self.tr('Clear now playing'), self)
         self.locateAct = QAction(
             MIF.create(MIF.BULLSEYE), self.tr('Locate current song'), self)
-        self.lyricAct = QAction(
-            MIF.create(MIF.LYRIC), self.tr('Hide lyric'), self)
+        self.showLyricAct = QAction(
+            MIF.create(MIF.HIDE), self.tr('Hide lyric'), self)
+        self.reloadLyricAct = QAction(MIF.create(
+            MIF.RELOAD), self.tr("Reload lyric"), self)
         self.movieAct = QAction(
             MIF.create(MIF.MOVIE), self.tr('Watch MV'), self)
         self.action_list = [
             self.savePlayListAct,
             self.clearPlayListAct,
             self.locateAct,
-            self.lyricAct,
-            self.movieAct
+            self.movieAct,
+            self.showLyricAct,
         ]
-        self.addActions(self.action_list)
+        self.addActions(self.action_list[:-1])
+
+        self.lyricMenu = DWMMenu(self.tr("Lyric"), self)
+        self.lyricMenu.setIcon(MIF.create(MIF.LYRIC))
+        self.lyricMenu.addActions([self.showLyricAct, self.reloadLyricAct])
+        self.addMenu(self.lyricMenu)
+        self.lyricMenu.setObjectName("lyricMenu")

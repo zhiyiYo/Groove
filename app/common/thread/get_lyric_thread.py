@@ -32,8 +32,7 @@ class GetLyricThread(QThread):
         self.cacheFolder.mkdir(exist_ok=True, parents=True)
 
         # search lyrics in local cached files
-        file = adjustName(f'{self.singer}_{self.songName}.json')
-        lyricPath = self.cacheFolder / file
+        lyricPath = self.getLyricPath()
         if lyricPath.exists():
             with open(lyricPath, 'r', encoding='utf-8') as f:
                 self.crawlFinished.emit(json.load(f))
@@ -58,8 +57,22 @@ class GetLyricThread(QThread):
 
         self.crawlFinished.emit(lyric)
 
-    def setSongInfo(self, songInfo: SongInfo):
-        """ set song information for searching lyrics """
+    def get(self, songInfo: SongInfo):
+        """ get lyrics """
         self.songInfo = songInfo
         self.singer = songInfo.singer
         self.songName = songInfo.title
+        self.start()
+
+    def reload(self):
+        """ reload lyrics """
+        path = self.getLyricPath()
+        if path.exists():
+            path.unlink()
+
+        self.start()
+
+    def getLyricPath(self):
+        """ get lyric file path """
+        file = adjustName(f'{self.singer}_{self.songName}.json')
+        return self.cacheFolder / file
