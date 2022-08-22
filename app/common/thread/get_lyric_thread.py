@@ -2,9 +2,10 @@
 import json
 from pathlib import Path
 
+from common.crawler import (KuGouMusicCrawler, KuWoMusicCrawler,
+                            QQMusicCrawler, WanYiMusicCrawler)
 from common.database.entity import SongInfo
-from common.crawler import KuWoMusicCrawler, KuGouMusicCrawler, WanYiMusicCrawler, QQMusicCrawler
-from common.lyric_parser import parse_lyric, LyricParserBase
+from common.lyric import Lyric
 from common.os_utils import adjustName
 from PyQt5.QtCore import QThread, pyqtSignal
 
@@ -12,7 +13,7 @@ from PyQt5.QtCore import QThread, pyqtSignal
 class GetLyricThread(QThread):
     """ Get lyrics thread """
 
-    crawlFinished = pyqtSignal(dict)
+    crawlFinished = pyqtSignal(Lyric)
     cacheFolder = Path('cache/lyric')
 
     def __init__(self, parent=None):
@@ -32,28 +33,20 @@ class GetLyricThread(QThread):
         self.cacheFolder.mkdir(exist_ok=True, parents=True)
 
         # search lyrics in local cached files
-        lyricPath = self.getLyricPath()
-        if lyricPath.exists():
-            with open(lyricPath, 'r', encoding='utf-8') as f:
-                self.crawlFinished.emit(json.load(f))
-                return
+        path = self.getLyricPath()
+        if path.exists():
+            self.crawlFinished.emit(Lyric.load(path))
+            return
 
         # search lyrics online
-        notEmpty = False
+        lyric = Lyric.new()
         keyWord = self.singer + ' ' + self.songName
-
         for crawler in self.crawlers:
-            lyric = crawler.getLyric(keyWord)
-            notEmpty = bool(lyric)
-            if notEmpty and parse_lyric(lyric) != LyricParserBase.error_lyric:
+            lyric_ = Lyric.parse(crawler.getLyric(keyWord))
+            if lyric_.isValid():
+                lyric_.save(path)
+                lyric = lyric_
                 break
-
-        lyric = parse_lyric(lyric)
-
-        # cache lyrics to local
-        if notEmpty:
-            with open(lyricPath, 'w', encoding='utf-8') as f:
-                json.dump(lyric, f, ensure_ascii=False, indent=4)
 
         self.crawlFinished.emit(lyric)
 

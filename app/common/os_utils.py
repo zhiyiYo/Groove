@@ -3,10 +3,11 @@ import re
 import sys
 from pathlib import Path
 from platform import platform
+from typing import Union
 
-from PyQt5.QtSql import QSqlDatabase
+from PyQt5.QtCore import QDir, QFileInfo, QProcess, QUrl
 from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtCore import QProcess, QFileInfo, QDir, QUrl
+from PyQt5.QtSql import QSqlDatabase
 
 from common.database import DBInitializer
 from common.database.service import PlaylistService
@@ -129,8 +130,11 @@ def getWindowsVersion():
     return version
 
 
-def showInFolder(path: str):
+def showInFolder(path: Union[str, Path]):
     """ show file in file explorer """
+    if isinstance(path, Path):
+        path = str(path.absolute())
+
     if not path or path.lower() == 'http':
         return
 

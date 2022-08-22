@@ -1,1 +1,0 @@
-from .parser import KuWoLyricParser, KuGouLyricParser, WanYiLyricParser, QQLyricParser, parse_lyric, LyricParserBase

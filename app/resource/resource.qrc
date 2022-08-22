@@ -209,6 +209,8 @@
         <file>images/menu/View_black.png</file>
         <file>images/menu/Hide_white.png</file>
         <file>images/menu/Hide_black.png</file>
+        <file>images/menu/FolderSearch_white.png</file>
+        <file>images/menu/FolderSearch_black.png</file>
         <file>images/navigation_interface/clear_hover.png</file>
         <file>images/navigation_interface/clear_normal.png</file>
         <file>images/navigation_interface/clear_pressed.png</file>

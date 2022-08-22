@@ -3,7 +3,7 @@ import sys
 sys.path.append('./app')
 
 from unittest import TestCase
-from app.common.lyric_parser import KuWoLyricParser, KuGouLyricParser, WanYiLyricParser, QQLyricParser
+from app.common.lyric.parser import KuWoLyricParser, KuGouLyricParser, WanYiLyricParser, QQLyricParser
 
 
 class TestLyricParser(TestCase):

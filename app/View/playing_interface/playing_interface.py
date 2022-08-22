@@ -1,8 +1,9 @@
 # coding:utf-8
-from typing import Dict, List
+from typing import List
 
 from common.database.entity import SongInfo
-from common.os_utils import getCoverPath
+from common.lyric import Lyric
+from common.os_utils import getCoverPath, showInFolder
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
 from common.thread.get_lyric_thread import GetLyricThread
@@ -537,7 +538,16 @@ class PlayingInterface(QWidget):
         self.lyricWidget.setLoadingState(True)
         self.getLyricThread.reload()
 
-    def __onCrawlLyricFinished(self, lyric: Dict[str, List[str]]):
+    def __revealLyricFileInExplorer(self):
+        """ reveal lyric file in explorer """
+        path = self.getLyricThread.getLyricPath()
+        if path.exists():
+            showInFolder(path)
+        else:
+            self.__showMessageDialog(
+                self.tr("Open failed"), self.tr("Lyrics file does not exist"))
+
+    def __onCrawlLyricFinished(self, lyric: Lyric):
         """ crawl lyrics finished slot """
         if self.isLyricVisible:
             self.lyricWidget.show()
@@ -569,13 +579,20 @@ class PlayingInterface(QWidget):
     def __onCrawlMvUrlFinished(self, url: str):
         """ crawl the play url of MV finished slot """
         if not url:
-            w = MessageDialog(self.tr('Unable to find the corresponding MV'), self.tr(
-                'Sorry, there are no MVs available for the current song'), self.window())
-            w.yesButton.hide()
-            w.exec_()
+            self.__showMessageDialog(
+                self.tr('Unable to find the corresponding MV'),
+                self.tr('Sorry, there are no MVs available for the current song'),
+            )
             return
 
         self.switchToVideoInterfaceSig.emit(url)
+
+    def __showMessageDialog(self, title: str, content: str):
+        """ show message dialog """
+        w = MessageDialog(title, content, self.window())
+        w.cancelButton.setText(self.tr("Close"))
+        w.yesButton.hide()
+        w.exec_()
 
     def __connectSignalToSlot(self):
         """ connect signal to slot """
@@ -620,6 +637,8 @@ class PlayingInterface(QWidget):
             lambda: signalBus.addSongsToNewCustomPlaylistSig.emit(self.playlist))
         self.playBar.moreActionsMenu.reloadLyricAct.triggered.connect(
             self.__reloadLyric)
+        self.playBar.moreActionsMenu.revealLyricInFolderAct.triggered.connect(
+            self.__revealLyricFileInExplorer)
         self.playBar.moreActionsMenu.lyricVisibleChanged.connect(
             self.__onLyricVisibleChanged)
         self.playBar.moreActionsMenu.movieAct.triggered.connect(

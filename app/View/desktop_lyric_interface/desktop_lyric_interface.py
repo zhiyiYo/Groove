@@ -3,6 +3,7 @@ import bisect
 import sys
 from typing import Dict, List
 
+from common.lyric import Lyric
 from common.config import config
 from common.database.entity import SongInfo
 from common.signal_bus import signalBus
@@ -127,10 +128,10 @@ class DesktopLyricInterface(FramelessWindow):
         self.__adjustSongLabel()
         self.lyricWidget.setLyric([self.tr("Loading lyrics...")], 1, True)
 
-    def setLyric(self, lyric: Dict[str, List[str]]):
+    def setLyric(self, lyric: Lyric):
         """ set lyric """
         self.lyric = lyric
-        self.times = list(self.lyric.keys())
+        self.times = lyric.times()
         self.currentIndex = -1
         self.lyricWidget.setLyric([""], 1, True)
 
@@ -236,13 +237,13 @@ class DesktopLyricInterface(FramelessWindow):
 
     def clear(self):
         """ clear lyrics """
-        self.setLyric({})
+        self.setLyric(Lyric({}))
         self.songInfo = SongInfo()
         self.__adjustSongLabel()
 
     def __reset(self):
         """ reset data """
-        self.lyric = {}
+        self.lyric = Lyric({})
         self.times = []
         self.currentIndex = -1
 

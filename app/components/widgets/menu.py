@@ -34,6 +34,7 @@ class MenuIconFactory:
     RELOAD = "Reload"
     HIDE = "Hide"
     VIEW = "View"
+    FOLDER_SEARCH = "FolderSearch"
 
     @classmethod
     def create(cls, iconType: str):
@@ -310,6 +311,8 @@ class PlayingInterfaceMoreActionsMenu(MoreActionsMenu):
             MIF.create(MIF.HIDE), self.tr('Hide lyric'), self)
         self.reloadLyricAct = QAction(MIF.create(
             MIF.RELOAD), self.tr("Reload lyric"), self)
+        self.revealLyricInFolderAct = QAction(
+            MIF.create(MIF.FOLDER_SEARCH), self.tr("Reveal in explorer"), self)
         self.movieAct = QAction(
             MIF.create(MIF.MOVIE), self.tr('Watch MV'), self)
         self.action_list = [
@@ -323,6 +326,7 @@ class PlayingInterfaceMoreActionsMenu(MoreActionsMenu):
 
         self.lyricMenu = DWMMenu(self.tr("Lyric"), self)
         self.lyricMenu.setIcon(MIF.create(MIF.LYRIC))
-        self.lyricMenu.addActions([self.showLyricAct, self.reloadLyricAct])
+        self.lyricMenu.addActions(
+            [self.showLyricAct, self.reloadLyricAct, self.revealLyricInFolderAct])
         self.addMenu(self.lyricMenu)
         self.lyricMenu.setObjectName("lyricMenu")

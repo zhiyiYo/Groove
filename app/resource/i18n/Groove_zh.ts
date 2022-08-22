@@ -1137,7 +1137,7 @@
         <translation>无法找到对应的 MV</translation>
     </message>
     <message>
-        <location filename="../../View/playing_interface/playing_interface.py" line="547"/>
+        <location filename="../../View/playing_interface/playing_interface.py" line="548"/>
         <source>Sorry, there are no MVs available for the current song</source>
         <translation>抱歉呢前辈，当前歌曲没有可供观看的 MV~</translation>
     </message>
@@ -1150,6 +1150,21 @@
         <location filename="../../View/playing_interface/playing_interface.py" line="261"/>
         <source>Show playlist</source>
         <translation>显示播放列表</translation>
+    </message>
+    <message>
+        <location filename="../../View/playing_interface/playing_interface.py" line="588"/>
+        <source>Close</source>
+        <translation>关闭</translation>
+    </message>
+    <message>
+        <location filename="../../View/playing_interface/playing_interface.py" line="560"/>
+        <source>Open failed</source>
+        <translation>打开失败</translation>
+    </message>
+    <message>
+        <location filename="../../View/playing_interface/playing_interface.py" line="560"/>
+        <source>Lyrics file does not exist</source>
+        <translation>抱歉呢前辈，当前歌曲的歌词文件不存在</translation>
     </message>
 </context>
 <context>
@@ -1193,6 +1208,11 @@
         <location filename="../../components/widgets/menu.py" line="338"/>
         <source>Locate current song</source>
         <translation>定位当前歌曲</translation>
+    </message>
+    <message>
+        <location filename="../../components/widgets/menu.py" line="344"/>
+        <source>Reveal in explorer</source>
+        <translation>打开歌词文件位置</translation>
     </message>
 </context>
 <context>

@@ -36,7 +36,7 @@ class KuWoLyricParser(LyricParserBase):
         return False
 
     @classmethod
-    def parse(cls, lyric: List[Dict[str, str]]) -> Dict[str, List[str]]:
+    def parse(cls, lyric: List[Dict[str, str]]):
         if not lyric:
             return cls.none_lyric
 
@@ -84,7 +84,7 @@ class KuGouLyricParser(LyricParserBase):
         return False
 
     @classmethod
-    def parse(cls, lyric: str) -> Dict[str, List[str]]:
+    def parse(cls, lyric: str):
         if not lyric:
             return cls.none_lyric
 
@@ -126,7 +126,7 @@ class WanYiLyricParser(LyricParserBase):
         return False
 
     @classmethod
-    def parse(cls, lyric: dict) -> Dict[str, List[str]]:
+    def parse(cls, lyric: dict):
         if not lyric:
             return cls.none_lyric
 
@@ -157,19 +157,3 @@ class WanYiLyricParser(LyricParserBase):
             lyrics[time] = v
 
         return lyrics
-
-
-def parse_lyric(lyric) -> Dict[str, List[str]]:
-    """ parse lyrics """
-    parsers = [KuWoLyricParser, WanYiLyricParser, KuGouLyricParser, QQLyricParser]
-
-    for parser in parsers:
-        if parser.can_parse(lyric):
-            try:
-                parsed_lyric = parser.parse(lyric)
-                if parsed_lyric:
-                    return parsed_lyric
-            except:
-                pass
-
-    return LyricParserBase.error_lyric

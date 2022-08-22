@@ -1,11 +1,12 @@
 # coding:utf-8
-from typing import List, Dict
+from typing import List
 import bisect
 
+from common.lyric import Lyric
 from common.auto_wrap import autoWrap
 from common.style_sheet import setStyleSheet
 from components.widgets.scroll_area import ScrollArea
-from PyQt5.QtCore import Qt, QFile, QPropertyAnimation, QEventLoop
+from PyQt5.QtCore import Qt, QPropertyAnimation, QEventLoop
 from PyQt5.QtGui import QColor, QLinearGradient, QPalette, QBrush
 from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget
 
@@ -15,7 +16,7 @@ class LyricWidget(ScrollArea):
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self.lyric = None
+        self.lyric = None  #type:Lyric
         self.times = []
         self.currentIndex = -1
         self.lyricLabels = []  # type:List[LyricLabel]
@@ -45,7 +46,7 @@ class LyricWidget(ScrollArea):
 
         self.verticalScrollBar().valueChanged.connect(self.__adjustTextColor)
 
-    def setLyric(self, lyric: Dict[str, List[str]]):
+    def setLyric(self, lyric: Lyric):
         """ set lyrics """
         if self.lyric == lyric:
             self.setLoadingState(False)
@@ -55,7 +56,7 @@ class LyricWidget(ScrollArea):
         self.scrollAni.stop()
 
         self.lyric = lyric
-        self.times = list(self.lyric.keys())
+        self.times = self.lyric.times()
         self.currentIndex = -1
 
         # update lyrics
