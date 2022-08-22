@@ -1162,9 +1162,29 @@
         <translation>打开失败</translation>
     </message>
     <message>
-        <location filename="../../View/playing_interface/playing_interface.py" line="560"/>
+        <location filename="../../View/playing_interface/playing_interface.py" line="561"/>
         <source>Lyrics file does not exist</source>
         <translation>抱歉呢前辈，当前歌曲的歌词文件不存在</translation>
+    </message>
+    <message>
+        <location filename="../../View/playing_interface/playing_interface.py" line="564"/>
+        <source>Parse lyric failed</source>
+        <translation>解析歌词失败</translation>
+    </message>
+    <message>
+        <location filename="../../View/playing_interface/playing_interface.py" line="565"/>
+        <source>Unable to parse the selected lyrics file</source>
+        <translation>无法解析选中的歌词文件，请尝试别的文件</translation>
+    </message>
+    <message>
+        <location filename="../../View/playing_interface/playing_interface.py" line="553"/>
+        <source>Open</source>
+        <translation>打开</translation>
+    </message>
+    <message>
+        <location filename="../../View/playing_interface/playing_interface.py" line="554"/>
+        <source>Lyric files</source>
+        <translation>歌词文件</translation>
     </message>
 </context>
 <context>
@@ -1208,6 +1228,11 @@
         <location filename="../../components/widgets/menu.py" line="338"/>
         <source>Locate current song</source>
         <translation>定位当前歌曲</translation>
+    </message>
+    <message>
+        <location filename="../../components/widgets/menu.py" line="345"/>
+        <source>Use external lyric file</source>
+        <translation>使用外部歌词文件</translation>
     </message>
     <message>
         <location filename="../../components/widgets/menu.py" line="344"/>

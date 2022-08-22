@@ -19,7 +19,7 @@ from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve,
                           QSize, Qt, QTimer, pyqtSignal)
 from PyQt5.QtGui import QColor
 from PyQt5.QtMultimedia import QMediaPlaylist
-from PyQt5.QtWidgets import QLabel, QWidget
+from PyQt5.QtWidgets import QFileDialog, QLabel, QWidget
 from View.desktop_lyric_interface import DesktopLyricInterface
 
 from .play_bar import PlayBar
@@ -547,8 +547,26 @@ class PlayingInterface(QWidget):
             self.__showMessageDialog(
                 self.tr("Open failed"), self.tr("Lyrics file does not exist"))
 
-    def __onCrawlLyricFinished(self, lyric: Lyric):
-        """ crawl lyrics finished slot """
+    def __loadLyricFromFile(self):
+        """ load lyric from file """
+        path, _ = QFileDialog.getOpenFileName(
+            self, self.tr("Open"), "./", self.tr("Lyric files")+"(*.lrc;*.txt;*.json)")
+        if not path:
+            return
+
+        lyric = Lyric.load(path)
+        if lyric.isValid():
+            self.lyricWidget.setLoadingState(True)
+            lyric.save(self.getLyricThread.getLyricPath())
+            self.setLyric(lyric)
+        else:
+            self.__showMessageDialog(
+                self.tr("Parse lyric failed"),
+                self.tr("Unable to parse the selected lyrics file")
+            )
+
+    def setLyric(self, lyric: Lyric):
+        """ set lyric """
         if self.isLyricVisible:
             self.lyricWidget.show()
 
@@ -596,7 +614,7 @@ class PlayingInterface(QWidget):
 
     def __connectSignalToSlot(self):
         """ connect signal to slot """
-        self.getLyricThread.crawlFinished.connect(self.__onCrawlLyricFinished)
+        self.getLyricThread.crawlFinished.connect(self.setLyric)
         self.getMvUrlThread.crawlFinished.connect(self.__onCrawlMvUrlFinished)
         self.randomPlayAllButton.clicked.connect(signalBus.randomPlayAllSig)
 
@@ -635,6 +653,8 @@ class PlayingInterface(QWidget):
             signalBus.clearPlayingPlaylistSig)
         self.playBar.moreActionsMenu.savePlayListAct.triggered.connect(
             lambda: signalBus.addSongsToNewCustomPlaylistSig.emit(self.playlist))
+        self.playBar.moreActionsMenu.loadLyricFromFileAct.triggered.connect(
+            self.__loadLyricFromFile)
         self.playBar.moreActionsMenu.reloadLyricAct.triggered.connect(
             self.__reloadLyric)
         self.playBar.moreActionsMenu.revealLyricInFolderAct.triggered.connect(

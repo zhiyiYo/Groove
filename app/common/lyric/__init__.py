@@ -11,7 +11,10 @@ class Lyric:
     """ lyric """
 
     def __init__(self, lyric: Dict[str, List[str]]):
-        self.lyric = lyric
+        if self._isValidLyric(lyric):
+            self.lyric = lyric
+        else:
+            self.lyric = LyricParserBase.error_lyric
 
     def __bool__(self):
         return bool(self.lyric)
@@ -37,7 +40,7 @@ class Lyric:
     def __repr__(self) -> str:
         return repr(self.lyric)
 
-    def load(self, key, default=None):
+    def get(self, key, default=None):
         return self.lyric.get(key, default)
 
     def keys(self):
@@ -112,3 +115,31 @@ class Lyric:
         """ save lyric """
         with open(path, 'w', encoding='utf-8') as f:
             json.dump(self.lyric, f, ensure_ascii=False, indent=4)
+
+    @staticmethod
+    def _isValidLyric(lyric):
+        """ is valid json lyric """
+        if not isinstance(lyric, dict):
+            return False
+
+        for k, v in lyric.items():
+            if not isinstance(k, str):
+                return False
+
+            try:
+                float(k)
+            except:
+                return False
+
+            if not isinstance(v, list) or not (v and all([isinstance(i, str) for i in v])):
+                return False
+
+        return True
+
+    @staticmethod
+    def _isnumeric(key: str):
+        try:
+            float(key)
+            return True
+        except:
+            return False

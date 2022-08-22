@@ -35,8 +35,10 @@ class GetLyricThread(QThread):
         # search lyrics in local cached files
         path = self.getLyricPath()
         if path.exists():
-            self.crawlFinished.emit(Lyric.load(path))
-            return
+            lyric = Lyric.load(path)
+            if lyric.isValid():
+                self.crawlFinished.emit(lyric)
+                return
 
         # search lyrics online
         lyric = Lyric.new()
