@@ -1,7 +1,5 @@
 # coding:utf-8
-import json
-from pathlib import Path
-
+from common.cache import lyricFolder
 from common.crawler import (KuGouMusicCrawler, KuWoMusicCrawler,
                             QQMusicCrawler, WanYiMusicCrawler)
 from common.database.entity import SongInfo
@@ -14,7 +12,6 @@ class GetLyricThread(QThread):
     """ Get lyrics thread """
 
     crawlFinished = pyqtSignal(Lyric)
-    cacheFolder = Path('cache/lyric')
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -30,7 +27,7 @@ class GetLyricThread(QThread):
 
     def run(self):
         """ start to get lyric """
-        self.cacheFolder.mkdir(exist_ok=True, parents=True)
+        lyricFolder.mkdir(exist_ok=True, parents=True)
 
         # search lyrics in local cached files
         path = self.getLyricPath()
@@ -70,4 +67,4 @@ class GetLyricThread(QThread):
     def getLyricPath(self):
         """ get lyric file path """
         file = adjustName(f'{self.singer}_{self.songName}.json')
-        return self.cacheFolder / file
+        return lyricFolder / file

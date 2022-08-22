@@ -122,7 +122,7 @@ class KuWoMusicCrawler(CrawlerBase):
         return song_infos, total
 
     @exceptionHandler('')
-    def getSingerAvatar(self, singer: str, save_dir: str) -> str:
+    def getSingerAvatar(self, singer, save_dir):
         singer_ = parse.quote(singer)
 
         # configure request header

@@ -4,9 +4,9 @@ from pathlib import Path
 from typing import List, Tuple, Union
 
 import requests
+from common.cache import albumCoverFolder
 from common.database.entity import AlbumInfo, SingerInfo, SongInfo
 from common.image_utils import getPicSuffix
-from common.meta_data.reader import AlbumCoverReader
 from common.meta_data.writer import MetaDataWriter
 from common.os_utils import adjustName, getCoverName
 from fuzzywuzzy import fuzz
@@ -180,7 +180,7 @@ class CrawlerBase:
         """
         raise NotImplementedError
 
-    def getSingerAvatar(self, singer: str, save_dir: str):
+    def getSingerAvatar(self, singer: str, save_dir: Union[str, Path]):
         """ get the avatar of singer
 
         Parameters
@@ -188,7 +188,7 @@ class CrawlerBase:
         singer: str
             singer name
 
-        save_dir: str
+        save_dir: str or Path
             directory to save the downloaded avatar
 
         Returns
@@ -419,9 +419,7 @@ class CrawlerBase:
         pic_data = response.content
 
         # save album cover
-        singer = singer or ''
-        album = album or ''
-        folder = AlbumCoverReader.coverFolder / getCoverName(singer, album)
+        folder = albumCoverFolder / getCoverName(singer, album)
         folder.mkdir(exist_ok=True, parents=True)
         save_path = folder / ("cover" + getPicSuffix(pic_data))
         with open(save_path, 'wb') as f:

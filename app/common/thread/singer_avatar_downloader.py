@@ -1,9 +1,10 @@
 # coding:utf-8
-from typing import List, Union
 from pathlib import Path
+from typing import List, Union
 
-from common.os_utils import adjustName
+from common.cache import singerAvatarFolder
 from common.crawler import KuWoMusicCrawler, WanYiMusicCrawler
+from common.os_utils import adjustName
 from common.signal_bus import signalBus
 from PyQt5.QtCore import QRunnable, QThread, QThreadPool
 
@@ -41,7 +42,7 @@ class SingerAvatarDownloadWorker(QRunnable):
 class SingerAvatarDownloader:
     """ Singer avatar downloader """
 
-    saveDir = Path('cache/singer_avatar')
+    saveDir = singerAvatarFolder
 
     @classmethod
     def download(cls, singers: List[str]):

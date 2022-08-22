@@ -2,6 +2,7 @@
 import os
 from pathlib import Path
 
+from common.cache import singerAvatarFolder
 from common.icon import getIconColor
 from common.crawler import KuWoMusicCrawler
 from common.database.entity import SingerInfo
@@ -123,8 +124,7 @@ class SingerInterface(AlbumSelectionModeInterface):
 
     def __getSingerAvatar(self, singer: str):
         """ get singer avatar """
-        folders = [i.stem for i in Path(
-            'cache/singer_avatar').glob('*') if i.is_dir()]
+        folders = [i.stem for i in singerAvatarFolder.glob('*') if i.is_dir()]
         if adjustName(singer) not in folders:
             self.singerInfoBar.coverLabel.hide()
             self.getAvatarThread.singer = singer

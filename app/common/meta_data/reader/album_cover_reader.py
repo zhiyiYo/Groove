@@ -4,6 +4,7 @@ from pathlib import Path
 from shutil import rmtree
 from typing import List, Union
 
+from common.cache import albumCoverFolder
 from common.database.entity import SongInfo
 from common.image_utils import getPicSuffix
 from common.logger import Logger
@@ -50,7 +51,7 @@ def exceptionHandler(func):
 class AlbumCoverReader:
     """ Read and save album cover class """
 
-    coverFolder = Path("cache/Album_Cover")
+    coverFolder = albumCoverFolder
     _readers = []
 
     @classmethod

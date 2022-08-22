@@ -9,6 +9,7 @@ from PyQt5.QtCore import QDir, QFileInfo, QProcess, QUrl
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtSql import QSqlDatabase
 
+from common.cache import singerAvatarFolder
 from common.database import DBInitializer
 from common.database.service import PlaylistService
 
@@ -104,7 +105,7 @@ def getSingerAvatarPath(singer: str, size='small'):
 
     avatar = avatar_paths[size]
     singer = adjustName(singer) if singer else ''
-    folder = Path("cache/singer_avatar") / singer
+    folder = singerAvatarFolder / singer
     files = [i for i in folder.glob('*') if i.is_file()]
 
     # use the first image file in directory
