@@ -8,7 +8,8 @@ from typing import List, Tuple
 import requests
 from common.database.entity import SongInfo
 
-from .crawler_base import AudioQualityError, CrawlerBase, VideoQualityError
+from .crawler_base import (AudioQualityError, CrawlerBase, MvQuality,
+                           SongQuality, VideoQualityError)
 from .exception_handler import exceptionHandler
 
 
@@ -17,16 +18,17 @@ class KuGouMusicCrawler(CrawlerBase):
 
     def __init__(self):
         super().__init__()
-        self.quality_hash_map = {
-            "Standard quality": "fileHash",
-            "High quality": "HQFileHash",
-            "Super quality": "SQFileHash",
+        self.song_qualities = {
+            SongQuality.STANDARD: "fileHash",
+            SongQuality.HIGH: "HQFileHash",
+            SongQuality.SUPER: "SQFileHash",
+            SongQuality.LOSSLESS: "SQFileHash",
         }
         self.video_qualities = {
-            "Full HD": "fhd_hash",
-            "HD": "hd_hash",
-            "SD": "qhd_hash",
-            "LD": "sd_hash"
+            MvQuality.FULL_HD: "fhd_hash",
+            MvQuality.HD: "hd_hash",
+            MvQuality.SD: "qhd_hash",
+            MvQuality.LD: "sd_hash"
         }
 
     def __getSearchParams(self, key_word: str, page_num, page_size):
@@ -75,10 +77,9 @@ class KuGouMusicCrawler(CrawlerBase):
             ''.join(infos).encode('utf-8')).hexdigest().lower()
         return params
 
-    def search(self, key_word: str, page_num=1, page_size=10, quality: str = 'Standard quality') -> Tuple[List[dict], int]:
-        if quality not in self.qualities:
-            raise AudioQualityError(
-                f'`{quality}` is not on the supported quality list `{self.qualities}`')
+    def search(self, key_word: str, page_num=1, page_size=10, quality=SongQuality.STANDARD) -> Tuple[List[dict], int]:
+        if quality not in SongQuality:
+            raise AudioQualityError(f'`{quality}` is not supported.')
 
         # search song information
         song_infos, total = self.getSongInfos(
@@ -88,9 +89,8 @@ class KuGouMusicCrawler(CrawlerBase):
 
         # get play urls and album cover urls
         for song_info in song_infos:
-            file_hash = song_info[self.quality_hash_map[quality]]
-            data = self.getSongDetails(
-                file_hash, song_info["albumID"])
+            file_hash = song_info[self.song_qualities[quality]]
+            data = self.getSongDetails(file_hash, song_info["albumID"])
 
             song_info["songPath"] = data.get('play_url', '')
             song_info["coverPath"] = data.get('img', '')
@@ -155,18 +155,17 @@ class KuGouMusicCrawler(CrawlerBase):
 
         return json.loads(response.text)["data"]
 
-    def getSongUrl(self, song_info: SongInfo, quality: str = 'Standard quality') -> str:
-        if quality not in self.qualities:
-            raise AudioQualityError(
-                f'`{quality}` is not on the supported quality list `{self.qualities}`')
+    @exceptionHandler('')
+    def getSongUrl(self, song_info: SongInfo, quality=SongQuality.STANDARD) -> str:
+        if quality not in SongQuality:
+            raise AudioQualityError(f'`{quality}` is not supported.')
 
         data = self.getSongDetails(
-            song_info[self.quality_hash_map[quality]], song_info["albumID"])
-
+            song_info[self.song_qualities[quality]], song_info["albumID"])
         return data.get('play_url', '')
 
     @exceptionHandler('')
-    def downloadSong(self, song_info: SongInfo, save_dir: str, quality: str = 'Standard quality') -> str:
+    def downloadSong(self, song_info: SongInfo, save_dir: str, quality=SongQuality.STANDARD) -> str:
         # get play url
         url = self.getSongUrl(song_info, quality)
         if not url:
@@ -213,30 +212,9 @@ class KuGouMusicCrawler(CrawlerBase):
         return mv_info_list, data['total']
 
     @exceptionHandler('')
-    def getMvUrl(self, mv_info: dict, quality: str = 'SD') -> str:
-        """ get the play url of MV
-
-        Parameters
-        ----------
-        mv_info: dict
-            MV information
-
-        quality: str
-            MV quality, including `Full HD`, `HD`, `SD` and `LD`
-
-        Returns
-        -------
-        play_url: str
-            the play url of MV, empty string when no url is found
-
-        Raises
-        ------
-        VideoQualityError:
-            thrown when the MV quality is illegal
-        """
-        if quality not in self.video_qualities:
-            raise VideoQualityError(
-                f"`{quality}` is not in supported quality list `{list(self.video_qualities.keys())}`")
+    def getMvUrl(self, mv_info: dict, quality=MvQuality.SD) -> str:
+        if quality not in MvQuality:
+            raise VideoQualityError(f"`{quality}` is not in supported.")
 
         # send request for available MV qualities
         url = "https://gateway.kugou.com/openapi/kmr/v1/mv"

@@ -25,7 +25,7 @@ class GetOnlineSongUrlThread(QThread):
 
         # get play url
         self.playUrl = self.crawler.getSongUrl(
-            self.songInfo, config['online-play-quality'])
+            self.songInfo, config.get(config.onlineSongQuality))
 
         # download album cover
         coverPath = ''
@@ -39,3 +39,8 @@ class GetOnlineSongUrlThread(QThread):
 
         self.coverPath = coverPath
         self.crawlFinished.emit(self.playUrl, coverPath)
+
+    def search(self, songInfo: SongInfo):
+        """ search song url """
+        self.songInfo = songInfo
+        self.start()

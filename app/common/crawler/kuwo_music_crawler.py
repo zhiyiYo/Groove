@@ -5,10 +5,9 @@ from urllib import parse
 from typing import List, Tuple
 
 import requests
-from fuzzywuzzy import fuzz
 from common.database.entity import SongInfo
 
-from .crawler_base import CrawlerBase, AudioQualityError
+from .crawler_base import CrawlerBase, AudioQualityError, SongQuality, MvQuality
 from .exception_handler import exceptionHandler
 
 
@@ -60,16 +59,16 @@ class KuWoMusicCrawler(CrawlerBase):
         return song_infos, int(data['total'])
 
     @exceptionHandler('')
-    def getSongUrl(self, song_info: SongInfo, quality='Standard quality') -> str:
-        if quality not in self.qualities:
-            raise AudioQualityError(
-                f'`{quality}` is not in the supported quality list `{self.qualities}`')
+    def getSongUrl(self, song_info: SongInfo, quality=SongQuality.STANDARD) -> str:
+        if quality not in SongQuality:
+            raise AudioQualityError(f'`{quality}` is not supported.')
 
         rid = song_info['rid']
         br = {
-            'Standard quality': '128k',
-            'High quality': '192k',
-            'Super quality': '320k'
+            SongQuality.STANDARD: '128k',
+            SongQuality.HIGH: '192k',
+            SongQuality.SUPER: '320k',
+            SongQuality.LOSSLESS: '320k',
         }[quality]
 
         # configure request header
@@ -94,7 +93,7 @@ class KuWoMusicCrawler(CrawlerBase):
         return f"http://www.kuwo.cn/play_detail/{song_info['rid']}"
 
     @exceptionHandler('')
-    def downloadSong(self, song_info: SongInfo, save_dir: str, quality='Standard quality') -> str:
+    def downloadSong(self, song_info: SongInfo, save_dir: str, quality=SongQuality.STANDARD) -> str:
         # get play url
         url = self.getSongUrl(song_info, quality)
         if not url:
@@ -112,7 +111,7 @@ class KuWoMusicCrawler(CrawlerBase):
         return self.saveSong(song_info, save_dir, '.mp3', response.content)
 
     @exceptionHandler([], 0)
-    def search(self, key_word: str, page_num=1, page_size=10, quality: str = 'Standard quality') -> Tuple[List[SongInfo], int]:
+    def search(self, key_word: str, page_num=1, page_size=10, quality=SongQuality.STANDARD) -> Tuple[List[SongInfo], int]:
         song_infos, total = self.getSongInfos(
             key_word, page_num, page_size)
 
@@ -191,7 +190,7 @@ class KuWoMusicCrawler(CrawlerBase):
         return mv_info_list, data['total']
 
     @exceptionHandler('')
-    def getMvUrl(self, mv_info: dict, quality: str = 'SD') -> str:
+    def getMvUrl(self, mv_info: dict, quality=MvQuality.SD) -> str:
         # configure request header
         headers = self.headers.copy()
         headers.pop('Referer')

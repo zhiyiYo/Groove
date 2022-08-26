@@ -29,8 +29,22 @@ class GetMvUrlThread(QThread):
             if not mvInfo:
                 continue
 
-            url = crawler.getMvUrl(mvInfo, config['mv-quality'])
+            url = crawler.getMvUrl(mvInfo, config.get(config.onlineMvQuality))
             if url:
                 break
 
         self.crawlFinished.emit(url)
+
+    def search(self, singer: str, title: str):
+        """ search mv url
+
+        Parameters
+        ----------
+        singer: str
+            singer name
+
+        title: str
+            song name
+        """
+        self.key_word = singer + ' ' + title
+        self.start()

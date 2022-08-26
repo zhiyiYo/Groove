@@ -185,8 +185,7 @@ class LocalSongListWidget(NoScrollSongListWidget):
 class OnlineSongListWidget(NoScrollSongListWidget):
     """ Online song list widget """
 
-    playSignal = pyqtSignal(int)                 # 将播放列表的当前歌曲切换为指定的歌曲卡
-    downloadSig = pyqtSignal(SongInfo, str)      # 下载歌曲 (songInfo, quality)
+    playSignal = pyqtSignal(int)    # 将播放列表的当前歌曲切换为指定的歌曲卡
 
     def __init__(self, parent=None):
         super().__init__(None, SongCardType.ONLINE_SONG_CARD,
@@ -204,7 +203,6 @@ class OnlineSongListWidget(NoScrollSongListWidget):
         songCard.doubleClicked.connect(self.playSignal)
         songCard.playButtonClicked.connect(self.playSignal)
         songCard.clicked.connect(self.setCurrentIndex)
-        songCard.downloadSig.connect(self.downloadSig)
 
     def __connectContextMenuSignalToSlot(self, menu):
         menu.showPropertyAct.triggered.connect(
@@ -214,7 +212,7 @@ class OnlineSongListWidget(NoScrollSongListWidget):
         menu.nextSongAct.triggered.connect(
             lambda: signalBus.nextToPlaySig.emit([self.currentSongInfo]))
         menu.downloadMenu.downloadSig.connect(
-            lambda quality: self.downloadSig.emit(self.currentSongInfo, quality))
+            lambda quality: signalBus.downloadSongSig.emit(self.currentSongInfo, quality))
         menu.viewOnlineAct.triggered.connect(
             lambda: signalBus.getSongDetailsUrlSig.emit(self.currentSongInfo, 'kuwo'))
 

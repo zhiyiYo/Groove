@@ -1,4 +1,5 @@
 # coding:utf-8
+from common.crawler import SongQuality
 from common.icon import Icon, getIconColor
 from common.os_utils import getPlaylistNames
 from common.style_sheet import setStyleSheet
@@ -6,7 +7,6 @@ from common.window_effect import WindowEffect
 from PyQt5.QtCore import (QEasingCurve, QEvent, QPropertyAnimation, QRect, Qt,
                           pyqtSignal)
 from PyQt5.QtWidgets import QAction, QApplication, QMenu
-from PyQt5.QtGui import QIcon
 
 
 class MenuIconFactory:
@@ -131,7 +131,7 @@ class AddToMenu(DWMMenu):
 class DownloadMenu(DWMMenu):
     """ Download online music menu """
 
-    downloadSig = pyqtSignal(str)
+    downloadSig = pyqtSignal(SongQuality)
 
     def __init__(self, title="Download", parent=None):
         super().__init__(title=title, parent=parent)
@@ -141,11 +141,11 @@ class DownloadMenu(DWMMenu):
         self.addActions(
             [self.standardQualityAct, self.highQualityAct, self.superQualityAct])
         self.standardQualityAct.triggered.connect(
-            lambda: self.downloadSig.emit('Standard quality'))
+            lambda: self.downloadSig.emit(SongQuality.STANDARD))
         self.highQualityAct.triggered.connect(
-            lambda: self.downloadSig.emit('High quality'))
+            lambda: self.downloadSig.emit(SongQuality.HIGH))
         self.superQualityAct.triggered.connect(
-            lambda: self.downloadSig.emit('Super quality'))
+            lambda: self.downloadSig.emit(SongQuality.SUPER))
         self.setQss()
 
 

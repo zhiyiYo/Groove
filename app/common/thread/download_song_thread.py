@@ -4,7 +4,7 @@ from queue import Queue
 
 from common.config import config
 from common.database.entity import SongInfo
-from common.crawler import KuWoMusicCrawler
+from common.crawler import KuWoMusicCrawler, SongQuality
 from PyQt5.QtCore import QThread, pyqtSignal
 
 
@@ -20,7 +20,7 @@ class DownloadSongThread(QThread):
 
     def run(self):
         """ start to download song """
-        folder = config['download-folder']
+        folder = config.get(config.downloadFolder)
         os.makedirs(folder, exist_ok=True)
 
         while not self.queue.empty():
@@ -31,6 +31,6 @@ class DownloadSongThread(QThread):
 
             self.downloadOneSongFinished.emit()
 
-    def appendDownloadTask(self, songInfo: SongInfo, quality='Standard quality'):
+    def appendDownloadTask(self, songInfo: SongInfo, quality=SongQuality.STANDARD):
         """ add download task to queque """
         self.queue.put((songInfo, quality))

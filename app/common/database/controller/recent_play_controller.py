@@ -18,7 +18,7 @@ class RecentPlayController:
     def getRecentPlays(self, key='lastPlayedTime') -> List[SongInfo]:
         """ get all recent plays """
         recentPlays = self.recentPlayService.listBy(
-            orderBy=key, desc=True, limit=config['recent-plays-number'])
+            orderBy=key, desc=True, limit=config.get(config.recentPlaysNumber))
         return self.songInfoService.listByIds([i.file for i in recentPlays])
 
     def add(self, file: str) -> bool:

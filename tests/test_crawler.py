@@ -3,7 +3,7 @@ import sys
 sys.path.append('./app')
 
 from unittest import TestCase
-from app.common.crawler import KuGouMusicCrawler, KuWoMusicCrawler, WanYiMusicCrawler, QQMusicCrawler
+from app.common.crawler import *
 from pprint import pprint
 
 
@@ -22,8 +22,9 @@ class TestKuGouMusicCrawler(TestCase):
 
     def test_get_song_url(self):
         """ 测试获取歌曲播放地址 """
-        songInfos, _ = self.crawler.getSongInfos('aiko 食べた愛', 1, 1)
+        songInfos, _ = self.crawler.getSongInfos('aiko 横颜', 1, 1)
         url = self.crawler.getSongUrl(songInfos[0])
+        self.assertTrue(url)
         print(url)
 
     def test_get_lyric(self):
@@ -39,7 +40,8 @@ class TestKuGouMusicCrawler(TestCase):
     def test_get_mv_url(self):
         """ 测试获取 MV 播放地址 """
         mvInfos, _ = self.crawler.getMvInfos('aiko 食べた愛')
-        url = self.crawler.getMvUrl(mvInfos[0])
+        url = self.crawler.getMvUrl(mvInfos[0], MvQuality.FULL_HD)
+        self.assertTrue(url)
         print(url)
 
 
@@ -60,22 +62,25 @@ class TestKuWoMusicCrawler(TestCase):
         """ 测试获取歌曲播放地址 """
         songInfos, _ = self.crawler.getSongInfos('aiko 食べた愛', 1, 1)
         url = self.crawler.getSongUrl(songInfos[0])
+        self.assertTrue(url)
         print(url)
 
     def test_get_lyric(self):
         """ 测试获取歌词 """
         lyric = self.crawler.getLyric('aiko 食べた愛')
+        self.assertTrue(lyric)
         pprint(lyric)
 
     def test_get_mv_infos(self):
         """ 测试获取 MV 信息 """
         songInfos, _ = self.crawler.getMvInfos('aiko 食べた愛')
-        self.assertEqual(len(songInfos), 1)
+        self.assertEqual(len(songInfos), 10)
 
     def test_get_mv_url(self):
         """ 测试获取 MV 播放地址 """
         mvInfos, _ = self.crawler.getMvInfos('aiko 食べた愛')
         url = self.crawler.getMvUrl(mvInfos[0])
+        self.assertTrue(url)
         print(url)
 
 
@@ -94,24 +99,27 @@ class TestWanYiMusicCrawler(TestCase):
 
     def test_get_song_url(self):
         """ 测试获取歌曲播放地址 """
-        songInfos, _ = self.crawler.getSongInfos('aiko 食べた愛', 1, 1)
+        songInfos, _ = self.crawler.getSongInfos('aiko 横颜', 1, 1)
         url = self.crawler.getSongUrl(songInfos[0])
+        self.assertTrue(url)
         print(url)
 
     def test_get_lyric(self):
         """ 测试获取歌词 """
-        lyric = self.crawler.getLyric('aiko 食べた愛')
+        lyric = self.crawler.getLyric('aiko シアワセ')
+        self.assertTrue(lyric)
         pprint(lyric)
 
     def test_get_mv_infos(self):
         """ 测试获取 MV 信息 """
-        songInfos, _ = self.crawler.getMvInfos('aiko 食べた愛')
+        songInfos, _ = self.crawler.getMvInfos('aiko 横颜')
         self.assertEqual(len(songInfos), 1)
 
     def test_get_mv_url(self):
         """ 测试获取 MV 播放地址 """
-        mvInfos, _ = self.crawler.getMvInfos('aiko 食べた愛')
+        mvInfos, _ = self.crawler.getMvInfos('aiko 横颜')
         url = self.crawler.getMvUrl(mvInfos[0])
+        self.assertTrue(url)
         print(url)
 
 
@@ -148,6 +156,6 @@ class TestQQMusicCrawler(TestCase):
     def test_get_mv_url(self):
         """ 测试获取 MV 播放地址 """
         mvInfo = self.crawler.getMvInfo('aiko 食べた愛')
-        url = self.crawler.getMvUrl(mvInfo, 'Full HD')
+        url = self.crawler.getMvUrl(mvInfo, MvQuality.FULL_HD)
         self.assertTrue(url)
         print(url)

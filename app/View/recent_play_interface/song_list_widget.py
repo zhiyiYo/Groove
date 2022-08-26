@@ -51,7 +51,7 @@ class RecentSongListWidget(SongListWidget):
             self.songInfos.insert(0, songInfo)
 
             # remove song card at the bottom when number exceeds threshold
-            N = config['recent-plays-number']
+            N = config.get(config.recentPlaysNumber)
             if self.songCardNum > N:
                 self.removeSongCard(N)
 

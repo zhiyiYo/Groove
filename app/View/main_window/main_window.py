@@ -124,7 +124,7 @@ class MainWindow(AcrylicWindow):
 
         # create play bar
         self.playBar = PlayBar(
-            self.mediaPlaylist.lastSongInfo, QColor(*config['playBar-color']), self)
+            self.mediaPlaylist.lastSongInfo, QColor(*config.get(config.playBarColor)), self)
 
         # create playing interface
         self.playingInterface = PlayingInterface(parent=self)
@@ -197,10 +197,11 @@ class MainWindow(AcrylicWindow):
         DBInitializer.init()
 
         self.library = Library(
-            config["selected-folders"],
+            config.get(config.musicFolders),
             QSqlDatabase.database(DBInitializer.connectionName)
         )
-        self.libraryThread = LibraryThread(config["selected-folders"], self)
+        self.libraryThread = LibraryThread(
+            config.get(config.musicFolders), self)
 
         eventLoop = QEventLoop(self)
         self.libraryThread.finished.connect(eventLoop.quit)
@@ -227,7 +228,8 @@ class MainWindow(AcrylicWindow):
     def initWidget(self):
         """ initialize widgets """
         self.setAcceptDrops(True)
-        QApplication.setQuitOnLastWindowClosed(not config['minimize-to-tray'])
+        QApplication.setQuitOnLastWindowClosed(
+            not config.get(config.minimizeToTray))
 
         desktop = QApplication.desktop().availableGeometry()
         self.smallestPlayInterface.move(desktop.width() - 390, 40)
@@ -274,7 +276,7 @@ class MainWindow(AcrylicWindow):
         self.navigationInterface.show()
         self.playBar.show()
         self.systemTrayIcon.show()
-        self.setWindowEffect(config["enable-acrylic-background"])
+        self.setWindowEffect(config.get(config.enableAcrylicBackground))
 
         if len(sys.argv) > 1:
             self.play()
@@ -427,12 +429,14 @@ class MainWindow(AcrylicWindow):
         self.pause()
 
         # set the playback position
-        pos = 0 if config["position"] > duration else config["position"]
+        pos = config.get(config.playerPosition)
+        pos = 0 if pos > duration else pos
         self.player.setPosition(max(0, pos))
 
     def initPlayBar(self):
         """ initialize play bar """
-        self.playBar.setVolume(config["volume"])
+        self.playBar.setVolume(config.get(config.playerVolume))
+        self.setMute(config.get(config.playerMuted))
         if self.mediaPlaylist.playlist:
             self.playBar.songInfoCard.albumCoverLabel.setOpacity(1)
 
@@ -479,12 +483,14 @@ class MainWindow(AcrylicWindow):
         self.player.setMuted(isMute)
         self.playBar.setMute(isMute)
         self.playingInterface.setMute(isMute)
+        config.set(config.playerMuted, isMute)
 
     def onVolumeChanged(self, volume: int):
         """ volume changed slot """
         self.player.setVolume(volume)
         self.playBar.setVolume(volume)
         self.playingInterface.setVolume(volume)
+        config.set(config.playerVolume, volume)
 
     def setRandomPlay(self, isRandomPlay: bool):
         """ set whether to play randomly """
@@ -640,8 +646,7 @@ class MainWindow(AcrylicWindow):
         # get play url and cover
         eventLoop = QEventLoop(self)
         self.getOnlineSongUrlThread.finished.connect(eventLoop.quit)
-        self.getOnlineSongUrlThread.songInfo = songInfo
-        self.getOnlineSongUrlThread.start()
+        self.getOnlineSongUrlThread.search(songInfo)
         eventLoop.exec()
 
         # TODO：更优雅地更新在线媒体
@@ -1245,11 +1250,9 @@ class MainWindow(AcrylicWindow):
 
     def onExit(self):
         """ exit main window """
-        config.update({
-            "volume": self.playBar.volumeSlider.value(),
-            "position": self.player.position(),
-            "playBar-color": list(self.playBar.getColor().getRgb()[:3])
-        })
+        config.set(config.playerPosition, self.player.position())
+        config.set(config.playBarColor, list(
+            self.playBar.getColor().getRgb()[:3]))
         self.mediaPlaylist.save()
         self.systemTrayIcon.hide()
         self.hotkeyManager.clear(self.winId())
@@ -1363,7 +1366,8 @@ class MainWindow(AcrylicWindow):
         qApp.clipboard().setText(message)
         self.showMessageBox(
             self.tr("Unhandled exception occurred"),
-            self.tr("The error message has been written to the paste board and log. Do you want to report?"),
+            self.tr(
+                "The error message has been written to the paste board and log. Do you want to report?"),
             True,
             lambda: QDesktopServices.openUrl(
                 QUrl('https://github.com/zhiyiYo/Groove/issues'))

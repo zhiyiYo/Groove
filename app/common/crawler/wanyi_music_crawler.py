@@ -12,7 +12,8 @@ from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
 from fuzzywuzzy import fuzz
 
-from .crawler_base import AudioQualityError, CrawlerBase, VideoQualityError
+from .crawler_base import (AudioQualityError, CrawlerBase, MvQuality,
+                           SongQuality, VideoQualityError)
 from .exception_handler import exceptionHandler
 
 
@@ -21,6 +22,7 @@ class WanYiMusicCrawler(CrawlerBase):
 
     def __init__(self):
         super().__init__()
+        self.encryptor = Encryptor()
         self.types = {
             "song": "1",
             "singer": "100",
@@ -28,14 +30,17 @@ class WanYiMusicCrawler(CrawlerBase):
             "lyric": "1006",
             "video": "1014"
         }
-        self.encryptor = Encryptor()
-        self.qualities = ['Standard quality', 'High quality',
-                          'Super quality', 'Lossless quality']
+        self.song_qualities = {
+            SongQuality.STANDARD: "standard",
+            SongQuality.HIGH: "higher",
+            SongQuality.SUPER: "exhigh",
+            SongQuality.LOSSLESS: "lossless",
+        }
         self.video_qualities = {
-            "Full HD": 1080,
-            "HD": 720,
-            "SD": 480,
-            "LD": 240
+            MvQuality.FULL_HD: 1080,
+            MvQuality.HD: 720,
+            MvQuality.SD: 480,
+            MvQuality.LD: 240
         }
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
@@ -70,13 +75,14 @@ class WanYiMusicCrawler(CrawlerBase):
 
         return song_infos, data['songCount']
 
-    def getSongUrl(self, song_info: SongInfo, quality: str = 'Standard quality') -> str:
+    @exceptionHandler('')
+    def getSongUrl(self, song_info: SongInfo, quality=SongQuality.STANDARD) -> str:
         urls = self.getSongUrls([song_info], quality)
         url = urls[0] if urls else ''
         return url
 
     @exceptionHandler([])
-    def getSongUrls(self, song_infos: List[SongInfo], quality: str = 'Standard quality') -> str:
+    def getSongUrls(self, song_infos: List[SongInfo], quality=SongQuality.STANDARD) -> str:
         """ get play urls of multi online songs
 
         Parameters
@@ -84,8 +90,8 @@ class WanYiMusicCrawler(CrawlerBase):
         song_infos: List[SongInfo]
             song information list
 
-        quality: str
-            song sound quality，including `Standard quality`, `High quality`, `Super quality` and `Lossless quality`
+        quality: SongQuality
+            song sound quality
 
         Returns
         -------
@@ -97,18 +103,14 @@ class WanYiMusicCrawler(CrawlerBase):
         AudioQualityError:
             thrown when the sound quality is illegal
         """
-        if quality not in self.qualities:
-            raise AudioQualityError(
-                f'`{quality}` is not in the supported quality list `{self.qualities}`')
-
-        qualities = ['standard', 'higher', 'exhigh', 'lossless']
-        quality = qualities[self.qualities.index(quality)]
+        if quality not in SongQuality:
+            raise AudioQualityError(f'`{quality}` is not in the supported.')
 
         # send request for play urls
         url = 'https://music.163.com/weapi/song/enhance/player/url/v1'
         form_data = {
             "ids": [i['id'] for i in song_infos],
-            "level": "standard",
+            "level": self.song_qualities[quality],
             "encodeType": "mp3",
         }
         text = self.send(url, form_data)
@@ -272,30 +274,9 @@ class WanYiMusicCrawler(CrawlerBase):
         return mv_info_list, data['videoCount']
 
     @exceptionHandler('')
-    def getMvUrl(self, mv_info: dict, quality: str = 'SD') -> str:
-        """ get the play url of MV
-
-        Parameters
-        ----------
-        mv_info: dict
-            MV information
-
-        quality: str
-            MV quality, including `Full HD`, `HD`, `SD` and `LD`
-
-        Returns
-        -------
-        play_url: str
-            the play url of MV, empty string when no url is found
-
-        Raises
-        ------
-        VideoQualityError:
-            thrown when the MV quality is illegal
-        """
-        if quality not in self.video_qualities:
-            raise VideoQualityError(
-                f"`{quality}` is not in supported quality list `{self.qualities}`")
+    def getMvUrl(self, mv_info: dict, quality=MvQuality.SD) -> str:
+        if quality not in MvQuality:
+            raise VideoQualityError(f"`{quality}` is not supported.")
 
         mv_type = mv_info['type']
         mv_url_func_map = {
@@ -306,7 +287,7 @@ class WanYiMusicCrawler(CrawlerBase):
         play_url = mv_url_func_map[mv_type](mv_info, quality)
         return play_url
 
-    def __getType0MvUrl(self, mv_info: dict, quality: str = 'SD'):
+    def __getType0MvUrl(self, mv_info: dict, quality=MvQuality.SD):
         """ get the play url of MV whose type if 0  """
         # send request for available qualities
         form_data = {"id": mv_info['vid']}
@@ -328,7 +309,7 @@ class WanYiMusicCrawler(CrawlerBase):
         play_url = json.loads(self.send(url, form_data))['data']['url']
         return play_url
 
-    def __getType1MvUrl(self, mv_info: dict, quality: str = 'SD'):
+    def __getType1MvUrl(self, mv_info: dict, quality=MvQuality.SD):
         """ get the play url of MV whose type if 1 """
         # send request for available qualities
         form_data = {"id": mv_info['vid']}

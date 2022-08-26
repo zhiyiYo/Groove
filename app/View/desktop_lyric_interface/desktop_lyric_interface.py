@@ -254,12 +254,14 @@ class DesktopLyricInterface(FramelessWindow):
 
     def __onFontIncreaseButtonClicked(self):
         """ font size increase button clicked slot """
-        config["lyric.font-size"] += 1
+        size = config.get(config.deskLyricFontSize)
+        config.set(config.deskLyricFontSize, size+1)
         self.update()
 
     def __onFontDecreaseButtonClicked(self):
         """ font size decrease button clicked slot """
-        config["lyric.font-size"] = max(15, config["lyric.font-size"]-1)
+        size = config.get(config.deskLyricFontSize)
+        config.set(config.deskLyricFontSize, size-1)
         self.update()
 
     def __connectSignalToSlot(self):

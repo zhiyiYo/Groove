@@ -48,7 +48,7 @@ class LyricWidget(QWidget):
         self.__drawLyric(
             painter,
             self.originTextX,
-            config["lyric.font-size"],
+            config.get(config.deskLyricFontSize),
             self.originMaskWidth,
             self.originFont,
             self.lyric[0]
@@ -61,7 +61,7 @@ class LyricWidget(QWidget):
         self.__drawLyric(
             painter,
             self.translationTextX,
-            25 + config["lyric.font-size"]*5/3,
+            25 + config.get(config.deskLyricFontSize)*5/3,
             self.translationMaskWidth,
             self.translationFont,
             self.lyric[1]
@@ -75,13 +75,13 @@ class LyricWidget(QWidget):
         path = QPainterPath()
         path.addText(QPointF(x, y), font, text)
         painter.strokePath(path, QPen(
-            QColor(*config["lyric.stroke-color"]), config["lyric.stroke-size"]))
-        painter.fillPath(path, QColor(*config['lyric.font-color']))
+            QColor(*config.get(config.deskLyricStrokeColor)), config.get(config.deskLyricStrokeSize)))
+        painter.fillPath(path, QColor(*config.get(config.deskLyricFontColor)))
 
         # draw foreground text
         painter.fillPath(
             self.__getMaskedLyricPath(path, width),
-            QColor(*config['lyric.highlight-color'])
+            QColor(*config.get(config.deskLyricHighlightColor))
         )
 
     def __getMaskedLyricPath(self, path: QPainterPath, width: float):
@@ -146,7 +146,7 @@ class LyricWidget(QWidget):
 
     def __getLyricX(self, w: float):
         """ get the x coordinate of lyric """
-        alignment = config["lyric.alignment"]
+        alignment = config.get(config.deskLyricAlignment)
         if alignment == "Right":
             return self.width() - w
         elif alignment == "Left":
@@ -202,7 +202,7 @@ class LyricWidget(QWidget):
         return len(self.lyric) == 2
 
     def minimumHeight(self) -> int:
-        size = config["lyric.font-size"]
+        size = config.get(config.deskLyricFontSize)
         h = size/1.5+60 if self.hasTranslation() else 40
         return int(size+h)
 
@@ -212,8 +212,8 @@ class LyricWidget(QWidget):
 
     @property
     def translationFont(self):
-        font = QFont(config["lyric.font-family"])
-        font.setPixelSize(config["lyric.font-size"]//1.5)
+        font = QFont(config.get(config.deskLyricFontFamily))
+        font.setPixelSize(config.get(config.deskLyricFontSize)//1.5)
         return font
 
     originMaskWidth = pyqtProperty(

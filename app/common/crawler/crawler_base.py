@@ -1,5 +1,6 @@
 # coding:utf-8
 import os
+from enum import Enum
 from pathlib import Path
 from typing import List, Tuple, Union
 
@@ -14,6 +15,32 @@ from fuzzywuzzy import fuzz
 from .exception_handler import exceptionHandler
 
 
+class SongQuality(Enum):
+    """ Online song quality enumeration class """
+
+    STANDARD = "Standard quality"
+    HIGH = "High quality"
+    SUPER = "Super quality"
+    LOSSLESS = "Lossless quality"
+
+    @staticmethod
+    def values():
+        return [q.value for q in SongQuality]
+
+
+class MvQuality(Enum):
+    """ MV quality enumeration class """
+
+    FULL_HD = "Full HD"
+    HD = "HD"
+    SD = "SD"
+    LD = "LD"
+
+    @staticmethod
+    def values():
+        return [q.value for q in MvQuality]
+
+
 class CrawlerBase:
     """ Crawler abstract class """
 
@@ -21,7 +48,7 @@ class CrawlerBase:
     meta_data_crawler = None  # type: CrawlerBase
 
     def __init__(self):
-        self.qualities = ['Standard quality', 'High quality', 'Super quality']
+        self.qualities = SongQuality.values()
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                           'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'
@@ -114,7 +141,7 @@ class CrawlerBase:
         """
         raise NotImplementedError
 
-    def getSongUrl(self, song_info: SongInfo, quality: str = 'Standard quality') -> str:
+    def getSongUrl(self, song_info: SongInfo, quality=SongQuality.STANDARD) -> str:
         """ get the play url of online song
 
         Parameters
@@ -122,8 +149,8 @@ class CrawlerBase:
         song_info: SongInfo
             song information
 
-        quality: str
-            song sound quality，including `Standard quality`, `High quality` and `Super quality`
+        quality: SongQuality
+            song sound quality
 
         Returns
         -------
@@ -154,7 +181,7 @@ class CrawlerBase:
         """
         raise NotImplementedError
 
-    def downloadSong(self, song_info: SongInfo, save_dir: str, quality: str = 'Standard quality') -> str:
+    def downloadSong(self, song_info: SongInfo, save_dir: str, quality=SongQuality.STANDARD) -> str:
         """ download online music to local
 
         Parameters
@@ -165,8 +192,8 @@ class CrawlerBase:
         save_dir: str
             directory to save the downloaded audio file
 
-        quality: str
-            song sound quality，including `Standard quality`, `High quality` and `Super quality`
+        quality: SongQuality
+            song sound quality
 
         Returns
         -------
@@ -198,7 +225,7 @@ class CrawlerBase:
         """
         raise NotImplementedError
 
-    def search(self, key_word: str, page_num=1, page_size=10, quality: str = 'Standard quality') -> Tuple[List[SongInfo], int]:
+    def search(self, key_word: str, page_num=1, page_size=10, quality=SongQuality.STANDARD) -> Tuple[List[SongInfo], int]:
         """ search online songs and get play urls
 
         Parameters
@@ -212,8 +239,8 @@ class CrawlerBase:
         page_size: int
             maximum number of entries per page
 
-        quality: str
-            song sound quality，including `Standard quality`, `High quality` and `Super quality`
+        quality: SongQuality
+            song sound quality
 
         Returns
         -------
@@ -254,7 +281,7 @@ class CrawlerBase:
         """
         raise NotImplementedError
 
-    def getMvUrl(self, mv_info: dict, quality: str = 'SD') -> str:
+    def getMvUrl(self, mv_info: dict, quality=MvQuality.SD) -> str:
         """ get the play url of MV
 
         Parameters
@@ -262,8 +289,8 @@ class CrawlerBase:
         mv_info: dict
             MV information
 
-        quality: str
-            MV quality, including `LD`, `SD`, `HD` and `Full HD`
+        quality: MvQuality
+            MV quality
 
         Returns
         -------

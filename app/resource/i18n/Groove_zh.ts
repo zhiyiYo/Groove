@@ -1844,6 +1844,11 @@
         <translation>超品</translation>
     </message>
     <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="80"/>
+        <source>Lossless quality</source>
+        <translation>无损</translation>
+    </message>
+    <message>
         <location filename="../../View/setting_interface/setting_interface.py" line="67"/>
         <source>Search</source>
         <translation>搜索</translation>

@@ -12,6 +12,7 @@ QScrollArea {
 QLabel {
     font-size: 18px;
     font-family: 'Segoe UI', 'Microsoft YaHei';
+    background-color: transparent;
 }
 
 QLabel#settingLabel {
@@ -203,4 +204,8 @@ QLineEdit {
 QLineEdit:hover {
     background-color: rgb(242, 242, 242);
     border: 1px solid rgb(230, 230, 230);
+}
+
+RadioButtonGroup {
+    background-color: transparent;
 }

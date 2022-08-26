@@ -1,4 +1,5 @@
 # coding:utf-8
+from common.crawler import SongQuality
 from common.database.entity import SongInfo
 from common.signal_bus import signalBus
 from components.widgets.label import ClickableLabel
@@ -258,8 +259,6 @@ class NoCheckBoxSongCard(DurationSongCard):
 class OnlineSongCard(DurationSongCard):
     """ Online song card """
 
-    downloadSig = pyqtSignal(SongInfo, str)  # songInfo, quality
-
     def __init__(self, songInfo: SongInfo, parent=None):
         super().__init__(songInfo, SongCardType.ONLINE_SONG_CARD, parent=parent)
         self.singerLabel = QLabel(self.singer, self)
@@ -310,7 +309,7 @@ class OnlineSongCard(DurationSongCard):
         y = pos.y() + int(
             self.addToButton.height() / 2 - (13 + 38 * 3) / 2)
         menu.downloadSig.connect(
-            lambda quality: self.downloadSig.emit(self.songInfo, quality))
+            lambda quality: signalBus.downloadSongSig.emit(self.songInfo, quality))
         menu.exec(QPoint(x, y))
 
 

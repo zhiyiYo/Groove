@@ -3,6 +3,8 @@ from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtGui import QColor, QFont
 from PyQt5.QtMultimedia import QMediaPlaylist
 
+from common.crawler import SongQuality
+
 from .database.entity import AlbumInfo, SingerInfo, SongInfo
 from .singleton import Singleton
 
@@ -54,6 +56,7 @@ class SignalBus(Singleton, QObject):
     lastSongSig = pyqtSignal()             # 上一首
     togglePlayStateSig = pyqtSignal()      # 播放/暂停
     progressSliderMoved = pyqtSignal(int)  # 播放进度条滑动
+    downloadSongSig = pyqtSignal(SongInfo, SongQuality)   # 开始下载一首歌
 
     muteStateChanged = pyqtSignal(bool)   # 静音
     volumeChanged = pyqtSignal(int)       # 调整音量
@@ -67,10 +70,10 @@ class SignalBus(Singleton, QObject):
     downloadAvatarFinished = pyqtSignal(str, str)  # 下载了一个头像
 
     lyricFontChanged = pyqtSignal(QFont)                # 桌面歌词字体改变
-    lyricFontColorChanged = pyqtSignal(QColor)    # 桌面歌词背景色改变
-    lyricHighlightColorChanged = pyqtSignal(QColor)         # 桌面歌词高亮色改变
+    lyricFontColorChanged = pyqtSignal(QColor)          # 桌面歌词背景色改变
+    lyricHighlightColorChanged = pyqtSignal(QColor)     # 桌面歌词高亮色改变
     lyricStrokeColorChanged = pyqtSignal(QColor)        # 桌面歌词描边色改变
-    lyricStrokeSizeChanged = pyqtSignal(int)         # 桌面歌词描边大小改变
+    lyricStrokeSizeChanged = pyqtSignal(int)            # 桌面歌词描边大小改变
     lyricAlignmentChanged = pyqtSignal(str)             # 桌面歌词对齐方式改变
 
 

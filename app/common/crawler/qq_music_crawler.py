@@ -8,7 +8,7 @@ import requests
 from common.database.entity import SongInfo
 
 from .exception_handler import exceptionHandler
-from .crawler_base import CrawlerBase, VideoQualityError
+from .crawler_base import CrawlerBase, VideoQualityError, MvQuality
 
 
 class QQMusicCrawler(CrawlerBase):
@@ -27,10 +27,10 @@ class QQMusicCrawler(CrawlerBase):
             "mv": 4
         }
         self.video_qualities = {
-            "Full HD": 3,
-            "HD": 2,
-            "SD": 1,
-            "LD": 0
+            MvQuality.FULL_HD: 3,
+            MvQuality.HD: 2,
+            MvQuality.SD: 1,
+            MvQuality.LD: 0
         }
 
     @exceptionHandler([], 0)
@@ -133,10 +133,9 @@ class QQMusicCrawler(CrawlerBase):
         return mv_infos, len(infos)
 
     @exceptionHandler('')
-    def getMvUrl(self, mv_info: dict, quality: str = 'SD'):
-        if quality not in self.video_qualities:
-            raise VideoQualityError(
-                f"`{quality}` is not in supported quality list `{list(self.video_qualities.keys())}`")
+    def getMvUrl(self, mv_info: dict, quality=MvQuality.SD):
+        if quality not in MvQuality:
+            raise VideoQualityError(f"`{quality}` is not supported.")
 
         mv_id = mv_info["id"]
         data = {

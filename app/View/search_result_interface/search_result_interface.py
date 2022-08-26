@@ -2,9 +2,9 @@
 from math import ceil
 
 from common.config import config
-from common.icon import getIconColor
-from common.crawler import KuWoMusicCrawler
+from common.crawler import KuWoMusicCrawler, SongQuality
 from common.database.entity import SongInfo
+from common.icon import getIconColor
 from common.library import Library
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
@@ -12,7 +12,7 @@ from common.thread.download_song_thread import DownloadSongThread
 from components.widgets.label import PixmapLabel
 from components.widgets.scroll_area import ScrollArea
 from components.widgets.tooltip import DownloadStateTooltip
-from PyQt5.QtCore import QFile, Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget
 
@@ -125,7 +125,7 @@ class SearchResultInterface(ScrollArea):
         self.checkSpellLabel.setVisible(isVisible)
         self.searchOthersLabel.setVisible(isVisible)
 
-    def __downloadSong(self, songInfo: SongInfo, quality: str):
+    def __downloadSong(self, songInfo: SongInfo, quality: SongQuality):
         """ download online music """
         self.downloadSongThread.appendDownloadTask(songInfo, quality)
         if self.downloadSongThread.isRunning():
@@ -179,10 +179,11 @@ class SearchResultInterface(ScrollArea):
 
         # search online songs
         self.currentPage = 1
+        pageSize = config.get(config.onlinePageSize)
         self.onlineSongInfos, self.totalOnlineMusic = self.crawler.getSongInfos(
-            keyWord, 1, config['online-music-page-size'])
+            keyWord, 1, pageSize)
         self.totalPages = 1 if not self.totalOnlineMusic else ceil(
-            self.totalOnlineMusic/config['online-music-page-size'])
+            self.totalOnlineMusic/pageSize)
 
         self.__updateLoadMoreLabel()
 
@@ -257,7 +258,7 @@ class SearchResultInterface(ScrollArea):
         # send request for online music
         self.currentPage += 1
         songInfos, _ = self.crawler.getSongInfos(
-            self.keyWord, self.currentPage, config['online-music-page-size'])
+            self.keyWord, self.currentPage, config.get(config.onlinePageSize))
 
         # update online music group box
         offset = len(self.onlineSongListWidget.songInfos)
@@ -276,6 +277,8 @@ class SearchResultInterface(ScrollArea):
 
     def __connectSignalToSlot(self):
         """ connect signal to slot """
+        signalBus.downloadSongSig.connect(self.__downloadSong)
+
         # local song group box signal
         self.localSongGroupBox.switchToMoreSearchResultInterfaceSig.connect(
             lambda: signalBus.switchToMoreSearchResultInterfaceSig.emit(self.keyWord, 'local song', self.localSongInfos))
@@ -285,7 +288,6 @@ class SearchResultInterface(ScrollArea):
 
         # online song group box signal
         self.onlineSongListWidget.playSignal.connect(self.playOnlineSongSig)
-        self.onlineSongListWidget.downloadSig.connect(self.__downloadSong)
         self.onlineSongGroupBox.loadMoreSignal.connect(
             self.__loadMoreOnlineMusic)
         self.onlineSongListWidget.currentIndexChanged.connect(

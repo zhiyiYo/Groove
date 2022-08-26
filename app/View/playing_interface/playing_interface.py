@@ -591,8 +591,7 @@ class PlayingInterface(QWidget):
             return
 
         songInfo = self.playlist[self.currentIndex]
-        self.getMvUrlThread.key_word = songInfo.singer + ' ' + songInfo.title
-        self.getMvUrlThread.start()
+        self.getMvUrlThread.search(songInfo.singer, songInfo.title)
 
     def __onCrawlMvUrlFinished(self, url: str):
         """ crawl the play url of MV finished slot """
