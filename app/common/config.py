@@ -18,12 +18,11 @@ class ConfigValidator:
 
     def validate(self, value) -> bool:
         """ Verify whether the value is legal """
-        raise NotImplementedError
+        return True
 
     def correct(self, value):
         """ correct illegal value """
-        raise NotImplementedError
-
+        return value
 
 class RangeValidator(ConfigValidator):
     """ Range validator """
@@ -160,10 +159,10 @@ class ConfigItem:
         """
         self.group = group
         self.name = name
-        self.default = default
-        self.__value = default
-        self.validator = validator
+        self.validator = validator or ConfigValidator()
         self.serializer = serializer or ConfigSerializer()
+        self.__value = default
+        self.value = default
 
     @property
     def value(self):
@@ -172,13 +171,7 @@ class ConfigItem:
 
     @value.setter
     def value(self, v):
-        if self.__value == v:
-            return
-
-        if not self.validator:
-            self.__value = v
-        else:
-            self.__value = self.validator.correct(v)
+        self.__value = self.validator.correct(v)
 
     @property
     def options(self):
