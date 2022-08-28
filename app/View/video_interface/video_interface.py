@@ -139,6 +139,10 @@ class VideoInterface(QGraphicsView):
 
         return super().keyPressEvent(e)
 
+    def wheelEvent(self, e):
+        """ disable scrolling """
+        return
+
     def __enterFullScreen(self):
         """ enter full screen """
         self.playBar.fullScreenButton.setFullScreen(True)
