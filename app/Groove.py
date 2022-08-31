@@ -26,7 +26,6 @@ QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
 app = SingletonApplication(sys.argv, "PyQt-Groove-Music")
 app.setAttribute(Qt.AA_DontCreateNativeWidgetSiblings)
-# app.setStyle("Windows")
 
 # Internationalization
 translator = QTranslator()

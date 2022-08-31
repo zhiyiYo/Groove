@@ -44,8 +44,8 @@ class RecentPlayInterface(SongSelectionModeInterface):
         self.recentPlayLabel.move(30, 54)
         self.randomPlayAllButton.move(30, 131)
         self.sortModeLabel.move(
-            self.randomPlayAllButton.geometry().right()+30, 131)
-        self.sortModeButton.move(self.sortModeLabel.geometry().right()+7, 131)
+            self.randomPlayAllButton.geometry().right()+30, 129)
+        self.sortModeButton.move(self.sortModeLabel.geometry().right()+7, 129)
 
         self.__connectSignalToSlot()
 
