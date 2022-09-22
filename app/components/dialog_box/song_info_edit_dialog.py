@@ -1,8 +1,10 @@
 # coding:utf-8
 from common.auto_wrap import autoWrap
 from common.style_sheet import setStyleSheet
-from common.os_utils import showInFolder
+from common.os_utils import showInFolder, getLyricPath
 from common.database.entity import SongInfo
+from common.config import config
+from common.lyric import Lyric
 from common.meta_data.reader import AlbumCoverReader, SongInfoReader
 from common.meta_data.writer import MetaDataWriter
 from common.thread.get_meta_data_thread import GetSongMetaDataThread
@@ -211,6 +213,13 @@ class SongInfoEditDialog(MaskDialogBase):
             success = self.writer.writeAlbumCover(
                 self.songInfo.file, self.songInfo['coverPath'])
             AlbumCoverReader.getAlbumCover(self.songInfo)
+
+        # embed lyrics
+        if config.get(config.embedLyricWhenSave):
+            path = getLyricPath(self.songInfo.singer, self.songInfo.title)
+            if path.exists() and Lyric.load(path).isValid():
+                success &= self.writer.writeLyrics(
+                    self.songInfo.file, Lyric.load(path).serialize())
 
         # write other meta data
         if not (success and self.writer.writeSongInfo(self.songInfo)):

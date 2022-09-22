@@ -9,7 +9,7 @@ from PyQt5.QtCore import QDir, QFileInfo, QProcess, QUrl
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtSql import QSqlDatabase
 
-from common.cache import singerAvatarFolder
+from common.cache import singerAvatarFolder, lyricFolder
 from common.database import DBInitializer
 from common.database.service import PlaylistService
 
@@ -113,6 +113,12 @@ def getSingerAvatarPath(singer: str, size='small'):
         avatar = str(files[0])
 
     return avatar
+
+
+def getLyricPath(singer: str, title: str):
+    """ get lyrics file path """
+    file = adjustName(f'{singer}_{title}.json')
+    return lyricFolder / file
 
 
 def getPlaylistNames():

@@ -1,7 +1,9 @@
 # coding:utf-8
 from common.cache import lyricFolder
+from common.config import config
 from common.crawler import (KuGouMusicCrawler, KuWoMusicCrawler,
                             QQMusicCrawler, WanYiMusicCrawler)
+from common.meta_data.reader import LyricReader
 from common.database.entity import SongInfo
 from common.lyric import Lyric
 from common.os_utils import adjustName
@@ -29,23 +31,16 @@ class GetLyricThread(QThread):
         """ start to get lyric """
         lyricFolder.mkdir(exist_ok=True, parents=True)
 
-        # search lyrics in local cached files
-        path = self.getLyricPath()
-        if path.exists():
-            lyric = Lyric.load(path)
-            if lyric.isValid():
-                self.crawlFinished.emit(lyric)
-                return
-
-        # search lyrics online
-        lyric = Lyric.new()
-        keyWord = self.singer + ' ' + self.songName
-        for crawler in self.crawlers:
-            lyric_ = Lyric.parse(crawler.getLyric(keyWord))
-            if lyric_.isValid():
-                lyric_.save(path)
-                lyric = lyric_
-                break
+        if config.get(config.preferEmbedLyric):
+            # use embedded lyrics
+            lyric = LyricReader.read(self.songInfo.file)
+            if not lyric.isValid():
+                lyric = self.__getLyrics()
+        else:
+            # use online/local lyrics
+            lyric = self.__getLyrics()
+            if not lyric.isValid():
+                lyric = LyricReader.read(self.songInfo.file)
 
         self.crawlFinished.emit(lyric)
 
@@ -68,3 +63,24 @@ class GetLyricThread(QThread):
         """ get lyric file path """
         file = adjustName(f'{self.singer}_{self.songName}.json')
         return lyricFolder / file
+
+    def __getLyrics(self):
+        """ get lyrics from local lyrics file or online source """
+        # search lyrics in local cached files
+        path = self.getLyricPath()
+        if path.exists():
+            lyric = Lyric.load(path)
+            if lyric.isValid():
+                return lyric
+
+        # search lyrics online
+        lyric = Lyric.new()
+        keyWord = self.singer + ' ' + self.songName
+        for crawler in self.crawlers:
+            lyric_ = Lyric.parse(crawler.getLyric(keyWord))
+            if lyric_.isValid():
+                lyric_.save(path)
+                lyric = lyric_
+                break
+
+        return lyric

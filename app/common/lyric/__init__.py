@@ -116,6 +116,21 @@ class Lyric:
         with open(path, 'w', encoding='utf-8') as f:
             json.dump(self.lyric, f, ensure_ascii=False, indent=4)
 
+    def serialize(self) -> str:
+        """ serialize lyrics to string """
+        lyrics = []
+        for time, lyric in self.lyric.items():
+            time = float(time)
+            m, s = int(time//60), time % 60
+            t = f"[{m:02}:{s:05.2f}]"
+            line = t + lyric[0]
+            if len(lyric) == 2:
+                line += f"\r\n{t}{lyric[1]}"
+
+            lyrics.append(line)
+
+        return "\r\n".join(lyrics)
+
     @staticmethod
     def _isValidLyric(lyric):
         """ is valid json lyric """

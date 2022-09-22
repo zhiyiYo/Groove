@@ -2,8 +2,7 @@
 import sys
 from typing import List
 
-from common.config import config, ConfigItem
-from common.crawler import SongQuality, MvQuality
+from common.config import ConfigItem, config
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
 from common.thread.get_meta_data_thread import GetFolderMetaDataThread
@@ -16,8 +15,9 @@ from components.widgets.slider import Slider
 from components.widgets.tooltip import StateTooltip, ToastTooltip
 from PyQt5.QtCore import QEvent, Qt, QUrl, pyqtSignal
 from PyQt5.QtGui import QColor, QDesktopServices
-from PyQt5.QtWidgets import (QButtonGroup, QFileDialog, QFontDialog, QLabel,
-                             QLineEdit, QPushButton, QRadioButton, QWidget, QVBoxLayout)
+from PyQt5.QtWidgets import (QButtonGroup, QCheckBox, QFileDialog, QFontDialog,
+                             QLabel, QLineEdit, QPushButton, QRadioButton,
+                             QVBoxLayout, QWidget)
 
 
 class SettingInterface(ScrollArea):
@@ -142,6 +142,14 @@ class SettingInterface(ScrollArea):
         self.lyricFontButton = QPushButton(
             self.tr("Choose font"), self.scrollwidget)
 
+        # embedded lyrics
+        self.embedLyricLabel = QLabel(
+            self.tr("Embedded Lyrics"), self.scrollwidget)
+        self.preferEmbedCheckBox = QCheckBox(
+            self.tr("Prefer embedded lyrics"), self.scrollwidget)
+        self.embedWhenSaveCheckBox = QCheckBox(
+            self.tr("Embed lyrics when saving song information"), self.scrollwidget)
+
         # download folder
         self.downloadFolderHintLabel = QLabel('')
         self.downloadFolderButton = QPushButton(
@@ -165,7 +173,7 @@ class SettingInterface(ScrollArea):
         self.downloadFolderLineEdit.resize(313, 42)
         self.downloadFolderLineEdit.setReadOnly(True)
         self.downloadFolderLineEdit.setCursorPosition(0)
-        self.scrollwidget.resize(self.width(), 2140)
+        self.scrollwidget.resize(self.width(), 2340)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setViewportMargins(0, 120, 0, 0)
         self.setWidget(self.scrollwidget)
@@ -195,6 +203,10 @@ class SettingInterface(ScrollArea):
         self.lyricStrokeSizeSlider.setSingleStep(1)
         self.lyricStrokeSizeSlider.setValue(strokeSize.value)
         self.lyricStrokeSizeValueLabel.setNum(strokeSize.value)
+
+        # set embedded lyrics
+        self.preferEmbedCheckBox.setChecked(config.preferEmbedLyric.value)
+        self.embedWhenSaveCheckBox.setChecked(config.embedLyricWhenSave.value)
 
         self.__updateMetaDataSwitchButtonEnabled()
 
@@ -262,10 +274,15 @@ class SettingInterface(ScrollArea):
         self.lyricStrokeSizeValueLabel.move(230, 1684)
         self.lyricAlignGroup.move(30, 1724)
 
+        # embedded lyrics
+        self.embedLyricLabel.move(30, 1917)
+        self.preferEmbedCheckBox.move(30, 1967)
+        self.embedWhenSaveCheckBox.move(30, 2007)
+
         # download folder
-        self.downloadFolderLabel.move(30, 1909)
-        self.downloadFolderLineEdit.move(30, 1969)
-        self.downloadFolderButton.move(350, 1969)
+        self.downloadFolderLabel.move(30, 2069)
+        self.downloadFolderLineEdit.move(30, 2129)
+        self.downloadFolderButton.move(350, 2129)
 
         # application
         self.appLabel.move(self.width() - 400, 18)
@@ -330,6 +347,7 @@ class SettingInterface(ScrollArea):
         self.selectMusicFolderLabel.setObjectName("clickableLabel")
         self.desktopLyricLabel.setObjectName("titleLabel")
         self.lyricStyleLabel.setObjectName("subTitleLabel")
+        self.embedLyricLabel.setObjectName("titleLabel")
         setStyleSheet(self, 'setting_interface')
 
     def resizeEvent(self, e):
@@ -447,6 +465,10 @@ class SettingInterface(ScrollArea):
             self.__onLyricStrokeSizeChanged)
         self.lyricAlignGroup.buttonClicked.connect(
             self.__onLyricAlignmentChanged)
+        self.preferEmbedCheckBox.stateChanged.connect(
+            lambda: config.set(config.preferEmbedLyric, self.preferEmbedCheckBox.isChecked()))
+        self.embedWhenSaveCheckBox.stateChanged.connect(
+            lambda: config.set(config.embedLyricWhenSave, self.embedWhenSaveCheckBox.isChecked()))
         self.modeGroup.buttonClicked.connect(self.__onThemeModeChanged)
         self.getMetaDataSwitchButton.checkedChanged.connect(
             self.__onGetMetaDataSwitchButtonCheckedChanged)

@@ -77,7 +77,7 @@ class KuGouLyricParser(LyricParserBase):
             if not lyric:
                 return True
 
-            for i in ['[id:$', '[ti:', '[ar:', '[al:', '[by:', '[offset:']:
+            for i in ['[id:$', '[ti:', '[ar:', '[al:', '[by:', '[offset:', "\r\n"]:
                 if i in lyric:
                     return True
 
@@ -96,9 +96,14 @@ class KuGouLyricParser(LyricParserBase):
             time, text = line.split(']')
             time = time[1:]
             minutes, seconds = time.split(':')
-            if minutes.isnumeric():
-                time = str(float(minutes)*60 + float(seconds))
+            if not minutes.isnumeric():
+                continue
+
+            time = str(float(minutes)*60 + float(seconds))
+            if time not in lyrics:
                 lyrics[time] = [text]
+            else:
+                lyrics[time].append(text)
 
         return lyrics
 

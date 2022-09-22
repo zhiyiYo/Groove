@@ -9,7 +9,8 @@ ID3_FRAME_MAP = {
     "track": "TRCK",
     "disc": "TPOS",
     "trackTotal": "TRCK",
-    "discTotal": "TPOS"
+    "discTotal": "TPOS",
+    "lyrics": "USLT"
 }
 
 
@@ -22,7 +23,8 @@ MP4_FRAME_MAP = {
     "track": "trkn",
     "disc": "disk",
     "trackTotal": "trkn",
-    "discTotal": "disk"
+    "discTotal": "disk",
+    "lyrics": "©lyr"
 }
 
 
@@ -35,7 +37,8 @@ VORBIS_FRAME_MAP = {
     "track": "tracknumber",
     "disc": "discnumber",
     "trackTotal": "tracktotal",
-    "discTotal": "discTotal"
+    "discTotal": "discTotal",
+    "lyrics": "lyrics"
 }
 
 
@@ -48,7 +51,8 @@ APEV2_FRAME_MAP = {
     "track": "Track",
     "disc": "Disc",
     "trackTotal": "Track",
-    "discTotal": "Disc"
+    "discTotal": "Disc",
+    "lyrics": "Lyrics"
 }
 
 
@@ -61,5 +65,6 @@ ASF_FRAME_MAP = {
     "track": "WM/TrackNumber",
     "disc": "WM/PartOfSet",
     "trackTotal": "WM/TrackNumber",
-    "discTotal": "WM/PartOfSet"
+    "discTotal": "WM/PartOfSet",
+    "lyrics": "WM/Lyrics"
 }

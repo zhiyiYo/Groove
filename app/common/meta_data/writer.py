@@ -14,7 +14,7 @@ from mutagen.apev2 import APEBinaryValue, APETextValue, APEv2
 from mutagen.asf import ASF, ASFByteArrayAttribute, ASFUnicodeAttribute
 from mutagen.flac import FLAC, Picture
 from mutagen.id3 import (APIC, ID3, TALB, TCON, TDRC, TIT2, TPE1, TPE2, TPOS,
-                         TRCK)
+                         TRCK, USLT)
 from mutagen.monkeysaudio import MonkeysAudio
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
@@ -55,7 +55,7 @@ class MetaDataWriterBase:
     options = []
     _Tag = None
     frameMap = {}
-    excludeFrames = ['trackTotal', "discTotal"]
+    excludeFrames = ['trackTotal', "discTotal", "lyrics"]
 
     def __init__(self, file: Union[str, Path]):
         """
@@ -74,12 +74,12 @@ class MetaDataWriterBase:
                 self.audio = self._Tag()
 
     @classmethod
-    def canWrite(cls, file: Union[str, Path]):
+    def canWrite(cls, file: Union[str, Path]) -> bool:
         """ determine whether information can be written to the file """
         return str(file).lower().endswith(tuple(cls.formats))
 
     @save
-    def writeSongInfo(self, songInfo: SongInfo):
+    def writeSongInfo(self, songInfo: SongInfo) -> bool:
         """ write song information
 
         Parameters
@@ -100,7 +100,7 @@ class MetaDataWriterBase:
                 if k not in self.excludeFrames and songInfo[k] is not None:
                     self.audio[v] = self._v(songInfo, k)
 
-    def writeAlbumCover(self, picData: bytes, mimeType: str):
+    def writeAlbumCover(self, picData: bytes, mimeType: str) -> bool:
         """ write album cover
 
         Parameters
@@ -117,6 +117,22 @@ class MetaDataWriterBase:
             whether write album cover successfully
         """
         raise NotImplementedError
+
+    @save
+    def writeLyric(self, lyric: str) -> bool:
+        """ write lyrics
+
+        Parameters
+        ----------
+        lyric: str
+            lyrics in `.lrc` format
+
+        Returns
+        -------
+        success: bool
+            whether write lyrics successfully
+        """
+        self.audio[self.frameMap["lyrics"]] = [lyric]
 
     def _v(self, songInfo: SongInfo, key: str):
         """ get the value of frame """
@@ -202,6 +218,29 @@ class MetaDataWriter:
         logger.info(f'The format of {file} is not supported')
         return False
 
+    def writeLyrics(self, file: Union[str, Path], lyric: str):
+        """ write lyrics
+
+        Parameters
+        ----------
+        file: str or Path
+            audio file path
+
+        lyric: str
+            lyrics in `.lrc` format
+
+        Returns
+        -------
+        success: bool
+            whether write lyrics successfully
+        """
+        for Writer in self._writers:
+            if Writer.canWrite(file):
+                return Writer(file).writeLyric(lyric)
+
+        logger.info(f'The format of {file} is not supported')
+        return False
+
 
 @MetaDataWriter.register
 class ID3Writer(MetaDataWriterBase):
@@ -242,6 +281,21 @@ class ID3Writer(MetaDataWriterBase):
         self.audio[keyName] = APIC(
             encoding=0, mime=mimeType, type=3, desc='', data=picData)
 
+    @save
+    def writeLyric(self, lyric: str):
+        keys = []
+
+        # get lyric keys which may already exist
+        for k in self.audio.keys():
+            if k.startswith("USLT"):
+                keys.append(k)
+
+        # pop old lyric keys to write new data
+        for k in keys:
+            self.audio.pop(k)
+
+        self.audio["USLT::XXX"] = USLT(encoding=3, desc="", text=lyric)
+
 
 @MetaDataWriter.register
 class AIFFWriter(ID3Writer):
@@ -268,7 +322,7 @@ class FLACWriter(MetaDataWriterBase):
     formats = [".flac"]
     options = [FLAC]
     frameMap = VORBIS_FRAME_MAP
-    excludeFrames = []
+    excludeFrames = ["lyrics"]
 
     @save
     def writeAlbumCover(self, picData: bytes, mimeType: str):
@@ -287,7 +341,7 @@ class OGGWriter(MetaDataWriterBase):
     formats = [".ogg", ".opus"]
     options = [OggVorbis, OggFLAC, OggSpeex, OggOpus]
     frameMap = VORBIS_FRAME_MAP
-    excludeFrames = []
+    excludeFrames = ["lyrics"]
 
     def _v(self, songInfo, key):
         return [str(songInfo[key])]
@@ -360,3 +414,7 @@ class ASFWriter(MetaDataWriterBase):
     @save
     def writeAlbumCover(self, picData: bytes, mimeType: str):
         self.audio['WM/Picture'] = ASFByteArrayAttribute(data=picData)
+
+    @save
+    def writeLyric(self, lyric: str) -> bool:
+        self.audio["WM/Lyrics"] = ASFUnicodeAttribute(lyric)

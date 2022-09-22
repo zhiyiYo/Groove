@@ -2048,6 +2048,21 @@
         <source>Select Font</source>
         <translation>选择字体</translation>
     </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="144"/>
+        <source>Embedded Lyrics</source>
+        <translation>内嵌歌词</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="146"/>
+        <source>Prefer embedded lyrics</source>
+        <translation>优先使用内嵌歌词</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="148"/>
+        <source>Embed lyrics when saving song information</source>
+        <translation>保存歌曲信息时嵌入歌词</translation>
+    </message>
 </context>
 <context>
     <name>QPlatformTheme</name>

@@ -351,6 +351,8 @@
         <file>images/setting_interface/Close_black.png</file>
         <file>images/setting_interface/Add_white.png</file>
         <file>images/setting_interface/Close_white.png</file>
+        <file>images/setting_interface/CheckMark.png</file>
+        <file>images/setting_interface/CheckMark_pressed.png</file>
         <file>images/singer_interface/Play_black_hover.png</file>
         <file>images/singer_interface/Play_black_normal.png</file>
         <file>images/singer_interface/Play_black_pressed.png</file>

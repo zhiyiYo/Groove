@@ -24,6 +24,7 @@ class ConfigValidator:
         """ correct illegal value """
         return value
 
+
 class RangeValidator(ConfigValidator):
     """ Range validator """
 
@@ -254,6 +255,12 @@ class Config(Singleton):
         "DesktopLyric", "FontFamily", "Microsoft YaHei")
     deskLyricAlignment = ConfigItem(
         "DesktopLyric", "Alignment", "Center", OptionsValidator(["Center", "Left", "Right"]))
+
+    # embedded lyrics
+    preferEmbedLyric = ConfigItem(
+        "EmbeddedLyric", "PreferEmbedded", True, BoolValidator())
+    embedLyricWhenSave = ConfigItem(
+        "EmbeddedLyric", "EmbedWhenSave", False, BoolValidator())    # embed lyric when saving song info
 
     def __init__(self):
         self.__theme = "Light"

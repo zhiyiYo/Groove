@@ -4,6 +4,7 @@ from pathlib import Path
 from shutil import rmtree
 from typing import List, Union
 
+from common.exception_handler import exceptionHandler
 from common.cache import albumCoverFolder
 from common.database.entity import SongInfo
 from common.image_utils import getPicSuffix
@@ -25,27 +26,6 @@ from mutagen.oggspeex import OggSpeex
 from mutagen.oggvorbis import OggVorbis
 from mutagen.trueaudio import TrueAudio
 from mutagen.wave import WAVE
-
-logger = Logger("meta_data_reader")
-
-
-def exceptionHandler(func):
-    """ decorator for exception handling
-
-    Parameters
-    ----------
-    *default:
-        the default value returned when an exception occurs
-    """
-
-    def wrapper(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except Exception as e:
-            logger.error(e)
-            return False
-
-    return wrapper
 
 
 class AlbumCoverReader:
@@ -76,7 +56,7 @@ class AlbumCoverReader:
             cls.getAlbumCover(songInfo)
 
     @classmethod
-    @exceptionHandler
+    @exceptionHandler("meta_data_reader", False)
     def getAlbumCover(cls, songInfo: SongInfo) -> bool:
         """ Read and save an album cover from audio file """
         cls.coverFolder.mkdir(exist_ok=True, parents=True)

@@ -212,3 +212,32 @@ QLineEdit:hover {
 RadioButtonGroup {
     background-color: transparent;
 }
+
+
+/* 复选框样式 */
+QCheckBox {
+    font: 18px 'Segoe UI', 'Microsoft YaHei';
+    background-color: transparent;
+    spacing: 10px
+}
+
+QCheckBox::indicator {
+    /*需要减去边框的宽度*/
+    width: 23px;
+    height: 23px;
+    background-color: transparent;
+    border: 1px solid white;
+    border-radius: 6px;
+}
+
+
+QCheckBox::indicator:pressed {
+    border: 1px solid rgb(125, 125, 125);
+}
+
+
+QCheckBox::indicator:checked {
+    border-image: url(:/images/setting_interface/CheckMark.png);
+    background-color: rgb(0, 153, 188);
+    border: 1px solid rgb(0, 153, 188);
+}

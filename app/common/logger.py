@@ -1,8 +1,28 @@
 # coding:utf-8
 import logging
+import weakref
 from pathlib import Path
 
 
+_loggers = weakref.WeakValueDictionary()
+
+
+def loggerCache(cls):
+    """ decorator for caching logger """
+
+    def wrapper(name, *args, **kwargs):
+        if name not in _loggers:
+            instance = cls(name, *args, **kwargs)
+            _loggers[name] = instance
+        else:
+            instance = _loggers[name]
+
+        return instance
+
+    return wrapper
+
+
+@loggerCache
 class Logger:
     """ Logger class """
 
@@ -19,7 +39,8 @@ class Logger:
         self.__logFile = self.logFolder/(fileName+'.log')
         self.__logger = logging.getLogger(fileName)
         self.__consoleHandler = logging.StreamHandler()
-        self.__fileHandler = logging.FileHandler(self.__logFile, encoding='utf-8')
+        self.__fileHandler = logging.FileHandler(
+            self.__logFile, encoding='utf-8')
 
         # set log level
         self.__logger.setLevel(logging.DEBUG)
