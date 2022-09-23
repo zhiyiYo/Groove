@@ -218,7 +218,8 @@ RadioButtonGroup {
 QCheckBox {
     font: 18px 'Segoe UI', 'Microsoft YaHei';
     background-color: transparent;
-    spacing: 10px
+    spacing: 10px;
+    color: white;
 }
 
 QCheckBox::indicator {

@@ -190,6 +190,10 @@ class MainWindow(AcrylicWindow):
                     triggered=self.exitFullScreen),
             QAction(self, shortcut=Qt.Key_Space,
                     triggered=self.togglePlayState),
+            QAction(self, shortcut="Ctrl++", triggered=self.playSpeedUp),
+            QAction(self, shortcut="Ctrl+-", triggered=self.playSpeedDown),
+            QAction(self, shortcut="Ctrl+Enter",
+                    triggered=self.playSpeedReset),
         ])
 
     def initLibrary(self):
@@ -259,7 +263,7 @@ class MainWindow(AcrylicWindow):
         self.player.setNotifyInterval(1000)
         self.updateLyricPosTimer.setInterval(200)
 
-        self.initPlaylist()
+        self.initPlayer()
         self.connectSignalToSlot()
         self.initPlayBar()
 
@@ -400,8 +404,8 @@ class MainWindow(AcrylicWindow):
             self.libraryThread.library.loadFromFiles, files=files)
         self.libraryThread.start()
 
-    def initPlaylist(self):
-        """ initialize playlist """
+    def initPlayer(self):
+        """ initialize player """
         self.player.setPlaylist(self.mediaPlaylist)
 
         if len(sys.argv) > 1:
@@ -422,6 +426,7 @@ class MainWindow(AcrylicWindow):
             # don't modify the following code
             self.mediaPlaylist.setCurrentIndex(index)
 
+        # initialize duration
         duration = self.mediaPlaylist.getCurrentSong().duration or 0
         duration *= 1000
         self.setDuration(duration)
@@ -432,6 +437,9 @@ class MainWindow(AcrylicWindow):
         pos = config.get(config.playerPosition)
         pos = 0 if pos > duration else pos
         self.player.setPosition(max(0, pos))
+
+        # initialize playback speed
+        self.player.setPlaybackRate(config.get(config.playerSpeed))
 
     def initPlayBar(self):
         """ initialize play bar """
@@ -1207,6 +1215,23 @@ class MainWindow(AcrylicWindow):
         shuffle(playlist)
         self.setPlaylist(playlist)
 
+    def playSpeedUp(self):
+        """ speed up playback speed """
+        speed = self.player.playbackRate()+0.1
+        self.player.setPlaybackRate(speed)
+        config.set(config.playerSpeed, speed)
+
+    def playSpeedDown(self):
+        """ speed down playback speed """
+        speed = max(0.1, self.player.playbackRate()-0.1)
+        self.player.setPlaybackRate(speed)
+        config.set(config.playerSpeed, speed)
+
+    def playSpeedReset(self):
+        """ reset playback speed """
+        self.player.setPlaybackRate(1)
+        config.set(config.playerSpeed, 1)
+
     def onEditSongInfo(self, oldSongInfo: SongInfo, newSongInfo: SongInfo):
         """ edit song information slot """
         self.library.updateSongInfo(oldSongInfo, newSongInfo)
@@ -1467,6 +1492,10 @@ class MainWindow(AcrylicWindow):
         signalBus.playCheckedSig.connect(self.playCustomPlaylist)
         signalBus.playOneSongCardSig.connect(self.playOneSongCard)
         signalBus.nextToPlaySig.connect(self.onSongsNextToPlay)
+
+        signalBus.playSpeedUpSig.connect(self.playSpeedUp)
+        signalBus.playSpeedDownSig.connect(self.playSpeedDown)
+        signalBus.playSpeedResetSig.connect(self.playSpeedReset)
 
         signalBus.editSongInfoSig.connect(self.onEditSongInfo)
         signalBus.editAlbumInfoSig.connect(self.onEditAlbumInfo)

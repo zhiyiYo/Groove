@@ -213,6 +213,14 @@
         <file>images/menu/FolderSearch_black.png</file>
         <file>images/menu/FileComment_white.png</file>
         <file>images/menu/FileComment_black.png</file>
+        <file>images/menu/Speed_white.png</file>
+        <file>images/menu/Speed_black.png</file>
+        <file>images/menu/SpeedUp_black.png</file>
+        <file>images/menu/SpeedUp_white.png</file>
+        <file>images/menu/SpeedDown_black.png</file>
+        <file>images/menu/SpeedDown_white.png</file>
+        <file>images/menu/SpeedReset_black.png</file>
+        <file>images/menu/SpeedReset_white.png</file>
         <file>images/navigation_interface/clear_hover.png</file>
         <file>images/navigation_interface/clear_normal.png</file>
         <file>images/navigation_interface/clear_pressed.png</file>

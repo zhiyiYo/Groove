@@ -1105,6 +1105,11 @@
         <source>Go full screen</source>
         <translation>转到全屏</translation>
     </message>
+    <message>
+        <location filename="../../components/widgets/menu.py" line="285"/>
+        <source>Playback speed</source>
+        <translation>播放速度</translation>
+    </message>
 </context>
 <context>
     <name>PlayButton</name>
@@ -1238,6 +1243,29 @@
         <location filename="../../components/widgets/menu.py" line="344"/>
         <source>Reveal in explorer</source>
         <translation>打开歌词文件位置</translation>
+    </message>
+    <message>
+        <location filename="../../components/widgets/menu.py" line="349" />
+        <source>Playback speed</source>
+        <translation>播放速度</translation>
+    </message>
+</context>
+<context>
+    <name>PlaySpeedMenu</name>
+    <message>
+        <location filename="../../components/widgets/menu.py" line="360"/>
+        <source>Faster</source>
+        <translation>加速播放</translation>
+    </message>
+    <message>
+        <location filename="../../components/widgets/menu.py" line="362"/>
+        <source>Slower</source>
+        <translation>减速播放</translation>
+    </message>
+    <message>
+        <location filename="../../components/widgets/menu.py" line="364"/>
+        <source>Normal</source>
+        <translation>恢复原速</translation>
     </message>
 </context>
 <context>

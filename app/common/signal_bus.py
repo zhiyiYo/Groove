@@ -12,7 +12,7 @@ from .singleton import Singleton
 class SignalBus(Singleton, QObject):
     """ Signal bus in Groove Music """
     appMessageSig = pyqtSignal(object)          # APP 发来消息
-    appErrorSig = pyqtSignal(str)                  # APP 发生异常
+    appErrorSig = pyqtSignal(str)               # APP 发生异常
 
     randomPlayAllSig = pyqtSignal()             # 无序播放所有
     playCheckedSig = pyqtSignal(list)           # 播放选中的歌曲
@@ -63,6 +63,10 @@ class SignalBus(Singleton, QObject):
 
     randomPlayChanged = pyqtSignal(bool)                        # 随机播放
     loopModeChanged = pyqtSignal(QMediaPlaylist.PlaybackMode)   # 循环模式
+
+    playSpeedUpSig = pyqtSignal()       # 加速播放
+    playSpeedDownSig = pyqtSignal()     # 减速播放
+    playSpeedResetSig = pyqtSignal()    # 恢复播放速度
 
     showMainWindowSig = pyqtSignal()      # 显示主界面
     fullScreenChanged = pyqtSignal(bool)  # 全屏/退出全屏

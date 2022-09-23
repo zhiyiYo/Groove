@@ -239,6 +239,8 @@ class Config(Singleton):
     playerMuted = ConfigItem("Player", "Muted", False, BoolValidator())
     playerPosition = ConfigItem(
         "Player", "Position", 0, RangeValidator(0, float("inf")))
+    playerSpeed = ConfigItem(
+        "Player", "Speed", 1, RangeValidator(0.1, float("inf")))
 
     # desktop lyric
     deskLyricFontColor = ConfigItem(

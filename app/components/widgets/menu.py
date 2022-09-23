@@ -2,6 +2,7 @@
 from common.crawler import SongQuality
 from common.icon import Icon, getIconColor
 from common.os_utils import getPlaylistNames
+from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
 from common.window_effect import WindowEffect
 from PyQt5.QtCore import (QEasingCurve, QEvent, QPropertyAnimation, QRect, Qt,
@@ -36,6 +37,10 @@ class MenuIconFactory:
     VIEW = "View"
     FOLDER_SEARCH = "FolderSearch"
     FILE_COMMENT = "FileComment"
+    SPEED = "Speed"
+    SPEED_UP = "SpeedUp"
+    SPEED_DOWN = "SpeedDown"
+    SPEED_RESET = "SpeedReset"
 
     @classmethod
     def create(cls, iconType: str):
@@ -235,7 +240,6 @@ class MoreActionsMenu(AeroMenu):
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self.action_list = []
         self.animation = QPropertyAnimation(self, b"geometry")
         self._createActions()
         self.__initWidget()
@@ -251,9 +255,9 @@ class MoreActionsMenu(AeroMenu):
         raise NotImplementedError
 
     def exec(self, pos):
-        h = len(self.action_list) * 38
+        h = len(self.actions()) * 38
         w = max(self.fontMetrics().width(i.text())
-                for i in self.action_list) + 65
+                for i in self.actions()) + 65
         self.animation.setStartValue(QRect(pos.x(), pos.y(), 1, h))
         self.animation.setEndValue(QRect(pos.x(), pos.y(), w, h))
         self.animation.start()
@@ -272,9 +276,12 @@ class PlayBarMoreActionsMenu(MoreActionsMenu):
             MIF.create(MIF.PLAYLIST), self.tr("Show now playing list"), self)
         self.fullScreenAct = QAction(
             MIF.create(MIF.FULL_SCREEN), self.tr("Go full screen"), self)
-        self.action_list = [self.showPlayListAct, self.fullScreenAct,
-                            self.savePlayListAct, self.clearPlayListAct]
-        self.addActions(self.action_list)
+        self.addActions([self.showPlayListAct, self.fullScreenAct])
+
+        # play speed submenu
+        self.addMenu(PlaySpeedMenu(self.tr("Playback speed"), self))
+
+        self.addActions([self.savePlayListAct, self.clearPlayListAct])
 
 
 class PlayingInterfaceMoreActionsMenu(MoreActionsMenu):
@@ -302,6 +309,9 @@ class PlayingInterfaceMoreActionsMenu(MoreActionsMenu):
         self.lyricVisibleChanged.emit(not isVisible)
 
     def _createActions(self):
+        # play speed submenu
+        self.addMenu(PlaySpeedMenu(self.tr("Playback speed"), self))
+
         self.savePlayListAct = QAction(
             MIF.create(MIF.ADD), self.tr("Save as a playlist"), self)
         self.clearPlayListAct = QAction(
@@ -318,15 +328,14 @@ class PlayingInterfaceMoreActionsMenu(MoreActionsMenu):
             MIF.FILE_COMMENT), self.tr("Use external lyric file"), self)
         self.movieAct = QAction(
             MIF.create(MIF.MOVIE), self.tr('Watch MV'), self)
-        self.action_list = [
+        self.addActions([
             self.savePlayListAct,
             self.clearPlayListAct,
             self.locateAct,
-            self.movieAct,
-            self.showLyricAct,
-        ]
-        self.addActions(self.action_list[:-1])
+            self.movieAct
+        ])
 
+        # lyric submenu
         self.lyricMenu = DWMMenu(self.tr("Lyric"), self)
         self.lyricMenu.setIcon(MIF.create(MIF.LYRIC))
         self.lyricMenu.addActions([
@@ -335,3 +344,25 @@ class PlayingInterfaceMoreActionsMenu(MoreActionsMenu):
         ])
         self.addMenu(self.lyricMenu)
         self.lyricMenu.setObjectName("lyricMenu")
+
+
+class PlaySpeedMenu(DWMMenu):
+    """ Play speed menu """
+
+    def __init__(self, title, parent=None):
+        super().__init__(title, parent)
+        self.setObjectName("playSpeedMenu")
+        self.setIcon(MIF.create(MIF.SPEED))
+
+        self.speedUpAct = QAction(MIF.create(
+            MIF.SPEED_UP), self.tr("Faster"), self)
+        self.speedDownAct = QAction(MIF.create(
+            MIF.SPEED_DOWN), self.tr("Slower"), self)
+        self.speedResetAct = QAction(MIF.create(
+            MIF.SPEED_RESET), self.tr("Normal"), self)
+        self.addActions([
+            self.speedUpAct, self.speedDownAct, self.speedResetAct])
+
+        self.speedUpAct.triggered.connect(signalBus.playSpeedUpSig)
+        self.speedDownAct.triggered.connect(signalBus.playSpeedDownSig)
+        self.speedResetAct.triggered.connect(signalBus.playSpeedResetSig)
