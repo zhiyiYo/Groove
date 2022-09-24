@@ -122,6 +122,10 @@ English | <a href="docs/README_zh.md">简体中文</a>
 
   I solved this problem on Ubuntu 20.04 by `sudo apt-get install gstreamer1.0-libav`.
 
+* **What formats of lyrics files are supported?**
+
+  Currently, lyrics in `.lrc` format and `.json` format are supported. Refer to [lyrics file format](./docs/lyrics_format.md) for more information.
+
 ## License
 ```
 MIT License

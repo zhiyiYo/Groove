@@ -122,6 +122,10 @@
 
   可以尝试 `sudo apt-get install gstreamer1.0-libav` 来解决该问题，Ubuntu 20.04 亲测有效。
 
+* **支持哪些格式的歌词文件呀？**
+
+  目前支持 `.lrc` 和 `.json` 格式的歌词文件，更多信息请参见 [歌词文件格式说明](./lyrics_format.md)。
+
 ## 许可证
 ```txt
 MIT License
