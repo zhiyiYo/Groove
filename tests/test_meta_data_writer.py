@@ -1,11 +1,10 @@
 # coding:utf-8
+from app.common.lyric import Lyric
+from app.common.database.entity import SongInfo
+from app.common.meta_data.writer import MetaDataWriter
+from unittest import TestCase
 import sys
 sys.path.append('./app')
-
-from unittest import TestCase
-from app.common.meta_data.writer import MetaDataWriter
-from app.common.database.entity import SongInfo
-from app.common.lyric import Lyric
 
 
 class TestMetaDataWriter(TestCase):
@@ -32,8 +31,8 @@ class TestMetaDataWriter(TestCase):
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
             songInfo.file, 'app/cache/Album_Cover/Maroon 5_Ⅴ/cover.jpg'))
-        self.assertTrue(self.writer.writeLyrics(
-            songInfo.file, Lyric.load("app/cache/lyric/Maroon 5_Sugar.json").serialize()))
+        self.assertTrue(self.writer.writeLyric(
+            songInfo.file, Lyric.load("app/cache/lyric/Maroon 5_Sugar.json")))
 
     def test_write_aiff(self):
         """ 测试写入 AIFF 元数据 """
@@ -53,8 +52,8 @@ class TestMetaDataWriter(TestCase):
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
             songInfo.file, 'app/cache/Album_Cover/aiko_暁のラブレター/cover.jpg'))
-        self.assertTrue(self.writer.writeLyrics(
-            songInfo.file, Lyric.load("app/cache/lyric/aiko_彼の落書き.json").serialize()))
+        self.assertTrue(self.writer.writeLyric(
+            songInfo.file, Lyric.load("app/cache/lyric/aiko_彼の落書き.json")))
 
     def test_write_aac(self):
         """ 测试写入 AAC 元数据 """
@@ -74,8 +73,8 @@ class TestMetaDataWriter(TestCase):
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
             songInfo.file, 'app/cache/Album_Cover/aiko_どうしたって伝えられないから/cover.jpg'))
-        self.assertTrue(self.writer.writeLyrics(
-            songInfo.file, Lyric.load("app/cache/lyric/aiko_磁石.json").serialize()))
+        self.assertTrue(self.writer.writeLyric(
+            songInfo.file, Lyric.load("app/cache/lyric/aiko_磁石.json")))
 
     def test_write_flac(self):
         """ 测试写入 FLAC 元数据 """
@@ -95,8 +94,8 @@ class TestMetaDataWriter(TestCase):
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
             songInfo.file, 'app/cache/Album_Cover/RADWIMPS_ココロノナカ/cover.jpg'))
-        self.assertTrue(self.writer.writeLyrics(
-            songInfo.file, Lyric.load("app/cache/lyric/RADWIMPS_ココロノナカ.json").serialize()))
+        self.assertTrue(self.writer.writeLyric(
+            songInfo.file, Lyric.load("app/cache/lyric/RADWIMPS_ココロノナカ.json")))
 
     def test_write_ogg(self):
         """ 测试写入 OGG 元数据 """
@@ -116,8 +115,8 @@ class TestMetaDataWriter(TestCase):
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
             songInfo.file, 'app/cache/Album_Cover/aiko_かばん/cover.jpg'))
-        self.assertTrue(self.writer.writeLyrics(
-            songInfo.file, Lyric.load("app/cache/lyric/aiko_かばん.json").serialize()))
+        self.assertTrue(self.writer.writeLyric(
+            songInfo.file, Lyric.load("app/cache/lyric/aiko_かばん.json")))
 
     def test_write_opus(self):
         """ 测试写入 OPUS 元数据 """
@@ -137,8 +136,8 @@ class TestMetaDataWriter(TestCase):
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
             songInfo.file, 'app/cache/Album_Cover/aiko_秘密/cover.jpg'))
-        self.assertTrue(self.writer.writeLyrics(
-            songInfo.file, Lyric.load("app/cache/lyric/aiko_シアワセ.json").serialize()))
+        self.assertTrue(self.writer.writeLyric(
+            songInfo.file, Lyric.load("app/cache/lyric/aiko_シアワセ.json")))
 
     def test_write_m4a(self):
         """ 测试写入 M4A 元数据 """
@@ -158,8 +157,8 @@ class TestMetaDataWriter(TestCase):
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
             songInfo.file, 'app/cache/Album_Cover/RADWIMPS_アルトコロニーの定理/cover.png'))
-        self.assertTrue(self.writer.writeLyrics(
-            songInfo.file, Lyric.load("app/cache/lyric/RADWIMPS_謎謎.json").serialize()))
+        self.assertTrue(self.writer.writeLyric(
+            songInfo.file, Lyric.load("app/cache/lyric/RADWIMPS_謎謎.json")))
 
     def test_write_ape(self):
         """ 测试写入 APE 元数据 """
@@ -179,8 +178,8 @@ class TestMetaDataWriter(TestCase):
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
             songInfo.file, 'app/cache/Album_Cover/aiko_May Dream/cover.jpg'))
-        self.assertTrue(self.writer.writeLyrics(
-            songInfo.file, Lyric.load("app/cache/lyric/aiko_何時何分.json").serialize()))
+        self.assertTrue(self.writer.writeLyric(
+            songInfo.file, Lyric.load("app/cache/lyric/aiko_何時何分.json")))
 
     def test_write_ac3(self):
         """ 测试写入 AC3 元数据 """
@@ -200,8 +199,8 @@ class TestMetaDataWriter(TestCase):
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
             songInfo.file, "app/cache/Album_Cover/B.o.B_Nothin' On You/cover.jpg"))
-        self.assertTrue(self.writer.writeLyrics(
-            songInfo.file, Lyric.load("app/cache/lyric/B.o.B_Nothin' on You.json").serialize()))
+        self.assertTrue(self.writer.writeLyric(
+            songInfo.file, Lyric.load("app/cache/lyric/B.o.B_Nothin' on You.json")))
 
     def test_write_tta(self):
         """ 测试写入 TTA 元数据 """
@@ -221,8 +220,8 @@ class TestMetaDataWriter(TestCase):
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
             songInfo.file, "app/cache/Album_Cover/aiko_ストロー/cover.jpg"))
-        self.assertTrue(self.writer.writeLyrics(
-            songInfo.file, Lyric.load("app/cache/lyric/aiko_夜の風邪.json").serialize()))
+        self.assertTrue(self.writer.writeLyric(
+            songInfo.file, Lyric.load("app/cache/lyric/aiko_夜の風邪.json")))
 
     def test_write_asf(self):
         """ 测试写入 ASF 元数据 """
@@ -242,8 +241,8 @@ class TestMetaDataWriter(TestCase):
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
             songInfo.file, "app/cache/Album_Cover/aiko_もっと/cover.jpg"))
-        self.assertTrue(self.writer.writeLyrics(
-            songInfo.file, Lyric.load("app/cache/lyric/aiko_もっと.json").serialize()))
+        self.assertTrue(self.writer.writeLyric(
+            songInfo.file, Lyric.load("app/cache/lyric/aiko_もっと.json")))
 
     def test_write_wma(self):
         """ 测试写入 WMA 元数据 """
@@ -263,8 +262,8 @@ class TestMetaDataWriter(TestCase):
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
             songInfo.file, "app/cache/Album_Cover/BEYOND_海阔天空/cover.jpg"))
-        self.assertTrue(self.writer.writeLyrics(
-            songInfo.file, Lyric.load("app/cache/lyric/BEYOND_海阔天空.json").serialize()))
+        self.assertTrue(self.writer.writeLyric(
+            songInfo.file, Lyric.load("app/cache/lyric/BEYOND_海阔天空.json")))
 
     def test_write_wv(self):
         """ 测试写入 WavPack 元数据 """
@@ -284,8 +283,8 @@ class TestMetaDataWriter(TestCase):
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
             songInfo.file, "app/cache/Album_Cover/Bruno Mars_Unorthodox Jukebox/cover.jpg"))
-        self.assertTrue(self.writer.writeLyrics(
-            songInfo.file, Lyric.load("app/cache/lyric/Bruno Mars_Treasure.json").serialize()))
+        self.assertTrue(self.writer.writeLyric(
+            songInfo.file, Lyric.load("app/cache/lyric/Bruno Mars_Treasure.json")))
 
     def test_write_wav(self):
         """ 测试写入 Waveform 元数据 """
@@ -305,8 +304,8 @@ class TestMetaDataWriter(TestCase):
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
             songInfo.file, "app/cache/Album_Cover/Charli XCX_Sucker/cover.jpg"))
-        self.assertTrue(self.writer.writeLyrics(
-            songInfo.file, Lyric.load("app/cache/lyric/Charli XCX_Boom Clap.json").serialize()))
+        self.assertTrue(self.writer.writeLyric(
+            songInfo.file, Lyric.load("app/cache/lyric/Charli XCX_Boom Clap.json")))
 
     def test_write_mpc(self):
         """ 测试写入 Musepack 元数据 """
@@ -326,5 +325,5 @@ class TestMetaDataWriter(TestCase):
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
             songInfo.file, "app/cache/Album_Cover/ClariS_BIRTHDAY/cover.jpg"))
-        self.assertTrue(self.writer.writeLyrics(
-            songInfo.file, Lyric.load("app/cache/lyric/ClariS_irony.json").serialize()))
+        self.assertTrue(self.writer.writeLyric(
+            songInfo.file, Lyric.load("app/cache/lyric/ClariS_irony.json")))

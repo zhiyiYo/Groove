@@ -3,7 +3,9 @@ from typing import List
 
 from common.database.entity import SongInfo
 from common.lyric import Lyric
+from common.meta_data.writer import MetaDataWriter
 from common.os_utils import getCoverPath, showInFolder
+from common.audio_utils import writeAudio
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
 from common.thread.get_lyric_thread import GetLyricThread
@@ -585,6 +587,17 @@ class PlayingInterface(QWidget):
         self.lyricWidget.setVisible(isVisible)
         self.isLyricVisible = isVisible
 
+    @writeAudio
+    def __embedLyric(self, checked):
+        """ embed lyrics to audio file """
+        if not self.playlist or not self.lyricWidget.lyric:
+            return
+
+        songInfo = self.playlist[self.currentIndex]
+        lyric = Lyric.load(self.getLyricThread.getLyricPath(), True)
+        if lyric.isValid():
+            MetaDataWriter().writeLyric(songInfo.file, lyric)
+
     def __searchMV(self):
         """ search MV """
         if not self.playlist:
@@ -660,6 +673,8 @@ class PlayingInterface(QWidget):
             self.__revealLyricFileInExplorer)
         self.playBar.moreActionsMenu.lyricVisibleChanged.connect(
             self.__onLyricVisibleChanged)
+        self.playBar.moreActionsMenu.embedLyricAct.triggered.connect(
+            self.__embedLyric)
         self.playBar.moreActionsMenu.movieAct.triggered.connect(
             self.__searchMV)
         self.playBar.moreActionsMenu.locateAct.triggered.connect(

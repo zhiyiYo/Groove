@@ -79,6 +79,11 @@ class Lyric:
         return Lyric(LyricParserBase.none_lyric)
 
     @staticmethod
+    def error():
+        """ create an lyric whose content is equals to `LyricParserBase.error_lyric` """
+        return Lyric(LyricParserBase.error_lyric)
+
+    @staticmethod
     def parse(lyric):
         """ parse lyric """
         parsers = [KuWoLyricParser, WanYiLyricParser, KuGouLyricParser,
@@ -93,14 +98,17 @@ class Lyric:
                 except:
                     pass
 
-        return Lyric(LyricParserBase.error_lyric)
+        return Lyric.error()
 
     @staticmethod
-    def load(path: Union[str, Path]):
+    def load(path: Union[str, Path], ignoreError=False):
         """ load lyric from `.json` or `.lrc` lyric file """
         path = Path(path)
         if not path.exists():
-            raise FileNotFoundError(f"The lyric file `{path}` does not exist.")
+            if not ignoreError:
+                raise FileNotFoundError(f"The lyric file `{path}` does not exist.")
+
+            return Lyric.error()
 
         suffix = path.suffix.lower()
         with open(path, encoding='utf-8') as f:
@@ -109,7 +117,7 @@ class Lyric:
             elif suffix == ".json":
                 return Lyric(json.load(f))
 
-            return Lyric(LyricParserBase.error_lyric)
+            return Lyric.error()
 
     def save(self, path: Union[str, Path]):
         """ save lyric """

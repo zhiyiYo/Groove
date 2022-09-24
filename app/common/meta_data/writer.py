@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import List, Union
 
 from common.database.entity import SongInfo
+from common.lyric import Lyric
 from common.image_utils import getPicMimeType
 from common.logger import Logger
 from mutagen import File
@@ -218,7 +219,7 @@ class MetaDataWriter:
         logger.info(f'The format of {file} is not supported')
         return False
 
-    def writeLyrics(self, file: Union[str, Path], lyric: str):
+    def writeLyric(self, file: Union[str, Path], lyric: Union[Lyric, str]):
         """ write lyrics
 
         Parameters
@@ -226,7 +227,7 @@ class MetaDataWriter:
         file: str or Path
             audio file path
 
-        lyric: str
+        lyric: str or Lyric
             lyrics in `.lrc` format
 
         Returns
@@ -234,6 +235,9 @@ class MetaDataWriter:
         success: bool
             whether write lyrics successfully
         """
+        if isinstance(lyric, Lyric):
+            lyric = lyric.serialize()
+
         for Writer in self._writers:
             if Writer.canWrite(file):
                 return Writer(file).writeLyric(lyric)

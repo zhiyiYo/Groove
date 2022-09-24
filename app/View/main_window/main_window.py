@@ -36,7 +36,7 @@ from PyQt5.QtCore import (QEasingCurve, QEvent, QEventLoop, QFile, QFileInfo,
                           Qt, QTimer, QUrl)
 from PyQt5.QtGui import (QColor, QDesktopServices, QDragEnterEvent, QDropEvent,
                          QIcon, QPixmap)
-from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist
+from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist, QMediaContent
 from PyQt5.QtSql import QSqlDatabase
 from PyQt5.QtWidgets import QAction, QApplication, QHBoxLayout, QWidget, qApp
 from View.album_interface import AlbumInterface
@@ -110,6 +110,9 @@ class MainWindow(AcrylicWindow):
         # create player and playlist
         self.player = QMediaPlayer(self)
         self.mediaPlaylist = MediaPlaylist(self.library, self)
+        self.isPlaying = False
+        self.currentIndex = 0
+        self.playerPosition = 0
 
         # create my music interface
         self.myMusicInterface = MyMusicInterface(
@@ -1431,6 +1434,27 @@ class MainWindow(AcrylicWindow):
         if self.isMinimized():
             self.showNormal()
 
+    def onWritePlayingSongStart(self):
+        """ write data to audio file slot """
+        self.playerPosition=self.player.position()
+        self.isPlaying = self.player.state() == QMediaPlayer.PlayingState
+        self.currentIndex = self.mediaPlaylist.currentIndex()
+        
+        # block the signal to prevent switching songs
+        self.player.blockSignals(True)
+        self.mediaPlaylist.blockSignals(True)
+        self.player.setMedia(QMediaContent())
+
+    def onWritePlayingSongEnd(self):
+        """ write data to audio file slot """
+        self.player.setPlaylist(self.mediaPlaylist)
+        self.mediaPlaylist.setCurrentIndex(self.currentIndex)
+        self.player.setPosition(self.playerPosition)
+        self.player.blockSignals(False)
+        self.mediaPlaylist.blockSignals(False)
+        if self.isPlaying:
+            self.play()
+
     def connectSignalToSlot(self):
         """ connect signal to slot """
 
@@ -1496,6 +1520,9 @@ class MainWindow(AcrylicWindow):
         signalBus.playSpeedUpSig.connect(self.playSpeedUp)
         signalBus.playSpeedDownSig.connect(self.playSpeedDown)
         signalBus.playSpeedResetSig.connect(self.playSpeedReset)
+
+        signalBus.writePlayingSongStarted.connect(self.onWritePlayingSongStart)
+        signalBus.writePlayingSongEnded.connect(self.onWritePlayingSongEnd)
 
         signalBus.editSongInfoSig.connect(self.onEditSongInfo)
         signalBus.editAlbumInfoSig.connect(self.onEditAlbumInfo)

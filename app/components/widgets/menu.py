@@ -41,6 +41,7 @@ class MenuIconFactory:
     SPEED_UP = "SpeedUp"
     SPEED_DOWN = "SpeedDown"
     SPEED_RESET = "SpeedReset"
+    INSERT = "Insert"
 
     @classmethod
     def create(cls, iconType: str):
@@ -277,10 +278,7 @@ class PlayBarMoreActionsMenu(MoreActionsMenu):
         self.fullScreenAct = QAction(
             MIF.create(MIF.FULL_SCREEN), self.tr("Go full screen"), self)
         self.addActions([self.showPlayListAct, self.fullScreenAct])
-
-        # play speed submenu
         self.addMenu(PlaySpeedMenu(self.tr("Playback speed"), self))
-
         self.addActions([self.savePlayListAct, self.clearPlayListAct])
 
 
@@ -326,6 +324,8 @@ class PlayingInterfaceMoreActionsMenu(MoreActionsMenu):
             MIF.create(MIF.FOLDER_SEARCH), self.tr("Reveal in explorer"), self)
         self.loadLyricFromFileAct = QAction(MIF.create(
             MIF.FILE_COMMENT), self.tr("Use external lyric file"), self)
+        self.embedLyricAct = QAction(MIF.create(
+            MIF.INSERT), self.tr("Embed lyrics to audio file"), self)
         self.movieAct = QAction(
             MIF.create(MIF.MOVIE), self.tr('Watch MV'), self)
         self.addActions([
@@ -340,7 +340,8 @@ class PlayingInterfaceMoreActionsMenu(MoreActionsMenu):
         self.lyricMenu.setIcon(MIF.create(MIF.LYRIC))
         self.lyricMenu.addActions([
             self.showLyricAct, self.reloadLyricAct,
-            self.loadLyricFromFileAct, self.revealLyricInFolderAct
+            self.loadLyricFromFileAct, self.revealLyricInFolderAct,
+            self.embedLyricAct
         ])
         self.addMenu(self.lyricMenu)
         self.lyricMenu.setObjectName("lyricMenu")

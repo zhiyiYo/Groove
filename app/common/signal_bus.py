@@ -68,6 +68,9 @@ class SignalBus(Singleton, QObject):
     playSpeedDownSig = pyqtSignal()     # 减速播放
     playSpeedResetSig = pyqtSignal()    # 恢复播放速度
 
+    writePlayingSongStarted = pyqtSignal()  # 开始向正在播放的歌曲写入数据
+    writePlayingSongEnded = pyqtSignal()    # 完成向正在播放的歌曲写入数据
+
     showMainWindowSig = pyqtSignal()      # 显示主界面
     fullScreenChanged = pyqtSignal(bool)  # 全屏/退出全屏
 

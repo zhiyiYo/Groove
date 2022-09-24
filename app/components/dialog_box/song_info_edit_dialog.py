@@ -217,9 +217,9 @@ class SongInfoEditDialog(MaskDialogBase):
         # embed lyrics
         if config.get(config.embedLyricWhenSave):
             path = getLyricPath(self.songInfo.singer, self.songInfo.title)
-            if path.exists() and Lyric.load(path).isValid():
-                success &= self.writer.writeLyrics(
-                    self.songInfo.file, Lyric.load(path).serialize())
+            lyric = Lyric.load(path, ignoreError=True)
+            if lyric.isValid():
+                success &= self.writer.writeLyric(self.songInfo.file, lyric)
 
         # write other meta data
         if not (success and self.writer.writeSongInfo(self.songInfo)):

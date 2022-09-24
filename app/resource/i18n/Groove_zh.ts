@@ -1245,6 +1245,11 @@
         <translation>打开歌词文件位置</translation>
     </message>
     <message>
+        <location filename="../../components/widgets/menu.py" line="346"/>
+        <source>Embed lyrics to audio file</source>
+        <translation>嵌入歌词到音频文件中</translation>
+    </message>
+    <message>
         <location filename="../../components/widgets/menu.py" line="349" />
         <source>Playback speed</source>
         <translation>播放速度</translation>
