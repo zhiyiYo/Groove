@@ -179,9 +179,9 @@ class BasicSongListWidget(ListWidget):
             self.songCards[i].itemIndex = i
 
         if self.currentIndex is not None and self.currentIndex >= index:
-            self.currentIndex -= 1
+            self.currentIndex = self.currentIndex-1 if self.currentIndex > 0 else None
         if self.playingIndex is not None and self.playingIndex >= index:
-            self.playingIndex -= 1
+            self.playingIndex = self.playingIndex-1 if self.playingIndex > 0 else None
 
         if emit:
             self.songCardNumChanged.emit(len(self.songCards))
