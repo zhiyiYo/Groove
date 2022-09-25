@@ -15,6 +15,6 @@ def writeAudio(func):
             Logger("meta_data_writer").error(e)
             return False
         finally:
-            signalBus.writePlayingSongEnded.emit()
+            signalBus.writePlayingSongFinished.emit()
 
     return wrapper

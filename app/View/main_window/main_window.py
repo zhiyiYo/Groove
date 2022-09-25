@@ -15,16 +15,17 @@ from common.library import Directory, Library
 from common.os_utils import getWindowsVersion
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
-from common.thread.get_online_song_url_thread import GetOnlineSongUrlThread
-from common.thread.get_song_details_url_thread import GetSongDetailsUrlThread
 from common.thread.get_album_details_url_thread import GetAlbumDetailsUrlThread
-from common.thread.get_singer_details_url_thread import GetSingerDetailsUrlThread
+from common.thread.get_online_song_url_thread import GetOnlineSongUrlThread
+from common.thread.get_singer_details_url_thread import \
+    GetSingerDetailsUrlThread
+from common.thread.get_song_details_url_thread import GetSongDetailsUrlThread
 from common.thread.library_thread import LibraryThread
 from components.dialog_box.create_playlist_dialog import CreatePlaylistDialog
 from components.dialog_box.message_dialog import MessageDialog
 from components.frameless_window import AcrylicWindow
 from components.label_navigation_interface import LabelNavigationInterface
-from components.media_player import MediaPlaylist, PlaylistType
+from components.media_player import MediaPlayer, MediaPlaylist, PlaylistType
 from components.system_tray_icon import SystemTrayIcon
 from components.thumbnail_tool_bar import ThumbnailToolBar
 from components.title_bar import TitleBar
@@ -36,7 +37,7 @@ from PyQt5.QtCore import (QEasingCurve, QEvent, QEventLoop, QFile, QFileInfo,
                           Qt, QTimer, QUrl)
 from PyQt5.QtGui import (QColor, QDesktopServices, QDragEnterEvent, QDropEvent,
                          QIcon, QPixmap)
-from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist, QMediaContent
+from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer, QMediaPlaylist
 from PyQt5.QtSql import QSqlDatabase
 from PyQt5.QtWidgets import QAction, QApplication, QHBoxLayout, QWidget, qApp
 from View.album_interface import AlbumInterface
@@ -108,11 +109,8 @@ class MainWindow(AcrylicWindow):
         self.initLibrary()
 
         # create player and playlist
-        self.player = QMediaPlayer(self)
         self.mediaPlaylist = MediaPlaylist(self.library, self)
-        self.isPlaying = False
-        self.currentIndex = 0
-        self.playerPosition = 0
+        self.player = MediaPlayer(self.mediaPlaylist, self)
 
         # create my music interface
         self.myMusicInterface = MyMusicInterface(
@@ -262,8 +260,6 @@ class MainWindow(AcrylicWindow):
         self.adjustWidgetGeometry()
         self.setQss()
 
-        # Set the interval that the player sends update position signal
-        self.player.setNotifyInterval(1000)
         self.updateLyricPosTimer.setInterval(200)
 
         self.initPlayer()
@@ -409,8 +405,6 @@ class MainWindow(AcrylicWindow):
 
     def initPlayer(self):
         """ initialize player """
-        self.player.setPlaylist(self.mediaPlaylist)
-
         if len(sys.argv) > 1:
             songInfos = self.library.loadFromFiles([sys.argv[1]])
             self.setPlaylist(songInfos)
@@ -565,7 +559,7 @@ class MainWindow(AcrylicWindow):
             self.videoInterface.togglePlayState()
             return
 
-        if self.player.state() == QMediaPlayer.PlayingState:
+        if self.player.isPlaying():
             self.pause()
             self.thumbnailToolBar.setButtonsEnabled(True)
         else:
@@ -1265,7 +1259,7 @@ class MainWindow(AcrylicWindow):
 
     def onUpdateLyricPosTimeOut(self):
         """ update lyric postion timer time out """
-        if self.player.state() != QMediaPlayer.PlayingState:
+        if not self.player.isPlaying():
             return
 
         t = self.player.position()
@@ -1436,23 +1430,12 @@ class MainWindow(AcrylicWindow):
 
     def onWritePlayingSongStart(self):
         """ write data to audio file slot """
-        self.playerPosition=self.player.position()
-        self.isPlaying = self.player.state() == QMediaPlayer.PlayingState
-        self.currentIndex = self.mediaPlaylist.currentIndex()
-        
-        # block the signal to prevent switching songs
-        self.player.blockSignals(True)
-        self.mediaPlaylist.blockSignals(True)
-        self.player.setMedia(QMediaContent())
+        self.player.releaseAudioHandle()
 
-    def onWritePlayingSongEnd(self):
+    def onWritePlayingSongFinished(self):
         """ write data to audio file slot """
-        self.player.setPlaylist(self.mediaPlaylist)
-        self.mediaPlaylist.setCurrentIndex(self.currentIndex)
-        self.player.setPosition(self.playerPosition)
-        self.player.blockSignals(False)
-        self.mediaPlaylist.blockSignals(False)
-        if self.isPlaying:
+        self.player.recoverAudioHandle()
+        if self.player.isPlayingBeforeRelease:
             self.play()
 
     def connectSignalToSlot(self):
@@ -1522,7 +1505,8 @@ class MainWindow(AcrylicWindow):
         signalBus.playSpeedResetSig.connect(self.playSpeedReset)
 
         signalBus.writePlayingSongStarted.connect(self.onWritePlayingSongStart)
-        signalBus.writePlayingSongEnded.connect(self.onWritePlayingSongEnd)
+        signalBus.writePlayingSongFinished.connect(
+            self.onWritePlayingSongFinished)
 
         signalBus.editSongInfoSig.connect(self.onEditSongInfo)
         signalBus.editAlbumInfoSig.connect(self.onEditAlbumInfo)
