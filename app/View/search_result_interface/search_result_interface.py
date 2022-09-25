@@ -180,10 +180,15 @@ class SearchResultInterface(ScrollArea):
         # search online songs
         self.currentPage = 1
         pageSize = config.get(config.onlinePageSize)
-        self.onlineSongInfos, self.totalOnlineMusic = self.crawler.getSongInfos(
-            keyWord, 1, pageSize)
-        self.totalPages = 1 if not self.totalOnlineMusic else ceil(
-            self.totalOnlineMusic/pageSize)
+        if pageSize > 0:
+            self.onlineSongInfos, self.totalOnlineMusic = self.crawler.getSongInfos(
+                keyWord, 1, pageSize)
+            self.totalPages = 1 if not self.totalOnlineMusic else ceil(
+                self.totalOnlineMusic/pageSize)
+        else:
+            self.onlineSongInfos = []
+            self.totalOnlineMusic = 0
+            self.totalPages = 0
 
         self.__updateLoadMoreLabel()
 
