@@ -602,7 +602,7 @@ class MainWindow(AcrylicWindow):
 
         messageMap = {
             QMediaPlayer.ResourceError: self.tr(
-                "The media resource couldn't be resolved") + ", " + hint,
+                "It's not on this device or somewhere we can stream from."),
             QMediaPlayer.FormatError: self.tr(
                 "The format of a media resource isn't supported."),
             QMediaPlayer.NetworkError: self.tr("A network error occurred."),
@@ -611,7 +611,7 @@ class MainWindow(AcrylicWindow):
             QMediaPlayer.ServiceMissingError: self.tr(
                 "A valid playback service was not found") + ", " + hint
         }
-        self.showMessageBox(self.tr('An error occurred'), messageMap[error])
+        self.showMessageBox(self.tr("Can't play this song"), messageMap[error])
 
     def onProgressSliderMoved(self, position):
         """ progress slider moved slot """
@@ -693,27 +693,6 @@ class MainWindow(AcrylicWindow):
             self.smallestPlayInterface.setCurrentIndex(index)
 
         signalBus.playBySongInfoSig.emit(songInfo)
-
-        self.checkMediaAvailable()
-
-    def checkMediaAvailable(self):
-        """ check the availability of media """
-        if not self.mediaPlaylist.playlist:
-            return
-
-        # determin the availability
-        songPath = self.mediaPlaylist.getCurrentSong().file
-        if songPath.startswith('http') or Path(songPath).exists():
-            return
-
-        # pause player when the media is not available
-        self.pause()
-
-        # pop up message dialog
-        self.showMessageBox(
-            self.tr("Can't play this song"),
-            self.tr("It's not on this device or somewhere we can stream from.")
-        )
 
     def showMessageBox(self, title: str, content: str, showYesButton=False, yesSlot=None):
         """ show message box """
