@@ -1,8 +1,11 @@
 # coding:utf-8
+from typing import Union
+
+from common.cover import Cover
 from common.thread.blur_cover_thread import BlurCoverThread
 from PyQt5.QtCore import QPropertyAnimation, Qt, pyqtProperty, pyqtSignal
-from PyQt5.QtGui import (QBrush, QColor, QImage, QImageReader, QMouseEvent,
-                         QPainter, QPixmap, QLinearGradient)
+from PyQt5.QtGui import (QBrush, QColor, QImage, QImageReader, QLinearGradient,
+                         QMouseEvent, QPainter, QPixmap)
 from PyQt5.QtWidgets import QLabel, QWidget
 
 
@@ -201,13 +204,16 @@ class BlurCoverLabel(QLabel):
         self.blurPixmap = blurPixmap
         self.adjustCover()
 
-    def setCover(self, coverPath: str):
+    def setCover(self, cover: Union[str, Cover]):
         """ set the cover to blur """
-        if coverPath == self.coverPath:
+        if isinstance(cover, Cover):
+            cover = cover.path()
+
+        if cover == self.coverPath:
             return
 
-        self.coverPath = coverPath
-        self.blurThread.setCover(coverPath, self.blurRadius, self.maxBlurSize)
+        self.coverPath = cover
+        self.blurThread.setCover(cover, self.blurRadius, self.maxBlurSize)
         self.blurThread.start()
 
     def adjustCover(self):

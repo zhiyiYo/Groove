@@ -5,7 +5,7 @@ from pathlib import Path
 from common.style_sheet import setStyleSheet
 from common.database.entity import AlbumInfo, SongInfo
 from common.image_utils import getPicSuffix
-from common.os_utils import getCoverName, getCoverPath
+from common.cover import Cover, CoverType
 from components.buttons.perspective_button import PerspectivePushButton
 from components.widgets.label import ErrorIcon, PixmapLabel
 from components.widgets.line_edit import LineEdit
@@ -34,7 +34,7 @@ class AlbumInfoEditDialog(MaskDialogBase):
         self.genre = self.albumInfo.genre or ''
         self.singer = self.albumInfo.singer or ''
         self.album = self.albumInfo.album or ''  # type:str
-        self.coverPath = getCoverPath(self.singer, self.album, 'album_big')
+        self.coverPath = Cover(self.singer, self.album).path()
         self.songInfos = self.albumInfo.songInfos  # type:list
         self.newAlbumCoverPath = ''
         self.__createWidgets()
@@ -244,9 +244,9 @@ class AlbumInfoEditDialog(MaskDialogBase):
         suffix = getPicSuffix(picData)
 
         # modify the cover path if it's default
-        if self.coverPath == ":/images/default_covers/album_200_200.png":
-            name = getCoverName(self.singer, self.album)
-            coverPath = Path(f"cache/Album_Cover/{name}/cover{suffix}")
+        if self.coverPath == CoverType.ALBUM_BIG.value:
+            cover = Cover(self.singer, self.album)
+            coverPath = cover.folder/("cover" + suffix)
         else:
             coverPath = Path(self.coverPath)
 

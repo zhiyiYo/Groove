@@ -254,6 +254,13 @@ class BasicSongListWidget(ListWidget):
         w.saveInfoSig.connect(signalBus.editSongInfoSig)
         w.exec_()
 
+    def updateOneSongCardInfo(self, old: SongInfo, new: SongInfo):
+        """ update song information of one song card """
+        for i, songInfo in enumerate(self.songInfos):
+            if songInfo.file == old.file:
+                self.songInfos[i] = new
+                self.songCards[i].updateSongCard(new)
+
     def updateOneSongCard(self, newSongInfo: SongInfo):
         """ update a song card """
         for i, songInfo in enumerate(self.songInfos):

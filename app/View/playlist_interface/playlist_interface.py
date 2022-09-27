@@ -4,7 +4,7 @@ from typing import List
 from common.icon import getIconColor
 from common.database.entity import Playlist, SongInfo
 from common.library import Library
-from common.os_utils import getCoverPath
+from common.cover import Cover, CoverType
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
 from components.buttons.three_state_button import ThreeStatePushButton
@@ -98,8 +98,8 @@ class PlaylistInterface(SongSelectionModeInterface):
         """
         self.songListWidget.updateOneSongCard(newSongInfo)
         if self.songInfos and self.songInfos[0].file == newSongInfo.file:
-            coverPath = getCoverPath(
-                newSongInfo.singer, newSongInfo.album, 'playlist_big')
+            coverPath = Cover(
+                newSongInfo.singer, newSongInfo.album).path(CoverType.PLAYLIST_BIG)
             if coverPath != self.playlistInfoBar.playlistCoverPath:
                 self.playlistInfoBar.updateWindow(self.playlist)
 

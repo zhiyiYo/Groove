@@ -16,6 +16,8 @@ from .exception_handler import exceptionHandler
 class KuGouMusicCrawler(CrawlerBase):
     """ Crawler of KuGou Music """
 
+    name = "kugou"
+
     def __init__(self):
         super().__init__()
         self.song_qualities = {

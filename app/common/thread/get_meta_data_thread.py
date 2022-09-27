@@ -7,7 +7,7 @@ from common.crawler.qq_music_crawler import QQMusicCrawler
 from common.database.entity import SongInfo
 from common.library import Directory
 from common.meta_data.writer import MetaDataWriter
-from common.os_utils import getCoverName
+from common.cover import Cover
 from PyQt5.QtCore import QThread, pyqtSignal
 
 
@@ -41,7 +41,7 @@ class GetFolderMetaDataThread(QThread):
                 # modify song information
                 songInfo.file = songPath
                 writer.writeSongInfo(songInfo)
-                key = getCoverName(songInfo.singer, songInfo.album)
+                key = Cover(songInfo.singer, songInfo.album).name
 
                 # search album cover in local or online
                 if key not in albumCovers:
@@ -95,7 +95,7 @@ class GetSongMetaDataThread(QThread):
             songInfo.file = self.songPath
 
             # get album cover
-            key = getCoverName(songInfo.singer, songInfo.album)
+            key = Cover(songInfo.singer, songInfo.album).name
             coverPath = crawlAlbumCoverFolder / (key + '.jpg')
             url = self.crawler.getAlbumCoverURL(
                 songInfo['albummid'], coverPath)

@@ -52,6 +52,9 @@ class LyricReader:
         lyric: Lyric
             song lyrics
         """
+        if str(file).startswith('http'):
+            return Lyric.new()
+
         for reader in cls._readers:
             if reader.canRead(file):
                 return reader.read(file)

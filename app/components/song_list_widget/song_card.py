@@ -1,5 +1,5 @@
 # coding:utf-8
-from common.crawler import SongQuality
+import os
 from common.database.entity import SongInfo
 from common.signal_bus import signalBus
 from components.widgets.label import ClickableLabel
@@ -195,6 +195,12 @@ class PlaylistInterfaceSongCard(DurationSongCard):
         self.genreLabel.setText(self.genre)
         self._adjustWidgetWidth()
 
+    def _validateSongPath(self):
+        if self.songPath.startswith("http"):
+            self.isSongExist = True
+        else:
+            self.isSongExist = os.path.exists(self.songPath)
+
 
 class NoCheckBoxSongCard(DurationSongCard):
     """ Song card without check box """
@@ -284,8 +290,6 @@ class OnlineSongCard(DurationSongCard):
         # set song card clicked animation
         self.setAnimation(self.widgets, [13, 6, -3, -6, -13])
 
-        # self.addToButton.setToolTip(self.tr('Download'))
-
         # connect signal to slot
         self.addToButton.clicked.connect(self.__showDownloadMenu)
 
@@ -311,6 +315,9 @@ class OnlineSongCard(DurationSongCard):
         menu.downloadSig.connect(
             lambda quality: signalBus.downloadSongSig.emit(self.songInfo, quality))
         menu.exec(QPoint(x, y))
+
+    def _validateSongPath(self):
+        self.isSongExist = True
 
 
 class SongCardFactory:

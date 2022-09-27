@@ -2,7 +2,7 @@
 from typing import List
 
 from common.database.entity import SongInfo
-from common.os_utils import getCoverPath
+from common.cover import Cover
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
 from components.buttons.circle_button import CircleButton
@@ -249,9 +249,8 @@ class SmallestPlayInterface(FramelessWindow):
 
         if self.aniGroup.state() != QAbstractAnimation.Running:
             songInfo = self.playlist[index]
-            coverPath = getCoverPath(
-                songInfo.singer, songInfo.album, "album_big")
-            self.albumCoverLabel.setCover(coverPath)
+            self.albumCoverLabel.setCover(
+                Cover(songInfo.singer, songInfo.album))
             self.__completeShift(index)
         else:
             self.__unCompleteShift_list.append(index)

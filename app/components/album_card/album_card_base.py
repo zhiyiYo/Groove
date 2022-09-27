@@ -3,7 +3,7 @@ import sys
 
 from common.auto_wrap import autoWrap
 from common.database.entity import AlbumInfo
-from common.os_utils import getCoverPath
+from common.cover import Cover
 from common.signal_bus import signalBus
 from components.buttons.blur_button import BlurButton
 from components.widgets.check_box import CheckBox
@@ -125,7 +125,7 @@ class AlbumCardBase(PerspectiveWidget):
         self.album = albumInfo.album
         self.singer = albumInfo.singer
         self.year = str(albumInfo.year)
-        self.coverPath = getCoverPath(self.singer, self.album, 'album_big')
+        self.coverPath = Cover(self.singer, self.album).path()
 
     def enterEvent(self, e):
         albumCardPos = self.mapToGlobal(QPoint(0, 0))  # type:QPoint

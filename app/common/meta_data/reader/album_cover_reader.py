@@ -7,9 +7,7 @@ from typing import List, Union
 from common.exception_handler import exceptionHandler
 from common.cache import albumCoverFolder
 from common.database.entity import SongInfo
-from common.image_utils import getPicSuffix
-from common.logger import Logger
-from common.os_utils import getCoverName
+from common.cover import Cover
 from mutagen import File, FileType
 from mutagen.aac import AAC
 from mutagen.aiff import AIFF
@@ -61,48 +59,28 @@ class AlbumCoverReader:
         """ Read and save an album cover from audio file """
         cls.coverFolder.mkdir(exist_ok=True, parents=True)
 
-        if cls.__isCoverExists(songInfo.singer, songInfo.album):
+        cover = Cover(songInfo.singer, songInfo.album)
+        if cover.isExists():
             return True
 
+        # remove the dirty folder
+        if cover.folder.exists():
+            rmtree(cover.folder)
+
         file = songInfo.file
+        if file.startswith('http'):
+            return False
+
         for Reader in cls._readers:
             if not Reader.canRead(file):
                 continue
 
             picData = Reader.read(file)
             if picData:
-                cls.__save(songInfo.singer, songInfo.album, picData)
+                cover.save(picData)
                 return True
 
         return False
-
-    @classmethod
-    def __isCoverExists(cls, singer: str, album: str) -> bool:
-        """ Check whether the cover exists """
-        folder = cls.coverFolder / getCoverName(singer, album)
-
-        isExists = False
-        if folder.exists():
-            files = list(folder.glob('*'))
-
-            if files:
-                suffix = files[0].suffix.lower()
-                if suffix in [".png", ".jpg", ".jpeg", ".jiff", ".gif"]:
-                    isExists = True
-                else:
-                    rmtree(folder)
-
-        return isExists
-
-    @classmethod
-    def __save(cls, singer: str, album: str, picData: bytes):
-        """ save album cover """
-        folder = cls.coverFolder / getCoverName(singer, album)
-        folder.mkdir(exist_ok=True, parents=True)
-
-        suffix = getPicSuffix(picData)
-        with open(folder/("cover" + suffix), "wb") as f:
-            f.write(picData)
 
 
 class CoverDataReaderBase:

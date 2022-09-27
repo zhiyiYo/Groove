@@ -1,4 +1,5 @@
 # coding: utf-8
+from pathlib import Path
 from .logger import Logger
 from .signal_bus import signalBus
 
@@ -18,3 +19,7 @@ def writeAudio(func):
             signalBus.writePlayingSongFinished.emit()
 
     return wrapper
+
+
+def isValidLocalAudio(file: str):
+    return not file.startswith('http') and Path(file).exists()

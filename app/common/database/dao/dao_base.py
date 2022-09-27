@@ -216,6 +216,32 @@ class DaoBase:
         return self.query.exec()
 
     @finishQuery
+    def updateByField(self, field: str, old, new) -> bool:
+        """ update the value of a field in a record
+
+        Parameters
+        ----------
+        filed: str
+            field name
+
+        old:
+            old field value
+
+        new:
+            new filed value
+
+        Returns
+        -------
+        success: bool
+            is the update successful
+        """
+        sql = f"UPDATE {self.table} SET {field} = ? WHERE {field} = ?"
+        self.query.prepare(sql)
+        self.query.addBindValue(new)
+        self.query.addBindValue(old)
+        return self.query.exec()
+
+    @finishQuery
     def updateById(self, entity: Entity) -> bool:
         """ update a record
 
@@ -298,13 +324,16 @@ class DaoBase:
         return self.query.exec()
 
     @finishQuery
-    def insertBatch(self, entities: List[Entity]) -> bool:
+    def insertBatch(self, entities: List[Entity], ignore=False) -> bool:
         """ insert multi records
 
         Parameters
         ----------
         entities: List[Entity]
             entity instances
+
+        ignore: bool
+            If the primary key exists, the corresponding row will not be inserted when `ignore=True`
 
         Returns
         -------
@@ -318,7 +347,11 @@ class DaoBase:
         db.transaction()
 
         values = ','.join([f':{i}' for i in self.fields])
-        sql = f"INSERT INTO {self.table} VALUES ({values})"
+        if not ignore:
+            sql = f"INSERT INTO {self.table} VALUES ({values})"
+        else:
+            sql = f"INSERT OR IGNORE INTO {self.table} VALUES ({values})"
+
         self.query.prepare(sql)
 
         for entity in entities:

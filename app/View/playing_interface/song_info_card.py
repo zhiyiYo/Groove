@@ -1,10 +1,10 @@
 # coding:utf-8
 from common.database.entity import SongInfo
-from common.os_utils import getCoverPath
+from common.cover import Cover
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
 from components.widgets.label import ClickableLabel, AlbumCover
-from PyQt5.QtCore import QEvent, QFile, Qt, QTimer, pyqtSignal
+from PyQt5.QtCore import QEvent, Qt, QTimer, pyqtSignal
 from PyQt5.QtWidgets import QApplication, QWidget
 
 
@@ -53,7 +53,7 @@ class SongInfoCard(QWidget):
         self.songName = songInfo.title or ''
         self.singer = songInfo.singer or ''
         self.album = songInfo.album or ''
-        self.coverPath = getCoverPath(self.singer, self.album, 'album_big')
+        self.coverPath = Cover(self.singer, self.album).path()
 
     def updateCard(self, songInfo: SongInfo):
         """ update song information card """

@@ -4,7 +4,8 @@ from typing import List
 from common.database.entity import SongInfo
 from common.lyric import Lyric
 from common.meta_data.writer import MetaDataWriter
-from common.os_utils import getCoverPath, showInFolder
+from common.os_utils import showInFolder
+from common.cover import Cover, CoverType
 from common.audio_utils import writeAudio
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
@@ -340,8 +341,8 @@ class PlayingInterface(QWidget):
             self.songInfoCardChute.currentIndex -= 1
             if n > 0:
                 songInfo = self.playlist[self.currentIndex]
-                self.albumCoverLabel.setCover(getCoverPath(
-                    songInfo.singer, songInfo.album, "album_big"))
+                self.albumCoverLabel.setCover(
+                    Cover(songInfo.singer, songInfo.album))
                 self.__getLyric()
 
         # update song information of song information card
@@ -391,13 +392,12 @@ class PlayingInterface(QWidget):
 
         # update album cover
         index_ = self.songInfoCardChute.currentIndex
-        isDefaultCover = self.albumCoverLabel.coverPath == getCoverPath(
-            '', '', "album_big")
+        isDefaultCover = self.albumCoverLabel.coverPath == CoverType.ALBUM_BIG.value
         if self.currentIndex != index_ and index == index_ or \
                 self.currentIndex == index_ and index_ == 0 or isDefaultCover:
             self.songInfoCardChute.cards[1].updateCard(songInfo)
-            self.albumCoverLabel.setCover(getCoverPath(
-                songInfo.singer, songInfo.album, "album_big"))
+            self.albumCoverLabel.setCover(
+                Cover(songInfo.singer, songInfo.album))
 
     def updateSongInfo(self, newSongInfo: SongInfo):
         """ update song information """

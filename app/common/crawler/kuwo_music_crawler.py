@@ -1,18 +1,22 @@
 # coding:utf-8
 import json
 import re
-from urllib import parse
 from typing import List, Tuple
+from urllib import parse
 
 import requests
 from common.database.entity import SongInfo
+from common.url import FakeUrl
 
-from .crawler_base import CrawlerBase, AudioQualityError, SongQuality, MvQuality
+from .crawler_base import (AudioQualityError, CrawlerBase, MvQuality,
+                           SongQuality)
 from .exception_handler import exceptionHandler
 
 
 class KuWoMusicCrawler(CrawlerBase):
     """ Crawler of KuWo Music """
+
+    name = "kuwo"
 
     def __init__(self):
         super().__init__()
@@ -43,8 +47,7 @@ class KuWoMusicCrawler(CrawlerBase):
         data = json.loads(response.text)['data']
         for info in data['list']:
             song_info = SongInfo()
-            song_info['rid'] = info['rid']
-            song_info.file = self.song_url_mark  # remark that the play url is not fetched
+            song_info.file = KuWoFakeSongUrl(info['rid']).url()
             song_info.title = info['name']
             song_info.singer = info['artist']
             song_info.album = info['album']
@@ -63,7 +66,7 @@ class KuWoMusicCrawler(CrawlerBase):
         if quality not in SongQuality:
             raise AudioQualityError(f'`{quality}` is not supported.')
 
-        rid = song_info['rid']
+        rid = KuWoFakeSongUrl.getId(song_info.file)
         br = {
             SongQuality.STANDARD: '128k',
             SongQuality.HIGH: '192k',
@@ -90,7 +93,7 @@ class KuWoMusicCrawler(CrawlerBase):
         if not song_info:
             return ''
 
-        return f"http://www.kuwo.cn/play_detail/{song_info['rid']}"
+        return f"http://www.kuwo.cn/play_detail/{KuWoFakeSongUrl.getId(song_info.file)}"
 
     @exceptionHandler('')
     def downloadSong(self, song_info: SongInfo, save_dir: str, quality=SongQuality.STANDARD) -> str:
@@ -152,7 +155,7 @@ class KuWoMusicCrawler(CrawlerBase):
             return
 
         # send request for lyrics
-        url = f"https://m.kuwo.cn/newh5/singles/songinfoandlrc?musicId={song_info['rid']}"
+        url = f"https://m.kuwo.cn/newh5/singles/songinfoandlrc?musicId={KuWoFakeSongUrl.getId(song_info.file)}"
         response = requests.get(url)
         response.raise_for_status()
 
@@ -204,3 +207,16 @@ class KuWoMusicCrawler(CrawlerBase):
         # search the play url of mp4
         match = re.search(r'src:"(.+\.mp4)"', response.text)
         return match.group(1).replace(r'\u002F', '/')
+
+
+class KuWoFakeUrl(FakeUrl):
+    """ Kuwo music fake url """
+
+    server_name = "kuwo"
+
+
+@FakeUrl.register
+class KuWoFakeSongUrl(KuWoFakeUrl):
+    """ Kuwo music fake song url """
+
+    category = "song"

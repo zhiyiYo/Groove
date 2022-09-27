@@ -1,16 +1,16 @@
 # coding:utf-8
-from common.cache import albumCoverFolder
+from pathlib import Path
 from common.config import config
 from common.crawler import KuWoMusicCrawler
 from common.database.entity import SongInfo
-from common.os_utils import getCoverName
+from common.cover import Cover
 from PyQt5.QtCore import QThread, pyqtSignal
 
 
 class GetOnlineSongUrlThread(QThread):
     """ Thread used to get the play url of online song """
 
-    crawlFinished = pyqtSignal(str, str)
+    crawlFinished = pyqtSignal(str)
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -21,24 +21,21 @@ class GetOnlineSongUrlThread(QThread):
 
     def run(self):
         """ start to get play url """
-        albumCoverFolder.mkdir(exist_ok=True, parents=True)
-
         # get play url
         self.playUrl = self.crawler.getSongUrl(
             self.songInfo, config.get(config.onlineSongQuality))
 
         # download album cover
-        coverPath = ''
-        coverName = getCoverName(self.songInfo.singer, self.songInfo.album)
-        folder = albumCoverFolder / coverName
-        names = [i.stem for i in folder.glob('*')]
+        songInfo = self.songInfo
+        cover = Cover(songInfo.singer, songInfo.album)
+        self.coverPath = cover.path()
+        if not Path(self.coverPath).exists():
+            url = self.songInfo.get('coverPath') or \
+                self.crawler.getAlbumCoverUrl(songInfo.singer+" "+songInfo.title)
+            self.coverPath = self.crawler.downloadAlbumCover(
+                url, self.songInfo.singer, self.songInfo.album)
 
-        if coverName not in names or not list(folder.iterdir()):
-            coverPath = self.crawler.downloadAlbumCover(
-                self.songInfo['coverPath'], self.songInfo.singer, self.songInfo.album)
-
-        self.coverPath = coverPath
-        self.crawlFinished.emit(self.playUrl, coverPath)
+        self.crawlFinished.emit(self.playUrl)
 
     def search(self, songInfo: SongInfo):
         """ search song url """

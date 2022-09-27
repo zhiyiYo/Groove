@@ -1,8 +1,8 @@
 # coding:utf-8
 import re
 
+from common.cover import Cover
 from common.database.entity import SongInfo
-from common.os_utils import getCoverPath
 from components.widgets.label import FadeInLabel
 from components.widgets.perspective_widget import PerspectiveWidget
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal
@@ -79,7 +79,7 @@ class SongInfoCard(PerspectiveWidget):
             self.hide()
             return
 
-        coverPath = getCoverPath(self.singer, self.songInfo.album, "album_big")
+        coverPath = Cover(self.singer, self.songInfo.album).path()
         if coverPath == self.coverPath:
             return
 
@@ -205,7 +205,8 @@ class ScrollTextWindow(QWidget):
     def paintEvent(self, e):
         """ paint text """
         painter = QPainter(self)
-        painter.setRenderHints(QPainter.Antialiasing | QPainter.TextAntialiasing)
+        painter.setRenderHints(QPainter.Antialiasing |
+                               QPainter.TextAntialiasing)
         painter.setPen(Qt.white)
 
         # paint song name

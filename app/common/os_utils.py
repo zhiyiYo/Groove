@@ -9,7 +9,7 @@ from PyQt5.QtCore import QDir, QFileInfo, QProcess, QUrl
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtSql import QSqlDatabase
 
-from common.cache import lyricFolder, singerAvatarFolder
+from common.cache import lyricFolder, singerAvatarFolder, albumCoverFolder
 from common.database import DBInitializer
 from common.database.service import PlaylistService
 
@@ -25,64 +25,6 @@ def adjustName(name: str):
     name = re.sub(r'[\\/:*?"<>|\r\n]+', "_", name).strip()
     return name
 
-
-def getCoverName(singer: str, album: str):
-    """ get album cover name
-
-    Parameters
-    ----------
-    singer: str
-        singer name
-
-    album name: str
-        album name
-
-    Returns
-    -------
-    name: str
-        album cover name
-    """
-    singer = singer or ''
-    album = album or ''
-    return adjustName(singer + '_' + album)
-
-
-def getCoverPath(singer: str, album: str, coverType: str) -> str:
-    """ get cover path
-
-    Parameters
-    ----------
-    singer: str
-        singer name
-
-    album: str
-        album name
-
-    coverType: str
-        cover type, including:
-        * `album_big` - big default album cover
-        * `album_small` - small default album cover
-        * `playlist_big` - big default playlist cover
-        * `playlist_small` - small default playlist cover
-    """
-    cover_paths = {
-        "album_big": ":/images/default_covers/album_200_200.png",
-        "album_small": ":/images/default_covers/album_113_113.png",
-        "playlist_big": ":/images/default_covers/playlist_275_275.png",
-        "playlist_small": ":/images/default_covers/playlist_135_135.png",
-    }
-    if coverType not in cover_paths:
-        raise ValueError(f"`{coverType}` is not supported")
-
-    cover = cover_paths[coverType]
-    folder = Path("cache/Album_Cover") / getCoverName(singer, album)
-    files = [i for i in folder.glob('*') if i.is_file()]
-
-    # use the first image file in directory
-    if files and files[0].suffix.lower() in (".png", ".jpg", ".jpeg", ".jiff", ".gif"):
-        cover = str(files[0])
-
-    return cover
 
 
 def getSingerAvatarPath(singer: str, size='small'):

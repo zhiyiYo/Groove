@@ -28,6 +28,7 @@ class EntityFactory:
             "tbl_album_info": AlbumInfo,
             "tbl_singer_info": SingerInfo,
             "tbl_playlist": Playlist,
+            "tbl_playlist_song_info": SongInfo,
             "tbl_song_playlist": SongPlaylist,
             "tbl_recent_play": RecentPlay,
         }

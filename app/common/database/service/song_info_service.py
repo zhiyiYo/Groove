@@ -3,7 +3,7 @@ from typing import List
 
 from PyQt5.QtSql import QSqlDatabase
 
-from ..dao import SongInfoDao
+from ..dao import PlaylistSongInfoDao, SongInfoDao
 from ..entity import SongInfo
 
 from.service_base import ServiceBase
@@ -55,11 +55,12 @@ class SongInfoService(ServiceBase):
 
         if len(songInfos) < len(files) and repeat:
             songInfoMap = {i.file: i for i in songInfos}
-            songInfos = [songInfoMap[i].copy() for i in files if i in songInfoMap]
+            songInfos = [songInfoMap[i].copy()
+                         for i in files if i in songInfoMap]
 
         return songInfos
 
-    def listBySingers(self, singers: List[str])-> List[SongInfo]:
+    def listBySingers(self, singers: List[str]) -> List[SongInfo]:
         """ list song information by singer names """
         return self.songInfoDao.listBySingers(singers)
 
@@ -98,3 +99,11 @@ class SongInfoService(ServiceBase):
     def setDatabase(self, db: QSqlDatabase):
         """ use the specified database """
         self.songInfoDao.setDatabase(db)
+
+
+class PlaylistSongInfoService(SongInfoService):
+    """ Playlist song information service """
+
+    def __init__(self, db: QSqlDatabase = None):
+        super().__init__(db)
+        self.songInfoDao = PlaylistSongInfoDao(db)

@@ -7,7 +7,6 @@ from typing import List
 
 from common import resource
 from common.config import config
-from common.crawler import CrawlerBase
 from common.database import DBInitializer
 from common.database.entity import AlbumInfo, Playlist, SongInfo
 from common.hotkey_manager import HotkeyManager
@@ -21,6 +20,7 @@ from common.thread.get_singer_details_url_thread import \
     GetSingerDetailsUrlThread
 from common.thread.get_song_details_url_thread import GetSongDetailsUrlThread
 from common.thread.library_thread import LibraryThread
+from common.url import FakeUrl
 from components.dialog_box.create_playlist_dialog import CreatePlaylistDialog
 from components.dialog_box.message_dialog import MessageDialog
 from components.frameless_window import AcrylicWindow
@@ -37,7 +37,7 @@ from PyQt5.QtCore import (QEasingCurve, QEvent, QEventLoop, QFile, QFileInfo,
                           Qt, QTimer, QUrl)
 from PyQt5.QtGui import (QColor, QDesktopServices, QDragEnterEvent, QDropEvent,
                          QIcon, QPixmap)
-from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer, QMediaPlaylist
+from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist
 from PyQt5.QtSql import QSqlDatabase
 from PyQt5.QtWidgets import QAction, QApplication, QHBoxLayout, QWidget, qApp
 from View.album_interface import AlbumInterface
@@ -642,11 +642,9 @@ class MainWindow(AcrylicWindow):
             return
 
         songInfo = self.mediaPlaylist.playlist[index]
-        if songInfo.file != CrawlerBase.song_url_mark:
+        oldSongInfo = songInfo.copy()
+        if not FakeUrl.isFake(songInfo.file):
             return
-
-        i = self.searchResultInterface.onlineSongInfos.index(songInfo)
-        songCard = self.searchResultInterface.onlineSongListWidget.songCards[i]
 
         # get play url and cover
         eventLoop = QEventLoop(self)
@@ -657,11 +655,12 @@ class MainWindow(AcrylicWindow):
         # TODO：更优雅地更新在线媒体
         songInfo.file = self.getOnlineSongUrlThread.playUrl
         songInfo['coverPath'] = self.getOnlineSongUrlThread.coverPath
-        songCard.setSongInfo(songInfo)
         self.mediaPlaylist.insertSong(index, songInfo)
         self.playingInterface.updateSongInfoByIndex(index, songInfo)
         self.smallestPlayInterface.playlist[index] = songInfo
-        self.searchResultInterface.onlineSongInfos[i] = songInfo
+        self.searchResultInterface.onlineSongListWidget.updateOneSongCardInfo(oldSongInfo, songInfo)
+        self.playlistInterface.songListWidget.updateOneSongCardInfo(oldSongInfo, songInfo)
+        self.library.playlistController.updateOnlineSongUrl(oldSongInfo.file, songInfo.file)
         self.mediaPlaylist.removeOnlineSong(index+1)
         self.mediaPlaylist.setCurrentIndex(index)
 
@@ -680,6 +679,7 @@ class MainWindow(AcrylicWindow):
             return
 
         songInfo = self.mediaPlaylist.playlist[index]
+        self.library.albumCoverController.getAlbumCover(songInfo)
 
         # update sub interfaces
         self.playBar.updateWindow(songInfo)
@@ -1098,8 +1098,7 @@ class MainWindow(AcrylicWindow):
             songInfos.clear()
             songInfos.extend(diffSongInfos)
 
-        songInfos = deepcopy(
-            [i for i in songInfos if not i.file.startswith('http')])
+        songInfos = deepcopy(songInfos)
 
         # find new songs
         oldPlaylist = self.library.playlistController.getPlaylist(name)
@@ -1324,7 +1323,6 @@ class MainWindow(AcrylicWindow):
     def showCreatePlaylistDialog(self, songInfos: List[SongInfo] = None):
         """ show create playlist dialog box """
         songInfos = songInfos or []
-        songInfos = [i for i in songInfos if not i.file.startswith('http')]
         w = CreatePlaylistDialog(self.library, songInfos, self)
         w.createPlaylistSig.connect(self.onCreatePlaylist)
         w.exec_()

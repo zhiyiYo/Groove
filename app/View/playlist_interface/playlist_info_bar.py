@@ -1,11 +1,11 @@
 # coding:utf-8
 from math import ceil
 
+from common.cover import Cover, CoverType
 from common.database.entity import Playlist, SongInfo
-from common.os_utils import getCoverPath
 from components.app_bar import AppBarButtonFactory as BF
 from components.app_bar import CollapsingAppBarBase
-from PyQt5.QtCore import QObject, pyqtSignal
+from PyQt5.QtCore import QObject
 from PyQt5.QtGui import QColor, QPalette
 
 
@@ -30,8 +30,8 @@ class PlaylistInfoBar(CollapsingAppBarBase):
 
         self.songInfos = playlist.songInfos
         songInfo = self.songInfos[0] if self.songInfos else SongInfo()
-        self.playlistCoverPath = getCoverPath(
-            songInfo.singer, songInfo.album, "playlist_big")
+        self.playlistCoverPath = Cover(
+            songInfo.singer, songInfo.album).path(CoverType.PLAYLIST_BIG)
 
         # calculate the total duration of playlist
         seconds = sum(i.duration for i in self.songInfos)
@@ -50,8 +50,7 @@ class PlaylistInfoBar(CollapsingAppBarBase):
 
     def setBackgroundColor(self):
         """ set background color """
-        path = ":/images/default_covers/playlist_113_113.png"
-        if self.playlistCoverPath != path:
+        if self.playlistCoverPath != CoverType.PLAYLIST_BIG.value:
             super().setBackgroundColor()
         else:
             palette = QPalette()

@@ -6,13 +6,16 @@ from typing import Union
 
 import requests
 from common.database.entity import SongInfo
+from common.url import FakeUrl
 
+from .crawler_base import CrawlerBase, MvQuality, VideoQualityError
 from .exception_handler import exceptionHandler
-from .crawler_base import CrawlerBase, VideoQualityError, MvQuality
 
 
 class QQMusicCrawler(CrawlerBase):
     """ Crawler of QQ Music """
+
+    name = "qq"
 
     def __init__(self):
         self.headers = {
@@ -55,6 +58,7 @@ class QQMusicCrawler(CrawlerBase):
         }
         for info in infos:
             song_info = SongInfo()
+            song_info.file = QQFakeSongUrl(info['mid']).url()
             song_info.title = info["name"]
             song_info.album = info["album"]["name"]
             song_info.singer = info["singer"][0]["name"]
@@ -63,7 +67,6 @@ class QQMusicCrawler(CrawlerBase):
             song_info.disc = info['index_cd'] + 1
             song_info.discTotal = info['index_cd'] + 1
             song_info["albummid"] = info['album']['mid']
-            song_info["songmid"] = info['mid']
             song_info.genre = genres.get(info["genre"], 'Pop')
             song_info.duration = info["interval"]
             year = info["time_public"].split('-')[0]  # type:str
@@ -108,7 +111,8 @@ class QQMusicCrawler(CrawlerBase):
         if not song_info:
             return
 
-        url = f"https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg?format=json&songmid={song_info['songmid']}"
+        mid = QQFakeSongUrl.getId(song_info.file)
+        url = f"https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg?format=json&songmid={mid}"
         response = requests.get(url, headers=self.headers)
         response.raise_for_status()
         lyric = json.loads(response.text)['lyric']
@@ -188,3 +192,16 @@ class QQMusicCrawler(CrawlerBase):
 
 # solve circular import problem
 CrawlerBase.meta_data_crawler = QQMusicCrawler()
+
+
+class QQFakeUrl(FakeUrl):
+    """ QQ music fake url """
+
+    server_name = "qq"
+
+
+@FakeUrl.register
+class QQFakeSongUrl(QQFakeUrl):
+    """ QQ music fake song url """
+
+    category = "song"

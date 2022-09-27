@@ -4,7 +4,7 @@ from typing import List
 from PyQt5.QtCore import QDateTime
 from PyQt5.QtSql import QSqlDatabase
 
-from ..dao import PlaylistDao, SongPlaylistDao, SongInfoDao
+from ..dao import PlaylistDao, SongPlaylistDao, PlaylistSongInfoDao
 from ..entity import Playlist, SongPlaylist, SongInfo
 from ..utils import UUIDUtils
 
@@ -18,12 +18,13 @@ class PlaylistService(ServiceBase):
         super().__init__()
         self.playlistDao = PlaylistDao(db)
         self.songPlaylistDao = SongPlaylistDao(db)
-        self.songInfoDao = SongInfoDao(db)
+        self.songInfoDao = PlaylistSongInfoDao(db)
 
     def createTable(self) -> bool:
         s1 = self.playlistDao.createTable()
         s2 = self.songPlaylistDao.createTable()
-        return s1 and s2
+        s3 = self.songInfoDao.createTable()
+        return s1 and s2 and s3
 
     def findByName(self, name: str) -> Playlist:
         """ list a playlists by name, return `None` if no one match """
@@ -59,8 +60,7 @@ class PlaylistService(ServiceBase):
 
     def modifyName(self, old: str, new: str) -> bool:
         """ modify the name of playlist """
-        s1 = self.playlistDao.update(old, 'name', new)
-        if not s1:
+        if not self.playlistDao.update(old, 'name', new):
             return False
 
         songPlaylists = self.songPlaylistDao.listBy(name=old)
@@ -77,13 +77,15 @@ class PlaylistService(ServiceBase):
         playlist.count = len(playlist.songInfos)
         playlist.modifiedTime = QDateTime.currentDateTime().toSecsSinceEpoch()
 
-        s1 = self.playlistDao.insert(playlist)
-        if not s1:
+        if not self.playlistDao.insert(playlist):
             return False
 
         songPlaylists = [SongPlaylist(
             UUIDUtils.getUUID(), i.file, playlist.name) for i in playlist.songInfos]
-        return self.songPlaylistDao.insertBatch(songPlaylists)
+        if not self.songPlaylistDao.insertBatch(songPlaylists):
+            return False
+
+        return self.songInfoDao.insertBatch(playlist.songInfos, ignore=True)
 
     def addSongs(self, name: str, songInfos: List[SongInfo]) -> bool:
         """ add songs to a playlist """
@@ -102,18 +104,19 @@ class PlaylistService(ServiceBase):
         playlist.count = playlist.count + len(songInfos)
         playlist.modifiedTime = QDateTime.currentDateTime().toSecsSinceEpoch()
 
-        s1 = self.playlistDao.updateById(playlist)
-        if not s1:
+        if not self.playlistDao.updateById(playlist):
             return False
 
         songPlaylists = [SongPlaylist(
             UUIDUtils.getUUID(), i.file, playlist.name) for i in songInfos]
-        return self.songPlaylistDao.insertBatch(songPlaylists)
+        if not self.songPlaylistDao.insertBatch(songPlaylists):
+            return False
+
+        return self.songInfoDao.insertBatch(songInfos, ignore=True)
 
     def remove(self, name: str) -> bool:
         """ remove a playlist """
-        s1 = self.playlistDao.deleteById(name)
-        if not s1:
+        if not self.playlistDao.deleteById(name):
             return False
 
         songPlaylists = self.songPlaylistDao.listBy(name=name)
@@ -121,8 +124,7 @@ class PlaylistService(ServiceBase):
 
     def removeBatch(self, names: List[str]) -> bool:
         """ remove multi playlists """
-        s1 = self.playlistDao.deleteByIds(names)
-        if not s1:
+        if not self.playlistDao.deleteByIds(names):
             return False
 
         songPlaylists = self.songPlaylistDao.listByFields('name', names)
@@ -131,8 +133,7 @@ class PlaylistService(ServiceBase):
     def removeSongs(self, name: str, songInfos: List[str]):
         """ remove songs from playlist """
         ids = [i['id'] for i in songInfos]
-        s1 = self.songPlaylistDao.deleteByIds(ids)
-        if not s1:
+        if not self.songPlaylistDao.deleteByIds(ids):
             return False
 
         songPlaylist = self.songPlaylistDao.selectBy(name=name)
@@ -150,10 +151,27 @@ class PlaylistService(ServiceBase):
         playlist.modifiedTime = QDateTime.currentDateTime().toSecsSinceEpoch()
         return self.playlistDao.updateById(playlist)
 
+    def updateOnlineSongUrl(self, old: str, new: str):
+        """ update the url of online song
+
+        Parameters
+        ----------
+        old: str
+            old url
+
+        new: str
+            new url
+        """
+        if not self.songPlaylistDao.updateByField("file", old, new):
+            return False
+
+        return self.songInfoDao.updateByField("file", old, new)
+
     def clearTable(self) -> bool:
         s1 = self.playlistDao.clearTable()
         s2 = self.songPlaylistDao.clearTable()
-        return s1 and s2
+        s3 = self.songInfoDao.clearTable()
+        return s1 and s2 and s3
 
     def setDatabase(self, db: QSqlDatabase):
         self.playlistDao.setDatabase(db)

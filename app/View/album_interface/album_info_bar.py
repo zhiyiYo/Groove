@@ -1,9 +1,8 @@
 # coding:utf-8
+from common.cover import Cover
 from common.database.entity import AlbumInfo
-from common.os_utils import getCoverPath
 from components.app_bar import AppBarButtonFactory as BF
 from components.app_bar import CollapsingAppBarBase
-from PyQt5.QtCore import pyqtSignal
 
 
 class AlbumInfoBar(CollapsingAppBarBase):
@@ -29,8 +28,7 @@ class AlbumInfoBar(CollapsingAppBarBase):
         self.genre = albumInfo.genre or ''
         self.album = albumInfo.album or ''
         self.singer = albumInfo.singer or ''
-        self.albumCoverPath = getCoverPath(
-            self.singer, self.album, 'album_big')
+        self.albumCoverPath = Cover(self.singer, self.album).path()
 
     def updateWindow(self, albumInfo: AlbumInfo):
         """ update window """

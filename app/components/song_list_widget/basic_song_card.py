@@ -176,10 +176,7 @@ class BasicSongCard(QWidget):
         self.isSelected = isPlay
 
         # judge whether the song file exists
-        if self.__songCardType != SongCardType.ONLINE_SONG_CARD:
-            self.isSongExist = os.path.exists(self.songPath)
-        else:
-            self.isSongExist = True
+        self._validateSongPath()
 
         if isPlay:
             self.isSelected = True
@@ -252,6 +249,10 @@ class BasicSongCard(QWidget):
             self.__aniGroup.addAnimation(ani)
 
         self._getAniTargetX()
+
+    def _validateSongPath(self):
+        """ validate song path """
+        self.isSongExist = os.path.exists(self.songPath)
 
     def _getAniTargetX(self):
         """ get initial value of animation """

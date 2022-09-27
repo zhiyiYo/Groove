@@ -1,18 +1,19 @@
 # coding:utf-8
 from pathlib import Path
-from typing import List, Union
+from typing import List
 
 from PyQt5.QtSql import QSqlDatabase
 
+from common.meta_data.reader import SongInfoReader, AlbumCoverReader
 from ..entity import SongInfo, Playlist
-from ..service import SongInfoService, PlaylistService
+from ..service import PlaylistSongInfoService, PlaylistService
 
 
 class PlaylistController:
     """ Playlist controller """
 
     def __init__(self, db: QSqlDatabase = None):
-        self.songInfoService = SongInfoService(db)
+        self.songInfoService = PlaylistSongInfoService(db)
         self.playlistService = PlaylistService(db)
 
     def getAllPlaylists(self):
@@ -29,6 +30,8 @@ class PlaylistController:
 
         files = [i.file for i in playlist.songInfos]
         songInfos = self.songInfoService.listByIds(files, True)
+        self.__updateExpiredSongInfos(songInfos)
+
         for songInfo, songInfo_ in zip(songInfos, playlist.songInfos):
             songInfo['id'] = songInfo_['id']
 
@@ -42,6 +45,7 @@ class PlaylistController:
         for playlist in playlists:
             files = [i.file for i in playlist.songInfos]
             songInfos = self.songInfoService.listByIds(files, True)
+            self.__updateExpiredSongInfos(songInfos)
 
             for songInfo, songInfo_ in zip(songInfos, playlist.songInfos):
                 songInfo['id'] = songInfo_['id']
@@ -60,6 +64,7 @@ class PlaylistController:
 
     def addSongs(self, name: str, songInfos: List[SongInfo]):
         """ add songs to a playlist """
+        AlbumCoverReader.getAlbumCovers(songInfos)
         return self.playlistService.addSongs(name, songInfos)
 
     def removeSongs(self, name: str, songInfos: List[SongInfo]):
@@ -77,3 +82,24 @@ class PlaylistController:
     def deleteBatch(self, names: List[str]):
         """ delete multi playlists """
         return self.playlistService.removeBatch(names)
+
+    def updateOnlineSongUrl(self, old: str, new: str):
+        """ update the url of online song """
+        return self.playlistService.updateOnlineSongUrl(old, new)
+
+    def __updateExpiredSongInfos(self, songInfos: List[SongInfo]):
+        """ update expired song information """
+        expiredSongInfos = []
+        reader = SongInfoReader()
+        for i, songInfo in enumerate(songInfos):
+            file = songInfo.file
+            if file.startswith("http"):
+                continue
+
+            path = Path(file)
+            if path.exists() and path.stat().st_mtime != songInfo.modifiedTime:
+                newSongInfo = reader.read(file)
+                songInfos[i] = newSongInfo
+                expiredSongInfos.append(newSongInfo)
+
+        self.songInfoService.modifyByIds(expiredSongInfos)

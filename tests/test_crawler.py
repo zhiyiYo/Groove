@@ -112,8 +112,8 @@ class TestWanYiMusicCrawler(TestCase):
 
     def test_get_mv_infos(self):
         """ 测试获取 MV 信息 """
-        songInfos, _ = self.crawler.getMvInfos('aiko 横颜')
-        self.assertEqual(len(songInfos), 1)
+        mvInfos, _ = self.crawler.getMvInfos('aiko 横颜')
+        self.assertTrue(mvInfos)
 
     def test_get_mv_url(self):
         """ 测试获取 MV 播放地址 """
@@ -135,12 +135,6 @@ class TestQQMusicCrawler(TestCase):
         """ 测试获取歌曲信息列表 """
         songInfos, _ = self.crawler.getSongInfos(self.keyWord, 1, 20)
         self.assertEqual(len(songInfos), 20)
-
-    def test_get_song_url(self):
-        """ 测试获取歌曲播放地址 """
-        songInfos, _ = self.crawler.getSongInfos('aiko 食べた愛', 1, 1)
-        url = self.crawler.getSongUrl(songInfos[0])
-        print(url)
 
     def test_get_lyric(self):
         """ 测试获取歌词 """

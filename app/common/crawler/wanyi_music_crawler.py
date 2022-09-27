@@ -8,6 +8,7 @@ from typing import List, Tuple, Union
 
 import requests
 from common.database.entity import AlbumInfo, SingerInfo, SongInfo
+from common.url import FakeUrl
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
 from fuzzywuzzy import fuzz
@@ -19,6 +20,8 @@ from .exception_handler import exceptionHandler
 
 class WanYiMusicCrawler(CrawlerBase):
     """ Crawler of WanYiYun Music """
+
+    name = "wanyi"
 
     def __init__(self):
         super().__init__()
@@ -59,8 +62,7 @@ class WanYiMusicCrawler(CrawlerBase):
         data = json.loads(text)['result']
         for info in data['songs']:
             song_info = SongInfo()
-            song_info['id'] = info['id']
-            song_info.file = self.song_url_mark
+            song_info.file = WanYiFakeSongUrl(info['id']).url()
             song_info.title = info['name']
             song_info.singer = info['ar'][0]['name']
             song_info.album = info['al']['name']
@@ -109,7 +111,7 @@ class WanYiMusicCrawler(CrawlerBase):
         # send request for play urls
         url = 'https://music.163.com/weapi/song/enhance/player/url/v1'
         form_data = {
-            "ids": [i['id'] for i in song_infos],
+            "ids": [WanYiFakeSongUrl.getId(i.file) for i in song_infos],
             "level": self.song_qualities[quality],
             "encodeType": "mp3",
         }
@@ -135,8 +137,8 @@ class WanYiMusicCrawler(CrawlerBase):
         if best_match < 85:
             return ''
 
-        id = song_infos[matches.index(best_match)]['id']
-        return f'https://music.163.com/#/song?id={id}'
+        url = song_infos[matches.index(best_match)].file
+        return f'https://music.163.com/#/song?id={WanYiFakeSongUrl.getId(url)}'
 
     @exceptionHandler([], 0)
     def getAlbumInfos(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[AlbumInfo], int]:
@@ -216,7 +218,7 @@ class WanYiMusicCrawler(CrawlerBase):
         # send request for lyrics
         url = 'https://music.163.com/weapi/song/lyric'
         form_data = {
-            "id": song_info['id'],
+            "id": WanYiFakeSongUrl.getId(song_info.file) ,
             "lv": -1,
             "tv": -1
         }
@@ -467,3 +469,16 @@ class Encryptor:
         # C = M^e mod n
         num = pow(int(i[::-1].encode().hex(), 16), int(e, 16), int(n, 16))
         return format(num, 'x')
+
+
+class WanYiFakeUrl(FakeUrl):
+    """ WanYi music fake url """
+
+    server_name = "wanyi"
+
+
+@FakeUrl.register
+class WanYiFakeSongUrl(WanYiFakeUrl):
+    """ WanYi music fake song url """
+
+    category = "song"

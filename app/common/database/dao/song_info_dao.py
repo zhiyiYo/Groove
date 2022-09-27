@@ -91,3 +91,9 @@ class SongInfoDao(DaoBase):
             return []
 
         return self.iterRecords()
+
+
+class PlaylistSongInfoDao(SongInfoDao):
+    """ Playlist song information DAO """
+
+    table = "tbl_playlist_song_info"

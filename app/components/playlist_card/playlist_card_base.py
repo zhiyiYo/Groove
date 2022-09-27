@@ -4,7 +4,7 @@ import sys
 from common.auto_wrap import autoWrap
 from common.database.entity import Playlist
 from common.image_utils import DominantColor, readImage
-from common.os_utils import getCoverPath
+from common.cover import Cover, CoverType
 from common.signal_bus import signalBus
 from components.buttons.blur_button import BlurButton
 from components.widgets.check_box import CheckBox
@@ -118,7 +118,7 @@ class PlaylistCardBase(PerspectiveWidget):
         self.count = playlist.count
         singer = playlist.singer or ''
         album = playlist.album or ''
-        self.coverPath = getCoverPath(singer, album, 'playlist_small')
+        self.coverPath = Cover(singer, album).path(CoverType.PLAYLIST_BIG)
 
     def __adjustLabel(self):
         """ adjust the text of label """

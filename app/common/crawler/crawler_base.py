@@ -5,11 +5,11 @@ from pathlib import Path
 from typing import List, Tuple, Union
 
 import requests
-from common.cache import albumCoverFolder
+from common.cover import Cover
 from common.database.entity import AlbumInfo, SingerInfo, SongInfo
 from common.image_utils import getPicSuffix
 from common.meta_data.writer import MetaDataWriter
-from common.os_utils import adjustName, getCoverName
+from common.os_utils import adjustName
 from fuzzywuzzy import fuzz
 
 from .exception_handler import exceptionHandler
@@ -44,8 +44,9 @@ class MvQuality(Enum):
 class CrawlerBase:
     """ Crawler abstract class """
 
-    song_url_mark = 'http'  # mark that song url has not been obtained
-    meta_data_crawler = None  # type: CrawlerBase
+    name = "base"               # server name
+    song_url_mark = 'http'      # mark that song url has not been obtained
+    meta_data_crawler = None    # type: CrawlerBase
 
     def __init__(self):
         self.qualities = SongQuality.values()
@@ -304,6 +305,22 @@ class CrawlerBase:
         """
         raise NotImplementedError
 
+    def getAlbumCoverUrl(self, key_word: str) -> str:
+        """ get album cover url
+
+        Parameters
+        ----------
+        key_word: str
+            search key word, the format is `singer title`
+
+        Returns
+        -------
+        url: str
+            the url of album cover
+        """
+        songInfo = self.getSongInfo(key_word)
+        return songInfo.get("coverPath", "")
+
     def getAlbumDetailsUrl(self, key_word: str):
         """ get the url of album details page
 
@@ -446,13 +463,7 @@ class CrawlerBase:
         pic_data = response.content
 
         # save album cover
-        folder = albumCoverFolder / getCoverName(singer, album)
-        folder.mkdir(exist_ok=True, parents=True)
-        save_path = folder / ("cover" + getPicSuffix(pic_data))
-        with open(save_path, 'wb') as f:
-            f.write(pic_data)
-
-        return str(save_path)
+        return Cover(singer, album).save(pic_data)
 
     def getSongInfo(self, key_word: str, threshold=90) -> SongInfo:
         """ get the most matching song information according to keyword
