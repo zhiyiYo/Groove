@@ -3,7 +3,7 @@ import sys
 from copy import deepcopy
 from pathlib import Path
 from random import shuffle
-from typing import List
+from typing import List, Union
 
 from common import resource
 from common.config import config
@@ -658,9 +658,12 @@ class MainWindow(AcrylicWindow):
         self.mediaPlaylist.insertSong(index, songInfo)
         self.playingInterface.updateSongInfoByIndex(index, songInfo)
         self.smallestPlayInterface.playlist[index] = songInfo
-        self.searchResultInterface.onlineSongListWidget.updateOneSongCardInfo(oldSongInfo, songInfo)
-        self.playlistInterface.songListWidget.updateOneSongCardInfo(oldSongInfo, songInfo)
-        self.library.playlistController.updateOnlineSongUrl(oldSongInfo.file, songInfo.file)
+        self.searchResultInterface.onlineSongListWidget.updateOneSongCardInfo(
+            oldSongInfo, songInfo)
+        self.playlistInterface.songListWidget.updateOneSongCardInfo(
+            oldSongInfo, songInfo)
+        self.library.playlistController.updateOnlineSongUrl(
+            oldSongInfo.file, songInfo.file)
         self.mediaPlaylist.removeOnlineSong(index+1)
         self.mediaPlaylist.setCurrentIndex(index)
 
@@ -1091,13 +1094,26 @@ class MainWindow(AcrylicWindow):
         self.mediaPlaylist.addSongs(songInfos)
         self.updatePlaylist(reset)
 
+    def addFilesToCustomPlaylist(self, name: str, files: List[Union[Path, str]]):
+        """ add audio files to custom playlist  """
+        if not files:
+            return
+
+        if len(files) > 10:
+            self.showScanInfoTooltip()
+
+        eventLoop = QEventLoop(self)
+        self.libraryThread.setTask(
+            lambda: self.library.loadFromFiles(files, False))
+        self.libraryThread.finished.connect(eventLoop.quit)
+        self.libraryThread.start()
+        eventLoop.exec()
+
+        self.hideScanInfoTooltip()
+        self.addSongsToCustomPlaylist(name, self.libraryThread.taskResult)
+
     def addSongsToCustomPlaylist(self, name: str, songInfos: List[SongInfo]):
         """ add songs to custom playlist """
-
-        def resetSongInfo(songInfos: list, diffSongInfos):
-            songInfos.clear()
-            songInfos.extend(diffSongInfos)
-
         songInfos = deepcopy(songInfos)
 
         # find new songs
@@ -1112,23 +1128,24 @@ class MainWindow(AcrylicWindow):
         if repeatNum > 0:
             if planToAddNum == 1:
                 content = self.tr(
-                    "This song is already in your playlist. Do you want to add?")
+                    "This song is already in your playlist.")
             elif repeatNum < planToAddNum:
                 content = self.tr(
-                    "Some songs are already in your playlist. Do you want to add?")
+                    "Some songs are already in your playlist.")
             else:
                 content = self.tr(
-                    "All these songs are already in your playlist. Do you want to add?")
+                    "All these songs are already in your playlist.")
 
-            w = MessageDialog(self.tr("Song duplication"), content, self)
-            w.cancelSignal.connect(
-                lambda: resetSongInfo(songInfos, diffSongInfos))
-            w.exec_()
+            self.showMessageBox(self.tr("Song duplication"), content)
 
-        success = self.library.playlistController.addSongs(name, songInfos)
+        if not diffSongInfos:
+            return
+
+        success = self.library.playlistController.addSongs(name, diffSongInfos)
         if not success:
             return
 
+        self.playlistInterface.addSongsToPlaylist(name, songInfos)
         self.playlistCardInterface.addSongsToPlaylist(name, songInfos)
         self.searchResultInterface.playlistGroupBox.playlistCardView.addSongsToPlaylistCard(
             name, songInfos)
@@ -1290,10 +1307,18 @@ class MainWindow(AcrylicWindow):
         self.navigationHistories.pop()
 
     def showScanInfoTooltip(self):
+        """ show scan song information tooltip """
         title = self.tr("Scanning song information")
         content = self.tr("Please wait patiently")
         self.scanInfoTooltip = StateTooltip(title, content, self.window())
         self.scanInfoTooltip.show()
+
+    def hideScanInfoTooltip(self):
+        """ hide and destroy scan song information tooltip """
+        if self.scanInfoTooltip:
+            self.scanInfoTooltip.setState(True)
+
+        self.scanInfoTooltip = None
 
     def onSelectedFolderChanged(self, directories: List[str]):
         """ selected music folders changed slot """
@@ -1315,10 +1340,7 @@ class MainWindow(AcrylicWindow):
     def onLoadFromFilesFinished(self, songInfos: List[SongInfo]):
         """ load song information form files finished slot """
         self.setPlaylist(songInfos)
-        if self.scanInfoTooltip:
-            self.scanInfoTooltip.setState(True)
-
-        self.scanInfoTooltip = None
+        self.hideScanInfoTooltip()
 
     def showCreatePlaylistDialog(self, songInfos: List[SongInfo] = None):
         """ show create playlist dialog box """
@@ -1519,6 +1541,8 @@ class MainWindow(AcrylicWindow):
             self.addSongsToPlayingPlaylist)
         signalBus.addSongsToCustomPlaylistSig.connect(
             self.addSongsToCustomPlaylist)
+        signalBus.addFilesToCustomPlaylistSig.connect(
+            self.addFilesToCustomPlaylist)
         signalBus.addSongsToNewCustomPlaylistSig.connect(
             self.showCreatePlaylistDialog)
         signalBus.selectionModeStateChanged.connect(

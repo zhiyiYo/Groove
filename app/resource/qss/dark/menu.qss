@@ -37,11 +37,13 @@ QMenu::item:selected {
 }
 
 /*添加到菜单样式*/
-QMenu#addToMenu {
+QMenu#addToMenu,
+QMenu#addFromMenu {
     padding: 5px 0px 8px 0px;
 }
 
 QMenu#addToMenu::item,
+QMenu#addFromMenu::item,
 QMenu#blackAddToMenu::item,
 QMenu#deskLyricMenu::item {
     height: 38px;
@@ -52,7 +54,8 @@ QMenu#deskLyricMenu::item {
 
 }
 
-QMenu#addToMenu::item:selected {
+QMenu#addToMenu::item:selected,
+QMenu#addFromMenu::item:selected {
     background-color: rgb(64, 64, 64);
 }
 
@@ -64,6 +67,7 @@ QMenu#addToMenu::separator {
 
 /*调整图标位置*/
 QMenu#addToMenu::icon,
+QMenu#addFromMenu::icon,
 QMenu#blackAddToMenu::icon,
 QMenu#deskLyricMenu::icon {
     position: absolute;

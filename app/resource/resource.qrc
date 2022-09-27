@@ -141,6 +141,7 @@
         <file>images/album_interface/Pin.png</file>
         <file>images/album_interface/Play.png</file>
         <file>images/album_interface/Online.png</file>
+        <file>images/album_interface/AddFavorite.png</file>
         <file>images/default_covers/album_113_113.png</file>
         <file>images/default_covers/album_200_200.png</file>
         <file>images/default_covers/playlist_135_135.png</file>
@@ -223,6 +224,10 @@
         <file>images/menu/SpeedReset_white.png</file>
         <file>images/menu/Insert_black.png</file>
         <file>images/menu/Insert_white.png</file>
+        <file>images/menu/MusicNote_black.png</file>
+        <file>images/menu/MusicNote_white.png</file>
+        <file>images/menu/Folder_black.png</file>
+        <file>images/menu/Folder_white.png</file>
         <file>images/navigation_interface/clear_hover.png</file>
         <file>images/navigation_interface/clear_normal.png</file>
         <file>images/navigation_interface/clear_pressed.png</file>

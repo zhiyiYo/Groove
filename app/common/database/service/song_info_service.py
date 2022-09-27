@@ -36,7 +36,8 @@ class SongInfoService(ServiceBase):
         return self.songInfoDao.listAll()
 
     def listByIds(self, files: list, repeat=False) -> List[SongInfo]:
-        """ list song information by the path of audio files
+        """ list song information by the path of audio files,
+        the order of song infoamtion list is the same as `files`
 
         Parameters
         ----------

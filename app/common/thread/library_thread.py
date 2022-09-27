@@ -18,6 +18,7 @@ class LibraryThread(QThread):
         self.library = Library(directories, db, False, self)
         self.task = self.library.load
         self.params = {}
+        self.taskResult = None
 
         self.library.reloadFinished.connect(self.reloadFinished)
         self.library.loadFromFilesFinished.connect(self.loadFromFilesFinished)
@@ -30,7 +31,7 @@ class LibraryThread(QThread):
             db.open()
             self.library.setDatabase(db)
 
-        self.task(**self.params)
+        self.taskResult = self.task(**self.params)
 
     def setTask(self, task, **params):
         """ Set the song library task implemented in the thread

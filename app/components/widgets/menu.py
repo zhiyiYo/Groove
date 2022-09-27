@@ -42,6 +42,8 @@ class MenuIconFactory:
     SPEED_DOWN = "SpeedDown"
     SPEED_RESET = "SpeedReset"
     INSERT = "Insert"
+    FOLDER = "Folder"
+    MUSIC_NOTE = "MusicNote"
 
     @classmethod
     def create(cls, iconType: str):
@@ -367,3 +369,16 @@ class PlaySpeedMenu(DWMMenu):
         self.speedUpAct.triggered.connect(signalBus.playSpeedUpSig)
         self.speedDownAct.triggered.connect(signalBus.playSpeedDownSig)
         self.speedResetAct.triggered.connect(signalBus.playSpeedResetSig)
+
+
+class AddFromMenu(DWMMenu):
+    """ Add from menu """
+
+    def __init__(self, title="", parent=None):
+        super().__init__(title, parent)
+        self.setObjectName("addFromMenu")
+        self.fromFileAct = QAction(MIF.create(
+            MIF.MUSIC_NOTE), self.tr("From music files"), self)
+        self.fromFolderAct = QAction(MIF.create(
+            MIF.FOLDER), self.tr("From music folder"), self)
+        self.addActions([self.fromFileAct, self.fromFolderAct])

@@ -32,11 +32,10 @@ class PlaylistService(ServiceBase):
         if not playlist:
             return None
 
-        for songPlaylist in self.songPlaylistDao.listBy(name=playlist.name):
-            songInfo = SongInfo(songPlaylist.file)
-            songInfo['id'] = songPlaylist.id
-            playlist.songInfos.append(songInfo)
-
+        files = [i.file for i in self.songPlaylistDao.listBy(name=name)]
+        playlist.songInfos = self.songInfoDao.listByIds(files)
+        k = self.songInfoDao.fields[0]
+        playlist.songInfos.sort(key=lambda i: files.index(i[k]))
         return playlist
 
     def listByNames(self, names: List[str]) -> List[Playlist]:
@@ -44,10 +43,10 @@ class PlaylistService(ServiceBase):
         playlists = self.playlistDao.listByIds(names)  # type:Playlist
 
         for playlist in playlists:
-            for songPlaylist in self.songPlaylistDao.listBy(name=playlist.name):
-                songInfo = SongInfo(songPlaylist.file)
-                songInfo['id'] = songPlaylist.id
-                playlist.songInfos.append(songInfo)
+            files = [i.file for i in self.songPlaylistDao.listBy(name=playlist.name)]
+            playlist.songInfos = self.songInfoDao.listByIds(files)
+            k = self.songInfoDao.fields[0]
+            playlist.songInfos.sort(key=lambda i: files.index(i[k]))
 
         return playlists
 
@@ -130,10 +129,10 @@ class PlaylistService(ServiceBase):
         songPlaylists = self.songPlaylistDao.listByFields('name', names)
         return self.songPlaylistDao.deleteByIds([i.id for i in songPlaylists])
 
-    def removeSongs(self, name: str, songInfos: List[str]):
+    def removeSongs(self, name: str, songInfos: List[SongInfo]):
         """ remove songs from playlist """
-        ids = [i['id'] for i in songInfos]
-        if not self.songPlaylistDao.deleteByIds(ids):
+        files = [i.file for i in songInfos]
+        if not self.songPlaylistDao.deleteByNameFiles(name, files):
             return False
 
         songPlaylist = self.songPlaylistDao.selectBy(name=name)

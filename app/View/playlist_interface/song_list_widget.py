@@ -6,8 +6,8 @@ from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
 from components.song_list_widget import NoScrollSongListWidget, SongCardType
 from components.song_list_widget.song_card import PlaylistInterfaceSongCard
-from components.widgets.menu import AddToMenu, DWMMenu
-from PyQt5.QtCore import QFile, pyqtSignal
+from components.widgets.menu import AddToMenu, DownloadMenu, DWMMenu
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent
 from PyQt5.QtWidgets import QAction
 
@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import QAction
 class SongCardListContextMenu(DWMMenu):
     """ Context menu of song list widget """
 
-    def __init__(self, parent):
+    def __init__(self, showDownload=False, parent=None):
         super().__init__("", parent)
         self.playAct = QAction(self.tr("Play"), self)
         self.nextSongAct = QAction(self.tr("Play next"), self)
@@ -26,11 +26,15 @@ class SongCardListContextMenu(DWMMenu):
         self.showPropertyAct = QAction(self.tr("Properties"), self)
         self.selectAct = QAction(self.tr("Select"), self)
         self.addToMenu = AddToMenu(self.tr("Add to"), self)
+        self.downloadMenu = DownloadMenu(self.tr("Download"), self)
 
         self.addActions([self.playAct, self.nextSongAct])
         self.addMenu(self.addToMenu)
-        self.addActions([self.deleteAct, self.showAlbumAct, self.viewOnlineAct,
-                        self.editInfoAct, self.showPropertyAct])
+        self.addActions([self.deleteAct, self.showAlbumAct, self.viewOnlineAct, self.editInfoAct])
+        if showDownload:
+            self.addMenu(self.downloadMenu)
+
+        self.addAction(self.showPropertyAct)
         self.addSeparator()
         self.addAction(self.selectAct)
 
@@ -57,10 +61,13 @@ class SongListWidget(NoScrollSongListWidget):
 
     def contextMenuEvent(self, e: QContextMenuEvent):
         hitIndex = self.indexAt(e.pos()).column()
-        if hitIndex > -1:
-            contextMenu = SongCardListContextMenu(self)
-            self.__connectMenuSignalToSlot(contextMenu)
-            contextMenu.exec(self.cursor().pos())
+        if hitIndex < 0:
+            return
+
+        showDownload = self.currentSongInfo.file.startswith("http")
+        contextMenu = SongCardListContextMenu(showDownload, self)
+        self.__connectMenuSignalToSlot(contextMenu)
+        contextMenu.exec(self.cursor().pos())
 
     def __onPlayButtonClicked(self, index):
         """ play button clicked slot """
@@ -117,3 +124,6 @@ class SongListWidget(NoScrollSongListWidget):
             lambda name: signalBus.addSongsToCustomPlaylistSig.emit(name, self.songInfos))
         menu.addToMenu.newPlaylistAct.triggered.connect(
             lambda: signalBus.addSongsToNewCustomPlaylistSig.emit([self.currentSongInfo]))
+
+        menu.downloadMenu.downloadSig.connect(
+            lambda quality: signalBus.downloadSongSig.emit(self.currentSongInfo, quality))

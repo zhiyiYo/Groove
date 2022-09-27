@@ -28,29 +28,14 @@ class PlaylistController:
         if not playlist:
             return None
 
-        files = [i.file for i in playlist.songInfos]
-        songInfos = self.songInfoService.listByIds(files, True)
-        self.__updateExpiredSongInfos(songInfos)
-
-        for songInfo, songInfo_ in zip(songInfos, playlist.songInfos):
-            songInfo['id'] = songInfo_['id']
-
-        playlist.songInfos = songInfos
+        self.__updateExpiredSongInfos(playlist.songInfos)
         return playlist
 
     def getPlaylists(self, names: List[str]):
         """ get multi playlists, contain song information """
         playlists = self.playlistService.listByNames(names)
-
         for playlist in playlists:
-            files = [i.file for i in playlist.songInfos]
-            songInfos = self.songInfoService.listByIds(files, True)
-            self.__updateExpiredSongInfos(songInfos)
-
-            for songInfo, songInfo_ in zip(songInfos, playlist.songInfos):
-                songInfo['id'] = songInfo_['id']
-
-            playlist.songInfos = songInfos
+            self.__updateExpiredSongInfos(playlist.songInfos)
 
         return playlists
 

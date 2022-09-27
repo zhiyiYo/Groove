@@ -28,6 +28,7 @@ class SignalBus(Singleton, QObject):
     addSongsToPlayingPlaylistSig = pyqtSignal(list)      # 添加到正在播放
     addSongsToNewCustomPlaylistSig = pyqtSignal(list)    # 添加到新建自定义播放列表
     addSongsToCustomPlaylistSig = pyqtSignal(str, list)  # 添加到自定义播放列表
+    addFilesToCustomPlaylistSig = pyqtSignal(str, list)  # 添加本地文件到播放列表
 
     editSongInfoSig = pyqtSignal(SongInfo, SongInfo)          # 编辑歌曲信息
     editAlbumInfoSig = pyqtSignal(AlbumInfo, AlbumInfo, str)  # 编辑专辑信息

@@ -3,7 +3,7 @@ from typing import List, Union
 
 from common.image_utils import DominantColor
 from components.widgets.label import AvatarLabel
-from components.widgets.menu import AddToMenu
+from components.widgets.menu import AddToMenu, AddFromMenu
 from PyQt5.QtCore import QPoint, Qt, pyqtSignal
 from PyQt5.QtGui import (QColor, QFont, QFontMetrics, QPainter, QPalette,
                          QPixmap, QResizeEvent)
@@ -17,12 +17,15 @@ from .more_actions_menu import MoreActionsMenu
 class CollapsingAppBarBase(QWidget):
     """ Collapsing app bar base class """
 
+    addSig = pyqtSignal()
     playSig = pyqtSignal()
     singerSig = pyqtSignal()
     editInfoSig = pyqtSignal()
     renameSig = pyqtSignal()
     deleteSig = pyqtSignal()
     viewOnlineSig = pyqtSignal()
+    addFromFileSig = pyqtSignal()
+    addFromFolderSig = pyqtSignal()
     addToPlayingPlaylistSig = pyqtSignal()
     addToNewCustomPlaylistSig = pyqtSignal()
     addToCustomPlaylistSig = pyqtSignal(str)
@@ -70,6 +73,7 @@ class CollapsingAppBarBase(QWidget):
 
         self.__signalMap = {
             'playAllButton': self.playSig,
+            'addButton': self._onAddButtonClicked,
             'addToButton': self._onAddToButtonClicked,
             'singerButton': self.singerSig,
             'viewOnlineButton': self.viewOnlineSig,
@@ -280,6 +284,17 @@ class CollapsingAppBarBase(QWidget):
         menu.playingAct.triggered.connect(self.addToPlayingPlaylistSig)
         menu.addSongsToPlaylistSig.connect(self.addToCustomPlaylistSig)
         menu.newPlaylistAct.triggered.connect(self.addToNewCustomPlaylistSig)
+        menu.exec(QPoint(x, y))
+
+    def _onAddButtonClicked(self):
+        """ show add from menu """
+        menu = AddFromMenu(parent=self)
+        pos = self.mapToGlobal(self.addButton.pos())
+        x = pos.x() + self.addButton.width() + 5
+        y = pos.y() + self.addButton.height() // 2 - \
+            (13 + 38 * len(menu.actions())) // 2
+        menu.fromFileAct.triggered.connect(self.addFromFileSig)
+        menu.fromFolderAct.triggered.connect(self.addFromFolderSig)
         menu.exec(QPoint(x, y))
 
     def updateWindow(self, title: str, content: str, coverPath: str):

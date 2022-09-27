@@ -215,6 +215,12 @@ class OnlineSongListWidget(NoScrollSongListWidget):
             lambda quality: signalBus.downloadSongSig.emit(self.currentSongInfo, quality))
         menu.viewOnlineAct.triggered.connect(
             lambda: signalBus.getSongDetailsUrlSig.emit(self.currentSongInfo, 'kuwo'))
+        menu.addToMenu.playingAct.triggered.connect(
+            lambda: signalBus.addSongsToPlayingPlaylistSig.emit([self.currentSongInfo]))
+        menu.addToMenu.addSongsToPlaylistSig.connect(
+            lambda name: signalBus.addSongsToCustomPlaylistSig.emit(name, [self.currentSongInfo]))
+        menu.addToMenu.newPlaylistAct.triggered.connect(
+            lambda: signalBus.addSongsToNewCustomPlaylistSig.emit([self.currentSongInfo]))
 
 
 class LocalSongListContextMenu(DWMMenu):
@@ -245,6 +251,9 @@ class OnlineSongListContextMenu(DWMMenu):
         self.viewOnlineAct = QAction(self.tr('View online'), self)
         self.showPropertyAct = QAction(self.tr("Properties"), self)
         self.downloadMenu = DownloadMenu(self.tr('Download'), self)
+        self.addToMenu = AddToMenu(self.tr("Add to"), self)
         self.addActions([self.playAct, self.nextSongAct])
+        self.addMenu(self.addToMenu)
+        self.addAction(self.viewOnlineAct)
         self.addMenu(self.downloadMenu)
-        self.addActions([self.viewOnlineAct, self.showPropertyAct])
+        self.addAction(self.showPropertyAct)

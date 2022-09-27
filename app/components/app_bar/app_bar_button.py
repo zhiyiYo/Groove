@@ -68,7 +68,8 @@ class AppBarButtonFactory(QObject):
     EDIT_INFO = 5
     RENAME = 6
     DELETE = 7
-    MORE = 8
+    ADD_FAVORITE = 8
+    MORE = 9
 
     def create(self, buttonType: int) -> AppBarButton:
         """ create a button """
@@ -96,6 +97,9 @@ class AppBarButtonFactory(QObject):
         elif buttonType == self.DELETE:
             button = AppBarButton(
                 ":/images/album_interface/Delete.png", self.tr("Delete"), objectName="deleteButton")
+        elif buttonType == self.ADD_FAVORITE:
+            button = AppBarButton(
+                ":/images/album_interface/AddFavorite.png", self.tr("Add songs"), objectName="addButton")
         elif buttonType == self.MORE:
             button = AppBarButton(
                 ":/images/album_interface/More.png", "", objectName="moreActionButton")

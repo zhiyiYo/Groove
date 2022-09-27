@@ -1,10 +1,11 @@
 # coding:utf-8
-from typing import List
+from pathlib import Path
+from typing import List, Union
 
-from common.icon import getIconColor
-from common.database.entity import Playlist, SongInfo
-from common.library import Library
 from common.cover import Cover, CoverType
+from common.database.entity import Playlist, SongInfo
+from common.icon import getIconColor
+from common.library import Directory, Library
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
 from components.buttons.three_state_button import ThreeStatePushButton
@@ -13,7 +14,7 @@ from components.dialog_box.rename_playlist_dialog import RenamePlaylistDialog
 from components.selection_mode_interface import (SelectionModeBarType,
                                                  SongSelectionModeInterface)
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QLabel
+from PyQt5.QtWidgets import QFileDialog, QLabel
 
 from .playlist_info_bar import PlaylistInfoBar
 from .song_list_widget import SongListWidget
@@ -82,6 +83,15 @@ class PlaylistInterface(SongSelectionModeInterface):
         self.playlistInfoBar.updateWindow(self.playlist)
         self.songListWidget.updateAllSongCards(self.songInfos)
         self.adjustScrollHeight()
+
+    def addSongsToPlaylist(self, name: str, songInfos: List[SongInfo]):
+        """ add songs to playlist, won't insert song information to database """
+        if name != self.playlistName:
+            return
+
+        playlist = self.playlist.copy()
+        playlist.songInfos = playlist.songInfos+songInfos
+        self.updateWindow(playlist)
 
     def resizeEvent(self, e):
         super().resizeEvent(e)
@@ -174,6 +184,24 @@ class PlaylistInterface(SongSelectionModeInterface):
         self.addMusicButton.setVisible(isEmpty)
         self.noMusicLabel.setVisible(isEmpty)
 
+    def __showAddFolderToPlaylistDialog(self):
+        """ add folder to playlist """
+        path = QFileDialog.getExistingDirectory(
+            self, self.tr("Choose folder"), "./")
+        if path:
+            signalBus.addFilesToCustomPlaylistSig.emit(
+                self.playlistName, Directory(path).glob())
+
+    def __showAddFilesToPlaylistDialog(self):
+        """ add files to playlist """
+        filters = '(' + \
+            ';'.join(["*"+i for i in Directory.audio_formats]) + ')'
+        files, _ = QFileDialog.getOpenFileNames(
+            self, self.tr("Choose songs to add"), "./", self.tr("Audio files")+filters)
+        if files:
+            signalBus.addFilesToCustomPlaylistSig.emit(
+                self.playlistName, files)
+
     def __connectSignalToSlot(self):
         """ connect signal to slot """
         self.addMusicButton.clicked.connect(self.switchToAlbumCardInterfaceSig)
@@ -191,6 +219,10 @@ class PlaylistInterface(SongSelectionModeInterface):
             lambda: self.__showRenamePlaylistDialog(self.playlist.name))
         self.playlistInfoBar.deleteSig.connect(
             self.__showDeletePlaylistDialog)
+        self.playlistInfoBar.addFromFileSig.connect(
+            self.__showAddFilesToPlaylistDialog)
+        self.playlistInfoBar.addFromFolderSig.connect(
+            self.__showAddFolderToPlaylistDialog)
 
         # song list widget signal
         self.songListWidget.playSignal.connect(self.songCardPlaySig)

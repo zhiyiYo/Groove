@@ -1,4 +1,5 @@
 # coding:utf-8
+from typing import List
 from .dao_base import DaoBase
 
 
@@ -36,3 +37,8 @@ class SongPlaylistDao(DaoBase):
             )
         """)
         return success
+
+    def deleteByNameFiles(self, name:str, files: List[str]):
+        """ delete bt name-file pairs """
+        names = [name] * len(files)
+        return self.deleteByMultiFields(name=names, file=files)

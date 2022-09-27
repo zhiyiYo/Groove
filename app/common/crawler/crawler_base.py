@@ -380,7 +380,13 @@ class CrawlerBase:
             f.write(data)
 
         # download album cover
-        cover_path = song_info['coverPath']
+        cover_path = song_info.get('coverPath') or Cover(
+            song_info.singer, song_info.album).path()
+
+        if not cover_path.startswith("http") and not Path(cover_path).exists():
+            key_word = song_info.singer + " " + song_info.title
+            cover_path = self.getAlbumCoverUrl(key_word)
+
         if cover_path.startswith('http'):
             cover_path = self.downloadAlbumCover(
                 cover_path, song_info.singer, song_info.album)
@@ -399,7 +405,8 @@ class CrawlerBase:
 
         writer = MetaDataWriter()
         writer.writeSongInfo(song_info_)
-        writer.writeAlbumCover(song_path, cover_path)
+        if Path(cover_path).exists():
+            writer.writeAlbumCover(song_path, cover_path)
 
         return song_path
 

@@ -78,11 +78,13 @@ class Library(QObject):
 
         self.loadFinished.emit()
 
-    def loadFromFiles(self, files: List[Union[Path, str]]):
+    def loadFromFiles(self, files: List[Union[Path, str]], emit=True):
         """ load song information from files """
         songInfos = self.songInfoController.getSongInfosFromFile(files)
         self.albumCoverController.getAlbumCovers(songInfos)
-        self.loadFromFilesFinished.emit(songInfos)
+        if emit:
+            self.loadFromFilesFinished.emit(songInfos)
+
         return songInfos
 
     def setDirectories(self, directories: List[str]):

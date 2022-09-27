@@ -422,6 +422,27 @@ class DaoBase:
 
         return self.query.exec()
 
+    @finishQuery
+    def deleteByMultiFields(self, **condition):
+        """ delete multi records based on the value of multi fields """
+        if not condition:
+            return
+
+        placeHolders = []
+        keys = list(condition.keys())
+        for _ in range(len(condition[keys[0]])):
+            placeHolder = ' AND '.join([f"{k} = ?" for k in keys])
+            placeHolders.append(f"({placeHolder})")
+
+        sql = f"DELETE FROM {self.table} WHERE {' OR '.join(placeHolders)}"
+        self.query.prepare(sql)
+
+        for value in zip(*condition.values()):
+            for v in value:
+                self.query.addBindValue(v)
+
+        return self.query.exec()
+
     def deleteByIds(self, ids: list) -> bool:
         """ delete multi records
 

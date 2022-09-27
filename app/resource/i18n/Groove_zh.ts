@@ -10,6 +10,19 @@
     </message>
 </context>
 <context>
+    <name>AddFromMenu</name>
+    <message>
+        <location filename="../../components/widgets/menu.py" line="380"/>
+        <source>From music files</source>
+        <translation>添加自音乐文件</translation>
+    </message>
+    <message>
+        <location filename="../../components/widgets/menu.py" line="382"/>
+        <source>From music folder</source>
+        <translation>添加自音乐文件夹</translation>
+    </message>
+</context>
+<context>
     <name>AddToMenu</name>
     <message>
         <location filename="../../View/playing_interface/menu.py" line="63"/>
@@ -276,6 +289,11 @@
         <location filename="../../View/album_interface/album_info_bar.py" line="95"/>
         <source>Delete</source>
         <translation>删除</translation>
+    </message>
+    <message>
+        <location filename="../../View/album_interface/album_info_bar.py" line="96"/>
+        <source>Add songs</source>
+        <translation>添加歌曲</translation>
     </message>
 </context>
 <context>
@@ -717,18 +735,18 @@
     </message>
     <message>
         <location filename="../../View/main_window/main_window.py" line="1100"/>
-        <source>This song is already in your playlist. Do you want to add?</source>
-        <translation>此歌已在你的播放列表中。是否要添加？</translation>
+        <source>This song is already in your playlist.</source>
+        <translation>此歌已在你的播放列表中。</translation>
     </message>
     <message>
         <location filename="../../View/main_window/main_window.py" line="1103"/>
-        <source>Some songs are already in your playlist. Do you want to add?</source>
-        <translation>部分歌曲已在你的播放列表中。是否要添加？</translation>
+        <source>Some songs are already in your playlist.</source>
+        <translation>部分歌曲已在你的播放列表中。</translation>
     </message>
     <message>
         <location filename="../../View/main_window/main_window.py" line="1106"/>
-        <source>All these songs are already in your playlist. Do you want to add?</source>
-        <translation>所有这些歌曲都已在你的播放列表中。是否要添加？</translation>
+        <source>All these songs are already in your playlist.</source>
+        <translation>所有这些歌曲都已在你的播放列表中。</translation>
     </message>
     <message>
         <location filename="../../View/main_window/main_window.py" line="1109"/>
@@ -1023,6 +1041,11 @@
         <location filename="../../View/search_result_interface/song_group_box.py" line="302"/>
         <source>Properties</source>
         <translation>属性</translation>
+    </message>
+    <message>
+        <location filename="../../View/search_result_interface/song_group_box.py" line="306"/>
+        <source>Add to</source>
+        <translation>添加到</translation>
     </message>
     <message>
         <location filename="../../View/search_result_interface/song_group_box.py" line="304"/>
@@ -1534,6 +1557,21 @@
         <location filename="../../View/playlist_interface/playlist_interface.py" line="255"/>
         <source>it won&apos;t be on be this device anymore.</source>
         <translation>，它将不再位于此设备上。</translation>
+    </message>
+    <message>
+        <location filename="../../View/playlist_interface/playlist_interface.py" line="180"/>
+        <source>Choose folder</source>
+        <translation>选择文件夹</translation>
+    </message>
+    <message>
+        <location filename="../../View/playlist_interface/playlist_interface.py" line="190"/>
+        <source>Choose songs to add</source>
+        <translation>选择要添加的歌曲</translation>
+    </message>
+    <message>
+        <location filename="../../View/playlist_interface/playlist_interface.py" line="191"/>
+        <source>Audio files</source>
+        <translation>音频文件</translation>
     </message>
 </context>
 <context>
@@ -2387,6 +2425,11 @@
         <source>Delete</source>
         <translation>删除</translation>
     </message>
+    <message>
+        <location filename="../../View/my_music_interface/song_tab_interface/song_list_widget.py" line="29"/>
+        <source>Download</source>
+        <translation>下载</translation>
+    </message>
 </context>
 <context>
     <name>SongGroupBox</name>
@@ -3141,6 +3184,29 @@
     </message>
     <message>
         <location filename="../../View/singer_interface/singer_info_bar.py" line="51"/>
+        <source>Unknown artist</source>
+        <translation>未知歌手</translation>
+    </message>
+</context>
+<context>
+    <name>Translator</name>
+    <message>
+        <location filename="../../common/translator.py" line="10"/>
+        <source>hrs</source>
+        <translation>小时</translation>
+    </message>
+    <message>
+        <location filename="../../common/translator.py" line="11"/>
+        <source>mins</source>
+        <translation>分钟</translation>
+    </message>
+    <message>
+        <location filename="../../common/translator.py" line="12"/>
+        <source>Unknown genre</source>
+        <translation>未知流派</translation>
+    </message>
+    <message>
+        <location filename="../../common/translator.py" line="13"/>
         <source>Unknown artist</source>
         <translation>未知歌手</translation>
     </message>

@@ -66,6 +66,9 @@ class KuWoMusicCrawler(CrawlerBase):
         if quality not in SongQuality:
             raise AudioQualityError(f'`{quality}` is not supported.')
 
+        if not FakeUrl.isFake(song_info.file):
+            return song_info.file
+
         rid = KuWoFakeSongUrl.getId(song_info.file)
         br = {
             SongQuality.STANDARD: '128k',

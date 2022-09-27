@@ -2,6 +2,7 @@
 from math import ceil
 
 from common.cover import Cover, CoverType
+from common.translator import Translator
 from common.database.entity import Playlist, SongInfo
 from components.app_bar import AppBarButtonFactory as BF
 from components.app_bar import CollapsingAppBarBase
@@ -19,12 +20,13 @@ class PlaylistInfoBar(CollapsingAppBarBase):
         super().__init__(self.playlistName, content,
                          self.playlistCoverPath, 'playlist', parent)
 
-        self.setButtons([BF.PLAY, BF.ADD_TO, BF.RENAME,
-                        BF.PIN_TO_START, BF.DELETE])
+        self.setButtons([
+            BF.PLAY, BF.ADD_FAVORITE, BF.ADD_TO,
+            BF.RENAME, BF.PIN_TO_START, BF.DELETE
+        ])
 
     def __getPlaylistInfo(self, playlist: Playlist):
         """ get playlist information """
-        obj = QObject()
         self.playlist = playlist
         self.playlistName = playlist.name or ''
 
@@ -37,8 +39,9 @@ class PlaylistInfoBar(CollapsingAppBarBase):
         seconds = sum(i.duration for i in self.songInfos)
         self.hours = seconds//3600
         self.minutes = ceil((seconds % 3600)/60)
-        h = obj.tr('hrs')
-        m = obj.tr('mins')
+        translator = Translator()
+        h = translator.hrs
+        m = translator.mins
         self.duration = f"{self.hours} {h} {self.minutes} {m}" if self.hours > 0 else f"{self.minutes} {m}"
 
     def updateWindow(self, playlist: Playlist):

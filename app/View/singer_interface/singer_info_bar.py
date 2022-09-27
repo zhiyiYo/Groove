@@ -1,6 +1,7 @@
 # coding:utf-8
 from common.image_utils import getBlurPixmap
 from common.os_utils import getSingerAvatarPath
+from common.translator import Translator
 from components.app_bar import AppBarButtonFactory as BF
 from components.app_bar import CollapsingAppBarBase
 from PyQt5.QtCore import QObject, Qt
@@ -27,9 +28,9 @@ class SingerInfoBar(CollapsingAppBarBase):
 
     def __getInfo(self, singerInfo: dict):
         """ get singer information """
-        obj = QObject()
-        self.singer = singerInfo.get('singer', obj.tr('Unknown artist'))
-        self.genre = singerInfo.get('genre', obj.tr('Unknown genre'))
+        translator = Translator()
+        self.singer = singerInfo.get('singer', translator.unknownArtist)
+        self.genre = singerInfo.get('genre', translator.unknownGenre)
         self.albumInfos = singerInfo.get('albumInfos', [])
         self.coverPath = getSingerAvatarPath(self.singer, 'big')
 
