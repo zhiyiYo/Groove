@@ -91,7 +91,7 @@ class FolderListValidator(ConfigValidator):
             if path.exists():
                 folders.append(str(path.absolute()).replace("\\", "/"))
 
-        return value
+        return folders
 
 
 class ColorValidator(ConfigValidator):

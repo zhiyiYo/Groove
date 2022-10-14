@@ -23,7 +23,7 @@ def adjustName(name: str):
         file name after adjusting
     """
     name = re.sub(r'[\\/:*?"<>|\r\n]+', "_", name).strip()
-    return name
+    return name.rstrip(".")
 
 
 
