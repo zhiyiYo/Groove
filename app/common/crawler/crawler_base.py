@@ -5,11 +5,9 @@ from pathlib import Path
 from typing import List, Tuple, Union
 
 import requests
-from common.cover import Cover
+from common.picture import Cover
 from common.database.entity import AlbumInfo, SingerInfo, SongInfo
-from common.image_utils import getPicSuffix
 from common.meta_data.writer import MetaDataWriter
-from common.os_utils import adjustName
 from fuzzywuzzy import fuzz
 
 from .exception_handler import exceptionHandler
@@ -208,16 +206,13 @@ class CrawlerBase:
         """
         raise NotImplementedError
 
-    def getSingerAvatar(self, singer: str, save_dir: Union[str, Path]):
+    def getSingerAvatar(self, singer: str):
         """ get the avatar of singer
 
         Parameters
         ----------
         singer: str
             singer name
-
-        save_dir: str or Path
-            directory to save the downloaded avatar
 
         Returns
         -------
@@ -409,33 +404,6 @@ class CrawlerBase:
             writer.writeAlbumCover(song_path, cover_path)
 
         return song_path
-
-    def saveSingerAvatar(self, singer: str, save_dir: Union[str, Path], data: bytes) -> str:
-        """ write the binary data of response to an avatar image file
-
-        Parameters
-        ----------
-        singer: str
-            singer name
-
-        save_dir: str or Path
-            root directory to save the avatar file
-
-        data: bytes
-            the binary data of response
-
-        Returns
-        -------
-        save_path: str
-            save path of avatar image, empty string when the download fails
-        """
-        folder = Path(save_dir)/adjustName(singer)
-        folder.mkdir(exist_ok=True, parents=True)
-        save_path = folder/('avatar'+getPicSuffix(data))
-        with open(save_path, 'wb') as f:
-            f.write(data)
-
-        return str(save_path)
 
     @exceptionHandler('')
     def downloadAlbumCover(self, url: str, singer: str, album: str) -> str:

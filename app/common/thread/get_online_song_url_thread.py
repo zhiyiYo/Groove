@@ -3,7 +3,7 @@ from pathlib import Path
 from common.config import config
 from common.crawler import KuWoMusicCrawler
 from common.database.entity import SongInfo
-from common.cover import Cover
+from common.picture import Cover
 from PyQt5.QtCore import QThread, pyqtSignal
 
 

@@ -7,7 +7,7 @@ from typing import List, Union
 from common.exception_handler import exceptionHandler
 from common.cache import albumCoverFolder
 from common.database.entity import SongInfo
-from common.cover import Cover
+from common.picture import Cover
 from mutagen import File, FileType
 from mutagen.aac import AAC
 from mutagen.aiff import AIFF

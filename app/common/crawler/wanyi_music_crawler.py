@@ -3,10 +3,10 @@ import base64
 import json
 import random
 from datetime import datetime
-from pathlib import Path
-from typing import List, Tuple, Union
+from typing import List, Tuple
 
 import requests
+from common.picture import Avatar
 from common.database.entity import AlbumInfo, SingerInfo, SongInfo
 from common.url import FakeUrl
 from Crypto.Cipher import AES
@@ -233,7 +233,7 @@ class WanYiMusicCrawler(CrawlerBase):
         return lyrics
 
     @exceptionHandler('')
-    def getSingerAvatar(self, singer: str, save_dir: Union[str, Path]):
+    def getSingerAvatar(self, singer: str):
         # send request for singer information
         url = "https://music.163.com/weapi/cloudsearch/get/web"
         form_data = {
@@ -253,7 +253,7 @@ class WanYiMusicCrawler(CrawlerBase):
         response.raise_for_status()
 
         # save avatar
-        return self.saveSingerAvatar(singer, save_dir, response.content)
+        return Avatar(singer).save(response.content)
 
     @exceptionHandler([], 0)
     def getMvInfos(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[dict], int]:

@@ -1,6 +1,6 @@
 # coding:utf-8
 from common.image_utils import getBlurPixmap
-from common.os_utils import getSingerAvatarPath
+from common.picture import Avatar, AvatarType
 from common.translator import Translator
 from components.app_bar import AppBarButtonFactory as BF
 from components.app_bar import CollapsingAppBarBase
@@ -12,8 +12,6 @@ from PyQt5.QtWidgets import QLabel
 class SingerInfoBar(CollapsingAppBarBase):
     """ Singer information bar """
 
-    defaultCoverPath = ':/images/default_covers/singer_295_295.png'
-
     def __init__(self, singerInfo: dict, parent=None):
         self.__getInfo(singerInfo)
         super().__init__(self.singer, self.genre, self.coverPath, 'singer', parent)
@@ -22,7 +20,7 @@ class SingerInfoBar(CollapsingAppBarBase):
 
         self.blurLabel = BlurLabel(self.coverPath, 8, self)
         self.blurLabel.lower()
-        self.blurLabel.setHidden(self.coverPath == self.defaultCoverPath)
+        self.blurLabel.setHidden(self.coverPath == AvatarType.BIG.value)
 
         self.setAutoFillBackground(True)
 
@@ -32,17 +30,17 @@ class SingerInfoBar(CollapsingAppBarBase):
         self.singer = singerInfo.get('singer', translator.unknownArtist)
         self.genre = singerInfo.get('genre', translator.unknownGenre)
         self.albumInfos = singerInfo.get('albumInfos', [])
-        self.coverPath = getSingerAvatarPath(self.singer, 'big')
+        self.coverPath = Avatar(self.singer).path(AvatarType.BIG)
 
     def setBackgroundColor(self):
         """ set the background color of bar """
-        if self.coverPath == self.defaultCoverPath:
+        if self.coverPath == AvatarType.BIG.value:
             palette = QPalette()
             palette.setColor(self.backgroundRole(), QColor(24, 24, 24))
             self.setPalette(palette)
 
         if hasattr(self, 'blurLabel'):
-            self.blurLabel.setHidden(self.coverPath == self.defaultCoverPath)
+            self.blurLabel.setHidden(self.coverPath == AvatarType.BIG.value)
 
     def updateWindow(self, singerInfo: dict):
         self.__getInfo(singerInfo)

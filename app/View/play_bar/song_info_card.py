@@ -1,7 +1,7 @@
 # coding:utf-8
 import re
 
-from common.cover import Cover
+from common.picture import Cover
 from common.database.entity import SongInfo
 from components.widgets.label import FadeInLabel
 from components.widgets.perspective_widget import PerspectiveWidget

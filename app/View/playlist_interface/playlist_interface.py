@@ -2,7 +2,7 @@
 from pathlib import Path
 from typing import List, Union
 
-from common.cover import Cover, CoverType
+from common.picture import Cover, CoverType
 from common.database.entity import Playlist, SongInfo
 from common.icon import getIconColor
 from common.library import Directory, Library

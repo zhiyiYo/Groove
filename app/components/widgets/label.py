@@ -1,7 +1,7 @@
 # coding:utf-8
 from typing import Union
 
-from common.cover import Cover
+from common.picture import Cover
 from common.thread.blur_cover_thread import BlurCoverThread
 from PyQt5.QtCore import QPropertyAnimation, Qt, pyqtProperty, pyqtSignal
 from PyQt5.QtGui import (QBrush, QColor, QImage, QImageReader, QLinearGradient,

@@ -5,6 +5,7 @@ from typing import List, Tuple
 from urllib import parse
 
 import requests
+from common.picture import Avatar
 from common.database.entity import SongInfo
 from common.url import FakeUrl
 
@@ -127,7 +128,7 @@ class KuWoMusicCrawler(CrawlerBase):
         return song_infos, total
 
     @exceptionHandler('')
-    def getSingerAvatar(self, singer, save_dir):
+    def getSingerAvatar(self, singer):
         singer_ = parse.quote(singer)
 
         # configure request header
@@ -149,7 +150,7 @@ class KuWoMusicCrawler(CrawlerBase):
         response.raise_for_status()
 
         # save avatar
-        return self.saveSingerAvatar(singer, save_dir, response.content)
+        return Avatar(singer).save(response.content)
 
     @exceptionHandler()
     def getLyric(self, key_word: str) -> list:

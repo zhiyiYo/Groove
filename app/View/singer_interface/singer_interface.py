@@ -1,13 +1,11 @@
 # coding:utf-8
 import os
-from pathlib import Path
 
-from common.cache import singerAvatarFolder
 from common.icon import getIconColor
 from common.crawler import KuWoMusicCrawler
 from common.database.entity import SingerInfo
 from common.library import Library
-from common.os_utils import adjustName
+from common.picture import Avatar
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
 from common.thread.get_singer_avatar_thread import GetSingerAvatarThread
@@ -124,11 +122,11 @@ class SingerInterface(AlbumSelectionModeInterface):
 
     def __getSingerAvatar(self, singer: str):
         """ get singer avatar """
-        folders = [i.stem for i in singerAvatarFolder.glob('*') if i.is_dir()]
-        if adjustName(singer) not in folders:
-            self.singerInfoBar.coverLabel.hide()
-            self.getAvatarThread.singer = singer
-            self.getAvatarThread.start()
+        if Avatar(singer).isExists():
+            return
+
+        self.singerInfoBar.coverLabel.hide()
+        self.getAvatarThread.get(singer)
 
     def __onDownloadAvatarFinished(self, avatarPath: str):
         """ download avatar finished """

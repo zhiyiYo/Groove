@@ -2,7 +2,7 @@
 import sys
 
 from common.database.entity import SingerInfo
-from common.os_utils import getSingerAvatarPath
+from common.picture import Avatar
 from common.signal_bus import signalBus
 from components.buttons.blur_button import BlurButton
 from components.widgets.check_box import CheckBox
@@ -45,7 +45,7 @@ class SingerAvatar(QWidget):
             singer name
         """
         self.singer = singer
-        self.updateAvatar(getSingerAvatarPath(singer))
+        self.updateAvatar(Avatar(singer).path())
 
     def updateAvatar(self, imagePath: str):
         """ update avatar """

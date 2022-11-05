@@ -3,6 +3,9 @@ import json
 from pathlib import Path
 from typing import Dict, List, Union
 
+from common.os_utils import adjustName
+from common.cache import lyricFolder
+
 from .parser import (KuGouLyricParser, KuWoLyricParser, LyricParserBase,
                      QQLyricParser, WanYiLyricParser)
 
@@ -118,6 +121,12 @@ class Lyric:
                 return Lyric(json.load(f))
 
             return Lyric.error()
+
+    @staticmethod
+    def path(singer: str, title: str):
+        """ get lyrics file path """
+        file = adjustName(f'{singer}_{title}.json')
+        return lyricFolder / file
 
     def save(self, path: Union[str, Path]):
         """ save lyric """

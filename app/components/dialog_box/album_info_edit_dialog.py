@@ -5,7 +5,7 @@ from pathlib import Path
 from common.style_sheet import setStyleSheet
 from common.database.entity import AlbumInfo, SongInfo
 from common.image_utils import getPicSuffix
-from common.cover import Cover, CoverType
+from common.picture import Cover, CoverType
 from components.buttons.perspective_button import PerspectivePushButton
 from components.widgets.label import ErrorIcon, PixmapLabel
 from components.widgets.line_edit import LineEdit

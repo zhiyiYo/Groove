@@ -3,7 +3,7 @@ import sys
 
 from common.auto_wrap import autoWrap
 from common.database.entity import AlbumInfo
-from common.cover import Cover
+from common.picture import Cover
 from common.signal_bus import signalBus
 from components.buttons.blur_button import BlurButton
 from components.widgets.check_box import CheckBox

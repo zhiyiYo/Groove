@@ -250,6 +250,9 @@ class BasicSongListWidget(ListWidget):
         if not songInfo:
             songInfo = self.currentSongInfo
 
+        if songInfo.file.startswith("http"):
+            return
+
         w = SongInfoEditDialog(songInfo, self.window())
         w.saveInfoSig.connect(signalBus.editSongInfoSig)
         w.exec_()

@@ -9,7 +9,7 @@ from PyQt5.QtCore import QDir, QFileInfo, QProcess, QUrl
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtSql import QSqlDatabase
 
-from common.cache import lyricFolder, singerAvatarFolder, albumCoverFolder
+from common.cache import lyricFolder
 from common.database import DBInitializer
 from common.database.service import PlaylistService
 
@@ -24,43 +24,6 @@ def adjustName(name: str):
     """
     name = re.sub(r'[\\/:*?"<>|\r\n]+', "_", name).strip()
     return name.rstrip(".")
-
-
-
-def getSingerAvatarPath(singer: str, size='small'):
-    """ get singer avatar path
-
-    Parameters
-    ----------
-    singer: str
-        singer name
-
-    size: str
-        size of default avatar, could be `small` or `big`
-    """
-    avatar_paths = {
-        "big": ":/images/default_covers/singer_295_295.png",
-        "small": ":/images/default_covers/singer_200_200.png",
-    }
-    if size not in avatar_paths:
-        raise ValueError(f"`{size}` size is not supported")
-
-    avatar = avatar_paths[size]
-    singer = adjustName(singer) if singer else ''
-    folder = singerAvatarFolder / singer
-    files = [i for i in folder.glob('*') if i.is_file()]
-
-    # use the first image file in directory
-    if files and files[0].suffix.lower() in (".png", ".jpg", ".jpeg", ".jiff", ".gif"):
-        avatar = str(files[0])
-
-    return avatar
-
-
-def getLyricPath(singer: str, title: str):
-    """ get lyrics file path """
-    file = adjustName(f'{singer}_{title}.json')
-    return lyricFolder / file
 
 
 def getPlaylistNames():

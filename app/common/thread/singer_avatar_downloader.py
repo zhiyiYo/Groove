@@ -1,9 +1,8 @@
 # coding:utf-8
-from pathlib import Path
-from typing import List, Union
+from typing import List
 
-from common.cache import singerAvatarFolder
-from common.crawler import KuWoMusicCrawler, WanYiMusicCrawler
+from common.picture import Avatar
+from common.crawler import KuWoMusicCrawler, WanYiMusicCrawler, CrawlerBase
 from common.os_utils import adjustName
 from common.signal_bus import signalBus
 from PyQt5.QtCore import QRunnable, QThread, QThreadPool
@@ -12,28 +11,24 @@ from PyQt5.QtCore import QRunnable, QThread, QThreadPool
 class SingerAvatarDownloadWorker(QRunnable):
     """ Singer avatar download worker """
 
-    def __init__(self, singers: List[str], saveDir: Union[str, Path]):
+    def __init__(self, singers: List[str]):
         """
         Parameters
         ----------
         singers: List[str]
             singer names
-
-        saveDir: str or Path
-            the root dir to save avatar
         """
         super().__init__()
         self.singers = singers or []
-        self.saveDir = saveDir
         self.crawlers = [
             WanYiMusicCrawler(),
             KuWoMusicCrawler()
-        ]
+        ]  # type:List[CrawlerBase]
 
     def run(self):
         for singer in self.singers:
             for crawler in self.crawlers:
-                save_path = crawler.getSingerAvatar(singer, self.saveDir)
+                save_path = crawler.getSingerAvatar(singer)
                 if save_path:
                     signalBus.downloadAvatarFinished.emit(singer, save_path)
                     break
@@ -42,10 +37,8 @@ class SingerAvatarDownloadWorker(QRunnable):
 class SingerAvatarDownloader:
     """ Singer avatar downloader """
 
-    saveDir = singerAvatarFolder
-
-    @classmethod
-    def download(cls, singers: List[str]):
+    @staticmethod
+    def download(singers: List[str]):
         """ download singer avatars
 
         Parameters
@@ -57,7 +50,7 @@ class SingerAvatarDownloader:
 
         # get singers that haven't been downloaded yet
         singerSet = set(singerMap.keys())
-        downloaded = {i.name for i in cls.saveDir.glob('*') if i.is_dir()}
+        downloaded = set(Avatar.listNames())
         toDownload = [singerMap[i] for i in singerSet-downloaded]
         toDownload.sort(key=lambda i: singers.index(i))
 
@@ -69,5 +62,5 @@ class SingerAvatarDownloader:
         # download singer avatars
         pool = QThreadPool.globalInstance()
         for singerChunk in singerChunks:
-            worker = SingerAvatarDownloadWorker(singerChunk, cls.saveDir)
+            worker = SingerAvatarDownloadWorker(singerChunk)
             pool.start(worker)

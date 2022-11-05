@@ -11,6 +11,7 @@ from common.database import DBInitializer
 from common.database.entity import AlbumInfo, Playlist, SongInfo
 from common.hotkey_manager import HotkeyManager
 from common.library import Directory, Library
+from common.picture import Cover
 from common.os_utils import getWindowsVersion
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
@@ -643,14 +644,12 @@ class MainWindow(AcrylicWindow):
 
         songInfo = self.mediaPlaylist.playlist[index]
         oldSongInfo = songInfo.copy()
-        if not FakeUrl.isFake(songInfo.file):
+        cover = Cover(songInfo.singer, songInfo.album)
+        if not FakeUrl.isFake(songInfo.file) and cover.isExists():
             return
 
         # get play url and cover
-        eventLoop = QEventLoop(self)
-        self.getOnlineSongUrlThread.finished.connect(eventLoop.quit)
-        self.getOnlineSongUrlThread.search(songInfo)
-        eventLoop.exec()
+        self.searchOnlineSongUrl(songInfo)
 
         # TODO：更优雅地更新在线媒体
         songInfo.file = self.getOnlineSongUrlThread.playUrl
@@ -666,6 +665,13 @@ class MainWindow(AcrylicWindow):
             oldSongInfo.file, songInfo.file)
         self.mediaPlaylist.removeOnlineSong(index+1)
         self.mediaPlaylist.setCurrentIndex(index)
+
+    def searchOnlineSongUrl(self, songInfo):
+        """ search online song url and cover """
+        eventLoop = QEventLoop(self)
+        self.getOnlineSongUrlThread.finished.connect(eventLoop.quit)
+        self.getOnlineSongUrlThread.search(songInfo)
+        eventLoop.exec()
 
     def updateWindow(self, index: int):
         """ update main window after switching songs """
@@ -1330,6 +1336,12 @@ class MainWindow(AcrylicWindow):
 
     def onCreatePlaylist(self, name: str, playlist: Playlist):
         """ create a playlist """
+        # download album cover if it doesn't exist
+        songInfos = playlist.songInfos
+        if songInfos and songInfos[0].file.startswith("http"):
+            if not Cover(songInfos[0].singer, songInfos[0].album).isExists():
+                self.searchOnlineSongUrl(songInfos[0])
+
         self.playlistCardInterface.addPlaylistCard(name, playlist)
         self.navigationInterface.updateWindow()
 

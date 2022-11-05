@@ -1,7 +1,7 @@
 # coding:utf-8
 from common.auto_wrap import autoWrap
 from common.style_sheet import setStyleSheet
-from common.os_utils import showInFolder, getLyricPath
+from common.os_utils import showInFolder
 from common.database.entity import SongInfo
 from common.config import config
 from common.lyric import Lyric
@@ -216,7 +216,7 @@ class SongInfoEditDialog(MaskDialogBase):
 
         # embed lyrics
         if config.get(config.embedLyricWhenSave):
-            path = getLyricPath(self.songInfo.singer, self.songInfo.title)
+            path = Lyric.path(self.songInfo.singer, self.songInfo.title)
             lyric = Lyric.load(path, ignoreError=True)
             if lyric.isValid():
                 success &= self.writer.writeLyric(self.songInfo.file, lyric)

@@ -1,5 +1,5 @@
 # coding:utf-8
-from common.cover import Cover
+from common.picture import Cover
 from common.database.entity import AlbumInfo
 from components.app_bar import AppBarButtonFactory as BF
 from components.app_bar import CollapsingAppBarBase

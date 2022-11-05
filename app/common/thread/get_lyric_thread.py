@@ -6,7 +6,6 @@ from common.crawler import (KuGouMusicCrawler, KuWoMusicCrawler,
 from common.meta_data.reader import LyricReader
 from common.database.entity import SongInfo
 from common.lyric import Lyric
-from common.os_utils import adjustName
 from PyQt5.QtCore import QThread, pyqtSignal
 
 
@@ -61,8 +60,7 @@ class GetLyricThread(QThread):
 
     def getLyricPath(self):
         """ get lyric file path """
-        file = adjustName(f'{self.singer}_{self.songName}.json')
-        return lyricFolder / file
+        return Lyric.path(self.singer, self.songName)
 
     def __getLyrics(self):
         """ get lyrics from local lyrics file or online source """

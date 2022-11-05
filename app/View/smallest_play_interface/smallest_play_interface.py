@@ -2,7 +2,7 @@
 from typing import List
 
 from common.database.entity import SongInfo
-from common.cover import Cover
+from common.picture import Cover
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
 from components.buttons.circle_button import CircleButton

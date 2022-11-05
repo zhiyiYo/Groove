@@ -5,7 +5,7 @@ from common.database.entity import SongInfo
 from common.lyric import Lyric
 from common.meta_data.writer import MetaDataWriter
 from common.os_utils import showInFolder
-from common.cover import Cover, CoverType
+from common.picture import Cover, CoverType
 from common.audio_utils import writeAudio
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet

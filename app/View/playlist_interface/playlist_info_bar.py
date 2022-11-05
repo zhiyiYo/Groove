@@ -1,7 +1,7 @@
 # coding:utf-8
 from math import ceil
 
-from common.cover import Cover, CoverType
+from common.picture import Cover, CoverType
 from common.translator import Translator
 from common.database.entity import Playlist, SongInfo
 from components.app_bar import AppBarButtonFactory as BF
