@@ -264,6 +264,10 @@ class Config(Singleton):
     embedLyricWhenSave = ConfigItem(
         "EmbeddedLyric", "EmbedWhenSave", False, BoolValidator())    # embed lyric when saving song info
 
+    # software update
+    checkUpdateAtStartUp = ConfigItem(
+        "Update", "CheckUpdateAtStartUp", True, BoolValidator())
+
     def __init__(self):
         self.__theme = "Light"
         self.load()
@@ -362,3 +366,8 @@ class Config(Singleton):
 
 
 config = Config()
+
+VERSION = "v1.2.1"
+HELP_URL = "https://github.com/zhiyiYo/Groove#readme"
+FEEDBACK_URL = "https://github.com/zhiyiYo/Groove/issues"
+RELEASE_URL = "https://github.com/zhiyiYo/Groove/releases/latest"

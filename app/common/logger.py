@@ -52,8 +52,9 @@ class Logger:
         self.__consoleHandler.setFormatter(fmt)
         self.__fileHandler.setFormatter(fmt)
 
-        self.__logger.addHandler(self.__consoleHandler)
-        self.__logger.addHandler(self.__fileHandler)
+        if not self.__logger.hasHandlers():
+            self.__logger.addHandler(self.__consoleHandler)
+            self.__logger.addHandler(self.__fileHandler)
 
     def info(self, msg):
         self.__logger.info(msg)

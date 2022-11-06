@@ -853,6 +853,31 @@
         <source>The error message has been written to the paste board and log. Do you want to report?</source>
         <translation>错误信息已写入剪切板和日志，是否立即反馈此 bug？</translation>
     </message>
+    <message>
+        <location filename="../../View/main_window/main_window.py" line="1461"/>
+        <source>Updates available</source>
+        <translation>有可用更新</translation>
+    </message>
+    <message>
+        <location filename="../../View/main_window/main_window.py" line="1462"/>
+        <source>A new version</source>
+        <translation>新版本</translation>
+    </message>
+    <message>
+        <location filename="../../View/main_window/main_window.py" line="1463"/>
+        <source>is available. Do you want to download this version?</source>
+        <translation>发布啦，前辈快来体验一下吧！</translation>
+    </message>
+    <message>
+        <location filename="../../View/main_window/main_window.py" line="1467"/>
+        <source>No updates available</source>
+        <translation>没有可用更新</translation>
+    </message>
+    <message>
+        <location filename="../../View/main_window/main_window.py" line="1468"/>
+        <source>Groove is the latest version, feel free to use it.</source>
+        <translation>Groove 已更新到最新版本，前辈可以放心食用哦~</translation>
+    </message>
 </context>
 <context>
     <name>Menu</name>
@@ -2134,6 +2159,21 @@
         <source>Embed lyrics when saving song information</source>
         <translation>保存歌曲信息时嵌入歌词</translation>
     </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="156"/>
+        <source>Software update</source>
+        <translation>软件更新</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="157"/>
+        <source>Check for updates when the application starts</source>
+        <translation>在应用程序启动时检查更新</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="177"/>
+        <source>Check update</source>
+        <translation>检查更新</translation>
+    </message>
 </context>
 <context>
     <name>QPlatformTheme</name>
@@ -2174,6 +2214,19 @@
         <location filename="../../components/singer_card/singer_card_base.py" line="86"/>
         <source>Play</source>
         <translation>播放</translation>
+    </message>
+</context>
+<context>
+    <name>SwitchButtonGroup</name>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="566" />
+        <source>Off</source>
+        <translation>关</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="581" />
+        <source>On</source>
+        <translation>开</translation>
     </message>
 </context>
 <context>

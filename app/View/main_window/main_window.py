@@ -6,15 +6,17 @@ from random import shuffle
 from typing import List, Union
 
 from common import resource
-from common.config import config
+from common.config import config, FEEDBACK_URL, RELEASE_URL
 from common.database import DBInitializer
 from common.database.entity import AlbumInfo, Playlist, SongInfo
+from common.exception_handler import exceptionHandler
 from common.hotkey_manager import HotkeyManager
 from common.library import Directory, Library
 from common.picture import Cover
 from common.os_utils import getWindowsVersion
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
+from common.version_manager import VersionManager
 from common.thread.get_album_details_url_thread import GetAlbumDetailsUrlThread
 from common.thread.get_online_song_url_thread import GetOnlineSongUrlThread
 from common.thread.get_singer_details_url_thread import \
@@ -34,6 +36,7 @@ from components.widgets.label import PixmapLabel
 from components.widgets.stacked_widget import (OpacityAniStackedWidget,
                                                PopUpAniStackedWidget)
 from components.widgets.tooltip import StateTooltip
+import requests
 from PyQt5.QtCore import (QEasingCurve, QEvent, QEventLoop, QFile, QFileInfo,
                           Qt, QTimer, QUrl)
 from PyQt5.QtGui import (QColor, QDesktopServices, QDragEnterEvent, QDropEvent,
@@ -63,6 +66,7 @@ class MainWindow(AcrylicWindow):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.isInSelectionMode = False
+        self.versionManager = VersionManager()
         self.navigationHistories = [("myMusicInterfaceStackWidget", 0)]
         self.setObjectName("mainWindow")
         self.createWidgets()
@@ -282,8 +286,13 @@ class MainWindow(AcrylicWindow):
         self.systemTrayIcon.show()
         self.setWindowEffect(config.get(config.enableAcrylicBackground))
 
+        # play the song specified by command line
         if len(sys.argv) > 1:
             self.play()
+
+        # check for updates
+        if config.get(config.checkUpdateAtStartUp):
+            self.checkUpdate()
 
     def setWindowEffect(self, enableAcrylic: bool):
         """ set window effect """
@@ -1402,8 +1411,7 @@ class MainWindow(AcrylicWindow):
             self.tr(
                 "The error message has been written to the paste board and log. Do you want to report?"),
             True,
-            lambda: QDesktopServices.openUrl(
-                QUrl('https://github.com/zhiyiYo/Groove/issues'))
+            lambda: QDesktopServices.openUrl(QUrl(FEEDBACK_URL))
         )
 
     def onAppMessage(self, message: str):
@@ -1449,6 +1457,22 @@ class MainWindow(AcrylicWindow):
         if self.player.isPlayingBeforeRelease:
             self.play()
 
+    def checkUpdate(self):
+        """ check software update """
+        if self.versionManager.hasNewVersion():
+            self.showMessageBox(
+                self.tr('Updates available'),
+                self.tr('A new version')+f" {self.versionManager.lastestVersion[1:]} " +
+                    self.tr('is available. Do you want to download this version?'),
+                True,
+                lambda: QDesktopServices.openUrl(QUrl(RELEASE_URL))
+            )
+        else:
+            self.showMessageBox(
+                self.tr('No updates available'),
+                self.tr('Groove is the latest version, feel free to use it.'),
+            )
+
     def connectSignalToSlot(self):
         """ connect signal to slot """
 
@@ -1471,6 +1495,7 @@ class MainWindow(AcrylicWindow):
             self.onMinimizeToTrayChanged)
         self.settingInterface.crawlFinished.connect(
             self.onCrawMetaDataFinished)
+        self.settingInterface.checkUpdateSig.connect(self.checkUpdate)
 
         # title signal
         self.titleBar.returnButton.clicked.connect(self.onReturnButtonClicked)

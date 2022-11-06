@@ -2,7 +2,7 @@
 import sys
 from typing import List
 
-from common.config import ConfigItem, config
+from common.config import ConfigItem, config, HELP_URL, FEEDBACK_URL
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
 from common.thread.get_meta_data_thread import GetFolderMetaDataThread
@@ -24,6 +24,7 @@ class SettingInterface(ScrollArea):
     """ Setting interface """
 
     crawlFinished = pyqtSignal()
+    checkUpdateSig = pyqtSignal()
     acrylicEnableChanged = pyqtSignal(bool)
     downloadFolderChanged = pyqtSignal(str)
     minimizeToTrayChanged = pyqtSignal(bool)
@@ -43,19 +44,20 @@ class SettingInterface(ScrollArea):
             self.tr("Choose where we look for music"), self.scrollwidget)
 
         # acrylic background
-        self.acrylicLabel = QLabel(
-            self.tr("Acrylic Background"), self.scrollwidget)
-        self.acrylicHintLabel = QLabel(
-            self.tr("Use the acrylic background effect"), self.scrollwidget)
-        self.acrylicSwitchButton = SwitchButton(
-            self.tr("Off"), self.scrollwidget)
+        self.acrylicGroup = SwitchButtonGroup(
+            self.tr("Acrylic Background"),
+            self.tr("Use the acrylic background effect"),
+            config.enableAcrylicBackground,
+            self.scrollwidget
+        )
 
         # media info
-        self.mediaInfoLabel = QLabel(self.tr("Media Info"), self.scrollwidget)
-        self.getMetaDataLabel = QLabel(self.tr(
-            "Automatically retrieve and update missing album art and metadata"), self.scrollwidget)
-        self.getMetaDataSwitchButton = SwitchButton(
-            self.tr("Off"), self.scrollwidget)
+        self.mediaInfoGroup = SwitchButtonGroup(
+            self.tr("Media Info"),
+            self.tr(
+                "Automatically retrieve and update missing album art and metadata"),
+            parent=self.scrollwidget
+        )
 
         # search
         self.searchLabel = QLabel(self.tr('Search'), self.scrollwidget)
@@ -150,6 +152,14 @@ class SettingInterface(ScrollArea):
         self.embedWhenSaveCheckBox = QCheckBox(
             self.tr("Embed lyrics when saving song information"), self.scrollwidget)
 
+        # media info
+        self.softwareUpdateGroup = SwitchButtonGroup(
+            self.tr("Software update"),
+            self.tr("Check for updates when the application starts"),
+            config.checkUpdateAtStartUp,
+            self.scrollwidget
+        )
+
         # download folder
         self.downloadFolderHintLabel = QLabel('')
         self.downloadFolderButton = QPushButton(
@@ -164,6 +174,8 @@ class SettingInterface(ScrollArea):
         self.helpLabel = ClickableLabel(self.tr("Help"), self.scrollwidget)
         self.issueLabel = ClickableLabel(
             self.tr("Feedback"), self.scrollwidget)
+        self.checkUpdateLabel = ClickableLabel(
+            self.tr("Check update"), self.scrollwidget)
 
         self.__initWidget()
 
@@ -173,22 +185,19 @@ class SettingInterface(ScrollArea):
         self.downloadFolderLineEdit.resize(313, 42)
         self.downloadFolderLineEdit.setReadOnly(True)
         self.downloadFolderLineEdit.setCursorPosition(0)
-        self.scrollwidget.resize(self.width(), 2340)
+        self.scrollwidget.resize(self.width(), 2460)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setViewportMargins(0, 120, 0, 0)
         self.setWidget(self.scrollwidget)
 
         # set the checked state of acrylic switch button
-        enableAcrylic = config.get(config.enableAcrylicBackground)
-        self.acrylicSwitchButton.setChecked(enableAcrylic)
-        self.acrylicSwitchButton.setText(
-            self.tr('On') if enableAcrylic else self.tr('Off'))
-        self.acrylicSwitchButton.setEnabled(sys.platform == "win32")
+        self.acrylicGroup.setEnabled(sys.platform == "win32")
 
         # set cursor
         self.selectMusicFolderLabel.setCursor(Qt.PointingHandCursor)
         self.helpLabel.setCursor(Qt.PointingHandCursor)
         self.issueLabel.setCursor(Qt.PointingHandCursor)
+        self.checkUpdateLabel.setCursor(Qt.PointingHandCursor)
 
         # set slider
         pageSize = config.onlinePageSize
@@ -212,9 +221,9 @@ class SettingInterface(ScrollArea):
 
         # set hyper link
         self.helpLabel.clicked.connect(lambda: QDesktopServices.openUrl(
-            QUrl('https://github.com/zhiyiYo/Groove#readme')))
+            QUrl(HELP_URL)))
         self.issueLabel.clicked.connect(lambda: QDesktopServices.openUrl(
-            QUrl('https://github.com/zhiyiYo/Groove/issues')))
+            QUrl(FEEDBACK_URL)))
 
         self.downloadFolderLineEdit.installEventFilter(self)
 
@@ -231,14 +240,10 @@ class SettingInterface(ScrollArea):
         self.selectMusicFolderLabel.move(30, 64)
 
         # acrylic background
-        self.acrylicLabel.move(30, 125)
-        self.acrylicHintLabel.move(30, 168)
-        self.acrylicSwitchButton.move(30, 200)
+        self.acrylicGroup.move(30, 125)
 
         # media info
-        self.mediaInfoLabel.move(30, 262)
-        self.getMetaDataLabel.move(30, 312)
-        self.getMetaDataSwitchButton.move(30, 344)
+        self.mediaInfoGroup.move(30, 262)
 
         # search
         self.searchLabel.move(30, 406)
@@ -279,32 +284,32 @@ class SettingInterface(ScrollArea):
         self.preferEmbedCheckBox.move(30, 1967)
         self.embedWhenSaveCheckBox.move(30, 2007)
 
+        # software update
+        self.softwareUpdateGroup.move(30, 2069)
+
         # download folder
-        self.downloadFolderLabel.move(30, 2069)
-        self.downloadFolderLineEdit.move(30, 2129)
-        self.downloadFolderButton.move(350, 2129)
+        self.downloadFolderLabel.move(30, 2206)
+        self.downloadFolderLineEdit.move(30, 2266)
+        self.downloadFolderButton.move(350, 2266)
 
         # application
         self.appLabel.move(self.width() - 400, 18)
         self.helpLabel.move(self.width() - 400, 64)
         self.issueLabel.move(self.width() - 400, 94)
+        self.checkUpdateLabel.move(self.width() - 400, 124)
 
     def __updateMetaDataSwitchButtonEnabled(self):
         """ set the enabled state of meta data switch button """
-        if config.get(config.musicFolders):
-            self.getMetaDataSwitchButton.setEnabled(True)
-        else:
-            self.getMetaDataSwitchButton.setEnabled(False)
+        self.mediaInfoGroup.switchButton.setEnabled(
+            bool(config.get(config.musicFolders)))
 
     def __onGetMetaDataSwitchButtonCheckedChanged(self):
         """ get meta data switch button checked changed slot """
-        if self.getMetaDataSwitchButton.isChecked():
-            self.getMetaDataSwitchButton.setText(self.tr("On"))
-            self.getMetaDataSwitchButton.setEnabled(False)
+        if self.mediaInfoGroup.isChecked():
+            self.mediaInfoGroup.setEnabled(False)
             self.__crawlMetaData()
         else:
-            self.getMetaDataSwitchButton.setEnabled(True)
-            self.getMetaDataSwitchButton.setText(self.tr("Off"))
+            self.mediaInfoGroup.setEnabled(True)
 
     def __crawlMetaData(self):
         """ crawl song meta data """
@@ -328,9 +333,8 @@ class SettingInterface(ScrollArea):
         self.sender().quit()
         self.sender().wait()
         self.sender().deleteLater()
-        self.getMetaDataSwitchButton.setEnabled(True)
-        self.getMetaDataSwitchButton.setChecked(False)
-        self.getMetaDataSwitchButton.setText(self.tr("Off"))
+        self.mediaInfoGroup.setEnabled(True)
+        self.mediaInfoGroup.setChecked(False)
         self.crawlFinished.emit()
 
     def __setQss(self):
@@ -338,11 +342,10 @@ class SettingInterface(ScrollArea):
         self.appLabel.setObjectName("titleLabel")
         self.downloadFolderLabel.setObjectName("titleLabel")
         self.settingLabel.setObjectName("settingLabel")
-        self.mediaInfoLabel.setObjectName("titleLabel")
-        self.acrylicLabel.setObjectName("titleLabel")
         self.searchLabel.setObjectName('titleLabel')
         self.helpLabel.setObjectName("clickableLabel")
         self.issueLabel.setObjectName("clickableLabel")
+        self.checkUpdateLabel.setObjectName("clickableLabel")
         self.musicInThisPCLabel.setObjectName("titleLabel")
         self.selectMusicFolderLabel.setObjectName("clickableLabel")
         self.desktopLyricLabel.setObjectName("titleLabel")
@@ -354,6 +357,8 @@ class SettingInterface(ScrollArea):
         self.appLabel.move(self.width() - 400, self.appLabel.y())
         self.helpLabel.move(self.width() - 400, self.helpLabel.y())
         self.issueLabel.move(self.width() - 400, self.issueLabel.y())
+        self.checkUpdateLabel.move(
+            self.width() - 400, self.checkUpdateLabel.y())
         self.scrollwidget.resize(self.width(), self.scrollwidget.height())
         super().resizeEvent(e)
 
@@ -413,11 +418,6 @@ class SettingInterface(ScrollArea):
         self.downloadFolderLineEdit.setText(folder)
         self.downloadFolderChanged.emit(folder)
 
-    def __onAcrylicCheckedChanged(self, isChecked: bool):
-        """ acrylic switch button checked changed slot """
-        config.set(config.enableAcrylicBackground, isChecked)
-        self.acrylicEnableChanged.emit(isChecked)
-
     def __onLyricFontButtonClicked(self):
         """ desktop lyric font button clicked slot """
         font, isOk = QFontDialog.getFont(
@@ -470,7 +470,7 @@ class SettingInterface(ScrollArea):
         self.embedWhenSaveCheckBox.stateChanged.connect(
             lambda: config.set(config.embedLyricWhenSave, self.embedWhenSaveCheckBox.isChecked()))
         self.modeGroup.buttonClicked.connect(self.__onThemeModeChanged)
-        self.getMetaDataSwitchButton.checkedChanged.connect(
+        self.mediaInfoGroup.checkedChanged.connect(
             self.__onGetMetaDataSwitchButtonCheckedChanged)
         self.selectMusicFolderLabel.clicked.connect(
             self.__showSongFolderListDialog)
@@ -480,8 +480,9 @@ class SettingInterface(ScrollArea):
             self.__onDownloadFolderButtonClicked)
         self.closeWindowGroup.buttonClicked.connect(
             self.__onMinimizeToTrayChanged)
-        self.acrylicSwitchButton.checkedChanged.connect(
-            self.__onAcrylicCheckedChanged)
+        self.acrylicGroup.checkedChanged.connect(
+            self.acrylicEnableChanged)
+        self.checkUpdateLabel.clicked.connect(self.checkUpdateSig)
 
 
 class RadioButtonGroup(QWidget):
@@ -548,3 +549,63 @@ class RadioButtonGroup(QWidget):
         """ select button according to the value """
         for button in self.buttons:
             button.setChecked(button.property(self.propertyName) == value)
+
+
+class SwitchButtonGroup(QWidget):
+    """ Switch button group """
+
+    checkedChanged = pyqtSignal(bool)
+
+    def __init__(self, title: str, content: str, property: ConfigItem = None, parent=None):
+        """
+        Parameters
+        ----------
+        title: str
+            the title of switch button group
+
+        content: str
+            the content of switch button group
+
+        property: ConfigItem
+            config item
+
+        parent:
+            parent window
+        """
+        super().__init__(parent=parent)
+        setStyleSheet(self, "setting_interface")
+        self.configItem = property
+        self.vBox = QVBoxLayout(self)
+        self.titleLabel = QLabel(title, self, objectName="titleLabel")
+        self.contentLabel = QLabel(content, self)
+        self.switchButton = SwitchButton(self.tr("Off"), self)
+
+        if self.configItem:
+            self.setChecked(config.get(property))
+
+        self.vBox.setSpacing(5)
+        self.vBox.setContentsMargins(0, 0, 0, 0)
+        self.vBox.addWidget(self.titleLabel, 0, Qt.AlignTop)
+        self.vBox.addWidget(self.contentLabel, 0, Qt.AlignTop)
+        self.vBox.addSpacing(2)
+        self.vBox.addWidget(self.switchButton, 0, Qt.AlignTop)
+        self.vBox.setAlignment(Qt.AlignTop)
+        self.switchButton.checkedChanged.connect(self.__onCheckedChanged)
+        self.adjustSize()
+
+    def __onCheckedChanged(self, isChecked: bool):
+        """ switch button checked state changed slot """
+        self.setChecked(isChecked)
+        self.checkedChanged.emit(isChecked)
+
+    def setChecked(self, isChecked: bool):
+        """ set switch button checked state """
+        if self.configItem:
+            config.set(self.configItem, isChecked)
+
+        self.switchButton.setChecked(isChecked)
+        self.switchButton.setText(
+            self.tr('On') if isChecked else self.tr('Off'))
+
+    def isChecked(self):
+        return self.switchButton.isChecked()
