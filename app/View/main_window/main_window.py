@@ -433,7 +433,7 @@ class MainWindow(AcrylicWindow):
 
         # set the playback position
         pos = config.get(config.playerPosition)
-        pos = 0 if pos > duration else pos
+        pos = 0 if pos > duration or len(sys.argv) > 1 else pos
         self.player.setPosition(max(0, pos))
 
         # initialize playback speed
