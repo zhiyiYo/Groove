@@ -292,7 +292,7 @@ class MainWindow(AcrylicWindow):
 
         # check for updates
         if config.get(config.checkUpdateAtStartUp):
-            self.checkUpdate()
+            self.checkUpdate(True)
 
     def setWindowEffect(self, enableAcrylic: bool):
         """ set window effect """
@@ -1457,8 +1457,14 @@ class MainWindow(AcrylicWindow):
         if self.player.isPlayingBeforeRelease:
             self.play()
 
-    def checkUpdate(self):
-        """ check software update """
+    def checkUpdate(self, ignore=False):
+        """ check software update
+
+        Parameters
+        ----------
+        ignore: bool
+            ignore message box when no updates are available
+        """
         if self.versionManager.hasNewVersion():
             self.showMessageBox(
                 self.tr('Updates available'),
@@ -1467,7 +1473,7 @@ class MainWindow(AcrylicWindow):
                 True,
                 lambda: QDesktopServices.openUrl(QUrl(RELEASE_URL))
             )
-        else:
+        elif not ignore:
             self.showMessageBox(
                 self.tr('No updates available'),
                 self.tr('Groove is the latest version, feel free to use it.'),
