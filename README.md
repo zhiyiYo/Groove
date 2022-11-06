@@ -77,6 +77,13 @@ English | <a href="docs/README_zh.md">简体中文</a>
 
 ## Install
 ### Win32
+#### Installer
+1. Download and install [LAV Filters](https://github.com/Nevcairiel/LAVFilters/releases/download/0.74/LAVFilters-0.74-Installer.exe)
+2. Download `Groove_v*.*.*_x64_setup.exe` from [release page](https://github.com/zhiyiYo/Groove/releases)
+3. Double click `Groove_v*.*.*_x64_setup.exe` and install Groove
+4. Start to enjoy your music~~
+
+#### Portable Edition
 1. Download and install [LAV Filters](https://github.com/Nevcairiel/LAVFilters/releases/download/0.74/LAVFilters-0.74-Installer.exe)
 2. Download `Groove_v*.*.*_windows_x64.zip` from [release page](https://github.com/zhiyiYo/Groove/releases)
 3. Unzip `Groove_v*.*.*_windows_x64.zip`
