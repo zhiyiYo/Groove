@@ -8,8 +8,8 @@ class LyricParserBase:
     none_lyric = {'0.0': ['暂无歌词']}
     error_lyric = {'0.0': ['无法解析歌词']}
 
-    @staticmethod
-    def can_parse(lyric) -> bool:
+    @classmethod
+    def can_parse(cls, lyric) -> bool:
         """ can the parser parse the lyrics """
         raise NotImplementedError
 
@@ -22,8 +22,8 @@ class LyricParserBase:
 class KuWoLyricParser(LyricParserBase):
     """ Lyric parser for KuWo Music """
 
-    @staticmethod
-    def can_parse(lyric: List[Dict[str, str]]) -> bool:
+    @classmethod
+    def can_parse(cls, lyric: List[Dict[str, str]]) -> bool:
         if lyric is None:
             return True
 
@@ -68,8 +68,8 @@ class KuGouLyricParser(LyricParserBase):
 
     seperator = "\r\n"
 
-    @staticmethod
-    def can_parse(lyric) -> bool:
+    @classmethod
+    def can_parse(cls, lyric) -> bool:
         if lyric is None:
             return True
 
@@ -77,7 +77,7 @@ class KuGouLyricParser(LyricParserBase):
             if not lyric:
                 return True
 
-            for i in ['[id:$', '[ti:', '[ar:', '[al:', '[by:', '[offset:', "\r\n"]:
+            for i in ['[id:$', '[ti:', '[ar:', '[al:', '[by:', '[offset:', cls.seperator]:
                 if i in lyric:
                     return True
 
@@ -117,8 +117,8 @@ class QQLyricParser(KuGouLyricParser):
 class WanYiLyricParser(LyricParserBase):
     """ Lyric parser for WanYiYun Music """
 
-    @staticmethod
-    def can_parse(lyric) -> bool:
+    @classmethod
+    def can_parse(cls, lyric) -> bool:
         if lyric is None:
             return True
 

@@ -181,11 +181,11 @@ class SelectionModeInterface(ScrollArea):
 
     def _onMoveUp(self):
         """ selection mode bar move up signal slot """
-        raise NotImplementedError
+        pass
 
     def _onMoveDown(self):
         """ selection mode bar move down signal slot """
-        raise NotImplementedError
+        pass
 
     def _onDelete(self):
         """ selection mode bar delete signal slot """
