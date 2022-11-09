@@ -8,7 +8,7 @@ from components.playlist_card import GridPlaylistCardView, PlaylistCardType
 from components.selection_mode_interface import (
     PlaylistSelectionModeInterface, SelectionModeBarType)
 from components.widgets.menu import AeroMenu
-from PyQt5.QtCore import QFile, QMargins, QPoint, Qt, pyqtSignal
+from PyQt5.QtCore import QMargins, QPoint, pyqtSignal
 from PyQt5.QtWidgets import QAction, QLabel, QPushButton, QWidget
 
 

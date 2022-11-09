@@ -11,35 +11,21 @@ from common.get_pressed_pos import getPressedPos
 class NavigationIconFactory:
     """ Navigation icon factory """
 
-    ADD = 0
-    ALBUM = 1
-    GLOBAL_NAVIGATION = 2
-    MUSIC_IN_COLLECTION = 3
-    PLAYING = 4
-    PLAYLIST = 5
-    RECENT = 6
-    SEARCH = 7
-    SETTINGS = 8
+    ADD = "Add"
+    ALBUM = "Album"
+    GLOBAL_NAVIGATION = "GlobalNavButton"
+    MUSIC_IN_COLLECTION = "MusicInCollection"
+    PLAYING = "Playing"
+    PLAYLIST = "Playlist"
+    RECENT = "Recent"
+    SEARCH = "Search"
+    SETTINGS = "Settings"
 
     @classmethod
-    def create(cls, iconType: int):
+    def create(cls, iconType: str):
         """ create icon """
-        c = getIconColor()
-        iconMap = {
-            cls.ADD: f":/images/navigation_interface/Add_{c}.png",
-            cls.ALBUM: f":/images/navigation_interface/Album_{c}.png",
-            cls.GLOBAL_NAVIGATION: f":/images/navigation_interface/GlobalNavButton_{c}.png",
-            cls.MUSIC_IN_COLLECTION: f":/images/navigation_interface/MusicInCollection_{c}.png",
-            cls.PLAYING: f":/images/navigation_interface/Playing_{c}.png",
-            cls.PLAYLIST: f":/images/navigation_interface/Playlist_{c}.png",
-            cls.RECENT: f":/images/navigation_interface/Recent_{c}.png",
-            cls.SEARCH: f":/images/navigation_interface/Search_{c}.png",
-            cls.SETTINGS: f":/images/navigation_interface/Settings_{c}.png",
-        }
-        if iconType not in iconMap:
-            raise ValueError(f"The icon type `{iconType}` is illegal.")
-
-        return iconMap[iconType]
+        path = f":/images/navigation_interface/{iconType}_{getIconColor()}.png"
+        return path
 
 
 NIF = NavigationIconFactory
