@@ -4,10 +4,10 @@ from enum import Enum
 
 from common.config import config
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QPen, QBrush, QPainter, QColor
+from PyQt5.QtGui import QPen, QPainter, QColor
 from PyQt5.QtWidgets import QWidget
 
-from .button import ButtonFactory as BF
+from .button import SelectionModeBarButtonFactory as BF
 from .button import Button
 
 
@@ -27,6 +27,7 @@ class SelectionModeBarBase(QWidget):
     moveUpSig = pyqtSignal()
     moveDownSig = pyqtSignal()
     deleteSig = pyqtSignal()
+    downloadSig = pyqtSignal()
     checkAllSig = pyqtSignal(bool)
 
     def __init__(self, parent=None):
@@ -51,7 +52,8 @@ class SelectionModeBarBase(QWidget):
             'moveUpButton': self.moveUpSig,
             'moveDownButton': self.moveDownSig,
             'deleteButton': self.deleteSig,
-            'checkAllButton': self.checkAllSig
+            'downloadButton': self.downloadSig,
+            'checkAllButton': self.checkAllSig,
         }
 
     def addButton(self, button: int):
@@ -91,7 +93,7 @@ class SelectionModeBarBase(QWidget):
             button.show()
 
             button.clicked.connect(self.__signalMap[name])
-            if name in ['playButton', 'nextToPlayButton', 'pinToStartButton']:
+            if name in ['playButton', 'nextToPlayButton', 'pinToStartButton', 'downloadButton']:
                 button.clicked.connect(self.cancelSig)
 
         self.buttons.extend(buttons)
@@ -163,6 +165,19 @@ class SongTabSelectionModeBar(SelectionModeBarBase):
             BF.PROPERTY, BF.DELETE, BF.CHECK_ALL
         ])
         self.setToHideButtons(self.buttons[4:-2])
+        self.insertSeparator(1)
+
+
+class OnlineSongSelectionModeBar(SelectionModeBarBase):
+    """ Online Song interface selection mode bar """
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.addButtons([
+            BF.CANCEL, BF.PLAY, BF.NEXT_TO_PLAY,
+            BF.ADD_TO, BF.DOWNLOAD, BF.PROPERTY, BF.CHECK_ALL
+        ])
+        self.setToHideButtons([self.buttons[-2]])
         self.insertSeparator(1)
 
 
@@ -274,6 +289,7 @@ class SelectionModeBarType(Enum):
     ALBUM = 5
     PLAYLIST_CARD = 6
     PLAYLIST = 7
+    ONLINE_SONG = 8
 
 
 class SelectionModeBarFactory:
@@ -291,6 +307,7 @@ class SelectionModeBarFactory:
             SelectionModeBarType.ALBUM: AlbumInterfaceSelectionModeBar,
             SelectionModeBarType.PLAYLIST_CARD: PlaylistCardSelectionModeBar,
             SelectionModeBarType.PLAYLIST: PlaylistSelectionModeBar,
+            SelectionModeBarType.ONLINE_SONG: OnlineSongSelectionModeBar,
         }
 
         if barType not in barMap:

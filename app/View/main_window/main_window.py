@@ -1198,6 +1198,11 @@ class MainWindow(AcrylicWindow):
         index = songInfos.index(songInfo)
         self.playCustomPlaylistSong(songInfos, index)
 
+    def playOnlineMoreSearchedSong(self, index: int):
+        """ play selected online more searched song """
+        songInfos = self.moreSearchResultInterface.onlineSongListWidget.songInfos
+        self.playCustomPlaylistSong(songInfos, index)
+
     def playRecentPlaySong(self, songInfo: SongInfo):
         """ play recent played song """
         songInfos = self.recentPlayInterface.songListWidget.songInfos
@@ -1646,6 +1651,8 @@ class MainWindow(AcrylicWindow):
         # more search result interface signal
         self.moreSearchResultInterface.playLocalSongSig.connect(
             self.playLocalMoreSearchedSong)
+        self.moreSearchResultInterface.playOnlineSongSig.connect(
+            self.playOnlineMoreSearchedSong)
 
         # system tray icon signal
         qApp.aboutToQuit.connect(self.onExit)

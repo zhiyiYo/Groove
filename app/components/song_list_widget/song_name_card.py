@@ -340,8 +340,8 @@ class NoCheckBoxSongNameCard(SongNameCard):
         self._moveButtonGroup()
 
 
-class OnlineSongNameCard(SongNameCard):
-    """ Online song card """
+class NoCheckBoxOnlineSongNameCard(SongNameCard):
+    """ Online song card without check box """
 
     def __init__(self, songName, parent):
         super().__init__(songName, parent=parent)
@@ -362,6 +362,19 @@ class OnlineSongNameCard(SongNameCard):
         x = 41 if isPlay or (not isSongExist) else 15
         self.songNameLabel.move(x, self.songNameLabel.y())
         self._moveButtonGroup()
+
+
+class OnlineSongNameCard(SongNameCard):
+    """ Online song name card """
+
+    def __init__(self, songName, parent):
+        super().__init__(songName, parent=parent)
+        self.addToButton.setIconPaths({
+            "notSelected-notPlay": f":/images/search_result_interface/Download_{getIconColor()}.png",
+            "notSelected-play": ":/images/search_result_interface/Download_green.png",
+            "selected": ":/images/search_result_interface/Download_white.png",
+        })
+
 
 
 class SongNameCardFactory:
@@ -390,18 +403,19 @@ class SongNameCardFactory:
         songNameCard:
             song name card
         """
-        songNameCard_dict = {
+        songNameCardMap = {
             SongCardType.SONG_TAB_SONG_CARD: SongNameCard,
             SongCardType.ALBUM_INTERFACE_SONG_CARD: TrackSongNameCard,
             SongCardType.PLAYLIST_INTERFACE_SONG_CARD: PlaylistSongNameCard,
             SongCardType.NO_CHECKBOX_SONG_CARD: NoCheckBoxSongNameCard,
-            SongCardType.ONLINE_SONG_CARD: OnlineSongNameCard
+            SongCardType.NO_CHECKBOX_ONLINE_SONG_CARD: NoCheckBoxOnlineSongNameCard,
+            SongCardType.ONLINE_SONG_CARD: OnlineSongNameCard,
         }
 
-        if songCardType not in songNameCard_dict:
+        if songCardType not in songNameCardMap:
             raise ValueError(f"Song card type `{songCardType}` is illegal")
 
-        SongNameCard_ = songNameCard_dict[songCardType]
+        SongNameCard_ = songNameCardMap[songCardType]
         if songCardType != SongCardType.ALBUM_INTERFACE_SONG_CARD:
             return SongNameCard_(songName, parent)
 

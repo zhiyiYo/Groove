@@ -335,6 +335,7 @@
         <file>images/search_result_interface/ShowAll_normal.png</file>
         <file>images/search_result_interface/ShowAll_pressed.png</file>
         <file>images/selection_mode_bar/Add_black.png</file>
+        <file>images/selection_mode_bar/Download_black.png</file>
         <file>images/selection_mode_bar/Cancel_black.png</file>
         <file>images/selection_mode_bar/CancelSelectAll_black.png</file>
         <file>images/selection_mode_bar/Contact_black.png</file>
@@ -349,6 +350,7 @@
         <file>images/selection_mode_bar/ShowAlbum_black.png</file>
         <file>images/selection_mode_bar/Up_black.png</file>
         <file>images/selection_mode_bar/Add_white.png</file>
+        <file>images/selection_mode_bar/Download_white.png</file>
         <file>images/selection_mode_bar/Cancel_white.png</file>
         <file>images/selection_mode_bar/CancelSelectAll_white.png</file>
         <file>images/selection_mode_bar/Contact_white.png</file>

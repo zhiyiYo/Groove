@@ -58,6 +58,7 @@ class SignalBus(Singleton, QObject):
     togglePlayStateSig = pyqtSignal()      # 播放/暂停
     progressSliderMoved = pyqtSignal(int)  # 播放进度条滑动
     downloadSongSig = pyqtSignal(SongInfo, SongQuality)   # 开始下载一首歌
+    downloadSongsSig = pyqtSignal(list, SongQuality)   # 开始下载多首歌
 
     muteStateChanged = pyqtSignal(bool)   # 静音
     volumeChanged = pyqtSignal(int)       # 调整音量

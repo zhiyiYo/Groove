@@ -152,7 +152,7 @@ class CheckAllButton(TwoStateButton):
         self.setState(not isChecked)
 
 
-class ButtonFactory(QObject):
+class SelectionModeBarButtonFactory(QObject):
     """ Selection mode button factory """
 
     CANCEL = 0
@@ -169,54 +169,59 @@ class ButtonFactory(QObject):
     MOVE_DOWN = 11
     DELETE = 12
     CHECK_ALL = 13
+    DOWNLOAD = 14
 
     def create(self, buttonType: int) -> Button:
         """ create a button """
         c = getIconColor()
+        folder = ":/images/selection_mode_bar"
         if buttonType == self.CANCEL:
             button = Button(
-                f":/images/selection_mode_bar/Cancel_{c}.png", self.tr("Cancel"), objectName='cancelButton')
+                f"{folder}/Cancel_{c}.png", self.tr("Cancel"), objectName='cancelButton')
         elif buttonType == self.PLAY:
             button = Button(
-                f":/images/selection_mode_bar/Play_{c}.png", self.tr("Play"), objectName='playButton')
+                f"{folder}/Play_{c}.png", self.tr("Play"), objectName='playButton')
         elif buttonType == self.NEXT_TO_PLAY:
             button = Button(
-                f":/images/selection_mode_bar/NextToPlay_{c}.png", self.tr("Play next"), objectName='nextToPlayButton')
+                f"{folder}/NextToPlay_{c}.png", self.tr("Play next"), objectName='nextToPlayButton')
         elif buttonType == self.ADD_TO:
             button = Button(
-                f":/images/selection_mode_bar/Add_{c}.png", self.tr("Add to"), objectName='addToButton')
+                f"{folder}/Add_{c}.png", self.tr("Add to"), objectName='addToButton')
         elif buttonType == self.SINGER:
             button = Button(
-                f":/images/selection_mode_bar/Contact_{c}.png", self.tr("Show artist"), objectName='singerButton')
+                f"{folder}/Contact_{c}.png", self.tr("Show artist"), objectName='singerButton')
         elif buttonType == self.ALBUM:
             button = Button(
-                f":/images/selection_mode_bar/ShowAlbum_{c}.png", self.tr("Show album"), objectName='albumButton')
+                f"{folder}/ShowAlbum_{c}.png", self.tr("Show album"), objectName='albumButton')
         elif buttonType == self.PROPERTY:
             button = Button(
-                f":/images/selection_mode_bar/Property_{c}.png", self.tr("Properties"), objectName='propertyButton')
+                f"{folder}/Property_{c}.png", self.tr("Properties"), objectName='propertyButton')
         elif buttonType == self.EDIT_INFO:
             button = Button(
-                f":/images/selection_mode_bar/Edit_{c}.png", self.tr("Edit info"), objectName='editInfoButton')
+                f"{folder}/Edit_{c}.png", self.tr("Edit info"), objectName='editInfoButton')
         elif buttonType == self.PIN_TO_START:
             button = Button(
-                f":/images/selection_mode_bar/Pin_{c}.png", self.tr('Pin to Start'), objectName='pinToStartButton')
+                f"{folder}/Pin_{c}.png", self.tr('Pin to Start'), objectName='pinToStartButton')
         elif buttonType == self.RENAME:
             button = Button(
-                f":/images/selection_mode_bar/Edit_{c}.png", self.tr("Rename"), objectName='renameButton')
+                f"{folder}/Edit_{c}.png", self.tr("Rename"), objectName='renameButton')
         elif buttonType == self.MOVE_UP:
             button = Button(
-                f":/images/selection_mode_bar/Up_{c}.png", self.tr("Move up"), objectName='moveUpButton')
+                f"{folder}/Up_{c}.png", self.tr("Move up"), objectName='moveUpButton')
         elif buttonType == self.MOVE_DOWN:
             button = Button(
-                f":/images/selection_mode_bar/Down_{c}.png", self.tr("Move down"), objectName='moveDownButton')
+                f"{folder}/Down_{c}.png", self.tr("Move down"), objectName='moveDownButton')
         elif buttonType == self.DELETE:
             button = Button(
-                f":/images/selection_mode_bar/Delete_{c}.png", self.tr("Delete"), objectName='deleteButton')
+                f"{folder}/Delete_{c}.png", self.tr("Delete"), objectName='deleteButton')
+        elif buttonType == self.DOWNLOAD:
+            button = Button(
+                f"{folder}/Download_{c}.png", self.tr("Download"), objectName='downloadButton')
         elif buttonType == self.CHECK_ALL:
             button = CheckAllButton(
                 [
-                    f":/images/selection_mode_bar/SelectAll_{c}.png",
-                    f":/images/selection_mode_bar/CancelSelectAll_{c}.png",
+                    f"{folder}/SelectAll_{c}.png",
+                    f"{folder}/CancelSelectAll_{c}.png",
                 ],
                 [self.tr("Select all"), self.tr("Deselect all")],
             )

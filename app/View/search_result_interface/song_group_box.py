@@ -8,10 +8,9 @@ from common.style_sheet import setStyleSheet
 from components.buttons.three_state_button import ThreeStatePushButton
 from components.song_list_widget import NoScrollSongListWidget, SongCardType
 from components.song_list_widget.song_card import (NoCheckBoxSongCard,
-                                                   OnlineSongCard)
-from components.widgets.label import ClickableLabel
+                                                   NoCheckBoxOnlineSongCard)
 from components.widgets.menu import AddToMenu, DownloadMenu, DWMMenu
-from PyQt5.QtCore import QFile, QMargins, Qt, pyqtSignal
+from PyQt5.QtCore import QMargins, Qt, pyqtSignal
 from PyQt5.QtWidgets import QAction, QPushButton, QWidget
 
 
@@ -42,12 +41,9 @@ class SongGroupBox(QWidget):
         if not self.isOnline:
             self.songListWidget = LocalSongListWidget(self)
             self.titleButton = QPushButton(self.tr('Local songs'), self)
-            self.loadMoreLabel = ClickableLabel()
-            self.loadMoreLabel.hide()   # 隐藏本地歌曲的加载更多标签
         else:
             self.songListWidget = OnlineSongListWidget(self)
             self.titleButton = QPushButton(self.tr('Online songs'), self)
-            self.loadMoreLabel = ClickableLabel(self.tr("Load more"), self)
 
         self.showAllButton = ThreeStatePushButton(
             {
@@ -67,19 +63,14 @@ class SongGroupBox(QWidget):
         self.setMinimumHeight(47)
         self.titleButton.move(35, 0)
         self.songListWidget.move(0, 57)
-        self.loadMoreLabel.setCursor(Qt.PointingHandCursor)
-        self.showAllButton.setHidden(self.isOnline)
-        self.titleButton.clicked.connect(self.__showMoreSearchResultInterface)
-        self.showAllButton.clicked.connect(
-            self.__showMoreSearchResultInterface)
-        self.loadMoreLabel.clicked.connect(self.__onLoadMoreLabelClicked)
+        self.titleButton.clicked.connect(self.switchToMoreSearchResultInterfaceSig)
+        self.showAllButton.clicked.connect(self.switchToMoreSearchResultInterfaceSig)
         self.__setQss()
 
     def __setQss(self):
         """ set style sheet """
         self.titleButton.setObjectName('titleButton')
         self.showAllButton.setObjectName('showAllButton')
-        self.loadMoreLabel.setProperty("loadFinished", "false")
         setStyleSheet(self, 'song_group_box')
         self.titleButton.adjustSize()
         self.showAllButton.adjustSize()
@@ -87,14 +78,9 @@ class SongGroupBox(QWidget):
     def resizeEvent(self, e):
         self.songListWidget.resize(self.width(), self.songListWidget.height())
         self.showAllButton.move(self.width()-self.showAllButton.width()-30, 5)
-        self.loadMoreLabel.move(self.width()//2-self.loadMoreLabel.width()//2,
-                                57+self.songListWidget.height()+17)
 
     def __adjustHeight(self):
-        spacing = 0 if not self.isOnline else 17*2+19
-        self.setFixedHeight(57+self.songListWidget.height()+spacing)
-        self.loadMoreLabel.move(self.loadMoreLabel.x(),
-                                57+self.songListWidget.height()+17)
+        self.setFixedHeight(57+self.songListWidget.height())
 
     def updateWindow(self, songInfos: List[SongInfo]):
         """ update window """
@@ -104,38 +90,6 @@ class SongGroupBox(QWidget):
         self.songInfos = songInfos
         self.songListWidget.updateAllSongCards(self.songInfos)
         self.__adjustHeight()
-
-    def loadMoreOnlineMusic(self, songInfos: List[SongInfo]):
-        """ load more online music
-
-        Parameters
-        ----------
-        songInfos: List[SongInfo]
-            newly added song information list
-        """
-        if self.songType != 'Online songs':
-            return
-
-        self.loadMoreLabel.hide()
-        self.songInfos.extend(songInfos)
-        self.songListWidget.songInfos = self.songInfos
-        self.songListWidget.appendSongCards(songInfos)
-        self.__adjustHeight()
-        self.loadMoreLabel.show()
-
-    def __onLoadMoreLabelClicked(self):
-        """ load more """
-        if self.loadMoreLabel.isHidden() or self.loadMoreLabel.property("loadFinished") == "true":
-            return
-
-        self.loadMoreSignal.emit()
-
-    def __showMoreSearchResultInterface(self):
-        """ show more search result interface """
-        if self.songType == 'Online songs':
-            return
-
-        self.switchToMoreSearchResultInterfaceSig.emit()
 
 
 class LocalSongListWidget(NoScrollSongListWidget):
@@ -189,7 +143,7 @@ class OnlineSongListWidget(NoScrollSongListWidget):
     playSignal = pyqtSignal(int)    # 将播放列表的当前歌曲切换为指定的歌曲卡
 
     def __init__(self, parent=None):
-        super().__init__(None, SongCardType.ONLINE_SONG_CARD,
+        super().__init__(None, SongCardType.NO_CHECKBOX_ONLINE_SONG_CARD,
                          parent, QMargins(30, 0, 30, 0), 0)
         setStyleSheet(self, 'song_list_widget')
 
@@ -200,7 +154,7 @@ class OnlineSongListWidget(NoScrollSongListWidget):
             self.__connectContextMenuSignalToSlot(menu)
             menu.exec(self.cursor().pos())
 
-    def _connectSongCardSignalToSlot(self, songCard: OnlineSongCard):
+    def _connectSongCardSignalToSlot(self, songCard: NoCheckBoxOnlineSongCard):
         songCard.doubleClicked.connect(self.playSignal)
         songCard.playButtonClicked.connect(self.playSignal)
         songCard.clicked.connect(self.setCurrentIndex)

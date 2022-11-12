@@ -5,7 +5,7 @@ from common.database.entity import Playlist, SongInfo
 from common.library import Library
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
-from PyQt5.QtCore import QFile, QPoint, Qt, pyqtSignal
+from PyQt5.QtCore import QPoint, Qt, pyqtSignal
 from PyQt5.QtWidgets import QVBoxLayout, QWidget
 
 from ..album_card import AlbumCardViewBase
@@ -13,7 +13,7 @@ from ..dialog_box.message_dialog import MessageDialog
 from ..playlist_card import PlaylistCardViewBase
 from ..singer_card import SingerCardViewBase
 from ..song_list_widget import BasicSongListWidget
-from ..widgets.menu import AddToMenu
+from ..widgets.menu import AddToMenu, DownloadMenu
 from ..widgets.scroll_area import ScrollArea
 from .bar import SelectionModeBarFactory, SelectionModeBarType
 
@@ -151,6 +151,21 @@ class SelectionModeInterface(ScrollArea):
                           2 - (13 + 38 * menu.actionCount()) / 2)
         menu.exec(QPoint(x, y))
 
+    def _onDownload(self):
+        """ selection mode bar download signal slot """
+        menu = DownloadMenu(parent=self)
+        songInfos = self._getCheckedSongInfos()
+        menu.downloadSig.connect(self.exitSelectionMode)
+        menu.downloadSig.connect(
+            lambda quality: signalBus.downloadSongsSig.emit(songInfos, quality))
+
+        pos = self.selectionModeBar.mapToGlobal(
+            QPoint(self.selectionModeBar.downloadButton.x(), 0))
+        x = pos.x() + self.selectionModeBar.downloadButton.width() + 5
+        y = pos.y() + int(self.selectionModeBar.downloadButton.height() /
+                          2 - (13 + 38 * 3) / 2)
+        menu.exec(QPoint(x, y))
+
     def _onSinger(self):
         """ selection mode bar singer signal slot """
         singer = self._getCheckedSinger()
@@ -211,6 +226,7 @@ class SelectionModeInterface(ScrollArea):
         self.selectionModeBar.moveUpSig.connect(self._onMoveUp)
         self.selectionModeBar.moveDownSig.connect(self._onMoveDown)
         self.selectionModeBar.deleteSig.connect(self._onDelete)
+        self.selectionModeBar.downloadSig.connect(self._onDownload)
         self.selectionModeBar.checkAllSig.connect(self._onCheckAll)
 
 

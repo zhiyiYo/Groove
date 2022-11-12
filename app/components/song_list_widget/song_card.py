@@ -58,8 +58,7 @@ class SongTabSongCard(DurationSongCard):
 
         # The width of year is fixed to 60px, duration distance window right border 45px
         self.setScalableWidgets(
-            [self.songNameCard, self.singerLabel,
-                self.albumLabel, self.genreLabel],
+            [self.songNameCard, self.singerLabel, self.albumLabel, self.genreLabel],
             [326, 191, 191, 178],
             105,
         )
@@ -161,8 +160,7 @@ class PlaylistInterfaceSongCard(DurationSongCard):
 
         # The width of year is fixed to 60px, duration distance window right border 45px
         self.setScalableWidgets(
-            [self.songNameCard, self.singerLabel,
-                self.albumLabel, self.genreLabel],
+            [self.songNameCard, self.singerLabel, self.albumLabel, self.genreLabel],
             [326, 191, 191, 178],
             105,
         )
@@ -262,11 +260,13 @@ class NoCheckBoxSongCard(DurationSongCard):
         self._adjustWidgetWidth()
 
 
-class OnlineSongCard(DurationSongCard):
-    """ Online song card """
+class NoCheckBoxOnlineSongCard(DurationSongCard):
+    """ Online song card without check box """
+
+    cardType =  SongCardType.NO_CHECKBOX_ONLINE_SONG_CARD
 
     def __init__(self, songInfo: SongInfo, parent=None):
-        super().__init__(songInfo, SongCardType.ONLINE_SONG_CARD, parent=parent)
+        super().__init__(songInfo, self.cardType, parent=parent)
         self.singerLabel = QLabel(self.singer, self)
         self.albumLabel = QLabel(self.album, self)
         self.yearLabel = QLabel(self.year, self)
@@ -291,7 +291,7 @@ class OnlineSongCard(DurationSongCard):
         self.setAnimation(self.widgets, [13, 6, -3, -6, -13])
 
         # connect signal to slot
-        self.addToButton.clicked.connect(self.__showDownloadMenu)
+        self.addToButton.clicked.connect(self._showDownloadMenu)
 
     def updateSongCard(self, songInfo: SongInfo):
         if self.songInfo == songInfo:
@@ -304,20 +304,18 @@ class OnlineSongCard(DurationSongCard):
         self.yearLabel.setText(self.year)
         self._adjustWidgetWidth()
 
-    def __showDownloadMenu(self):
-        """ show download menu """
-        menu = DownloadMenu(parent=self)
-        pos = self.mapToGlobal(
-            QPoint(self.addToButton.x()+self.buttonGroup.x(), 0))
-        x = pos.x() + self.addToButton.width() + 5
-        y = pos.y() + int(
-            self.addToButton.height() / 2 - (13 + 38 * 3) / 2)
-        menu.downloadSig.connect(
-            lambda quality: signalBus.downloadSongSig.emit(self.songInfo, quality))
-        menu.exec(QPoint(x, y))
-
     def _validateSongPath(self):
         self.isSongExist = True
+
+
+class OnlineSongCard(NoCheckBoxOnlineSongCard):
+    """ Online song card """
+
+    cardType = SongCardType.ONLINE_SONG_CARD
+
+    def __init__(self, songInfo: SongInfo, parent=None):
+        super().__init__(songInfo, parent=parent)
+        self.checkBox.stateChanged.connect(self._onCheckedStateChanged)
 
 
 class SongCardFactory:
@@ -343,7 +341,8 @@ class SongCardFactory:
             SongCardType.ALBUM_INTERFACE_SONG_CARD: AlbumInterfaceSongCard,
             SongCardType.PLAYLIST_INTERFACE_SONG_CARD: PlaylistInterfaceSongCard,
             SongCardType.NO_CHECKBOX_SONG_CARD: NoCheckBoxSongCard,
-            SongCardType.ONLINE_SONG_CARD: OnlineSongCard
+            SongCardType.NO_CHECKBOX_ONLINE_SONG_CARD: NoCheckBoxOnlineSongCard,
+            SongCardType.ONLINE_SONG_CARD: OnlineSongCard,
         }
 
         if songCardType not in songCardMap:

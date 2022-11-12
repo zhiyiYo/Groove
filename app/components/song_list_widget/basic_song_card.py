@@ -4,14 +4,13 @@ import sys
 
 from common.database.entity import SongInfo
 from common.signal_bus import signalBus
-from components.widgets.menu import AddToMenu
+from components.widgets.menu import AddToMenu, DownloadMenu
 from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
                           QParallelAnimationGroup, QPoint, QPropertyAnimation,
                           Qt, pyqtSignal)
 from PyQt5.QtGui import QContextMenuEvent, QFont, QFontMetrics, QMouseEvent
 from PyQt5.QtWidgets import QApplication, QWidget
 
-from .song_card_type import SongCardType
 from .song_name_card import SongNameCardFactory
 
 
@@ -462,6 +461,18 @@ class BasicSongCard(QWidget):
             lambda: signalBus.addSongsToNewCustomPlaylistSig.emit([self.songInfo]))
         menu.addSongsToPlaylistSig.connect(
             lambda name: signalBus.addSongsToCustomPlaylistSig.emit(name, [self.songInfo]))
+        menu.exec(QPoint(x, y))
+
+    def _showDownloadMenu(self):
+        """ show download menu """
+        menu = DownloadMenu(parent=self)
+        pos = self.mapToGlobal(
+            QPoint(self.addToButton.x()+self.buttonGroup.x(), 0))
+        x = pos.x() + self.addToButton.width() + 5
+        y = pos.y() + int(self.addToButton.height() / 2 - (13 + 38 * 3) / 2)
+
+        menu.downloadSig.connect(
+            lambda quality: signalBus.downloadSongSig.emit(self.songInfo, quality))
         menu.exec(QPoint(x, y))
 
     @property

@@ -1,7 +1,7 @@
 # coding:utf-8
 from PyQt5.QtWidgets import QApplication
 from app.components.song_list_widget.song_card import (
-    AlbumInterfaceSongCard, NoCheckBoxSongCard, OnlineSongCard,
+    AlbumInterfaceSongCard, NoCheckBoxSongCard, NoCheckBoxOnlineSongCard,
     PlaylistInterfaceSongCard, SongTabSongCard)
 from app.common.style_sheet import setStyleSheet
 from app.common.database.entity import SongInfo
@@ -68,7 +68,7 @@ class TestSongCard(TestCase):
     def test_online_song_card(self):
         """ 测试在线歌曲卡 """
         app = QApplication(sys.argv)
-        w = OnlineSongCard(self.songInfo)
+        w = NoCheckBoxOnlineSongCard(self.songInfo)
         setStyleSheet(w, 'song_list_widget')
         w.show()
         app.exec_()

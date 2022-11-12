@@ -10,13 +10,14 @@ from PyQt5.QtWidgets import QLabel, QStackedWidget, QWidget
 from .album_interface import AlbumInterface
 from .playlist_interface import PlaylistInterface
 from .singer_interface import SingerInterface
-from .song_interface import LocalSongInterface
+from .song_interface import LocalSongInterface, OnlineSongInterface
 
 
 class MoreSearchResultInterface(QWidget):
     """ More search result interface """
 
     playLocalSongSig = pyqtSignal(SongInfo)
+    playOnlineSongSig = pyqtSignal(int)
 
     def __init__(self, library: Library, parent=None):
         super().__init__(parent=parent)
@@ -25,11 +26,13 @@ class MoreSearchResultInterface(QWidget):
         self.albumInterface = AlbumInterface(library, self)
         self.singerInterface = SingerInterface(library, self)
         self.localSongInterface = LocalSongInterface([], self)
+        self.onlineSongInterface = OnlineSongInterface([], self)
         self.playlistInterface = PlaylistInterface(library, self)
         self.titleMask = QWidget(self)
         self.titleLabel = QLabel(self)
 
         self.localSongListWidget = self.localSongInterface.songListWidget
+        self.onlineSongListWidget = self.onlineSongInterface.songListWidget
 
         self.__initWidget()
 
@@ -41,6 +44,7 @@ class MoreSearchResultInterface(QWidget):
         self.stackedWidget.addWidget(self.singerInterface)
         self.stackedWidget.addWidget(self.playlistInterface)
         self.stackedWidget.addWidget(self.localSongInterface)
+        self.stackedWidget.addWidget(self.onlineSongInterface)
         self.__setQss()
         self.__connectSignalToSlot()
 
@@ -59,6 +63,7 @@ class MoreSearchResultInterface(QWidget):
         viewType: str
             the type of displayed view, including：
             * `local song`: local song
+            * `online song`: online song
             * `album`: local album
             * `singer`: local singer
             * `playlist`: local playlist
@@ -68,6 +73,7 @@ class MoreSearchResultInterface(QWidget):
         """
         funcMap = {
             'local song': self.showLocalSongInterface,
+            'online song': self.showOnlineSongInterface,
             'album': self.showAlbumInterface,
             'singer': self.showSingerInterface,
             'playlist': self.showPlaylistInterface
@@ -102,6 +108,12 @@ class MoreSearchResultInterface(QWidget):
         self.singerInterface.updateWindow(singerInfos)
         self.stackedWidget.setCurrentWidget(self.singerInterface)
 
+    def showOnlineSongInterface(self, keyWord: str, songInfos: List[SongInfo]):
+        """ update and show online song interface """
+        self.setTitle(f'"{keyWord}"'+self.tr('search result for online songs'))
+        self.onlineSongInterface.updateWindow(keyWord, songInfos)
+        self.stackedWidget.setCurrentWidget(self.onlineSongInterface)
+
     def setTitle(self, title: str):
         """ set the title of interface """
         self.titleLabel.setText(title)
@@ -115,3 +127,4 @@ class MoreSearchResultInterface(QWidget):
     def __connectSignalToSlot(self):
         """ connect signal to slot """
         self.localSongListWidget.playSignal.connect(self.playLocalSongSig)
+        self.onlineSongListWidget.playSignal.connect(self.playOnlineSongSig)

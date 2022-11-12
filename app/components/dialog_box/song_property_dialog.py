@@ -1,9 +1,10 @@
 # coding:utf-8
 from common.auto_wrap import autoWrap
+from common.crawler import CrawlerBase
 from common.database.entity import SongInfo
 from common.style_sheet import setStyleSheet
 from common.os_utils import showInFolder
-from common.crawler import CrawlerBase
+from common.url import FakeUrl
 from components.widgets.label import ClickableLabel
 from components.buttons.perspective_button import PerspectivePushButton
 from PyQt5.QtCore import Qt
@@ -57,6 +58,7 @@ class SongPropertyDialog(MaskDialogBase):
         self.__setQss()
         self.widget.setFixedWidth(942)
         self.songPathLabel.setCursor(Qt.PointingHandCursor)
+        self.songPathLabel.setHidden(FakeUrl.isFake(self.songInfo.file))
 
         self.songNameLabel.setFixedWidth(523)
         self.trackLabel.setFixedWidth(523)

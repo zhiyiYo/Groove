@@ -1,5 +1,6 @@
 # coding:utf-8
 from math import ceil
+from typing import List
 
 from common.config import config
 from common.crawler import KuWoMusicCrawler, SongQuality
@@ -14,7 +15,7 @@ from components.widgets.scroll_area import ScrollArea
 from components.widgets.tooltip import DownloadStateTooltip
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QLabel, QVBoxLayout, QWidget
 
 from .album_group_box import AlbumGroupBox
 from .playlist_group_box import PlaylistGroupBox
@@ -66,9 +67,6 @@ class SearchResultInterface(ScrollArea):
         self.onlineSongListWidget = self.onlineSongGroupBox.songListWidget
 
         self.crawler = KuWoMusicCrawler()
-        self.totalPages = 1                             # 在线音乐总分页数
-        self.currentPage = 1                            # 当前在线音乐页码
-        self.totalOnlineMusic = 0                       # 数据库中所有符合条件的在线音乐数
 
         self.downloadSongThread = DownloadSongThread(self)
         self.downloadStateTooltip = None
@@ -124,6 +122,11 @@ class SearchResultInterface(ScrollArea):
         self.searchLabel.setVisible(isVisible)
         self.checkSpellLabel.setVisible(isVisible)
         self.searchOthersLabel.setVisible(isVisible)
+
+    def __downloadSongs(self, songInfos: List[SongInfo], quality: SongQuality):
+        """ download multi online music """
+        for songInfo in songInfos:
+            self.__downloadSong(songInfo, quality)
 
     def __downloadSong(self, songInfo: SongInfo, quality: SongQuality):
         """ download online music """
@@ -181,16 +184,10 @@ class SearchResultInterface(ScrollArea):
         self.currentPage = 1
         pageSize = config.get(config.onlinePageSize)
         if pageSize > 0:
-            self.onlineSongInfos, self.totalOnlineMusic = self.crawler.getSongInfos(
+            self.onlineSongInfos, _ = self.crawler.getSongInfos(
                 keyWord, 1, pageSize)
-            self.totalPages = 1 if not self.totalOnlineMusic else ceil(
-                self.totalOnlineMusic/pageSize)
         else:
             self.onlineSongInfos = []
-            self.totalOnlineMusic = 0
-            self.totalPages = 0
-
-        self.__updateLoadMoreLabel()
 
         # update window
         self.titleLabel.setText(f'"{keyWord}"'+self.tr('Search Result'))
@@ -199,7 +196,7 @@ class SearchResultInterface(ScrollArea):
         self.albumGroupBox.updateWindow(self.albumInfos)
         self.playlistGroupBox.updateWindow(self.playlists)
         self.localSongGroupBox.updateWindow(self.localSongInfos[:5])
-        self.onlineSongGroupBox.updateWindow(self.onlineSongInfos)
+        self.onlineSongGroupBox.updateWindow(self.onlineSongInfos[:5])
 
         self.__adjustHeight()
         self.__updateWidgetsVisible()
@@ -239,40 +236,6 @@ class SearchResultInterface(ScrollArea):
                 self.playlistGroupBox.isHidden() and self.onlineSongGroupBox.isHidden():
             self.__setHintsLabelVisible(True)
 
-    def __updateLoadMoreLabel(self):
-        """ update load more label """
-        label = self.onlineSongGroupBox.loadMoreLabel
-
-        if self.currentPage < self.totalPages:
-            label.setText(self.tr('Load more'))
-            label.setProperty('loadFinished', 'false')
-            label.setCursor(Qt.PointingHandCursor)
-        else:
-            label.setText(self.tr('No more results'))
-            label.setProperty('loadFinished', 'true')
-            label.setCursor(Qt.ArrowCursor)
-
-        label.adjustSize()
-        label.setStyle(QApplication.style())
-
-    def __loadMoreOnlineMusic(self):
-        """ load more online music """
-        if self.currentPage == self.totalPages:
-            return
-
-        # send request for online music
-        self.currentPage += 1
-        songInfos, _ = self.crawler.getSongInfos(
-            self.keyWord, self.currentPage, config.get(config.onlinePageSize))
-
-        # update online music group box
-        offset = len(self.onlineSongListWidget.songInfos)
-        self.onlineSongGroupBox.loadMoreOnlineMusic(songInfos)
-        self.onlineSongInfos = self.onlineSongListWidget.songInfos
-
-        self.__updateLoadMoreLabel()
-        self.__adjustHeight()
-
     def deletePlaylistCard(self, name: str):
         """ delete a playlist card """
         self.playlistGroupBox.playlistCardView.deletePlaylistCard(name)
@@ -283,18 +246,19 @@ class SearchResultInterface(ScrollArea):
     def __connectSignalToSlot(self):
         """ connect signal to slot """
         signalBus.downloadSongSig.connect(self.__downloadSong)
+        signalBus.downloadSongsSig.connect(self.__downloadSongs)
 
         # local song group box signal
         self.localSongGroupBox.switchToMoreSearchResultInterfaceSig.connect(
             lambda: signalBus.switchToMoreSearchResultInterfaceSig.emit(self.keyWord, 'local song', self.localSongInfos))
+        self.onlineSongGroupBox.switchToMoreSearchResultInterfaceSig.connect(
+            lambda: signalBus.switchToMoreSearchResultInterfaceSig.emit(self.keyWord, 'online song', self.onlineSongInfos))
         self.localSongListWidget.playSignal.connect(self.playLocalSongSig)
         self.localSongListWidget.currentIndexChanged.connect(
             self.onlineSongListWidget.cancelSelectedState)
 
         # online song group box signal
         self.onlineSongListWidget.playSignal.connect(self.playOnlineSongSig)
-        self.onlineSongGroupBox.loadMoreSignal.connect(
-            self.__loadMoreOnlineMusic)
         self.onlineSongListWidget.currentIndexChanged.connect(
             self.localSongListWidget.cancelSelectedState)
 

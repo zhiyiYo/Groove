@@ -1082,6 +1082,11 @@
         <source>View online</source>
         <translation>在线查看</translation>
     </message>
+    <message>
+        <location filename="../../View/more_search_result_interface/song_interface.py" line="29"/>
+        <source>Select</source>
+        <translation>选择</translation>
+    </message>
 </context>
 <context>
     <name>PlayBar</name>
@@ -3265,7 +3270,7 @@
     </message>
 </context>
 <context>
-    <name>ButtonFactory</name>
+    <name>SelectionModeBarButtonFactory</name>
     <message>
         <location filename="../../components/selection_mode_bar/button.py" line="168"/>
         <source>Cancel</source>
@@ -3340,6 +3345,11 @@
         <location filename="../../components/selection_mode_bar/button.py" line="211"/>
         <source>Deselect all</source>
         <translation>取消全选</translation>
+    </message>
+    <message>
+        <location filename="../../components/selection_mode_bar/button.py" line="219"/>
+        <source>Download</source>
+        <translation>下载</translation>
     </message>
 </context>
 <context>
@@ -3488,6 +3498,11 @@
         <location filename="../../View/more_search_result_interface/more_search_result_interface.py" line="62"/>
         <source>search result for local songs</source>
         <translation>的本地歌曲搜索结果</translation>
+    </message>
+    <message>
+        <location filename="../../View/more_search_result_interface/more_search_result_interface.py" line="113"/>
+        <source>search result for online songs</source>
+        <translation>的在线歌曲搜索结果</translation>
     </message>
     <message>
         <location filename="../../View/more_search_result_interface/more_search_result_interface.py" line="78"/>
