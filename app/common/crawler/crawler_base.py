@@ -311,9 +311,12 @@ class CrawlerBase:
         Returns
         -------
         url: str
-            the url of album cover
+            the url of album cover, empty string when the search fails
         """
         songInfo = self.getSongInfo(key_word)
+        if not songInfo:
+            return ''
+
         return songInfo.get("coverPath", "")
 
     def getAlbumDetailsUrl(self, key_word: str):
