@@ -1,6 +1,8 @@
 # coding:utf-8
 import sys
+
 from common.config import config
+from common.os_utils import getWindowsVersion
 from common.signal_bus import signalBus
 from common.window_effect import WindowEffect
 from PyQt5.QtCore import QEasingCurve, QPropertyAnimation, QRect, Qt
@@ -22,7 +24,7 @@ class NavigationMenu(NavigationWidget):
         """ initialize widgets """
         self.resize(60, 800)
         self.setWindowFlags(Qt.Popup | Qt.NoDropShadowWindowHint)
-        self.setProperty("win32", sys.platform == "win32")
+        self.setProperty("useAcrylic", sys.platform == "win32" and getWindowsVersion()>=10)
         color = '2B2B2B99' if config.theme == 'dark' else 'F2F2F299'
         self.windowEffect.setAcrylicEffect(self.winId(), color, False)
 

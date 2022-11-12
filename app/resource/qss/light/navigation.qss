@@ -12,7 +12,7 @@ QWidget, QScrollArea {
     border: none;
 }
 
-NavigationMenu[win32=false]{
+NavigationMenu[useAcrylic=false]{
     background-color: #f2f2f2;
 }
 
