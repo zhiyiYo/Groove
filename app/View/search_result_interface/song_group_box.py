@@ -1,6 +1,7 @@
 # coding:utf-8
 from typing import List
 
+from common.crawler import QueryServerType
 from common.database.entity import SongInfo
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
@@ -160,7 +161,7 @@ class LocalSongListWidget(NoScrollSongListWidget):
         menu.nextSongAct.triggered.connect(
             lambda: signalBus.nextToPlaySig.emit([self.currentSongInfo]))
         menu.viewOnlineAct.triggered.connect(
-            lambda: signalBus.getSongDetailsUrlSig.emit(self.currentSongInfo, 'wanyi'))
+            lambda: signalBus.getSongDetailsUrlSig.emit(self.currentSongInfo, QueryServerType.WANYI))
         menu.showPropertyAct.triggered.connect(self.showSongPropertyDialog)
         menu.showAlbumAct.triggered.connect(
             lambda: signalBus.switchToAlbumInterfaceSig.emit(
@@ -214,7 +215,7 @@ class OnlineSongListWidget(NoScrollSongListWidget):
         menu.downloadMenu.downloadSig.connect(
             lambda quality: signalBus.downloadSongSig.emit(self.currentSongInfo, quality))
         menu.viewOnlineAct.triggered.connect(
-            lambda: signalBus.getSongDetailsUrlSig.emit(self.currentSongInfo, 'kuwo'))
+            lambda: signalBus.getSongDetailsUrlSig.emit(self.currentSongInfo, QueryServerType.KUWO))
         menu.addToMenu.playingAct.triggered.connect(
             lambda: signalBus.addSongsToPlayingPlaylistSig.emit([self.currentSongInfo]))
         menu.addToMenu.addSongsToPlaylistSig.connect(

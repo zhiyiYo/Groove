@@ -9,7 +9,6 @@ from common import resource
 from common.config import config, FEEDBACK_URL, RELEASE_URL
 from common.database import DBInitializer
 from common.database.entity import AlbumInfo, Playlist, SongInfo
-from common.exception_handler import exceptionHandler
 from common.hotkey_manager import HotkeyManager
 from common.library import Directory, Library
 from common.picture import Cover
@@ -17,11 +16,8 @@ from common.os_utils import getWindowsVersion
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
 from common.version_manager import VersionManager
-from common.thread.get_album_details_url_thread import GetAlbumDetailsUrlThread
 from common.thread.get_online_song_url_thread import GetOnlineSongUrlThread
-from common.thread.get_singer_details_url_thread import \
-    GetSingerDetailsUrlThread
-from common.thread.get_song_details_url_thread import GetSongDetailsUrlThread
+from common.thread.view_online_thread import ViewOnlineThread, ViewOnlineType
 from common.thread.library_thread import LibraryThread
 from common.url import FakeUrl
 from components.dialog_box.create_playlist_dialog import CreatePlaylistDialog
@@ -36,7 +32,6 @@ from components.widgets.label import PixmapLabel
 from components.widgets.stacked_widget import (OpacityAniStackedWidget,
                                                PopUpAniStackedWidget)
 from components.widgets.tooltip import StateTooltip
-import requests
 from PyQt5.QtCore import (QEasingCurve, QEvent, QEventLoop, QFile, QFileInfo,
                           Qt, QTimer, QUrl)
 from PyQt5.QtGui import (QColor, QDesktopServices, QDragEnterEvent, QDropEvent,
@@ -98,14 +93,8 @@ class MainWindow(AcrylicWindow):
         # get online music url thread
         self.getOnlineSongUrlThread = GetOnlineSongUrlThread(self)
 
-        # get song details url thread
-        self.getSongDetailsUrlThread = GetSongDetailsUrlThread(self)
-
-        # get album details url thread
-        self.getAlbumDetailsUrlThread = GetAlbumDetailsUrlThread(self)
-
-        # get album details url thread
-        self.getSingerDetailsUrlThread = GetSingerDetailsUrlThread(self)
+        # view online thread
+        self.viewOnlineThread = ViewOnlineThread(self)
 
         # create setting interface
         self.settingInterface = SettingInterface(self.subMainWindow)
@@ -1424,21 +1413,21 @@ class MainWindow(AcrylicWindow):
             self.setPlaylist(self.library.loadFromFiles([message]))
             self.show()
 
-    def onCrawlDetailsUrlFinished(self, url: str):
+    def onCrawlDetailsUrlFinished(self, onlineType: ViewOnlineType, url: str):
         """ crawl song details url finished thread """
         if url:
             QDesktopServices.openUrl(QUrl(url))
             return
 
         contentMap = {
-            self.getSongDetailsUrlThread: self.tr(
+            ViewOnlineType.SONG: self.tr(
                 'Unable to find a matching online song.'),
-            self.getAlbumDetailsUrlThread: self.tr(
+            ViewOnlineType.ALBUM: self.tr(
                 'Unable to find a matching online album.'),
-            self.getSingerDetailsUrlThread: self.tr(
+            ViewOnlineType.SINGER: self.tr(
                 'Unable to find a matching online singer.'),
         }
-        content = contentMap[self.sender()]
+        content = contentMap[onlineType]
         self.showMessageBox(self.tr("Can't view online"), content)
 
     def onShowMainWindow(self):
@@ -1469,7 +1458,7 @@ class MainWindow(AcrylicWindow):
             self.showMessageBox(
                 self.tr('Updates available'),
                 self.tr('A new version')+f" {self.versionManager.lastestVersion[1:]} " +
-                    self.tr('is available. Do you want to download this version?'),
+                self.tr('is available. Do you want to download this version?'),
                 True,
                 lambda: QDesktopServices.openUrl(QUrl(RELEASE_URL))
             )
@@ -1552,12 +1541,13 @@ class MainWindow(AcrylicWindow):
 
         signalBus.editSongInfoSig.connect(self.onEditSongInfo)
         signalBus.editAlbumInfoSig.connect(self.onEditAlbumInfo)
+
         signalBus.getSongDetailsUrlSig.connect(
-            self.getSongDetailsUrlThread.get)
+            self.viewOnlineThread.getSongDetailsUrl)
         signalBus.getAlbumDetailsUrlSig.connect(
-            self.getAlbumDetailsUrlThread.get)
+            self.viewOnlineThread.getAlbumDetailsUrl)
         signalBus.getSingerDetailsUrlSig.connect(
-            self.getSingerDetailsUrlThread.get)
+            self.viewOnlineThread.getSingerDetailsUrl)
 
         signalBus.addSongsToPlayingPlaylistSig.connect(
             self.addSongsToPlayingPlaylist)
@@ -1674,11 +1664,7 @@ class MainWindow(AcrylicWindow):
         self.library.fileRemoved.connect(self.onFileRemoved)
 
         # get details url thread signal
-        self.getSongDetailsUrlThread.crawlFinished.connect(
-            self.onCrawlDetailsUrlFinished)
-        self.getAlbumDetailsUrlThread.crawlFinished.connect(
-            self.onCrawlDetailsUrlFinished)
-        self.getSingerDetailsUrlThread.crawlFinished.connect(
+        self.viewOnlineThread.crawlFinished.connect(
             self.onCrawlDetailsUrlFinished)
 
 

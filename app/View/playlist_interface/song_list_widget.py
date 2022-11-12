@@ -1,6 +1,7 @@
 # coding:utf-8
 from typing import List
 
+from common.crawler import QueryServerType
 from common.database.entity import SongInfo
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
@@ -102,7 +103,7 @@ class SongListWidget(NoScrollSongListWidget):
         menu.editInfoAct.triggered.connect(self.showSongInfoEditDialog)
         menu.showPropertyAct.triggered.connect(self.showSongPropertyDialog)
         menu.viewOnlineAct.triggered.connect(
-            lambda: signalBus.getSongDetailsUrlSig.emit(self.currentSongInfo, 'wanyi'))
+            lambda: signalBus.getSongDetailsUrlSig.emit(self.currentSongInfo, QueryServerType.WANYI))
         menu.playAct.triggered.connect(
             lambda: signalBus.playOneSongCardSig.emit(self.currentSongInfo))
         menu.nextSongAct.triggered.connect(

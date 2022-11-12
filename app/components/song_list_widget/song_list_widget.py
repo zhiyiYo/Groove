@@ -1,12 +1,13 @@
 # coding:utf-8
 from typing import List
 
+from common.crawler import QueryServerType
 from common.database.entity import SongInfo
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
 from components.dialog_box.message_dialog import MessageDialog
 from components.widgets.menu import AddToMenu, DWMMenu
-from PyQt5.QtCore import QFile, Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent
 from PyQt5.QtWidgets import QAction, QLabel
 
@@ -154,7 +155,7 @@ class SongListWidget(NoScrollSongListWidget):
         menu.nextSongAct.triggered.connect(
             lambda: signalBus.nextToPlaySig.emit([self.currentSongInfo]))
         menu.viewOnlineAct.triggered.connect(
-            lambda: signalBus.getSongDetailsUrlSig.emit(self.currentSongInfo, 'wanyi'))
+            lambda: signalBus.getSongDetailsUrlSig.emit(self.currentSongInfo, QueryServerType.WANYI))
         menu.showAlbumAct.triggered.connect(
             lambda: signalBus.switchToAlbumInterfaceSig.emit(
                 self.currentSongCard.singer,

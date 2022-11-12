@@ -1,12 +1,13 @@
 # coding:utf-8
 from typing import List
 
+from common.crawler import QueryServerType
 from common.signal_bus import signalBus
 from common.database.entity import SongInfo
 from common.style_sheet import setStyleSheet
 from components.dialog_box.song_property_dialog import SongPropertyDialog
 from components.widgets.list_widget import ListWidget
-from PyQt5.QtCore import QFile, QSize, Qt, pyqtSignal
+from PyQt5.QtCore import QSize, Qt, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent
 from PyQt5.QtWidgets import QApplication, QListWidgetItem
 
@@ -269,7 +270,7 @@ class SongListWidget(ListWidget):
             )
         )
         menu.viewOnlineAct.triggered.connect(
-            lambda: signalBus.getSongDetailsUrlSig.emit(self.currentSongInfo, 'wanyi'))
+            lambda: signalBus.getSongDetailsUrlSig.emit(self.currentSongInfo, QueryServerType.WANYI))
 
         menu.addToMenu.addSongsToPlaylistSig.connect(
             lambda name: signalBus.addSongsToCustomPlaylistSig.emit(name, [self.currentSongInfo]))

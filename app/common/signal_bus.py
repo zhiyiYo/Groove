@@ -3,7 +3,7 @@ from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtGui import QColor, QFont
 from PyQt5.QtMultimedia import QMediaPlaylist
 
-from common.crawler import SongQuality
+from common.crawler import SongQuality, QueryServerType
 
 from .database.entity import AlbumInfo, SingerInfo, SongInfo
 from .singleton import Singleton
@@ -23,7 +23,7 @@ class SignalBus(Singleton, QObject):
     playBySongInfoSig = pyqtSignal(SongInfo)          # 更新歌曲卡列表控件的正在播放歌曲
     getAlbumDetailsUrlSig = pyqtSignal(AlbumInfo)     # 在线查看专辑详细信息
     getSingerDetailsUrlSig = pyqtSignal(SingerInfo)   # 在线查看歌手详细信息
-    getSongDetailsUrlSig = pyqtSignal(SongInfo, str)  # 在线查看歌曲详细信息
+    getSongDetailsUrlSig = pyqtSignal(SongInfo, QueryServerType)  # 在线查看歌曲详细信息
 
     addSongsToPlayingPlaylistSig = pyqtSignal(list)      # 添加到正在播放
     addSongsToNewCustomPlaylistSig = pyqtSignal(list)    # 添加到新建自定义播放列表

@@ -1,6 +1,7 @@
 # coding:utf-8
 from typing import List
 
+from common.crawler import QueryServerType
 from common.database.entity import SongInfo
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
@@ -8,7 +9,7 @@ from components.dialog_box.message_dialog import MessageDialog
 from components.song_list_widget import NoScrollSongListWidget, SongCardType
 from components.song_list_widget.song_card import AlbumInterfaceSongCard
 from components.widgets.menu import AddToMenu, DWMMenu
-from PyQt5.QtCore import QFile, pyqtSignal
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent
 from PyQt5.QtWidgets import QAction
 
@@ -89,7 +90,7 @@ class SongListWidget(NoScrollSongListWidget):
         menu.nextSongAct.triggered.connect(
             lambda: signalBus.nextToPlaySig.emit([self.currentSongInfo]))
         menu.viewOnlineAct.triggered.connect(
-            lambda: signalBus.getSongDetailsUrlSig.emit(self.currentSongInfo, 'wanyi'))
+            lambda: signalBus.getSongDetailsUrlSig.emit(self.currentSongInfo, QueryServerType.WANYI))
         menu.addToMenu.playingAct.triggered.connect(
             lambda: signalBus.addSongsToPlayingPlaylistSig.emit([self.currentSongInfo]))
         menu.selectAct.triggered.connect(
