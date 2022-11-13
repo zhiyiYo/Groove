@@ -26,7 +26,10 @@ class FramelessWindow(QWidget):
         self.windowEffect = WindowEffect()
 
         # remove window border
-        self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint)
+        if getWindowsVersion() > 7:
+            self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint)
+        else:
+            self.setWindowFlags(Qt.WindowMinMaxButtonsHint | Qt.FramelessWindowHint)
 
         # add DWM shadow and window animation
         self.windowEffect.addWindowAnimation(self.winId())
@@ -113,18 +116,20 @@ class AcrylicWindow(FramelessWindow):
         self.__closeByKey = False
 
         QtWin.enableBlurBehindWindow(self)
-        self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint)
-        self.windowEffect.addWindowAnimation(self.winId())
 
+        # remove border and add acrylic effect
         version = getWindowsVersion()
         if version == 7:
+            self.setWindowFlags(Qt.WindowMinMaxButtonsHint | Qt.FramelessWindowHint)
             self.windowEffect.addShadowEffect(self.winId())
             self.windowEffect.setAeroEffect(self.winId())
         else:
+            self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint)
             self.windowEffect.setAcrylicEffect(self.winId())
             if version == 11:
                 self.windowEffect.addShadowEffect(self.winId())
 
+        self.windowEffect.addWindowAnimation(self.winId())
         self.setStyleSheet("background:transparent")
 
     def nativeEvent(self, eventType, message):
@@ -146,5 +151,3 @@ class AcrylicWindow(FramelessWindow):
 
         self.__closeByKey = False
         self.hide()
-
-
