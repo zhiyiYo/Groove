@@ -78,6 +78,8 @@ class SignalBus(Singleton, QObject):
 
     downloadAvatarFinished = pyqtSignal(str, str)  # 下载了一个头像
 
+    totalOnlineSongsChanged = pyqtSignal(int)      # 搜索到的在线音乐总数发生变化
+
     lyricFontChanged = pyqtSignal(QFont)                # 桌面歌词字体改变
     lyricFontColorChanged = pyqtSignal(QColor)          # 桌面歌词背景色改变
     lyricHighlightColorChanged = pyqtSignal(QColor)     # 桌面歌词高亮色改变

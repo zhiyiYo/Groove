@@ -2,13 +2,13 @@
 from math import ceil
 from typing import List
 
-from PyQt5.QtCore import pyqtSignal, QMargins
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QAction
-from common.config import config
-from common.crawler import QueryServerType, KuWoMusicCrawler
+from common.crawler import QueryServerType
+from common.database.entity import SongInfo
 from common.style_sheet import setStyleSheet
 from common.signal_bus import signalBus
-from common.database.entity import SongInfo
+from common.thread.search_online_songs_thread import SearchOnlineSongsThread
 from components.selection_mode_interface import (SelectionModeBarType,
                                                  SongSelectionModeInterface)
 from components.song_list_widget import SongListWidget, NoScrollSongListWidget, SongCardType
@@ -44,8 +44,7 @@ class OnlineSongListWidget(NoScrollSongListWidget):
     playSignal = pyqtSignal(int)    # 将播放列表的当前歌曲切换为指定的歌曲卡
 
     def __init__(self, songInfos: List[SongInfo], parent=None):
-        super().__init__(songInfos, SongCardType.ONLINE_SONG_CARD,
-                         parent, QMargins(30, 0, 30, 0), 0)
+        super().__init__(songInfos, SongCardType.ONLINE_SONG_CARD, parent)
         setStyleSheet(self, 'song_list_widget')
 
     def loadMoreOnlineMusic(self, songInfos: List[SongInfo]):
@@ -130,38 +129,29 @@ class OnlineSongInterface(SongSelectionModeInterface):
                          SelectionModeBarType.ONLINE_SONG, parent)
         self.resize(1270, 800)
         self.vBox.setContentsMargins(0, 145, 0, 0)
-
-        self.crawler = KuWoMusicCrawler()
-        self.keyWord = ''                     # 搜索关键词
-        self.currentPage = 1                  # 当前在线音乐页码
-
+        self.searchThread = SearchOnlineSongsThread(self.window())
         self.__connectSignalToSlot()
 
     def updateWindow(self, keyWord: str, songInfos: List[SongInfo]):
         """ update window """
-        self.currentPage = 1
-        self.keyWord = keyWord
+        self.searchThread.setKeyWord(keyWord)
         self.songListWidget.updateAllSongCards(songInfos)
         self.adjustScrollHeight()
 
     def __connectSignalToSlot(self):
         """ connect signal to slot """
+        self.searchThread.searchFinished.connect(self.__loadMoreSongs)
         self.verticalScrollBar().valueChanged.connect(self.__onScrollValueChanged)
 
     def __onScrollValueChanged(self, value):
         """ load more online songs """
-        if value != self.verticalScrollBar().maximum():
+        if value != self.verticalScrollBar().maximum() or self.searchThread.isRunning():
             return
 
-        # send request for online music
-        songInfos, total = self.crawler.getSongInfos(
-            self.keyWord, self.currentPage+1, config.get(config.onlinePageSize))
-        if not songInfos:
-            return
+        self.searchThread.nextPage()
 
-        # update online music group box
-        self.currentPage += 1
+    def __loadMoreSongs(self, songInfos: List[SongInfo]):
+        """ load more online songs """
         self.songListWidget.songInfos.extend(songInfos)
         self.songListWidget.appendSongCards(songInfos)
-
         self.adjustScrollHeight()
