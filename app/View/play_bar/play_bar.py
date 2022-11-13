@@ -78,8 +78,8 @@ class PlayBar(QWidget):
         """ show more actions menu """
         globalPos = self.rightWidgetGroup.mapToGlobal(
             self.moreActionsButton.pos())
-        x = globalPos.x() + self.moreActionsButton.width() + 30
-        y = int(globalPos.y() + self.moreActionsButton.height() / 2 - 152 / 2)
+        x = globalPos.x() + self.moreActionsButton.width() - 250
+        y = int(globalPos.y() + self.moreActionsButton.height() / 2 - 300 / 2)
         self.moreActionsMenu.exec(QPoint(x, y))
 
     def __referenceWidgets(self):
