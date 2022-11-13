@@ -130,6 +130,11 @@ def isGreaterEqualWin8_1():
     return isGreaterEqualVersion(QOperatingSystemVersion.Windows8_1)
 
 
+def isGreaterEqualWin10():
+    """ determine if the windows version ≥ Win10 """
+    return isGreaterEqualVersion(QOperatingSystemVersion.Windows10)
+
+
 class APPBARDATA(Structure):
     _fields_ = [
         ('cbSize',            DWORD),

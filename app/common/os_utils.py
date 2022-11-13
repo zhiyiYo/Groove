@@ -5,11 +5,10 @@ from pathlib import Path
 from platform import platform
 from typing import Union
 
-from PyQt5.QtCore import QDir, QFileInfo, QProcess, QUrl
+from PyQt5.QtCore import QDir, QFileInfo, QProcess, QUrl, QOperatingSystemVersion
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtSql import QSqlDatabase
 
-from common.cache import lyricFolder
 from common.database import DBInitializer
 from common.database.service import PlaylistService
 
@@ -40,6 +39,11 @@ def getWindowsVersion():
     build = sys.getwindowsversion().build
     version = 10 if build < 22000 else 11
     return version
+
+
+def isGreaterEqualWin10():
+    """ determine if the os version ≥ Win10 """
+    return QOperatingSystemVersion.current() >= QOperatingSystemVersion.Windows10
 
 
 def showInFolder(path: Union[str, Path]):

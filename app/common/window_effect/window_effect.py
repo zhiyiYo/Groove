@@ -1,7 +1,6 @@
 # coding:utf-8
 import sys
 
-from common.os_utils import getWindowsVersion
 
 if sys.platform == "win32":
     from ctypes import POINTER, WinDLL, byref, c_bool, c_int, pointer, sizeof
@@ -9,6 +8,7 @@ if sys.platform == "win32":
 
     from win32 import win32gui
     from win32.lib import win32con
+    from common.utils.win_utils import isGreaterEqualWin10
 
     from .c_structures import (ACCENT_POLICY, ACCENT_STATE,
                                DWMNCRENDERINGPOLICY, DWMWINDOWATTRIBUTE,
@@ -131,7 +131,7 @@ class WindowsEffect(WindowEffectBase):
         self.winCompAttrData.Data = pointer(self.accentPolicy)
 
     def setAcrylicEffect(self, hWnd, gradientColor: str = "F2F2F230", isEnableShadow: bool = True, animationId: int = 0):
-        if getWindowsVersion() < 10:
+        if not isGreaterEqualWin10():
             return
 
         # Acrylic mixed color

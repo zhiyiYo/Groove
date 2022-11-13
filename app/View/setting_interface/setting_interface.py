@@ -5,6 +5,7 @@ from typing import List
 from common.config import ConfigItem, config, HELP_URL, FEEDBACK_URL
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
+from common.os_utils import isGreaterEqualWin10
 from common.thread.get_meta_data_thread import GetFolderMetaDataThread
 from components.buttons.switch_button import SwitchButton
 from components.dialog_box.folder_list_dialog import FolderListDialog
@@ -191,7 +192,7 @@ class SettingInterface(ScrollArea):
         self.setWidget(self.scrollwidget)
 
         # set the checked state of acrylic switch button
-        self.acrylicGroup.setEnabled(sys.platform == "win32")
+        self.acrylicGroup.switchButton.setEnabled(isGreaterEqualWin10())
 
         # set cursor
         self.selectMusicFolderLabel.setCursor(Qt.PointingHandCursor)
@@ -306,10 +307,10 @@ class SettingInterface(ScrollArea):
     def __onGetMetaDataSwitchButtonCheckedChanged(self):
         """ get meta data switch button checked changed slot """
         if self.mediaInfoGroup.isChecked():
-            self.mediaInfoGroup.setEnabled(False)
+            self.mediaInfoGroup.switchButton.setEnabled(False)
             self.__crawlMetaData()
         else:
-            self.mediaInfoGroup.setEnabled(True)
+            self.mediaInfoGroup.switchButton.setEnabled(True)
 
     def __crawlMetaData(self):
         """ crawl song meta data """
@@ -333,7 +334,7 @@ class SettingInterface(ScrollArea):
         self.sender().quit()
         self.sender().wait()
         self.sender().deleteLater()
-        self.mediaInfoGroup.setEnabled(True)
+        self.mediaInfoGroup.switchButton.setEnabled(True)
         self.mediaInfoGroup.setChecked(False)
         self.crawlFinished.emit()
 
