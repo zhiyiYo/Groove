@@ -4,6 +4,7 @@ import re
 from typing import List, Tuple
 from urllib import parse
 
+from uuid import uuid4
 import requests
 from common.picture import Avatar
 from common.database.entity import SongInfo

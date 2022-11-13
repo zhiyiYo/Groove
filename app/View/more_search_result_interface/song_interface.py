@@ -47,19 +47,6 @@ class OnlineSongListWidget(NoScrollSongListWidget):
         super().__init__(songInfos, SongCardType.ONLINE_SONG_CARD, parent)
         setStyleSheet(self, 'song_list_widget')
 
-    def loadMoreOnlineMusic(self, songInfos: List[SongInfo]):
-        """ load more online music
-
-        Parameters
-        ----------
-        songInfos: List[SongInfo]
-            newly added song information list
-        """
-        self.songInfos.extend(songInfos)
-        self.songListWidget.songInfos = self.songInfos
-        self.songListWidget.appendSongCards(songInfos)
-        self.__adjustHeight()
-
     def contextMenuEvent(self, e):
         hitIndex = self.indexAt(e.pos()).column()
         if hitIndex > -1:

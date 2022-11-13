@@ -218,7 +218,7 @@ class Config(Singleton):
     onlineSongQuality = ConfigItem(
         "Online", "SongQuality", SongQuality.STANDARD, OptionsValidator(SongQuality), EnumSerializer(SongQuality))
     onlinePageSize = ConfigItem(
-        "Online", "PageSize", 20, RangeValidator(0, 50))
+        "Online", "PageSize", 30, RangeValidator(0, 30))
     onlineMvQuality = ConfigItem(
         "Online", "MvQuality", MvQuality.FULL_HD, OptionsValidator(MvQuality), EnumSerializer(MvQuality))
 
