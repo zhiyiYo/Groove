@@ -111,6 +111,17 @@ class SettingInterface(ScrollArea):
             parent=self.scrollwidget
         )
 
+        # dpi scale
+        self.dpiScaleGroup = RadioButtonGroup(
+            property=config.dpiScale,
+            texts=[
+                "100%", "125%", "150%", "175%", "200%",
+                self.tr("Use system setting"),
+            ],
+            title=self.tr("Interface zoom"),
+            parent=self.scrollwidget
+        )
+
         # desktop lyric
         self.desktopLyricLabel = QLabel(
             self.tr("Desktop Lyric"), self.scrollwidget)
@@ -186,7 +197,7 @@ class SettingInterface(ScrollArea):
         self.downloadFolderLineEdit.resize(313, 42)
         self.downloadFolderLineEdit.setReadOnly(True)
         self.downloadFolderLineEdit.setCursorPosition(0)
-        self.scrollwidget.resize(self.width(), 2460)
+        self.scrollwidget.resize(self.width(), 2760)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setViewportMargins(0, 120, 0, 0)
         self.setWidget(self.scrollwidget)
@@ -288,10 +299,13 @@ class SettingInterface(ScrollArea):
         # software update
         self.softwareUpdateGroup.move(30, 2069)
 
+        # dpi scale
+        self.dpiScaleGroup.move(30, 2206)
+
         # download folder
-        self.downloadFolderLabel.move(30, 2206)
-        self.downloadFolderLineEdit.move(30, 2266)
-        self.downloadFolderButton.move(350, 2266)
+        self.downloadFolderLabel.move(30, 2506)
+        self.downloadFolderLineEdit.move(30, 2566)
+        self.downloadFolderButton.move(350, 2566)
 
         # application
         self.appLabel.move(self.width() - 400, 18)
@@ -398,10 +412,10 @@ class SettingInterface(ScrollArea):
         """ minimize to tray changed slot """
         self.minimizeToTrayChanged.emit(button.property(key))
 
-    def __onThemeModeChanged(self, button: QRadioButton, key: str):
-        """ theme mode changed slot """
+    def __showRestartTooltip(self):
+        """ show restart tooltip """
         w = ToastTooltip(
-            self.tr('Change mode successful'),
+            self.tr('Configuration updated successfully'),
             self.tr('Configuration takes effect after restart'),
             'info',
             self.window()
@@ -455,6 +469,7 @@ class SettingInterface(ScrollArea):
 
     def __connectSignalToSlot(self):
         """ connect signal to slot """
+        signalBus.appRestartSig.connect(self.__showRestartTooltip)
         self.lyricFontButton.clicked.connect(self.__onLyricFontButtonClicked)
         self.lyricFontColorPicker.colorChanged.connect(
             self.__onLyricFontColorChanged)
@@ -470,7 +485,6 @@ class SettingInterface(ScrollArea):
             lambda: config.set(config.preferEmbedLyric, self.preferEmbedCheckBox.isChecked()))
         self.embedWhenSaveCheckBox.stateChanged.connect(
             lambda: config.set(config.embedLyricWhenSave, self.embedWhenSaveCheckBox.isChecked()))
-        self.modeGroup.buttonClicked.connect(self.__onThemeModeChanged)
         self.mediaInfoGroup.checkedChanged.connect(
             self.__onGetMetaDataSwitchButtonCheckedChanged)
         self.selectMusicFolderLabel.clicked.connect(

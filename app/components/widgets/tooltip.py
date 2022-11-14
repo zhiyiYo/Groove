@@ -1,5 +1,6 @@
 # coding:utf-8
 from common.style_sheet import setStyleSheet
+from components.widgets.label import PixmapLabel
 from PyQt5.QtCore import (QEasingCurve, QPoint, QPropertyAnimation, QSize, Qt,
                           QTimer, pyqtSignal)
 from PyQt5.QtGui import QColor, QPainter, QPixmap
@@ -308,7 +309,7 @@ class ToastTooltip(QWidget):
 
         self.titleLabel = QLabel(self.title, self)
         self.contentLabel = QLabel(self.content, self)
-        self.iconLabel = QLabel(self)
+        self.iconLabel = PixmapLabel(self)
         self.closeButton = QToolButton(self)
         self.closeTimer = QTimer(self)
         self.opacityEffect = QGraphicsOpacityEffect(self)
@@ -320,6 +321,8 @@ class ToastTooltip(QWidget):
     def __initWidget(self):
         """ initialize widgets """
         self.setAttribute(Qt.WA_StyledBackground)
+        self.closeButton.setFixedSize(QSize(14, 14))
+        self.closeButton.setIconSize(QSize(14, 14))
         self.closeTimer.setInterval(2000)
         self.contentLabel.setMinimumWidth(250)
 

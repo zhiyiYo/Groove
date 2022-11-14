@@ -2076,8 +2076,8 @@
     </message>
     <message>
         <location filename="../../View/setting_interface/setting_interface.py" line="418"/>
-        <source>Change mode successful</source>
-        <translation>主题修改成功</translation>
+        <source>Configuration updated successfully</source>
+        <translation>配置更新成功</translation>
     </message>
     <message>
         <location filename="../../View/setting_interface/setting_interface.py" line="419"/>
@@ -2178,6 +2178,11 @@
         <location filename="../../View/setting_interface/setting_interface.py" line="177"/>
         <source>Check update</source>
         <translation>检查更新</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="121"/>
+        <source>Interface zoom</source>
+        <translation>界面缩放</translation>
     </message>
 </context>
 <context>

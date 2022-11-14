@@ -12,6 +12,7 @@ from PyQt5.QtMultimedia import QMediaPlaylist
 from .crawler import MvQuality, SongQuality
 from .exception_handler import exceptionHandler
 from .singleton import Singleton
+from .signal_bus import signalBus
 
 
 class ConfigValidator:
@@ -150,7 +151,7 @@ class ConfigItem:
     """ Config item """
 
     def __init__(self, group: str, name: str, default, validator: ConfigValidator = None,
-                 serializer: ConfigSerializer = None):
+                 serializer: ConfigSerializer = None, restart=False):
         """
         Parameters
         ----------
@@ -168,6 +169,9 @@ class ConfigItem:
 
         serializer: ConfigSerializer
             config serializer
+
+        restart: bool
+            whether to restart the application after updating the configuration item
         """
         self.group = group
         self.name = name
@@ -175,6 +179,7 @@ class ConfigItem:
         self.serializer = serializer or ConfigSerializer()
         self.__value = default
         self.value = default
+        self.restart = restart
 
     @property
     def value(self):
@@ -241,9 +246,11 @@ class Config(Singleton):
     playBarColor = ConfigItem(
         "MainWindow", "PlayBarColor", [34, 92, 127], ColorValidator([34, 92, 127]))
     themeMode = ConfigItem(
-        "MainWindow", "ThemeMode", "Light", OptionsValidator(["Light", "Dark", "Auto"]))
+        "MainWindow", "ThemeMode", "Light", OptionsValidator(["Light", "Dark", "Auto"]), restart=True)
     recentPlaysNumber = ConfigItem(
         "MainWindow", "RecentPlayNumbers", 300, RangeValidator(10, 300))
+    dpiScale = ConfigItem(
+        "MainWindow", "DpiScale", "Auto", OptionsValidator([1, 1.25, 1.5, 1.75, 2, "Auto"]), restart=True)
 
     # media player
     randomPlay = ConfigItem("Player", "RandomPlay", False, BoolValidator())
@@ -299,6 +306,7 @@ class Config(Singleton):
             return
 
         item.value = value
+        signalBus.appRestartSig.emit()
         cls.save()
 
     @classmethod

@@ -11,6 +11,7 @@ from PyQt5.QtCore import QLocale, Qt, QTranslator
 from PyQt5.QtWidgets import QApplication
 
 from common.application import SingletonApplication
+from common.config import config
 from common.dpi_manager import dpi_manager
 from View.main_window import MainWindow
 
@@ -21,7 +22,11 @@ if "QT_QPA_PLATFORM_PLUGIN_PATH" in os.environ:
 
 # enable high dpi scale
 os.environ["QT_ENABLE_HIGHDPI_SCALING"] = "0"
-os.environ["QT_SCALE_FACTOR"] = str(max(1, dpi_manager.scale-0.25))
+if config.get(config.dpiScale) == "Auto":
+    os.environ["QT_SCALE_FACTOR"] = str(max(1, dpi_manager.scale-0.25))
+else:
+    os.environ["QT_SCALE_FACTOR"] = str(config.get(config.dpiScale))
+
 QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
 app = SingletonApplication(sys.argv, "PyQt-Groove-Music")
