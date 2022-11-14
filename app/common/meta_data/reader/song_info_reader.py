@@ -208,7 +208,7 @@ class GeneralSongInfoReader(SongInfoReaderBase):
 
     def __getYear(self, tag: TinyTag, file: Path):
         """ get release year of song """
-        if tag.year and tag.year[0] != '0':
+        if tag.year and str(tag.year).isdigit():
             return int(tag.year[:4])
 
         audio = File(file, self.options)
@@ -222,7 +222,7 @@ class GeneralSongInfoReader(SongInfoReaderBase):
         else:
             year = ['0']
 
-        if year and year[0] != '0':
+        if year and year[0] != '0' and year[0].isdigit():
             return int(year[0][:4])
 
         return self.year

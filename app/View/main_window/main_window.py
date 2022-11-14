@@ -635,9 +635,15 @@ class MainWindow(AcrylicWindow):
             return
 
         songInfo = self.mediaPlaylist.playlist[index]
+        if not songInfo.file.startswith('http'):
+            return
+
         oldSongInfo = songInfo.copy()
-        cover = Cover(songInfo.singer, songInfo.album)
-        if not FakeUrl.isFake(songInfo.file) and cover.isExists():
+
+        # download missing covers for online songs
+        if not FakeUrl.isFake(songInfo.file):
+            if not Cover(songInfo.singer, songInfo.album).isExists():
+                self.searchOnlineSongUrl(songInfo)
             return
 
         # get play url and cover
