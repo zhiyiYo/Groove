@@ -449,19 +449,13 @@ class BasicSongCard(QWidget):
     def _showAddToMenu(self):
         """ show add to menu """
         menu = AddToMenu(parent=self)
-        pos = self.mapToGlobal(
-            QPoint(self.addToButton.x()+self.buttonGroup.x(), 0))
-        x = pos.x() + self.addToButton.width() + 5
-        y = pos.y() + int(
-            self.addToButton.height() / 2 - (13 + 38 * menu.actionCount()) / 2)
-
         menu.playingAct.triggered.connect(
             lambda: signalBus.addSongsToPlayingPlaylistSig.emit([self.songInfo]))
         menu.newPlaylistAct.triggered.connect(
             lambda: signalBus.addSongsToNewCustomPlaylistSig.emit([self.songInfo]))
         menu.addSongsToPlaylistSig.connect(
             lambda name: signalBus.addSongsToCustomPlaylistSig.emit(name, [self.songInfo]))
-        menu.exec(QPoint(x, y))
+        menu.exec(menu.getPopupPos(self.addToButton))
 
     def _showDownloadMenu(self):
         """ show download menu """

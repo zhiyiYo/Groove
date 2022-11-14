@@ -2,8 +2,8 @@
 from common.icon import Icon
 from common.os_utils import getPlaylistNames
 from common.style_sheet import setStyleSheet
-from PyQt5.QtCore import QFile, Qt, pyqtSignal
-from PyQt5.QtWidgets import QAction, QMenu
+from PyQt5.QtCore import QPoint, Qt, pyqtSignal
+from PyQt5.QtWidgets import QAction, QMenu, QWidget
 
 
 class Menu(QMenu):
@@ -61,8 +61,6 @@ class AddToMenu(QMenu):
         self.addAction(self.playingAct)
         self.addSeparator()
         self.addActions([self.newPlaylistAct]+self.playlistActs)
-        self.action_list = [self.playingAct,
-                            self.newPlaylistAct] + self.playlistActs
 
         self.setWindowFlags(
             Qt.FramelessWindowHint | Qt.Popup | Qt.NoDropShadowWindowHint)
@@ -75,5 +73,15 @@ class AddToMenu(QMenu):
         self.setObjectName('blackAddToMenu')
         setStyleSheet(self, 'menu')
 
-    def actionCount(self):
-        return len(self.action_list)
+    def getPopupPos(self, widget: QWidget):
+        """ get suitable popup position
+
+        Parameters
+        ----------
+        widget: QWidget
+            the widget that triggers the pop-up menu
+        """
+        pos = widget.mapToGlobal(QPoint())
+        x = pos.x() + widget.width() + 5
+        y = pos.y() + int(widget.height() / 2 - (13 + 38 * len(self.actions())) / 2)
+        return QPoint(x, y)

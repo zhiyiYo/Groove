@@ -216,18 +216,13 @@ class PlaylistCardBase(PerspectiveWidget):
     def __showAddToMenu(self):
         """ show add to menu """
         menu = AddToMenu(parent=self)
-        pos = self.mapToGlobal(QPoint(
-            self.addToButton.x(), self.addToButton.y()))
-        x = pos.x() + self.addToButton.width() + 5
-        y = pos.y() + int(
-            self.addToButton.height() / 2 - (13 + 38 * menu.actionCount()) / 2)
         menu.playingAct.triggered.connect(
             lambda: self.addSongsToPlayingPlaylistSig.emit(self.name))
         menu.newPlaylistAct.triggered.connect(
             lambda: self.addSongsToNewCustomPlaylistSig.emit(self.name))
         menu.addSongsToPlaylistSig.connect(
             lambda name: self.addSongsToCustomPlaylistSig.emit(name, self.name))
-        menu.exec(QPoint(x, y))
+        menu.exec(menu.getPopupPos(self.addToButton))
 
     def _onSelectActionTrigerred(self):
         """ select action triggered slot """

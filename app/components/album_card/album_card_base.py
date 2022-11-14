@@ -230,18 +230,13 @@ class AlbumCardBase(PerspectiveWidget):
     def __showAddToMenu(self):
         """ show add to menu """
         menu = AddToMenu(parent=self)
-        pos = self.mapToGlobal(QPoint(
-            self.addToButton.x(), self.addToButton.y()))
-        x = pos.x() + self.addToButton.width() + 5
-        y = pos.y() + int(
-            self.addToButton.height() / 2 - (13 + 38 * menu.actionCount()) / 2)
         menu.playingAct.triggered.connect(
             lambda: self.addToPlayingSignal.emit(self.singer, self.album))
         menu.newPlaylistAct.triggered.connect(
             lambda: self.addAlbumToNewCustomPlaylistSig.emit(self.singer, self.album))
         menu.addSongsToPlaylistSig.connect(
             lambda name: self.addAlbumToCustomPlaylistSig.emit(name, self.singer, self.album))
-        menu.exec(QPoint(x, y))
+        menu.exec(menu.getPopupPos(self.addToButton))
 
     def __onCheckedStateChanged(self):
         """ check box checked state changed slot """

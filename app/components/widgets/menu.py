@@ -5,9 +5,9 @@ from common.os_utils import getPlaylistNames
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
 from common.window_effect import WindowEffect
-from PyQt5.QtCore import (QEasingCurve, QEvent, QPropertyAnimation, QRect, Qt,
-                          pyqtSignal)
-from PyQt5.QtWidgets import QAction, QApplication, QMenu
+from PyQt5.QtCore import (QEasingCurve, QEvent, QPropertyAnimation, QPoint, QRect,
+                          Qt, pyqtSignal)
+from PyQt5.QtWidgets import QAction, QApplication, QMenu, QWidget
 
 
 class MenuIconFactory:
@@ -98,6 +98,19 @@ class DWMMenu(QMenu):
         """ set style sheet """
         setStyleSheet(self, 'menu')
 
+    def getPopupPos(self, widget: QWidget):
+        """ get suitable popup position
+
+        Parameters
+        ----------
+        widget: QWidget
+            the widget that triggers the pop-up menu
+        """
+        pos = widget.mapToGlobal(QPoint())
+        x = pos.x() + widget.width() + 5
+        y = pos.y() + int(widget.height() / 2 - (13 + 38 * len(self.actions())) / 2)
+        return QPoint(x, y)
+
 
 class AddToMenu(DWMMenu):
     """ Add to menu """
@@ -121,8 +134,7 @@ class AddToMenu(DWMMenu):
         names = getPlaylistNames()
         self.playlistNameActs = [
             QAction(MIF.create(MIF.ALBUM), i, self) for i in names]
-        self.action_list = [self.playingAct,
-                            self.newPlaylistAct] + self.playlistNameActs
+
         self.addAction(self.playingAct)
         self.addSeparator()
         self.addActions([self.newPlaylistAct] + self.playlistNameActs)
@@ -133,7 +145,7 @@ class AddToMenu(DWMMenu):
                 lambda checked, playlistName=name: self.addSongsToPlaylistSig.emit(playlistName))
 
     def actionCount(self):
-        return len(self.action_list)
+        return len(self.actions())
 
 
 class DownloadMenu(DWMMenu):
@@ -257,14 +269,31 @@ class MoreActionsMenu(AeroMenu):
         """ create actions"""
         raise NotImplementedError
 
-    def exec(self, pos):
+    def exec(self, pos: QPoint):
+        # prevent menus from exceeding the screen display area
         h = len(self.actions()) * 38
-        w = max(self.fontMetrics().width(i.text())
-                for i in self.actions()) + 65
+        w = max(self.fontMetrics().width(i.text()) for i in self.actions()) + 65
+        desktop = QApplication.desktop().availableGeometry()
+        pos.setX(min(pos.x(), desktop.width() - w))
+        pos.setY(min(pos.y(), desktop.height() - h))
+
         self.animation.setStartValue(QRect(pos.x(), pos.y(), 1, h))
         self.animation.setEndValue(QRect(pos.x(), pos.y(), w, h))
         self.animation.start()
         super().exec(pos)
+
+    def getPopupPos(self, widget: QWidget):
+        """ get suitable popup position
+
+        Parameters
+        ----------
+        widget: QWidget
+            the widget that triggers the pop-up menu
+        """
+        pos = widget.mapToGlobal(QPoint())
+        x = pos.x() + widget.width() + 30
+        y = pos.y() + int(widget.height() / 2 - (13 + 38 * len(self.actions())) / 2)
+        return QPoint(x, y)
 
 
 class PlayBarMoreActionsMenu(MoreActionsMenu):

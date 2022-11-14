@@ -267,35 +267,23 @@ class CollapsingAppBarBase(QWidget):
     def _onMoreActionsButtonClicked(self):
         menu = MoreActionsMenu()
         index = len(self.buttons)-self.hiddenButtonNum
-        actions = self.actions()[index:]
-        menu.addActions(actions)
-        pos = self.mapToGlobal(self.moreActionsButton.pos())
-        x = pos.x()+self.moreActionsButton.width()+5
-        y = pos.y()+self.moreActionsButton.height()//2-(13+38*len(actions))//2
-        menu.exec(QPoint(x, y))
+        menu.addActions(self.actions()[index:])
+        menu.exec(menu.getPopupPos(self.moreActionsButton))
 
     def _onAddToButtonClicked(self):
         """ show add to menu """
         menu = AddToMenu(parent=self)
-        pos = self.mapToGlobal(self.addToButton.pos())
-        x = pos.x() + self.addToButton.width() + 5
-        y = pos.y() + self.addToButton.height() // 2 - \
-            (13 + 38 * menu.actionCount()) // 2
         menu.playingAct.triggered.connect(self.addToPlayingPlaylistSig)
         menu.addSongsToPlaylistSig.connect(self.addToCustomPlaylistSig)
         menu.newPlaylistAct.triggered.connect(self.addToNewCustomPlaylistSig)
-        menu.exec(QPoint(x, y))
+        menu.exec(menu.getPopupPos(self.addToButton))
 
     def _onAddButtonClicked(self):
         """ show add from menu """
         menu = AddFromMenu(parent=self)
-        pos = self.mapToGlobal(self.addButton.pos())
-        x = pos.x() + self.addButton.width() + 5
-        y = pos.y() + self.addButton.height() // 2 - \
-            (13 + 38 * len(menu.actions())) // 2
         menu.fromFileAct.triggered.connect(self.addFromFileSig)
         menu.fromFolderAct.triggered.connect(self.addFromFolderSig)
-        menu.exec(QPoint(x, y))
+        menu.exec(menu.getPopupPos(self.addButton))
 
     def updateWindow(self, title: str, content: str, coverPath: str):
         """ update app bar """

@@ -506,7 +506,7 @@ class PlayingInterface(QWidget):
         songInfos = [
             i.songInfo for i in self.songListWidget.checkedSongCards]
 
-        for act in menu.action_list:
+        for act in menu.actions():
             act.triggered.connect(self.exitSelectionMode)
 
         menu.newPlaylistAct.triggered.connect(

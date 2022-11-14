@@ -93,7 +93,7 @@ class SelectionModeBarBase(QWidget):
             button.show()
 
             button.clicked.connect(self.__signalMap[name])
-            if name in ['playButton', 'nextToPlayButton', 'pinToStartButton', 'downloadButton']:
+            if name in ['playButton', 'nextToPlayButton', 'pinToStartButton']:
                 button.clicked.connect(self.cancelSig)
 
         self.buttons.extend(buttons)

@@ -133,7 +133,7 @@ class SelectionModeInterface(ScrollArea):
         """ selection mode bar add to signal slot """
         menu = AddToMenu(parent=self)
 
-        for act in menu.action_list:
+        for act in menu.actions():
             act.triggered.connect(self.exitSelectionMode)
 
         songInfos = self._getCheckedSongInfos()
@@ -143,13 +143,7 @@ class SelectionModeInterface(ScrollArea):
             lambda name: signalBus.addSongsToCustomPlaylistSig.emit(name, songInfos))
         menu.newPlaylistAct.triggered.connect(
             lambda: signalBus.addSongsToNewCustomPlaylistSig.emit(songInfos))
-
-        pos = self.selectionModeBar.mapToGlobal(
-            QPoint(self.selectionModeBar.addToButton.x(), 0))
-        x = pos.x() + self.selectionModeBar.addToButton.width() + 5
-        y = pos.y() + int(self.selectionModeBar.addToButton.height() /
-                          2 - (13 + 38 * menu.actionCount()) / 2)
-        menu.exec(QPoint(x, y))
+        menu.exec(menu.getPopupPos(self.selectionModeBar.addToButton))
 
     def _onDownload(self):
         """ selection mode bar download signal slot """
@@ -158,13 +152,7 @@ class SelectionModeInterface(ScrollArea):
         menu.downloadSig.connect(self.exitSelectionMode)
         menu.downloadSig.connect(
             lambda quality: signalBus.downloadSongsSig.emit(songInfos, quality))
-
-        pos = self.selectionModeBar.mapToGlobal(
-            QPoint(self.selectionModeBar.downloadButton.x(), 0))
-        x = pos.x() + self.selectionModeBar.downloadButton.width() + 5
-        y = pos.y() + int(self.selectionModeBar.downloadButton.height() /
-                          2 - (13 + 38 * 3) / 2)
-        menu.exec(QPoint(x, y))
+        menu.exec(menu.getPopupPos(self.selectionModeBar.downloadButton))
 
     def _onSinger(self):
         """ selection mode bar singer signal slot """

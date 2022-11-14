@@ -292,16 +292,11 @@ class SongCard(QWidget):
     def __showAddToMenu(self):
         """ show add to menu """
         menu = AddToMenu(parent=self)
-        pos = self.mapToGlobal(
-            QPoint(self.addToButton.x()+self.buttonGroup.x(), 0))
-        x = pos.x()+self.addToButton.width()+5
-        y = pos.y()+self.addToButton.height()//2-(13+38*menu.actionCount()//2)
-
         menu.newPlaylistAct.triggered.connect(
             lambda: signalBus.addSongsToNewCustomPlaylistSig.emit([self.songInfo]))
         menu.addSongsToPlaylistSig.connect(
             lambda name: signalBus.addSongsToCustomPlaylistSig.emit(name, [self.songInfo]))
-        menu.exec_(QPoint(x, y))
+        menu.exec_(menu.getPopupPos(self.addToButton))
 
     def __connectSignalToSlot(self):
         """ connect signal to slot """
