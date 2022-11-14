@@ -45,7 +45,7 @@ class SelectionModeInterface(ScrollArea):
         parent:
             parent window
         """
-        super().__init__(parent=parent)
+        super().__init__(parent=parent, trigger=True)
         self.view = None
         self.isInSelectionMode = False
         self.scrollWidget = QWidget(self)

@@ -3,7 +3,7 @@ from collections import deque
 from enum import Enum
 from math import cos, pi
 
-from PyQt5.QtCore import QDateTime, Qt, QTimer, QPoint
+from PyQt5.QtCore import QDateTime, Qt, QTimer, QPoint, QEvent
 from PyQt5.QtGui import QWheelEvent, QCursor
 from PyQt5.QtWidgets import QApplication, QScrollArea
 
@@ -11,7 +11,16 @@ from PyQt5.QtWidgets import QApplication, QScrollArea
 class ScrollArea(QScrollArea):
     """ A scroll area which can scroll smoothly """
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, trigger=False):
+        """
+        Parameters
+        ----------
+        parent: QWidget
+            parent window
+
+        update: bool
+            whether to trigger the enter/leave event when scrolling
+        """
         super().__init__(parent)
         self.fps = 60
         self.duration = 400
@@ -24,14 +33,15 @@ class ScrollArea(QScrollArea):
         self.smoothMoveTimer = QTimer(self)
         self.smoothMode = SmoothMode(SmoothMode.COSINE)
         self.smoothMoveTimer.timeout.connect(self.__smoothMove)
-        self.verticalScrollBar().valueChanged.connect(self.__fakeMoveMouse)
+
+        if trigger:
+            self.verticalScrollBar().valueChanged.connect(self.__fakeMoveMouse)
 
     def __fakeMoveMouse(self):
         """ fake move mouse """
-        pos = QCursor.pos()
-        QCursor.setPos(pos + QPoint(0, 1))
+        QCursor.setPos(QCursor.pos() + QPoint(0, 1))
         QApplication.processEvents()
-        QCursor.setPos(pos)
+        QCursor.setPos(QCursor.pos() - QPoint(0, 1))
 
     def setSmoothMode(self, smoothMode):
         """ set smooth mode """
