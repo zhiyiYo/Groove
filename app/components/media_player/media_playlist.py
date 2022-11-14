@@ -36,7 +36,7 @@ class MediaPlaylist(QMediaPlaylist):
 
         self.setPlaybackMode(QMediaPlaylist.Sequential)
         self.prePlayMode = self.playbackMode()
-        self.randPlayBtPressed = False
+        self.randPlayBtnPressed = False
         self.__readLastPlaylist()
 
     def addSong(self, songInfo: SongInfo):
@@ -123,13 +123,22 @@ class MediaPlaylist(QMediaPlaylist):
     def setRandomPlay(self, isRandomPlay=False):
         """ set whether to play randomly """
         if isRandomPlay:
-            self.randPlayBtPressed = True
+            self.randPlayBtnPressed = True
             self.prePlayMode = self.playbackMode()
             if self.playbackMode() != QMediaPlaylist.CurrentItemInLoop:
                 self.setPlaybackMode(QMediaPlaylist.Random)
         else:
-            self.randPlayBtPressed = False
+            self.randPlayBtnPressed = False
             self.setPlaybackMode(self.prePlayMode)
+
+    def setLoopMode(self, loopMode: QMediaPlaylist.PlaybackMode):
+        self.prePlayMode = loopMode
+        if not self.randPlayBtnPressed:
+            self.setPlaybackMode(loopMode)
+        elif loopMode == QMediaPlaylist.CurrentItemInLoop:
+            self.setPlaybackMode(QMediaPlaylist.CurrentItemInLoop)
+        else:
+            self.setPlaybackMode(QMediaPlaylist.Random)
 
     def setPlaylist(self, songInfos: List[SongInfo], index=0):
         """ set songs in playlist """

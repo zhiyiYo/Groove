@@ -436,6 +436,8 @@ class MainWindow(AcrylicWindow):
 
         # initialize playback speed
         self.player.setPlaybackRate(config.get(config.playerSpeed))
+        self.setRandomPlay(config.get(config.randomPlay))
+        self.setLoopMode(config.get(config.loopMode))
 
     def initPlayBar(self):
         """ initialize play bar """
@@ -501,6 +503,7 @@ class MainWindow(AcrylicWindow):
         self.mediaPlaylist.setRandomPlay(isRandomPlay)
         self.playingInterface.setRandomPlay(isRandomPlay)
         self.playBar.randomPlayButton.setRandomPlay(isRandomPlay)
+        config.set(config.randomPlay, isRandomPlay)
 
     def play(self):
         """ play songs """
@@ -619,21 +622,12 @@ class MainWindow(AcrylicWindow):
         self.playingInterface.setCurrentTime(position)
         self.smallestPlayInterface.progressBar.setValue(position)
 
-    def switchLoopMode(self, loopMode):
-        """ switch loop mode of player """
-        self.mediaPlaylist.prePlayMode = loopMode
-
+    def setLoopMode(self, loopMode: QMediaPlaylist.PlaybackMode):
+        """ set the loop mode of playlist """
         self.playBar.setLoopMode(loopMode)
         self.playingInterface.setLoopMode(loopMode)
-
-        if not self.mediaPlaylist.randPlayBtPressed:
-            self.mediaPlaylist.setPlaybackMode(loopMode)
-        else:
-            if self.playBar.loopModeButton.loopMode == QMediaPlaylist.CurrentItemInLoop:
-                self.mediaPlaylist.setPlaybackMode(
-                    QMediaPlaylist.CurrentItemInLoop)
-            else:
-                self.mediaPlaylist.setPlaybackMode(QMediaPlaylist.Random)
+        self.mediaPlaylist.setLoopMode(loopMode)
+        config.set(config.loopMode, loopMode)
 
     def getOnlineSongUrl(self, index: int):
         """ get the play url of online music """
@@ -1525,7 +1519,7 @@ class MainWindow(AcrylicWindow):
         signalBus.muteStateChanged.connect(self.setMute)
         signalBus.volumeChanged.connect(self.onVolumeChanged)
 
-        signalBus.loopModeChanged.connect(self.switchLoopMode)
+        signalBus.loopModeChanged.connect(self.setLoopMode)
         signalBus.randomPlayChanged.connect(self.setRandomPlay)
 
         signalBus.fullScreenChanged.connect(self.setFullScreen)

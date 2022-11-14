@@ -7,6 +7,7 @@ from typing import Iterable, List, Union
 
 import darkdetect
 from PyQt5.QtGui import QFont, QGuiApplication
+from PyQt5.QtMultimedia import QMediaPlaylist
 
 from .crawler import MvQuality, SongQuality
 from .exception_handler import exceptionHandler
@@ -135,6 +136,16 @@ class EnumSerializer(ConfigSerializer):
         return self.enumClass(value)
 
 
+class PlaybackModeSerializer(ConfigSerializer):
+    """ Playback mode class serializer """
+
+    def serialize(self, value: QMediaPlaylist.PlaybackMode):
+        return int(value)
+
+    def deserialize(self, value):
+        return QMediaPlaylist.PlaybackMode(value)
+
+
 class ConfigItem:
     """ Config item """
 
@@ -235,12 +246,18 @@ class Config(Singleton):
         "MainWindow", "RecentPlayNumbers", 300, RangeValidator(10, 300))
 
     # media player
+    randomPlay = ConfigItem("Player", "RandomPlay", False, BoolValidator())
     playerVolume = ConfigItem("Player", "Volume", 30, RangeValidator(0, 100))
     playerMuted = ConfigItem("Player", "Muted", False, BoolValidator())
     playerPosition = ConfigItem(
         "Player", "Position", 0, RangeValidator(0, float("inf")))
     playerSpeed = ConfigItem(
         "Player", "Speed", 1, RangeValidator(0.1, float("inf")))
+    loopMode = ConfigItem(
+        "Player", "LoopMode", QMediaPlaylist.Sequential,
+        OptionsValidator([QMediaPlaylist.Sequential, QMediaPlaylist.Loop, QMediaPlaylist.CurrentItemInLoop]),
+        PlaybackModeSerializer()
+    )
 
     # desktop lyric
     deskLyricFontColor = ConfigItem(
