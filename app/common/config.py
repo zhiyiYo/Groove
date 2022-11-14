@@ -306,8 +306,10 @@ class Config(Singleton):
             return
 
         item.value = value
-        signalBus.appRestartSig.emit()
         cls.save()
+
+        if item.restart:
+            signalBus.appRestartSig.emit()
 
     @classmethod
     def toDict(cls, serialize=True):
