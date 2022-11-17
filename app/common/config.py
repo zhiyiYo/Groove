@@ -394,7 +394,7 @@ class Config(Singleton):
 
 config = Config()
 
-VERSION = "v1.2.1"
+VERSION = "v1.2.2"
 HELP_URL = "https://github.com/zhiyiYo/Groove#readme"
 FEEDBACK_URL = "https://github.com/zhiyiYo/Groove/issues"
 RELEASE_URL = "https://github.com/zhiyiYo/Groove/releases/latest"
