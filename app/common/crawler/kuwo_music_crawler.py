@@ -40,9 +40,12 @@ class KuWoMusicCrawler(CrawlerBase):
         headers["Referer"] = 'http://www.kuwo.cn/search/list?key='+key_word
 
         # send request for song information
-        url = f'http://www.kuwo.cn/api/www/search/searchMusicBykeyWord?key={key_word}&pn={page_num}&rn={page_size}&reqId=c06e0e50-fe7c-11eb-9998-47e7e13a7206'
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
+        try:
+            url = f'http://www.kuwo.cn/api/www/search/searchMusicBykeyWord?key={key_word}&pn={page_num}&rn={page_size}&reqId=c06e0e50-fe7c-11eb-9998-47e7e13a7206'
+            response = self.send_request(url, headers=headers)
+        except:
+            url = f'http://www.kuwo.cn/api/www/search/searchMusicBykeyWord?key={key_word}&pn={page_num}&rn={page_size}'
+            response = self.send_request(url, headers=headers)
 
         # parse the response data
         song_infos = []
@@ -53,12 +56,15 @@ class KuWoMusicCrawler(CrawlerBase):
             song_info.title = info['name']
             song_info.singer = info['artist']
             song_info.album = info['album']
-            song_info.year = info['releaseDate'].split('-')[0]
             song_info.track = info['track']
             song_info.trackTotal = info['track']
             song_info.duration = info["duration"]
             song_info.genre = 'Pop'
             song_info['coverPath'] = info.get('albumpic', '')
+            if info.get('releaseDate'):
+                year = info['releaseDate'].split('-')[0]
+                song_info.year = int(year) if year.isnumeric() else None
+
             song_infos.append(song_info)
 
         return song_infos, int(data['total'])
@@ -86,8 +92,7 @@ class KuWoMusicCrawler(CrawlerBase):
 
         # send request for play url
         url = f'http://www.kuwo.cn/api/v1/www/music/playUrl?mid={rid}&type=convert_url3&br={br}mp3'
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
+        response = self.send_request(url, headers=headers)
         play_url = json.loads(response.text)['data']['url']
 
         return play_url
@@ -112,8 +117,7 @@ class KuWoMusicCrawler(CrawlerBase):
         headers.pop('Referer')
         headers.pop('csrf')
         headers.pop('Host')
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
+        response = self.send_request(url, headers=headers)
 
         # save audio file
         return self.saveSong(song_info, save_dir, '.mp3', response.content)
@@ -138,8 +142,7 @@ class KuWoMusicCrawler(CrawlerBase):
 
         # send request for singer information
         url = f'http://www.kuwo.cn/api/www/search/searchArtistBykeyWord?key={singer_}&pn=1&rn=3&reqId=c06e0e50-fe7c-11eb-9998-47e7e13a7206'
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
+        response = self.send_request(url, headers=headers)
 
         # send request for singer avatar
         artist_info = json.loads(response.text)["data"]["artistList"][0]
@@ -147,8 +150,7 @@ class KuWoMusicCrawler(CrawlerBase):
         headers.pop('Referer')
         headers.pop('csrf')
         headers.pop('Host')
-        response = requests.get(artist_info['pic300'], headers=headers)
-        response.raise_for_status()
+        response = self.send_request(artist_info['pic300'], headers=headers)
 
         # save avatar
         return Avatar(singer).save(response.content)
@@ -161,8 +163,7 @@ class KuWoMusicCrawler(CrawlerBase):
 
         # send request for lyrics
         url = f"https://m.kuwo.cn/newh5/singles/songinfoandlrc?musicId={KuWoFakeSongUrl.getId(song_info.file)}"
-        response = requests.get(url)
-        response.raise_for_status()
+        response = self.send_request(url)
 
         # lyric could be null, corresponding to None
         return json.loads(response.text)['data']['lrclist']
@@ -179,8 +180,7 @@ class KuWoMusicCrawler(CrawlerBase):
 
         # search MV information
         url = f'http://www.kuwo.cn/api/www/search/searchMvBykeyWord?key={key_word}&pn={page_num}&rn={page_size}&reqId=ba2f7511-6e89-11ec-aa1e-9520a8bfa7a5'
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
+        response = self.send_request(url, headers=headers)
 
         # parse the response data
         mv_info_list = []
@@ -206,8 +206,7 @@ class KuWoMusicCrawler(CrawlerBase):
 
         # send request for HTML file
         url = f"http://www.kuwo.cn/mvplay/{mv_info['id']}"
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
+        response = self.send_request(url, headers=headers)
 
         # search the play url of mp4
         match = re.search(r'src:"(.+\.mp4)"', response.text)

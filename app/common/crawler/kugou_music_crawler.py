@@ -84,8 +84,7 @@ class KuGouMusicCrawler(CrawlerBase):
             raise AudioQualityError(f'`{quality}` is not supported.')
 
         # search song information
-        song_infos, total = self.getSongInfos(
-            key_word, page_num, page_size)
+        song_infos, total = self.getSongInfos(key_word, page_num, page_size)
         if not song_infos:
             return [], 0
 
@@ -93,7 +92,6 @@ class KuGouMusicCrawler(CrawlerBase):
         for song_info in song_infos:
             file_hash = song_info[self.song_qualities[quality]]
             data = self.getSongDetails(file_hash, song_info["albumID"])
-
             song_info["songPath"] = data.get('play_url', '')
             song_info["coverPath"] = data.get('img', '')
 
@@ -104,8 +102,7 @@ class KuGouMusicCrawler(CrawlerBase):
         # send request for song information
         url = 'https://complexsearch.kugou.com/v2/search/song'
         params = self.__getSearchParams(key_word, page_num, page_size)
-        response = requests.get(url, headers=self.headers, params=params)
-        response.raise_for_status()
+        response = self.send_request(url, headers=self.headers, params=params)
 
         # parse the response data
         data = json.loads(response.text[12:-2])["data"]
@@ -151,10 +148,7 @@ class KuGouMusicCrawler(CrawlerBase):
             details of song
         """
         url = f'https://wwwapi.kugou.com/yy/index.php?r=play/getdata&hash={file_hash}&mid=68aa6f0242d4192a2a9e2b91e44c226d&album_id={album_id}'
-
-        response = requests.get(url, headers=self.headers)
-        response.raise_for_status()
-
+        response = self.send_request(url, headers=self.headers)
         return json.loads(response.text)["data"]
 
     @exceptionHandler('')
@@ -173,10 +167,8 @@ class KuGouMusicCrawler(CrawlerBase):
         if not url:
             return ''
 
-        response = requests.get(url, headers=self.headers)
-        response.raise_for_status()
-
-        # save audio file
+        # request for data and save audio file
+        response = self.send_request(url, headers=self.headers)
         return self.saveSong(song_info, save_dir, '.mp3', response.content)
 
     @exceptionHandler('')
@@ -185,18 +177,14 @@ class KuGouMusicCrawler(CrawlerBase):
         if not song_info:
             return
 
-        lyric = self.getSongDetails(
-            song_info['fileHash'], song_info['albumID']).get('lyrics')
-
-        return lyric
+        return self.getSongDetails(song_info['fileHash'], song_info['albumID']).get('lyrics')
 
     @exceptionHandler([], 0)
     def getMvInfos(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[dict], int]:
         # send request for MV information
         url = 'https://complexsearch.kugou.com/v1/search/mv'
         params = self.__getSearchParams(key_word, page_num, page_size)
-        response = requests.get(url, headers=self.headers, params=params)
-        response.raise_for_status()
+        response = self.send_request(url, headers=self.headers, params=params)
 
         # parse the response data
         data = json.loads(response.text[12:-2])["data"]
@@ -225,9 +213,8 @@ class KuGouMusicCrawler(CrawlerBase):
             mv_info["MvID"]) + '"}]}'
         headers = self.headers.copy()
         headers['kg-tid'] = "317"
-        response = requests.post(
-            url, form_data, params=params, headers=headers)
-        response.raise_for_status()
+        response = self.send_request(
+            url, method='post', data=form_data, params=params, headers=headers)
 
         # parse the response data
         data = json.loads(response.text)['data'][0]['h264']
@@ -251,8 +238,7 @@ class KuGouMusicCrawler(CrawlerBase):
         params = self.__getMvUrlParams(mv_hash)
         headers = self.headers.copy()
         headers['x-router'] = 'trackermv.kugou.com'
-        response = requests.get(url, params, headers=headers)
-        response.raise_for_status()
+        response = self.send_request(url, params=params, headers=headers)
 
         data = json.loads(response.text)['data']
         return data[list(data.keys())[0]]['downurl']

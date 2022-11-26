@@ -35,7 +35,7 @@ class TestKuGouMusicCrawler(TestCase):
     def test_get_mv_infos(self):
         """ 测试获取 MV 信息 """
         songInfos, _ = self.crawler.getMvInfos('aiko 食べた愛')
-        self.assertEqual(len(songInfos), 2)
+        self.assertEqual(len(songInfos), 3)
 
     def test_get_mv_url(self):
         """ 测试获取 MV 播放地址 """

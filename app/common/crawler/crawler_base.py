@@ -2,7 +2,7 @@
 import os
 from enum import Enum
 from pathlib import Path
-from typing import List, Tuple, Union
+from typing import List, Tuple
 
 import requests
 from common.picture import Cover
@@ -400,6 +400,7 @@ class CrawlerBase:
                 song_info_.genre = song_info.genre
                 song_info_.disc = song_info.disc
                 song_info_.discTotal = song_info_.discTotal
+                song_info_.year = song_info_.year or song_info.year
 
         writer = MetaDataWriter()
         writer.writeSongInfo(song_info_)
@@ -436,12 +437,8 @@ class CrawlerBase:
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                           'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'
         }
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-        pic_data = response.content
-
-        # save album cover
-        return Cover(singer, album).save(pic_data)
+        response = self.send_request(url, headers=headers)
+        return Cover(singer, album).save(response.content)
 
     def getSongInfo(self, key_word: str, threshold=90) -> SongInfo:
         """ get the most matching song information according to keyword
@@ -510,6 +507,13 @@ class CrawlerBase:
         matches = [fuzz.ratio(key_word, i["singer"]+' '+i["name"])
                    for i in best_infos]
         return best_infos[matches.index(max(matches))]
+
+    def send_request(self, url: str, *, method='get', data=None, params=None, headers=None, cookies=None, **kwargs):
+        """ send request """
+        response = requests.request(
+            method, url, data=data, params=params, headers=headers, cookies=cookies, **kwargs)
+        response.raise_for_status()
+        return response
 
 
 class AudioQualityError(Exception):

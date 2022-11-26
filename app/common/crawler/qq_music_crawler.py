@@ -95,10 +95,8 @@ class QQMusicCrawler(CrawlerBase):
             the url of album cover, `None` if no album cover is found
         """
         detail_url = f"https://c.y.qq.com/v8/fcg-bin/musicmall.fcg?_=1628997268750&cmd=get_album_buy_page&albummid={albummid}"
-        response = requests.get(detail_url, headers=self.headers)
-        response.raise_for_status()
-        url = json.loads(response.text[18:-1]
-                         )["data"]["headpiclist"][0]["picurl"]
+        response = self.send_request(detail_url, headers=self.headers)
+        url = json.loads(response.text[18:-1])["data"]["headpiclist"][0]["picurl"]
 
         with open(save_path, 'wb') as f:
             f.write(requests.get(url, headers=self.headers).content)
@@ -113,8 +111,7 @@ class QQMusicCrawler(CrawlerBase):
 
         mid = QQFakeSongUrl.getId(song_info.file)
         url = f"https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg?format=json&songmid={mid}"
-        response = requests.get(url, headers=self.headers)
-        response.raise_for_status()
+        response = self.send_request(url, headers=self.headers)
         lyric = json.loads(response.text)['lyric']
         return base64.b64decode(lyric).decode('utf-8')
 
@@ -185,8 +182,7 @@ class QQMusicCrawler(CrawlerBase):
     def __post(self, data: dict):
         url = f"https://u.y.qq.com/cgi-bin/musicu.fcg"
         data = json.dumps(data, ensure_ascii=False).encode('utf-8')
-        response = requests.post(url, data, headers=self.headers)
-        response.raise_for_status()
+        response = self.send_request(url, method='post', data=data, headers=self.headers)
         return json.loads(response.text)
 
 
