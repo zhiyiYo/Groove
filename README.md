@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="12%" align="center" src="app/resource/images/logo/logo.png" alt="logo">
+  <img width="15%" align="center" src="app/resource/images/logo/logo.png" alt="logo">
 </p>
   <h1 align="center">
   Groove Music
