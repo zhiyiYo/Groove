@@ -771,7 +771,7 @@ class MainWindow(AcrylicWindow):
         """ show video window """
         self.pause()
 
-        songInfo = self.mediaPlaylist.getCurrentSong()
+        songInfo = self.playingInterface.songListWidget.currentSongInfo
         self.totalStackWidget.setCurrentIndex(2)
         self.videoInterface.setVideo(url, songInfo.singer+' - '+songInfo.title)
 
@@ -1682,7 +1682,7 @@ class SplashScreen(QWidget):
         super().__init__(parent=parent)
         self.hBoxLayout = QHBoxLayout(self)
         self.logo = PixmapLabel(self)
-        self.logo.setPixmap(QPixmap(":/images/logo/splash_screen_logo.png"))
+        self.logo.setPixmap(QPixmap(":/images/logo/logo_splash_screen.png"))
         self.hBoxLayout.addWidget(self.logo, 0, Qt.AlignCenter)
         self.setAttribute(Qt.WA_StyledBackground)
         color = '2b2b2b' if config.theme == 'dark' else 'ffffff'

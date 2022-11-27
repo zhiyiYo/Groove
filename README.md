@@ -5,7 +5,7 @@
   Groove Music
 </h1>
 <p align="center">
-  A cross-platform music player based on PyQt5.
+  A cross-platform music player based on PyQt5
 </p>
 
 <p align="center">

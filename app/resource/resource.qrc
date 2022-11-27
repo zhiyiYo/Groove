@@ -84,11 +84,10 @@
         <file>qss/dark/desktop_lyric_interface.qss</file>
         <file>qss/dark/color_picker.qss</file>
 
-        <file>images/logo/logo.png</file>
         <file>images/logo/logo_30_30.png</file>
         <file>images/logo/logo.ico</file>
-        <file>images/logo/logo_small.png</file>
-        <file>images/logo/splash_screen_logo.png</file>
+        <file>images/logo/logo_tray.png</file>
+        <file>images/logo/logo_splash_screen.png</file>
         <file>images/acrylic/noise.png</file>
         <file>images/title_bar/关闭按钮_hover_57_40.png</file>
         <file>images/title_bar/关闭按钮_pressed_57_40.png</file>

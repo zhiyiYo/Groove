@@ -19,7 +19,7 @@ class SystemTrayIcon(QSystemTrayIcon):
         self.isPlay = False
         self.menu = SystemTrayMenu(parent)
         self.setContextMenu(self.menu)
-        self.setIcon(QIcon(':/images/logo/logo_small.png'))
+        self.setIcon(QIcon(':/images/logo/logo_tray.png'))
         self.clearPlaylist()
         self.__connectSignalToSlot()
 

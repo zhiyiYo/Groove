@@ -5,7 +5,7 @@
   Groove 音乐
 </h1>
 <p align="center">
-  一个基于 PyQt5 的跨平台音乐播放器.
+  一个基于 PyQt5 的跨平台音乐播放器
 </p>
 
 <p align="center">

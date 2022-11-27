@@ -32,7 +32,7 @@ class SingletonApplication(QApplication):
             self.isRunning = True
             self.sendMessage(argv[1] if len(argv) > 1 else 'show')
             self.logger.info(
-                "Another Groove Music is already running, you should kill it first if you want to launch a new one.")
+                "Another Groove Music is already running, you should kill it first to launch a new one.")
             sys.exit(1)
 
         self.isRunning = False
