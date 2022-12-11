@@ -1,4 +1,5 @@
 # coding:utf-8
+from common.crawler.crawler_base import SongQuality
 from common.icon import Icon
 from common.os_utils import getPlaylistNames
 from common.style_sheet import setStyleSheet
@@ -85,3 +86,30 @@ class AddToMenu(QMenu):
         x = pos.x() + widget.width() + 5
         y = pos.y() + int(widget.height() / 2 - (13 + 38 * len(self.actions())) / 2)
         return QPoint(x, y)
+
+
+class DownloadMenu(QMenu):
+    """ Download online music menu """
+
+    downloadSig = pyqtSignal(SongQuality)
+
+    def __init__(self, title="Download", parent=None):
+        super().__init__(title=title, parent=parent)
+        self.standardQualityAct = QAction(self.tr('Standard'), self)
+        self.highQualityAct = QAction(self.tr('HQ'), self)
+        self.superQualityAct = QAction(self.tr('SQ'), self)
+        self.addActions(
+            [self.standardQualityAct, self.highQualityAct, self.superQualityAct])
+
+        self.setWindowFlags(
+            Qt.FramelessWindowHint | Qt.Popup | Qt.NoDropShadowWindowHint)
+        self.setAttribute(Qt.WA_TranslucentBackground)
+        self.setObjectName('blackDownloadMenu')
+        setStyleSheet(self, 'menu')
+
+        self.standardQualityAct.triggered.connect(
+            lambda: self.downloadSig.emit(SongQuality.STANDARD))
+        self.highQualityAct.triggered.connect(
+            lambda: self.downloadSig.emit(SongQuality.HIGH))
+        self.superQualityAct.triggered.connect(
+            lambda: self.downloadSig.emit(SongQuality.SUPER))

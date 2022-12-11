@@ -2947,6 +2947,11 @@
         <source>There is nothing to display here. Try a different filter.</source>
         <translation>这里没有可显示的内容。请尝试其他筛选器。</translation>
     </message>
+    <message>
+        <location filename="../../View/playing_interface/song_list_widget.py" line="81" />
+        <source>Download</source>
+        <translation>下载</translation>
+    </message>
 </context>
 <context>
     <name>SongPropertyDialog</name>

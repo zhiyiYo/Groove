@@ -45,6 +45,7 @@ QMenu#addFromMenu {
 QMenu#addToMenu::item,
 QMenu#addFromMenu::item,
 QMenu#blackAddToMenu::item,
+QMenu#blackDownloadMenu::item,
 QMenu#deskLyricMenu::item {
     height: 38px;
     /*设置文字边距*/
@@ -69,6 +70,7 @@ QMenu#addToMenu::separator {
 QMenu#addToMenu::icon,
 QMenu#addFromMenu::icon,
 QMenu#blackAddToMenu::icon,
+QMenu#blackDownloadMenu::icon,
 QMenu#deskLyricMenu::icon {
     position: absolute;
     left: 14px;
@@ -172,7 +174,8 @@ QMenu#playingInterfaceMenu::right-arrow {
 }
 
 QMenu#playingInterfaceMenu,
-QMenu#blackAddToMenu {
+QMenu#blackAddToMenu,
+QMenu#blackDownloadMenu {
     color: white;
     background-color: rgb(31, 31, 31);
     border: 1px solid rgb(20, 20, 20);
@@ -182,7 +185,8 @@ QMenu#blackAddToMenu {
 }
 
 QMenu#playingInterfaceMenu::separator,
-QMenu#blackAddToMenu::separator {
+QMenu#blackAddToMenu::separator,
+QMenu#blackDownloadMenu::separator {
     background-color: rgb(120, 120, 120);
 }
 
@@ -191,7 +195,8 @@ QMenu#playingInterfaceMenu::item {
 }
 
 QMenu#playingInterfaceMenu::item,
-QMenu#blackAddToMenu::item {
+QMenu#blackAddToMenu::item,
+QMenu#blackDownloadMenu::item {
     color: white;
 }
 
@@ -211,18 +216,21 @@ QMenu#playingInterfaceMenu::item:disabled:pressed {
 }
 
 QMenu#playingInterfaceMenu::item:selected,
-QMenu#blackAddToMenu::item:selected {
+QMenu#blackAddToMenu::item:selected,
+QMenu#blackDownloadMenu::item:selected {
     background: rgb(54, 54, 54);
     color: white;
 }
 
 QMenu#playingInterfaceMenu::item:pressed,
-QMenu#blackAddToMenu::item:pressed {
+QMenu#blackAddToMenu::item:pressed,
+QMenu#blackDownloadMenu::item:pressed {
     background: rgb(77, 77, 77);
     color: white;
 }
 
-QMenu#blackAddToMenu {
+QMenu#blackAddToMenu,
+QMenu#blackDownloadMenu {
     padding: 5px 0px 8px 0px;
 }
 

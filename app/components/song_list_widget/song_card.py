@@ -3,8 +3,7 @@ import os
 from common.database.entity import SongInfo
 from common.signal_bus import signalBus
 from components.widgets.label import ClickableLabel
-from components.widgets.menu import DownloadMenu
-from PyQt5.QtCore import QPoint, Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QLabel
 
 from .basic_song_card import BasicSongCard

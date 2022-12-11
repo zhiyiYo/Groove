@@ -11,7 +11,7 @@ from PyQt5.QtCore import QSize, Qt, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent
 from PyQt5.QtWidgets import QApplication, QListWidgetItem
 
-from .menu import Menu
+from .menu import Menu, DownloadMenu
 from .song_card import SongCard
 
 
@@ -68,15 +68,22 @@ class SongListWidget(ListWidget):
         self.setCurrentIndex(index)
 
     def contextMenuEvent(self, e: QContextMenuEvent):
-        hitIndex = self.indexAt(e.pos()).column()
-        if hitIndex > -1:
-            menu = Menu(self)
-            self.__connectContextMenuSignalToSlot(menu)
-            if self.currentRow() == len(self.songInfos) - 1:
-                menu.moveDownAct.setEnabled(False)
-            if self.currentRow() == 0:
-                menu.moveUpAct.setEnabled(False)
-            menu.exec_(e.globalPos())
+        if self.indexAt(e.pos()).column() <= -1:
+            return
+
+        menu = Menu(self)
+        self.__connectContextMenuSignalToSlot(menu)
+        if self.currentRow() == len(self.songInfos) - 1:
+            menu.moveDownAct.setEnabled(False)
+        if self.currentRow() == 0:
+            menu.moveUpAct.setEnabled(False)
+        if self.currentSongInfo.file.startswith('http'):
+            downloadMenu = DownloadMenu(self.tr('Download'), menu)
+            downloadMenu.downloadSig.connect(
+                lambda quality: signalBus.downloadSongSig.emit(self.currentSongInfo, quality))
+            menu.insertMenu(menu.removeAct, downloadMenu)
+
+        menu.exec_(e.globalPos())
 
     def showSongPropertyDialog(self, songInfo: SongInfo = None):
         """ show song property dialog box """
