@@ -20,7 +20,7 @@ class VersionManager:
     def getLatestVersion(self):
         """ get latest version """
         url = "https://api.github.com/repos/zhiyiYo/Groove/releases/latest"
-        response = requests.get(url)
+        response = requests.get(url, timeout=2)
         response.raise_for_status()
 
         # parse version
