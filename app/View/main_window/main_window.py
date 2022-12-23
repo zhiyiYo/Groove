@@ -181,14 +181,13 @@ class MainWindow(AcrylicWindow):
             self.winId(), Qt.Key_MediaPrevious, self.mediaPlaylist.previous)
 
         self.addActions([
-            QAction(self, shortcut=Qt.Key_Escape,
-                    triggered=self.exitFullScreen),
-            QAction(self, shortcut=Qt.Key_Space,
-                    triggered=self.togglePlayState),
+            QAction(self, shortcut=Qt.Key_Escape, triggered=self.exitFullScreen),
+            QAction(self, shortcut=Qt.Key_Space, triggered=self.togglePlayState),
+            QAction(self, shortcut=Qt.Key_Left, triggered=self.playSkipBack),
+            QAction(self, shortcut=Qt.Key_Right, triggered=self.playSkipForward),
             QAction(self, shortcut="Ctrl++", triggered=self.playSpeedUp),
             QAction(self, shortcut="Ctrl+-", triggered=self.playSpeedDown),
-            QAction(self, shortcut="Ctrl+Enter",
-                    triggered=self.playSpeedReset),
+            QAction(self, shortcut="Ctrl+Enter", triggered=self.playSpeedReset),
         ])
 
     def initLibrary(self):
@@ -1232,6 +1231,20 @@ class MainWindow(AcrylicWindow):
         """ reset playback speed """
         self.player.setPlaybackRate(1)
         config.set(config.playerSpeed, 1)
+
+    def playSkipBack(self):
+        """ Rewind playback progress """
+        if self.totalStackWidget.currentWidget() is self.videoInterface:
+            self.videoInterface.skipBack()
+        else:
+            self.player.setPosition(self.player.position()-3000)
+
+    def playSkipForward(self):
+        """ Fast forward playback progress """
+        if self.totalStackWidget.currentWidget() is self.videoInterface:
+            self.videoInterface.skipForward()
+        else:
+            self.player.setPosition(self.player.position()+3000)
 
     def onEditSongInfo(self, oldSongInfo: SongInfo, newSongInfo: SongInfo):
         """ edit song information slot """

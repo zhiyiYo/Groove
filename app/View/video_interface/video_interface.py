@@ -129,9 +129,9 @@ class VideoInterface(QGraphicsView):
 
     def keyPressEvent(self, e: QKeyEvent):
         if e.key() == Qt.Key_Left:
-            self.__skipBack()
+            self.skipBack()
         elif e.key() == Qt.Key_Right:
-            self.__skipForward()
+            self.skipForward()
         elif e.key() == Qt.Key_Up:
             self.playBar.volumeSliderWidget.setVolume(self.player.volume()+1)
         elif e.key() == Qt.Key_Down:
@@ -169,15 +169,13 @@ class VideoInterface(QGraphicsView):
 
         self.playBar.playButton.setPlay(False)
 
-    def __skipBack(self):
+    def skipBack(self):
         """ Back up for 10 seconds. """
-        pos = self.player.position()
-        self.player.setPosition(max(pos-10000, 0))
+        self.player.setPosition(self.player.position()-10000)
 
-    def __skipForward(self):
+    def skipForward(self):
         """ Fast forward 10 seconds """
-        pos = self.player.position()
-        self.player.setPosition(min(pos+10000, self.player.duration()))
+        self.player.setPosition(self.player.position()+10000)
 
     def __onPlayerError(self, error: QMediaPlayer.Error):
         """ play error slot """
@@ -240,8 +238,8 @@ class VideoInterface(QGraphicsView):
 
         self.playBar.playButton.clicked.connect(self.togglePlayState)
         self.playBar.progressSliderMoved.connect(self.player.setPosition)
-        self.playBar.skipBackButton.clicked.connect(self.__skipBack)
-        self.playBar.skipForwardButton.clicked.connect(self.__skipForward)
+        self.playBar.skipBackButton.clicked.connect(self.skipBack)
+        self.playBar.skipForwardButton.clicked.connect(self.skipForward)
         self.playBar.volumeSliderWidget.muteStateChanged.connect(
             self.player.setMuted)
         self.playBar.volumeSliderWidget.volumeSlider.valueChanged.connect(
