@@ -18,3 +18,5 @@ pinyin==0.4.0
 pycryptodome==3.9.8
 pyqtkeybind==0.0.9
 darkdetect
+sphinx-markdown-tables==0.0.17
+sphinx-rtd-theme==1.1.1
