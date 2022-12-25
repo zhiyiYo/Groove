@@ -28,29 +28,29 @@
 </p>
 
 ## 界面
-![界面](./screenshot/Groove音乐.png)
+![界面](source/_static/images/Groove音乐.png)
 
 ## 功能
 
 * 播放本地音乐
 
-  ![local music](screenshot/本地音乐.gif)
+  ![local music](source/_static/images/本地音乐.gif)
 
 * 搜索、播放和下载在线音乐
 
-  ![online music](screenshot/在线音乐.gif)
+  ![online music](source/_static/images/在线音乐.gif)
 
 * 创建和管理个人播放列表
 
-  ![custom playlist](screenshot/播放列表.gif)
+  ![custom playlist](source/_static/images/播放列表.gif)
 
 * 查看和编辑歌曲元数据
 
-  ![song meta data](screenshot/歌曲信息.gif)
+  ![song meta data](source/_static/images/歌曲信息.gif)
 
 * 观看和下载在线 MV
 
-  ![MV](screenshot/播放和下载MV.png)
+  ![MV](source/_static/images/播放和下载MV.png)
 
 
 ## 快速开始

@@ -28,29 +28,29 @@ English | <a href="docs/README_zh.md">简体中文</a>
 </p>
 
 ## Interface
-![界面](docs/screenshot/Groove音乐.png)
+![界面](docs/source/_static/images/Groove音乐.png)
 
 ## Features
 
 * Play local music
 
-  ![local music](docs/screenshot/本地音乐.gif)
+  ![local music](docs/source/_static/images/本地音乐.gif)
 
 * Search, play and download online music
 
-  ![online music](docs/screenshot/在线音乐.gif)
+  ![online music](docs/source/_static/images/在线音乐.gif)
 
 * Create and manage custom playlist
 
-  ![custom playlist](docs/screenshot/播放列表.gif)
+  ![custom playlist](docs/source/_static/images/播放列表.gif)
 
 * View and edit song meta data
 
-  ![song meta data](docs/screenshot/歌曲信息.gif)
+  ![song meta data](docs/source/_static/images/歌曲信息.gif)
 
 * Watch and download MV
 
-  ![MV](docs/screenshot/播放和下载MV.png)
+  ![MV](docs/source/_static/images/播放和下载MV.png)
 
 
 
