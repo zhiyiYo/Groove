@@ -27,20 +27,20 @@ Groove 使用 Python3 进行开发，基于 PyQt5 构建 GUI，在使用之前�
 ## 基本使用
 * 播放本地音乐
 
-  ![local music](../../_static/images/本地音乐.gif)
+  ![](../../_static/images/本地音乐.gif)
 
 * 搜索、播放和下载在线音乐
 
-  ![online music](../../_static/images/在线音乐.gif)
+  ![](../../_static/images/在线音乐.gif)
 
 * 创建和管理个人播放列表
 
-  ![custom playlist](../../_static/images/播放列表.gif)
+  ![](../../_static/images/播放列表.gif)
 
 * 查看和编辑歌曲元数据
 
-  ![song meta data](../../_static/images/歌曲信息.gif)
+  ![](../../_static/images/歌曲信息.gif)
 
 * 观看和下载在线 MV
 
-  ![MV](../../_static/images/播放和下载MV.png)
+  ![](../../_static/images/播放和下载MV.png)
