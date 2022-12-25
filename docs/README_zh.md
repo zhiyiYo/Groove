@@ -98,37 +98,5 @@
 5. 开启你的音乐之旅 😊~~
 
 
-## 常见问题
-* **为什么窗口拖动的时候会出现卡顿现象？**
-
-  由于界面使用了亚克力窗口特效，在某些版本的 Win10 上会出现这个问题。有三种解决方案:
-
-  * 更新 Win10 到最新版本，比如 Win11.
-  * 取消复选框的选中 **高级系统设置 --> 性能 --> 拖动时显示窗口内容**.
-  * 在设置界面禁用亚克力效果.
-
-* **支持哪些格式的音频文件呀？**
-
-  目前支持下述格式的音频文件:
-  * True Audio File(*.tta)
-  * WAVE Audio File(*.wav)
-  * WavPack Audio File(*.wv)
-  * Audio Codec 3 File(*.ac3)
-  * Ogg Opus Audio File(*.opus)
-  * Ogg Vorbis Audio File(*.ogg)
-  * MPEG File(*.mp3, *.m4a, *.mp4)
-  * Windows Media Audio File(*.wma)
-  * Advanced Audio Coding File(*.aac)
-  * Advanced Systems Format File(*.asf)
-  * Audio Interchange File Format(*.aiff)
-  * Free Lossless Audio Codec File(*.flac)
-  * Musepack Compressed Audio File(*.mpc)
-  * Monkey's Audio Lossless Audio File(*.ape)
-
-* **为什么运行的时候 GStreamer 报错：Warning: "No decoder available for type ..."?**
-
-  可以尝试 `sudo apt-get install gstreamer1.0-libav` 来解决该问题，Ubuntu 20.04 亲测有效。
-
-* **支持哪些格式的歌词文件呀？**
-
-  目前支持 `.lrc` 和 `.json` 格式的歌词文件，更多信息请参见 [歌词文件格式说明](./lyrics_format.md)。
+## 文档
+使用 Groove 音乐之前建议阅读[帮助文档](https://groove-music.readthedocs.io)，你想知道的，都在这里~~

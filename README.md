@@ -98,38 +98,5 @@ English | <a href="docs/README_zh.md">简体中文</a>
 5. Start to enjoy your music~~
 
 
-## FAQ
-* **Why does the window get stuck when it is dragged?**
-
-  Because the interface background uses acrylic effect, this problem will occur for some versions of win10. There are three solutions:
-
-  * Upgrade Win10 to Win11.
-  * Uncheck the check box of **Advanced system settings --> Performance --> Show window contents when dragging**.
-  * Turn off the option to enable acrylic background in the setting interface.
-
-* **What formats of audio files are supported?**
-
-  Currently, the following formats are supported:
-  * True Audio File(*.tta)
-  * WAVE Audio File(*.wav)
-  * WavPack Audio File(*.wv)
-  * Audio Codec 3 File(*.ac3)
-  * Ogg Opus Audio File(*.opus)
-  * Ogg Vorbis Audio File(*.ogg)
-  * MPEG File(*.mp3, *.m4a, *.mp4)
-  * Windows Media Audio File(*.wma)
-  * Advanced Audio Coding File(*.aac)
-  * Advanced Systems Format File(*.asf)
-  * Audio Interchange File Format(*.aiff)
-  * Free Lossless Audio Codec File(*.flac)
-  * Musepack Compressed Audio File(*.mpc)
-  * Monkey's Audio Lossless Audio File(*.ape)
-
-* **Why did GStreamer report this error: Warning: "No decoder available for type blah blah"?**
-
-  I solved this problem on Ubuntu 20.04 by `sudo apt-get install gstreamer1.0-libav`.
-
-* **What formats of lyrics files are supported?**
-
-  Currently, lyrics in `.lrc` format and `.json` format are supported. Refer to [lyrics file format](./docs/lyrics_format.md) for more information.
-
+## Document
+It is recommended to read the [help document](https://groove-music.readthedocs.io) before use Groove Music. All you want to know is here~~
