@@ -14,4 +14,4 @@
 | 元数据管理 | `common.meta_data`                      |
 
 ### 界面结构
-![界面结构](../../_static/images/界面结构.png)
+![](../../_static/images/界面结构.png)
