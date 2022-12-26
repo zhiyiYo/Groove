@@ -1,5 +1,5 @@
 ## 数据库
-Groove 音乐使用 sqlite 数据库进行数据管理。
+Groove 音乐使用 sqlite 数据库进行歌曲信息、专辑信息和播放列表信息等数据的管理。
 
 ### 各个模块
 #### entity
@@ -8,8 +8,11 @@ Groove 音乐使用 sqlite 数据库进行数据管理。
 #### dao
 数据库访问操作模块，`DaoBase` 作为基类封装了基本的数据库操作方法，使得子类无需编写重复的 SQL 语句就能操作数据库。
 
+#### service
+业务模块，业务类使用 `Dao` 类来操作数据库
+
 #### controller
-控制器模块，控制器类使用 `Dao` 类来操作数据库，外部使用 `controller` 提供接口来访问数据库。
+控制器模块，控制器类使用 `Service` 类来操作数据库，外部使用 `controller` 提供的接口来访问数据库。
 
 ### 数据表
 #### tbl_song_info
@@ -34,7 +37,7 @@ Groove 音乐使用 sqlite 数据库进行数据管理。
 其中，`file` 字段有两种格式：
 * 本地音乐路径，比如：`D:/Music/aiko - 二人.mp3`
 * 在线音乐 URL
-  * 虚假 URL，播放时会被转换为真实 URL，比如：http://kuwo/song/2333
+  * 虚假 URL，比如：http://kuwo/song/2333，播放时会被转换为真实 URL
   * 真实 URL
 
 
