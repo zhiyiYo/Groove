@@ -151,9 +151,7 @@ class BasicSongListWidget(ListWidget):
             songCard = self.songCards[index]
             songCard.setChecked(not songCard.isChecked)
         elif index != self.currentIndex:
-            if self.currentIndex is not None:
-                self.songCards[self.currentIndex].setSelected(False)
-
+            self.cancelSelectedState()
             self.songCards[index].setSelected(True)
             self.currentIndexChanged.emit(index)
 
@@ -218,18 +216,16 @@ class BasicSongListWidget(ListWidget):
 
     def cancelSelectedState(self):
         """ cancel the selected status """
-        if self.currentIndex is None or len(self.songCards) < self.currentIndex+1:
-            return
+        if self.currentIndex is not None and 0 <= self.currentIndex < len(self.songCards):
+            self.songCards[self.currentIndex].setSelected(False)
 
-        self.songCards[self.currentIndex].setSelected(False)
         self.currentIndex = None
 
     def cancelPlayState(self):
         """ cancel the playback status """
-        if self.playingIndex is None or len(self.songCards) < self.playingIndex+1:
-            return
+        if self.playingIndex is not None and 0 <= self.playingIndex < len(self.songCards):
+            self.songCards[self.playingIndex].setPlay(False)
 
-        self.songCards[self.playingIndex].setPlay(False)
         self.playingIndex = None
 
     def cancelState(self):
@@ -473,7 +469,7 @@ class BasicSongListWidget(ListWidget):
 
     @property
     def playingSongInfo(self):
-        if not self.songCards or self.playingIndex is None:
+        if self.playingIndex is None or not 0 <= self.playingIndex < len(self.songInfos):
             return None
 
         return self.songInfos[self.playingIndex]
