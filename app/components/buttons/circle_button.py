@@ -74,3 +74,9 @@ class CircleButton(TooltipButton):
         # paint icon
         painter.drawPixmap(px, py, iconPixmap.width(),
                            iconPixmap.height(), iconPixmap)
+
+    def cancelHoverState(self):
+        """ cancel button hover state """
+        self.isEnter = False
+        self.isPressed = False
+        self.update()

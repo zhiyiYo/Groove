@@ -268,6 +268,7 @@ class CollapsingAppBarBase(QWidget):
         menu = MoreActionsMenu()
         index = len(self.buttons)-self.hiddenButtonNum
         menu.addActions(self.actions()[index:])
+        self.moreActionsButton.cancelHoverState()
         menu.exec(menu.getPopupPos(self.moreActionsButton))
 
     def _onAddToButtonClicked(self):
@@ -276,6 +277,7 @@ class CollapsingAppBarBase(QWidget):
         menu.playingAct.triggered.connect(self.addToPlayingPlaylistSig)
         menu.addSongsToPlaylistSig.connect(self.addToCustomPlaylistSig)
         menu.newPlaylistAct.triggered.connect(self.addToNewCustomPlaylistSig)
+        self.addToButton.cancelHoverState()
         menu.exec(menu.getPopupPos(self.addToButton))
 
     def _onAddButtonClicked(self):
@@ -283,6 +285,7 @@ class CollapsingAppBarBase(QWidget):
         menu = AddFromMenu(parent=self)
         menu.fromFileAct.triggered.connect(self.addFromFileSig)
         menu.fromFolderAct.triggered.connect(self.addFromFolderSig)
+        self.addButton.cancelHoverState()
         menu.exec(menu.getPopupPos(self.addButton))
 
     def updateWindow(self, title: str, content: str, coverPath: str):

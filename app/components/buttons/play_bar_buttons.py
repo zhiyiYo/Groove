@@ -319,6 +319,7 @@ class FullScreenButton(TwoStateButton):
         super().mouseReleaseEvent(e)
         self.__isFullScreen = not self.__isFullScreen
         self.fullScreenChanged.emit(self.__isFullScreen)
+        self.cancelHoverState()
 
     def update(self):
         super().update()

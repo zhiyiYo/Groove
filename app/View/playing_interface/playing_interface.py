@@ -272,6 +272,8 @@ class PlayingInterface(QWidget):
 
     def __onShowPlaylistButtonClicked(self):
         """ show playlist button clicked """
+        self.playBar.showPlaylistButton.cancelHoverState()
+        self.playBar.pullUpArrowButton.cancelHoverState()
         if not self.isPlaylistVisible:
             self.showPlaylist()
         else:

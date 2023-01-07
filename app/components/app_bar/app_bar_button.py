@@ -1,7 +1,7 @@
 # coding:utf-8
-from PyQt5.QtCore import Qt, QSize, QObject
-from PyQt5.QtGui import QPixmap, QPainter
-from PyQt5.QtWidgets import QPushButton
+from PyQt5.QtCore import QEvent, Qt, QSize, QObject, QPoint
+from PyQt5.QtGui import QPixmap, QPainter, QHoverEvent
+from PyQt5.QtWidgets import QApplication, QPushButton
 
 
 class AppBarButton(QPushButton):
@@ -55,6 +55,12 @@ class AppBarButton(QPushButton):
         painter.setPen(Qt.white)
         painter.setFont(self.font())
         painter.drawText(54, 29, self.__text)
+
+    def cancelHoverState(self):
+        """ cancel mouse hover state """
+        self.setAttribute(Qt.WA_UnderMouse, False)
+        e = QHoverEvent(QEvent.HoverLeave, QPoint(self.width()*2, 0), QPoint())
+        QApplication.sendEvent(self, e)
 
 
 class AppBarButtonFactory(QObject):
