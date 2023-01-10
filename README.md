@@ -28,7 +28,7 @@ English | <a href="docs/README_zh.md">简体中文</a>
 </p>
 
 ## Interface
-![界面](docs/source/_static/images/Groove音乐.png)
+![界面](docs/source/_static/images/Groove音乐.jpg)
 
 ## Features
 
@@ -50,7 +50,7 @@ English | <a href="docs/README_zh.md">简体中文</a>
 
 * Watch and download MV
 
-  ![MV](docs/source/_static/images/播放和下载MV.png)
+  ![MV](docs/source/_static/images/播放和下载MV.jpg)
 
 
 

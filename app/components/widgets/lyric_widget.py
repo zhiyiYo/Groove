@@ -3,11 +3,13 @@ from typing import List
 import bisect
 
 from common.lyric import Lyric
+from common.config import config
+from common.signal_bus import signalBus
 from common.auto_wrap import autoWrap
 from common.style_sheet import setStyleSheet
 from components.widgets.scroll_area import ScrollArea
 from PyQt5.QtCore import Qt, QPropertyAnimation, QEventLoop
-from PyQt5.QtGui import QColor, QLinearGradient, QPalette, QBrush
+from PyQt5.QtGui import QColor, QLinearGradient, QPalette, QBrush, QFont
 from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget
 
 
@@ -16,7 +18,7 @@ class LyricWidget(ScrollArea):
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self.lyric = None  #type:Lyric
+        self.lyric = None  # type:Lyric
         self.times = []
         self.currentIndex = -1
         self.lyricLabels = []  # type:List[LyricLabel]
@@ -44,6 +46,7 @@ class LyricWidget(ScrollArea):
         self.loadingLabel.hide()
         self.__setQss()
 
+        signalBus.lyricFontChanged.connect(self.__onLyricFontChanged)
         self.verticalScrollBar().valueChanged.connect(self.__adjustTextColor)
 
     def setLyric(self, lyric: Lyric):
@@ -193,6 +196,18 @@ class LyricWidget(ScrollArea):
         self.loadingLabel.setVisible(isLoading)
         self.scrollWidget.setVisible(not isLoading)
 
+    def __onLyricFontChanged(self):
+        """ lyric font changed slot """
+        font = config.lyricFont
+        for label in self.lyricLabels:
+            label.setFont(font)
+
+        for label in self.__unusedlyricLabels:
+            label.setFont(font)
+
+        font.setPixelSize(int(font.pixelSize()*1.25))
+        self.loadingLabel.setFont(font)
+
 
 class LyricLabel(QLabel):
     """ lyric label """
@@ -231,6 +246,9 @@ class LyricLabel(QLabel):
         self.setPalette(palette)
 
         # change font size
-        self.setProperty('isPlay', 'true' if isPlay else 'false')
-        self.setStyle(QApplication.style())
+        font = config.lyricFont  # type:QFont
+        if isPlay:
+            font.setPixelSize(int(font.pixelSize()*1.25))
+
+        self.setFont(font)
         self.adjustSize()

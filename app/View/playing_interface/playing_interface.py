@@ -1,6 +1,7 @@
 # coding:utf-8
 from typing import List
 
+from common.config import config
 from common.database.entity import SongInfo
 from common.lyric import Lyric
 from common.meta_data.writer import MetaDataWriter
@@ -63,7 +64,8 @@ class PlayingInterface(QWidget):
         self.getMvUrlThread = GetMvUrlThread(self)
 
         # create widgets
-        self.albumCoverLabel = BlurCoverLabel(12, (450, 450), self)
+        self.albumCoverLabel = BlurCoverLabel(
+            config.get(config.albumBlurRadius), (450, 450), self)
         self.maskLabel = MaskLabel(QColor(0, 0, 0, 215), self)
         self.songInfoCardChute = SongInfoCardChute(self.playlist, self)
         self.lyricWidget = LyricWidget(self.songInfoCardChute)
@@ -628,6 +630,9 @@ class PlayingInterface(QWidget):
 
     def __connectSignalToSlot(self):
         """ connect signal to slot """
+        # signal bus
+        signalBus.albumBlurRadiusChanged.connect(self.albumCoverLabel.setBlurRadius)
+
         self.getLyricThread.crawlFinished.connect(self.setLyric)
         self.getMvUrlThread.crawlFinished.connect(self.__onCrawlMvUrlFinished)
         self.randomPlayAllButton.clicked.connect(signalBus.randomPlayAllSig)

@@ -43,4 +43,4 @@ Groove 使用 Python3 进行开发，基于 PyQt5 构建 GUI，在使用之前�
 
 * 观看和下载在线 MV
 
-  ![](../../_static/images/播放和下载MV.png)
+  ![](../../_static/images/播放和下载MV.jpg)

@@ -29,12 +29,12 @@ class LyricWidget(QWidget):
         self.translationTextXAni = QPropertyAnimation(
             self, b'translationTextX', self)
 
-        signalBus.lyricAlignmentChanged.connect(self.update)
-        signalBus.lyricFontChanged.connect(self.update)
-        signalBus.lyricFontColorChanged.connect(self.update)
-        signalBus.lyricHighlightColorChanged.connect(self.update)
-        signalBus.lyricStrokeColorChanged.connect(self.update)
-        signalBus.lyricStrokeSizeChanged.connect(self.update)
+        signalBus.desktopLyricAlignmentChanged.connect(self.update)
+        signalBus.desktopLyricFontChanged.connect(self.update)
+        signalBus.desktopLyricFontColorChanged.connect(self.update)
+        signalBus.desktopLyricHighlightColorChanged.connect(self.update)
+        signalBus.desktopLyricStrokeColorChanged.connect(self.update)
+        signalBus.desktopLyricStrokeSizeChanged.connect(self.update)
 
     def paintEvent(self, e):
         if not self.lyric:
@@ -208,7 +208,7 @@ class LyricWidget(QWidget):
 
     @property
     def originFont(self):
-        return config.lyricFont
+        return config.desktopLyricFont
 
     @property
     def translationFont(self):

@@ -18,7 +18,7 @@ from PyQt5.QtCore import QEvent, Qt, QUrl, pyqtSignal
 from PyQt5.QtGui import QColor, QDesktopServices
 from PyQt5.QtWidgets import (QButtonGroup, QCheckBox, QFileDialog, QFontDialog,
                              QLabel, QLineEdit, QPushButton, QRadioButton,
-                             QVBoxLayout, QWidget)
+                             QVBoxLayout, QWidget, QHBoxLayout)
 
 
 class SettingInterface(ScrollArea):
@@ -33,23 +33,23 @@ class SettingInterface(ScrollArea):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.scrollwidget = QWidget()
+        self.scrollWidget = QWidget()
 
         # setting label
         self.settingLabel = QLabel(self.tr("Settings"), self)
 
         # select music folders
         self.musicInThisPCLabel = QLabel(
-            self.tr("Music on this PC"), self.scrollwidget)
+            self.tr("Music on this PC"), self.scrollWidget)
         self.selectMusicFolderLabel = ClickableLabel(
-            self.tr("Choose where we look for music"), self.scrollwidget)
+            self.tr("Choose where we look for music"), self.scrollWidget)
 
         # acrylic background
         self.acrylicGroup = SwitchButtonGroup(
             self.tr("Acrylic Background"),
             self.tr("Use the acrylic background effect"),
             config.enableAcrylicBackground,
-            self.scrollwidget
+            self.scrollWidget
         )
 
         # media info
@@ -57,15 +57,15 @@ class SettingInterface(ScrollArea):
             self.tr("Media Info"),
             self.tr(
                 "Automatically retrieve and update missing album art and metadata"),
-            parent=self.scrollwidget
+            parent=self.scrollWidget
         )
 
         # search
-        self.searchLabel = QLabel(self.tr('Search'), self.scrollwidget)
-        self.pageSizeSlider = Slider(Qt.Horizontal, self.scrollwidget)
-        self.pageSizeValueLabel = QLabel(self.scrollwidget)
+        self.searchLabel = QLabel(self.tr('Search'), self.scrollWidget)
+        self.pageSizeSlider = SliderWidget(
+            config.onlinePageSize, self.scrollWidget)
         self.pageSizeHintLabel = QLabel(
-            self.tr('Set the number of online music displayed'), self.scrollwidget)
+            self.tr('Set the number of online music displayed'), self.scrollWidget)
 
         # online music quality
         self.onlinePlayQualityGroup = RadioButtonGroup(
@@ -75,7 +75,7 @@ class SettingInterface(ScrollArea):
                 self.tr('Super quality'), self.tr('Lossless quality')
             ],
             title=self.tr('Online Playing Quality'),
-            parent=self.scrollwidget
+            parent=self.scrollWidget
         )
 
         # MV quality
@@ -86,7 +86,7 @@ class SettingInterface(ScrollArea):
                 self.tr('SD'), self.tr('LD')
             ],
             title=self.tr('MV Quality'),
-            parent=self.scrollwidget
+            parent=self.scrollWidget
         )
 
         # close main window
@@ -97,7 +97,7 @@ class SettingInterface(ScrollArea):
                 self.tr('Quit Groove Music')
             ],
             title=self.tr('Close Main Window'),
-            parent=self.scrollwidget
+            parent=self.scrollWidget
         )
 
         # theme mode
@@ -108,7 +108,7 @@ class SettingInterface(ScrollArea):
                 self.tr('Use system setting')
             ],
             title=self.tr('Mode'),
-            parent=self.scrollwidget
+            parent=self.scrollWidget
         )
 
         # dpi scale
@@ -119,29 +119,42 @@ class SettingInterface(ScrollArea):
                 self.tr("Use system setting"),
             ],
             title=self.tr("Interface zoom"),
-            parent=self.scrollwidget
+            parent=self.scrollWidget
         )
+
+        # playing interface
+        self.playingInterfaceLabel = QLabel(
+            self.tr('Playing Interface'), self.scrollWidget)
+        self.lyricFontLabel = QLabel(self.tr(
+            'Lyric font, the font size of the lyrics being played will be larger'), self.scrollWidget)
+        self.lyricFontButton = QPushButton(
+            self.tr("Choose font"), self.scrollWidget)
+        self.albumBlurRadiusLabel = QLabel(
+            self.tr('Album background blur radius, the greater the value, the more blurred'), self.scrollWidget)
+        self.albumBlurRadiusSlider = SliderWidget(
+            config.albumBlurRadius, self.scrollWidget)
 
         # desktop lyric
         self.desktopLyricLabel = QLabel(
-            self.tr("Desktop Lyric"), self.scrollwidget)
-        self.lyricStyleLabel = QLabel(self.tr("Style"), self.scrollwidget)
-        self.lyricFontLabel = QLabel(self.tr("Font"), self.scrollwidget)
-        self.lyricFontColorLabel = QLabel(
-            self.tr("Font color"), self.scrollwidget)
-        self.lyricHighlightLabel = QLabel(
-            self.tr("Highlight color"), self.scrollwidget)
-        self.lyricStrokeColorLabel = QLabel(
-            self.tr("Stroke color"), self.scrollwidget)
-        self.lyricStrokeSizeLabel = QLabel(
-            self.tr("Stroke size"), self.scrollwidget)
-        self.lyricFontColorPicker = ColorPicker(
-            config.get(config.deskLyricFontColor), self.scrollwidget)
-        self.lyricHighlightColorPicker = ColorPicker(
-            config.get(config.deskLyricHighlightColor), self.scrollwidget)
-        self.lyricStrokeColorPicker = ColorPicker(
-            config.get(config.deskLyricStrokeColor), self.scrollwidget)
-        self.lyricAlignGroup = RadioButtonGroup(
+            self.tr("Desktop Lyric"), self.scrollWidget)
+        self.desktopLyricStyleLabel = QLabel(
+            self.tr("Style"), self.scrollWidget)
+        self.desktopLyricFontLabel = QLabel(self.tr("Font"), self.scrollWidget)
+        self.desktopLyricFontColorLabel = QLabel(
+            self.tr("Font color"), self.scrollWidget)
+        self.desktopLyricHighlightLabel = QLabel(
+            self.tr("Highlight color"), self.scrollWidget)
+        self.desktopLyricStrokeColorLabel = QLabel(
+            self.tr("Stroke color"), self.scrollWidget)
+        self.desktopLyricStrokeSizeLabel = QLabel(
+            self.tr("Stroke size"), self.scrollWidget)
+        self.desktopLyricFontColorPicker = ColorPicker(
+            config.get(config.deskLyricFontColor), self.scrollWidget)
+        self.desktopLyricHighlightColorPicker = ColorPicker(
+            config.get(config.deskLyricHighlightColor), self.scrollWidget)
+        self.desktopLyricStrokeColorPicker = ColorPicker(
+            config.get(config.deskLyricStrokeColor), self.scrollWidget)
+        self.desktopLyricAlignGroup = RadioButtonGroup(
             property=config.deskLyricAlignment,
             texts=[
                 self.tr('Center aligned'), self.tr('Left aligned'),
@@ -149,45 +162,45 @@ class SettingInterface(ScrollArea):
             ],
             title=self.tr('Alignment'),
             titleType="subTitle",
-            parent=self.scrollwidget
+            parent=self.scrollWidget
         )
-        self.lyricStrokeSizeSlider = Slider(Qt.Horizontal, self.scrollwidget)
-        self.lyricStrokeSizeValueLabel = QLabel(self.scrollwidget)
-        self.lyricFontButton = QPushButton(
-            self.tr("Choose font"), self.scrollwidget)
+        self.desktopLyricStrokeSizeSlider = SliderWidget(
+            config.deskLyricStrokeSize, self.scrollWidget)
+        self.desktopLyricStrokeSizeValueLabel = QLabel(self.scrollWidget)
+        self.desktopLyricFontButton = QPushButton(
+            self.tr("Choose font"), self.scrollWidget)
 
         # embedded lyrics
         self.embedLyricLabel = QLabel(
-            self.tr("Embedded Lyrics"), self.scrollwidget)
+            self.tr("Embedded Lyrics"), self.scrollWidget)
         self.preferEmbedCheckBox = QCheckBox(
-            self.tr("Prefer embedded lyrics"), self.scrollwidget)
+            self.tr("Prefer embedded lyrics"), self.scrollWidget)
         self.embedWhenSaveCheckBox = QCheckBox(
-            self.tr("Embed lyrics when saving song information"), self.scrollwidget)
+            self.tr("Embed lyrics when saving song information"), self.scrollWidget)
 
         # media info
         self.softwareUpdateGroup = SwitchButtonGroup(
             self.tr("Software update"),
             self.tr("Check for updates when the application starts"),
             config.checkUpdateAtStartUp,
-            self.scrollwidget
+            self.scrollWidget
         )
 
         # download folder
-        self.downloadFolderHintLabel = QLabel('')
         self.downloadFolderButton = QPushButton(
-            self.tr("Choose"), self.scrollwidget)
+            self.tr("Choose"), self.scrollWidget)
         self.downloadFolderLineEdit = QLineEdit(
-            config.get(config.downloadFolder), self.scrollwidget)
+            config.get(config.downloadFolder), self.scrollWidget)
         self.downloadFolderLabel = QLabel(
-            self.tr("Download Directory"), self.scrollwidget)
+            self.tr("Download Directory"), self.scrollWidget)
 
         # application
-        self.appLabel = QLabel(self.tr("App"), self.scrollwidget)
-        self.helpLabel = ClickableLabel(self.tr("Help"), self.scrollwidget)
+        self.appLabel = QLabel(self.tr("App"), self.scrollWidget)
+        self.helpLabel = ClickableLabel(self.tr("Help"), self.scrollWidget)
         self.issueLabel = ClickableLabel(
-            self.tr("Feedback"), self.scrollwidget)
+            self.tr("Feedback"), self.scrollWidget)
         self.checkUpdateLabel = ClickableLabel(
-            self.tr("Check update"), self.scrollwidget)
+            self.tr("Check update"), self.scrollWidget)
 
         self.__initWidget()
 
@@ -197,10 +210,10 @@ class SettingInterface(ScrollArea):
         self.downloadFolderLineEdit.resize(313, 42)
         self.downloadFolderLineEdit.setReadOnly(True)
         self.downloadFolderLineEdit.setCursorPosition(0)
-        self.scrollwidget.resize(self.width(), 2760)
+        self.scrollWidget.resize(self.width(), 2960)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setViewportMargins(0, 120, 0, 0)
-        self.setWidget(self.scrollwidget)
+        self.setWidget(self.scrollWidget)
 
         # set the checked state of acrylic switch button
         self.acrylicGroup.switchButton.setEnabled(isGreaterEqualWin10())
@@ -210,20 +223,6 @@ class SettingInterface(ScrollArea):
         self.helpLabel.setCursor(Qt.PointingHandCursor)
         self.issueLabel.setCursor(Qt.PointingHandCursor)
         self.checkUpdateLabel.setCursor(Qt.PointingHandCursor)
-
-        # set slider
-        pageSize = config.onlinePageSize
-        self.pageSizeSlider.setRange(*pageSize.range)
-        self.pageSizeSlider.setValue(pageSize.value)
-        self.pageSizeSlider.setSingleStep(1)
-        self.pageSizeValueLabel.setNum(pageSize.value)
-
-        # set desktop lyric
-        strokeSize = config.deskLyricStrokeSize
-        self.lyricStrokeSizeSlider.setRange(*strokeSize.range)
-        self.lyricStrokeSizeSlider.setSingleStep(1)
-        self.lyricStrokeSizeSlider.setValue(strokeSize.value)
-        self.lyricStrokeSizeValueLabel.setNum(strokeSize.value)
 
         # set embedded lyrics
         self.preferEmbedCheckBox.setChecked(config.preferEmbedLyric.value)
@@ -261,7 +260,6 @@ class SettingInterface(ScrollArea):
         self.searchLabel.move(30, 406)
         self.pageSizeHintLabel.move(30, 456)
         self.pageSizeSlider.move(30, 486)
-        self.pageSizeValueLabel.move(230, 486)
 
         # online music quality
         self.onlinePlayQualityGroup.move(30, 548)
@@ -269,43 +267,53 @@ class SettingInterface(ScrollArea):
         # MV quality
         self.mvQualityGroup.move(30, 780)
 
-        # close main window
-        self.closeWindowGroup.move(30, 1012)
-
-        # theme mode
-        self.modeGroup.move(30, 1164)
+        # playing interface
+        self.playingInterfaceLabel.move(30, 1012)
+        # self.lyricFontLabel.move(30, 1060)
+        # self.lyricFontButton.move(30, 1097)
+        # self.albumBlurRadiusLabel.move(30, 1167)
+        # self.albumBlurRadiusSlider.move(30, 1197)
+        self.albumBlurRadiusLabel.move(30, 1060)
+        self.albumBlurRadiusSlider.move(30, 1090)
+        self.lyricFontLabel.move(30, 1140)
+        self.lyricFontButton.move(30, 1170)
 
         # desktop lyric
-        self.desktopLyricLabel.move(30, 1354)
-        self.lyricStyleLabel.move(30, 1404)
-        self.lyricFontLabel.move(30, 1454)
-        self.lyricFontButton.move(230, 1454)
-        self.lyricFontColorLabel.move(30, 1504)
-        self.lyricFontColorPicker.move(230, 1504)
-        self.lyricHighlightLabel.move(30, 1554)
-        self.lyricHighlightColorPicker.move(230, 1554)
-        self.lyricStrokeColorLabel.move(30, 1604),
-        self.lyricStrokeColorPicker.move(230, 1604)
-        self.lyricStrokeSizeLabel.move(30, 1654)
-        self.lyricStrokeSizeSlider.move(30, 1684)
-        self.lyricStrokeSizeValueLabel.move(230, 1684)
-        self.lyricAlignGroup.move(30, 1724)
+        self.desktopLyricLabel.move(30, 1254)
+        self.desktopLyricStyleLabel.move(30, 1304)
+        self.desktopLyricFontLabel.move(30, 1354)
+        self.desktopLyricFontButton.move(230, 1354)
+        self.desktopLyricFontColorLabel.move(30, 1404)
+        self.desktopLyricFontColorPicker.move(230, 1404)
+        self.desktopLyricHighlightLabel.move(30, 1454)
+        self.desktopLyricHighlightColorPicker.move(230, 1454)
+        self.desktopLyricStrokeColorLabel.move(30, 1504),
+        self.desktopLyricStrokeColorPicker.move(230, 1504)
+        self.desktopLyricStrokeSizeLabel.move(30, 1554)
+        self.desktopLyricStrokeSizeSlider.move(230, 1554)
+        self.desktopLyricAlignGroup.move(30, 1604)
 
         # embedded lyrics
-        self.embedLyricLabel.move(30, 1917)
-        self.preferEmbedCheckBox.move(30, 1967)
-        self.embedWhenSaveCheckBox.move(30, 2007)
+        self.embedLyricLabel.move(30, 1797)
+        self.preferEmbedCheckBox.move(30, 1847)
+        self.embedWhenSaveCheckBox.move(30, 1887)
 
         # software update
-        self.softwareUpdateGroup.move(30, 2069)
+        self.softwareUpdateGroup.move(30, 1949)
 
         # dpi scale
-        self.dpiScaleGroup.move(30, 2206)
+        self.dpiScaleGroup.move(30, 2086)
+
+        # theme mode
+        self.modeGroup.move(30, 2390)
+
+        # close main window
+        self.closeWindowGroup.move(30, 2580)
 
         # download folder
-        self.downloadFolderLabel.move(30, 2506)
-        self.downloadFolderLineEdit.move(30, 2566)
-        self.downloadFolderButton.move(350, 2566)
+        self.downloadFolderLabel.move(30, 2732)
+        self.downloadFolderLineEdit.move(30, 2792)
+        self.downloadFolderButton.move(350, 2792)
 
         # application
         self.appLabel.move(self.width() - 400, 18)
@@ -364,8 +372,9 @@ class SettingInterface(ScrollArea):
         self.musicInThisPCLabel.setObjectName("titleLabel")
         self.selectMusicFolderLabel.setObjectName("clickableLabel")
         self.desktopLyricLabel.setObjectName("titleLabel")
-        self.lyricStyleLabel.setObjectName("subTitleLabel")
+        self.desktopLyricStyleLabel.setObjectName("subTitleLabel")
         self.embedLyricLabel.setObjectName("titleLabel")
+        self.playingInterfaceLabel.setObjectName('titleLabel')
         setStyleSheet(self, 'setting_interface')
 
     def resizeEvent(self, e):
@@ -374,7 +383,7 @@ class SettingInterface(ScrollArea):
         self.issueLabel.move(self.width() - 400, self.issueLabel.y())
         self.checkUpdateLabel.move(
             self.width() - 400, self.checkUpdateLabel.y())
-        self.scrollwidget.resize(self.width(), self.scrollwidget.height())
+        self.scrollWidget.resize(self.width(), self.scrollWidget.height())
         super().resizeEvent(e)
 
     def eventFilter(self, obj, e: QEvent):
@@ -402,12 +411,6 @@ class SettingInterface(ScrollArea):
         self.__updateMetaDataSwitchButtonEnabled()
         self.selectedMusicFoldersChanged.emit(folders)
 
-    def __onPageSliderValueChanged(self, value: int):
-        """ page slider value changed slot """
-        self.pageSizeValueLabel.setNum(value)
-        self.pageSizeValueLabel.adjustSize()
-        config.set(config.onlinePageSize, value)
-
     def __onMinimizeToTrayChanged(self, button: QRadioButton, key: str):
         """ minimize to tray changed slot """
         self.minimizeToTrayChanged.emit(button.property(key))
@@ -434,53 +437,58 @@ class SettingInterface(ScrollArea):
         self.downloadFolderChanged.emit(folder)
 
     def __onLyricFontButtonClicked(self):
-        """ desktop lyric font button clicked slot """
+        """ playing interface lyric font button clicked slot """
         font, isOk = QFontDialog.getFont(
             config.lyricFont, self.window(), self.tr("Select Font"))
         if isOk:
             config.lyricFont = font
             signalBus.lyricFontChanged.emit(font)
 
-    def __onLyricAlignmentChanged(self, button: QRadioButton, key: str):
-        """ desktop lyric alignment changed slot """
-        signalBus.lyricAlignmentChanged.emit(button.property(key))
+    def __onDesktopLyricFontButtonClicked(self):
+        """ desktop lyric font button clicked slot """
+        font, isOk = QFontDialog.getFont(
+            config.desktopLyricFont, self.window(), self.tr("Select Font"))
+        if isOk:
+            config.desktopLyricFont = font
+            signalBus.desktopLyricFontChanged.emit(font)
 
-    def __onLyricFontColorChanged(self, color: QColor):
+    def __onDesktopLyricAlignmentChanged(self, button: QRadioButton, key: str):
+        """ desktop lyric alignment changed slot """
+        signalBus.desktopLyricAlignmentChanged.emit(button.property(key))
+
+    def __onDesktopLyricFontColorChanged(self, color: QColor):
         """ desktop lyric font color changed slot """
         config.set(config.deskLyricFontColor, list(color.getRgb())[:3])
-        signalBus.lyricFontColorChanged.emit(color)
+        signalBus.desktopLyricFontColorChanged.emit(color)
 
-    def __onLyricHighlightColorChanged(self, color: QColor):
+    def __onDesktopLyricHighlightColorChanged(self, color: QColor):
         """ desktop lyric highlight color changed slot """
         config.set(config.deskLyricHighlightColor, list(color.getRgb())[:3])
-        signalBus.lyricHighlightColorChanged.emit(color)
+        signalBus.desktopLyricHighlightColorChanged.emit(color)
 
-    def __onLyricStrokeColorChanged(self, color: QColor):
+    def __onDesktopLyricStrokeColorChanged(self, color: QColor):
         """ desktop lyric stroke color changed slot """
         config.set(config.deskLyricStrokeColor, list(color.getRgb())[:3])
-        signalBus.lyricStrokeColorChanged.emit(color)
-
-    def __onLyricStrokeSizeChanged(self, size: int):
-        """ desktop lyric stroke size changed slot """
-        config.set(config.deskLyricStrokeSize, size)
-        self.lyricStrokeSizeValueLabel.setNum(size)
-        self.lyricStrokeSizeValueLabel.adjustSize()
-        signalBus.lyricStrokeSizeChanged.emit(size)
+        signalBus.desktopLyricStrokeColorChanged.emit(color)
 
     def __connectSignalToSlot(self):
         """ connect signal to slot """
         signalBus.appRestartSig.connect(self.__showRestartTooltip)
         self.lyricFontButton.clicked.connect(self.__onLyricFontButtonClicked)
-        self.lyricFontColorPicker.colorChanged.connect(
-            self.__onLyricFontColorChanged)
-        self.lyricHighlightColorPicker.colorChanged.connect(
-            self.__onLyricHighlightColorChanged)
-        self.lyricStrokeColorPicker.colorChanged.connect(
-            self.__onLyricStrokeColorChanged)
-        self.lyricStrokeSizeSlider.valueChanged.connect(
-            self.__onLyricStrokeSizeChanged)
-        self.lyricAlignGroup.buttonClicked.connect(
-            self.__onLyricAlignmentChanged)
+        self.albumBlurRadiusSlider.valueChanged.connect(
+            signalBus.albumBlurRadiusChanged)
+        self.desktopLyricFontButton.clicked.connect(
+            self.__onDesktopLyricFontButtonClicked)
+        self.desktopLyricFontColorPicker.colorChanged.connect(
+            self.__onDesktopLyricFontColorChanged)
+        self.desktopLyricHighlightColorPicker.colorChanged.connect(
+            self.__onDesktopLyricHighlightColorChanged)
+        self.desktopLyricStrokeColorPicker.colorChanged.connect(
+            self.__onDesktopLyricStrokeColorChanged)
+        self.desktopLyricStrokeSizeSlider.valueChanged.connect(
+            signalBus.desktopLyricStrokeSizeChanged)
+        self.desktopLyricAlignGroup.buttonClicked.connect(
+            self.__onDesktopLyricAlignmentChanged)
         self.preferEmbedCheckBox.stateChanged.connect(
             lambda: config.set(config.preferEmbedLyric, self.preferEmbedCheckBox.isChecked()))
         self.embedWhenSaveCheckBox.stateChanged.connect(
@@ -489,8 +497,6 @@ class SettingInterface(ScrollArea):
             self.__onGetMetaDataSwitchButtonCheckedChanged)
         self.selectMusicFolderLabel.clicked.connect(
             self.__showSongFolderListDialog)
-        self.pageSizeSlider.valueChanged.connect(
-            self.__onPageSliderValueChanged)
         self.downloadFolderButton.clicked.connect(
             self.__onDownloadFolderButtonClicked)
         self.closeWindowGroup.buttonClicked.connect(
@@ -624,3 +630,37 @@ class SwitchButtonGroup(QWidget):
 
     def isChecked(self):
         return self.switchButton.isChecked()
+
+
+class SliderWidget(QWidget):
+    """ Slider widget """
+
+    valueChanged = pyqtSignal(int)
+
+    def __init__(self, property: ConfigItem, parent=None):
+        super().__init__(parent)
+        self.configItem = property
+        self.hBox = QHBoxLayout(self)
+        self.slider = Slider(Qt.Horizontal, self)
+        self.label = QLabel(self)
+        self.slider.setFixedWidth(188)
+
+        self.slider.setRange(*property.range)
+        self.slider.setSingleStep(1)
+        self.slider.setValue(property.value)
+        self.label.setNum(property.value)
+
+        self.hBox.setSpacing(10)
+        self.hBox.setContentsMargins(0, 0, 0, 0)
+        self.hBox.addWidget(self.slider)
+        self.hBox.addWidget(self.label)
+
+        self.slider.valueChanged.connect(self.__onValueChanged)
+
+    def __onValueChanged(self, value: int):
+        """ slider value changed slot """
+        config.set(self.configItem, value)
+        self.label.setNum(value)
+        self.label.adjustSize()
+        self.adjustSize()
+        self.valueChanged.emit(value)

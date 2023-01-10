@@ -81,12 +81,15 @@ class SignalBus(Singleton, QObject):
 
     totalOnlineSongsChanged = pyqtSignal(int)      # 搜索到的在线音乐总数发生变化
 
-    lyricFontChanged = pyqtSignal(QFont)                # 桌面歌词字体改变
-    lyricFontColorChanged = pyqtSignal(QColor)          # 桌面歌词背景色改变
-    lyricHighlightColorChanged = pyqtSignal(QColor)     # 桌面歌词高亮色改变
-    lyricStrokeColorChanged = pyqtSignal(QColor)        # 桌面歌词描边色改变
-    lyricStrokeSizeChanged = pyqtSignal(int)            # 桌面歌词描边大小改变
-    lyricAlignmentChanged = pyqtSignal(str)             # 桌面歌词对齐方式改变
+    lyricFontChanged = pyqtSignal(QFont)                       # 正在播放界面歌词字体改变
+    albumBlurRadiusChanged = pyqtSignal(int)                   # 正在播放界面背景磨砂半径改变
+
+    desktopLyricFontChanged = pyqtSignal(QFont)                # 桌面歌词字体改变
+    desktopLyricFontColorChanged = pyqtSignal(QColor)          # 桌面歌词背景色改变
+    desktopLyricHighlightColorChanged = pyqtSignal(QColor)     # 桌面歌词高亮色改变
+    desktopLyricStrokeColorChanged = pyqtSignal(QColor)        # 桌面歌词描边色改变
+    desktopLyricStrokeSizeChanged = pyqtSignal(int)            # 桌面歌词描边大小改变
+    desktopLyricAlignmentChanged = pyqtSignal(str)             # 桌面歌词对齐方式改变
 
 
 signalBus = SignalBus()

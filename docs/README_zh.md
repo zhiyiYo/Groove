@@ -28,7 +28,7 @@
 </p>
 
 ## 界面
-![界面](source/_static/images/Groove音乐.png)
+![界面](source/_static/images/Groove音乐.jpg)
 
 ## 功能
 
@@ -50,7 +50,7 @@
 
 * 观看和下载在线 MV
 
-  ![MV](source/_static/images/播放和下载MV.png)
+  ![MV](source/_static/images/播放和下载MV.jpg)
 
 
 ## 快速开始

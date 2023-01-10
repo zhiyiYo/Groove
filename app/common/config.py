@@ -266,6 +266,14 @@ class Config(Singleton):
         PlaybackModeSerializer()
     )
 
+    # playing interface
+    lyricFontSize = ConfigItem(
+        "PlayingInterface", "LyricFontSize", 24, RangeValidator(10, 40))
+    lyricFontFamily = ConfigItem(
+        "PlayingInterface", "LyricFontFamily", "Microsoft YaHei")
+    albumBlurRadius = ConfigItem(
+        "PlayingInterface", "AlbumBlurRadius", 12, RangeValidator(0, 20))
+
     # desktop lyric
     deskLyricFontColor = ConfigItem(
         "DesktopLyric", "FontColor", [255, 255, 255], ColorValidator([255, 255, 255]))
@@ -379,13 +387,27 @@ class Config(Singleton):
 
     @property
     def lyricFont(self):
+        """ get the playing interface lyric font """
+        font = QFont(self.lyricFontFamily.value)
+        font.setPixelSize(self.lyricFontSize.value)
+        return font
+
+    @lyricFont.setter
+    def lyricFont(self, font: QFont):
+        dpi = QGuiApplication.primaryScreen().logicalDotsPerInch()
+        self.lyricFontFamily.value = font.family()
+        self.lyricFontSize.value = max(10, int(font.pointSize()*dpi/72))
+        self.save()
+
+    @property
+    def desktopLyricFont(self):
         """ get the desktop lyric font """
         font = QFont(self.deskLyricFontFamily.value)
         font.setPixelSize(self.deskLyricFontSize.value)
         return font
 
-    @lyricFont.setter
-    def lyricFont(self, font: QFont):
+    @desktopLyricFont.setter
+    def desktopLyricFont(self, font: QFont):
         dpi = QGuiApplication.primaryScreen().logicalDotsPerInch()
         self.deskLyricFontFamily.value = font.family()
         self.deskLyricFontSize.value = max(15, int(font.pointSize()*dpi/72))

@@ -2184,6 +2184,21 @@
         <source>Interface zoom</source>
         <translation>界面缩放</translation>
     </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="127"/>
+        <source>Playing Interface</source>
+        <translation>正在播放界面</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="130"/>
+        <source>Lyric font, the font size of the lyrics being played will be larger</source>
+        <translation>歌词字体，正在播放的歌词会更大</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="132"/>
+        <source>Album background blur radius, the greater the value, the more blurred</source>
+        <translation>专辑背景磨砂半径，值越大越模糊</translation>
+    </message>
 </context>
 <context>
     <name>QPlatformTheme</name>

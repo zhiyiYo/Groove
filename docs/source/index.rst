@@ -34,7 +34,7 @@
    </p>
 
    <p align="center">
-      <img src="./_static/images/Groove音乐.png" alt="界面">
+      <img src="./_static/images/Groove音乐.jpg" alt="界面">
    </p>
 
 

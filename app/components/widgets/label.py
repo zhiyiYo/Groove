@@ -230,6 +230,12 @@ class BlurCoverLabel(QLabel):
         """ set foreground color """
         self.acrylicTextureLabel.setTintColor(color)
 
+    def setBlurRadius(self, radius: int):
+        """ set blur radius """
+        self.blurRadius = max(0, radius)
+        self.blurThread.setCover(self.coverPath, self.blurRadius, self.maxBlurSize)
+        self.blurThread.start()
+
     def resizeEvent(self, e):
         super().resizeEvent(e)
         self.acrylicTextureLabel.resize(self.size())
