@@ -11,11 +11,11 @@
 }
 
 #subStackWidget {
-    background-color: rgb(15, 15, 15);
+    background-color: rgb(39, 39, 39);
 }
 
 #myMusicInterface {
-    background-color: rgb(15, 15, 15);
+    background-color: rgb(39, 39, 39);
 }
 
 QLabel {

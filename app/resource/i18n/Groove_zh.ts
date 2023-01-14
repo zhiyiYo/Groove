@@ -489,29 +489,24 @@
     </message>
 </context>
 <context>
-    <name>FolderListDialog</name>
+    <name>FolderListSettingCard</name>
     <message>
-        <location filename="../../components/dialog_box/folder_list_dialog.py" line="33"/>
-        <source>Done</source>
-        <translation>完成</translation>
+        <location filename="../../components/settings/folder_list_setting_card.py" line="116"/>
+        <source>Add folder</source>
+        <translation>添加文件夹</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/folder_list_dialog.py" line="105"/>
-        <source>Choose folder</source>
-        <translation>选择文件夹</translation>
-    </message>
-    <message>
-        <location filename="../../components/dialog_box/folder_list_dialog.py" line="125"/>
+        <location filename="../../components/settings/folder_list_setting_card.py" line="156"/>
         <source>Are you sure you want to delete the folder?</source>
-        <translation>确认删除文件夹吗？</translation>
+        <translation>确认删除此文件夹吗？</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/folder_list_dialog.py" line="126"/>
+        <location filename="../../components/settings/folder_list_setting_card.py" line="157"/>
         <source>If you delete the </source>
         <translation>如果将 </translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/folder_list_dialog.py" line="127"/>
+        <location filename="../../components/settings/folder_list_setting_card.py" line="158"/>
         <source> folder and remove it from the list, the folder will no longer appear in the list, but will not be deleted.</source>
         <translation> 文件夹从列表中移除，则该文件夹不会再出现在列表中，但不会被删除。</translation>
     </message>
@@ -530,9 +525,9 @@
     </message>
 </context>
 <context>
-    <name>GetFolderMetaDataThread</name>
+    <name>CrawlFolderMetaDataThread</name>
     <message>
-        <location filename="../../common/thread/get_meta_data_thread.py" line="58"/>
+        <location filename="../../common/thread/crawl_meta_data_thread.py" line="58"/>
         <source>Current progress: </source>
         <translation>当前进度: </translation>
     </message>
@@ -1915,9 +1910,49 @@
         <translation>此 PC 上的音乐</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="280"/>
-        <source>Off</source>
-        <translation>关</translation>
+        <location filename="../../View/setting_interface/setting_interface.py" line="40"/>
+        <source>Local music library</source>
+        <translation>本地音乐库</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="47"/>
+        <source>Choose folder</source>
+        <translation>选择文件夹</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="53"/>
+        <source>Personalization</source>
+        <translation>个性化</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="56"/>
+        <source>Use Acrylic effect</source>
+        <translation>启用亚克力效果</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="58"/>
+        <source>Acrylic effect has better visual experience, but it may cause the window to become stuck</source>
+        <translation>亚克力效果的视觉体验更好，但可能导致窗口卡顿</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="65"/>
+        <source>Application theme</source>
+        <translation>应用主题</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="76"/>
+        <source>Change the size of widgets and fonts</source>
+        <translation>更改小部件和界面字体的大小</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="95"/>
+        <source>Online Music</source>
+        <translation>在线音乐</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="100"/>
+        <source>Number of online music displayed on each page</source>
+        <translation>每页显示的在线歌曲数量</translation>
     </message>
     <message>
         <location filename="../../View/setting_interface/setting_interface.py" line="61"/>
@@ -1926,7 +1961,7 @@
     </message>
     <message>
         <location filename="../../View/setting_interface/setting_interface.py" line="75"/>
-        <source>Online Playing Quality</source>
+        <source>Online music quality</source>
         <translation>在线播放音质</translation>
     </message>
     <message>
@@ -1955,59 +1990,14 @@
         <translation>搜索</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="70"/>
-        <source>Set the number of online music displayed</source>
-        <translation>显示的在线音乐数量</translation>
-    </message>
-    <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="48"/>
-        <source>Choose where we look for music</source>
-        <translation>选择查找音乐的位置</translation>
-    </message>
-    <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="395"/>
-        <source>Choose folder</source>
-        <translation>选择文件夹</translation>
-    </message>
-    <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="103"/>
-        <source>Choose</source>
-        <translation>浏览</translation>
-    </message>
-    <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="245"/>
-        <source>On</source>
-        <translation>开</translation>
-    </message>
-    <message>
         <location filename="../../View/setting_interface/setting_interface.py" line="260"/>
         <source>Current progress: </source>
         <translation>当前进度: </translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="320"/>
-        <source>Right now, we&apos;re watching these folders:</source>
-        <translation>现在我们正在查看这些文件夹:</translation>
-    </message>
-    <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="319"/>
-        <source>Build your collection from your local music files</source>
-        <translation>从本地曲库创建个人&quot;收藏&quot;</translation>
-    </message>
-    <message>
         <location filename="../../View/setting_interface/setting_interface.py" line="260"/>
         <source>Crawling metadata</source>
         <translation>正在爬取歌曲信息</translation>
-    </message>
-    <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="52"/>
-        <source>Acrylic Background</source>
-        <translation>亚克力背景</translation>
-    </message>
-    <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="54"/>
-        <source>Use the acrylic background effect</source>
-        <translation>使用亚克力背景效果</translation>
     </message>
     <message>
         <location filename="../../View/setting_interface/setting_interface.py" line="107"/>
@@ -2016,8 +2006,8 @@
     </message>
     <message>
         <location filename="../../View/setting_interface/setting_interface.py" line="86"/>
-        <source>MV Quality</source>
-        <translation>MV 画质</translation>
+        <source>Online MV quality</source>
+        <translation>在线 MV 画质</translation>
     </message>
     <message>
         <location filename="../../View/setting_interface/setting_interface.py" line="87"/>
@@ -2041,23 +2031,18 @@
     </message>
     <message>
         <location filename="../../View/setting_interface/setting_interface.py" line="94"/>
-        <source>Close Main Window</source>
-        <translation>关闭主界面</translation>
+        <source>Main Panel</source>
+        <translation>主面板</translation>
     </message>
     <message>
         <location filename="../../View/setting_interface/setting_interface.py" line="96"/>
-        <source>Minimize to system tray</source>
-        <translation>最小化到系统托盘</translation>
+        <source>Minimize to tray after closing</source>
+        <translation>关闭后最小化到托盘</translation>
     </message>
     <message>
         <location filename="../../View/setting_interface/setting_interface.py" line="98"/>
-        <source>Quit Groove Music</source>
-        <translation>退出 Groove 音乐</translation>
-    </message>
-    <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="100"/>
-        <source>Mode</source>
-        <translation>主题</translation>
+        <source>Groove Music will continue to run in the background</source>
+        <translation>Groove 音乐将在后台继续运行</translation>
     </message>
     <message>
         <location filename="../../View/setting_interface/setting_interface.py" line="102"/>
@@ -2101,12 +2086,12 @@
     </message>
     <message>
         <location filename="../../View/setting_interface/setting_interface.py" line="111"/>
-        <source>Font color</source>
+        <source>Background color</source>
         <translation>背景色</translation>
     </message>
     <message>
         <location filename="../../View/setting_interface/setting_interface.py" line="113"/>
-        <source>Highlight color</source>
+        <source>Foreground color</source>
         <translation>前景色</translation>
     </message>
     <message>
@@ -2140,13 +2125,8 @@
         <translation>选择字体</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="135"/>
-        <source>Style</source>
-        <translation>样式</translation>
-    </message>
-    <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="482"/>
-        <source>Select Font</source>
+        <location filename="../../View/setting_interface/setting_interface.py" line="139"/>
+        <source>Choose Font</source>
         <translation>选择字体</translation>
     </message>
     <message>
@@ -2158,6 +2138,11 @@
         <location filename="../../View/setting_interface/setting_interface.py" line="146"/>
         <source>Prefer embedded lyrics</source>
         <translation>优先使用内嵌歌词</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="194"/>
+        <source>Embedded lyrics will be used preferentially instead of online lyrics</source>
+        <translation>优先使用内嵌歌词而非在线搜索的歌词</translation>
     </message>
     <message>
         <location filename="../../View/setting_interface/setting_interface.py" line="148"/>
@@ -2173,6 +2158,11 @@
         <location filename="../../View/setting_interface/setting_interface.py" line="157"/>
         <source>Check for updates when the application starts</source>
         <translation>在应用程序启动时检查更新</translation>
+    </message>
+        <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="223"/>
+        <source>The new version will be more stable and have more features</source>
+        <translation>新版本将更加稳定并拥有更多功能（建议启用此选项）</translation>
     </message>
     <message>
         <location filename="../../View/setting_interface/setting_interface.py" line="177"/>
@@ -2191,13 +2181,63 @@
     </message>
     <message>
         <location filename="../../View/setting_interface/setting_interface.py" line="130"/>
-        <source>Lyric font, the font size of the lyrics being played will be larger</source>
-        <translation>歌词字体，正在播放的歌词会更大</translation>
+        <source>Background blur radius</source>
+        <translation>背景磨砂半径</translation>
     </message>
     <message>
-        <location filename="../../View/setting_interface/setting_interface.py" line="132"/>
-        <source>Album background blur radius, the greater the value, the more blurred</source>
-        <translation>专辑背景磨砂半径，值越大越模糊</translation>
+        <location filename="../../View/setting_interface/setting_interface.py" line="131"/>
+        <source>The greater the radius, the more blurred the image</source>
+        <translation>磨砂半径越大，图像看起来越模糊</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="136"/>
+        <source>Lyric font</source>
+        <translation>歌词字体</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="138"/>
+        <source>The lyrics being played will be larger than the lyrics not being played</source>
+        <translation>正在播放的歌词字体大小将大于没在播放的歌词</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="230"/>
+        <source>About</source>
+        <translation>关于</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="233"/>
+        <source>Open help page</source>
+        <translation>打开帮助页面</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="236"/>
+        <source>Discover new features and learn useful tips about Groove Music</source>
+        <translation>发现新功能并了解有关 Groove 音乐的使用技巧</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="240"/>
+        <source>Provide feedback</source>
+        <translation>提供反馈</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="243"/>
+        <source>Help us improve Groove Music by providing feedback</source>
+        <translation>通过提供反馈帮助我们改进 Groove 音乐</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="249"/>
+        <source>About Groove Music</source>
+        <translation>关于 Groove 音乐</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="250"/>
+        <source>Copyright</source>
+        <translation>版权所有</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="252"/>
+        <source>Version</source>
+        <translation>当前版本</translation>
     </message>
 </context>
 <context>
@@ -2213,6 +2253,19 @@
     <message>
         <source>Select Font</source>
         <translation>选择字体</translation>
+    </message>
+</context>
+<context>
+    <name>SwitchSettingCard</name>
+    <message>
+        <location filename="../../components/settings/setting_card.py" line="104"/>
+        <source>Off</source>
+        <translation>关</translation>
+    </message>
+    <message>
+        <location filename="../../components/settings/setting_card.py" line="130"/>
+        <source>On</source>
+        <translation>开</translation>
     </message>
 </context>
 <context>

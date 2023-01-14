@@ -51,7 +51,6 @@ QLineEdit {
     padding: 10px 14px 10px 14px;
     font: 18px 'Segoe UI', 'Microsoft YaHei';
     selection-background-color: rgb(0, 153, 188);
-    /*margin: 8px 16px 8px 16px;*/
 }
 
 QLineEdit:focus {

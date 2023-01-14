@@ -1,100 +1,19 @@
-QWidget {
-    background-color: rgb(15, 15, 15);
+SettingInterface,
+#scrollWidget {
+    background-color: rgb(39, 39, 39);
 }
 
 QScrollArea {
-    background-color: rgb(15, 15, 15);
+    background-color: rgb(39, 39, 39);
     border: none;
 }
 
 
 /* 标签 */
-QLabel {
-    font-size: 18px;
-    font-family: 'Segoe UI', 'Microsoft YaHei';
-    color: white;
-    background-color: transparent;
-}
-
 QLabel#settingLabel {
     font: 41px 'Microsoft YaHei Light';
-}
-
-QLabel#titleLabel {
-    font: 29px 'Segoe UI', 'Microsoft YaHei';
-}
-
-QLabel#subTitleLabel {
-    font: 24px 'Segoe UI', 'Microsoft YaHei';
-}
-
-QLabel#clickableLabel {
-    color: rgb(0, 153, 188);
-    font-family: 'Segoe UI', 'Microsoft YaHei';
-    font-size: 18px;
-}
-
-QLabel#clickableLabel:hover {
-    color: rgb(154, 154, 154);
-}
-
-
-
-/* 单选按钮 */
-QRadioButton {
-    spacing: 10px;
+    background-color: transparent;
     color: white;
-    font-size: 18px;
-    font-family: 'Segoe UI', 'Microsoft YaHei';
-    background-color: transparent;
-}
-
-QRadioButton::indicator {
-    background-color: transparent;
-}
-
-QRadioButton::indicator:unchecked {
-    height: 22px;
-    width: 22px;
-    border: 2px solid rgb(154, 154, 154);
-    border-radius: 13px;
-}
-
-QRadioButton::indicator:checked {
-    height: 12px;
-    width: 12px;
-    border: 7px solid rgb(0, 153, 188);
-    border-radius: 13px;
-}
-
-QRadioButton::indicator:unchecked:hover {
-    height: 22px;
-    width: 22px;
-    border: 2px solid rgb(120, 120, 120);
-    border-radius: 13px;
-}
-
-QRadioButton::indicator:checked:hover {
-    height: 12px;
-    width: 12px;
-    border: 7px solid rgb(72, 210, 242);
-    border-radius: 13px;
-}
-
-QRadioButton::indicator:unchecked:pressed {
-    height: 22px;
-    width: 22px;
-    background-color: rgb(153, 153, 153);
-    border: 2px solid rgb(84, 84, 84);
-    border-radius: 13px;
-
-}
-
-QRadioButton::indicator:checked:pressed {
-    height: 12px;
-    width: 12px;
-    border: 7px solid rgb(0, 107, 131);
-    border-radius: 13px;
 }
 
 
@@ -127,118 +46,4 @@ QScrollBar::handle {
 QScrollBar::add-page:vertical,
 QScrollBar::sub-page:vertical {
     background: none;
-}
-
-
-/* 水平滑动条 */
-Slider:horizontal {
-    height: 26px;
-    width: 188px;
-    background-color: transparent;
-}
-
-Slider::groove:horizontal {
-    border: none;
-    height: 4px;
-}
-
-Slider::handle:horizontal {
-    width: 26px;
-    height: 26px;
-    border-radius: 13px;
-    margin-top: -11px;
-    margin-bottom: -11px;
-    background-color: rgb(0, 153, 188);
-}
-
-Slider::handle:horizontal:hover {
-    background-color: rgb(72, 210, 242);
-}
-
-Slider::handle:horizontal:pressed {
-    background-color: rgb(0, 107, 131);
-}
-
-
-Slider::sub-page:horizontal {
-    /*已划过部分的颜色*/
-    background: rgb(0, 153, 187);
-    height: 4px;
-    border-radius: 2px;
-}
-
-Slider::add-page:horizontal {
-    background-color: rgb(153, 153, 153);
-    height: 4px;
-    border-radius: 2px;
-}
-
-/* 按钮 */
-QPushButton {
-    background-color: rgb(51, 51, 51);
-    font-size: 17px;
-    font-family: 'Segoe UI', 'Microsoft YaHei';
-    border: none;
-    border-radius: 4px;
-    padding: 9px 11px 9px 11px;
-    color: white;
-}
-
-QPushButton:pressed:hover {
-    background-color: rgb(102, 102, 102);
-}
-
-QPushButton:hover {
-    background-color: rgb(25, 25, 25);
-}
-
-
-/* 输入框 */
-QLineEdit {
-    font: 16px 'Segoe UI', 'Microsoft YaHei';
-    padding: 6px 11px 6px 11px;
-    selection-background-color: rgb(0, 153, 188);
-    background-color: rgb(36, 36, 36);
-    border: 1px solid rgb(52, 52, 52);
-    border-radius: 4px;
-    color: white;
-}
-
-QLineEdit:hover {
-    background-color: rgb(13, 13, 13);
-    border: 1px solid rgb(25, 25, 25);
-}
-
-RadioButtonGroup {
-    background-color: transparent;
-}
-
-
-/* 复选框样式 */
-QCheckBox {
-    font: 18px 'Segoe UI', 'Microsoft YaHei';
-    background-color: transparent;
-    spacing: 10px;
-    color: white;
-}
-
-QCheckBox::indicator {
-    /*需要减去边框的宽度*/
-    width: 23px;
-    height: 23px;
-    background-color: transparent;
-    border: 1px solid white;
-    border-radius: 6px;
-}
-
-
-QCheckBox::indicator:pressed {
-    border: 1px solid rgb(125, 125, 125);
-}
-
-
-QCheckBox::indicator:checked {
-    border-image: url(:/images/setting_interface/CheckMark.png);
-    background-color: rgb(0, 153, 188);
-    border: 1px solid rgb(0, 153, 188);
 }

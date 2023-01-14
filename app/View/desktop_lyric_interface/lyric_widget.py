@@ -29,12 +29,7 @@ class LyricWidget(QWidget):
         self.translationTextXAni = QPropertyAnimation(
             self, b'translationTextX', self)
 
-        signalBus.desktopLyricAlignmentChanged.connect(self.update)
-        signalBus.desktopLyricFontChanged.connect(self.update)
-        signalBus.desktopLyricFontColorChanged.connect(self.update)
-        signalBus.desktopLyricHighlightColorChanged.connect(self.update)
-        signalBus.desktopLyricStrokeColorChanged.connect(self.update)
-        signalBus.desktopLyricStrokeSizeChanged.connect(self.update)
+        signalBus.desktopLyricStyleChanged.connect(self.update)
 
     def paintEvent(self, e):
         if not self.lyric:
@@ -75,13 +70,13 @@ class LyricWidget(QWidget):
         path = QPainterPath()
         path.addText(QPointF(x, y), font, text)
         painter.strokePath(path, QPen(
-            QColor(*config.get(config.deskLyricStrokeColor)), config.get(config.deskLyricStrokeSize)))
-        painter.fillPath(path, QColor(*config.get(config.deskLyricFontColor)))
+            config.get(config.deskLyricStrokeColor), config.get(config.deskLyricStrokeSize)))
+        painter.fillPath(path, config.get(config.deskLyricFontColor))
 
         # draw foreground text
         painter.fillPath(
             self.__getMaskedLyricPath(path, width),
-            QColor(*config.get(config.deskLyricHighlightColor))
+            config.get(config.deskLyricHighlightColor)
         )
 
     def __getMaskedLyricPath(self, path: QPainterPath, width: float):

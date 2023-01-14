@@ -6,7 +6,8 @@ from pathlib import Path
 from typing import Iterable, List, Union
 
 import darkdetect
-from PyQt5.QtGui import QFont, QGuiApplication
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QColor, QFont, QGuiApplication
 from PyQt5.QtMultimedia import QMediaPlaylist
 
 from .crawler import MvQuality, SongQuality
@@ -99,17 +100,17 @@ class FolderListValidator(ConfigValidator):
 class ColorValidator(ConfigValidator):
     """ RGB color validator """
 
-    def __init__(self, default: List[int]):
-        self.default = default
+    def __init__(self, default):
+        self.default = QColor(default)
 
-    def validate(self, value: List[int]) -> bool:
-        if not isinstance(value, list) or len(value) != 3:
+    def validate(self, color) -> bool:
+        try:
+            return QColor(color).isValid()
+        except:
             return False
 
-        return all(0 <= i <= 255 for i in value)
-
-    def correct(self, value: List[int]):
-        return value if self.validate(value) else self.default
+    def correct(self, value):
+        return QColor(value) if self.validate(value) else self.default
 
 
 class ConfigSerializer:
@@ -135,6 +136,16 @@ class EnumSerializer(ConfigSerializer):
 
     def deserialize(self, value):
         return self.enumClass(value)
+
+
+class ColorSerializer(ConfigSerializer):
+    """ QColor serializer """
+
+    def serialize(self, value: QColor):
+        return value.name()
+
+    def deserialize(self, value):
+        return QColor(value)
 
 
 class PlaybackModeSerializer(ConfigSerializer):
@@ -191,22 +202,6 @@ class ConfigItem:
         self.__value = self.validator.correct(v)
 
     @property
-    def options(self):
-        """ get optional values, only available for item with `OptionsValidator` """
-        if isinstance(self.validator, OptionsValidator):
-            return self.validator.options
-
-        return []
-
-    @property
-    def range(self):
-        """ get the available range of config """
-        if isinstance(self.validator, RangeValidator):
-            return self.validator.range
-
-        return (self.value, self.value)
-
-    @property
     def key(self):
         """ get the config key separated by `.` """
         return self.group+"."+self.name if self.name else self.group
@@ -216,6 +211,31 @@ class ConfigItem:
 
     def deserializeFrom(self, value):
         self.value = self.serializer.deserialize(value)
+
+
+class RangeConfigItem(ConfigItem):
+    """ Config item of range """
+
+    @property
+    def range(self):
+        """ get the available range of config """
+        return self.validator.range
+
+
+class OptionsConfigItem(ConfigItem):
+    """ Config item with options """
+
+    @property
+    def options(self):
+        return self.validator.options
+
+
+class ColorConfigItem(ConfigItem):
+    """ Color config item """
+
+    def __init__(self, group: str, name: str, default, restart=False):
+        super().__init__(group, name, QColor(default),
+                         ColorValidator(default), ColorSerializer(), restart)
 
 
 class Config(Singleton):
@@ -231,11 +251,11 @@ class Config(Singleton):
         "Folders", "Download", "download", FolderValidator())
 
     # online
-    onlineSongQuality = ConfigItem(
+    onlineSongQuality = OptionsConfigItem(
         "Online", "SongQuality", SongQuality.STANDARD, OptionsValidator(SongQuality), EnumSerializer(SongQuality))
-    onlinePageSize = ConfigItem(
-        "Online", "PageSize", 30, RangeValidator(0, 30))
-    onlineMvQuality = ConfigItem(
+    onlinePageSize = RangeConfigItem(
+        "Online", "PageSize", 30, RangeValidator(0, 50))
+    onlineMvQuality = OptionsConfigItem(
         "Online", "MvQuality", MvQuality.FULL_HD, OptionsValidator(MvQuality), EnumSerializer(MvQuality))
 
     # main window
@@ -243,51 +263,51 @@ class Config(Singleton):
         "MainWindow", "EnableAcrylicBackground", False, BoolValidator())
     minimizeToTray = ConfigItem(
         "MainWindow", "MinimizeToTray", True, BoolValidator())
-    playBarColor = ConfigItem(
-        "MainWindow", "PlayBarColor", [34, 92, 127], ColorValidator([34, 92, 127]))
-    themeMode = ConfigItem(
+    playBarColor = ColorConfigItem("MainWindow", "PlayBarColor", "#225C7F")
+    themeMode = OptionsConfigItem(
         "MainWindow", "ThemeMode", "Light", OptionsValidator(["Light", "Dark", "Auto"]), restart=True)
-    recentPlaysNumber = ConfigItem(
+    recentPlaysNumber = RangeConfigItem(
         "MainWindow", "RecentPlayNumbers", 300, RangeValidator(10, 300))
-    dpiScale = ConfigItem(
+    dpiScale = OptionsConfigItem(
         "MainWindow", "DpiScale", "Auto", OptionsValidator([1, 1.25, 1.5, 1.75, 2, "Auto"]), restart=True)
 
     # media player
     randomPlay = ConfigItem("Player", "RandomPlay", False, BoolValidator())
-    playerVolume = ConfigItem("Player", "Volume", 30, RangeValidator(0, 100))
+    playerVolume = RangeConfigItem(
+        "Player", "Volume", 30, RangeValidator(0, 100))
     playerMuted = ConfigItem("Player", "Muted", False, BoolValidator())
-    playerPosition = ConfigItem(
+    playerPosition = RangeConfigItem(
         "Player", "Position", 0, RangeValidator(0, float("inf")))
-    playerSpeed = ConfigItem(
+    playerSpeed = RangeConfigItem(
         "Player", "Speed", 1, RangeValidator(0.1, float("inf")))
-    loopMode = ConfigItem(
+    loopMode = OptionsConfigItem(
         "Player", "LoopMode", QMediaPlaylist.Sequential,
-        OptionsValidator([QMediaPlaylist.Sequential, QMediaPlaylist.Loop, QMediaPlaylist.CurrentItemInLoop]),
+        OptionsValidator([QMediaPlaylist.Sequential,
+                         QMediaPlaylist.Loop, QMediaPlaylist.CurrentItemInLoop]),
         PlaybackModeSerializer()
     )
 
     # playing interface
-    lyricFontSize = ConfigItem(
+    lyricFontSize = RangeConfigItem(
         "PlayingInterface", "LyricFontSize", 24, RangeValidator(10, 40))
     lyricFontFamily = ConfigItem(
         "PlayingInterface", "LyricFontFamily", "Microsoft YaHei")
-    albumBlurRadius = ConfigItem(
-        "PlayingInterface", "AlbumBlurRadius", 12, RangeValidator(0, 20))
+    albumBlurRadius = RangeConfigItem(
+        "PlayingInterface", "AlbumBlurRadius", 12, RangeValidator(0, 40))
 
     # desktop lyric
-    deskLyricFontColor = ConfigItem(
-        "DesktopLyric", "FontColor", [255, 255, 255], ColorValidator([255, 255, 255]))
-    deskLyricHighlightColor = ConfigItem(
-        "DesktopLyric", "HighlightColor", [0, 153, 188], ColorValidator([0, 153, 188]))
-    deskLyricFontSize = ConfigItem(
+    deskLyricFontColor = ColorConfigItem("DesktopLyric", "FontColor", Qt.white)
+    deskLyricHighlightColor = ColorConfigItem(
+        "DesktopLyric", "HighlightColor", "#0099BC")
+    deskLyricFontSize = RangeConfigItem(
         "DesktopLyric", "FontSize", 50, RangeValidator(15, 50))
-    deskLyricStrokeSize = ConfigItem(
-        "DesktopLyric", "StrokeSize", 5, RangeValidator(0, 10))
-    deskLyricStrokeColor = ConfigItem(
-        "DesktopLyric", "StrokeColor", [0, 0, 0], ColorValidator([0, 0, 0]))
+    deskLyricStrokeSize = RangeConfigItem(
+        "DesktopLyric", "StrokeSize", 5, RangeValidator(0, 20))
+    deskLyricStrokeColor = ColorConfigItem(
+        "DesktopLyric", "StrokeColor", Qt.black)
     deskLyricFontFamily = ConfigItem(
         "DesktopLyric", "FontFamily", "Microsoft YaHei")
-    deskLyricAlignment = ConfigItem(
+    deskLyricAlignment = OptionsConfigItem(
         "DesktopLyric", "Alignment", "Center", OptionsValidator(["Center", "Left", "Right"]))
 
     # embedded lyrics
@@ -416,7 +436,9 @@ class Config(Singleton):
 
 config = Config()
 
-VERSION = "v1.2.5"
+YEAR = 2022
+AUTHOR = "zhiyiYo"
+VERSION = "v1.2.6"
 HELP_URL = "https://groove-music.readthedocs.io"
 FEEDBACK_URL = "https://github.com/zhiyiYo/Groove/issues"
 RELEASE_URL = "https://github.com/zhiyiYo/Groove/releases/latest"

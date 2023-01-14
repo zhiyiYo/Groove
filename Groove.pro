@@ -1,7 +1,6 @@
 SOURCES += app/View/main_window/main_window.py \
         app/View/setting_interface/setting_interface.py \
-        app/common/thread/get_meta_data_thread.py \
-        app/components/dialog_box/folder_list_dialog.py \
+        app/common/thread/crawl_meta_data_thread.py \
         app/components/dialog_box/dialog.py \
         app/View/navigation_interface/navigation_widget.py \
         app/View/navigation_interface/navigation_menu.py \
@@ -71,6 +70,8 @@ SOURCES += app/View/main_window/main_window.py \
         app/View/more_search_result_interface/more_search_result_interface.py \
         app/components/singer_card/singer_card_base.py \
         app/components/singer_card/singer_card.py \
-        app/View/search_result_interface/singer_group_box.py
+        app/View/search_result_interface/singer_group_box.py \
+        app/components/settings/folder_list_setting_card.py \
+        app/components/settings/setting_card.py \
 
 TRANSLATIONS += app/resource/i18n/Groove_zh.ts

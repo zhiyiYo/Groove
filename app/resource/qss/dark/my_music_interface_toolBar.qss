@@ -1,5 +1,5 @@
 QWidget {
-    background-color: rgb(15, 15, 15);
+    background-color: rgb(39, 39, 39);
 }
 
 /*设置标签文本左对齐*/

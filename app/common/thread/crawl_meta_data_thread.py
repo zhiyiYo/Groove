@@ -11,7 +11,7 @@ from common.picture import Cover
 from PyQt5.QtCore import QThread, pyqtSignal
 
 
-class GetFolderMetaDataThread(QThread):
+class CrawlFolderMetaDataThread(QThread):
     """ Thread used to get all song meta data in directories """
 
     crawlSignal = pyqtSignal(str)
@@ -64,7 +64,7 @@ class GetFolderMetaDataThread(QThread):
         self.__isStopped = True
 
 
-class GetSongMetaDataThread(QThread):
+class CrawlSongMetaDataThread(QThread):
     """ Thread used to get song meta data of one song """
 
     crawlFinished = pyqtSignal(bool, SongInfo)

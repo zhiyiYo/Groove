@@ -7,7 +7,7 @@ from common.config import config
 from common.lyric import Lyric
 from common.meta_data.reader import AlbumCoverReader, SongInfoReader
 from common.meta_data.writer import MetaDataWriter
-from common.thread.get_meta_data_thread import GetSongMetaDataThread
+from common.thread.crawl_meta_data_thread import CrawlSongMetaDataThread
 from components.buttons.perspective_button import PerspectivePushButton
 from components.buttons.switch_button import SwitchButton
 from components.widgets.label import ErrorIcon, ClickableLabel
@@ -270,7 +270,7 @@ class SongInfoEditDialog(MaskDialogBase):
         self.stateToolTip.show()
 
         # create crawler thread
-        crawler = GetSongMetaDataThread(self.songInfo.file, self)
+        crawler = CrawlSongMetaDataThread(self.songInfo.file, self)
         crawler.crawlFinished.connect(self.__onCrawlFinished)
         crawler.finished.connect(self.__onCrawlThreadFinished)
         crawler.start()

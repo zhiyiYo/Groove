@@ -1,10 +1,10 @@
 QScrollArea {
-    background-color: rgb(15, 15, 15);
+    background-color: rgb(39, 39, 39);
     border: none;
 }
 
 QWidget {
-    background-color: rgb(15, 15, 15);
+    background-color: rgb(39, 39, 39);
 }
 
 QLabel {

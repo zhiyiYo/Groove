@@ -119,7 +119,7 @@ class MainWindow(AcrylicWindow):
 
         # create play bar
         self.playBar = PlayBar(
-            self.mediaPlaylist.lastSongInfo, QColor(*config.get(config.playBarColor)), self)
+            self.mediaPlaylist.lastSongInfo, config.get(config.playBarColor), self)
 
         # create playing interface
         self.playingInterface = PlayingInterface(parent=self)
@@ -1290,8 +1290,7 @@ class MainWindow(AcrylicWindow):
     def onExit(self):
         """ exit main window """
         config.set(config.playerPosition, self.player.position())
-        config.set(config.playBarColor, list(
-            self.playBar.getColor().getRgb()[:3]))
+        config.set(config.playBarColor, self.playBar.getColor())
         self.mediaPlaylist.save()
         self.systemTrayIcon.hide()
         self.hotkeyManager.clear(self.winId())
@@ -1502,11 +1501,11 @@ class MainWindow(AcrylicWindow):
         # setting interface signal
         self.settingInterface.acrylicEnableChanged.connect(
             self.setWindowEffect)
-        self.settingInterface.selectedMusicFoldersChanged.connect(
+        self.settingInterface.musicFoldersChanged.connect(
             self.onSelectedFolderChanged)
         self.settingInterface.minimizeToTrayChanged.connect(
             self.onMinimizeToTrayChanged)
-        self.settingInterface.crawlFinished.connect(
+        self.settingInterface.crawlMetaDataFinished.connect(
             self.onCrawMetaDataFinished)
         self.settingInterface.checkUpdateSig.connect(self.checkUpdate)
 

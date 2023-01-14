@@ -2,6 +2,7 @@
 from typing import List
 
 from PyQt5.QtCore import QUrl
+from PyQt5.QtGui import QDesktopServices
 
 
 class FakeUrl(QUrl):
@@ -61,3 +62,8 @@ def url(path: str):
         return QUrl("http")
 
     return QUrl(path)
+
+
+def openUrl(url: str):
+    """ open url """
+    QDesktopServices.openUrl(QUrl(url))

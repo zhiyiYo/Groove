@@ -1,4 +1,6 @@
 # coding: utf-8
+from enum import Enum
+
 from common.style_sheet import setStyleSheet
 from PyQt5.QtCore import QFile, Qt, QTimer, pyqtProperty, pyqtSignal
 from PyQt5.QtGui import QColor, QPainter
@@ -114,15 +116,34 @@ class Indicator(QToolButton):
         QColor, getSliderDisabledColor, setSliderDisabledColor)
 
 
+class IndicatorPosition(Enum):
+    """ Indicator position """
+    LEFT = 0
+    RIGHT = 1
+
+
 class SwitchButton(QWidget):
     """ Switch button class """
 
     checkedChanged = pyqtSignal(bool)
 
-    def __init__(self, text='关', parent=None):
+    def __init__(self, text='关', parent=None, indicatorPos=IndicatorPosition.LEFT):
+        """
+        Parameters
+        ----------
+        text: str
+            the text of switch button
+
+        parent: QWidget
+            parent widget
+
+        indicatorPosition: IndicatorPosition
+            the position of indicator
+        """
         super().__init__(parent=parent)
         self.text = text
         self.__spacing = 15
+        self.indicatorPos = indicatorPos
         self.hBox = QHBoxLayout(self)
         self.indicator = Indicator(self)
         self.label = QLabel(text, self)
@@ -130,13 +151,20 @@ class SwitchButton(QWidget):
 
     def __initWidget(self):
         """ initialize widgets """
-        # set layout
-        self.hBox.addWidget(self.indicator)
-        self.hBox.addWidget(self.label)
-        self.hBox.setSpacing(self.__spacing)
-        self.hBox.setAlignment(Qt.AlignLeft)
         self.setAttribute(Qt.WA_StyledBackground)
+
+        # set layout
+        self.hBox.setSpacing(self.__spacing)
         self.hBox.setContentsMargins(0, 0, 0, 0)
+
+        if self.indicatorPos == IndicatorPosition.LEFT:
+            self.hBox.addWidget(self.indicator)
+            self.hBox.addWidget(self.label)
+            self.hBox.setAlignment(Qt.AlignLeft)
+        else:
+            self.hBox.addWidget(self.label, 0, Qt.AlignRight)
+            self.hBox.addWidget(self.indicator, 0, Qt.AlignRight)
+            self.hBox.setAlignment(Qt.AlignRight)
 
         # set default style sheet
         setStyleSheet(self, 'switch_button')
