@@ -2,7 +2,7 @@
 import logging
 import weakref
 from pathlib import Path
-
+from .cache import logFolder
 
 _loggers = weakref.WeakValueDictionary()
 
@@ -26,8 +26,6 @@ def loggerCache(cls):
 class Logger:
     """ Logger class """
 
-    logFolder = Path('cache/log')
-
     def __init__(self, fileName: str):
         """
         Parameters
@@ -35,8 +33,8 @@ class Logger:
         fileName: str
             log filename which doesn't contain `.log` suffix
         """
-        self.logFolder.mkdir(exist_ok=True, parents=True)
-        self.__logFile = self.logFolder/(fileName+'.log')
+        logFolder.mkdir(exist_ok=True, parents=True)
+        self.__logFile = logFolder/(fileName+'.log')
         self.__logger = logging.getLogger(fileName)
         self.__consoleHandler = logging.StreamHandler()
         self.__fileHandler = logging.FileHandler(

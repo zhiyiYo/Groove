@@ -8,6 +8,6 @@ QWidget {
 }
 
 QLabel#loadingLabel{
-    font-size: 30px;
     color: rgba(255, 255, 255, 0.6);
+    font: 30px 'Segoe UI', 'Microsoft YaHei';
 }

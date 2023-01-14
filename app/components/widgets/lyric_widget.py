@@ -205,9 +205,6 @@ class LyricWidget(ScrollArea):
         for label in self.__unusedlyricLabels:
             label.setFont(font)
 
-        font.setPixelSize(int(font.pixelSize()*1.25))
-        self.loadingLabel.setFont(font)
-
 
 class LyricLabel(QLabel):
     """ lyric label """

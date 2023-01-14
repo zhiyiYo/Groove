@@ -145,6 +145,9 @@ class ColorSerializer(ConfigSerializer):
         return value.name()
 
     def deserialize(self, value):
+        if isinstance(value, list):
+            return QColor(*value)
+
         return QColor(value)
 
 
@@ -438,7 +441,7 @@ config = Config()
 
 YEAR = 2022
 AUTHOR = "zhiyiYo"
-VERSION = "v1.2.6"
+VERSION = "v1.3.0"
 HELP_URL = "https://groove-music.readthedocs.io"
 FEEDBACK_URL = "https://github.com/zhiyiYo/Groove/issues"
 RELEASE_URL = "https://github.com/zhiyiYo/Groove/releases/latest"

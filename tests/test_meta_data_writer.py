@@ -30,7 +30,7 @@ class TestMetaDataWriter(TestCase):
         )
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
-            songInfo.file, 'app/cache/Album_Cover/Maroon 5_Ⅴ/cover.jpg'))
+            songInfo.file, 'app/cache/AlbumCover/Maroon 5_Ⅴ/cover.jpg'))
         self.assertTrue(self.writer.writeLyric(
             songInfo.file, Lyric.load("app/cache/lyric/Maroon 5_Sugar.json")))
 
@@ -51,7 +51,7 @@ class TestMetaDataWriter(TestCase):
         )
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
-            songInfo.file, 'app/cache/Album_Cover/aiko_暁のラブレター/cover.jpg'))
+            songInfo.file, 'app/cache/AlbumCover/aiko_暁のラブレター/cover.jpg'))
         self.assertTrue(self.writer.writeLyric(
             songInfo.file, Lyric.load("app/cache/lyric/aiko_彼の落書き.json")))
 
@@ -72,7 +72,7 @@ class TestMetaDataWriter(TestCase):
         )
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
-            songInfo.file, 'app/cache/Album_Cover/aiko_どうしたって伝えられないから/cover.jpg'))
+            songInfo.file, 'app/cache/AlbumCover/aiko_どうしたって伝えられないから/cover.jpg'))
         self.assertTrue(self.writer.writeLyric(
             songInfo.file, Lyric.load("app/cache/lyric/aiko_磁石.json")))
 
@@ -93,7 +93,7 @@ class TestMetaDataWriter(TestCase):
         )
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
-            songInfo.file, 'app/cache/Album_Cover/RADWIMPS_ココロノナカ/cover.jpg'))
+            songInfo.file, 'app/cache/AlbumCover/RADWIMPS_ココロノナカ/cover.jpg'))
         self.assertTrue(self.writer.writeLyric(
             songInfo.file, Lyric.load("app/cache/lyric/RADWIMPS_ココロノナカ.json")))
 
@@ -114,7 +114,7 @@ class TestMetaDataWriter(TestCase):
         )
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
-            songInfo.file, 'app/cache/Album_Cover/aiko_かばん/cover.jpg'))
+            songInfo.file, 'app/cache/AlbumCover/aiko_かばん/cover.jpg'))
         self.assertTrue(self.writer.writeLyric(
             songInfo.file, Lyric.load("app/cache/lyric/aiko_かばん.json")))
 
@@ -135,7 +135,7 @@ class TestMetaDataWriter(TestCase):
         )
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
-            songInfo.file, 'app/cache/Album_Cover/aiko_秘密/cover.jpg'))
+            songInfo.file, 'app/cache/AlbumCover/aiko_秘密/cover.jpg'))
         self.assertTrue(self.writer.writeLyric(
             songInfo.file, Lyric.load("app/cache/lyric/aiko_シアワセ.json")))
 
@@ -156,7 +156,7 @@ class TestMetaDataWriter(TestCase):
         )
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
-            songInfo.file, 'app/cache/Album_Cover/RADWIMPS_アルトコロニーの定理/cover.png'))
+            songInfo.file, 'app/cache/AlbumCover/RADWIMPS_アルトコロニーの定理/cover.png'))
         self.assertTrue(self.writer.writeLyric(
             songInfo.file, Lyric.load("app/cache/lyric/RADWIMPS_謎謎.json")))
 
@@ -177,7 +177,7 @@ class TestMetaDataWriter(TestCase):
         )
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
-            songInfo.file, 'app/cache/Album_Cover/aiko_May Dream/cover.jpg'))
+            songInfo.file, 'app/cache/AlbumCover/aiko_May Dream/cover.jpg'))
         self.assertTrue(self.writer.writeLyric(
             songInfo.file, Lyric.load("app/cache/lyric/aiko_何時何分.json")))
 
@@ -198,7 +198,7 @@ class TestMetaDataWriter(TestCase):
         )
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
-            songInfo.file, "app/cache/Album_Cover/B.o.B_Nothin' On You/cover.jpg"))
+            songInfo.file, "app/cache/AlbumCover/B.o.B_Nothin' On You/cover.jpg"))
         self.assertTrue(self.writer.writeLyric(
             songInfo.file, Lyric.load("app/cache/lyric/B.o.B_Nothin' on You.json")))
 
@@ -219,7 +219,7 @@ class TestMetaDataWriter(TestCase):
         )
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
-            songInfo.file, "app/cache/Album_Cover/aiko_ストロー/cover.jpg"))
+            songInfo.file, "app/cache/AlbumCover/aiko_ストロー/cover.jpg"))
         self.assertTrue(self.writer.writeLyric(
             songInfo.file, Lyric.load("app/cache/lyric/aiko_夜の風邪.json")))
 
@@ -240,7 +240,7 @@ class TestMetaDataWriter(TestCase):
         )
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
-            songInfo.file, "app/cache/Album_Cover/aiko_もっと/cover.jpg"))
+            songInfo.file, "app/cache/AlbumCover/aiko_もっと/cover.jpg"))
         self.assertTrue(self.writer.writeLyric(
             songInfo.file, Lyric.load("app/cache/lyric/aiko_もっと.json")))
 
@@ -261,7 +261,7 @@ class TestMetaDataWriter(TestCase):
         )
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
-            songInfo.file, "app/cache/Album_Cover/BEYOND_海阔天空/cover.jpg"))
+            songInfo.file, "app/cache/AlbumCover/BEYOND_海阔天空/cover.jpg"))
         self.assertTrue(self.writer.writeLyric(
             songInfo.file, Lyric.load("app/cache/lyric/BEYOND_海阔天空.json")))
 
@@ -282,7 +282,7 @@ class TestMetaDataWriter(TestCase):
         )
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
-            songInfo.file, "app/cache/Album_Cover/Bruno Mars_Unorthodox Jukebox/cover.jpg"))
+            songInfo.file, "app/cache/AlbumCover/Bruno Mars_Unorthodox Jukebox/cover.jpg"))
         self.assertTrue(self.writer.writeLyric(
             songInfo.file, Lyric.load("app/cache/lyric/Bruno Mars_Treasure.json")))
 
@@ -303,7 +303,7 @@ class TestMetaDataWriter(TestCase):
         )
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
-            songInfo.file, "app/cache/Album_Cover/Charli XCX_Sucker/cover.jpg"))
+            songInfo.file, "app/cache/AlbumCover/Charli XCX_Sucker/cover.jpg"))
         self.assertTrue(self.writer.writeLyric(
             songInfo.file, Lyric.load("app/cache/lyric/Charli XCX_Boom Clap.json")))
 
@@ -324,6 +324,6 @@ class TestMetaDataWriter(TestCase):
         )
         self.assertTrue(self.writer.writeSongInfo(songInfo))
         self.assertTrue(self.writer.writeAlbumCover(
-            songInfo.file, "app/cache/Album_Cover/ClariS_BIRTHDAY/cover.jpg"))
+            songInfo.file, "app/cache/AlbumCover/ClariS_BIRTHDAY/cover.jpg"))
         self.assertTrue(self.writer.writeLyric(
             songInfo.file, Lyric.load("app/cache/lyric/ClariS_irony.json")))

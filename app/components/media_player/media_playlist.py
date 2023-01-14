@@ -4,6 +4,7 @@ from enum import Enum
 from pathlib import Path
 from typing import List
 
+from common.cache import lastPlaylistFolder
 from common.database.entity import SongInfo
 from common.library import Library
 from common.url import url
@@ -151,18 +152,18 @@ class MediaPlaylist(QMediaPlaylist):
 
     def save(self):
         """ save playlist to json file """
-        self.folder.mkdir(exist_ok=True, parents=True)
+        lastPlaylistFolder.mkdir(exist_ok=True, parents=True)
         files = [i.file for i in self.playlist]
         playlist = {
             "files": files,
             "last": files[self.currentIndex()] if files else ''
         }
-        with open(self.folder/'last_playlist.json', 'w', encoding='utf-8') as f:
+        with open(lastPlaylistFolder/'playlist.json', 'w', encoding='utf-8') as f:
             json.dump(playlist, f)
 
     def __readLastPlaylist(self):
         """ read last playlist from json file """
-        file = self.folder/"last_playlist.json"
+        file = lastPlaylistFolder/"playlist.json"
         try:
             with open(file, encoding='utf-8') as f:
                 playlist = json.load(f)

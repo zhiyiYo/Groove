@@ -3,9 +3,10 @@ from pathlib import Path
 
 
 cacheFolder = Path("cache")
-logFolder = cacheFolder / "log"
+logFolder = cacheFolder / "Log"
 dbPath = cacheFolder / "cache.db"
-lyricFolder = cacheFolder / "lyric"
-albumCoverFolder = cacheFolder / "Album_Cover"
-singerAvatarFolder = cacheFolder / "singer_avatar"
-crawlAlbumCoverFolder = cacheFolder / "crawl_album_covers"
+lyricFolder = cacheFolder / "Lyric"
+albumCoverFolder = cacheFolder / "AlbumCover"
+lastPlaylistFolder = cacheFolder / "LastPlaylist"
+singerAvatarFolder = cacheFolder / "SingerAvatar"
+crawlAlbumCoverFolder = cacheFolder / "CrawlAlbumCover"
