@@ -24,6 +24,7 @@ class FramelessWindow(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.windowEffect = WindowEffect()
+        self._isResizeEnabled = True
 
         # remove window border
         if getWindowsVersion() > 7:
@@ -40,10 +41,14 @@ class FramelessWindow(QWidget):
 
         self.resize(500, 500)
 
+    def setResizeEnabled(self, isEnabled: bool):
+        """ set whether resizing is enabled """
+        self._isResizeEnabled = isEnabled
+
     def nativeEvent(self, eventType, message):
         """ handle the Windows message """
         msg = MSG.from_address(message.__int__())
-        if msg.message == win32con.WM_NCHITTEST:
+        if msg.message == win32con.WM_NCHITTEST and self._isResizeEnabled:
             pos = QCursor.pos()
             xPos = pos.x() - self.x()
             yPos = pos.y() - self.y()

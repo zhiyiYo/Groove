@@ -39,10 +39,10 @@
         <file>qss/light/singer_group_box.qss</file>
         <file>qss/light/recent_play_interface.qss</file>
         <file>qss/light/desktop_lyric_interface.qss</file>
-        <file>qss/light/color_picker.qss</file>
         <file>qss/light/setting_card.qss</file>
         <file>qss/light/expand_setting_card.qss</file>
         <file>qss/light/setting_group.qss</file>
+        <file>qss/light/color_dialog.qss</file>
 
         <file>qss/dark/album_card_interface.qss</file>
         <file>qss/dark/album_group_box.qss</file>
@@ -83,10 +83,10 @@
         <file>qss/dark/singer_group_box.qss</file>
         <file>qss/dark/recent_play_interface.qss</file>
         <file>qss/dark/desktop_lyric_interface.qss</file>
-        <file>qss/dark/color_picker.qss</file>
         <file>qss/dark/setting_card.qss</file>
         <file>qss/dark/expand_setting_card.qss</file>
         <file>qss/dark/setting_group.qss</file>
+        <file>qss/dark/color_dialog.qss</file>
 
         <file>images/logo/logo_30_30.png</file>
         <file>images/logo/logo.ico</file>
@@ -427,10 +427,6 @@
         <file>images/desktop_lyric_interface/Close.png</file>
         <file>images/desktop_lyric_interface/FontIncrease.png</file>
         <file>images/desktop_lyric_interface/FontDecrease.png</file>
-        <file>images/color_picker/brightness.png</file>
-        <file>images/color_picker/saturation_black.png</file>
-        <file>images/color_picker/saturation_white.png</file>
-        <file>images/color_picker/wheel.png</file>
         <file>images/setting_card/ChevronDown_black.png</file>
         <file>images/setting_card/ChevronDown_white.png</file>
         <file>images/setting_card/Folder_white.png</file>
@@ -497,6 +493,9 @@
         <file>images/setting_card/Question_black.png</file>
         <file>images/setting_card/Info_white.png</file>
         <file>images/setting_card/Info_black.png</file>
+        <file>images/color_picker/HuePanel.png</file>
+        <file>images/color_picker/Clear_black.png</file>
+        <file>images/color_picker/Clear_white.png</file>
 
         <file>i18n/Groove_zh.qm</file>
     </qresource>

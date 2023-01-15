@@ -65,3 +65,5 @@ class MessageDialog(MaskDialogBase):
         self.titleLabel.setObjectName('titleLabel')
         self.contentLabel.setObjectName('contentLabel')
         setStyleSheet(self, 'message_dialog')
+
+    

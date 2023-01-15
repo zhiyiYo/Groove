@@ -16,12 +16,17 @@ class FramelessWindow(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.windowEffect = WindowEffect()
+        self._isResizeEnabled = True
         self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint)
         QCoreApplication.instance().installEventFilter(self)
 
+    def setResizeEnabled(self, isEnabled: bool):
+        """ set whether resizing is enabled """
+        self._isResizeEnabled = isEnabled
+
     def eventFilter(self, obj, event):
         et = event.type()
-        if et != QEvent.MouseButtonPress and et != QEvent.MouseMove:
+        if et != QEvent.MouseButtonPress and et != QEvent.MouseMove or not self._isResizeEnabled:
             return False
 
         edges = Qt.Edges()

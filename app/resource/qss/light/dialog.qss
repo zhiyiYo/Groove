@@ -2,6 +2,16 @@ QDialog {
     background-color: white;
 }
 
+#buttonGroup {
+    background-color: rgb(243, 243, 243);
+    border-top: 1px solid rgb(229, 229, 229);
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
 QLabel {
     background-color: transparent;
 }
@@ -12,6 +22,12 @@ QLabel#titleLabel {
 
 QLabel#contentLabel {
     font: 17px 'Segoe UI', 'Microsoft YaHei';
+}
+
+QLabel#windowTitleLabel {
+    font: 15px 'Segoe UI', 'Microsoft YaHei';
+    padding: 8px 8px;
+    background-color: rgb(243, 243, 243);
 }
 
 QPushButton {

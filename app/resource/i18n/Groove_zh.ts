@@ -402,6 +402,39 @@
     </message>
 </context>
 <context>
+    <name>ColorDialog</name>
+    <message>
+        <location filename="../../components/dialog_box/color_dialog.py" line="205"/>
+        <source>OK</source>
+        <translation>确定</translation>
+    </message>
+    <message>
+        <location filename="../../components/dialog_box/color_dialog.py" line="206"/>
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <location filename="../../components/dialog_box/color_dialog.py" line="215"/>
+        <source>Edit Color</source>
+        <translation>编辑颜色</translation>
+    </message>
+    <message>
+        <location filename="../../components/dialog_box/color_dialog.py" line="216"/>
+        <source>Red</source>
+        <translation>红色</translation>
+    </message>
+    <message>
+        <location filename="../../components/dialog_box/color_dialog.py" line="217"/>
+        <source>Blue</source>
+        <translation>蓝色</translation>
+    </message>
+    <message>
+        <location filename="../../components/dialog_box/color_dialog.py" line="218"/>
+        <source>Green</source>
+        <translation>绿色</translation>
+    </message>
+</context>
+<context>
     <name>DesktopLyricInterface</name>
     <message>
         <location filename="../../View/desktop_lyric_interface/desktop_lyric_interface.py" line="74" />
@@ -2266,6 +2299,14 @@
         <location filename="../../components/settings/setting_card.py" line="130"/>
         <source>On</source>
         <translation>开</translation>
+    </message>
+</context>
+<context>
+    <name>ColorPickerButton</name>
+    <message>
+        <location filename="../../components/settings/setting_card.py" line="286"/>
+        <source>Choose </source>
+        <translation>选择</translation>
     </message>
 </context>
 <context>

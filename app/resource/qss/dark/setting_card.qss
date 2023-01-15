@@ -183,3 +183,18 @@ QPushButton:pressed {
     border: 1px solid rgb(42, 207, 214);
     color: rgba(0, 0, 0, 0.63);
 }
+
+ColorPickerButton {
+    border: 1px solid rgba(255, 255, 255, 24);
+    border-radius: 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 17);
+    background-color: --color-picker-background;
+}
+
+ColorPickerButton:hover {
+    background-color: --color-picker-background;
+}
+
+ColorPickerButton:pressed {
+    background-color: --color-picker-background;
+}

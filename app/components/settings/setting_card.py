@@ -1,13 +1,13 @@
 # coding:utf-8
-from common.style_sheet import setStyleSheet
+from common.style_sheet import setStyleSheet, getStyleSheet
 from common.config import ConfigItem, config, RangeConfigItem
 from common.icon import getIconColor
 
 from PyQt5.QtCore import QUrl, Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap, QColor, QDesktopServices
-from PyQt5.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton, QVBoxLayout
+from PyQt5.QtWidgets import QFrame, QHBoxLayout, QLabel, QToolButton, QVBoxLayout, QPushButton
 
-from ..widgets.color_picker import ColorPicker
+from ..dialog_box.color_dialog import ColorDialog
 from ..buttons.switch_button import SwitchButton, IndicatorPosition
 from ..widgets.slider import Slider
 
@@ -265,6 +265,43 @@ class HyperlinkCard(SettingCard):
         self.hBoxLayout.addSpacing(20)
 
 
+class ColorPickerButton(QToolButton):
+    """ Color picker button """
+
+    colorChanged = pyqtSignal(QColor)
+
+    def __init__(self, color: QColor, title: str, parent=None):
+        super().__init__(parent=parent)
+        self.title = title
+        self.setFixedSize(120, 40)
+        self.setAutoFillBackground(True)
+        self.setAttribute(Qt.WA_TranslucentBackground)
+
+        self.setColor(color)
+        self.setCursor(Qt.PointingHandCursor)
+        self.clicked.connect(self.__showColorDialog)
+
+    def __showColorDialog(self):
+        """ show color dialog """
+        w = ColorDialog(self.color, self.tr(
+            'Choose ')+self.title, self.window())
+        w.updateStyle()
+        w.colorChanged.connect(self.__onColorChanged)
+        w.exec()
+
+    def __onColorChanged(self, color: QColor):
+        """ color changed slot """
+        self.setColor(color)
+        self.colorChanged.emit(color)
+
+    def setColor(self, color: QColor):
+        """ set color """
+        self.color = QColor(color)
+        qss = getStyleSheet('setting_card')
+        qss = qss.replace('--color-picker-background', color.name())
+        self.setStyleSheet(qss)
+
+
 class ColorSettingCard(SettingCard):
     """ Setting card with color picker """
 
@@ -291,7 +328,8 @@ class ColorSettingCard(SettingCard):
         """
         super().__init__(iconPath, title, content, parent)
         self.configItem = configItem
-        self.colorPicker = ColorPicker(config.get(configItem), self)
+        self.colorPicker = ColorPickerButton(
+            config.get(configItem), title, self)
         self.hBoxLayout.addWidget(self.colorPicker, 0, Qt.AlignRight)
         self.hBoxLayout.addSpacing(20)
         self.colorPicker.colorChanged.connect(self.__onColorChanged)

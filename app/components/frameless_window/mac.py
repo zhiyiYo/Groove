@@ -14,7 +14,7 @@ class FramelessWindow(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.windowEffect = WindowEffect(self)
-        self.titleBar = TitleBar(self)
+        self._isResizeEnabled = True
 
         view = objc.objc_object(c_void_p=self.winId().__int__())
         self.__nsWindow = view.window()
@@ -23,24 +23,10 @@ class FramelessWindow(QWidget):
         self.__hideSystemTitleBar()
 
         self.resize(500, 500)
-        self.titleBar.raise_()
 
-    def setTitleBar(self, titleBar):
-        """ set custom title bar
-
-        Parameters
-        ----------
-        titleBar: TitleBar
-            title bar
-        """
-        self.titleBar.deleteLater()
-        self.titleBar = titleBar
-        self.titleBar.setParent(self)
-        self.titleBar.raise_()
-
-    def resizeEvent(self, e):
-        super().resizeEvent(e)
-        self.titleBar.resize(self.width(), self.titleBar.height())
+    def setResizeEnabled(self, isEnabled: bool):
+        """ set whether resizing is enabled """
+        self._isResizeEnabled = isEnabled
 
     def paintEvent(self, e):
         super().paintEvent(e)

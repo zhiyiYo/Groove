@@ -1,51 +1,65 @@
 # coding:utf-8
 from common.auto_wrap import autoWrap
 from common.style_sheet import setStyleSheet
-from PyQt5.QtCore import QFile, Qt, pyqtSignal
-from PyQt5.QtGui import QPainter, QColor
-from PyQt5.QtWidgets import QDialog, QLabel, QPushButton
+from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtWidgets import QLabel, QPushButton, QFrame, QVBoxLayout, QHBoxLayout
+
+from ..frameless_window import FramelessDialog
 
 
-class Dialog(QDialog):
+class Dialog(FramelessDialog):
+    """ Dialog box """
 
     yesSignal = pyqtSignal()
     cancelSignal = pyqtSignal()
 
     def __init__(self, title: str, content: str, parent=None):
-        super().__init__(parent, Qt.WindowTitleHint | Qt.CustomizeWindowHint)
+        super().__init__(parent)
         self.resize(300, 240)
-        self.setWindowTitle(title)
+
         self.content = content
         self.titleLabel = QLabel(title, self)
         self.contentLabel = QLabel(content, self)
-        self.yesButton = QPushButton(self.tr('OK'), self)
-        self.cancelButton = QPushButton(self.tr('Cancel'), self)
+        self.windowTitleLabel = QLabel(title, self)
+
+        self.buttonGroup = QFrame(self)
+        self.yesButton = QPushButton(self.tr('OK'), self.buttonGroup)
+        self.cancelButton = QPushButton(self.tr('Cancel'), self.buttonGroup)
+
+        self.vBoxLayout = QVBoxLayout(self)
+        self.textLayout = QVBoxLayout()
+        self.buttonLayout = QHBoxLayout(self.buttonGroup)
+
         self.__initWidget()
 
     def __initWidget(self):
-        """ 初始化小部件 """
-        self.yesButton.setFocus()
-        self.titleLabel.move(30, 30)
-        self.contentLabel.move(30, 75)
-        self.contentLabel.setText(autoWrap(self.content, 100)[0])
-
-        # 设置层叠样式
         self.__setQss()
+        self.__initLayout()
 
-        # 调整窗口大小
-        rect = self.contentLabel.geometry()
-        self.setFixedSize(60 + rect.width(), rect.bottom() + 131)
+        self.yesButton.setFocus()
+        self.buttonGroup.setFixedHeight(101)
+        self.contentLabel.setText(autoWrap(self.content, 100)[0])
+        self.setResizeEnabled(False)
 
-        # 信号连接到槽
         self.yesButton.clicked.connect(self.__onYesButtonClicked)
         self.cancelButton.clicked.connect(self.__onCancelButtonClicked)
 
-    def resizeEvent(self, e):
-        w, h = self.width(), self.height()
-        self.yesButton.move(30, h-70)
-        self.yesButton.resize((w-75)//2, self.yesButton.height())
-        self.cancelButton.move(self.yesButton.geometry().right()+15, h-70)
-        self.cancelButton.resize((w-75)//2, self.cancelButton.height())
+    def __initLayout(self):
+        self.vBoxLayout.setSpacing(0)
+        self.vBoxLayout.setContentsMargins(0, 0, 0, 0)
+        self.vBoxLayout.addWidget(self.windowTitleLabel, 0, Qt.AlignTop)
+        self.vBoxLayout.addLayout(self.textLayout, 1)
+        self.vBoxLayout.addWidget(self.buttonGroup, 0, Qt.AlignBottom)
+
+        self.textLayout.setSpacing(20)
+        self.textLayout.setContentsMargins(30, 30, 30, 30)
+        self.textLayout.addWidget(self.titleLabel, 0, Qt.AlignTop)
+        self.textLayout.addWidget(self.contentLabel, 0, Qt.AlignTop)
+
+        self.buttonLayout.setSpacing(15)
+        self.buttonLayout.setContentsMargins(30, 30, 30, 30)
+        self.buttonLayout.addWidget(self.yesButton, 1, Qt.AlignVCenter)
+        self.buttonLayout.addWidget(self.cancelButton, 1, Qt.AlignVCenter)
 
     def __onCancelButtonClicked(self):
         self.cancelSignal.emit()
@@ -60,29 +74,11 @@ class Dialog(QDialog):
         self.titleLabel.setObjectName("titleLabel")
         self.contentLabel.setObjectName("contentLabel")
         self.yesButton.setObjectName('yesButton')
+        self.buttonGroup.setObjectName('buttonGroup')
+        self.windowTitleLabel.setObjectName('windowTitleLabel')
 
         setStyleSheet(self, 'dialog')
 
         self.yesButton.adjustSize()
         self.cancelButton.adjustSize()
-        self.contentLabel.adjustSize()
-
-    def paintEvent(self, e):
-        """ 绘制背景 """
-        super().paintEvent(e)
-        painter = QPainter(self)
-
-        # 绘制文本区背景
-        painter.setPen(Qt.NoPen)
-        painter.setBrush(QColor(Qt.white))
-        painter.drawRect(0, 0, self.width(), self.height()-101)
-
-        # 绘制分割线
-        painter.setPen(QColor(229, 229, 229))
-        painter.drawLine(0, self.height()-101,
-                         self.width()-1, self.height()-101)
-
-        # 绘制按钮背景
-        painter.setPen(Qt.NoPen)
-        painter.setBrush(QColor(243, 243, 243))
-        painter.drawRect(0, self.height()-100, self.width(), 100)
+        #self.contentLabel.adjustSize()
