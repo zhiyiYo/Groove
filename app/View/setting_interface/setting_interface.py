@@ -312,7 +312,7 @@ class SettingInterface(ScrollArea):
 
         # add setting card group to layout
         self.expandLayout.setSpacing(28)
-        self.expandLayout.setContentsMargins(0, 5, 0, 30)
+        self.expandLayout.setContentsMargins(32, 5, 32, 30)
         self.expandLayout.addWidget(self.musicInThisPCGroup)
         self.expandLayout.addWidget(self.personalGroup)
         self.expandLayout.addWidget(self.mediaInfoGroup)

@@ -17,7 +17,7 @@ class SettingCardGroup(QWidget):
         self.vBoxLayout = QVBoxLayout(self)
         self.cardLayout = ExpandLayout()
 
-        self.vBoxLayout.setContentsMargins(32, 0, 32, 0)
+        self.vBoxLayout.setContentsMargins(0, 0, 0, 0)
         self.vBoxLayout.setAlignment(Qt.AlignTop)
         self.vBoxLayout.setSpacing(0)
         self.cardLayout.setContentsMargins(0, 0, 0, 0)
@@ -42,5 +42,5 @@ class SettingCardGroup(QWidget):
             self.addSettingCard(card)
 
     def adjustSize(self):
-        h = self.cardLayout.heightForWidth(self.width()) + 50
+        h = self.cardLayout.heightForWidth(self.width()) + 52
         return self.resize(self.width(), h)
