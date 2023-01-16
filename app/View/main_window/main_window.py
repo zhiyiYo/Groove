@@ -21,7 +21,7 @@ from common.thread.view_online_thread import ViewOnlineThread, ViewOnlineType
 from common.thread.library_thread import LibraryThread
 from common.url import FakeUrl
 from components.dialog_box.create_playlist_dialog import CreatePlaylistDialog
-from components.dialog_box.message_dialog import MessageDialog
+from components.dialog_box.dialog import Dialog
 from components.frameless_window import AcrylicWindow
 from components.label_navigation_interface import LabelNavigationInterface
 from components.media_player import MediaPlayer, MediaPlaylist, PlaylistType
@@ -699,8 +699,7 @@ class MainWindow(AcrylicWindow):
 
     def showMessageBox(self, title: str, content: str, showYesButton=False, yesSlot=None):
         """ show message box """
-        w = MessageDialog(title, content, self)
-        w.yesButton.setVisible(showYesButton)
+        w = Dialog(title, content, self)
         if not showYesButton:
             w.cancelButton.setText(self.tr('Close'))
         if yesSlot:
@@ -1482,7 +1481,7 @@ class MainWindow(AcrylicWindow):
         elif not ignore:
             self.showMessageBox(
                 self.tr('No updates available'),
-                self.tr('Groove is the latest version, feel free to use it.'),
+                self.tr('Groove Music has been updated to the latest version, feel free to use it.'),
             )
 
     def connectSignalToSlot(self):

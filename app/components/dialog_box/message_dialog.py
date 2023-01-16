@@ -1,5 +1,5 @@
 # coding:utf-8
-from common.auto_wrap import autoWrap
+from common.auto_wrap import TextWrap
 from common.style_sheet import setStyleSheet
 from components.buttons.perspective_button import PerspectivePushButton
 from PyQt5.QtCore import QFile, pyqtSignal
@@ -30,7 +30,7 @@ class MessageDialog(MaskDialogBase):
         self.widget.setMaximumWidth(675)
         self.titleLabel.move(30, 30)
         self.contentLabel.move(30, 70)
-        self.contentLabel.setText(autoWrap(self.content, 71)[0])
+        self.contentLabel.setText(TextWrap.wrap(self.content, 71)[0])
 
         self.__setQss()
         self.__initLayout()
@@ -65,5 +65,3 @@ class MessageDialog(MaskDialogBase):
         self.titleLabel.setObjectName('titleLabel')
         self.contentLabel.setObjectName('contentLabel')
         setStyleSheet(self, 'message_dialog')
-
-    

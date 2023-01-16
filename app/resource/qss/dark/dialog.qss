@@ -22,9 +22,10 @@ QLabel#titleLabel {
     padding: 0;
 }
 
-QLabel#contentLabel {
+#contentLabel {
     padding: 0;
     font: 17px 'Segoe UI', 'Microsoft YaHei';
+    border: none;
 }
 
 QLabel#windowTitleLabel {

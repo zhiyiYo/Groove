@@ -1,70 +1,111 @@
 # coding: utf-8
-import re
+class TextWrap:
+    """ Text wrap """
 
+    char_widths = [
+        (126, 1), (159, 0), (687, 1), (710, 0),
+        (711, 1), (727, 0), (733, 1), (879, 0),
+        (1154, 1), (1161, 0), (4347, 1), (4447, 2),
+        (7467, 1), (7521, 0), (8369, 1), (8426, 0),
+        (9000, 1), (9002, 2), (11021, 1), (12350, 2),
+        (12351, 1), (12438, 2), (12442, 0), (19893, 2),
+        (19967, 1), (55203, 2), (63743, 1), (64106, 2),
+        (65039, 1), (65059, 0), (65131, 2), (65279, 1),
+        (65376, 2), (65500, 1), (65510, 2), (120831, 1),
+        (262141, 2), (1114109, 1),
+    ]
 
-def autoWrap(text: str, maxCharactersNum: int) -> tuple:
-    """ auto word wrap according to the length of the string
+    @classmethod
+    def get_width(cls, char):
+        """Return the screen column width for a char"""
+        o = ord(char)
+        if o == 0xe or o == 0xf:
+            return 0
 
-    Parameters
-    ----------
-    maxCharactersNum: int
-        the length of text (convert to letter size, e.g. `你.length = 2`)
+        for num, wid in cls.char_widths:
+            if o <= num:
+                return wid
 
-    Returns
-    -------
-    newText: str
-        text after auto word wrap process
+        return 1
 
-    isWordWrap: bool
-        whether a line break occurs in the text
-    """
-    isWordWrap = True
-    text_list = list(text)
-    alpha_num = 0
-    not_alpha_num = 0
-    blank_index = 0
-    for index, i in enumerate(text):
-        Match = re.match(r'[0-9A-Za-z:\+\-\{\}\d\(\)\*\.\s]', i)
-        if Match:
-            alpha_num += 1
-            if Match.group() == ' ':
-                # record previous blank position
-                blank_index = index
+    @classmethod
+    def wrap(cls, text: str, width: int, once=True) -> tuple:
+        """ Wrap according to string length
 
-            if alpha_num + 2 * not_alpha_num == maxCharactersNum:
-                try:
-                    if text[index + 1] == ' ':
-                        # insert \n
-                        text_list.insert(index + 1, '\n')
-                        # pop blank
-                        text_list.pop(index + 2)
+        Parameters
+        ----------
+        text: str
+            the text to be wrapped
+
+        width: int
+            the maximum length of a single line, the length of Chinese characters is 2
+
+        once: bool
+            whether to wrap only once
+
+        Returns
+        -------
+        wrap_text: str
+            text after auto word wrap process
+
+        is_wrapped: bool
+            whether a line break occurs in the text
+        """
+        count = 0
+        last_count = 0
+        chars = []
+        is_wrapped = False
+        break_pos = 0
+        is_break_alpha = True
+        n_inside_break = 0
+
+        i = 0
+        text = text.strip()
+        while i < len(text):
+            c = text[i]
+            length = cls.get_width(c)
+            count += length
+
+            # record the position of blank character
+            if c == " " or length > 1:
+                break_pos = i + n_inside_break
+                last_count = count
+                is_break_alpha = length == 1
+
+            # No line breaks
+            if count <= width:
+                chars.append(c)
+                i += 1
+                continue
+
+            # wrap at the position of the previous space
+            if break_pos > 0 and is_break_alpha:
+                if c != " ":
+                    chars[break_pos] = '\n'
+                    chars.append(c)
+
+                    # Wrap inside long words
+                    if last_count != 0:
+                        count -= last_count
+                        last_count = 0
                     else:
-                        text_list.insert(blank_index, '\n')
-                        text_list.pop(blank_index + 1)
-                    break
-                except IndexError:
-                    pass
-
-        else:
-            not_alpha_num += 1
-            if alpha_num + 2 * not_alpha_num == maxCharactersNum:
-                text_list.insert(index + 1, '\n')
-                try:
-                    if text_list[index + 2] == ' ':
-                        text_list.pop(index + 2)
-                    break
-                except:
-                    pass
-            elif alpha_num + 2 * not_alpha_num > maxCharactersNum:
-                if text_list[index - 1] == ' ':
-                    text_list.insert(index - 1, '\n')
-                    text_list.pop(index)
+                        chars.insert(i, '\n')
+                        break_pos = i
+                        n_inside_break += 1
                 else:
-                    text_list.insert(index, '\n')
-                break
-    else:
-        isWordWrap = False
+                    chars.append('\n')
+                    count = 0
+                    last_count = 0
+            else:
+                chars.extend(('\n', c))
+                count = length
 
-    newText = ''.join(text_list)
+            is_wrapped = True
 
-    return newText, isWordWrap
+            # early return
+            if once:
+                return ''.join(chars)+text[i+1:], True
+
+            i += 1
+
+        return ''.join(chars), is_wrapped

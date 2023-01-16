@@ -115,7 +115,7 @@ class FolderListSettingCard(ExpandSettingCard):
         self.addFolderButton = PushButton(
             SIF.create(SIF.FOLDER_ADD), self.tr('Add folder'), self)
 
-        self.folders = config.get(configItem)   # type:List[str]
+        self.folders = config.get(configItem).copy()   # type:List[str]
         self.__initWidget()
 
     def __initWidget(self):
@@ -169,4 +169,6 @@ class FolderListSettingCard(ExpandSettingCard):
         self.folders.remove(item.folder)
         self.viewLayout.deleteWidget(item)
         self._adjustViewSize()
+
         self.folderChanged.emit(self.folders)
+        config.set(self.configItem, self.folders)

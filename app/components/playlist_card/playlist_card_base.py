@@ -1,7 +1,7 @@
 # coding:utf-8
 import sys
 
-from common.auto_wrap import autoWrap
+from common.auto_wrap import TextWrap
 from common.database.entity import Playlist
 from common.image_utils import DominantColor, readImage
 from common.picture import Cover, CoverType
@@ -122,7 +122,7 @@ class PlaylistCardBase(PerspectiveWidget):
 
     def __adjustLabel(self):
         """ adjust the text of label """
-        newText, isWordWrap = autoWrap(self.name, 32)
+        newText, isWordWrap = TextWrap.wrap(self.name, 32)
         if isWordWrap:
             # 添加省略号
             index = newText.index("\n")

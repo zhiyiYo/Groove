@@ -1,7 +1,7 @@
 # coding:utf-8
 import sys
 
-from common.auto_wrap import autoWrap
+from common.auto_wrap import TextWrap
 from common.database.entity import AlbumInfo
 from common.picture import Cover
 from common.signal_bus import signalBus
@@ -189,7 +189,7 @@ class AlbumCardBase(PerspectiveWidget):
 
     def __adjustLabel(self):
         """ adjust text of label """
-        newText, isWordWrap = autoWrap(self.albumLabel.text(), 22)
+        newText, isWordWrap = TextWrap.wrap(self.albumLabel.text(), 22)
         if isWordWrap:
             # add ellipsis
             index = newText.index("\n")

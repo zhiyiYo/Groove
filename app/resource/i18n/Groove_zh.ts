@@ -903,8 +903,8 @@
     </message>
     <message>
         <location filename="../../View/main_window/main_window.py" line="1468"/>
-        <source>Groove is the latest version, feel free to use it.</source>
-        <translation>Groove 已更新到最新版本，前辈可以放心食用哦~</translation>
+        <source>Groove Music has been updated to the latest version, feel free to use it.</source>
+        <translation>Groove 音乐已更新到最新版本，前辈可以放心食用哦~</translation>
     </message>
 </context>
 <context>

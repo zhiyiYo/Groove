@@ -1,5 +1,5 @@
 # coding:utf-8
-from common.auto_wrap import autoWrap
+from common.auto_wrap import TextWrap
 from common.crawler import CrawlerBase
 from common.database.entity import SongInfo
 from common.style_sheet import setStyleSheet
@@ -136,13 +136,14 @@ class SongPropertyDialog(MaskDialogBase):
 
     def __adjustText(self):
         """ adjust text if it's too long """
-        songName, isSongNameWrap = autoWrap(self.songNameLabel.text(), 57)
-        singer, isSingerWrap = autoWrap(self.singerLabel.text(), 38)
-        albumName, isAlbumNameWrap = autoWrap(
+        wrapper = TextWrap()
+        songName, isSongNameWrap = wrapper.wrap(self.songNameLabel.text(), 57)
+        singer, isSingerWrap = wrapper.wrap(self.singerLabel.text(), 38)
+        albumName, isAlbumNameWrap = wrapper.wrap(
             self.albumNameLabel.text(), 57)
-        albumSinger, isAlbumSingerWrap = autoWrap(
+        albumSinger, isAlbumSingerWrap = wrapper.wrap(
             self.albumSingerLabel.text(), 38)
-        songPath, isSongPathWrap = autoWrap(self.songPathLabel.text(), 105)
+        songPath, isSongPathWrap = wrapper.wrap(self.songPathLabel.text(), 105)
 
         if isSongNameWrap or isSingerWrap:
             self.songNameLabel.setText(songName)

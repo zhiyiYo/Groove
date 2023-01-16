@@ -1,5 +1,5 @@
 # coding:utf-8
-from common.auto_wrap import autoWrap
+from common.auto_wrap import TextWrap
 from common.style_sheet import setStyleSheet
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QLabel, QPushButton, QFrame, QVBoxLayout, QHBoxLayout
@@ -38,7 +38,7 @@ class Dialog(FramelessDialog):
 
         self.yesButton.setFocus()
         self.buttonGroup.setFixedHeight(101)
-        self.contentLabel.setText(autoWrap(self.content, 100)[0])
+        self.contentLabel.setText(TextWrap.wrap(self.content, 100, False)[0])
         self.setResizeEnabled(False)
 
         self.yesButton.clicked.connect(self.__onYesButtonClicked)
@@ -51,7 +51,7 @@ class Dialog(FramelessDialog):
         self.vBoxLayout.addLayout(self.textLayout, 1)
         self.vBoxLayout.addWidget(self.buttonGroup, 0, Qt.AlignBottom)
 
-        self.textLayout.setSpacing(20)
+        self.textLayout.setSpacing(15)
         self.textLayout.setContentsMargins(30, 30, 30, 30)
         self.textLayout.addWidget(self.titleLabel, 0, Qt.AlignTop)
         self.textLayout.addWidget(self.contentLabel, 0, Qt.AlignTop)
@@ -81,4 +81,3 @@ class Dialog(FramelessDialog):
 
         self.yesButton.adjustSize()
         self.cancelButton.adjustSize()
-        #self.contentLabel.adjustSize()

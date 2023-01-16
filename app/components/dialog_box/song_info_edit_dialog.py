@@ -1,5 +1,5 @@
 # coding:utf-8
-from common.auto_wrap import autoWrap
+from common.auto_wrap import TextWrap
 from common.style_sheet import setStyleSheet
 from common.os_utils import showInFolder
 from common.database.entity import SongInfo
@@ -159,7 +159,7 @@ class SongInfoEditDialog(MaskDialogBase):
         self.gridLayout_4.addWidget(self.yearLineEdit, 1, 1)
 
         # adjust dialog height
-        newSongPath, isWordWrap = autoWrap(self.songPath.text(), 110)
+        newSongPath, isWordWrap = TextWrap.wrap(self.songPath.text(), 110)
         if isWordWrap:
             self.songPath.setText(newSongPath)
             self.songPath.adjustSize()

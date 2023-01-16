@@ -5,7 +5,7 @@ import bisect
 from common.lyric import Lyric
 from common.config import config
 from common.signal_bus import signalBus
-from common.auto_wrap import autoWrap
+from common.auto_wrap import TextWrap
 from common.style_sheet import setStyleSheet
 from components.widgets.scroll_area import ScrollArea
 from PyQt5.QtCore import Qt, QPropertyAnimation, QEventLoop
@@ -227,7 +227,7 @@ class LyricLabel(QLabel):
     def setLyric(self, lyric: List[str]):
         """ set lyric """
         self.lyric = lyric
-        wrapLyric = [autoWrap(i, self.maxCharacters)[0] for i in lyric]
+        wrapLyric = [TextWrap.wrap(i, self.maxCharacters)[0] for i in lyric]
         self.setText('\n'.join(wrapLyric))
         self.setPlay(False)
 
