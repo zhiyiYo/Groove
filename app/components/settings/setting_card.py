@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import QFrame, QHBoxLayout, QLabel, QToolButton, QVBoxLayou
 from ..dialog_box.color_dialog import ColorDialog
 from ..buttons.switch_button import SwitchButton, IndicatorPosition
 from ..widgets.slider import Slider
+from ..widgets.label import PixmapLabel
 
 
 class SettingCard(QFrame):
@@ -32,7 +33,7 @@ class SettingCard(QFrame):
             parent widget
         """
         super().__init__(parent=parent)
-        self.iconLabel = QLabel(self)
+        self.iconLabel = PixmapLabel(self)
         self.titleLabel = QLabel(title, self)
         self.contentLabel = QLabel(content or '', self)
         self.hBoxLayout = QHBoxLayout(self)
