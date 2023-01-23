@@ -41,18 +41,20 @@ class SignalBus(Singleton, QObject):
 
     selectionModeStateChanged = pyqtSignal(bool)  # 进入/退出 选择模式
 
-    showPlayingPlaylistSig = pyqtSignal()                    # 显示正在播放列表
-    showPlayingInterfaceSig = pyqtSignal()                   # 显示正在播放界面信号
-    showSmallestPlayInterfaceSig = pyqtSignal()              # 显示最小播放模式界面
-    switchToSettingInterfaceSig = pyqtSignal()               # 切换到设置界面信号
-    switchToSingerInterfaceSig = pyqtSignal(str)             # 切换到歌手界面
-    switchToAlbumInterfaceSig = pyqtSignal(str, str)         # 切换到专辑界面
-    switchToMyMusicInterfaceSig = pyqtSignal()               # 切换到我的音乐界面
-    switchToRecentPlayInterfaceSig = pyqtSignal()            # 切换到最近播放界面
-    switchToPlaylistInterfaceSig = pyqtSignal(str)           # 切换到播放列表界面信号
-    switchToPlaylistCardInterfaceSig = pyqtSignal()          # 切换到播放列表卡界面
-    showLabelNavigationInterfaceSig = pyqtSignal(list, str)  # 显示标签导航界面
-    switchToMoreSearchResultInterfaceSig = pyqtSignal(str, str, list)
+    showPlayingPlaylistSig = pyqtSignal()                        # 显示正在播放列表
+    switchToPlayingInterfaceSig = pyqtSignal()                   # 显示正在播放界面信号
+    switchToSettingInterfaceSig = pyqtSignal()                   # 切换到设置界面信号
+    switchToSingerInterfaceSig = pyqtSignal(str)                 # 切换到歌手界面
+    switchToAlbumInterfaceSig = pyqtSignal(str, str)             # 切换到专辑界面
+    switchToMyMusicInterfaceSig = pyqtSignal()                   # 切换到我的音乐界面
+    switchToRecentPlayInterfaceSig = pyqtSignal()                # 切换到最近播放界面
+    switchToPlaylistInterfaceSig = pyqtSignal(str)               # 切换到播放列表界面信号
+    switchToPlaylistCardInterfaceSig = pyqtSignal()              # 切换到播放列表卡界面
+    switchToSmallestPlayInterfaceSig = pyqtSignal()              # 显示最小播放模式界面
+    switchToVideoInterfaceSig = pyqtSignal(str, str)             # 切换到视频界面
+    switchToLabelNavigationInterfaceSig = pyqtSignal(list, str)  # 显示标签导航界面
+    switchToMoreSearchResultInterfaceSig = pyqtSignal(str, str, list) # 切换到更多搜索结果界面
+
 
     nextSongSig = pyqtSignal()             # 下一首
     lastSongSig = pyqtSignal()             # 上一首

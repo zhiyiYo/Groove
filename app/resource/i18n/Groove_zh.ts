@@ -954,6 +954,11 @@
         <source>View online</source>
         <translation>在线查看</translation>
     </message>
+    <message>
+        <location filename="../../View/playing_interface/menu.py" line="25"/>
+        <source>Watch MV</source>
+        <translation>观看 MV</translation>
+    </message>
 </context>
 <context>
     <name>MessageDialog</name>

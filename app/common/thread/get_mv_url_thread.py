@@ -14,6 +14,8 @@ class GetMvUrlThread(QThread):
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
+        self.singer = ''
+        self.title = ''
         self.key_word = ''
         self.crawlers = [
             KuGouMusicCrawler(),
@@ -46,5 +48,7 @@ class GetMvUrlThread(QThread):
         title: str
             song name
         """
-        self.key_word = singer + ' ' + title
+        self.singer = singer or ''
+        self.title = title or ''
+        self.key_word = self.singer + ' ' + self.title
         self.start()

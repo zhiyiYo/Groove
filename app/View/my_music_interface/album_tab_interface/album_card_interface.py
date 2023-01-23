@@ -189,7 +189,7 @@ class AlbumCardView(QWidget):
         for letter, cards in groupCards:
             view = self.__createAlbumCardView(cards, letter)
             view.titleClicked.connect(
-                lambda: signalBus.showLabelNavigationInterfaceSig.emit(list(firstLetters.keys()), "grid"))
+                lambda: signalBus.switchToLabelNavigationInterfaceSig.emit(list(firstLetters.keys()), "grid"))
 
         self.__addViewToLayout()
 
@@ -219,7 +219,7 @@ class AlbumCardView(QWidget):
         for year, cards in groupCards:
             view = self.__createAlbumCardView(cards, year)
             view.titleClicked.connect(
-                lambda: signalBus.showLabelNavigationInterfaceSig.emit(years, "list"))
+                lambda: signalBus.switchToLabelNavigationInterfaceSig.emit(years, "list"))
 
         self.__addViewToLayout()
 
@@ -246,7 +246,7 @@ class AlbumCardView(QWidget):
         for singer, cards in groupCards:
             view = self.__createAlbumCardView(cards, singer)
             view.titleClicked.connect(
-                lambda: signalBus.showLabelNavigationInterfaceSig.emit(list(singers.keys()), "grid"))
+                lambda: signalBus.switchToLabelNavigationInterfaceSig.emit(list(singers.keys()), "grid"))
 
         self.__addViewToLayout()
 

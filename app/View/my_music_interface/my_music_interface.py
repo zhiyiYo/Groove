@@ -146,6 +146,7 @@ class MyMusicInterface(QWidget):
         sender = self.sender()
         self.currentSongSortAct = sender
         self.toolBar.songSortModeButton.setText(sender.text())
+        self.toolBar.songSortModeButton.adjustSize()
         self.songListWidget.setSortMode(sender.property('mode'))
 
     def __sortAlbumCard(self):
@@ -153,6 +154,7 @@ class MyMusicInterface(QWidget):
         sender = self.sender()
         self.currentAlbumSortAct = sender
         self.toolBar.albumSortModeButton.setText(sender.text())
+        self.toolBar.songSortModeButton.adjustSize()
         self.albumTabInterface.setSortMode(sender.property('mode'))
 
     def scrollToLabel(self, label: str):

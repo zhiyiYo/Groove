@@ -117,6 +117,7 @@ class ToolBar(QWidget):
         setStyleSheet(self, 'my_music_interface_toolBar')
         self.randomPlayAllButton.adjustSize()
         self.sortModeLabel.adjustSize()
+        self.songSortModeButton.adjustSize()
 
 
 class TabButton(QPushButton):

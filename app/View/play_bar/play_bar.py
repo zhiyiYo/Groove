@@ -131,12 +131,12 @@ class PlayBar(QWidget):
         self.playButton.clicked.connect(signalBus.togglePlayStateSig)
         self.volumeSlider.valueChanged.connect(signalBus.volumeChanged)
         self.progressSlider.clicked.connect(signalBus.progressSliderMoved)
-        self.songInfoCard.clicked.connect(signalBus.showPlayingInterfaceSig)
+        self.songInfoCard.clicked.connect(signalBus.switchToPlayingInterfaceSig)
         self.songInfoCard.albumChanged.connect(self.__onAlbumChanged)
         self.moreActionsButton.clicked.connect(self.__showMoreActionsMenu)
         self.progressSlider.sliderMoved.connect(signalBus.progressSliderMoved)
         self.smallPlayModeButton.clicked.connect(
-            signalBus.showSmallestPlayInterfaceSig)
+            signalBus.switchToSmallestPlayInterfaceSig)
         self.moreActionsMenu.fullScreenAct.triggered.connect(
             lambda: signalBus.fullScreenChanged.emit(True))
         self.moreActionsMenu.savePlayListAct.triggered.connect(

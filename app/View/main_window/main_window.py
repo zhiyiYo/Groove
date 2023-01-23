@@ -753,25 +753,24 @@ class MainWindow(AcrylicWindow):
         if len(self.navigationHistories) == 1:
             self.titleBar.returnButton.hide()
 
-    def showLabelNavigationInterface(self, labels: list, layout: str):
+    def switchToLabelNavigationInterface(self, labels: list, layout: str):
         """ show label navigation interface """
         self.labelNavigationInterface.setLabels(labels, layout)
         self.switchToSubInterface(self.labelNavigationInterface)
 
-    def showSmallestPlayInterface(self):
+    def switchToSmallestPlayInterface(self):
         """ show smallest play interface """
         self.smallestPlayInterface.setCurrentIndex(
             self.mediaPlaylist.currentIndex())
         self.hide()
         self.smallestPlayInterface.show()
 
-    def showVideoWindow(self, url: str):
+    def switchToVideoInterface(self, url: str, title: str):
         """ show video window """
         self.pause()
 
-        songInfo = self.playingInterface.songListWidget.currentSongInfo
         self.totalStackWidget.setCurrentIndex(2)
-        self.videoInterface.setVideo(url, songInfo.singer+' - '+songInfo.title)
+        self.videoInterface.setVideo(url, title)
 
         self.navigationHistories.append(("totalStackWidget", 2))
         self.titleBar.returnButton.show()
@@ -806,7 +805,7 @@ class MainWindow(AcrylicWindow):
         self.titleBar.titleLabel.setVisible(
             self.navigationInterface.isExpanded)
 
-    def showPlayingInterface(self):
+    def switchToPlayingInterface(self):
         """ show playing interface """
         self.show()
 
@@ -834,7 +833,7 @@ class MainWindow(AcrylicWindow):
         self.playingInterface.playBar.pullUpArrowButton.setArrowDirection(
             "down")
         if self.playingInterface.isPlaylistVisible:
-            self.showPlayingInterface()
+            self.switchToPlayingInterface()
 
     def clearPlaylist(self):
         """ clear playlist """
@@ -1582,7 +1581,10 @@ class MainWindow(AcrylicWindow):
         signalBus.renamePlaylistSig.connect(self.onRenamePlaylist)
 
         signalBus.showPlayingPlaylistSig.connect(self.showPlayingPlaylist)
-        signalBus.showPlayingInterfaceSig.connect(self.showPlayingInterface)
+        signalBus.switchToVideoInterfaceSig.connect(
+            self.switchToVideoInterface)
+        signalBus.switchToPlayingInterfaceSig.connect(
+            self.switchToPlayingInterface)
         signalBus.switchToSingerInterfaceSig.connect(
             self.switchToSingerInterface)
         signalBus.switchToAlbumInterfaceSig.connect(
@@ -1599,10 +1601,10 @@ class MainWindow(AcrylicWindow):
             self.switchToSettingInterface)
         signalBus.switchToMoreSearchResultInterfaceSig.connect(
             self.switchToMoreSearchResultInterface)
-        signalBus.showSmallestPlayInterfaceSig.connect(
-            self.showSmallestPlayInterface)
-        signalBus.showLabelNavigationInterfaceSig.connect(
-            self.showLabelNavigationInterface)
+        signalBus.switchToSmallestPlayInterfaceSig.connect(
+            self.switchToSmallestPlayInterface)
+        signalBus.switchToLabelNavigationInterfaceSig.connect(
+            self.switchToLabelNavigationInterface)
 
         # playing interface signal
         self.playingInterface.currentIndexChanged.connect(
@@ -1611,8 +1613,6 @@ class MainWindow(AcrylicWindow):
             self.mediaPlaylist.removeSong)
         self.playingInterface.selectionModeStateChanged.connect(
             self.onSelectionModeStateChanged)
-        self.playingInterface.switchToVideoInterfaceSig.connect(
-            self.showVideoWindow)
 
         # song tab interface song list widget signal
         self.songTabSongListWidget.playSignal.connect(

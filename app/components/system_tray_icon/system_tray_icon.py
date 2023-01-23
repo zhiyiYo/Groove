@@ -29,7 +29,7 @@ class SystemTrayIcon(QSystemTrayIcon):
         self.menu.exitAct.triggered.connect(self.exitSignal)
         self.menu.lastSongAct.triggered.connect(signalBus.lastSongSig)
         self.menu.nextSongAct.triggered.connect(signalBus.nextSongSig)
-        self.menu.songAct.triggered.connect(signalBus.showPlayingInterfaceSig)
+        self.menu.songAct.triggered.connect(signalBus.switchToPlayingInterfaceSig)
         self.menu.playAct.triggered.connect(self.__onPlayActionTriggered)
         self.menu.settingsAct.triggered.connect(
             signalBus.switchToSettingInterfaceSig)

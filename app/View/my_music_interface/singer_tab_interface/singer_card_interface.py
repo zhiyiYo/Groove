@@ -168,7 +168,7 @@ class SingerCardView(QWidget):
         for letter, cards in groupCards:
             view = self.__createSingerCardView(cards, letter)
             view.titleClicked.connect(
-                lambda: signalBus.showLabelNavigationInterfaceSig.emit(list(firstLetters.keys()), "grid"))
+                lambda: signalBus.switchToLabelNavigationInterfaceSig.emit(list(firstLetters.keys()), "grid"))
 
         self.__addViewToLayout()
 

@@ -99,6 +99,7 @@ class PlaylistCardInterface(PlaylistSelectionModeInterface):
         setStyleSheet(self, 'playlist_card_interface')
         self.createPlaylistButton.adjustSize()
         self.sortModeLabel.adjustSize()
+        self.sortModeButton.adjustSize()
         self.guideLabel.adjustSize()
 
     def resizeEvent(self, e):

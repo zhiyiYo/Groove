@@ -13,7 +13,7 @@ from common.style_sheet import setStyleSheet
 from common.thread.get_lyric_thread import GetLyricThread
 from common.thread.get_mv_url_thread import GetMvUrlThread
 from components.buttons.three_state_button import ThreeStatePushButton
-from components.dialog_box.message_dialog import MessageDialog
+from components.dialog_box.dialog import Dialog
 from components.selection_mode_interface.bar import PlayingSelectionModeBar
 from components.widgets.label import BlurCoverLabel, MaskLabel
 from components.widgets.lyric_widget import LyricWidget
@@ -49,7 +49,6 @@ class PlayingInterface(QWidget):
     savePlaylistSig = pyqtSignal()                       # 保存播放列表
     currentIndexChanged = pyqtSignal(int)                # 当前歌曲改变
     selectionModeStateChanged = pyqtSignal(bool)         # 进入/退出选择模式
-    switchToVideoInterfaceSig = pyqtSignal(str)          # 切换到视频界面
 
     def __init__(self, playlist: List[SongInfo] = None, parent=None):
         super().__init__(parent)
@@ -419,7 +418,7 @@ class PlayingInterface(QWidget):
     def __onShowSmallestPlayInterfaceButtonClicked(self):
         """ show smallest play interface """
         signalBus.fullScreenChanged.emit(False)
-        signalBus.showSmallestPlayInterfaceSig.emit()
+        signalBus.switchToSmallestPlayInterfaceSig.emit()
 
     def setRandomPlay(self, isRandomPlay: bool):
         """ set whether to play randomly """
@@ -602,12 +601,12 @@ class PlayingInterface(QWidget):
         if lyric.isValid():
             MetaDataWriter().writeLyric(songInfo.file, lyric)
 
-    def __searchMV(self):
+    def __searchMV(self, songInfo: SongInfo = None):
         """ search MV """
         if not self.playlist:
             return
 
-        songInfo = self.playlist[self.currentIndex]
+        songInfo = songInfo or self.playlist[self.currentIndex]
         self.getMvUrlThread.search(songInfo.singer, songInfo.title)
 
     def __onCrawlMvUrlFinished(self, url: str):
@@ -617,21 +616,21 @@ class PlayingInterface(QWidget):
                 self.tr('Unable to find the corresponding MV'),
                 self.tr('Sorry, there are no MVs available for the current song'),
             )
-            return
-
-        self.switchToVideoInterfaceSig.emit(url)
+        else:
+            title = self.getMvUrlThread.singer + ' - ' + self.getMvUrlThread.title
+            signalBus.switchToVideoInterfaceSig.emit(url, title)
 
     def __showMessageDialog(self, title: str, content: str):
         """ show message dialog """
-        w = MessageDialog(title, content, self.window())
+        w = Dialog(title, content, self.window())
         w.cancelButton.setText(self.tr("Close"))
-        w.yesButton.hide()
         w.exec_()
 
     def __connectSignalToSlot(self):
         """ connect signal to slot """
         # signal bus
-        signalBus.albumBlurRadiusChanged.connect(self.albumCoverLabel.setBlurRadius)
+        signalBus.albumBlurRadiusChanged.connect(
+            self.albumCoverLabel.setBlurRadius)
 
         self.getLyricThread.crawlFinished.connect(self.setLyric)
         self.getMvUrlThread.crawlFinished.connect(self.__onCrawlMvUrlFinished)
@@ -688,6 +687,7 @@ class PlayingInterface(QWidget):
             self.songListWidget.locateCurrentSong)
 
         # song list widget signal
+        self.songListWidget.watchMvSig.connect(self.__searchMV)
         self.songListWidget.currentIndexChanged.connect(
             self.currentIndexChanged)
         self.songListWidget.removeSongSig.connect(

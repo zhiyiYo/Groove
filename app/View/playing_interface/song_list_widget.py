@@ -20,6 +20,7 @@ class SongListWidget(ListWidget):
 
     emptyChanged = pyqtSignal(bool)                 # 歌曲列表 空/非空 变化
     removeSongSig = pyqtSignal(int)                 # 移除歌曲
+    watchMvSig = pyqtSignal(SongInfo)               # 观看 MV
     currentIndexChanged = pyqtSignal(int)           # 当前播放的变化
     isAllCheckedChanged = pyqtSignal(bool)          # 歌曲卡卡全部选中改变
     selectionModeStateChanged = pyqtSignal(bool)    # 进入或退出选择模式
@@ -278,6 +279,8 @@ class SongListWidget(ListWidget):
         )
         menu.viewOnlineAct.triggered.connect(
             lambda: signalBus.getSongDetailsUrlSig.emit(self.currentSongInfo, QueryServerType.WANYI))
+        menu.movieAct.triggered.connect(
+            lambda: self.watchMvSig.emit(self.currentSongInfo))
 
         menu.addToMenu.addSongsToPlaylistSig.connect(
             lambda name: signalBus.addSongsToCustomPlaylistSig.emit(name, [self.currentSongInfo]))

@@ -72,7 +72,7 @@ class NavigationInterface(QWidget):
         self.navigationMenu.searchSig.connect(self.__collapseWindow)
         for widget in self.__navigations:
             widget.playingButton.clicked.connect(
-                signalBus.showPlayingInterfaceSig)
+                signalBus.switchToPlayingInterfaceSig)
             widget.settingButton.clicked.connect(
                 signalBus.switchToSettingInterfaceSig)
             widget.myMusicButton.clicked.connect(
