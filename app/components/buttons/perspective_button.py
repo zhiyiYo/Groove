@@ -1,6 +1,6 @@
 # coding:utf-8
 
-from common.get_pressed_pos import getPressedPos
+from common.get_pressed_pos import getPressedPos, Position
 from common.image_utils import PixmapPerspectiveTransform
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QPainter
@@ -33,15 +33,15 @@ class PerspectivePushButton(QPushButton):
         w = self.transform.width
         h = self.transform.height
         dstPointMap = {
-            "left": [[3, 1], [w - 2, 1], [3, h - 2], [w - 2, h - 1]],
-            "left-top": [[3, 2], [w - 1, 1], [1, h - 2], [w - 2, h - 1]],
-            "left-bottom": [[3, 1], [w - 2, 1], [3, h - 3], [w - 1, h - 1]],
-            "center": [[2, 2], [w - 3, 2], [2, h - 3], [w - 3, h - 3]],
-            "top": [[2, 2], [w - 3, 2], [1, h - 2], [w - 2, h - 2]],
-            "bottom": [[1, 1], [w - 2, 1], [3, h - 3], [w - 4, h - 3]],
-            "right-bottom": [[1, 1], [w - 2, 1], [0, h - 1], [w - 4, h - 3]],
-            "right-top": [[0, 0], [w - 4, 1], [1, h - 1], [w - 2, h - 2]],
-            "right": [[1, 0], [w - 4, 1], [1, h - 1], [w - 4, h - 2]],
+            Position.LEFT: [[3, 1], [w - 2, 1], [3, h - 2], [w - 2, h - 1]],
+            Position.TOP_LEFT: [[3, 2], [w - 1, 1], [1, h - 2], [w - 2, h - 1]],
+            Position.BOTTOM_LEFT: [[3, 1], [w - 2, 1], [3, h - 3], [w - 1, h - 1]],
+            Position.CENTER: [[2, 2], [w - 3, 2], [2, h - 3], [w - 3, h - 3]],
+            Position.TOP: [[2, 2], [w - 3, 2], [1, h - 2], [w - 2, h - 2]],
+            Position.BOTTOM: [[1, 1], [w - 2, 1], [3, h - 3], [w - 4, h - 3]],
+            Position.BOTTOM_RIGHT: [[1, 1], [w - 2, 1], [0, h - 1], [w - 4, h - 3]],
+            Position.TOP_RIGHT: [[0, 0], [w - 4, 1], [1, h - 1], [w - 2, h - 2]],
+            Position.RIGHT: [[1, 0], [w - 4, 1], [1, h - 1], [w - 4, h - 2]],
         }
 
         if self.__pressedPos in dstPointMap:

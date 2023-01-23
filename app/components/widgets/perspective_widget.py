@@ -1,5 +1,5 @@
 # coding:utf-8
-from common.get_pressed_pos import getPressedPos
+from common.get_pressed_pos import getPressedPos, Position
 from common.image_utils import PixmapPerspectiveTransform
 from PyQt5.QtCore import QPoint, Qt
 from PyQt5.QtGui import QPainter, QPixmap, QScreen
@@ -89,15 +89,15 @@ class PerspectiveWidget(QWidget):
         w = self.__perspectiveTrans.width
         h = self.__perspectiveTrans.height
         dstPointMap = {
-            "left": [[5, 4], [w - 2, 1], [3, h - 3], [w - 2, h - 1]],
-            "left-top": [[7, 6], [w - 1, 1], [1, h - 2], [w - 2, h - 1]],
-            "left-bottom": [[0, 1], [w - 3, 0], [6, h - 5], [w - 2, h - 2]],
-            "center": [[3, 4], [w - 4, 4], [3, h - 3], [w - 4, h - 3]],
-            "top": [[4, 5], [w - 5, 5], [0, h - 1], [w - 1, h - 1]],
-            "bottom": [[0, 0], [w - 1, 0], [4, h - 4], [w - 5, h - 4]],
-            "right-bottom": [[1, 0], [w - 3, 2], [1, h - 2], [w - 6, h - 5]],
-            "right-top": [[0, 1], [w - 7, 5], [2, h - 1], [w - 2, h - 2]],
-            "right": [[1, 1], [w - 6, 4], [2, h - 1], [w - 4, h - 3]]
+            Position.LEFT: [[5, 4], [w - 2, 1], [3, h - 3], [w - 2, h - 1]],
+            Position.TOP_LEFT: [[7, 6], [w - 1, 1], [1, h - 2], [w - 2, h - 1]],
+            Position.BOTTOM_LEFT: [[0, 1], [w - 3, 0], [6, h - 5], [w - 2, h - 2]],
+            Position.CENTER: [[3, 4], [w - 4, 4], [3, h - 3], [w - 4, h - 3]],
+            Position.TOP: [[4, 5], [w - 5, 5], [0, h - 1], [w - 1, h - 1]],
+            Position.BOTTOM: [[0, 0], [w - 1, 0], [4, h - 4], [w - 5, h - 4]],
+            Position.BOTTOM_RIGHT: [[1, 0], [w - 3, 2], [1, h - 2], [w - 6, h - 5]],
+            Position.TOP_RIGHT: [[0, 1], [w - 7, 5], [2, h - 1], [w - 2, h - 2]],
+            Position.RIGHT: [[1, 1], [w - 6, 4], [2, h - 1], [w - 4, h - 3]]
         }
         self.__perspectiveTrans.setDstPoints(*dstPointMap[pressedPos])
 

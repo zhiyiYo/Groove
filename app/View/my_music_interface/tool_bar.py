@@ -1,6 +1,6 @@
 # coding:utf-8
 from common.config import config
-from common.get_pressed_pos import getPressedPos
+from common.get_pressed_pos import getPressedPos, Position
 from common.style_sheet import setStyleSheet
 from components.buttons.three_state_button import RandomPlayAllButton
 from components.widgets.menu import AeroMenu
@@ -187,11 +187,11 @@ class TabButton(QPushButton):
 
         if not self.pressedPos:
             self.__paintLine(painter, 1, h-3, w-1, h-3, w-1, h, 1, h)
-        elif self.pressedPos in ["left-top", "right-bottom"]:
+        elif self.pressedPos in [Position.TOP_LEFT, Position.BOTTOM_RIGHT]:
             self.__paintLine(painter, 1, h-3, w-1, h-4, w-1, h-1, 1, h)
-        elif self.pressedPos in ["left", "center", "right", "top", "bottom"]:
+        elif self.pressedPos in [Position.LEFT, Position.CENTER, Position.RIGHT, Position.TOP, Position.BOTTOM]:
             self.__paintLine(painter, 2, h-4, w-2, h-4, w-2, h-1, 2, h-1)
-        elif self.pressedPos in ["left-bottom", "right-top"]:
+        elif self.pressedPos in [Position.BOTTOM_LEFT, Position.TOP_RIGHT]:
             self.__paintLine(painter, 1, h-4, w-1, h-3, w-1, h, 1, h-1)
 
     def __paintText(self, painter: QPainter, shearX, shearY, x=1, y=5):
@@ -224,9 +224,9 @@ class TabButton(QPushButton):
             self.__paintText(painter, 0, 0)
         else:
             painter.setFont(QFont("Microsoft YaHei", fontSize))
-            if self.pressedPos in ["left-top", "right-bottom"]:
+            if self.pressedPos in [Position.TOP_LEFT, Position.BOTTOM_RIGHT]:
                 self.__paintText(painter, -0.03, 0)
-            elif self.pressedPos in ["left", "center", "right", "top", "bottom"]:
+            elif self.pressedPos in [Position.LEFT, Position.CENTER, Position.RIGHT, Position.TOP, Position.BOTTOM]:
                 self.__paintText(painter, 0, 0)
-            elif self.pressedPos in ["left-bottom", "right-top"]:
+            elif self.pressedPos in [Position.BOTTOM_LEFT, Position.TOP_RIGHT]:
                 self.__paintText(painter, 0.03, 0)

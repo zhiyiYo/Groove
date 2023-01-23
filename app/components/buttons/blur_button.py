@@ -1,5 +1,4 @@
 # coding:utf-8
-from PIL import Image
 from PIL.ImageFilter import GaussianBlur
 from PyQt5.QtCore import QPropertyAnimation, Qt, pyqtProperty
 from PyQt5.QtGui import QBrush, QEnterEvent, QPainter, QPixmap

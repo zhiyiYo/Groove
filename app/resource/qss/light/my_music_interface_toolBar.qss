@@ -36,7 +36,7 @@ QPushButton#sortModeButton {
 }
 
 QPushButton#sortModeButton:hover {
-    color: rgb(59, 165, 194);
+    color: rgba(0, 107, 131, 0.8);
 }
 
 QPushButton#randomPlayButton,

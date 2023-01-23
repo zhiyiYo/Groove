@@ -5,7 +5,7 @@ from PyQt5.QtCore import QPoint, Qt
 from PyQt5.QtGui import QBrush, QColor, QPainter, QPolygon, QPixmap
 from PyQt5.QtWidgets import QPushButton
 
-from common.get_pressed_pos import getPressedPos
+from common.get_pressed_pos import getPressedPos, Position
 
 
 class NavigationIconFactory:
@@ -123,28 +123,28 @@ class ToolButton(NavigationButton):
 
         if self.isSelected == True:
             if not self.pressedPos:
-                brush = QBrush(QColor(0, 107, 133))
+                brush = QBrush(QColor(0, 153, 188))
                 painter.setBrush(brush)
                 painter.drawRect(0, 1, 4, self.height() - 2)
-            elif self.pressedPos in ["left-top", "right-bottom", "top"]:
+            elif self.pressedPos in [Position.TOP_LEFT, Position.BOTTOM_RIGHT, Position.TOP]:
                 # 绘制选中标志
                 self.drawLine(
                     painter, 2, 2, 6, 2, 4, self.height() - 2, 0, self.height() - 2)
-            elif self.pressedPos in ["left-bottom", "right-top", "bottom"]:
+            elif self.pressedPos in [Position.BOTTOM_LEFT, Position.TOP_RIGHT, Position.BOTTOM]:
                 self.drawLine(
                     painter, 0, 1, 4, 1, 6, self.height() - 2, 2, self.height() - 2)
-            elif self.pressedPos in ["left", "right", "center"]:
+            elif self.pressedPos in [Position.LEFT, Position.RIGHT, Position.CENTER]:
                 self.drawLine(
                     painter, 1, 2, 5, 2, 5, self.height() - 2, 1, self.height() - 2)
 
         # paint icon
         if not self.pressedPos:
             self.drawIcon(painter, self.image)
-        elif self.pressedPos in ["left-top", "right-bottom", "top"]:
+        elif self.pressedPos in [Position.TOP_LEFT, Position.BOTTOM_RIGHT, Position.TOP]:
             self.drawIcon(painter, self.image, -0.05, 0)
-        elif self.pressedPos in ["left-bottom", "right-top", "bottom"]:
+        elif self.pressedPos in [Position.BOTTOM_LEFT, Position.TOP_RIGHT, Position.BOTTOM]:
             self.drawIcon(painter, self.image, 0.05, 0)
-        elif self.pressedPos in ["left", "right", "center"]:
+        elif self.pressedPos in [Position.LEFT, Position.RIGHT, Position.CENTER]:
             image = self.image.scaled(
                 self.image.width() - 4,
                 self.image.height() - 4,
@@ -161,8 +161,7 @@ class ToolButton(NavigationButton):
     def drawLine(self, painter, x1, y1, x2, y2, x3, y3, x4, y4):
         """ draw selected line """
         painter.setPen(Qt.NoPen)
-        brush = QBrush(QColor(0, 107, 133))
-        painter.setBrush(brush)
+        painter.setBrush(QColor(0, 153, 188))
         points = [QPoint(x1, y1), QPoint(x2, y2),
                   QPoint(x3, y3), QPoint(x4, y4)]
         painter.drawPolygon(QPolygon(points), 4)
@@ -186,37 +185,37 @@ class PushButton(NavigationButton):
         painter.setPen(Qt.NoPen)
         if self.isSelected == True:
             if not self.pressedPos:
-                brush = QBrush(QColor(0, 107, 133))
+                brush = QBrush(QColor(0, 153, 188))
                 painter.setBrush(brush)
                 painter.drawRect(0, 1, 4, self.height() - 2)
 
-            elif self.pressedPos in ["left-top", "top"]:
+            elif self.pressedPos in [Position.TOP_LEFT, Position.TOP]:
                 self.drawLine(
                     painter, 5, 2, 9, 2, 7, self.height() - 2, 3, self.height() - 2)
-            elif self.pressedPos in ["left-bottom", "bottom"]:
+            elif self.pressedPos in [Position.BOTTOM_LEFT, Position.BOTTOM]:
                 self.drawLine(
                     painter, 3, 2, 7, 2, 9, self.height() - 3, 5, self.height() - 3)
-            elif self.pressedPos in ["left", "center"]:
+            elif self.pressedPos in [Position.LEFT, Position.CENTER]:
                 self.drawLine(
                     painter, 5, 2, 9, 2, 9, self.height() - 2, 5, self.height() - 2)
-            elif self.pressedPos == "right-top":
+            elif self.pressedPos == Position.TOP_RIGHT:
                 self.drawLine(
                     painter, 0, 2, 4, 2, 3, self.height() - 2, 0, self.height() - 2)
-            elif self.pressedPos == "right":
+            elif self.pressedPos == Position.RIGHT:
                 self.drawLine(
                     painter, 1, 1, 5, 1, 5, self.height() - 1, 1, self.height() - 1)
-            elif self.pressedPos == "right-bottom":
+            elif self.pressedPos == Position.BOTTOM_RIGHT:
                 self.drawLine(
                     painter, 0, 2, 3, 2, 4, self.height() - 2, 0, self.height() - 2)
 
         # paint icon and text
         if not self.pressedPos:
             self.drawTextIcon(painter, self.image)
-        elif self.pressedPos in ["left-top", "top"]:
+        elif self.pressedPos in [Position.TOP_LEFT, Position.TOP]:
             self.drawTextIcon(painter, self.image, -0.05, 0)
-        elif self.pressedPos in ["left-bottom", "bottom"]:
+        elif self.pressedPos in [Position.BOTTOM_LEFT, Position.BOTTOM]:
             self.drawTextIcon(painter, self.image, 0.05, 0)
-        elif self.pressedPos in ["left", "center"]:
+        elif self.pressedPos in [Position.LEFT, Position.CENTER]:
             image = self.image.scaled(
                 self.image.width() - 4,
                 self.image.height() - 4,
@@ -224,9 +223,9 @@ class PushButton(NavigationButton):
                 Qt.SmoothTransformation,
             )
             self.drawTextIcon(painter, image, 0, 0, 7, 2, 63)
-        elif self.pressedPos == "right-top":
+        elif self.pressedPos == Position.TOP_RIGHT:
             self.drawTextIcon(painter, self.image, -0.02, 0)
-        elif self.pressedPos == "right":
+        elif self.pressedPos == Position.RIGHT:
             image = self.image.scaled(
                 self.image.width() - 2,
                 self.image.height() - 2,
@@ -234,7 +233,7 @@ class PushButton(NavigationButton):
                 Qt.SmoothTransformation,
             )
             self.drawTextIcon(painter, image, 0, 0, 3, 1, 61)
-        elif self.pressedPos == "right-bottom":
+        elif self.pressedPos == Position.BOTTOM_RIGHT:
             image = self.image.scaled(
                 self.image.width() - 2,
                 self.image.height() - 2,
@@ -256,8 +255,7 @@ class PushButton(NavigationButton):
         painter.setPen(color)
         painter.setFont(self.font())
         text = painter.fontMetrics().elidedText(self.text(), Qt.ElideRight, 320)
-        names = ["myMusicButton", "historyButton",
-                 "playingButton", "settingButton"]
+        names = ["myMusicButton", "historyButton", "playingButton", "settingButton"]
         if self.objectName() in names:
             painter.drawText(textX, textY + 14, text)
         else:
@@ -266,10 +264,8 @@ class PushButton(NavigationButton):
     def drawLine(self, painter, x1, y1, x2, y2, x3, y3, x4, y4):
         """ paint selected line """
         painter.setPen(Qt.NoPen)
-        brush = QBrush(QColor(0, 107, 133))
-        painter.setBrush(brush)
-        points = [QPoint(x1, y1), QPoint(x2, y2),
-                  QPoint(x3, y3), QPoint(x4, y4)]
+        painter.setBrush(QColor(0, 153, 188))
+        points = [QPoint(x1, y1), QPoint(x2, y2), QPoint(x3, y3), QPoint(x4, y4)]
         painter.drawPolygon(QPolygon(points), 4)
 
 
@@ -290,11 +286,11 @@ class CreatePlaylistButton(NavigationButton):
 
         if not self.pressedPos:
             self.drawIcon(painter, self.image)
-        elif self.pressedPos in ["left-top", "right-bottom", "top"]:
+        elif self.pressedPos in [Position.TOP_LEFT, Position.BOTTOM_RIGHT, Position.TOP]:
             self.drawIcon(painter, self.image, -0.05, 0)
-        elif self.pressedPos in ["left-bottom", "right-top", "bottom"]:
+        elif self.pressedPos in [Position.BOTTOM_LEFT, Position.TOP_RIGHT, Position.BOTTOM]:
             self.drawIcon(painter, self.image, 0.05, 0)
-        elif self.pressedPos in ["left", "right", "center"]:
+        elif self.pressedPos in [Position.LEFT, Position.RIGHT, Position.CENTER]:
             image = self.image.scaled(
                 self.image.width() - 6,
                 self.image.height() - 4,
