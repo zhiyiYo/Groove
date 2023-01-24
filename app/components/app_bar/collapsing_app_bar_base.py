@@ -168,21 +168,7 @@ class CollapsingAppBarBase(QWidget):
             x += button.width()+10
 
         # Hide part of the button
-        index = self.__getLastVisibleButtonIndex()
-        self.hiddenButtonNum = self.__nButtons-(index+1)
-        self.moreActionsButton.setVisible(index + 1 < self.__nButtons)
-        for i, button in enumerate(self.__buttons):
-            button.setHidden(i > index)
-
-        self.moreActionsButton.move(
-            self.__buttons[index].geometry().right()+10, y)
-
-        # according to the position of the button and the width to decide whether to hide the button again.
-        if self.moreActionsButton.isVisible() and self.width() < self.moreActionsButton.geometry().right()+10:
-            self.hiddenButtonNum += 1
-            self.__buttons[index].hide()
-            self.moreActionsButton.move(
-                self.__buttons[index-1].geometry().right()+10, y)
+        self.__hideButtons()
 
     def paintEvent(self, e):
         """ paint the white lines of cover """
@@ -207,6 +193,29 @@ class CollapsingAppBarBase(QWidget):
         # paint second white line
         painter.setBrush(QColor(255, 255, 255, 255*0.2))
         painter.drawRect(x+2*h_, y-2*h_, w2, h_)
+
+    def __hideButtons(self):
+        """ hide part of buttons """
+        if self.needWhiteBar:
+            y = 288 - int((385-self.height())/230*206)
+        else:
+            y = 308 - int((385-self.height())/230*220)
+
+        index = self.__getLastVisibleButtonIndex()
+        self.hiddenButtonNum = self.__nButtons-(index+1)
+        self.moreActionsButton.setVisible(index + 1 < self.__nButtons)
+        for i, button in enumerate(self.__buttons):
+            button.setHidden(i > index)
+
+        self.moreActionsButton.move(
+            self.__buttons[index].geometry().right()+10, y)
+
+        # according to the position of the button and the width to decide whether to hide the button again.
+        if self.moreActionsButton.isVisible() and self.width() < self.moreActionsButton.geometry().right()+10:
+            self.hiddenButtonNum += 1
+            self.__buttons[index].hide()
+            self.moreActionsButton.move(
+                self.__buttons[index-1].geometry().right()+10, y)
 
     @staticmethod
     def __getLabelStyleSheet(fontFamily: Union[str, List[str]], fontSize: int, fontWeight=400):
@@ -301,3 +310,7 @@ class CollapsingAppBarBase(QWidget):
     @property
     def buttons(self):
         return self.__buttons
+
+    def showEvent(self, e):
+        super().showEvent(e)
+        self.__hideButtons()
