@@ -16,6 +16,9 @@ else:
     from PyQt5 import sip
 
 
+from .config import config
+
+
 class DPIManager:
     """ DPI Manager """
 
@@ -80,9 +83,13 @@ class MacDPIManager(DPIManager):
 
     def _get_scale(self) -> float:
         # for screen in NSScreen.screens():
-        #     return screen.backingScaleFactor() 
+        #     return screen.backingScaleFactor()
 
         return 1
 
 
 dpi_manager = DPIManager()
+if config.get(config.dpiScale) == "Auto":
+    DPI_SCALE = max(1, dpi_manager.scale-0.25)
+else:
+    DPI_SCALE = config.get(config.dpiScale)

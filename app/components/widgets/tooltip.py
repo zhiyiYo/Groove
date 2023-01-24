@@ -343,7 +343,7 @@ class ToastTooltip(QWidget):
     def __initLayout(self):
         """ initialize layout """
         self.setFixedSize(max(self.titleLabel.width(),
-                          self.contentLabel.width()) + 70, 64)
+                          self.contentLabel.width()) + 80, 64)
         self.titleLabel.move(40, 11)
         self.contentLabel.move(15, 34)
         self.closeButton.move(self.width() - 30, 23)

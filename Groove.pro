@@ -74,4 +74,5 @@ SOURCES += app/View/main_window/main_window.py \
         app/components/settings/folder_list_setting_card.py \
         app/components/settings/setting_card.py \
 
-TRANSLATIONS += app/resource/i18n/Groove_zh.ts
+TRANSLATIONS += app/resource/i18n/Groove_zh.ts \
+        app/resource/i18n/Groove_hk.ts

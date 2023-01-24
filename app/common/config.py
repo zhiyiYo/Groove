@@ -16,6 +16,15 @@ from .singleton import Singleton
 from .signal_bus import signalBus
 
 
+class Language(Enum):
+    """ Language enumeration """
+
+    CHINESE_SIMPLIFIED = "zh"
+    CHINESE_TRADITIONAL = "hk"
+    ENGLISH = "en"
+    AUTO = "Auto"
+
+
 class ConfigValidator:
     """ Config validator """
 
@@ -273,6 +282,8 @@ class Config(Singleton):
         "MainWindow", "RecentPlayNumbers", 300, RangeValidator(10, 300))
     dpiScale = OptionsConfigItem(
         "MainWindow", "DpiScale", "Auto", OptionsValidator([1, 1.25, 1.5, 1.75, 2, "Auto"]), restart=True)
+    language = OptionsConfigItem(
+        "MainWindow", "Language", Language.AUTO, OptionsValidator(Language), EnumSerializer(Language), restart=True)
 
     # media player
     randomPlay = ConfigItem("Player", "RandomPlay", False, BoolValidator())

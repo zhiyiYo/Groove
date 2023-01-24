@@ -11,6 +11,7 @@ QScrollArea {
 
 /* 标签 */
 QLabel#settingLabel {
+    color: black;
     font: 41px 'Microsoft YaHei Light';
     background-color: transparent;
 }

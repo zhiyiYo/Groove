@@ -23,6 +23,7 @@ QLabel#guideLabel {
 }
 
 QLabel#myMusicLabel {
+    color: black;
     font-family: 'Microsoft YaHei Light';
     font-size: 43px;
     padding: 0px;

@@ -487,10 +487,13 @@
         <file>images/setting_card/Question_black.png</file>
         <file>images/setting_card/Info_white.png</file>
         <file>images/setting_card/Info_black.png</file>
+        <file>images/setting_card/Language_white.png</file>
+        <file>images/setting_card/Language_black.png</file>
         <file>images/color_picker/HuePanel.png</file>
         <file>images/color_picker/Clear_black.png</file>
         <file>images/color_picker/Clear_white.png</file>
 
         <file>i18n/Groove_zh.qm</file>
+        <file>i18n/Groove_hk.qm</file>
     </qresource>
 </RCC>

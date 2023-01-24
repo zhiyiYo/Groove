@@ -5,7 +5,7 @@ from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
 from common.thread.crawl_meta_data_thread import CrawlFolderMetaDataThread
 from components.layout.expand_layout import ExpandLayout
-from components.widgets.scroll_area import ScrollArea
+from components.widgets.scroll_area import ScrollArea, SmoothScrollArea, SmoothMode
 from components.widgets.tooltip import ToastTooltip, StateTooltip
 from components.settings import (SettingCardGroup, SwitchSettingCard, FolderListSettingCard,
                                  OptionsSettingCard, RangeSettingCard, PushSettingCard,
@@ -15,7 +15,7 @@ from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QWidget, QLabel, QFontDialog, QFileDialog
 
 
-class SettingInterface(ScrollArea):
+class SettingInterface(SmoothScrollArea):
     """ Setting interface """
 
     checkUpdateSig = pyqtSignal()
@@ -64,6 +64,7 @@ class SettingInterface(ScrollArea):
             config.themeMode,
             SIF.create(SIF.BRUSH),
             self.tr('Application theme'),
+            self.tr('Choose a color theme to personalize Groove Music'),
             texts=[
                 self.tr('Light'), self.tr('Dark'),
                 self.tr('Use system setting')
@@ -79,6 +80,14 @@ class SettingInterface(ScrollArea):
                 "100%", "125%", "150%", "175%", "200%",
                 self.tr("Use system setting")
             ],
+            parent=self.personalGroup
+        )
+        self.languageCard=OptionsSettingCard(
+            config.language,
+            SIF.create(SIF.LANGUAGE),
+            self.tr('Language'),
+            self.tr('Set your preferred language for UI'),
+            texts=['简体中文', '繁體中文', 'English', self.tr('Use system setting')],
             parent=self.personalGroup
         )
 
@@ -257,9 +266,9 @@ class SettingInterface(ScrollArea):
     def __initWidget(self):
         self.resize(1000, 800)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.setViewportMargins(0, 120, 0, 0)
+        self.setViewportMargins(0, 120, 0, 133)
         self.setWidget(self.scrollWidget)
-        self.scrollWidget.resize(self.width(), 2750)
+        self.setWidgetResizable(True)
 
         # initialize style sheet
         self.scrollWidget.setObjectName('scrollWidget')
@@ -282,6 +291,7 @@ class SettingInterface(ScrollArea):
         self.personalGroup.addSettingCard(self.enableAcrylicCard)
         self.personalGroup.addSettingCard(self.themeCard)
         self.personalGroup.addSettingCard(self.zoomCard)
+        self.personalGroup.addSettingCard(self.languageCard)
 
         self.mediaInfoGroup.addSettingCard(self.crawlMetadataCard)
 
@@ -323,10 +333,6 @@ class SettingInterface(ScrollArea):
         self.expandLayout.addWidget(self.mainPanelGroup)
         self.expandLayout.addWidget(self.updateSoftwareGroup)
         self.expandLayout.addWidget(self.aboutGroup)
-
-    def resizeEvent(self, e):
-        self.scrollWidget.resize(self.width(), self.scrollWidget.height())
-        super().resizeEvent(e)
 
     def __updateMetaDataCardEnabled(self):
         """ set the enabled state of meta data switch button """

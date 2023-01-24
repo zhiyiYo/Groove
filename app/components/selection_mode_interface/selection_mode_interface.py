@@ -5,7 +5,7 @@ from common.database.entity import Playlist, SongInfo
 from common.library import Library
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
-from PyQt5.QtCore import QPoint, Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QVBoxLayout, QWidget
 
 from ..album_card import AlbumCardViewBase

@@ -364,6 +364,7 @@ class SettingIconFactory:
     MINIMIZE = "Minimize"
     DOWNLOAD = "Download"
     QUESTION = "Question"
+    LANGUAGE = "Language"
     ALIGNMENT = "Alignment"
     PENCIL_INK = "PencilInk"
     FOLDER_ADD = "FolderAdd"

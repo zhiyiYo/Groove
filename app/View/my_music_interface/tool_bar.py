@@ -100,7 +100,7 @@ class ToolBar(QWidget):
         """ paint horizontal line """
         super().paintEvent(QPaintEvent)
         painter = QPainter(self)
-        r = 46 if config.theme == 'dark' else 229
+        r = 55 if config.theme == 'dark' else 229
         painter.setPen(QColor(r, r, r))
         painter.drawLine(30, 176, self.width()-20, 176)
 
@@ -208,12 +208,15 @@ class TabButton(QPushButton):
                   QPoint(x3, y3), QPoint(x4, y4)]
         painter.drawPolygon(QPolygon(points), 4)
 
-    def __paintAllText(self, painter, fontSize=16):
+    def __paintAllText(self, painter: QPainter, fontSize=16):
         """ paint all texts """
         isDark = config.theme == 'dark'
 
         if not self.isSelected:
             r = 153 if isDark else 102
+            painter.setPen(QColor(r, r, r))
+        else:
+            r = 255 if isDark else 0
             painter.setPen(QColor(r, r, r))
 
         if not self.pressedPos:

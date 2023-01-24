@@ -4,13 +4,13 @@ from random import shuffle
 from common.database.entity import SongInfo
 from common.library import Library
 from common.signal_bus import signalBus
-from common.style_sheet import getStyleSheet
+from common.style_sheet import setStyleSheet
 from components.buttons.three_state_button import RandomPlayAllButton
 from components.dialog_box.message_dialog import MessageDialog
 from components.selection_mode_interface import (SelectionModeBarType,
                                                  SongSelectionModeInterface)
-from PyQt5.QtCore import QFile, pyqtSignal
-from PyQt5.QtWidgets import QLabel, QPushButton, QWidget
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QLabel, QPushButton, QWidget, QApplication
 
 from .song_list_widget import RecentSongListWidget
 
@@ -38,26 +38,28 @@ class RecentPlayInterface(SongSelectionModeInterface):
     def __initWidget(self):
         """ initialize widgets """
         self.resize(1300, 970)
-        self.randomPlayAllButton.setNumber(self.songListWidget.songCardNum)
         self.__setQss()
+
+        self.randomPlayAllButton.setNumber(self.songListWidget.songCardNum)
 
         self.recentPlayLabel.move(30, 54)
         self.randomPlayAllButton.move(30, 131)
         self.sortModeLabel.move(
-            self.randomPlayAllButton.geometry().right()+30, 129)
-        self.sortModeButton.move(self.sortModeLabel.geometry().right()+7, 129)
+            self.randomPlayAllButton.geometry().right()+30, 131)
+        self.sortModeButton.move(self.sortModeLabel.geometry().right()+7, 128)
 
         self.__connectSignalToSlot()
 
     def __setQss(self):
         """ set style sheet """
-        self.sortModeLabel.setMinimumSize(50, 28)
         self.recentPlayLabel.setObjectName('recentPlayLabel')
         self.sortModeLabel.setObjectName("sortModeLabel")
         self.sortModeButton.setObjectName("sortModeButton")
 
-        qss = getStyleSheet('recent_play_interface')
-        self.setStyleSheet(self.styleSheet()+qss)
+        # force style sheets to take effect
+        setStyleSheet(self, 'recent_play_interface')
+        self.setStyle(QApplication.style())
+        QApplication.processEvents()
 
         self.randomPlayAllButton.adjustSize()
         self.sortModeLabel.adjustSize()

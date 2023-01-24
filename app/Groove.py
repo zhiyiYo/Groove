@@ -11,8 +11,8 @@ from PyQt5.QtCore import QLocale, Qt, QTranslator
 from PyQt5.QtWidgets import QApplication
 
 from common.application import SingletonApplication
-from common.config import config
-from common.dpi_manager import dpi_manager
+from common.config import config, Language
+from common.dpi_manager import DPI_SCALE
 from View.main_window import MainWindow
 
 
@@ -22,10 +22,7 @@ if "QT_QPA_PLATFORM_PLUGIN_PATH" in os.environ:
 
 # enable high dpi scale
 os.environ["QT_ENABLE_HIGHDPI_SCALING"] = "0"
-if config.get(config.dpiScale) == "Auto":
-    os.environ["QT_SCALE_FACTOR"] = str(max(1, dpi_manager.scale-0.25))
-else:
-    os.environ["QT_SCALE_FACTOR"] = str(config.get(config.dpiScale))
+os.environ["QT_SCALE_FACTOR"] = str(DPI_SCALE)
 
 QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
@@ -34,7 +31,13 @@ app.setAttribute(Qt.AA_DontCreateNativeWidgetSiblings)
 
 # Internationalization
 translator = QTranslator()
-translator.load(QLocale.system(), ":/i18n/Groove_")
+language = config.get(config.language)  # type: Language
+
+if language == Language.AUTO:
+    translator.load(QLocale.system(), ":/i18n/Groove_")
+elif language != Language.ENGLISH:
+    translator.load(f":/i18n/Groove_{language.value}.qm")
+
 app.installTranslator(translator)
 
 # create main window

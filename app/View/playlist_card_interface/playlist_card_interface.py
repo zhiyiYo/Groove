@@ -9,7 +9,7 @@ from components.selection_mode_interface import (
     PlaylistSelectionModeInterface, SelectionModeBarType)
 from components.widgets.menu import AeroMenu
 from PyQt5.QtCore import QMargins, QPoint, pyqtSignal
-from PyQt5.QtWidgets import QAction, QLabel, QPushButton, QWidget
+from PyQt5.QtWidgets import QAction, QApplication, QLabel, QPushButton, QWidget
 
 
 class PlaylistCardInterface(PlaylistSelectionModeInterface):
@@ -82,21 +82,24 @@ class PlaylistCardInterface(PlaylistSelectionModeInterface):
         self.playlistLabel.move(30, 54)
         self.createPlaylistButton.move(30, 131)
         self.sortModeLabel.move(
-            self.createPlaylistButton.geometry().right()+30, 133)
+            self.createPlaylistButton.geometry().right()+30, 136)
         self.sortModeButton.move(self.sortModeLabel.geometry().right()+7, 132)
 
     def __setQss(self):
         """ set style sheet """
-        self.sortModeLabel.setMinimumSize(50, 28)
         self.guideLabel.setMinimumSize(600, 40)
         self.playlistLabel.setObjectName("playlistLabel")
         self.sortModeLabel.setObjectName("sortModeLabel")
         self.sortModeButton.setObjectName("sortModeButton")
         self.createPlaylistButton.setObjectName("createPlaylistButton")
         self.sortModeMenu.setObjectName("sortModeMenu")
-        self.sortModeMenu.setProperty("modeNumber", "2")
         self.guideLabel.setObjectName('guideLabel')
+
+        # force style sheets to take effect
         setStyleSheet(self, 'playlist_card_interface')
+        self.setStyle(QApplication.style())
+        QApplication.processEvents()
+
         self.createPlaylistButton.adjustSize()
         self.sortModeLabel.adjustSize()
         self.sortModeButton.adjustSize()
