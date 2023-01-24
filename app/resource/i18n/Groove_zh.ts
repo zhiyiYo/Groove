@@ -529,6 +529,11 @@
         <translation>添加文件夹</translation>
     </message>
     <message>
+        <location filename="../../components/settings/folder_list_setting_card.py" line="136"/>
+        <source>Choose folder</source>
+        <translation>选择文件夹</translation>
+    </message>
+    <message>
         <location filename="../../components/settings/folder_list_setting_card.py" line="156"/>
         <source>Are you sure you want to delete the folder?</source>
         <translation>确认删除此文件夹吗？</translation>
@@ -764,7 +769,7 @@
     <message>
         <location filename="../../View/main_window/main_window.py" line="1100"/>
         <source>This song is already in your playlist.</source>
-        <translation>此歌已在你的播放列表中。</translation>
+        <translation>这首歌曲已经在你的播放列表中啦~~</translation>
     </message>
     <message>
         <location filename="../../View/main_window/main_window.py" line="1103"/>

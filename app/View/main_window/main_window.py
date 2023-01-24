@@ -380,7 +380,7 @@ class MainWindow(AcrylicWindow):
 
     def dropEvent(self, e: QDropEvent):
         files = []
-        formats = tuple(Directory.audio_formats)
+        formats = tuple(Directory.formats)
 
         for url in e.mimeData().urls():
             fileInfo = QFileInfo(url.toLocalFile())
@@ -389,7 +389,7 @@ class MainWindow(AcrylicWindow):
             if fileInfo.isFile() and path.endswith(formats):
                 files.append(path)
             elif fileInfo.isDir():
-                files.extend(Directory(path).glob())
+                files.extend(Directory(path).glob(True))
 
         if not files:
             return

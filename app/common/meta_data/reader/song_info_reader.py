@@ -1,6 +1,6 @@
 # coding:utf-8
 from pathlib import Path
-from typing import Union
+from typing import Union, Type
 
 from common.database.entity import SongInfo
 from common.logger import Logger
@@ -136,7 +136,7 @@ class SongInfoReader(SongInfoReaderBase):
     readers = []
 
     @classmethod
-    def register(cls, reader):
+    def register(cls, reader: Type[SongInfoReaderBase]):
         """ register song information reader
 
         Parameters
@@ -147,6 +147,7 @@ class SongInfoReader(SongInfoReaderBase):
         if reader not in cls.readers:
             # shouldn't instantiate directly, or tr() will not work
             cls.readers.append(reader)
+            cls.formats.extend(reader.formats)
 
         return reader
 

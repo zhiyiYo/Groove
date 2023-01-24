@@ -1,15 +1,18 @@
 # coding: utf-8
 from typing import Union
 from pathlib import Path
-from itertools import chain
 from common.meta_data.reader import SongInfoReader
 
+from PyQt5.QtCore import QObject, pyqtSignal
 
-class Directory:
+
+class Directory(QObject):
     """ Audio directory class """
 
-    audio_formats = list(chain.from_iterable(
-        [r.formats for r in SongInfoReader.readers]))
+    formats = SongInfoReader.formats
+
+    fileAdded = pyqtSignal(list)
+    fileRemoved = pyqtSignal(list)
 
     def __init__(self, path: str):
         """
@@ -18,12 +21,17 @@ class Directory:
         path: str
             path of audio directory
         """
+        super().__init__()
         self.path = Path(path)
         self.audioFiles = self.glob()
 
-    def glob(self):
+    def glob(self, recursive=False):
         """ get all audio file paths """
-        return [i.absolute() for i in self.path.iterdir() if self.isAudio(i)]
+        if not self.path.exists():
+            return []
+
+        paths = self.path.rglob('*') if recursive else self.path.iterdir()
+        return [i.absolute() for i in paths if self.isAudio(i)]
 
     def update(self):
         """ update audio directory
@@ -36,12 +44,15 @@ class Directory:
         files = self.glob()
         filesSet = set(files)
         oldFilesSet = set(self.audioFiles)
-        changedFiles = {
-            "added": list(filesSet - oldFilesSet),
-            "removed": list(oldFilesSet - filesSet)
-        }
         self.audioFiles = files
-        return changedFiles
+
+        added = list(filesSet - oldFilesSet)
+        if added:
+            self.fileAdded.emit(added)
+
+        removed = list(oldFilesSet - filesSet)
+        if removed:
+            self.fileRemoved.emit(removed)
 
     @classmethod
     def isAudio(cls, path: Union[str, Path]):
@@ -49,4 +60,4 @@ class Directory:
         if not isinstance(path, Path):
             path = Path(path)
 
-        return path.is_file() and path.suffix.lower() in cls.audio_formats
+        return path.is_file() and path.suffix.lower() in cls.formats

@@ -94,7 +94,6 @@ class CreatePlaylistDialog(MaskDialogBase):
         # add playlist to database
         playlist = Playlist(name=name, songInfos=self.songInfos)
         if not self.library.playlistController.create(playlist):
-            print('Create playlist failed')
             return
 
         self.createPlaylistSig.emit(name, playlist)

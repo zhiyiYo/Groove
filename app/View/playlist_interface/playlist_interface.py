@@ -190,12 +190,11 @@ class PlaylistInterface(SongSelectionModeInterface):
             self, self.tr("Choose folder"), "./")
         if path:
             signalBus.addFilesToCustomPlaylistSig.emit(
-                self.playlistName, Directory(path).glob())
+                self.playlistName, Directory(path).glob(True))
 
     def __showAddFilesToPlaylistDialog(self):
         """ add files to playlist """
-        filters = '(' + \
-            ';'.join(["*"+i for i in Directory.audio_formats]) + ')'
+        filters = '(' + ';'.join(["*"+i for i in Directory.formats]) + ')'
         files, _ = QFileDialog.getOpenFileNames(
             self, self.tr("Choose songs to add"), "./", self.tr("Audio files")+filters)
         if files:

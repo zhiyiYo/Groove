@@ -45,7 +45,7 @@ class Library(QObject):
         self.singerInfos = []
         self.playlists = []
         self.directories = directories
-        self.fileSystem = FileSystem(directories, self)
+        self.fileSystem = FileSystem(directories, watch, self)
 
         self.songInfoController = SongInfoController(db)
         self.albumInfoController = AlbumInfoController(db)
@@ -60,9 +60,8 @@ class Library(QObject):
         self.playlists = []
         self.recentPlaySongInfos = []
 
-        if watch:
-            self.fileSystem.added.connect(self.__onFileAdded)
-            self.fileSystem.removed.connect(self.__onFileRemoved)
+        self.fileSystem.added.connect(self.__onFileAdded)
+        self.fileSystem.removed.connect(self.__onFileRemoved)
 
     def load(self):
         """ load data to library """

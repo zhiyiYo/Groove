@@ -1,6 +1,6 @@
 # coding:utf-8
 from pathlib import Path
-from typing import List
+from typing import List, Set
 
 from common.cache import crawlAlbumCoverFolder
 from common.crawler.qq_music_crawler import QQMusicCrawler
@@ -27,9 +27,9 @@ class CrawlFolderMetaDataThread(QThread):
         crawlAlbumCoverFolder.mkdir(exist_ok=True, parents=True)
         albumCovers = {}
 
-        songPaths = []  # type:List[Path]
+        songPaths = set()  # type:Set[Path]
         for directory in self.diretories:
-            songPaths.extend(directory.glob())
+            songPaths.update(directory.glob())
 
         writer = MetaDataWriter()
         for i, songPath in enumerate(songPaths):
