@@ -1,9 +1,9 @@
 # coding:utf-8
 from common.config import config
 from common.style_sheet import setStyleSheet
-from PyQt5.QtCore import (Qt, QPropertyAnimation, pyqtProperty, QEasingCurve,
+from PyQt5.QtCore import (QEvent, Qt, QPropertyAnimation, pyqtProperty, QEasingCurve,
                           QParallelAnimationGroup, QRect, QSize, QPoint)
-from PyQt5.QtGui import QPixmap, QPainter, QColor
+from PyQt5.QtGui import QPixmap, QPainter, QColor, QEnterEvent, QMouseEvent
 from PyQt5.QtWidgets import QFrame, QWidget, QAbstractButton, QApplication
 
 from .setting_card import SettingCard
@@ -125,6 +125,7 @@ class ExpandSettingCard(QFrame):
         setStyleSheet(self.card, 'expand_setting_card')
         setStyleSheet(self, 'expand_setting_card')
 
+        self.view.installEventFilter(self)
         self.aniGroup.finished.connect(self.__onAniFinished)
         self.expandButton.clicked.connect(self.toggleExpand)
 
@@ -170,24 +171,32 @@ class ExpandSettingCard(QFrame):
         self.card.resize(self.width(), self.card.height())
         self.view.resize(self.width(), self.view.height())
 
-    def enterEvent(self, e):
+    def enterEvent(self, e: QEnterEvent):
         super().enterEvent(e)
-        self.expandButton.setHover(True)
+        if self.childAt(e.pos()) is self.card:
+            self.expandButton.setHover(True)
 
     def leaveEvent(self, e):
         super().leaveEvent(e)
         self.expandButton.setHover(False)
 
-    def mousePressEvent(self, e):
+    def mousePressEvent(self, e: QMouseEvent):
         super().mousePressEvent(e)
-        if e.button() == Qt.LeftButton:
+        if e.button() == Qt.LeftButton and self.childAt(e.pos()) is self.card:
             self.expandButton.setPressed(True)
 
     def mouseReleaseEvent(self, e):
         super().mouseReleaseEvent(e)
-        if e.button() == Qt.LeftButton:
+        if e.button() == Qt.LeftButton and self.childAt(e.pos()) is self.card:
             self.expandButton.setPressed(False)
             self.expandButton.click()
+
+    def eventFilter(self, obj, e: QEvent):
+        if obj is self.view:
+            if e.type() == QEvent.Enter:
+                self.expandButton.setHover(False)
+
+        return super().eventFilter(obj, e)
 
     def sizeHint(self):
         return self.size()

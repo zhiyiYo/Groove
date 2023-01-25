@@ -81,6 +81,25 @@ QLabel#playlistLabel {
     padding: 0px;
 }
 
+QLabel#nameLabel[isChecked='False'] {
+    color: white;
+    font-family: 'Segoe UI', 'Microsoft YaHei';
+    font-weight: bold;
+}
+
+QLabel#nameLabel[isChecked='True'] {
+    color: white;
+    font-family: 'Segoe UI', 'Microsoft YaHei';
+    font-weight: bold;
+}
+
+QLabel#countLabel {
+    font-size: 16px;
+}
+
+QLabel#countLabel[isChecked='True'] {
+    color: rgb(153, 196, 205);
+}
 
 
 /*设置按钮的样式*/
