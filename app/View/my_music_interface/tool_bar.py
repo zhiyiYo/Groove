@@ -1,10 +1,10 @@
 # coding:utf-8
-from common.config import config
+from common.config import config, Theme
 from common.get_pressed_pos import getPressedPos, Position
 from common.style_sheet import setStyleSheet
 from components.buttons.three_state_button import RandomPlayAllButton
 from components.widgets.menu import AeroMenu
-from PyQt5.QtCore import QFile, QPoint, Qt, pyqtSignal
+from PyQt5.QtCore import QPoint, Qt, pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QFont, QPainter, QPen, QPolygon
 from PyQt5.QtWidgets import QAction, QLabel, QPushButton, QWidget
 
@@ -100,7 +100,7 @@ class ToolBar(QWidget):
         """ paint horizontal line """
         super().paintEvent(QPaintEvent)
         painter = QPainter(self)
-        r = 55 if config.theme == 'dark' else 229
+        r = 55 if config.theme == Theme.DARK else 229
         painter.setPen(QColor(r, r, r))
         painter.drawLine(30, 176, self.width()-20, 176)
 
@@ -210,7 +210,7 @@ class TabButton(QPushButton):
 
     def __paintAllText(self, painter: QPainter, fontSize=16):
         """ paint all texts """
-        isDark = config.theme == 'dark'
+        isDark = config.theme == Theme.DARK
 
         if not self.isSelected:
             r = 153 if isDark else 102

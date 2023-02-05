@@ -1,5 +1,5 @@
 # coding:utf-8
-from common.config import config
+from common.config import config, Theme
 from common.style_sheet import setStyleSheet
 from PyQt5.QtCore import (QEvent, Qt, QPropertyAnimation, pyqtProperty, QEasingCurve,
                           QParallelAnimationGroup, QRect, QSize, QPoint)
@@ -31,7 +31,7 @@ class ExpandButton(QAbstractButton):
         painter.setPen(Qt.NoPen)
 
         # draw background
-        r = 255 if config.theme == 'dark' else 0
+        r = 255 if config.theme == Theme.DARK else 0
         if self.isPressed:
             color = QColor(r, r, r, 10)
         elif self.isHover:

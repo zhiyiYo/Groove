@@ -8,13 +8,13 @@ from common.style_sheet import setStyleSheet
 from components.dialog_box.message_dialog import MessageDialog
 from components.song_list_widget import NoScrollSongListWidget, SongCardType
 from components.song_list_widget.song_card import AlbumInterfaceSongCard
-from components.widgets.menu import AddToMenu, DWMMenu
+from components.widgets.menu import AddToMenu, RoundMenu
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent
 from PyQt5.QtWidgets import QAction
 
 
-class SongCardListContextMenu(DWMMenu):
+class SongCardListContextMenu(RoundMenu):
     """ Context menu of song list widget """
 
     def __init__(self, parent):
@@ -62,11 +62,10 @@ class SongListWidget(NoScrollSongListWidget):
         content = self.tr("If you delete") + f' "{name}" ' + \
             self.tr("it won't be on be this device anymore.")
         w = MessageDialog(title, content, self.window())
-        w.yesSignal.connect(lambda: self.removeSongCard(index))
-        w.exec_()
+        if w.exec_():
+            self.removeSongCard(index)
 
     def contextMenuEvent(self, e: QContextMenuEvent):
-        """ 重写鼠标右击时间的响应函数 """
         hitIndex = self.indexAt(e.pos()).column()
         if hitIndex > -1:
             contextMenu = SongCardListContextMenu(self)

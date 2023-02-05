@@ -13,10 +13,10 @@ from components.selection_mode_interface import (SelectionModeBarType,
                                                  SongSelectionModeInterface)
 from components.song_list_widget import SongListWidget, NoScrollSongListWidget, SongCardType
 from components.song_list_widget.song_card import OnlineSongCard
-from components.widgets.menu import DWMMenu, DownloadMenu, AddToMenu
+from components.widgets.menu import RoundMenu, DownloadMenu, AddToMenu
 
 
-class OnlineSongListContextMenu(DWMMenu):
+class OnlineSongListContextMenu(RoundMenu):
     """ Online song list widget context menu """
 
     def __init__(self, parent):

@@ -9,7 +9,7 @@ from components.buttons.three_state_button import ThreeStatePushButton
 from components.song_list_widget import NoScrollSongListWidget, SongCardType
 from components.song_list_widget.song_card import (NoCheckBoxSongCard,
                                                    NoCheckBoxOnlineSongCard)
-from components.widgets.menu import AddToMenu, DownloadMenu, DWMMenu
+from components.widgets.menu import AddToMenu, DownloadMenu, RoundMenu
 from PyQt5.QtCore import QMargins, Qt, pyqtSignal
 from PyQt5.QtWidgets import QAction, QPushButton, QWidget
 
@@ -178,7 +178,7 @@ class OnlineSongListWidget(NoScrollSongListWidget):
             lambda: signalBus.addSongsToNewCustomPlaylistSig.emit([self.currentSongInfo]))
 
 
-class LocalSongListContextMenu(DWMMenu):
+class LocalSongListContextMenu(RoundMenu):
     """ Local song list widget context menu """
 
     def __init__(self, parent):
@@ -195,7 +195,7 @@ class LocalSongListContextMenu(DWMMenu):
             [self.showAlbumAct, self.viewOnlineAct, self.showPropertyAct])
 
 
-class OnlineSongListContextMenu(DWMMenu):
+class OnlineSongListContextMenu(RoundMenu):
     """ Online song list widget context menu """
 
     def __init__(self, parent):

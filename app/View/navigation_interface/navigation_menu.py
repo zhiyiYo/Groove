@@ -1,5 +1,5 @@
 # coding:utf-8
-from common.config import config
+from common.config import config, Theme
 from common.os_utils import isGreaterEqualWin10
 from common.signal_bus import signalBus
 from common.window_effect import WindowEffect
@@ -23,7 +23,7 @@ class NavigationMenu(NavigationWidget):
         self.resize(60, 800)
         self.setWindowFlags(Qt.Popup | Qt.NoDropShadowWindowHint)
         self.setProperty("useAcrylic", isGreaterEqualWin10())
-        color = '2B2B2B99' if config.theme == 'dark' else 'F2F2F299'
+        color = '2B2B2B99' if config.theme == Theme.DARK else 'F2F2F299'
         self.windowEffect.setAcrylicEffect(self.winId(), color, False)
 
         self.myMusicButton.setText(self.tr('My music'))

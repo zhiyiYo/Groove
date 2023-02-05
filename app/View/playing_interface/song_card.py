@@ -1,7 +1,10 @@
 # coding:utf-8
+from common.config import Theme
 from common.icon import Icon
 from common.database.entity import SongInfo
 from common.signal_bus import signalBus
+from common.style_sheet import setStyleSheet
+from components.widgets.menu import AddToMenu
 from components.widgets.label import ClickableLabel, PixmapLabel
 from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
                           QParallelAnimationGroup, QPoint, QPropertyAnimation,
@@ -9,8 +12,6 @@ from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
 from PyQt5.QtGui import QFont, QFontMetrics, QMouseEvent, QPixmap
 from PyQt5.QtWidgets import (QApplication, QCheckBox, QLabel, QToolButton,
                              QWidget)
-
-from .menu import AddToMenu
 
 
 class SongCard(QWidget):
@@ -291,7 +292,9 @@ class SongCard(QWidget):
 
     def __showAddToMenu(self):
         """ show add to menu """
-        menu = AddToMenu(parent=self)
+        menu = AddToMenu(parent=self, theme=Theme.DARK)
+        menu.setObjectName('darkMenu')
+        setStyleSheet(menu, 'menu', Theme.DARK)
         menu.newPlaylistAct.triggered.connect(
             lambda: signalBus.addSongsToNewCustomPlaylistSig.emit([self.songInfo]))
         menu.addSongsToPlaylistSig.connect(

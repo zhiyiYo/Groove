@@ -1,12 +1,11 @@
 # coding:utf-8
-from components.widgets.menu import DWMMenu
+from components.widgets.menu import RoundMenu
 from common.style_sheet import setStyleSheet
-from common.window_effect import WindowEffect
-from PyQt5.QtCore import QEasingCurve, QEvent, QPoint, QPropertyAnimation, QRect, Qt
-from PyQt5.QtWidgets import QApplication, QMenu
+from PyQt5.QtCore import QEasingCurve, QPoint, QPropertyAnimation, QRect, Qt
+from PyQt5.QtWidgets import QApplication
 
 
-class MoreActionsMenu(DWMMenu):
+class MoreActionsMenu(RoundMenu):
     """ More actions menu """
 
     def __init__(self, parent=None):

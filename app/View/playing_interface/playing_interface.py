@@ -502,10 +502,7 @@ class PlayingInterface(QWidget):
     def __onSelectionModeBarAddToButtonClicked(self):
         """ selection mode bar add to button clicked slot """
         menu = AddToMenu(parent=self)
-        btn = self.selectionModeBar.addToButton
-        pos = self.selectionModeBar.mapToGlobal(btn.pos())
-        x = pos.x()+btn.width()+5
-        y = pos.y()+btn.height()//2-(13+38*menu.actionCount())//2
+
         songInfos = [
             i.songInfo for i in self.songListWidget.checkedSongCards]
 
@@ -516,7 +513,7 @@ class PlayingInterface(QWidget):
             lambda: signalBus.addSongsToNewCustomPlaylistSig.emit(songInfos))
         menu.addSongsToPlaylistSig.connect(
             lambda name: signalBus.addSongsToCustomPlaylistSig.emit(name, songInfos))
-        menu.exec(QPoint(x, y))
+        menu.exec(menu.getPopupPos(self.selectionModeBar.addToButton))
 
     def exitSelectionMode(self):
         """ exit selection mode """
@@ -665,26 +662,19 @@ class PlayingInterface(QWidget):
             self.__onShowPlaylistButtonClicked)
         self.playBar.smallPlayModeButton.clicked.connect(
             lambda i: self.__onShowSmallestPlayInterfaceButtonClicked())
+
+        self.playBar.searchMvSig.connect(self.__searchMV)
+        self.playBar.embedLyricSig.connect(self.__embedLyric)
+        self.playBar.reloadLyricSig.connect(self.__reloadLyric)
         self.playBar.enterSignal.connect(self.__settleDownPlayBar)
         self.playBar.leaveSignal.connect(self.__startSongInfoCardTimer)
-        self.playBar.moreActionsMenu.clearPlayListAct.triggered.connect(
-            signalBus.clearPlayingPlaylistSig)
-        self.playBar.moreActionsMenu.savePlayListAct.triggered.connect(
+        self.playBar.loadLyricFromFileSig.connect(self.__loadLyricFromFile)
+        self.playBar.revealLyricInFolderSig.connect(self.__revealLyricFileInExplorer)
+        self.playBar.lyricVisibleChanged.connect(self.__onLyricVisibleChanged)
+        self.playBar.locateCurrentSongSig.connect(self.songListWidget.locateCurrentSong)
+        self.playBar.clearPlaylistSig.connect(signalBus.clearPlayingPlaylistSig)
+        self.playBar.savePlaylistSig.connect(
             lambda: signalBus.addSongsToNewCustomPlaylistSig.emit(self.playlist))
-        self.playBar.moreActionsMenu.loadLyricFromFileAct.triggered.connect(
-            self.__loadLyricFromFile)
-        self.playBar.moreActionsMenu.reloadLyricAct.triggered.connect(
-            self.__reloadLyric)
-        self.playBar.moreActionsMenu.revealLyricInFolderAct.triggered.connect(
-            self.__revealLyricFileInExplorer)
-        self.playBar.moreActionsMenu.lyricVisibleChanged.connect(
-            self.__onLyricVisibleChanged)
-        self.playBar.moreActionsMenu.embedLyricAct.triggered.connect(
-            self.__embedLyric)
-        self.playBar.moreActionsMenu.movieAct.triggered.connect(
-            self.__searchMV)
-        self.playBar.moreActionsMenu.locateAct.triggered.connect(
-            self.songListWidget.locateCurrentSong)
 
         # song list widget signal
         self.songListWidget.watchMvSig.connect(self.__searchMV)

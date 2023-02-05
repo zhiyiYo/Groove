@@ -104,9 +104,11 @@ class AlbumCardViewBase(QWidget):
             self.tr("it won't be on be this device anymore.")
 
         w = MessageDialog(title, content, self.window())
-        w.yesSignal.connect(lambda: signalBus.removeSongSig.emit(
-            [i.file for i in self.getAlbumSongInfos(singer, album)]))
-        w.exec_()
+        if not w.exec_():
+            return
+
+        files = [i.file for i in self.getAlbumSongInfos(singer, album)]
+        signalBus.removeSongSig.emit(files)
 
     def showAlbumInfoEditDialog(self, singer: str, album: str):
         """ show album information edit dialog box """

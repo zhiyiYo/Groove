@@ -275,11 +275,9 @@ class SongSelectionModeInterface(SelectionModeInterface):
                 self.tr("it won't be on be this device anymore.")
 
         w = MessageDialog(title, content, self.window())
-        w.yesSignal.connect(self._onDeleteConfirmed)
-        w.exec()
+        if not w.exec():
+            return
 
-    def _onDeleteConfirmed(self):
-        """ delete confirmed slot """
         songPaths = [i.songPath for i in self.songListWidget.checkedSongCards]
 
         for songCard in self.songListWidget.checkedSongCards.copy():
@@ -406,13 +404,10 @@ class AlbumSelectionModeInterface(SelectionModeInterface):
                 self.tr("it won't be on be this device anymore.")
 
         w = MessageDialog(title, content, self.window())
-        w.yesSignal.connect(self.__onDeleteConfirmed)
-        w.exec()
+        if not w.exec():
+            return
 
-    def __onDeleteConfirmed(self):
-        """ delete confirmed slot """
-        songInfos = self._getCheckedSongInfos()
-        songPaths = [i.file for i in songInfos]
+        songPaths = [i.file for i in self._getCheckedSongInfos()]
         self.exitSelectionMode()
         signalBus.removeSongSig.emit(songPaths)
 
@@ -484,13 +479,9 @@ class PlaylistSelectionModeInterface(SelectionModeInterface):
 
             # show delete playlist card dialog box
             w = MessageDialog(title, content, self.window())
-            w.yesSignal.connect(lambda: self.__onDeleteConfirmed(names))
-            w.exec()
-
-    def __onDeleteConfirmed(self, names: List[str]):
-        """ delete multi playlist cards """
-        for name in names:
-            signalBus.deletePlaylistSig.emit(name)
+            if w.exec():
+                for name in names:
+                    signalBus.deletePlaylistSig.emit(name)
 
     def addPlaylistCard(self, name: str, playlist: Playlist):
         """ add a playlist card """

@@ -1,17 +1,18 @@
 # coding:utf-8
 from typing import List
 
+from common.config import Theme
 from common.crawler import QueryServerType
 from common.signal_bus import signalBus
 from common.database.entity import SongInfo
 from common.style_sheet import setStyleSheet
+from components.widgets.menu import RoundMenu, AddToMenu, DownloadMenu
 from components.dialog_box.song_property_dialog import SongPropertyDialog
 from components.widgets.list_widget import ListWidget
 from PyQt5.QtCore import QSize, Qt, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent
-from PyQt5.QtWidgets import QApplication, QListWidgetItem
+from PyQt5.QtWidgets import QAction, QApplication, QListWidgetItem
 
-from .menu import Menu, DownloadMenu
 from .song_card import SongCard
 
 
@@ -72,16 +73,20 @@ class SongListWidget(ListWidget):
         if self.indexAt(e.pos()).column() <= -1:
             return
 
-        menu = Menu(self)
+        menu = SongCardContextMenu(self)
         self.__connectContextMenuSignalToSlot(menu)
+
         if self.currentRow() == len(self.songInfos) - 1:
             menu.moveDownAct.setEnabled(False)
         if self.currentRow() == 0:
             menu.moveUpAct.setEnabled(False)
+
         if self.currentSongInfo.file.startswith('http'):
-            downloadMenu = DownloadMenu(self.tr('Download'), menu)
+            downloadMenu = DownloadMenu(self.tr('Download'), menu, Theme.DARK)
+            downloadMenu.setObjectName('darkMenu')
+            downloadMenu.setStyle(downloadMenu, 'menu')
             downloadMenu.downloadSig.connect(
-                lambda quality: signalBus.downloadSongSig.emit(self.currentSongInfo, quality))
+                lambda q: signalBus.downloadSongSig.emit(self.currentSongInfo, q))
             menu.insertMenu(menu.removeAct, downloadMenu)
 
         menu.exec_(e.globalPos())
@@ -262,7 +267,7 @@ class SongListWidget(ListWidget):
     def currentSongInfo(self):
         return self.currentSongCard.songInfo
 
-    def __connectContextMenuSignalToSlot(self, menu: Menu):
+    def __connectContextMenuSignalToSlot(self, menu):
         """ connect context menu signal to slot """
         menu.playAct.triggered.connect(
             lambda: self.__emitCurrentChangedSignal(self.currentRow()))
@@ -286,3 +291,34 @@ class SongListWidget(ListWidget):
             lambda name: signalBus.addSongsToCustomPlaylistSig.emit(name, [self.currentSongInfo]))
         menu.addToMenu.newPlaylistAct.triggered.connect(
             lambda: signalBus.addSongsToNewCustomPlaylistSig.emit([self.currentSongInfo]))
+
+
+class SongCardContextMenu(RoundMenu):
+    """ Song card context menu """
+
+    def __init__(self, parent=None):
+        super().__init__(parent=parent, theme=Theme.DARK)
+        self.playAct = QAction(self.tr('Play'), self)
+        self.addToMenu = AddToMenu(self.tr('Add to'), self, Theme.DARK)
+        self.removeAct = QAction(self.tr('Remove'), self)
+        self.moveUpAct = QAction(self.tr('Move up'), self)
+        self.moveDownAct = QAction(self.tr('Move down'), self)
+        self.showAlbumAct = QAction(self.tr('Show album'), self)
+        self.propertyAct = QAction(self.tr('Properties'), self)
+        self.viewOnlineAct = QAction(self.tr('View online'), self)
+        self.movieAct = QAction(self.tr('Watch MV'), self)
+        self.selectAct = QAction(self.tr('Select'), self)
+
+        self.addAction(self.playAct)
+        self.addMenu(self.addToMenu)
+        self.addActions([
+            self.removeAct, self.moveUpAct, self.moveDownAct,
+            self.showAlbumAct, self.viewOnlineAct, self.movieAct,
+            self.propertyAct,
+        ])
+        self.addSeparator()
+        self.addAction(self.selectAct)
+        
+        self.setObjectName('darkMenu')
+        self.addToMenu.setObjectName('darkMenu')
+        setStyleSheet(self, 'menu', Theme.DARK)

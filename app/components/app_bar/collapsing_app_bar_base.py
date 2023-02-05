@@ -3,7 +3,7 @@ from typing import List, Union
 
 from common.image_utils import DominantColor
 from components.widgets.label import AvatarLabel
-from components.widgets.menu import AddToMenu, AddFromMenu
+from components.widgets.menu import AddToMenu, AddFromMenu, RoundMenu
 from PyQt5.QtCore import QPoint, Qt, pyqtSignal
 from PyQt5.QtGui import (QColor, QFont, QFontMetrics, QPainter, QPalette,
                          QPixmap, QResizeEvent)
@@ -11,7 +11,6 @@ from PyQt5.QtWidgets import QAction, QLabel, QWidget
 
 from .app_bar_button import AppBarButton
 from .app_bar_button import AppBarButtonFactory as BF
-from .more_actions_menu import MoreActionsMenu
 
 
 class CollapsingAppBarBase(QWidget):
@@ -274,7 +273,7 @@ class CollapsingAppBarBase(QWidget):
         return i
 
     def _onMoreActionsButtonClicked(self):
-        menu = MoreActionsMenu()
+        menu = RoundMenu()
         index = len(self.buttons)-self.hiddenButtonNum
         menu.addActions(self.actions()[index:])
         self.moreActionsButton.cancelHoverState()

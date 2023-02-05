@@ -158,11 +158,9 @@ class FolderListSettingCard(ExpandSettingCard):
             self.tr(" folder and remove it from the list, the folder will no "
                     "longer appear in the list, but will not be deleted.")
         w = Dialog(title, content, self.window())
-        w.yesSignal.connect(lambda: self.__removeFolder(item))
-        w.exec_()
+        if not w.exec_():
+            return
 
-    def __removeFolder(self, item: FolderItem):
-        """ remove folder """
         if item.folder not in self.folders:
             return
 

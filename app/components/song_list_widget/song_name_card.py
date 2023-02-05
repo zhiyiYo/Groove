@@ -1,5 +1,5 @@
 # coding:utf-8
-from common.config import config
+from common.config import config, Theme
 from common.icon import getIconColor
 from components.widgets.label import PixmapLabel
 from PyQt5.QtCore import QEvent, QSize, Qt
@@ -227,7 +227,7 @@ class SongNameCard(QWidget):
         if isSongExit:
             if state == "selected":
                 color = "white"
-            elif config.theme == "dark":
+            elif config.theme == Theme.DARK:
                 color = "green_"
             else:
                 color = "green"

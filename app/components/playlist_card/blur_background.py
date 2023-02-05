@@ -1,5 +1,5 @@
 # coding:utf-8
-from common.config import config
+from common.config import config, Theme
 from common.image_utils import readImage
 from components.widgets.label import FadeInLabel
 from PIL import Image
@@ -22,7 +22,7 @@ class BlurBackground(FadeInLabel):
         cover = readImage(imagePath).resize((288, 288)).crop((0, 92, 288, 288))
 
         # create a new image
-        r = 0 if config.theme == 'dark' else 255
+        r = 0 if config.theme == Theme.DARK else 255
         blurImage = Image.new(
             'RGBA', (288 + 2 * blurRadius, 196 + 2 * blurRadius), (r, r, r, 0))
         blurImage.paste(cover, (blurRadius, blurRadius))

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="zh_CN">
+<TS version="2.1" language="zh_HK">
 <context>
     <name>@default</name>
     <message>
@@ -913,54 +913,54 @@
     </message>
 </context>
 <context>
-    <name>Menu</name>
+    <name>SongCardContextMenu</name>
     <message>
-        <location filename="../../View/playing_interface/menu.py" line="16"/>
+        <location filename="../../View/playing_interface/song_list_widget.py" line="16"/>
         <source>Play</source>
         <translation>播放</translation>
     </message>
     <message>
-        <location filename="../../View/playing_interface/menu.py" line="17"/>
+        <location filename="../../View/playing_interface/song_list_widget.py" line="17"/>
         <source>Add to</source>
         <translation>添加到</translation>
     </message>
     <message>
-        <location filename="../../View/playing_interface/menu.py" line="18"/>
+        <location filename="../../View/playing_interface/song_list_widget.py" line="18"/>
         <source>Remove</source>
         <translation>移除</translation>
     </message>
     <message>
-        <location filename="../../View/playing_interface/menu.py" line="19"/>
+        <location filename="../../View/playing_interface/song_list_widget.py" line="19"/>
         <source>Move up</source>
         <translation>向上移動</translation>
     </message>
     <message>
-        <location filename="../../View/playing_interface/menu.py" line="20"/>
+        <location filename="../../View/playing_interface/song_list_widget.py" line="20"/>
         <source>Move down</source>
         <translation>向下移動</translation>
     </message>
     <message>
-        <location filename="../../View/playing_interface/menu.py" line="21"/>
+        <location filename="../../View/playing_interface/song_list_widget.py" line="21"/>
         <source>Show album</source>
         <translation>顯示專輯</translation>
     </message>
     <message>
-        <location filename="../../View/playing_interface/menu.py" line="22"/>
+        <location filename="../../View/playing_interface/song_list_widget.py" line="22"/>
         <source>Properties</source>
         <translation>屬性</translation>
     </message>
     <message>
-        <location filename="../../View/playing_interface/menu.py" line="23"/>
+        <location filename="../../View/playing_interface/song_list_widget.py" line="23"/>
         <source>Select</source>
         <translation>選擇</translation>
     </message>
     <message>
-        <location filename="../../View/playing_interface/menu.py" line="24"/>
+        <location filename="../../View/playing_interface/song_list_widget.py" line="24"/>
         <source>View online</source>
         <translation>在線查看</translation>
     </message>
     <message>
-        <location filename="../../View/playing_interface/menu.py" line="25"/>
+        <location filename="../../View/playing_interface/song_list_widget.py" line="25"/>
         <source>Watch MV</source>
         <translation>觀看 MV</translation>
     </message>

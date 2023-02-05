@@ -1,14 +1,10 @@
 # coding:utf-8
-from components.buttons.circle_button import CircleButton
-from components.buttons.play_bar_buttons import (FullScreenButton,
-                                                 LoopModeButton, PlayButton,
-                                                 PullUpArrow, RandomPlayButton,
-                                                 VolumeButton)
+from common.signal_bus import signalBus
 from components.buttons.play_bar_buttons import ButtonFactory as BF
 from components.widgets.label import TimeLabel
 from components.widgets.menu import PlayingInterfaceMoreActionsMenu
 from components.widgets.slider import HollowHandleStyle, Slider
-from PyQt5.QtCore import QPoint, Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QWidget
 
 from .volume_slider_widget import VolumeSliderWidget
@@ -20,14 +16,19 @@ class PlayBar(QWidget):
     enterSignal = pyqtSignal()
     leaveSignal = pyqtSignal()
 
+    searchMvSig = pyqtSignal()
+    embedLyricSig = pyqtSignal()
+    reloadLyricSig = pyqtSignal()
+    savePlaylistSig = pyqtSignal()
+    clearPlaylistSig = pyqtSignal()
+    loadLyricFromFileSig = pyqtSignal()
+    locateCurrentSongSig = pyqtSignal()
+    revealLyricInFolderSig = pyqtSignal()
+    lyricVisibleChanged = pyqtSignal(bool)
+
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.__createWidget()
-        self.__initWidget()
-
-    def __createWidget(self):
-        """ create widgets """
-        self.moreActionsMenu = PlayingInterfaceMoreActionsMenu(self)
+        self.isLyricVisible = True
         self.playButton = BF.create(BF.PLAY, self)
         self.volumeButton = BF.create(BF.VOLUME, self)
         self.volumeSliderWidget = VolumeSliderWidget(self.window())
@@ -42,6 +43,8 @@ class PlayBar(QWidget):
         self.moreActionsButton = BF.create(BF.MORE, self)
         self.showPlaylistButton = BF.create(BF.PLAYLIST, self)
         self.smallPlayModeButton = BF.create(BF.SMALLEST_PLAY_MODE, self)
+
+        self.__initWidget()
 
     def __initWidget(self):
         """ initialize widgets """
@@ -104,10 +107,23 @@ class PlayBar(QWidget):
 
     def __showMoreActionsMenu(self):
         """ show more actions menu """
-        pos = self.mapToGlobal(self.moreActionsButton.pos())
-        x = pos.x() + self.moreActionsButton.width() + 10
-        y = pos.y() + self.moreActionsButton.height()//2 - self.moreActionsMenu.height()/2
-        self.moreActionsMenu.exec(QPoint(x, y))
+        menu = PlayingInterfaceMoreActionsMenu(self, self.isLyricVisible)
+
+        menu.movieAct.triggered.connect(self.searchMvSig)
+        menu.embedLyricAct.triggered.connect(self.embedLyricSig)
+        menu.reloadLyricAct.triggered.connect(self.reloadLyricSig)
+        menu.lyricVisibleChanged.connect(self._onLyricVisibleChanged)
+        menu.locateAct.triggered.connect(self.locateCurrentSongSig)
+        menu.savePlaylistAct.triggered.connect(self.savePlaylistSig)
+        menu.loadLyricFromFileAct.triggered.connect(self.loadLyricFromFileSig)
+        menu.clearPlaylistAct.triggered.connect(signalBus.clearPlayingPlaylistSig)
+        menu.revealLyricInFolderAct.triggered.connect(self.revealLyricInFolderSig)
+
+        menu.exec(menu.getPopupPos(self.moreActionsButton))
+
+    def _onLyricVisibleChanged(self, isVisible: bool):
+        self.isLyricVisible = isVisible
+        self.lyricVisibleChanged.emit(isVisible)
 
     def __connectSignalToSlot(self):
         """ connect signal to slot """

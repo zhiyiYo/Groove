@@ -33,7 +33,6 @@ class PlayBar(QWidget):
         self.songInfoCard = SongInfoCard(songInfo, self)
         self.centralButtonGroup = CentralButtonGroup(self)
         self.rightWidgetGroup = RightWidgetGroup(self)
-        self.moreActionsMenu = PlayBarMoreActionsMenu(self)
 
         self.__initWidget()
 
@@ -76,8 +75,15 @@ class PlayBar(QWidget):
 
     def __showMoreActionsMenu(self):
         """ show more actions menu """
-        pos = self.moreActionsMenu.getPopupPos(self.moreActionsButton)
-        self.moreActionsMenu.exec(pos)
+        menu = PlayBarMoreActionsMenu(self)
+        menu.fullScreenAct.triggered.connect(
+            lambda: signalBus.fullScreenChanged.emit(True))
+        menu.savePlayListAct.triggered.connect(self.savePlaylistSig)
+        menu.showPlayListAct.triggered.connect(signalBus.showPlayingPlaylistSig)
+        menu.clearPlayListAct.triggered.connect(signalBus.clearPlayingPlaylistSig)
+
+        pos = menu.getPopupPos(self.moreActionsButton)
+        menu.exec(pos+QPoint(15, 0))
 
     def __referenceWidgets(self):
         """ reference widgets and methods """
@@ -131,20 +137,13 @@ class PlayBar(QWidget):
         self.playButton.clicked.connect(signalBus.togglePlayStateSig)
         self.volumeSlider.valueChanged.connect(signalBus.volumeChanged)
         self.progressSlider.clicked.connect(signalBus.progressSliderMoved)
-        self.songInfoCard.clicked.connect(signalBus.switchToPlayingInterfaceSig)
+        self.songInfoCard.clicked.connect(
+            signalBus.switchToPlayingInterfaceSig)
         self.songInfoCard.albumChanged.connect(self.__onAlbumChanged)
         self.moreActionsButton.clicked.connect(self.__showMoreActionsMenu)
         self.progressSlider.sliderMoved.connect(signalBus.progressSliderMoved)
         self.smallPlayModeButton.clicked.connect(
             signalBus.switchToSmallestPlayInterfaceSig)
-        self.moreActionsMenu.fullScreenAct.triggered.connect(
-            lambda: signalBus.fullScreenChanged.emit(True))
-        self.moreActionsMenu.savePlayListAct.triggered.connect(
-            self.savePlaylistSig)
-        self.moreActionsMenu.showPlayListAct.triggered.connect(
-            signalBus.showPlayingPlaylistSig)
-        self.moreActionsMenu.clearPlayListAct.triggered.connect(
-            signalBus.clearPlayingPlaylistSig)
 
     def __onAlbumChanged(self, albumPath: str):
         """ album changed slot """

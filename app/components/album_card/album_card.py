@@ -3,7 +3,7 @@ from enum import Enum
 
 from common.database.entity import AlbumInfo
 from common.signal_bus import signalBus
-from components.widgets.menu import AddToMenu, DWMMenu
+from components.widgets.menu import AddToMenu, RoundMenu
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QContextMenuEvent
 from PyQt5.QtWidgets import QAction
@@ -106,14 +106,13 @@ class SingerInterfaceAlbumCard(AlbumCardBase):
         menu.exec(e.globalPos())
 
 
-class AlbumCardContextMenu(DWMMenu):
+class AlbumCardContextMenu(RoundMenu):
     """ Context menu of album card """
 
     def __init__(self, parent):
         super().__init__("", parent)
         self.__createActions()
         self.setObjectName("albumCardContextMenu")
-        self.setQss()
 
     def __createActions(self):
         # create actions
@@ -138,14 +137,13 @@ class AlbumCardContextMenu(DWMMenu):
         self.addAction(self.selectAct)
 
 
-class LocalSearchedAlbumCardContextMenu(DWMMenu):
+class LocalSearchedAlbumCardContextMenu(RoundMenu):
     """ Context menu of local searched album card """
 
     def __init__(self, parent):
         super().__init__("", parent)
         self.__createActions()
         self.setObjectName("albumCardContextMenu")
-        self.setQss()
 
     def __createActions(self):
         # create actions
@@ -163,14 +161,13 @@ class LocalSearchedAlbumCardContextMenu(DWMMenu):
             [self.showSingerAct, self.viewOnlineAct, self.pinToStartMenuAct])
 
 
-class SingerInterfaceAlbumCardContextMenu(DWMMenu):
+class SingerInterfaceAlbumCardContextMenu(RoundMenu):
     """ Context menu of singer interface album card"""
 
     def __init__(self, parent):
         super().__init__("", parent)
         self.__createActions()
         self.setObjectName("albumCardContextMenu")
-        self.setQss()
 
     def __createActions(self):
         # create actions

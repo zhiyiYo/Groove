@@ -6,7 +6,7 @@ from random import shuffle
 from typing import List, Union
 
 from common import resource
-from common.config import config, FEEDBACK_URL, RELEASE_URL
+from common.config import config, FEEDBACK_URL, RELEASE_URL, Theme
 from common.database import DBInitializer
 from common.database.entity import AlbumInfo, Playlist, SongInfo
 from common.hotkey_manager import HotkeyManager
@@ -287,7 +287,7 @@ class MainWindow(AcrylicWindow):
         self.setProperty('useAcrylic', enableAcrylic)
         self.setStyle(QApplication.style())
         if enableAcrylic:
-            c = '2B2B2B' if config.theme == 'dark' else 'F2F2F2'
+            c = '2B2B2B' if config.theme == Theme.DARK else 'F2F2F2'
             self.windowEffect.setAcrylicEffect(self.winId(), c+"99")
             if getWindowsVersion() != 10:
                 self.windowEffect.addShadowEffect(self.winId())
@@ -702,10 +702,9 @@ class MainWindow(AcrylicWindow):
         w = Dialog(title, content, self)
         if not showYesButton:
             w.cancelButton.setText(self.tr('Close'))
-        if yesSlot:
-            w.yesSignal.connect(yesSlot)
 
-        w.exec()
+        if w.exec() and yesSlot is not None:
+            yesSlot()
 
     def onMinimizeToTrayChanged(self, isMinimize: bool):
         """ minimize to tray slot """
@@ -1696,5 +1695,5 @@ class SplashScreen(QWidget):
         self.logo.setPixmap(QPixmap(":/images/logo/logo_splash_screen.png"))
         self.hBoxLayout.addWidget(self.logo, 0, Qt.AlignCenter)
         self.setAttribute(Qt.WA_StyledBackground)
-        color = '2b2b2b' if config.theme == 'dark' else 'ffffff'
+        color = '2b2b2b' if config.theme == Theme.DARK else 'ffffff'
         self.setStyleSheet(f'background:#{color}')

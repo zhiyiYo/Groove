@@ -1,6 +1,6 @@
 # coding:utf-8
 from common.icon import getIconColor
-from common.config import config
+from common.config import config, Theme
 from PyQt5.QtCore import QEvent, QObject, QRect, Qt, pyqtSignal
 from PyQt5.QtGui import QColor, QPainter, QPixmap
 from PyQt5.QtWidgets import QPushButton
@@ -70,7 +70,7 @@ class Button(QPushButton):
         painter.setRenderHints(QPainter.Antialiasing |
                                QPainter.SmoothPixmapTransform)
 
-        isDark = config.theme == 'dark'
+        isDark = config.theme == Theme.DARK
         if self.__isEnter:
             # paint background and border
             bc = 85 if isDark else 170

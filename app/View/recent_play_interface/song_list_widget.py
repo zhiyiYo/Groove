@@ -29,10 +29,11 @@ class RecentSongListWidget(SongListWidget):
             self.tr("it will no longer in the list, but won't be deleted.")
 
         w = MessageDialog(title, content, self.window())
-        w.yesSignal.connect(lambda: self.removeSongCard(index))
-        w.yesSignal.connect(
-            lambda: self.removeSongSignal.emit(songInfo))
-        w.exec_()
+        if not w.exec_():
+            return
+
+        self.removeSongCard(index)
+        self.removeSongSignal.emit(songInfo)
 
     def prependOneSongCard(self, songInfo: SongInfo):
         super().prependOneSongCard(songInfo)

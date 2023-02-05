@@ -10,7 +10,7 @@ from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
 from common.utils import startSystemMove
 from components.frameless_window import FramelessWindow
-from components.widgets.menu import DWMMenu, MIF
+from components.widgets.menu import RoundMenu, MIF
 from PyQt5.QtCore import QEasingCurve, QPoint, QPropertyAnimation, Qt
 from PyQt5.QtWidgets import (QAction, QApplication, QFrame,
                              QGraphicsOpacityEffect, QLabel)
@@ -191,10 +191,10 @@ class DesktopLyricInterface(FramelessWindow):
 
     def contextMenuEvent(self, e):
         """ show context menu """
-        menu = DWMMenu(parent=self)
+        menu = RoundMenu(parent=self)
         menu.setObjectName("deskLyricMenu")
         menu.addAction(QAction(
-            MIF.create(MIF.CLOSE),
+            MIF.icon(MIF.CLOSE),
             self.tr("Close lyric"),
             parent=self,
             triggered=self.closeButton.click
@@ -202,21 +202,21 @@ class DesktopLyricInterface(FramelessWindow):
 
         if not self.isLocked:
             menu.addAction(QAction(
-                MIF.create(MIF.LOCK),
+                MIF.icon(MIF.LOCK),
                 self.tr("Lock lyric"),
                 parent=self,
                 triggered=lambda: self.setLocked(True)
             ))
         else:
             menu.addAction(QAction(
-                MIF.create(MIF.UNLOCK),
+                MIF.icon(MIF.UNLOCK),
                 self.tr("Unlock lyric"),
                 parent=self,
                 triggered=lambda: self.setLocked(False)
             ))
 
         menu.addAction(QAction(
-            MIF.create(MIF.SETTINGS),
+            MIF.icon(MIF.SETTINGS),
             self.tr("Setting"),
             parent=self,
             triggered=self.__onSettingButtonClicked

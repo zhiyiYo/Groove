@@ -1,5 +1,5 @@
 # coding:utf-8
-from common.config import config
+from common.config import config, Theme
 from common.image_utils import readImage
 from components.widgets.label import FadeInLabel
 from PIL import Image, ImageDraw
@@ -36,7 +36,7 @@ class SingerBlurBackground(FadeInLabel):
         avatar = readImage(imagePath).resize(imageSize)
 
         # create a new image
-        r = 0 if config.theme == 'dark' else 255
+        r = 0 if config.theme == Theme.DARK else 255
         blurAvatar = Image.new(
             'RGBA', (imageSize[0]+2*blurRadius, imageSize[1]+2*blurRadius), (r, r, r, 0))
         mask = Image.new('L', imageSize, 0)

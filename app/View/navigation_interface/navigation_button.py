@@ -1,5 +1,5 @@
 # coding:utf-8
-from common.config import config
+from common.config import config, Theme
 from common.icon import getIconColor
 from PyQt5.QtCore import QPoint, Qt
 from PyQt5.QtGui import QBrush, QColor, QPainter, QPolygon, QPixmap
@@ -251,7 +251,7 @@ class PushButton(NavigationButton):
         if not self.text():
             return
 
-        color = Qt.white if config.theme == 'dark' else Qt.black
+        color = Qt.white if config.theme == Theme.DARK else Qt.black
         painter.setPen(color)
         painter.setFont(self.font())
         text = painter.fontMetrics().elidedText(self.text(), Qt.ElideRight, 320)

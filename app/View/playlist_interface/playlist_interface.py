@@ -155,8 +155,8 @@ class PlaylistInterface(SongSelectionModeInterface):
         content = self.tr("If you delete") + f' "{name}" ' + \
             self.tr("it won't be on be this device anymore.")
         w = MessageDialog(title, content, self.window())
-        w.yesSignal.connect(lambda: signalBus.deletePlaylistSig.emit(name))
-        w.exec()
+        if w.exec():
+            signalBus.deletePlaylistSig.emit(name)
 
     def __showRenamePlaylistDialog(self, old: str):
         """ show rename playlist dialog box """

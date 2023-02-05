@@ -87,11 +87,9 @@ class RecentPlayInterface(SongSelectionModeInterface):
                 self.tr("it will no longer in the list, but won't be deleted.")
 
         w = MessageDialog(title, content, self.window())
-        w.yesSignal.connect(self._onDeleteConfirmed)
-        w.exec()
+        if not w.exec():
+            return
 
-    def _onDeleteConfirmed(self):
-        """ delete confirmed slot """
         files = [i.songPath for i in self.songListWidget.checkedSongCards]
 
         for songCard in self.songListWidget.checkedSongCards.copy():

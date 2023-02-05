@@ -25,12 +25,12 @@
 <context>
     <name>AddToMenu</name>
     <message>
-        <location filename="../../View/playing_interface/menu.py" line="63"/>
+        <location filename="../../View/playing_interface/song_list_widget.py" line="63"/>
         <source>Now playing</source>
         <translation>正在播放</translation>
     </message>
     <message>
-        <location filename="../../View/playing_interface/menu.py" line="65"/>
+        <location filename="../../View/playing_interface/song_list_widget.py" line="65"/>
         <source>New playlist</source>
         <translation>新的播放列表</translation>
     </message>
@@ -913,54 +913,54 @@
     </message>
 </context>
 <context>
-    <name>Menu</name>
+    <name>SongCardContextMenu</name>
     <message>
-        <location filename="../../View/playing_interface/menu.py" line="16"/>
+        <location filename="../../View/playing_interface/song_list_widget.py" line="16"/>
         <source>Play</source>
         <translation>播放</translation>
     </message>
     <message>
-        <location filename="../../View/playing_interface/menu.py" line="17"/>
+        <location filename="../../View/playing_interface/song_list_widget.py" line="17"/>
         <source>Add to</source>
         <translation>添加到</translation>
     </message>
     <message>
-        <location filename="../../View/playing_interface/menu.py" line="18"/>
+        <location filename="../../View/playing_interface/song_list_widget.py" line="18"/>
         <source>Remove</source>
         <translation>移除</translation>
     </message>
     <message>
-        <location filename="../../View/playing_interface/menu.py" line="19"/>
+        <location filename="../../View/playing_interface/song_list_widget.py" line="19"/>
         <source>Move up</source>
         <translation>向上移动</translation>
     </message>
     <message>
-        <location filename="../../View/playing_interface/menu.py" line="20"/>
+        <location filename="../../View/playing_interface/song_list_widget.py" line="20"/>
         <source>Move down</source>
         <translation>向下移动</translation>
     </message>
     <message>
-        <location filename="../../View/playing_interface/menu.py" line="21"/>
+        <location filename="../../View/playing_interface/song_list_widget.py" line="21"/>
         <source>Show album</source>
         <translation>显示专辑</translation>
     </message>
     <message>
-        <location filename="../../View/playing_interface/menu.py" line="22"/>
+        <location filename="../../View/playing_interface/song_list_widget.py" line="22"/>
         <source>Properties</source>
         <translation>属性</translation>
     </message>
     <message>
-        <location filename="../../View/playing_interface/menu.py" line="23"/>
+        <location filename="../../View/playing_interface/song_list_widget.py" line="23"/>
         <source>Select</source>
         <translation>选择</translation>
     </message>
     <message>
-        <location filename="../../View/playing_interface/menu.py" line="24"/>
+        <location filename="../../View/playing_interface/song_list_widget.py" line="24"/>
         <source>View online</source>
         <translation>在线查看</translation>
     </message>
     <message>
-        <location filename="../../View/playing_interface/menu.py" line="25"/>
+        <location filename="../../View/playing_interface/song_list_widget.py" line="25"/>
         <source>Watch MV</source>
         <translation>观看 MV</translation>
     </message>

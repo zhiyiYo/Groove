@@ -25,6 +25,14 @@ class Language(Enum):
     AUTO = "Auto"
 
 
+class Theme(Enum):
+    """ Theme enumeration """
+    
+    LIGHT = "Light"
+    DARK = "Dark"
+    AUTO = "Auto"
+
+
 class ConfigValidator:
     """ Config validator """
 
@@ -277,7 +285,7 @@ class Config(Singleton):
         "MainWindow", "MinimizeToTray", True, BoolValidator())
     playBarColor = ColorConfigItem("MainWindow", "PlayBarColor", "#225C7F")
     themeMode = OptionsConfigItem(
-        "MainWindow", "ThemeMode", "Light", OptionsValidator(["Light", "Dark", "Auto"]), restart=True)
+        "MainWindow", "ThemeMode", Theme.AUTO, OptionsValidator(Theme), EnumSerializer(Theme), restart=True)
     recentPlaysNumber = RangeConfigItem(
         "MainWindow", "RecentPlayNumbers", 300, RangeValidator(10, 300))
     dpiScale = OptionsConfigItem(
@@ -409,15 +417,19 @@ class Config(Singleton):
         if sys.platform != "win32":
             self.enableAcrylicBackground.value = False
 
-        if self.get(self.themeMode) == "Auto":
-            self.__theme = darkdetect.theme() or "Light"
+        if self.get(self.themeMode) == Theme.AUTO:
+            theme = darkdetect.theme()
+            if theme:
+                self.__theme == Theme(theme)
+            else:
+                self.__theme = Theme.LIGHT
         else:
             self.__theme = self.get(self.themeMode)
 
     @property
-    def theme(self):
-        """ get theme mode, can be `light` or `dark` """
-        return self.__theme.lower()
+    def theme(self) -> Theme:
+        """ theme mode """
+        return self.__theme
 
     @property
     def lyricFont(self):

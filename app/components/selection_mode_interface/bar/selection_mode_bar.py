@@ -2,7 +2,7 @@
 from typing import List
 from enum import Enum
 
-from common.config import config
+from common.config import config, Theme
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QPen, QPainter, QColor
 from PyQt5.QtWidgets import QWidget
@@ -143,7 +143,7 @@ class SelectionModeBarBase(QWidget):
     def paintEvent(self, e):
         """ paint bar """
         painter = QPainter(self)
-        bg = 37 if config.theme == 'dark' else 230
+        bg = 37 if config.theme == Theme.DARK else 230
         painter.setPen(Qt.NoPen)
         painter.setBrush(QColor(bg, bg, bg))
         painter.drawRect(self.rect())

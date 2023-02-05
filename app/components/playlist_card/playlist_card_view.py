@@ -110,8 +110,8 @@ class PlaylistCardViewBase(QWidget):
             self.tr("it won't be on be this device anymore.")
 
         w = MessageDialog(title, content, self.window())
-        w.yesSignal.connect(lambda: signalBus.deletePlaylistSig.emit(name))
-        w.exec()
+        if w.exec():
+            signalBus.deletePlaylistSig.emit(name)
 
     def __getPlaylistSongInfos(self, name: str):
         """ get song information of playlist """

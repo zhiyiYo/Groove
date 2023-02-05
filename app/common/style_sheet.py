@@ -1,25 +1,29 @@
 # coding:utf-8
-from .config import config
+from .config import config, Theme
 from PyQt5.QtCore import QFile
 from PyQt5.QtWidgets import QWidget
 
 
-def getStyleSheet(file: str):
+def getStyleSheet(file: str, theme=Theme.AUTO):
     """ get style sheet
 
     Parameters
     ----------
     file: str
         qss file name, without `.qss` suffix
+
+    theme: Theme
+        the theme of style sheet
     """
-    f = QFile(f":/qss/{config.theme}/{file}.qss")
+    theme = config.theme if theme == Theme.AUTO else theme
+    f = QFile(f":/qss/{theme.value.lower()}/{file}.qss")
     f.open(QFile.ReadOnly)
     qss = str(f.readAll(), encoding='utf-8')
     f.close()
     return qss
 
 
-def setStyleSheet(widget: QWidget, file: str):
+def setStyleSheet(widget: QWidget, file: str, theme=Theme.AUTO):
     """ set the style sheet of widget
 
     Parameters
@@ -29,5 +33,8 @@ def setStyleSheet(widget: QWidget, file: str):
 
     file: str
         qss file name, without `.qss` suffix
+
+    theme: Theme
+        the theme of style sheet
     """
-    widget.setStyleSheet(getStyleSheet(file))
+    widget.setStyleSheet(getStyleSheet(file, theme))

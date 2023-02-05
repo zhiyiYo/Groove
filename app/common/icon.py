@@ -1,8 +1,9 @@
 # coding:utf-8
-from PyQt5.QtCore import QPoint, QRect, QSize, Qt
+from PyQt5.QtCore import QPoint, QRect, QSize, Qt, QRectF
 from PyQt5.QtGui import QIcon, QIconEngine, QImage, QPainter, QPixmap
+from PyQt5.QtSvg import QSvgRenderer
 
-from .config import config
+from .config import config, Theme
 
 
 class PixmapIconEngine(QIconEngine):
@@ -31,6 +32,34 @@ class Icon(QIcon):
         super().__init__(PixmapIconEngine(iconPath))
 
 
+class MenuIconEngine(QIconEngine):
+
+    def __init__(self, icon: QIcon):
+        super().__init__()
+        self.icon = icon
+
+    def paint(self, painter, rect, mode, state):
+        self.icon.paint(painter, rect, Qt.AlignHCenter, QIcon.Normal, state)
+
+
 def getIconColor():
     """ get the color of icon based on theme """
-    return "white" if config.theme == 'dark' else 'black'
+    return "white" if config.theme == Theme.DARK else 'black'
+
+
+def drawSvgIcon(iconPath, painter, rect):
+    """ draw svg icon
+
+    Parameters
+    ----------
+    iconPath: str
+        the path of svg icon
+
+    painter: QPainter
+        painter
+
+    rect: QRect | QRectF
+        the rect to render icon
+    """
+    renderer = QSvgRenderer(iconPath)
+    renderer.render(painter, QRectF(rect))

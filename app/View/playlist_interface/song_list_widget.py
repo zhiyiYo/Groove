@@ -7,13 +7,13 @@ from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
 from components.song_list_widget import NoScrollSongListWidget, SongCardType
 from components.song_list_widget.song_card import PlaylistInterfaceSongCard
-from components.widgets.menu import AddToMenu, DownloadMenu, DWMMenu
+from components.widgets.menu import AddToMenu, DownloadMenu, RoundMenu
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent
 from PyQt5.QtWidgets import QAction
 
 
-class SongCardListContextMenu(DWMMenu):
+class SongCardListContextMenu(RoundMenu):
     """ Context menu of song list widget """
 
     def __init__(self, showDownload=False, parent=None):

@@ -6,7 +6,7 @@ from common.database.entity import SongInfo
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
 from components.dialog_box.message_dialog import MessageDialog
-from components.widgets.menu import AddToMenu, DWMMenu
+from components.widgets.menu import AddToMenu, RoundMenu
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QContextMenuEvent
 from PyQt5.QtWidgets import QAction, QLabel
@@ -16,7 +16,7 @@ from .song_card import SongTabSongCard
 from .song_card_type import SongCardType
 
 
-class SongCardListContextMenu(DWMMenu):
+class SongCardListContextMenu(RoundMenu):
     """ Context menu of song list widget """
 
     def __init__(self, parent):
@@ -140,10 +140,9 @@ class SongListWidget(NoScrollSongListWidget):
             self.tr("it won't be on be this device anymore.")
 
         w = MessageDialog(title, content, self.window())
-        w.yesSignal.connect(lambda: self.removeSongCard(index))
-        w.yesSignal.connect(
-            lambda: self.removeSongSignal.emit(songInfo))
-        w.exec_()
+        if w.exec_():
+            self.removeSongCard(index)
+            self.removeSongSignal.emit(songInfo)
 
     def __connectMenuSignalToSlot(self, menu: SongCardListContextMenu):
         """ connect context menu signal to slot """

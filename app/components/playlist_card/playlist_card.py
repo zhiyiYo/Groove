@@ -3,7 +3,7 @@ from enum import Enum
 
 from common.database.entity import Playlist, SongInfo
 from common.signal_bus import signalBus
-from components.widgets.menu import AddToMenu, DWMMenu
+from components.widgets.menu import AddToMenu, RoundMenu
 from PyQt5.QtWidgets import QAction
 
 from .playlist_card_base import PlaylistCardBase
@@ -61,14 +61,13 @@ class LocalSearchedPlaylistCard(PlaylistCardBase):
         menu.exec(e.globalPos())
 
 
-class PlaylistCardContextMenu(DWMMenu):
+class PlaylistCardContextMenu(RoundMenu):
     """ Context menu of playlist card """
 
     def __init__(self, parent=None):
         super().__init__("", parent)
         self.__createActions()
         self.setObjectName("playlistCardContextMenu")
-        self.setQss()
 
     def __createActions(self):
         # create actions
@@ -89,14 +88,13 @@ class PlaylistCardContextMenu(DWMMenu):
         self.addAction(self.selectAct)
 
 
-class LocalSearchedPlaylistCardContextMenu(DWMMenu):
+class LocalSearchedPlaylistCardContextMenu(RoundMenu):
     """ Context menu of local searched playlist card"""
 
     def __init__(self, parent):
         super().__init__("", parent)
         self.__createActions()
         self.setObjectName("playlistCardContextMenu")
-        self.setQss()
 
     def __createActions(self):
         # create actions
