@@ -7,6 +7,7 @@ QWidget {
     padding: 0;
     background-color: transparent;
     color: white;
+    border: none;
 }
 
 #titleButton:hover {
@@ -23,6 +24,7 @@ QPushButton#showAllButton {
     padding-bottom: 6px;
     margin: 0;
     background-color: transparent;
+    border: none;
 }
 
 QPushButton#showAllButton:hover {

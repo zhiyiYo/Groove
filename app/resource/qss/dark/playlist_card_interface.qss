@@ -112,6 +112,7 @@ QPushButton {
     margin: 0;
     padding-top: 4px;
     padding-bottom: 3px;
+    border: none;
 }
 
 QPushButton#sortModeButton {

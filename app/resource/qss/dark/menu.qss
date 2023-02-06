@@ -34,29 +34,11 @@ QMenu::item:selected {
 }
 
 
-QMenu#blackAddToMenu::item,
-QMenu#blackDownloadMenu::item {
-    height: 38px;
-    /*设置文字边距*/
-    padding-left: 20px;
-    padding-top: 0px;
-    padding-bottom: 0px;
-
-}
-
-/*调整图标位置*/
-QMenu#blackAddToMenu::icon,
-QMenu#blackDownloadMenu::icon {
-    position: absolute;
-    left: 14px;
-}
-
-
 /*排序模式菜单样式*/
 QMenu#sortModeMenu {
     font-size: 16px;
     height: 114px;
-    border: 1px solid rgb(210, 210, 210);
+    border: 1px solid rgb(20, 20, 20);
     border-bottom: none;
     padding-top: 1px;
     border-radius: 0px;

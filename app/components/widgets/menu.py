@@ -635,7 +635,7 @@ class RoundMenu(QWidget):
             return
 
         desktop = QApplication.desktop().availableGeometry()
-        w, h = self.width() + 25, self.height() + 25
+        w, h = self.width() + 5, self.height() + 5
         pos.setX(max(
             10, min(pos.x() - self.layout().contentsMargins().left(), desktop.width() - w)))
         pos.setY(max(10, min(pos.y() - 5, desktop.height() - h)))

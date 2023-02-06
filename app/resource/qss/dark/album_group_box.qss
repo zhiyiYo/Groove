@@ -24,6 +24,7 @@ QLabel {
     padding: 0;
     background-color: transparent;
     color: white;
+    border: none;
 }
 
 #titleButton:hover {
@@ -66,6 +67,7 @@ QPushButton#showAllButton {
     color: rgb(41, 247, 255);
     font: 15px 'Segoe UI', 'Microsoft YaHei';
     padding-bottom: 6px;
+    border: none;
 }
 
 QPushButton#showAllButton:hover {
