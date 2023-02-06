@@ -7,6 +7,7 @@ from PyQt5.QtCore import QPropertyAnimation, Qt, pyqtProperty, pyqtSignal
 from PyQt5.QtGui import (QBrush, QColor, QImage, QImageReader, QLinearGradient,
                          QMouseEvent, QPainter, QPixmap)
 from PyQt5.QtWidgets import QLabel, QWidget
+from PyQt5.QtSvg import QSvgWidget
 
 
 class ClickableLabel(QLabel):
@@ -326,13 +327,13 @@ class PixmapLabel(QLabel):
         painter.drawPixmap(self.rect(), self.__pixmap)
 
 
-class ErrorIcon(PixmapLabel):
+class ErrorIcon(QSvgWidget):
     """ Error icon """
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setPixmap(
-            QPixmap(":/images/song_tab_interface/Info_red.png"))
+        self.setFixedSize(19, 19)
+        self.load(":/images/song_list_widget/Info_red.svg")
 
 
 class AlbumCover(QWidget):

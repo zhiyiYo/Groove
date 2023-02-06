@@ -4,7 +4,7 @@ from typing import List
 from common.database.entity import AlbumInfo, Playlist, SingerInfo, SongInfo
 from common.library import Library
 from common.style_sheet import setStyleSheet
-from PyQt5.QtCore import QFile, pyqtSignal
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QLabel, QStackedWidget, QWidget
 
 from .album_interface import AlbumInterface

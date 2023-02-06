@@ -322,9 +322,6 @@
         <file>images/playlist_interface/album_white_hover.png</file>
         <file>images/playlist_interface/album_white_normal.png</file>
         <file>images/playlist_interface/album_white_pressed.png</file>
-        <file>images/playlist_interface/Delete_black.png</file>
-        <file>images/playlist_interface/Delete_green.png</file>
-        <file>images/playlist_interface/Delete_white.png</file>
         <file>images/random_play_all/Shuffle_black_hover.png</file>
         <file>images/random_play_all/Shuffle_black_normal.png</file>
         <file>images/random_play_all/Shuffle_black_pressed.png</file>
@@ -333,9 +330,6 @@
         <file>images/random_play_all/Shuffle_white_pressed.png</file>
         <file>images/search_result_interface/ChevronLeft.png</file>
         <file>images/search_result_interface/ChevronRight.png</file>
-        <file>images/search_result_interface/Download_black.png</file>
-        <file>images/search_result_interface/Download_green.png</file>
-        <file>images/search_result_interface/Download_white.png</file>
         <file>images/search_result_interface/Search_black.png</file>
         <file>images/search_result_interface/Search_white.png</file>
         <file>images/search_result_interface/ShowAll_hover_black.png</file>
@@ -384,19 +378,29 @@
         <file>images/smallest_play_interface/Pause.png</file>
         <file>images/smallest_play_interface/Play.png</file>
         <file>images/smallest_play_interface/Previous.png</file>
-        <file>images/song_tab_interface/Add_black.png</file>
-        <file>images/song_tab_interface/Add_green.png</file>
-        <file>images/song_tab_interface/Add_white.png</file>
-        <file>images/song_tab_interface/CheckMark.png</file>
-        <file>images/song_tab_interface/CheckMark_pressed.png</file>
-        <file>images/song_tab_interface/Info_red.png</file>
-        <file>images/song_tab_interface/Info_white.png</file>
-        <file>images/song_tab_interface/Playing_green.png</file>
-        <file>images/song_tab_interface/Playing_green_.png</file>
-        <file>images/song_tab_interface/Playing_white.png</file>
-        <file>images/song_tab_interface/Play_black.png</file>
-        <file>images/song_tab_interface/Play_green.png</file>
-        <file>images/song_tab_interface/Play_white.png</file>
+        <file>images/song_list_widget/Add_black.svg</file>
+        <file>images/song_list_widget/Add_green_black.svg</file>
+        <file>images/song_list_widget/Add_green_white.svg</file>
+        <file>images/song_list_widget/Add_white.svg</file>
+        <file>images/song_list_widget/CheckMark.png</file>
+        <file>images/song_list_widget/CheckMark_pressed.png</file>
+        <file>images/song_list_widget/Info_red.svg</file>
+        <file>images/song_list_widget/Info_white.svg</file>
+        <file>images/song_list_widget/Playing_green_black.svg</file>
+        <file>images/song_list_widget/Playing_green_white.svg</file>
+        <file>images/song_list_widget/Playing_white.svg</file>
+        <file>images/song_list_widget/Play_black.svg</file>
+        <file>images/song_list_widget/Play_white.svg</file>
+        <file>images/song_list_widget/Play_green_black.svg</file>
+        <file>images/song_list_widget/Play_green_white.svg</file>
+        <file>images/song_list_widget/Download_black.svg</file>
+        <file>images/song_list_widget/Download_white.svg</file>
+        <file>images/song_list_widget/Download_green_black.svg</file>
+        <file>images/song_list_widget/Download_green_white.svg</file>
+        <file>images/song_list_widget/Delete_black.svg</file>
+        <file>images/song_list_widget/Delete_white.svg</file>
+        <file>images/song_list_widget/Delete_green_black.svg</file>
+        <file>images/song_list_widget/Delete_green_white.svg</file>
         <file>images/video_window/Volume0.png</file>
         <file>images/video_window/Volume1.png</file>
         <file>images/video_window/Volume2.png</file>

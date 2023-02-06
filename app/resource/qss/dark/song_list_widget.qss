@@ -63,7 +63,7 @@ QLabel[state='notSelected-notPlay'] {
 }
 
 QLabel[state='notSelected-play'] {
-    color: rgb(0, 153, 188);
+    color: rgb(41, 247, 255);
 }
 
 QLabel[state='selected'] {
@@ -114,19 +114,19 @@ QCheckBox::indicator[state='notSelected-notPlay']:pressed {
 }
 
 QCheckBox::indicator[state='notSelected-play'] {
-    border: 1px solid rgb(0, 153, 188);
+    border: 1px solid rgb(41, 247, 255);
 }
 
 QCheckBox::indicator[state='notSelected-play']:pressed {
-    border: 1px solid rgb(130, 172, 182);
+    border: 1px solid rgba(41, 247, 255, 0.6);
 }
 
 QCheckBox::indicator:checked {
-    border-image: url(:/images/song_tab_interface/CheckMark.png);
+    border-image: url(:/images/song_list_widget/CheckMark.png);
 }
 
 QCheckBox::indicator:checked:pressed {
-    border-image: url(:/images/song_tab_interface/CheckMark_pressed.png);
+    border-image: url(:/images/song_list_widget/CheckMark_pressed.png);
 }
 
 

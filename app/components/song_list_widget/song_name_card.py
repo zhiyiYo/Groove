@@ -1,11 +1,9 @@
 # coding:utf-8
-from common.config import config, Theme
 from common.icon import getIconColor
-from components.widgets.label import PixmapLabel
 from PyQt5.QtCore import QEvent, QSize, Qt
-from PyQt5.QtGui import QFont, QFontMetrics, QPainter, QPixmap
-from PyQt5.QtWidgets import (QApplication, QCheckBox, QLabel, QToolButton,
-                             QWidget)
+from PyQt5.QtGui import QFont, QFontMetrics, QIcon
+from PyQt5.QtWidgets import QApplication, QCheckBox, QLabel, QToolButton, QWidget
+from PyQt5.QtSvg import QSvgWidget
 
 from .song_card_type import SongCardType
 
@@ -13,11 +11,18 @@ from .song_card_type import SongCardType
 class ToolButton(QToolButton):
     """ Tool button of song name card """
 
-    def __init__(self, iconPaths: dict, parent=None):
+    ADD = "Add"
+    PLAY = "Play"
+    DELETE = "Delete"
+    DOWNLOAD = "Download"
+
+    def __init__(self, iconType: str, parent=None):
         super().__init__(parent)
-        self.iconPaths = iconPaths
         self.setFixedSize(60, 60)
-        self.setIconSize(QSize(60, 60))
+        self.setIconSize(QSize(20, 20))
+
+        self.state = "notSelected-notPlay"
+        self.setIconType(iconType)
         self.setState("notSelected-notPlay")
         self.setStyleSheet("QToolButton{border:none;margin:0}")
 
@@ -33,22 +38,19 @@ class ToolButton(QToolButton):
             * selected
         """
         self.state = state
-        self.update()
         self.setProperty("state", state)
+        self.setIcon(QIcon(self.iconPaths[self.state]))
 
-    def setIconPaths(self, iconPaths: dict):
-        """ set icon paths of button """
-        self.iconPaths = iconPaths
-        self.update()
-
-    def paintEvent(self, e):
-        super().paintEvent(e)
-        painter = QPainter(self)
-        painter.setPen(Qt.NoPen)
-        painter.setRenderHints(QPainter.Antialiasing |
-                               QPainter.SmoothPixmapTransform)
-        pixmap = QPixmap(self.iconPaths[self.state])
-        painter.drawPixmap(self.rect(), pixmap)
+    def setIconType(self, iconType: str):
+        """ set the type of icon"""
+        c = getIconColor()
+        folder = ":/images/song_list_widget"
+        self.iconPaths = {
+            "notSelected-notPlay": f"{folder}/{iconType}_{c}.svg",
+            "notSelected-play": f"{folder}/{iconType}_green_{c}.svg",
+            "selected": f"{folder}/{iconType}_white.svg",
+        }
+        self.setIcon(QIcon(self.iconPaths[self.state]))
 
 
 class ButtonGroup(QWidget):
@@ -56,23 +58,8 @@ class ButtonGroup(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        color = getIconColor()
-        self.playButton = ToolButton(
-            {
-                "notSelected-notPlay": f":/images/song_tab_interface/Play_{color}.png",
-                "notSelected-play": ":/images/song_tab_interface/Play_green.png",
-                "selected": ":/images/song_tab_interface/Play_white.png",
-            },
-            self,
-        )
-        self.addToButton = ToolButton(
-            {
-                "notSelected-notPlay": f":/images/song_tab_interface/Add_{color}.png",
-                "notSelected-play": ":/images/song_tab_interface/Add_green.png",
-                "selected": ":/images/song_tab_interface/Add_white.png",
-            },
-            self,
-        )
+        self.playButton = ToolButton(ToolButton.PLAY, self)
+        self.addToButton = ToolButton(ToolButton.ADD, self)
         self.__initWidget()
 
     def __initWidget(self):
@@ -143,7 +130,7 @@ class SongNameCard(QWidget):
         self.songName = songName
         self.isPlay = False
         self.checkBox = QCheckBox(self)  # type:QCheckBox
-        self.playingLabel = PixmapLabel(self)
+        self.playingLabel = QSvgWidget(self)
         self.songNameLabel = QLabel(songName, self)
         self.buttonGroup = ButtonGroup(self)
         self.playButton = self.buttonGroup.playButton
@@ -159,6 +146,7 @@ class SongNameCard(QWidget):
         self.checkBox.setFocusPolicy(Qt.NoFocus)
 
         # hide widgets
+        self.playingLabel.setFixedSize(17, 17)
         self.playingLabel.hide()
         self.setWidgetHidden(True)
 
@@ -172,7 +160,7 @@ class SongNameCard(QWidget):
     def __initLayout(self):
         """ initialize layout """
         self.checkBox.move(15, 18)
-        self.playingLabel.move(57, 22)
+        self.playingLabel.move(56, 21)
         self.songNameLabel.move(57, 18)
         self._moveButtonGroup()
 
@@ -225,18 +213,13 @@ class SongNameCard(QWidget):
 
         # update icon
         if isSongExit:
-            if state == "selected":
-                color = "white"
-            elif config.theme == Theme.DARK:
-                color = "green_"
-            else:
-                color = "green"
-            path = f":/images/song_tab_interface/Playing_{color}.png"
+            color ="white" if state == "selected" else f"green_{getIconColor()}"
+            path = f":/images/song_list_widget/Playing_{color}.svg"
         else:
             color = "white" if state == "selected" else "red"
-            path = f":/images/song_tab_interface/Info_{color}.png"
+            path = f":/images/song_list_widget/Info_{color}.svg"
 
-        self.playingLabel.setPixmap(QPixmap(path))
+        self.playingLabel.load(path)
 
     def setButtonGroupState(self, state: str):
         """ set button group state """
@@ -314,11 +297,7 @@ class PlaylistSongNameCard(SongNameCard):
 
     def __init__(self, songName, parent):
         super().__init__(songName, parent=parent)
-        self.addToButton.setIconPaths({
-            "notSelected-notPlay": f":/images/playlist_interface/Delete_{getIconColor()}.png",
-            "notSelected-play": ":/images/playlist_interface/Delete_green.png",
-            "selected": ":/images/playlist_interface/Delete_white.png",
-        })
+        self.addToButton.setIconType(ToolButton.DELETE)
 
 
 class NoCheckBoxSongNameCard(SongNameCard):
@@ -327,7 +306,7 @@ class NoCheckBoxSongNameCard(SongNameCard):
     def __init__(self, songName, parent):
         super().__init__(songName, parent=parent)
         self.songNameLabel.move(15, 18)
-        self.playingLabel.move(15, 22)
+        self.playingLabel.move(15, 21)
         self.checkBox.setFixedWidth(0)
         self.checkBox.lower()
 
@@ -346,14 +325,10 @@ class NoCheckBoxOnlineSongNameCard(SongNameCard):
     def __init__(self, songName, parent):
         super().__init__(songName, parent=parent)
         self.songNameLabel.move(15, 18)
-        self.playingLabel.move(15, 22)
+        self.playingLabel.move(15, 21)
         self.checkBox.setFixedWidth(0)
         self.checkBox.lower()
-        self.addToButton.setIconPaths({
-            "notSelected-notPlay": f":/images/search_result_interface/Download_{getIconColor()}.png",
-            "notSelected-play": ":/images/search_result_interface/Download_green.png",
-            "selected": ":/images/search_result_interface/Download_white.png",
-        })
+        self.addToButton.setIconType(ToolButton.DOWNLOAD)
 
     def setPlay(self, isPlay: bool, isSongExist: bool = True):
         self.isPlay = isPlay
@@ -369,12 +344,7 @@ class OnlineSongNameCard(SongNameCard):
 
     def __init__(self, songName, parent):
         super().__init__(songName, parent=parent)
-        self.addToButton.setIconPaths({
-            "notSelected-notPlay": f":/images/search_result_interface/Download_{getIconColor()}.png",
-            "notSelected-play": ":/images/search_result_interface/Download_green.png",
-            "selected": ":/images/search_result_interface/Download_white.png",
-        })
-
+        self.addToButton.setIconType(ToolButton.DOWNLOAD)
 
 
 class SongNameCardFactory:

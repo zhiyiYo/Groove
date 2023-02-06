@@ -1,5 +1,9 @@
-QWidget {
+SongGroupBox {
     background-color: white;
+}
+
+QSvgWidget {
+    background-color: transparent;
 }
 
 #titleButton {
