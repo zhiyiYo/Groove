@@ -63,17 +63,17 @@ QLabel#singerNameLabel[isChecked='True']:hover {
 }
 
 QPushButton#showAllButton {
-    color: rgb(0, 107, 131);
+    color: rgb(41, 247, 255);
     font: 15px 'Segoe UI', 'Microsoft YaHei';
     padding-bottom: 6px;
 }
 
 QPushButton#showAllButton:hover {
-    color: rgba(0, 107, 131, 0.8);
+    color: rgba(41, 247, 255, 0.8);
 }
 
 QPushButton#showAllButton:pressed {
-    color: rgba(0, 107, 131, 0.4);
+    color: rgba(41, 247, 255, 0.4);
 }
 
 QToolButton {

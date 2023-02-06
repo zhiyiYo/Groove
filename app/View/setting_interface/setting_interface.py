@@ -43,7 +43,7 @@ class SettingInterface(SmoothScrollArea):
         )
         self.downloadFolderCard = PushSettingCard(
             self.tr('Choose folder'),
-            SIF.create(SIF.DOWNLOAD),
+            SIF.path(SIF.DOWNLOAD),
             self.tr("Download Directory"),
             config.get(config.downloadFolder),
             self.musicInThisPCGroup
@@ -53,7 +53,7 @@ class SettingInterface(SmoothScrollArea):
         self.personalGroup = SettingCardGroup(
             self.tr('Personalization'), self.scrollWidget)
         self.enableAcrylicCard = SwitchSettingCard(
-            SIF.create(SIF.TRANSPARENT),
+            SIF.path(SIF.TRANSPARENT),
             self.tr("Use Acrylic effect"),
             self.tr(
                 "Acrylic effect has better visual experience, but it may cause the window to become stuck"),
@@ -62,7 +62,7 @@ class SettingInterface(SmoothScrollArea):
         )
         self.themeCard = OptionsSettingCard(
             config.themeMode,
-            SIF.create(SIF.BRUSH),
+            SIF.path(SIF.BRUSH),
             self.tr('Application theme'),
             self.tr('Choose a color theme to personalize Groove Music'),
             texts=[
@@ -73,7 +73,7 @@ class SettingInterface(SmoothScrollArea):
         )
         self.zoomCard = OptionsSettingCard(
             config.dpiScale,
-            SIF.create(SIF.ZOOM),
+            SIF.path(SIF.ZOOM),
             self.tr("Interface zoom"),
             self.tr("Change the size of widgets and fonts"),
             texts=[
@@ -84,7 +84,7 @@ class SettingInterface(SmoothScrollArea):
         )
         self.languageCard=OptionsSettingCard(
             config.language,
-            SIF.create(SIF.LANGUAGE),
+            SIF.path(SIF.LANGUAGE),
             self.tr('Language'),
             self.tr('Set your preferred language for UI'),
             texts=['简体中文', '繁體中文', 'English', self.tr('Use system setting')],
@@ -95,7 +95,7 @@ class SettingInterface(SmoothScrollArea):
         self.mediaInfoGroup = SettingCardGroup(
             self.tr('Media Info'), self.scrollWidget)
         self.crawlMetadataCard = SwitchSettingCard(
-            SIF.create(SIF.WEB),
+            SIF.path(SIF.WEB),
             self.tr(
                 "Automatically retrieve and update missing album art and metadata"),
             parent=self.mediaInfoGroup
@@ -106,13 +106,13 @@ class SettingInterface(SmoothScrollArea):
             self.tr('Online Music'), self.scrollWidget)
         self.onlinePageSizeCard = RangeSettingCard(
             config.onlinePageSize,
-            SIF.create(SIF.SEARCH),
+            SIF.path(SIF.SEARCH),
             self.tr("Number of online music displayed on each page"),
             parent=self.onlineMusicGroup
         )
         self.onlineMusicQualityCard = OptionsSettingCard(
             config.onlineSongQuality,
-            SIF.create(SIF.MUSIC),
+            SIF.path(SIF.MUSIC),
             self.tr('Online music quality'),
             texts=[
                 self.tr('Standard quality'), self.tr('High quality'),
@@ -122,7 +122,7 @@ class SettingInterface(SmoothScrollArea):
         )
         self.onlineMvQualityCard = OptionsSettingCard(
             config.onlineMvQuality,
-            SIF.create(SIF.VIDEO),
+            SIF.path(SIF.VIDEO),
             self.tr('Online MV quality'),
             texts=[
                 self.tr('Full HD'), self.tr('HD'),
@@ -136,14 +136,14 @@ class SettingInterface(SmoothScrollArea):
             self.tr('Playing Interface'), self.scrollWidget)
         self.albumBlurRadiusCard = RangeSettingCard(
             config.albumBlurRadius,
-            SIF.create(SIF.ALBUM),
+            SIF.path(SIF.ALBUM),
             self.tr('Background blur radius'),
             self.tr('The greater the radius, the more blurred the image'),
             parent=self.playingInterfaceGroup
         )
         self.lyricFontCard = PushSettingCard(
             self.tr('Choose font'),
-            SIF.create(SIF.FONT),
+            SIF.path(SIF.FONT),
             self.tr('Lyric font'),
             self.tr(
                 'The lyrics being played will be larger than the lyrics not being played'),
@@ -155,37 +155,37 @@ class SettingInterface(SmoothScrollArea):
             self.tr('Desktop Lyric'), self.scrollWidget)
         self.deskLyricFontCard = PushSettingCard(
             self.tr('Choose font'),
-            SIF.create(SIF.FONT),
+            SIF.path(SIF.FONT),
             self.tr('Font'),
             parent=self.deskLyricGroup
         )
         self.deskLyricBackgroundColorCard = ColorSettingCard(
             config.deskLyricFontColor,
-            SIF.create(SIF.BACKGROUND_FILL),
+            SIF.path(SIF.PAINT_BUCKET),
             self.tr('Background color'),
             parent=self.deskLyricGroup
         )
         self.deskLyricHighlightColorCard = ColorSettingCard(
             config.deskLyricHighlightColor,
-            SIF.create(SIF.PALETTE),
+            SIF.path(SIF.PALETTE),
             self.tr('Foreground color'),
             parent=self.deskLyricGroup
         )
         self.deskLyricStrokeColorCard = ColorSettingCard(
             config.deskLyricStrokeColor,
-            SIF.create(SIF.PENCIL_INK),
+            SIF.path(SIF.PENCIL_INK),
             self.tr('Stroke color'),
             parent=self.deskLyricGroup
         )
         self.deskLyricStrokeSizeCard = RangeSettingCard(
             config.deskLyricStrokeSize,
-            SIF.create(SIF.FLUORESCENT_PEN),
+            SIF.path(SIF.FLUORESCENT_PEN),
             self.tr('Stroke size'),
             parent=self.deskLyricGroup
         )
         self.deskLyricAlignmentCard = OptionsSettingCard(
             config.deskLyricAlignment,
-            SIF.create(SIF.ALIGNMENT),
+            SIF.path(SIF.ALIGNMENT),
             self.tr('Alignment'),
             texts=[
                 self.tr('Center aligned'), self.tr('Left aligned'),
@@ -198,7 +198,7 @@ class SettingInterface(SmoothScrollArea):
         self.embedLyricGroup = SettingCardGroup(
             self.tr('Embedded Lyrics'), self.scrollWidget)
         self.preferEmbedLyricCard = SwitchSettingCard(
-            SIF.create(SIF.FILE_SEARCH),
+            SIF.path(SIF.FILE_SEARCH),
             self.tr('Prefer embedded lyrics'),
             self.tr(
                 'Embedded lyrics will be used preferentially instead of online lyrics'),
@@ -206,7 +206,7 @@ class SettingInterface(SmoothScrollArea):
             self.embedLyricGroup
         )
         self.embedLyricWhenSaveCard = SwitchSettingCard(
-            SIF.create(SIF.EMBED),
+            SIF.path(SIF.EMBED),
             self.tr('Embed lyrics when saving song information'),
             configItem=config.embedLyricWhenSave,
             parent=self.embedLyricGroup
@@ -216,7 +216,7 @@ class SettingInterface(SmoothScrollArea):
         self.mainPanelGroup = SettingCardGroup(
             self.tr('Main Panel'), self.scrollWidget)
         self.minimizeToTrayCard = SwitchSettingCard(
-            SIF.create(SIF.MINIMIZE),
+            SIF.path(SIF.MINIMIZE),
             self.tr('Minimize to tray after closing'),
             self.tr('Groove Music will continue to run in the background'),
             configItem=config.minimizeToTray,
@@ -227,7 +227,7 @@ class SettingInterface(SmoothScrollArea):
         self.updateSoftwareGroup = SettingCardGroup(
             self.tr("Software update"), self.scrollWidget)
         self.updateOnStartUpCard = SwitchSettingCard(
-            SIF.create(SIF.UPDATE),
+            SIF.path(SIF.UPDATE),
             self.tr('Check for updates when the application starts'),
             self.tr(
                 'The new version will be more stable and have more features'),
@@ -240,21 +240,21 @@ class SettingInterface(SmoothScrollArea):
         self.helpCard = HyperlinkCard(
             HELP_URL,
             self.tr('Open help page'),
-            SIF.create(SIF.HELP),
+            SIF.path(SIF.HELP),
             self.tr('Help'),
             self.tr('Discover new features and learn useful tips about Groove Music'),
             self.aboutGroup
         )
         self.feedbackCard = PrimaryPushSettingCard(
             self.tr('Provide feedback'),
-            SIF.create(SIF.FEEDBACK),
+            SIF.path(SIF.FEEDBACK),
             self.tr('Provide feedback'),
             self.tr('Help us improve Groove Music by providing feedback'),
             self.aboutGroup
         )
         self.aboutCard = PrimaryPushSettingCard(
             self.tr('Check update'),
-            SIF.create(SIF.INFO),
+            SIF.path(SIF.INFO),
             self.tr('About Groove Music'),
             '© ' + self.tr('Copyright') + f" {YEAR}, {AUTHOR}. " +
             self.tr('Version') + f" {VERSION[1:]}",

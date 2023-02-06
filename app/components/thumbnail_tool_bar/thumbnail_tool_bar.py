@@ -1,7 +1,10 @@
 # coding:utf-8
+from common.config import Theme
 from common.signal_bus import signalBus
+from components.widgets.menu import MIF
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWinExtras import QWinThumbnailToolBar, QWinThumbnailToolButton
+
 
 
 class WindowsThumbnailToolBar(QWinThumbnailToolBar):
@@ -16,10 +19,8 @@ class WindowsThumbnailToolBar(QWinThumbnailToolBar):
 
     def __initWidget(self):
         """ initialize widgets """
-        self.lastSongButton.setIcon(
-            QIcon(":/images/thumbnail_tool_bar/上一首_32_32_2.png"))
-        self.nextSongButton.setIcon(
-            QIcon(":/images/thumbnail_tool_bar/下一首_32_32_2.png"))
+        self.lastSongButton.setIcon(QIcon(":/images/thumbnail_tool_bar/Previous.svg"))
+        self.nextSongButton.setIcon(QIcon(":/images/thumbnail_tool_bar/Next.svg"))
 
         # add button to bar
         self.addButton(self.lastSongButton)
@@ -52,9 +53,6 @@ class ThumbnailPlayButton(QWinThumbnailToolButton):
         """ set play state """
         self.isPlaying = isPlay
         if self.isPlaying:
-            self.setIcon(QIcon(":/images/thumbnail_tool_bar/播放_32_32_2.png"))
+            self.setIcon(QIcon(":/images/thumbnail_tool_bar/Pause.svg"))
         else:
-            self.setIcon(QIcon(":/images/thumbnail_tool_bar/暂停_32_32_2.png"))
-
-
-
+            self.setIcon(QIcon(":/images/thumbnail_tool_bar/Play.svg"))

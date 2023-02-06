@@ -84,7 +84,7 @@ class SongListWidget(ListWidget):
         if self.currentSongInfo.file.startswith('http'):
             downloadMenu = DownloadMenu(self.tr('Download'), menu, Theme.DARK)
             downloadMenu.setObjectName('darkMenu')
-            downloadMenu.setStyle(downloadMenu, 'menu')
+            setStyleSheet(downloadMenu, 'menu', Theme.DARK)
             downloadMenu.downloadSig.connect(
                 lambda q: signalBus.downloadSongSig.emit(self.currentSongInfo, q))
             menu.insertMenu(menu.removeAct, downloadMenu)
@@ -318,7 +318,7 @@ class SongCardContextMenu(RoundMenu):
         ])
         self.addSeparator()
         self.addAction(self.selectAct)
-        
+
         self.setObjectName('darkMenu')
         self.addToMenu.setObjectName('darkMenu')
         setStyleSheet(self, 'menu', Theme.DARK)

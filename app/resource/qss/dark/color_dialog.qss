@@ -106,7 +106,7 @@ QSlider::handle:horizontal {
     border-radius: 14px;
     background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5,
             stop:0 rgb(255, 255, 255),
-            stop:0.55 rgb(255, 255, 255),
+            stop:0.5 rgb(255, 255, 255),
             stop:0.6 rgb(69, 69, 69),
             stop:1 rgb(69, 69, 69));
 }
@@ -163,7 +163,6 @@ QScrollBar {
     background: transparent;
     width: 5px;
     margin-top: 40px;
-    margin-bottom: 133px;
     padding-right: 2px;
 }
 

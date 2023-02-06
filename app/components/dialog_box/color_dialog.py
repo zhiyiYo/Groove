@@ -1,7 +1,7 @@
 # coding:utf-8
 from common.icon import getIconColor
 from common.style_sheet import setStyleSheet, getStyleSheet
-from PyQt5.QtCore import Qt, pyqtSignal, QPoint, QRegExp
+from PyQt5.QtCore import Qt, pyqtSignal, QPoint, QRegExp, QSize
 from PyQt5.QtGui import (QIcon, QBrush, QColor, QMouseEvent, QPixmap,
                          QPainter, QPen, QIntValidator, QRegExpValidator)
 from PyQt5.QtWidgets import (QApplication, QLabel, QLineEdit, QWidget,
@@ -145,8 +145,8 @@ class ColorLineEdit(QLineEdit):
         self.clearButton.setFixedSize(36, 31)
         self.clearButton.setObjectName('clearButton')
         self.clearButton.setIcon(
-            QIcon(f":/images/color_picker/Clear_{getIconColor()}.png"))
-        self.clearButton.setIconSize(self.size())
+            QIcon(f":/images/color_picker/Clear_{getIconColor()}.svg"))
+        self.clearButton.setIconSize(QSize(12, 12))
         self.clearButton.setCursor(Qt.PointingHandCursor)
         self.clearButton.hide()
 

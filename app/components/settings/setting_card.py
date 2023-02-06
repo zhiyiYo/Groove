@@ -1,16 +1,18 @@
 # coding:utf-8
+from typing import Union
+
 from common.style_sheet import setStyleSheet, getStyleSheet
 from common.config import ConfigItem, config, RangeConfigItem
-from common.icon import getIconColor
+from common.icon import getIconColor, drawSvgIcon
 
-from PyQt5.QtCore import QUrl, Qt, pyqtSignal
-from PyQt5.QtGui import QPixmap, QColor, QDesktopServices
+from PyQt5.QtCore import QUrl, Qt, pyqtSignal, QRect, QRectF
+from PyQt5.QtGui import QColor, QDesktopServices, QIcon, QPainter
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QLabel, QToolButton, QVBoxLayout, QPushButton
+from PyQt5.QtSvg import QSvgWidget
 
 from ..dialog_box.color_dialog import ColorDialog
 from ..buttons.switch_button import SwitchButton, IndicatorPosition
 from ..widgets.slider import Slider
-from ..widgets.label import PixmapLabel
 
 
 class SettingCard(QFrame):
@@ -21,7 +23,7 @@ class SettingCard(QFrame):
         Parameters
         ----------
         iconPath: str
-            the path of icon
+            the path of svg icon
 
         title: str
             the title of card
@@ -33,7 +35,7 @@ class SettingCard(QFrame):
             parent widget
         """
         super().__init__(parent=parent)
-        self.iconLabel = PixmapLabel(self)
+        self.iconLabel = QSvgWidget(iconPath, self)
         self.titleLabel = QLabel(title, self)
         self.contentLabel = QLabel(content or '', self)
         self.hBoxLayout = QHBoxLayout(self)
@@ -44,7 +46,6 @@ class SettingCard(QFrame):
 
         self.setFixedHeight(88 if content else 62)
         self.iconLabel.setFixedSize(20, 20)
-        self.iconLabel.setPixmap(QPixmap(iconPath))
 
         # initialize layout
         self.hBoxLayout.setSpacing(0)
@@ -344,13 +345,11 @@ class SettingIconFactory:
     """ Setting icon factory """
 
     WEB = "Web"
-    LINK = "Link"
     HELP = "Help"
     FONT = "Font"
     INFO = "Info"
     ZOOM = "Zoom"
     CLOSE = "Close"
-    MOVIE = "Movie"
     BRUSH = "Brush"
     MUSIC = "Music"
     VIDEO = "Video"
@@ -363,7 +362,6 @@ class SettingIconFactory:
     FEEDBACK = "Feedback"
     MINIMIZE = "Minimize"
     DOWNLOAD = "Download"
-    QUESTION = "Question"
     LANGUAGE = "Language"
     ALIGNMENT = "Alignment"
     PENCIL_INK = "PencilInk"
@@ -372,10 +370,36 @@ class SettingIconFactory:
     FILE_SEARCH = "FileSearch"
     TRANSPARENT = "Transparent"
     MUSIC_FOLDER = "MusicFolder"
-    BACKGROUND_FILL = "BackgroundColor"
+    PAINT_BUCKET = "PaintBucket"
+    CHEVRON_DOWN = "ChevronDown"
     FLUORESCENT_PEN = "FluorescentPen"
 
-    @staticmethod
-    def create(iconType: str):
+    @classmethod
+    def path(cls, iconType: str):
+        """ get icon path """
+        return f':/images/setting_card/{iconType}_{getIconColor()}.svg'
+
+    @classmethod
+    def icon(cls, iconType: str):
         """ create icon """
-        return f':/images/setting_card/{iconType}_{getIconColor()}.png'
+        return QIcon(cls.path(iconType))
+
+    @classmethod
+    def render(cls, iconType: str, painter: QPainter, rect: Union[QRect, QRectF]):
+        """ draw svg icon
+
+        Parameters
+        ----------
+        iconType: str
+            menu icon type
+
+        painter: QPainter
+            painter
+
+        rect: QRect | QRectF
+            the rect to render icon
+
+        theme: Theme
+            the theme of icon
+        """
+        drawSvgIcon(cls.path(iconType), painter, rect)

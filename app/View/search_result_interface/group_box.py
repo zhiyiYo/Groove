@@ -1,5 +1,5 @@
 # coding:utf-8
-from common.icon import Icon
+from common.icon import Icon, getIconColor
 from common.library import Library
 from common.style_sheet import setStyleSheet
 from components.buttons.three_state_button import ThreeStatePushButton
@@ -32,11 +32,12 @@ class GroupBox(QScrollArea):
         self.scrollAni = QPropertyAnimation(
             self.horizontalScrollBar(), b'value', self)
 
+        c = getIconColor()
         self.showAllButton = ThreeStatePushButton(
             {
-                "normal": ":/images/search_result_interface/ShowAll_normal.png",
-                "hover": ":/images/search_result_interface/ShowAll_hover.png",
-                "pressed": ":/images/search_result_interface/ShowAll_pressed.png",
+                "normal": f":/images/search_result_interface/ShowAll_normal_{c}.png",
+                "hover": f":/images/search_result_interface/ShowAll_hover_{c}.png",
+                "pressed": f":/images/search_result_interface/ShowAll_pressed_{c}.png",
             },
             self.tr(' Show All'),
             (14, 14),

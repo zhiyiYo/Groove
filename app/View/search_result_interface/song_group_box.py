@@ -1,6 +1,7 @@
 # coding:utf-8
 from typing import List
 
+from common.icon import getIconColor
 from common.crawler import QueryServerType
 from common.database.entity import SongInfo
 from common.signal_bus import signalBus
@@ -45,11 +46,12 @@ class SongGroupBox(QWidget):
             self.songListWidget = OnlineSongListWidget(self)
             self.titleButton = QPushButton(self.tr('Online songs'), self)
 
+        c = getIconColor()
         self.showAllButton = ThreeStatePushButton(
             {
-                "normal": ":/images/search_result_interface/ShowAll_normal.png",
-                "hover": ":/images/search_result_interface/ShowAll_hover.png",
-                "pressed": ":/images/search_result_interface/ShowAll_pressed.png",
+                "normal": f":/images/search_result_interface/ShowAll_normal_{c}.png",
+                "hover": f":/images/search_result_interface/ShowAll_hover_{c}.png",
+                "pressed": f":/images/search_result_interface/ShowAll_pressed_{c}.png",
             },
             self.tr(' Show All'),
             (14, 14),

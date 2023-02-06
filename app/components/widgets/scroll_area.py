@@ -48,11 +48,7 @@ class SmoothScrollBar(QScrollBar):
         self.ani.setEasingCurve(QEasingCurve.OutCubic)
         self.ani.setDuration(500)
         self.__value = self.value()
-        self.ani.finished.connect(self.__onScrollFinished)
-
-    def __onScrollFinished(self):
-        self.scrollFinished.emit()
-        return
+        self.ani.finished.connect(self.scrollFinished)
 
     def setValue(self, value: int):
         if value == self.value():

@@ -73,7 +73,7 @@ class MenuIconFactory:
         if theme == Theme.AUTO:
             c = getIconColor()
         else:
-            c = "white" if theme == Theme.DARK else "dark"
+            c = "white" if theme == Theme.DARK else "black"
 
         return f":/images/menu/{iconType}_{c}.svg"
 
@@ -334,15 +334,10 @@ class RoundMenu(QWidget):
         else:
             raise ValueError('`before` is not in the action list')
 
-        if action.shortcut().isEmpty():
-            text = action.text()
-        else:
-            text = action.text() + "   " + action.shortcut().toString()
-
-        item = QListWidgetItem(self._createItemIcon(action), text)
+        item = QListWidgetItem(self._createItemIcon(action), action.text())
 
         if not self._hasItemIcon():
-            w = 35 + self.view.fontMetrics().width(text)
+            w = 35 + self.view.fontMetrics().width(action.text())
         else:
             # add a blank character to increase space between icon and text
             item.setText(" " + item.text())
@@ -458,8 +453,7 @@ class RoundMenu(QWidget):
         """ Create submenu item """
         self._subMenus.append(menu)
 
-        item = QListWidgetItem(self._createItemIcon(
-            menu), menu.title(), self.view)
+        item = QListWidgetItem(self._createItemIcon(menu), menu.title())
         if not self._hasItemIcon():
             w = 60 + self.view.fontMetrics().width(menu.title())
         else:
@@ -594,17 +588,12 @@ class RoundMenu(QWidget):
         item = action.property('item')  # type:QListWidgetItem
         item.setIcon(self._createItemIcon(action))
 
-        if action.shortcut().isEmpty():
-            text = action.text()
-        else:
-            text = action.text() + "   " + action.shortcut().toString()
-
         if not self._hasItemIcon():
-            item.setText(text)
-            w = 35 + self.view.fontMetrics().width(text)
+            item.setText(action.text())
+            w = 35 + self.view.fontMetrics().width(action.text())
         else:
             # add a blank character to increase space between icon and text
-            item.setText(" " + text)
+            item.setText(" " + action.text())
             w = 75 + self.view.fontMetrics().width(item.text())
 
         item.setSizeHint(QSize(w, self.itemHeight))

@@ -2,8 +2,8 @@
 from common.config import config, Theme
 from common.style_sheet import setStyleSheet
 from PyQt5.QtCore import (QEvent, Qt, QPropertyAnimation, pyqtProperty, QEasingCurve,
-                          QParallelAnimationGroup, QRect, QSize, QPoint)
-from PyQt5.QtGui import QPixmap, QPainter, QColor, QEnterEvent, QMouseEvent
+                          QParallelAnimationGroup, QRect, QRectF, QSize, QPoint)
+from PyQt5.QtGui import QPixmap, QPainter, QColor
 from PyQt5.QtWidgets import QFrame, QWidget, QAbstractButton, QApplication
 
 from .setting_card import SettingCard
@@ -20,7 +20,6 @@ class ExpandButton(QAbstractButton):
         self.__angle = 0
         self.isHover = False
         self.isPressed = False
-        self.iconPixmap = QPixmap(SIF.create(SIF.ARROW_DOWN))
         self.rotateAni = QPropertyAnimation(self, b'angle', self)
         self.clicked.connect(self.__onClicked)
 
@@ -45,11 +44,7 @@ class ExpandButton(QAbstractButton):
         # draw icon
         painter.translate(self.width()//2, self.height()//2)
         painter.rotate(self.__angle)
-        painter.drawPixmap(
-            -int(self.iconPixmap.width() / 2),
-            -int(self.iconPixmap.height() / 2),
-            self.iconPixmap
-        )
+        SIF.render(SIF.ARROW_DOWN, painter, QRectF(-7.5, -7.5, 12, 12))
 
     def enterEvent(self, e):
         self.setHover(True)
@@ -125,7 +120,7 @@ class ExpandSettingCard(QFrame):
         setStyleSheet(self.card, 'expand_setting_card')
         setStyleSheet(self, 'expand_setting_card')
 
-        self.view.installEventFilter(self)
+        self.card.installEventFilter(self)
         self.aniGroup.finished.connect(self.__onAniFinished)
         self.expandButton.clicked.connect(self.toggleExpand)
 
@@ -171,35 +166,19 @@ class ExpandSettingCard(QFrame):
         self.card.resize(self.width(), self.card.height())
         self.view.resize(self.width(), self.view.height())
 
-    def enterEvent(self, e: QEnterEvent):
-        super().enterEvent(e)
-        if self.childAt(e.pos()) is self.card:
-            self.expandButton.setHover(True)
-
-    def leaveEvent(self, e):
-        super().leaveEvent(e)
-        self.expandButton.setHover(False)
-
-    def mousePressEvent(self, e: QMouseEvent):
-        super().mousePressEvent(e)
-        if e.button() == Qt.LeftButton and self.childAt(e.pos()) is self.card:
-            self.expandButton.setPressed(True)
-
-    def mouseReleaseEvent(self, e):
-        super().mouseReleaseEvent(e)
-        if e.button() == Qt.LeftButton and self.childAt(e.pos()) is self.card:
-            self.expandButton.setPressed(False)
-            self.expandButton.click()
-
     def eventFilter(self, obj, e: QEvent):
-        if obj is self.view:
+        if obj is self.card:
             if e.type() == QEvent.Enter:
+                self.expandButton.setHover(True)
+            elif e.type()==QEvent.Leave:
                 self.expandButton.setHover(False)
+            elif e.type() == QEvent.MouseButtonPress and e.button() == Qt.LeftButton:
+                self.expandButton.setPressed(True)
+            elif e.type() == QEvent.MouseButtonRelease and e.button() == Qt.LeftButton:
+                self.expandButton.setPressed(False)
+                self.expandButton.click()
 
         return super().eventFilter(obj, e)
-
-    def sizeHint(self):
-        return self.size()
 
     def __onAniFinished(self):
         """ expand animation finished slot """
