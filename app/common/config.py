@@ -27,7 +27,7 @@ class Language(Enum):
 
 class Theme(Enum):
     """ Theme enumeration """
-    
+
     LIGHT = "Light"
     DARK = "Dark"
     AUTO = "Auto"
@@ -343,7 +343,7 @@ class Config(Singleton):
         "Update", "CheckUpdateAtStartUp", True, BoolValidator())
 
     def __init__(self):
-        self.__theme = "Light"
+        self.__theme = Theme.LIGHT
         self.load()
 
     @classmethod
@@ -420,7 +420,7 @@ class Config(Singleton):
         if self.get(self.themeMode) == Theme.AUTO:
             theme = darkdetect.theme()
             if theme:
-                self.__theme == Theme(theme)
+                self.__theme = Theme(theme)
             else:
                 self.__theme = Theme.LIGHT
         else:
