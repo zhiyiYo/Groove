@@ -6,7 +6,7 @@ from components.widgets.label import ClickableLabel
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QLabel
 
-from .basic_song_card import BasicSongCard
+from .basic_song_card import BasicSongCard, CardState, WidgetState
 from .song_card_type import SongCardType
 
 
@@ -17,8 +17,8 @@ class DurationSongCard(BasicSongCard):
         super().__init__(songInfo, songCardType, parent)
         self.durationLabel = QLabel(self.duration, self)
         self.setAttribute(Qt.WA_StyledBackground)
-        self.setWidgetState("notSelected-leave")
-        self.setCheckBoxBtLabelState("notSelected-notPlay")
+        self.setCardState(CardState.LEAVE)
+        self.setWidgetState(WidgetState.NORMAL)
 
     def resizeEvent(self, e):
         super().resizeEvent(e)

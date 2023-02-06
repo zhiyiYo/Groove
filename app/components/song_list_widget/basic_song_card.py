@@ -11,7 +11,7 @@ from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
 from PyQt5.QtGui import QContextMenuEvent, QFont, QFontMetrics, QMouseEvent
 from PyQt5.QtWidgets import QApplication, QWidget
 
-from .song_name_card import SongNameCardFactory
+from .song_name_card import SongNameCardFactory, WidgetState, CardState
 
 
 class BasicSongCard(QWidget):
@@ -39,7 +39,6 @@ class BasicSongCard(QWidget):
         self.setFixedHeight(60)
         self.setSongInfo(songInfo)
         self.__resizeTime = 0
-        self.__songCardType = songCardType
 
         self.isSongExist = True
         self.isPlaying = False
@@ -159,13 +158,13 @@ class BasicSongCard(QWidget):
 
         self.isSelected = isSelected
         if isSelected:
-            self.setWidgetState("selected-leave")
-            self.setCheckBoxBtLabelState("selected")
+            self.setCardState(CardState.SELECTED_LEAVE)
+            self.setWidgetState(WidgetState.SELECTED)
         else:
             self.songNameCard.setWidgetHidden(True)
-            self.setWidgetState("notSelected-leave")
-            state = "notSelected-play" if self.isPlaying else "notSelected-notPlay"
-            self.setCheckBoxBtLabelState(state)
+            self.setCardState(CardState.LEAVE)
+            state = WidgetState.PLAY if self.isPlaying else WidgetState.NORMAL
+            self.setWidgetState(state)
 
         self.setStyle(QApplication.style())
 
@@ -179,46 +178,37 @@ class BasicSongCard(QWidget):
 
         if isPlay:
             self.isSelected = True
-            self.setCheckBoxBtLabelState("selected")
-            self.setWidgetState("selected-leave")
+            self.setWidgetState(WidgetState.SELECTED)
+            self.setCardState(CardState.SELECTED_LEAVE)
         else:
-            self.setCheckBoxBtLabelState("notSelected-notPlay")
-            self.setWidgetState("notSelected-leave")
+            self.setWidgetState(WidgetState.NORMAL)
+            self.setCardState(CardState.LEAVE)
 
         self.songNameCard.setPlay(isPlay, self.isSongExist)
         self.setStyle(QApplication.style())
 
-    def setCheckBoxBtLabelState(self, state: str):
+    def setWidgetState(self, state: WidgetState):
         """ set the state of check box, buttons and labels
 
         Parameters
         ----------
-        state: str
-            state of check box, buttons and labels, including:
-            * `notSelected-notPlay`
-            * `notSelected-play`
-            * `selected`
+        state: WidgetState
+            widget state
         """
-        self.songNameCard.setCheckBoxBtLabelState(state, self.isSongExist)
+        self.songNameCard.setWidgetState(state, self.isSongExist)
         for label in self.__dynamicStyleLabels:
-            label.setProperty("state", state)
+            label.setProperty("state", state.value)
 
-    def setWidgetState(self, state: str):
+    def setCardState(self, state: CardState):
         """ set the state of song card
 
         Parameters
         ----------
-        state: str
-            song card state, including:
-            * `notSelected-leave`
-            * `notSelected-enter`
-            * `notSelected-pressed`
-            * `selected-leave`
-            * `selected-enter`
-            * `selected-pressed`
+        state: CardState
+            song card state
         """
         self.songNameCard.setButtonGroupState(state)
-        self.setProperty("state", state)
+        self.setProperty("state", state.value)
 
     def setAnimation(self, widgets: list, deltaXs: list):
         """ set the animation of widgets
@@ -266,8 +256,8 @@ class BasicSongCard(QWidget):
         if e.type() == QEvent.Enter:
             self.songNameCard.checkBox.show()
             self.songNameCard.buttonGroup.setHidden(self.isInSelectionMode)
-            state = "selected-enter" if self.isSelected else "notSelected-enter"
-            self.setWidgetState(state)
+            state = CardState.SELECTED_ENTER if self.isSelected else CardState.ENTER
+            self.setCardState(state)
             self.setStyle(QApplication.style())
 
         elif e.type() == QEvent.Leave:
@@ -278,22 +268,22 @@ class BasicSongCard(QWidget):
                 self.songNameCard.checkBox.setHidden(
                     not self.isInSelectionMode)
 
-            state = "selected-leave" if self.isSelected else "notSelected-leave"
-            self.setWidgetState(state)
+            state = CardState.SELECTED_LEAVE if self.isSelected else CardState.LEAVE
+            self.setCardState(state)
             self.setStyle(QApplication.style())
 
         elif e.type() == QEvent.MouseButtonPress:
             self.isPressed = True
-            state = "selected-pressed" if self.isSelected else "notSelected-pressed"
+            state = CardState.SELECTED_PRESSED if self.isSelected else CardState.PRESSED
             if e.button() == Qt.LeftButton:
                 self.isSelected = True
 
-            self.setWidgetState(state)
+            self.setCardState(state)
             self.setStyle(QApplication.style())
 
         elif e.type() == QEvent.MouseButtonRelease and e.button() == Qt.LeftButton:
-            self.setWidgetState("selected-leave")
-            self.setCheckBoxBtLabelState("selected")
+            self.setCardState(CardState.SELECTED_LEAVE)
+            self.setWidgetState(WidgetState.SELECTED)
             self.setStyle(QApplication.style())
 
         elif e.type() == QEvent.MouseButtonDblClick:

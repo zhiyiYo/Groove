@@ -1,4 +1,6 @@
 # coding:utf-8
+from enum import Enum
+
 from common.icon import getIconColor
 from PyQt5.QtCore import QEvent, QSize, Qt
 from PyQt5.QtGui import QFont, QFontMetrics, QIcon
@@ -6,6 +8,23 @@ from PyQt5.QtWidgets import QApplication, QCheckBox, QLabel, QToolButton, QWidge
 from PyQt5.QtSvg import QSvgWidget
 
 from .song_card_type import SongCardType
+
+
+class WidgetState(Enum):
+    """ Widget state """
+    NORMAL = "notSelected-notPlay"
+    PLAY = "notSelected-play"
+    SELECTED = "selected"
+
+
+class CardState(Enum):
+    """ Song card state """
+    LEAVE = "notSelected-leave"
+    ENTER = "notSelected-enter"
+    PRESSED = "notSelected-pressed"
+    SELECTED_LEAVE = "selected-leave"
+    SELECTED_ENTER = "selected-enter"
+    SELECTED_PRESSED = "selected-pressed"
 
 
 class ToolButton(QToolButton):
@@ -21,24 +40,21 @@ class ToolButton(QToolButton):
         self.setFixedSize(60, 60)
         self.setIconSize(QSize(20, 20))
 
-        self.state = "notSelected-notPlay"
+        self.state = WidgetState.NORMAL
         self.setIconType(iconType)
-        self.setState("notSelected-notPlay")
+        self.setState(WidgetState.NORMAL)
         self.setStyleSheet("QToolButton{border:none;margin:0}")
 
-    def setState(self, state: str):
+    def setState(self, state: WidgetState):
         """ set button state
 
         Parameters
         ----------
-        state: str
-            button state, including:
-            * notSelected-notPlay
-            * notSelected-play
-            * selected
+        state: WidgetState
+            button state
         """
         self.state = state
-        self.setProperty("state", state)
+        self.setProperty("state", state.value)
         self.setIcon(QIcon(self.iconPaths[self.state]))
 
     def setIconType(self, iconType: str):
@@ -46,9 +62,9 @@ class ToolButton(QToolButton):
         c = getIconColor()
         folder = ":/images/song_list_widget"
         self.iconPaths = {
-            "notSelected-notPlay": f"{folder}/{iconType}_{c}.svg",
-            "notSelected-play": f"{folder}/{iconType}_green_{c}.svg",
-            "selected": f"{folder}/{iconType}_white.svg",
+            WidgetState.NORMAL: f"{folder}/{iconType}_{c}.svg",
+            WidgetState.PLAY: f"{folder}/{iconType}_green_{c}.svg",
+            WidgetState.SELECTED: f"{folder}/{iconType}_white.svg",
         }
         self.setIcon(QIcon(self.iconPaths[self.state]))
 
@@ -72,7 +88,7 @@ class ButtonGroup(QWidget):
 
         # set property and ID
         self.setObjectName("buttonGroup")
-        self.setProperty("state", "notSelected-leave")
+        self.setState(CardState.LEAVE)
 
         self.installEventFilter(self)
 
@@ -81,35 +97,26 @@ class ButtonGroup(QWidget):
         self.playButton.setHidden(isHidden)
         self.addToButton.setHidden(isHidden)
 
-    def setButtonState(self, state: str):
+    def setButtonState(self, state: WidgetState):
         """ set button state
 
         Parameters
         ----------
-        state: str
-            button state, including:
-            * notSelected-notPlay
-            * notSelected-play
-            * selected
+        state: WidgetState
+            button state
         """
         self.playButton.setState(state)
         self.addToButton.setState(state)
 
-    def setState(self, state: str):
+    def setState(self, state: CardState):
         """ set button group state
 
         Parameters
         ----------
-        state: str
-            按钮组状态，有以下六种：
-            * notSelected-leave
-            * notSelected-enter
-            * notSelected-pressed
-            * selected-leave
-            * selected-enter
-            * selected-pressed
+        state: CardState
+            button group state
         """
-        self.setProperty("state", state)
+        self.setProperty("state", state.value)
 
     def eventFilter(self, obj, e: QEvent):
         if obj == self:
@@ -196,32 +203,32 @@ class SongNameCard(QWidget):
         super().resizeEvent(e)
         self._moveButtonGroup()
 
-    def setCheckBoxBtLabelState(self, state: str, isSongExit=True):
+    def setWidgetState(self, state: WidgetState, isSongExit=True):
         """ set the state of check box, buttons and labels
 
         Parameters
         ----------
-        state: str
-            including `notSelected-notPlay`, `notSelected-play` and `selected`
+        state: WidgetState
+            widget state
 
         isSongExist: bool
             whether the song exists or not, the alarm icon will appear when it is `False`.
         """
-        self.checkBox.setProperty("state", state)
-        self.songNameLabel.setProperty("state", state)
+        self.checkBox.setProperty("state", state.value)
+        self.songNameLabel.setProperty("state", state.value)
         self.buttonGroup.setButtonState(state)
 
         # update icon
         if isSongExit:
-            color ="white" if state == "selected" else f"green_{getIconColor()}"
+            color ="white" if state == WidgetState.SELECTED else f"green_{getIconColor()}"
             path = f":/images/song_list_widget/Playing_{color}.svg"
         else:
-            color = "white" if state == "selected" else "red"
+            color = "white" if state == WidgetState.SELECTED else "red"
             path = f":/images/song_list_widget/Info_{color}.svg"
 
         self.playingLabel.load(path)
 
-    def setButtonGroupState(self, state: str):
+    def setButtonGroupState(self, state: CardState):
         """ set button group state """
         self.buttonGroup.setState(state)
 
@@ -252,9 +259,9 @@ class TrackSongNameCard(SongNameCard):
         self.trackLabel.setObjectName("trackLabel")
         self.checkBox.installEventFilter(self)
 
-    def setCheckBoxBtLabelState(self, state: str, isSongExist=True):
-        super().setCheckBoxBtLabelState(state, isSongExist)
-        self.trackLabel.setProperty("state", state)
+    def setWidgetState(self, state: WidgetState, isSongExist=True):
+        super().setWidgetState(state, isSongExist)
+        self.trackLabel.setProperty("state", state.value)
 
     def updateSongNameCard(self, songName: str, track: str):
         super().updateSongNameCard(songName)
