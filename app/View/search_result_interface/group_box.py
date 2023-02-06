@@ -1,12 +1,76 @@
 # coding:utf-8
 from common.icon import Icon, getIconColor
+from common.config import config, Theme
 from common.library import Library
 from common.style_sheet import setStyleSheet
 from components.buttons.three_state_button import ThreeStatePushButton
-from PyQt5.QtCore import (QEasingCurve, QFile, QParallelAnimationGroup,
-                          QPropertyAnimation, QSize, Qt, pyqtSignal)
+from PyQt5.QtCore import (QEasingCurve, QParallelAnimationGroup, QPropertyAnimation,
+                          QSize, Qt, pyqtSignal, pyqtProperty, QEvent)
+from PyQt5.QtGui import QColor, QPixmap, QPainter
 from PyQt5.QtWidgets import (QGraphicsOpacityEffect, QPushButton, QScrollArea,
                              QToolButton, QWidget)
+
+
+class ToolButton(QToolButton):
+    """ Tool button with opacity effect """
+
+    def __init__(self, iconPath: str, parent=None):
+        super().__init__(parent)
+        self.__opacity = 1
+        self.isEnter = False
+        self.isPressed = False
+        self.iconPixmap = QPixmap(iconPath)
+        self.setFixedSize(25, 301)
+        self.installEventFilter(self)
+
+    def paintEvent(self, e):
+        painter = QPainter(self)
+        painter.setRenderHints(QPainter.Antialiasing |
+                               QPainter.SmoothPixmapTransform)
+        painter.setOpacity(self.__opacity)
+
+        # draw background
+        painter.setPen(Qt.NoPen)
+        color = QColor(getIconColor())
+        if self.isPressed:
+            color.setAlpha(0.6*255)
+        elif self.isEnter:
+            color.setAlpha(0.5*255)
+        else:
+            color.setAlpha(0.4*255)
+
+        painter.setBrush(color)
+        painter.drawRect(self.rect())
+
+        # draw icon
+        painter.drawPixmap(5, 143, self.iconPixmap)
+
+    def eventFilter(self, obj, e):
+        if obj is self:
+            if e.type() == QEvent.Enter:
+                self.isEnter = True
+                self.update()
+            elif e.type() == QEvent.Leave:
+                self.isEnter = False
+                self.isPressed = False
+                self.update()
+            elif e.type() == QEvent.MouseButtonPress:
+                self.isPressed = True
+                self.update()
+            elif e.type() == QEvent.MouseButtonRelease:
+                self.isPressed = False
+                self.update()
+
+        return super().eventFilter(obj, e)
+
+    def getOpacity(self):
+        return self.__opacity
+
+    def setOpacity(self, opacity):
+        self.__opacity = opacity
+        self.update()
+
+    opacity = pyqtProperty(float, getOpacity, setOpacity)
 
 
 class GroupBox(QScrollArea):
@@ -20,15 +84,15 @@ class GroupBox(QScrollArea):
         self.setWidget(view)
         self.library = library
         self.titleButton = QPushButton('Title', self)
-        self.scrollRightButton = QToolButton(self)
-        self.scrollLeftButton = QToolButton(self)
+        self.scrollLeftButton = ToolButton(
+            ':/images/search_result_interface/ChevronLeft.png', self)
+        self.scrollRightButton = ToolButton(
+            ':/images/search_result_interface/ChevronRight.png', self)
         self.opacityAniGroup = QParallelAnimationGroup(self)
-        self.leftOpacityEffect = QGraphicsOpacityEffect(self)
-        self.rightOpacityEffect = QGraphicsOpacityEffect(self)
         self.leftOpacityAni = QPropertyAnimation(
-            self.leftOpacityEffect, b'opacity', self)
+            self.scrollLeftButton, b'opacity', self)
         self.rightOpacityAni = QPropertyAnimation(
-            self.rightOpacityEffect, b'opacity', self)
+            self.scrollRightButton, b'opacity', self)
         self.scrollAni = QPropertyAnimation(
             self.horizontalScrollBar(), b'value', self)
 
@@ -62,16 +126,6 @@ class GroupBox(QScrollArea):
         self.leftMask.resize(35, 296)
         self.rightMask.resize(65, 296)
         self.scrollLeftButton.move(35, 42)
-        self.scrollLeftButton.setFixedSize(25, 301)
-        self.scrollRightButton.setFixedSize(25, 301)
-        self.scrollLeftButton.setIconSize(QSize(15, 15))
-        self.scrollRightButton.setIconSize(QSize(15, 15))
-        self.scrollLeftButton.setIcon(
-            Icon(':/images/search_result_interface/ChevronLeft.png'))
-        self.scrollRightButton.setIcon(
-            Icon(':/images/search_result_interface/ChevronRight.png'))
-        self.scrollLeftButton.setGraphicsEffect(self.leftOpacityEffect)
-        self.scrollRightButton.setGraphicsEffect(self.rightOpacityEffect)
         self.scrollLeftButton.hide()
         self.scrollRightButton.hide()
         self.leftMask.hide()

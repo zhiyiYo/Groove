@@ -56,16 +56,3 @@ QPushButton#showAllButton:hover {
 QPushButton#showAllButton:pressed {
     color: rgba(0, 107, 131, 0.4);
 }
-
-QToolButton {
-    margin: 0;
-    background-color: rgba(0, 0, 0, 0.4);
-}
-
-QToolButton:hover {
-    background-color: rgba(0, 0, 0, 0.6);
-}
-
-QToolButton:pressed {
-    background-color: rgba(0, 0, 0, 0.8);
-}

@@ -61,18 +61,6 @@ QLabel#countLabel[isChecked='True'] {
     color: rgb(153, 196, 205);
 }
 
-QToolButton {
-    margin: 0;
-    background-color: rgba(0, 0, 0, 0.4);
-}
-
-QToolButton:hover {
-    background-color: rgba(0, 0, 0, 0.6);
-}
-
-QToolButton:pressed {
-    background-color: rgba(0, 0, 0, 0.8);
-}
 
 QPushButton#showAllButton {
     color: rgb(0, 107, 131);
