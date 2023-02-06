@@ -405,15 +405,15 @@
         <file>images/video_window/SkipBack.png</file>
         <file>images/video_window/SkipForward.png</file>
         <file>images/video_window/Download.png</file>
-        <file>images/desktop_lyric_interface/Play.png</file>
-        <file>images/desktop_lyric_interface/Pause.png</file>
-        <file>images/desktop_lyric_interface/Next.png</file>
-        <file>images/desktop_lyric_interface/Previous.png</file>
-        <file>images/desktop_lyric_interface/Lock.png</file>
-        <file>images/desktop_lyric_interface/Setting.png</file>
-        <file>images/desktop_lyric_interface/Close.png</file>
-        <file>images/desktop_lyric_interface/FontIncrease.png</file>
-        <file>images/desktop_lyric_interface/FontDecrease.png</file>
+        <file>images/desktop_lyric_interface/Play.svg</file>
+        <file>images/desktop_lyric_interface/Pause.svg</file>
+        <file>images/desktop_lyric_interface/Next.svg</file>
+        <file>images/desktop_lyric_interface/Previous.svg</file>
+        <file>images/desktop_lyric_interface/Lock.svg</file>
+        <file>images/desktop_lyric_interface/Setting.svg</file>
+        <file>images/desktop_lyric_interface/Close.svg</file>
+        <file>images/desktop_lyric_interface/FontIncrease.svg</file>
+        <file>images/desktop_lyric_interface/FontDecrease.svg</file>
         <file>images/setting_card/ChevronDown_black.svg</file>
         <file>images/setting_card/ChevronDown_white.svg</file>
         <file>images/setting_card/Folder_white.svg</file>

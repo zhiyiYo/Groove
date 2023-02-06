@@ -1,4 +1,6 @@
 # coding:utf-8
+from typing import Union
+
 from PyQt5.QtCore import QPoint, QRect, QSize, Qt, QRectF
 from PyQt5.QtGui import QIcon, QIconEngine, QImage, QPainter, QPixmap
 from PyQt5.QtSvg import QSvgRenderer
@@ -47,7 +49,7 @@ def getIconColor():
     return "white" if config.theme == Theme.DARK else 'black'
 
 
-def drawSvgIcon(iconPath, painter, rect):
+def drawSvgIcon(iconPath: str, painter: QPainter, rect: Union[QRect, QRectF]):
     """ draw svg icon
 
     Parameters

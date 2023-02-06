@@ -460,14 +460,9 @@ class BasicSongCard(QWidget):
     def _showDownloadMenu(self):
         """ show download menu """
         menu = DownloadMenu(parent=self)
-        pos = self.mapToGlobal(
-            QPoint(self.addToButton.x()+self.buttonGroup.x(), 0))
-        x = pos.x() + self.addToButton.width() + 5
-        y = pos.y() + int(self.addToButton.height() / 2 - (13 + 38 * 3) / 2)
-
         menu.downloadSig.connect(
             lambda quality: signalBus.downloadSongSig.emit(self.songInfo, quality))
-        menu.exec(QPoint(x, y))
+        menu.exec(menu.getPopupPos(self.addToButton))
 
     @property
     def widgets(self) -> list:
