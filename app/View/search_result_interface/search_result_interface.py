@@ -12,9 +12,10 @@ from common.thread.download_song_thread import DownloadSongThread
 from components.widgets.label import PixmapLabel
 from components.widgets.scroll_area import ScrollArea
 from components.widgets.tooltip import DownloadStateTooltip
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QLabel, QVBoxLayout, QWidget
+from PyQt5.QtSvg import QSvgWidget
 
 from .album_group_box import AlbumGroupBox
 from .playlist_group_box import PlaylistGroupBox
@@ -48,7 +49,7 @@ class SearchResultInterface(ScrollArea):
         self.onlineSongInfos = []    # matched online information
 
         self.titleLabel = QLabel(self)
-        self.searchLabel = PixmapLabel(self)
+        self.searchLabel = QSvgWidget(self)
         self.scrollWidget = QWidget(self)
         self.vBox = QVBoxLayout(self.scrollWidget)
         self.albumGroupBox = AlbumGroupBox(library, self.scrollWidget)
@@ -84,8 +85,9 @@ class SearchResultInterface(ScrollArea):
         self.setWidget(self.scrollWidget)
         self.setViewportMargins(0, 115, 0, 0)
         self.__setQss()
-        self.searchLabel.setPixmap(
-            QPixmap(f":/images/search_result_interface/Search_{getIconColor()}.png"))
+        self.searchLabel.setFixedSize(50, 50)
+        self.searchLabel.load(
+            f":/images/search_result_interface/Search_{getIconColor()}.svg")
         self.__setHintsLabelVisible(False)
         self.titleLabel.move(30, 55)
         self.titleLabel.raise_()

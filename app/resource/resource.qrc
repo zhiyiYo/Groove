@@ -161,10 +161,10 @@
         <file>images/create_playlist_dialog/pencil_black_noFocus_hover_50_50.png</file>
         <file>images/create_playlist_dialog/pencil_white_noFocus_hover_50_50.png</file>
         <file>images/create_playlist_dialog/Playlist_white.png</file>
-        <file>images/line_edit/close_hover.png</file>
-        <file>images/line_edit/close_black_normal.png</file>
-        <file>images/line_edit/close_white_normal.png</file>
-        <file>images/line_edit/close_pressed.png</file>
+        <file>images/line_edit/Close_white.svg</file>
+        <file>images/line_edit/Close_black.svg</file>
+        <file>images/line_edit/Close_green_white.svg</file>
+        <file>images/line_edit/Close_green_black.svg</file>
         <file>images/menu/Add_white.svg</file>
         <file>images/menu/Add_black.svg</file>
         <file>images/menu/Album_white.svg</file>
@@ -312,34 +312,34 @@
         <file>images/playing_interface/Volume3_black.png</file>
         <file>images/playing_interface/volume_black_level_mute_47_47.png</file>
         <file>images/playing_interface/volume_white_level_mute_47_47.png</file>
-        <file>images/playlist_card_interface/Add_black_hover.png</file>
-        <file>images/playlist_card_interface/Add_black_normal.png</file>
-        <file>images/playlist_card_interface/Add_black_pressed.png</file>
-        <file>images/playlist_card_interface/Add_white_hover.png</file>
-        <file>images/playlist_card_interface/Add_white_normal.png</file>
-        <file>images/playlist_card_interface/Add_white_pressed.png</file>
-        <file>images/playlist_interface/album_black_normal.png</file>
-        <file>images/playlist_interface/album_black_hover.png</file>
-        <file>images/playlist_interface/album_black_pressed.png</file>
-        <file>images/playlist_interface/album_white_hover.png</file>
-        <file>images/playlist_interface/album_white_normal.png</file>
-        <file>images/playlist_interface/album_white_pressed.png</file>
-        <file>images/random_play_all/Shuffle_black_hover.png</file>
-        <file>images/random_play_all/Shuffle_black_normal.png</file>
-        <file>images/random_play_all/Shuffle_black_pressed.png</file>
-        <file>images/random_play_all/Shuffle_white_hover.png</file>
-        <file>images/random_play_all/Shuffle_white_normal.png</file>
-        <file>images/random_play_all/Shuffle_white_pressed.png</file>
-        <file>images/search_result_interface/ChevronLeft.png</file>
-        <file>images/search_result_interface/ChevronRight.png</file>
-        <file>images/search_result_interface/Search_black.png</file>
-        <file>images/search_result_interface/Search_white.png</file>
-        <file>images/search_result_interface/ShowAll_hover_black.png</file>
-        <file>images/search_result_interface/ShowAll_normal_black.png</file>
-        <file>images/search_result_interface/ShowAll_pressed_black.png</file>
-        <file>images/search_result_interface/ShowAll_hover_white.png</file>
-        <file>images/search_result_interface/ShowAll_normal_white.png</file>
-        <file>images/search_result_interface/ShowAll_pressed_white.png</file>
+        <file>images/playlist_card_interface/Add_black_hover.svg</file>
+        <file>images/playlist_card_interface/Add_black_normal.svg</file>
+        <file>images/playlist_card_interface/Add_black_pressed.svg</file>
+        <file>images/playlist_card_interface/Add_white_hover.svg</file>
+        <file>images/playlist_card_interface/Add_white_normal.svg</file>
+        <file>images/playlist_card_interface/Add_white_pressed.svg</file>
+        <file>images/playlist_interface/album_black_normal.svg</file>
+        <file>images/playlist_interface/album_black_hover.svg</file>
+        <file>images/playlist_interface/album_black_pressed.svg</file>
+        <file>images/playlist_interface/album_white_hover.svg</file>
+        <file>images/playlist_interface/album_white_normal.svg</file>
+        <file>images/playlist_interface/album_white_pressed.svg</file>
+        <file>images/random_play_all/Shuffle_black_hover.svg</file>
+        <file>images/random_play_all/Shuffle_black_normal.svg</file>
+        <file>images/random_play_all/Shuffle_black_pressed.svg</file>
+        <file>images/random_play_all/Shuffle_white_hover.svg</file>
+        <file>images/random_play_all/Shuffle_white_normal.svg</file>
+        <file>images/random_play_all/Shuffle_white_pressed.svg</file>
+        <file>images/search_result_interface/ChevronLeft.svg</file>
+        <file>images/search_result_interface/ChevronRight.svg</file>
+        <file>images/search_result_interface/Search_black.svg</file>
+        <file>images/search_result_interface/Search_white.svg</file>
+        <file>images/search_result_interface/ShowAll_hover_black.svg</file>
+        <file>images/search_result_interface/ShowAll_normal_black.svg</file>
+        <file>images/search_result_interface/ShowAll_pressed_black.svg</file>
+        <file>images/search_result_interface/ShowAll_hover_white.svg</file>
+        <file>images/search_result_interface/ShowAll_normal_white.svg</file>
+        <file>images/search_result_interface/ShowAll_pressed_white.svg</file>
         <file>images/selection_mode_bar/Add_black.svg</file>
         <file>images/selection_mode_bar/Download_black.svg</file>
         <file>images/selection_mode_bar/Cancel_black.svg</file>
@@ -370,12 +370,12 @@
         <file>images/selection_mode_bar/SelectAll_white.svg</file>
         <file>images/selection_mode_bar/ShowAlbum_white.svg</file>
         <file>images/selection_mode_bar/Up_white.svg</file>
-        <file>images/singer_interface/Play_black_hover.png</file>
-        <file>images/singer_interface/Play_black_normal.png</file>
-        <file>images/singer_interface/Play_black_pressed.png</file>
-        <file>images/singer_interface/Play_white_hover.png</file>
-        <file>images/singer_interface/Play_white_normal.png</file>
-        <file>images/singer_interface/Play_white_pressed.png</file>
+        <file>images/singer_interface/Play_black_hover.svg</file>
+        <file>images/singer_interface/Play_black_normal.svg</file>
+        <file>images/singer_interface/Play_black_pressed.svg</file>
+        <file>images/singer_interface/Play_white_hover.svg</file>
+        <file>images/singer_interface/Play_white_normal.svg</file>
+        <file>images/singer_interface/Play_white_pressed.svg</file>
         <file>images/smallest_play_interface/Next.png</file>
         <file>images/smallest_play_interface/Pause.png</file>
         <file>images/smallest_play_interface/Play.png</file>

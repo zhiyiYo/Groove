@@ -40,7 +40,7 @@ class ToolButton(QToolButton):
         self.setFixedSize(60, 60)
         self.setIconSize(QSize(20, 20))
 
-        self.state = WidgetState.NORMAL
+        self.state = WidgetState.SELECTED
         self.setIconType(iconType)
         self.setState(WidgetState.NORMAL)
         self.setStyleSheet("QToolButton{border:none;margin:0}")
@@ -53,6 +53,9 @@ class ToolButton(QToolButton):
         state: WidgetState
             button state
         """
+        if state == self.state:
+            return
+
         self.state = state
         self.setProperty("state", state.value)
         self.setIcon(QIcon(self.iconPaths[self.state]))
@@ -214,6 +217,9 @@ class SongNameCard(QWidget):
         isSongExist: bool
             whether the song exists or not, the alarm icon will appear when it is `False`.
         """
+        if self.checkBox.property('state') == state.value:
+            return
+
         self.checkBox.setProperty("state", state.value)
         self.songNameLabel.setProperty("state", state.value)
         self.buttonGroup.setButtonState(state)

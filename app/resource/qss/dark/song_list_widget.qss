@@ -59,7 +59,7 @@ QLabel#trackLabel {
 }
 
 QLabel[state='notSelected-notPlay'] {
-    color: rgb(207, 207, 207);
+    color: rgb(217, 217, 217);
 }
 
 QLabel[state='notSelected-play'] {

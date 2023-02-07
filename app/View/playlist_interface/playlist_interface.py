@@ -53,9 +53,9 @@ class PlaylistInterface(SongSelectionModeInterface):
         c = getIconColor()
         self.addMusicButton = ThreeStatePushButton(
             {
-                "normal": f":/images/playlist_interface/album_{c}_normal.png",
-                "hover": f":/images/playlist_interface/album_{c}_hover.png",
-                "pressed": f":/images/playlist_interface/album_{c}_pressed.png",
+                "normal": f":/images/playlist_interface/album_{c}_normal.svg",
+                "hover": f":/images/playlist_interface/album_{c}_hover.svg",
+                "pressed": f":/images/playlist_interface/album_{c}_pressed.svg",
             },
             self.tr(" Add songs from my collection"),
             (29, 29),

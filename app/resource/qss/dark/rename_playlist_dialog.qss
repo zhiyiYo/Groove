@@ -1,6 +1,6 @@
 QWidget#centerWidget {
     background-color: rgb(23, 23, 23);
-    border: 1px solid rgb(83, 83, 83);
+    border: 1px solid rgb(50, 50, 50);
 }
 
 QPushButton {

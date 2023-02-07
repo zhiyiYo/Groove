@@ -1,5 +1,5 @@
 # coding:utf-8
-from common.icon import Icon, getIconColor
+from common.icon import getIconColor
 from PyQt5.QtCore import QEvent, QSize, Qt
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QPushButton, QToolButton
@@ -23,18 +23,18 @@ class ThreeStatePushButton(QPushButton):
         """
         super().__init__(text, parent)
         self.iconPaths = iconPaths
-        self.setIcon(Icon(self.iconPaths['normal']))
+        self.setIcon(QIcon(self.iconPaths['normal']))
         self.setIconSize(QSize(*iconSize))
         self.installEventFilter(self)
 
     def eventFilter(self, obj, e):
         if obj is self:
             if e.type() in [QEvent.Enter, QEvent.HoverMove]:
-                self.setIcon(Icon(self.iconPaths['hover']))
+                self.setIcon(QIcon(self.iconPaths['hover']))
             elif e.type() in [QEvent.Leave, QEvent.MouseButtonRelease]:
-                self.setIcon(Icon(self.iconPaths['normal']))
+                self.setIcon(QIcon(self.iconPaths['normal']))
             elif e.type() == QEvent.MouseButtonPress:
-                self.setIcon(Icon(self.iconPaths['pressed']))
+                self.setIcon(QIcon(self.iconPaths['pressed']))
 
         return False
 
@@ -86,9 +86,9 @@ class RandomPlayAllButton(ThreeStatePushButton):
     def __init__(self, parent=None):
         color = getIconColor()
         iconPaths = {
-            "normal": f":/images/random_play_all/Shuffle_{color}_normal.png",
-            "hover": f":/images/random_play_all/Shuffle_{color}_hover.png",
-            "pressed": f":/images/random_play_all/Shuffle_{color}_pressed.png",
+            "normal": f":/images/random_play_all/Shuffle_{color}_normal.svg",
+            "hover": f":/images/random_play_all/Shuffle_{color}_hover.svg",
+            "pressed": f":/images/random_play_all/Shuffle_{color}_pressed.svg",
         }
         super().__init__(iconPaths, " Shuffle all (0)", (20, 20), parent)
         self.setText(" " + self.tr("Shuffle all") + ' (0)')

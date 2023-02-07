@@ -13,7 +13,6 @@ QListWidget::item:alternate {
     background: white;
 }
 
-/*歌曲卡样式*/
 
 QWidget#songNameCard {
     background: transparent;
@@ -58,7 +57,7 @@ QLabel#trackLabel {
 }
 
 QLabel[state='notSelected-notPlay'] {
-    color: rgb(48, 48, 48);
+    color: rgb(20, 20, 20);
 }
 
 QLabel[state='notSelected-play'] {

@@ -49,9 +49,9 @@ class SongGroupBox(QWidget):
         c = getIconColor()
         self.showAllButton = ThreeStatePushButton(
             {
-                "normal": f":/images/search_result_interface/ShowAll_normal_{c}.png",
-                "hover": f":/images/search_result_interface/ShowAll_hover_{c}.png",
-                "pressed": f":/images/search_result_interface/ShowAll_pressed_{c}.png",
+                "normal": f":/images/search_result_interface/ShowAll_normal_{c}.svg",
+                "hover": f":/images/search_result_interface/ShowAll_hover_{c}.svg",
+                "pressed": f":/images/search_result_interface/ShowAll_pressed_{c}.svg",
             },
             self.tr(' Show All'),
             (14, 14),

@@ -54,7 +54,6 @@ QLineEdit:disabled {
 }
 
 
-
 /*按钮*/
 QPushButton {
     background-color: rgb(204, 204, 204);
@@ -77,6 +76,14 @@ QToolButton {
     border: none;
     background: transparent;
     margin: 0px;
+}
+
+QToolButton:hover {
+    background-color: transparent;
+}
+
+QToolButton:pressed {
+    background-color: rgb(0, 153, 188);
 }
 
 

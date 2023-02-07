@@ -75,5 +75,5 @@ QPushButton#showAllButton:hover {
 }
 
 QPushButton#showAllButton:pressed {
-    color: rgba(0, 107, 131, 0.4);
+    color: rgba(0, 107, 131, 0.6);
 }

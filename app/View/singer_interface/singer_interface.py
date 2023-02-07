@@ -57,12 +57,13 @@ class SingerInterface(AlbumSelectionModeInterface):
         c = getIconColor()
         self.playButton = ThreeStateButton(
             {
-                "normal": f":/images/singer_interface/Play_{c}_normal.png",
-                "hover": f":/images/singer_interface/Play_{c}_hover.png",
-                "pressed": f":/images/singer_interface/Play_{c}_pressed.png",
+                "normal": f":/images/singer_interface/Play_{c}_normal.svg",
+                "hover": f":/images/singer_interface/Play_{c}_hover.svg",
+                "pressed": f":/images/singer_interface/Play_{c}_pressed.svg",
             },
             self.scrollWidget,
-            (20, 20)
+            (20, 20),
+            (18, 18)
         )
         self.albumCards = self.albumCardView.albumCards
 

@@ -277,12 +277,12 @@ class CreatePlaylistButton(NavigationButton):
         elif self.pressedPos in [Position.BOTTOM_LEFT, Position.TOP_RIGHT, Position.BOTTOM]:
             self.drawIcon(painter, 0.05, 0)
         elif self.pressedPos in [Position.LEFT, Position.RIGHT, Position.CENTER]:
-            self.drawIcon(painter, 0, 0, 0, 0, 1)
+            self.drawIcon(painter, 0, 0, 0, 0, 2)
 
     def drawIcon(self, painter, shearX=0, shearY=0, x=0, y=0, ds=0):
         """ draw icon """
         ds = y/2 if not ds else ds
         painter.shear(shearX, shearY)
-        iw, ih = self.iconSize().width()-y/2, self.iconSize().height()-y/2
+        iw, ih = self.iconSize().width()-ds, self.iconSize().height()-ds
         rect = QRectF((60-iw)/2+x, (self.height()-ih)/2+y, iw, ih)
         drawSvgIcon(self.iconPath, painter, rect)

@@ -139,7 +139,7 @@ QPushButton#createPlaylistButton:hover {
 }
 
 QPushButton#createPlaylistButton:pressed {
-    color: rgba(0, 0, 0, 0.4);
+    color: rgba(0, 0, 0, 0.6);
 }
 
 /*复选框样式*/

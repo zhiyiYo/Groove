@@ -36,7 +36,7 @@ QPushButton#showAllButton:hover {
 }
 
 QPushButton#showAllButton:pressed {
-    color: rgba(41, 247, 255, 0.4);
+    color: rgba(41, 247, 255, 0.6);
 }
 
 ClickableLabel {

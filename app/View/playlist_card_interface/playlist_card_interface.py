@@ -43,9 +43,9 @@ class PlaylistCardInterface(PlaylistSelectionModeInterface):
         c = getIconColor()
         self.createPlaylistButton = ThreeStatePushButton(
             {
-                "normal": f":/images/playlist_card_interface/Add_{c}_normal.png",
-                "hover": f":/images/playlist_card_interface/Add_{c}_hover.png",
-                "pressed": f":/images/playlist_card_interface/Add_{c}_pressed.png",
+                "normal": f":/images/playlist_card_interface/Add_{c}_normal.svg",
+                "hover": f":/images/playlist_card_interface/Add_{c}_hover.svg",
+                "pressed": f":/images/playlist_card_interface/Add_{c}_pressed.svg",
             },
             self.tr(" New playlist"),
             (19, 19),
@@ -82,7 +82,7 @@ class PlaylistCardInterface(PlaylistSelectionModeInterface):
         self.playlistLabel.move(30, 54)
         self.createPlaylistButton.move(30, 131)
         self.sortModeLabel.move(
-            self.createPlaylistButton.geometry().right()+30, 136)
+            self.createPlaylistButton.geometry().right()+30, 135)
         self.sortModeButton.move(self.sortModeLabel.geometry().right()+7, 132)
 
     def __setQss(self):

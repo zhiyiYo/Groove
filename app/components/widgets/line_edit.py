@@ -9,22 +9,22 @@ from PyQt5.QtWidgets import QApplication, QLineEdit
 
 
 class LineEdit(QLineEdit):
-    """ 包含清空按钮的单行输入框 """
 
     def __init__(self, string=None, parent=None, needClearBtn: bool = True):
         super().__init__(string, parent)
         self.needClearBtn = needClearBtn
         self.clickedTime = 0
+        c = getIconColor()
         iconPaths = {
-            "normal": f":/images/line_edit/close_{getIconColor()}_normal.png",
-            "hover": ":/images/line_edit/close_hover.png",
-            "pressed": ":/images/line_edit/close_pressed.png",
+            "normal": f":/images/line_edit/Close_{c}.svg",
+            "hover": f":/images/line_edit/Close_green_{c}.svg",
+            "pressed": f":/images/line_edit/Close_white.svg",
         }
-        self.clearButton = ThreeStateButton(iconPaths, self)
+        self.clearButton = ThreeStateButton(iconPaths, self, iconSize=(14, 14))
         self.menu = LineEditMenu(self)
-        self.initWidget()
+        self.__initWidget()
 
-    def initWidget(self):
+    def __initWidget(self):
         """ initialize widgets """
         self.resize(500, 40)
         self.clearButton.hide()
@@ -72,7 +72,6 @@ class LineEdit(QLineEdit):
             if e.type() == QEvent.MouseButtonRelease and e.button() == Qt.LeftButton:
                 self.clear()
                 self.clearButton.hide()
-                return True
 
         return super().eventFilter(obj, e)
 

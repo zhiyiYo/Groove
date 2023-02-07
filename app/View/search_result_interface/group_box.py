@@ -1,14 +1,12 @@
 # coding:utf-8
-from common.icon import Icon, getIconColor
-from common.config import config, Theme
+from common.icon import getIconColor, drawSvgIcon
 from common.library import Library
 from common.style_sheet import setStyleSheet
 from components.buttons.three_state_button import ThreeStatePushButton
 from PyQt5.QtCore import (QEasingCurve, QParallelAnimationGroup, QPropertyAnimation,
-                          QSize, Qt, pyqtSignal, pyqtProperty, QEvent)
+                          Qt, pyqtSignal, pyqtProperty, QEvent, QRect)
 from PyQt5.QtGui import QColor, QPixmap, QPainter
-from PyQt5.QtWidgets import (QGraphicsOpacityEffect, QPushButton, QScrollArea,
-                             QToolButton, QWidget)
+from PyQt5.QtWidgets import QPushButton, QScrollArea, QToolButton, QWidget
 
 
 class ToolButton(QToolButton):
@@ -19,7 +17,7 @@ class ToolButton(QToolButton):
         self.__opacity = 1
         self.isEnter = False
         self.isPressed = False
-        self.iconPixmap = QPixmap(iconPath)
+        self.iconPath = iconPath
         self.setFixedSize(25, 301)
         self.installEventFilter(self)
 
@@ -43,7 +41,7 @@ class ToolButton(QToolButton):
         painter.drawRect(self.rect())
 
         # draw icon
-        painter.drawPixmap(5, 143, self.iconPixmap)
+        drawSvgIcon(self.iconPath, painter, QRect(5, 143, 15, 15))
 
     def eventFilter(self, obj, e):
         if obj is self:
@@ -85,9 +83,9 @@ class GroupBox(QScrollArea):
         self.library = library
         self.titleButton = QPushButton('Title', self)
         self.scrollLeftButton = ToolButton(
-            ':/images/search_result_interface/ChevronLeft.png', self)
+            ':/images/search_result_interface/ChevronLeft.svg', self)
         self.scrollRightButton = ToolButton(
-            ':/images/search_result_interface/ChevronRight.png', self)
+            ':/images/search_result_interface/ChevronRight.svg', self)
         self.opacityAniGroup = QParallelAnimationGroup(self)
         self.leftOpacityAni = QPropertyAnimation(
             self.scrollLeftButton, b'opacity', self)
@@ -99,9 +97,9 @@ class GroupBox(QScrollArea):
         c = getIconColor()
         self.showAllButton = ThreeStatePushButton(
             {
-                "normal": f":/images/search_result_interface/ShowAll_normal_{c}.png",
-                "hover": f":/images/search_result_interface/ShowAll_hover_{c}.png",
-                "pressed": f":/images/search_result_interface/ShowAll_pressed_{c}.png",
+                "normal": f":/images/search_result_interface/ShowAll_normal_{c}.svg",
+                "hover": f":/images/search_result_interface/ShowAll_hover_{c}.svg",
+                "pressed": f":/images/search_result_interface/ShowAll_pressed_{c}.svg",
             },
             self.tr(' Show All'),
             (14, 14),
