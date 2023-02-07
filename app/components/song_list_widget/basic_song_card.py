@@ -158,13 +158,11 @@ class BasicSongCard(QWidget):
 
         self.isSelected = isSelected
         if isSelected:
-            self.setCardState(CardState.SELECTED_LEAVE)
-            self.setWidgetState(WidgetState.SELECTED)
+            self.setState(WidgetState.SELECTED, CardState.SELECTED_LEAVE)
         else:
             self.songNameCard.setWidgetHidden(True)
-            self.setCardState(CardState.LEAVE)
             state = WidgetState.PLAY if self.isPlaying else WidgetState.NORMAL
-            self.setWidgetState(state)
+            self.setState(state, CardState.LEAVE)
 
         self.setStyle(QApplication.style())
 
@@ -178,11 +176,9 @@ class BasicSongCard(QWidget):
 
         if isPlay:
             self.isSelected = True
-            self.setWidgetState(WidgetState.SELECTED)
-            self.setCardState(CardState.SELECTED_LEAVE)
+            self.setState(WidgetState.SELECTED, CardState.SELECTED_LEAVE)
         else:
-            self.setWidgetState(WidgetState.NORMAL)
-            self.setCardState(CardState.LEAVE)
+            self.setState(WidgetState.NORMAL, CardState.LEAVE)
 
         self.songNameCard.setPlay(isPlay, self.isSongExist)
         self.setStyle(QApplication.style())
@@ -209,6 +205,11 @@ class BasicSongCard(QWidget):
         """
         self.songNameCard.setButtonGroupState(state)
         self.setProperty("state", state.value)
+
+    def setState(self, widgetState: WidgetState, cardState: CardState):
+        """ set the state of card and widget """
+        self.setWidgetState(widgetState)
+        self.setCardState(cardState)
 
     def setAnimation(self, widgets: list, deltaXs: list):
         """ set the animation of widgets
@@ -282,8 +283,7 @@ class BasicSongCard(QWidget):
             self.setStyle(QApplication.style())
 
         elif e.type() == QEvent.MouseButtonRelease and e.button() == Qt.LeftButton:
-            self.setCardState(CardState.SELECTED_LEAVE)
-            self.setWidgetState(WidgetState.SELECTED)
+            self.setState(WidgetState.SELECTED, CardState.SELECTED_LEAVE)
             self.setStyle(QApplication.style())
 
         elif e.type() == QEvent.MouseButtonDblClick:

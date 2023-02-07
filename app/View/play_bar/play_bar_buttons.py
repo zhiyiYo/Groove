@@ -1,12 +1,12 @@
 # coding:utf-8
 from common.signal_bus import signalBus
-from components.buttons.tooltip_button import TooltipButton
+from components.buttons.tool_tip_button import ToolTipButton
 from PyQt5.QtCore import QEvent, Qt
 from PyQt5.QtGui import QBrush, QColor, QPainter, QPen, QPixmap
 from PyQt5.QtMultimedia import QMediaPlaylist
 
 
-class PlayButton(TooltipButton):
+class PlayButton(ToolTipButton):
     """ Play button """
 
     def __init__(self, parent=None):
@@ -87,7 +87,7 @@ class PlayButton(TooltipButton):
             painter.drawPixmap(3, 3, 59, 59, iconPix)
 
 
-class RandomPlayButton(TooltipButton):
+class RandomPlayButton(ToolTipButton):
     """ Random play button """
 
     def __init__(self, parent=None):
@@ -173,7 +173,7 @@ class RandomPlayButton(TooltipButton):
             painter.drawPixmap(1, 1, 45, 45, self.image)
 
 
-class BasicButton(TooltipButton):
+class BasicButton(ToolTipButton):
     """ Basic circle button """
 
     def __init__(self, iconPath: str, parent=None):
@@ -232,7 +232,7 @@ class BasicButton(TooltipButton):
             painter.drawPixmap(2, 2, 42, 42, image)
 
 
-class LoopModeButton(TooltipButton):
+class LoopModeButton(ToolTipButton):
     """ Loop mode button """
 
     def __init__(self, parent=None):
@@ -343,7 +343,7 @@ class LoopModeButton(TooltipButton):
         self.setToolTip(text)
 
 
-class VolumeButton(TooltipButton):
+class VolumeButton(ToolTipButton):
     """ Volume button """
 
     def __init__(self, parent=None):

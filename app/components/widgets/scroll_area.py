@@ -15,7 +15,7 @@ class ScrollArea(QScrollArea):
         parent: QWidget
             parent window
 
-        update: bool
+        trigger: bool
             whether to trigger the enter/leave event when scrolling
         """
         super().__init__(parent)
@@ -98,11 +98,29 @@ class SmoothScrollBar(QScrollBar):
 class SmoothScrollArea(QScrollArea):
     """ Smooth scroll area """
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, trigger=False):
+        """
+        Parameters
+        ----------
+        parent: QWidget
+            parent window
+
+        trigger: bool
+            whether to trigger the enter/leave event when scrolling
+        """
         super().__init__(parent)
         self.vScrollBar = SmoothScrollBar()
         self.vScrollBar.setOrientation(Qt.Vertical)
         self.setVerticalScrollBar(self.vScrollBar)
 
+        if trigger:
+            self.verticalScrollBar().valueChanged.connect(self.__fakeMoveMouse)
+
     def wheelEvent(self, e: QWheelEvent):
         self.vScrollBar.scrollValue(-e.angleDelta().y())
+
+    def __fakeMoveMouse(self):
+        """ fake move mouse """
+        QCursor.setPos(QCursor.pos() + QPoint(0, 1))
+        QApplication.processEvents()
+        QCursor.setPos(QCursor.pos() - QPoint(0, 1))

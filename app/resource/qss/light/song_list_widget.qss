@@ -73,6 +73,10 @@ QLabel#clickableLabel[state='notSelected-notPlay']:hover {
     color: rgb(78, 78, 78);
 }
 
+QLabel#clickableLabel[state='notSelected-play']:hover {
+    color: rgba(0, 107, 131, 0.8);
+}
+
 QLabel#clickableLabel[state='selected']:hover {
     color: rgb(204, 225, 230);
 }

@@ -1,10 +1,10 @@
 # coding:utf-8
-from .tooltip_button import TooltipButton
+from .tool_tip_button import ToolTipButton
 from PyQt5.QtCore import Qt, QEvent
 from PyQt5.QtGui import QPainter, QPixmap, QBrush, QColor
 
 
-class CircleButton(TooltipButton):
+class CircleButton(ToolTipButton):
     """ Circle button """
 
     def __init__(self, iconPath: str, parent=None, iconSize: tuple = (47, 47), buttonSize: tuple = (47, 47)):

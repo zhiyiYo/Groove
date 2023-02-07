@@ -3,11 +3,11 @@ from PIL.ImageFilter import GaussianBlur
 from PyQt5.QtCore import QPropertyAnimation, Qt, pyqtProperty
 from PyQt5.QtGui import QBrush, QEnterEvent, QPainter, QPixmap
 
-from .tooltip_button import TooltipButton
+from .tool_tip_button import ToolTipButton
 from common.image_utils import readImage
 
 
-class BlurButton(TooltipButton):
+class BlurButton(ToolTipButton):
     """ Blur button class """
 
     def __init__(self, parent, cropPos: tuple, iconPath: str, blurPicPath: str,
@@ -52,6 +52,7 @@ class BlurButton(TooltipButton):
         self.radiusAni = QPropertyAnimation(self, b'paintRadius', self)
         self.opacityAni = QPropertyAnimation(self, b'opacity', self)
         self.setToolTip(text)
+        self.setToolTipDelay(250)
 
     def setBlurPic(self, blurPicPath, blurRadius=35):
         """ set the image to be blurred """

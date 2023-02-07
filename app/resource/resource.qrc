@@ -32,7 +32,7 @@
         <file>qss/light/switch_button.qss</file>
         <file>qss/light/volume_slider_widget.qss</file>
         <file>qss/light/lyric_widget.qss</file>
-        <file>qss/light/tooltip.qss</file>
+        <file>qss/light/tool_tip.qss</file>
         <file>qss/light/selection_mode_interface.qss</file>
         <file>qss/light/title_bar.qss</file>
         <file>qss/light/singer_card_interface.qss</file>
@@ -76,7 +76,7 @@
         <file>qss/dark/switch_button.qss</file>
         <file>qss/dark/volume_slider_widget.qss</file>
         <file>qss/dark/lyric_widget.qss</file>
-        <file>qss/dark/tooltip.qss</file>
+        <file>qss/dark/tool_tip.qss</file>
         <file>qss/dark/selection_mode_interface.qss</file>
         <file>qss/dark/title_bar.qss</file>
         <file>qss/dark/singer_card_interface.qss</file>

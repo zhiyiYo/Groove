@@ -14,7 +14,7 @@ from ..playlist_card import PlaylistCardViewBase
 from ..singer_card import SingerCardViewBase
 from ..song_list_widget import BasicSongListWidget
 from ..widgets.menu import AddToMenu, DownloadMenu
-from ..widgets.scroll_area import ScrollArea
+from ..widgets.scroll_area import ScrollArea, SmoothScrollArea
 from .bar import SelectionModeBarFactory, SelectionModeBarType
 
 
@@ -32,7 +32,7 @@ class SelectionModeViewBase(QWidget):
         raise NotImplementedError
 
 
-class SelectionModeInterface(ScrollArea):
+class SelectionModeInterface(SmoothScrollArea):
     """ Selection mode interface """
 
     def __init__(self, barType: SelectionModeBarType, parent=None):

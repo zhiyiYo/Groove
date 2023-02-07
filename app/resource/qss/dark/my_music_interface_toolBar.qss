@@ -13,6 +13,7 @@ QPushButton {
 }
 
 QLabel {
+    color: white;
     background-color: transparent;
     border: none;
     text-align: left;

@@ -17,8 +17,7 @@ class DurationSongCard(BasicSongCard):
         super().__init__(songInfo, songCardType, parent)
         self.durationLabel = QLabel(self.duration, self)
         self.setAttribute(Qt.WA_StyledBackground)
-        self.setCardState(CardState.LEAVE)
-        self.setWidgetState(WidgetState.NORMAL)
+        self.setState(WidgetState.NORMAL, CardState.LEAVE)
 
     def resizeEvent(self, e):
         super().resizeEvent(e)
@@ -68,6 +67,7 @@ class SongTabSongCard(DurationSongCard):
 
         self.setClickableLabels([self.singerLabel, self.albumLabel])
         self.setClickableLabelCursor(Qt.PointingHandCursor)
+        self.setState(WidgetState.NORMAL, CardState.LEAVE)
 
         # connect signal to slot
         self.addToButton.clicked.connect(self._showAddToMenu)
@@ -113,6 +113,7 @@ class AlbumInterfaceSongCard(DurationSongCard):
         # set clickable labels
         self.setClickableLabels([self.singerLabel])
         self.setClickableLabelCursor(Qt.PointingHandCursor)
+        self.setState(WidgetState.NORMAL, CardState.LEAVE)
 
         # connect signal to slot
         self.singerLabel.clicked.connect(
@@ -170,6 +171,7 @@ class PlaylistInterfaceSongCard(DurationSongCard):
 
         self.setClickableLabels([self.singerLabel, self.albumLabel])
         self.setClickableLabelCursor(Qt.PointingHandCursor)
+        self.setState(WidgetState.NORMAL, CardState.LEAVE)
 
         # connect signal to slot
         self.singerLabel.clicked.connect(
@@ -238,6 +240,7 @@ class NoCheckBoxSongCard(DurationSongCard):
 
         self.setClickableLabels([self.singerLabel, self.albumLabel])
         self.setClickableLabelCursor(Qt.PointingHandCursor)
+        self.setState(WidgetState.NORMAL, CardState.LEAVE)
 
         # connect signal to slot
         self.singerLabel.clicked.connect(
@@ -285,6 +288,7 @@ class NoCheckBoxOnlineSongCard(DurationSongCard):
             105,
         )
         self.setDynamicStyleLabels(self.labels)
+        self.setState(WidgetState.NORMAL, CardState.LEAVE)
 
         # set song card clicked animation
         self.setAnimation(self.widgets, [13, 6, -3, -6, -13])
