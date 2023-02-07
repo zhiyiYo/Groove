@@ -338,36 +338,36 @@
         <file>images/search_result_interface/ShowAll_hover_white.png</file>
         <file>images/search_result_interface/ShowAll_normal_white.png</file>
         <file>images/search_result_interface/ShowAll_pressed_white.png</file>
-        <file>images/selection_mode_bar/Add_black.png</file>
-        <file>images/selection_mode_bar/Download_black.png</file>
-        <file>images/selection_mode_bar/Cancel_black.png</file>
-        <file>images/selection_mode_bar/CancelSelectAll_black.png</file>
-        <file>images/selection_mode_bar/Contact_black.png</file>
-        <file>images/selection_mode_bar/Delete_black.png</file>
-        <file>images/selection_mode_bar/Down_black.png</file>
-        <file>images/selection_mode_bar/Edit_black.png</file>
-        <file>images/selection_mode_bar/NextToPlay_black.png</file>
-        <file>images/selection_mode_bar/Pin_black.png</file>
-        <file>images/selection_mode_bar/Play_black.png</file>
-        <file>images/selection_mode_bar/Property_black.png</file>
-        <file>images/selection_mode_bar/SelectAll_black.png</file>
-        <file>images/selection_mode_bar/ShowAlbum_black.png</file>
-        <file>images/selection_mode_bar/Up_black.png</file>
-        <file>images/selection_mode_bar/Add_white.png</file>
-        <file>images/selection_mode_bar/Download_white.png</file>
-        <file>images/selection_mode_bar/Cancel_white.png</file>
-        <file>images/selection_mode_bar/CancelSelectAll_white.png</file>
-        <file>images/selection_mode_bar/Contact_white.png</file>
-        <file>images/selection_mode_bar/Delete_white.png</file>
-        <file>images/selection_mode_bar/Down_white.png</file>
-        <file>images/selection_mode_bar/Edit_white.png</file>
-        <file>images/selection_mode_bar/NextToPlay_white.png</file>
-        <file>images/selection_mode_bar/Pin_white.png</file>
-        <file>images/selection_mode_bar/Play_white.png</file>
-        <file>images/selection_mode_bar/Property_white.png</file>
-        <file>images/selection_mode_bar/SelectAll_white.png</file>
-        <file>images/selection_mode_bar/ShowAlbum_white.png</file>
-        <file>images/selection_mode_bar/Up_white.png</file>
+        <file>images/selection_mode_bar/Add_black.svg</file>
+        <file>images/selection_mode_bar/Download_black.svg</file>
+        <file>images/selection_mode_bar/Cancel_black.svg</file>
+        <file>images/selection_mode_bar/CancelSelectAll_black.svg</file>
+        <file>images/selection_mode_bar/Contact_black.svg</file>
+        <file>images/selection_mode_bar/Delete_black.svg</file>
+        <file>images/selection_mode_bar/Down_black.svg</file>
+        <file>images/selection_mode_bar/Edit_black.svg</file>
+        <file>images/selection_mode_bar/NextToPlay_black.svg</file>
+        <file>images/selection_mode_bar/Pin_black.svg</file>
+        <file>images/selection_mode_bar/Play_black.svg</file>
+        <file>images/selection_mode_bar/Property_black.svg</file>
+        <file>images/selection_mode_bar/SelectAll_black.svg</file>
+        <file>images/selection_mode_bar/ShowAlbum_black.svg</file>
+        <file>images/selection_mode_bar/Up_black.svg</file>
+        <file>images/selection_mode_bar/Add_white.svg</file>
+        <file>images/selection_mode_bar/Download_white.svg</file>
+        <file>images/selection_mode_bar/Cancel_white.svg</file>
+        <file>images/selection_mode_bar/CancelSelectAll_white.svg</file>
+        <file>images/selection_mode_bar/Contact_white.svg</file>
+        <file>images/selection_mode_bar/Delete_white.svg</file>
+        <file>images/selection_mode_bar/Down_white.svg</file>
+        <file>images/selection_mode_bar/Edit_white.svg</file>
+        <file>images/selection_mode_bar/NextToPlay_white.svg</file>
+        <file>images/selection_mode_bar/Pin_white.svg</file>
+        <file>images/selection_mode_bar/Play_white.svg</file>
+        <file>images/selection_mode_bar/Property_white.svg</file>
+        <file>images/selection_mode_bar/SelectAll_white.svg</file>
+        <file>images/selection_mode_bar/ShowAlbum_white.svg</file>
+        <file>images/selection_mode_bar/Up_white.svg</file>
         <file>images/singer_interface/Play_black_hover.png</file>
         <file>images/singer_interface/Play_black_normal.png</file>
         <file>images/singer_interface/Play_black_pressed.png</file>

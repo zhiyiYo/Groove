@@ -1,8 +1,8 @@
 # coding:utf-8
-from common.icon import getIconColor
+from common.icon import getIconColor, drawSvgIcon
 from common.config import config, Theme
 from PyQt5.QtCore import QEvent, QObject, QRect, Qt, pyqtSignal
-from PyQt5.QtGui import QColor, QPainter, QPixmap
+from PyQt5.QtGui import QColor, QPainter
 from PyQt5.QtWidgets import QPushButton
 
 
@@ -10,57 +10,49 @@ class Button(QPushButton):
     """ Button of selection mode bar """
 
     def __init__(self, iconPath: str, text: str, parent=None, buttonSize: tuple = (85, 70), objectName=None):
-        super().__init__(parent)
+        super().__init__(text, parent)
+        self.isEnter = False
+        self.iconPath = iconPath
+
         self.resize(*buttonSize)
-        self.__iconPixmap = QPixmap(iconPath)
-        self.buttonText = text
-        self.__isEnter = False
+        self.setStyleSheet("QPushButton{font: 15px 'Segoe UI', 'Microsoft YaHei'}")
+        self.setText(text)
+
         self.installEventFilter(self)
-        self.setStyleSheet(
-            "QPushButton{font: 15px 'Segoe UI', 'Microsoft YaHei'}")
-        self.__adjustText()
         if objectName:
             self.setObjectName(objectName)
 
     def setText(self, text: str):
         """ set the text of button """
-        self.buttonText = text
-        self.__adjustText()
+        maxWidth = self.width()-4
+        chars = list(text)
+
+        # calculate text width
+        w = 0
+        for index, char in enumerate(text):
+            if w + self.fontMetrics().width(char) > maxWidth:
+                w = 0
+                chars.insert(index, '\n')
+                self.resize(self.width(), self.height() + 20)
+
+            w += self.fontMetrics().width(char)
+
+        super().setText(''.join(chars))
         self.update()
 
     def setIcon(self, iconPath: str):
         """ set the icon of button """
-        self.__iconPixmap = QPixmap(iconPath)
+        self.iconPath = iconPath
         self.update()
 
-    def __adjustText(self):
-        """ adjust the text which is too long """
-        maxWidth = self.width()-4
-        buttonChar_list = list(self.buttonText)
-
-        # calculate text width
-        textWidth = 0
-        for index, char in enumerate(self.buttonText):
-            if textWidth + self.fontMetrics().width(char) > maxWidth:
-                textWidth = 0
-                buttonChar_list.insert(index, '\n')
-                self.resize(self.width(), self.height() + 20)
-
-            textWidth += self.fontMetrics().width(char)
-
-        self.buttonText = ''.join(buttonChar_list)
-        self.__textRect = QRect(0, 40, self.width(), self.height() - 40)
-
     def eventFilter(self, obj, e: QEvent):
-        if obj == self:
+        if obj is self:
             if e.type() == QEvent.Enter:
-                self.__isEnter = True
+                self.isEnter = True
                 self.update()
-                return False
             elif e.type() == QEvent.Leave:
-                self.__isEnter = False
+                self.isEnter = False
                 self.update()
-                return False
 
         return super().eventFilter(obj, e)
 
@@ -71,22 +63,21 @@ class Button(QPushButton):
                                QPainter.SmoothPixmapTransform)
 
         isDark = config.theme == Theme.DARK
-        if self.__isEnter:
-            # paint background and border
+        if self.isEnter:
+            # draw background and border
             bc = 85 if isDark else 170
             painter.setPen(QColor(bc, bc, bc))
             painter.setBrush(QColor(0, 0, 0, 17))
             painter.drawRect(self.rect())
 
-        # paint icon
-        painter.drawPixmap(32, 15, self.__iconPixmap.width(),
-                           self.__iconPixmap.height(), self.__iconPixmap)
+        # draw icon
+        drawSvgIcon(self.iconPath, painter, QRect(32, 15, 20, 20))
 
-        # paint text
+        # draw text
         painter.setPen(Qt.white if isDark else Qt.black)
         painter.setFont(self.font())
-        painter.drawText(
-            self.__textRect, Qt.AlignHCenter, self.buttonText)
+        rect = QRect(0, 40, self.width(), self.height() - 40)
+        painter.drawText(rect, Qt.AlignHCenter, self.text())
 
 
 class TwoStateButton(Button):
@@ -115,22 +106,20 @@ class TwoStateButton(Button):
         """
         super().__init__(
             iconPaths[isState_1], texts[isState_1], parent, buttonSize)
-        self.__iconPaths = iconPaths
-        self.__texts = texts
-        self.__isState_1 = isState_1
-        self.__iconPixmap_list = [
-            QPixmap(iconPath) for iconPath in self.__iconPaths]
+        self.iconPaths = iconPaths
+        self.texts = texts
+        self.isState_1 = isState_1
 
     def mouseReleaseEvent(self, e):
         super().mouseReleaseEvent(e)
-        self.setState(not self.__isState_1)
-        self.clicked.emit(self.__isState_1)
+        self.setState(not self.isState_1)
+        self.clicked.emit(self.isState_1)
 
     def setState(self, isState_1: bool):
         """ set button state """
-        self.__isState_1 = isState_1
-        self.setText(self.__texts[self.__isState_1])
-        self.setIcon(self.__iconPixmap_list[self.__isState_1])
+        self.isState_1 = isState_1
+        self.setText(self.texts[self.isState_1])
+        self.setIcon(self.iconPaths[self.isState_1])
         self.update()
 
 
@@ -177,51 +166,51 @@ class SelectionModeBarButtonFactory(QObject):
         folder = ":/images/selection_mode_bar"
         if buttonType == self.CANCEL:
             button = Button(
-                f"{folder}/Cancel_{c}.png", self.tr("Cancel"), objectName='cancelButton')
+                f"{folder}/Cancel_{c}.svg", self.tr("Cancel"), objectName='cancelButton')
         elif buttonType == self.PLAY:
             button = Button(
-                f"{folder}/Play_{c}.png", self.tr("Play"), objectName='playButton')
+                f"{folder}/Play_{c}.svg", self.tr("Play"), objectName='playButton')
         elif buttonType == self.NEXT_TO_PLAY:
             button = Button(
-                f"{folder}/NextToPlay_{c}.png", self.tr("Play next"), objectName='nextToPlayButton')
+                f"{folder}/NextToPlay_{c}.svg", self.tr("Play next"), objectName='nextToPlayButton')
         elif buttonType == self.ADD_TO:
             button = Button(
-                f"{folder}/Add_{c}.png", self.tr("Add to"), objectName='addToButton')
+                f"{folder}/Add_{c}.svg", self.tr("Add to"), objectName='addToButton')
         elif buttonType == self.SINGER:
             button = Button(
-                f"{folder}/Contact_{c}.png", self.tr("Show artist"), objectName='singerButton')
+                f"{folder}/Contact_{c}.svg", self.tr("Show artist"), objectName='singerButton')
         elif buttonType == self.ALBUM:
             button = Button(
-                f"{folder}/ShowAlbum_{c}.png", self.tr("Show album"), objectName='albumButton')
+                f"{folder}/ShowAlbum_{c}.svg", self.tr("Show album"), objectName='albumButton')
         elif buttonType == self.PROPERTY:
             button = Button(
-                f"{folder}/Property_{c}.png", self.tr("Properties"), objectName='propertyButton')
+                f"{folder}/Property_{c}.svg", self.tr("Properties"), objectName='propertyButton')
         elif buttonType == self.EDIT_INFO:
             button = Button(
-                f"{folder}/Edit_{c}.png", self.tr("Edit info"), objectName='editInfoButton')
+                f"{folder}/Edit_{c}.svg", self.tr("Edit info"), objectName='editInfoButton')
         elif buttonType == self.PIN_TO_START:
             button = Button(
-                f"{folder}/Pin_{c}.png", self.tr('Pin to Start'), objectName='pinToStartButton')
+                f"{folder}/Pin_{c}.svg", self.tr('Pin to Start'), objectName='pinToStartButton')
         elif buttonType == self.RENAME:
             button = Button(
-                f"{folder}/Edit_{c}.png", self.tr("Rename"), objectName='renameButton')
+                f"{folder}/Edit_{c}.svg", self.tr("Rename"), objectName='renameButton')
         elif buttonType == self.MOVE_UP:
             button = Button(
-                f"{folder}/Up_{c}.png", self.tr("Move up"), objectName='moveUpButton')
+                f"{folder}/Up_{c}.svg", self.tr("Move up"), objectName='moveUpButton')
         elif buttonType == self.MOVE_DOWN:
             button = Button(
-                f"{folder}/Down_{c}.png", self.tr("Move down"), objectName='moveDownButton')
+                f"{folder}/Down_{c}.svg", self.tr("Move down"), objectName='moveDownButton')
         elif buttonType == self.DELETE:
             button = Button(
-                f"{folder}/Delete_{c}.png", self.tr("Delete"), objectName='deleteButton')
+                f"{folder}/Delete_{c}.svg", self.tr("Delete"), objectName='deleteButton')
         elif buttonType == self.DOWNLOAD:
             button = Button(
-                f"{folder}/Download_{c}.png", self.tr("Download"), objectName='downloadButton')
+                f"{folder}/Download_{c}.svg", self.tr("Download"), objectName='downloadButton')
         elif buttonType == self.CHECK_ALL:
             button = CheckAllButton(
                 [
-                    f"{folder}/SelectAll_{c}.png",
-                    f"{folder}/CancelSelectAll_{c}.png",
+                    f"{folder}/SelectAll_{c}.svg",
+                    f"{folder}/CancelSelectAll_{c}.svg",
                 ],
                 [self.tr("Select all"), self.tr("Deselect all")],
             )

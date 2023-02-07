@@ -52,6 +52,7 @@ class RecentPlayInterface(SongSelectionModeInterface):
 
     def __setQss(self):
         """ set style sheet """
+        self.whiteMask.setObjectName('mask')
         self.recentPlayLabel.setObjectName('recentPlayLabel')
         self.sortModeLabel.setObjectName("sortModeLabel")
         self.sortModeButton.setObjectName("sortModeButton")

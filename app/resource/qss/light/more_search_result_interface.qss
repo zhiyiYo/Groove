@@ -1,4 +1,4 @@
-MoreSearchResultInterface {
+MoreSearchResultInterface, #mask {
     background-color: white;
 }
 

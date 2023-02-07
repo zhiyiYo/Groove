@@ -1,9 +1,8 @@
-RecentPlayInterface {
+RecentPlayInterface, #mask {
     background-color: rgb(39, 39, 39);
 }
 
 /*设置标签文本左对齐*/
-QLabel,
 QPushButton {
     text-align: left;
     font-size: 16px;
@@ -13,11 +12,19 @@ QPushButton {
     border: none;
 }
 
+QLabel {
+    background-color: transparent;
+    border: none;
+    text-align: left;
+}
+
 QLabel#sortModeLabel {
+    color: white;
     font: 16px 'Segoe UI', 'Microsoft YaHei';
 }
 
 QLabel#recentPlayLabel {
+    color: white;
     font-family: 'Microsoft YaHei Light';
     font-size: 43px;
     padding: 0px;

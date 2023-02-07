@@ -1,4 +1,4 @@
-RecentPlayInterface {
+RecentPlayInterface, #mask {
     background-color: white;
 }
 

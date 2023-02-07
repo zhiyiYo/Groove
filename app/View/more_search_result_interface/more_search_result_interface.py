@@ -121,6 +121,7 @@ class MoreSearchResultInterface(QWidget):
 
     def __setQss(self):
         """ set style sheet """
+        self.titleMask.setObjectName('mask')
         self.titleLabel.setObjectName('titleLabel')
         setStyleSheet(self, 'more_search_result_interface')
 

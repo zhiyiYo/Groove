@@ -3,7 +3,6 @@ QWidget {
 }
 
 /*设置标签文本左对齐*/
-QLabel,
 QPushButton {
     text-align: left;
     color: rgb(75, 75, 75);
@@ -11,6 +10,12 @@ QPushButton {
     background-color: transparent;
     font-family: 'Segoe UI', 'Microsoft YaHei';
     border: none;
+}
+
+QLabel {
+    background-color: transparent;
+    border: none;
+    text-align: left;
 }
 
 QLabel#sortModeLabel {
