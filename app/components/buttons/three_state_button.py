@@ -1,7 +1,7 @@
 # coding:utf-8
 from common.icon import Icon, getIconColor
 from PyQt5.QtCore import QEvent, QSize, Qt
-from PyQt5.QtGui import QPainter, QPixmap
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QPushButton, QToolButton
 
 
@@ -42,7 +42,7 @@ class ThreeStatePushButton(QPushButton):
 class ThreeStateButton(QToolButton):
     """ Three state tool button class """
 
-    def __init__(self, iconPaths: dict, parent=None, iconSize: tuple = (40, 40)):
+    def __init__(self, iconPaths: dict, parent=None, buttonSize=(40, 40), iconSize=None):
         """
         Parameters
         ----------
@@ -52,51 +52,32 @@ class ThreeStateButton(QToolButton):
         parent:
             parent window
 
+        button: tuple
+            button size
+
         iconSize: tuple
             icon size
         """
         super().__init__(parent)
-        self.__state = 'normal'
         self.iconPaths = iconPaths
-        self.resize(*iconSize)
-        self.setIconSize(self.size())
+        self.resize(*buttonSize)
+        self.setIconSize(self.size() if not iconSize else QSize(*iconSize))
         self.setCursor(Qt.ArrowCursor)
         self.setStyleSheet('border: none; margin: 0px')
+        self.setIcon(QIcon(iconPaths['normal']))
+        self.installEventFilter(self)
 
-    def enterEvent(self, e):
-        self.__updateIcon('hover')
+    def eventFilter(self, obj, e):
+        if obj is self:
+            if e.type() == QEvent.Enter:
+                self.setIcon(QIcon(self.iconPaths['hover']))
+            elif e.type() in [QEvent.Leave, QEvent.MouseButtonRelease]:
+                self.setIcon(QIcon(self.iconPaths['normal']))
+            elif e.type() == QEvent.MouseButtonPress:
+                self.setIcon(QIcon(self.iconPaths['pressed']))
 
-    def leaveEvent(self, e):
-        self.__updateIcon('normal')
+        return super().eventFilter(obj, e)
 
-    def mousePressEvent(self, e):
-        if e.button() == Qt.RightButton:
-            return
-
-        self.__updateIcon('pressed')
-        super().mousePressEvent(e)
-
-    def mouseReleaseEvent(self, e):
-        if e.button() == Qt.RightButton:
-            return
-
-        self.__updateIcon('normal')
-        super().mouseReleaseEvent(e)
-
-    def __updateIcon(self, state: str):
-        if state == self.__state:
-            return
-
-        self.__state = state
-        self.update()
-
-    def paintEvent(self, e):
-        super().paintEvent(e)
-        painter = QPainter(self)
-        painter.setRenderHints(
-            QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
-        painter.setPen(Qt.NoPen)
-        painter.drawPixmap(self.rect(), QPixmap(self.iconPaths[self.__state]))
 
 
 class RandomPlayAllButton(ThreeStatePushButton):

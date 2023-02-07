@@ -235,30 +235,32 @@
         <file>images/menu/Previous_black.svg</file>
         <file>images/menu/SignOut_white.svg</file>
         <file>images/menu/SignOut_black.svg</file>
-        <file>images/navigation_interface/clear_hover.png</file>
-        <file>images/navigation_interface/clear_normal.png</file>
-        <file>images/navigation_interface/clear_pressed.png</file>
-        <file>images/navigation_interface/Add_black.png</file>
-        <file>images/navigation_interface/Album_black.png</file>
-        <file>images/navigation_interface/GlobalNavButton_black.png</file>
-        <file>images/navigation_interface/MusicInCollection_black.png</file>
-        <file>images/navigation_interface/Playing_black.png</file>
-        <file>images/navigation_interface/Playlist_black.png</file>
-        <file>images/navigation_interface/Recent_black.png</file>
-        <file>images/navigation_interface/Search_black.png</file>
-        <file>images/navigation_interface/Settings_black.png</file>
-        <file>images/navigation_interface/Add_white.png</file>
-        <file>images/navigation_interface/Album_white.png</file>
-        <file>images/navigation_interface/GlobalNavButton_white.png</file>
-        <file>images/navigation_interface/MusicInCollection_white.png</file>
-        <file>images/navigation_interface/Playing_white.png</file>
-        <file>images/navigation_interface/Playlist_white.png</file>
-        <file>images/navigation_interface/Recent_white.png</file>
-        <file>images/navigation_interface/Search_white.png</file>
-        <file>images/navigation_interface/Settings_white.png</file>
-        <file>images/navigation_interface/search_hover_46_45.png</file>
-        <file>images/navigation_interface/search_normal_46_45.png</file>
-        <file>images/navigation_interface/search_pressed_46_45.png</file>
+        <file>images/navigation_interface/Close_white.svg</file>
+        <file>images/navigation_interface/Close_green_white.svg</file>
+        <file>images/navigation_interface/Close_green_black.svg</file>
+        <file>images/navigation_interface/Close_black.svg</file>
+        <file>images/navigation_interface/Add_black.svg</file>
+        <file>images/navigation_interface/Album_black.svg</file>
+        <file>images/navigation_interface/GlobalNavButton_black.svg</file>
+        <file>images/navigation_interface/MusicInCollection_black.svg</file>
+        <file>images/navigation_interface/Playing_black.svg</file>
+        <file>images/navigation_interface/Playlist_black.svg</file>
+        <file>images/navigation_interface/Recent_black.svg</file>
+        <file>images/navigation_interface/Search_black.svg</file>
+        <file>images/navigation_interface/Settings_black.svg</file>
+        <file>images/navigation_interface/Add_white.svg</file>
+        <file>images/navigation_interface/Album_white.svg</file>
+        <file>images/navigation_interface/GlobalNavButton_white.svg</file>
+        <file>images/navigation_interface/MusicInCollection_white.svg</file>
+        <file>images/navigation_interface/Playing_white.svg</file>
+        <file>images/navigation_interface/Playlist_white.svg</file>
+        <file>images/navigation_interface/Recent_white.svg</file>
+        <file>images/navigation_interface/Search_white.svg</file>
+        <file>images/navigation_interface/Settings_white.svg</file>
+        <file>images/navigation_interface/SearchFlipped_white.svg</file>
+        <file>images/navigation_interface/SearchFlipped_green_white.svg</file>
+        <file>images/navigation_interface/SearchFlipped_green_black.svg</file>
+        <file>images/navigation_interface/SearchFlipped_black.svg</file>
         <file>images/play_bar/More.png</file>
         <file>images/play_bar/Next.png</file>
         <file>images/play_bar/Pause.png</file>

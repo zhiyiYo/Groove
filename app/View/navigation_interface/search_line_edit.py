@@ -1,5 +1,5 @@
 # coding:utf-8
-from common.icon import Icon
+from common.icon import getIconColor
 from components.buttons.three_state_button import ThreeStateButton
 from components.widgets.menu import LineEditMenu
 from PyQt5.QtCore import QEvent, Qt
@@ -7,41 +7,45 @@ from PyQt5.QtGui import QKeyEvent
 from PyQt5.QtWidgets import QLineEdit
 
 
+class ToolButton(ThreeStateButton):
+
+    CLEAR = "Close"
+    SEARCH = "SearchFlipped"
+
+    def __init__(self, iconType: str, iconSize=(20, 20), parent=None):
+        c = getIconColor()
+        folder = ":/images/navigation_interface"
+        iconPaths = {
+            "normal": f"{folder}/{iconType}_{c}.svg",
+            "hover": f"{folder}/{iconType}_green_{c}.svg",
+            "pressed": f"{folder}/{iconType}_white.svg",
+        }
+        super().__init__(iconPaths, parent, (46, 45), iconSize)
+
+
+
 class SearchLineEdit(QLineEdit):
     """ Search line edit """
 
     def __init__(self, parent=None):
         super().__init__(parent)
-
-        clearIcons = {
-            "normal": ":/images/navigation_interface/clear_normal.png",
-            "hover": ":/images/navigation_interface/clear_hover.png",
-            "pressed": ":/images/navigation_interface/clear_pressed.png",
-        }
-        self.__searchIcons = {
-            "normal": ":/images/navigation_interface/search_normal_46_45.png",
-            "hover": ":/images/navigation_interface/search_hover_46_45.png",
-            "pressed": ":/images/navigation_interface/search_pressed_46_45.png",
-        }
-
         self.menu = LineEditMenu(self)
-        self.clearButton = ThreeStateButton(clearIcons, self, (46, 45))
-        self.searchButton = ThreeStateButton(
-            self.__searchIcons, self, (46, 45))
-
+        self.clearButton = ToolButton(ToolButton.CLEAR, (16, 16), self)
+        self.searchButton = ToolButton(ToolButton.SEARCH, parent=self)
         self.__initWidget()
 
     def __initWidget(self):
         """ initialize widget """
-        self.clearButton.hide()
         self.setAttribute(Qt.WA_StyledBackground)
         self.setPlaceholderText(self.tr("Search"))
-        self.textChanged.connect(self.__onTextChanged)
         self.setTextMargins(
             0, 0, self.clearButton.width() + self.searchButton.width(), 0)
         self.resize(370, 45)
+
+        self.clearButton.hide()
         self.clearButton.installEventFilter(self)
-        self.searchButton.installEventFilter(self)
+
+        self.textChanged.connect(self.__onTextChanged)
 
     def __onTextChanged(self, text):
         """ text changed slot """
@@ -70,15 +74,10 @@ class SearchLineEdit(QLineEdit):
         self.clearButton.hide()
 
     def eventFilter(self, obj, e):
-        if obj == self.clearButton:
+        if obj is self.clearButton:
             if e.type() == QEvent.MouseButtonRelease and e.button() == Qt.LeftButton:
                 self.clear()
                 self.clearButton.hide()
-                return True
-        elif obj == self.searchButton:
-            if e.type() == QEvent.MouseButtonRelease and e.button() == Qt.LeftButton:
-                self.searchButton.setIcon(Icon(self.__searchIcons["hover"]))
-                return False
 
         return super().eventFilter(obj, e)
 

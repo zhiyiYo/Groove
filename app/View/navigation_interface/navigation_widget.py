@@ -27,18 +27,18 @@ class NavigationWidget(NavigationWidgetBase):
     def __createButtons(self):
         """ create buttons """
         self.showBarButton = ToolButton(
-            NIF.create(NIF.GLOBAL_NAVIGATION), parent=self)
+            NIF.path(NIF.GLOBAL_NAVIGATION), iconSize=(26, 26), parent=self)
         self.myMusicButton = PushButton(
-            NIF.create(NIF.MUSIC_IN_COLLECTION), self.tr("My music"), (400, 60), self.scrollWidget)
+            NIF.path(NIF.MUSIC_IN_COLLECTION), self.tr("My music"), (400, 60), parent=self.scrollWidget)
         self.historyButton = PushButton(
-            NIF.create(NIF.RECENT), self.tr("Recent plays"), (400, 62), self.scrollWidget)
+            NIF.path(NIF.RECENT), self.tr("Recent plays"), (400, 62), parent=self.scrollWidget)
         self.playingButton = PushButton(
-            NIF.create(NIF.PLAYING), self.tr("Now playing"), (400, 62), self.scrollWidget)
+            NIF.path(NIF.PLAYING), self.tr("Now playing"), (400, 62), parent=self.scrollWidget)
         self.playlistButton = PushButton(
-            NIF.create(NIF.PLAYLIST), self.tr("Playlists"), (340, 60), self.scrollWidget)
+            NIF.path(NIF.PLAYLIST), self.tr("Playlists"), (340, 60), (22, 22), parent=self.scrollWidget)
         self.createPlaylistButton = CreatePlaylistButton(self.scrollWidget)
         self.settingButton = PushButton(
-            NIF.create(NIF.SETTINGS), self.tr("Settings"), (400, 62), self)
+            NIF.path(NIF.SETTINGS), self.tr("Settings"), (400, 62), parent=self)
 
         self.__createPlaylistNameButtons(getPlaylistNames())
 
@@ -141,7 +141,7 @@ class NavigationWidget(NavigationWidgetBase):
         """ create playlist name buttons """
         self.playlistNames = playlistNames
         self.playlistNameButtons = [
-            PushButton(NIF.create(NIF.ALBUM), i, (400, 62), self.scrollWidget)
+            PushButton(NIF.path(NIF.ALBUM), i, (400, 62), (22, 22), self.scrollWidget)
             for i in playlistNames
         ]
 

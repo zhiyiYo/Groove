@@ -18,16 +18,19 @@ class NavigationBar(NavigationWidgetBase):
     def __createButtons(self):
         """create buttons """
         self.showMenuButton = ToolButton(
-            NIF.create(NIF.GLOBAL_NAVIGATION), parent=self)
-        self.searchButton = ToolButton(NIF.create(NIF.SEARCH), (60, 62), self)
-        self.myMusicButton = ToolButton(NIF.create(
-            NIF.MUSIC_IN_COLLECTION), (60, 62), self)
-        self.historyButton = ToolButton(NIF.create(NIF.RECENT), (60, 62), self)
+            NIF.path(NIF.GLOBAL_NAVIGATION), iconSize=(26, 26), parent=self)
+        self.searchButton = ToolButton(
+            NIF.path(NIF.SEARCH), (60, 62), (24, 24), parent=self)
+        self.myMusicButton = ToolButton(NIF.path(
+            NIF.MUSIC_IN_COLLECTION), (60, 62), parent=self)
+        self.historyButton = ToolButton(
+            NIF.path(NIF.RECENT), (60, 62), parent=self)
         self.playingButton = ToolButton(
-            NIF.create(NIF.PLAYING), (60, 62), self)
-        self.playlistButton = ToolButton(NIF.create(NIF.PLAYLIST), parent=self)
+            NIF.path(NIF.PLAYING), (60, 62), parent=self)
+        self.playlistButton = ToolButton(
+            NIF.path(NIF.PLAYLIST), iconSize=(22, 22), parent=self)
         self.createPlaylistButton = CreatePlaylistButton(self)
-        self.settingButton = ToolButton(NIF.create(NIF.SETTINGS), parent=self)
+        self.settingButton = ToolButton(NIF.path(NIF.SETTINGS), parent=self)
 
         # selected button
         self.currentButton = self.myMusicButton
