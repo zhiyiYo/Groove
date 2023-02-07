@@ -6,7 +6,6 @@ RecentPlayInterface {
 QLabel,
 QPushButton {
     text-align: left;
-    color: rgb(75, 75, 75);
     background-color: transparent;
     font: 16px 'Segoe UI', 'Microsoft YaHei';
     border: none;

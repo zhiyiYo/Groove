@@ -1,33 +1,33 @@
 # coding:utf-8
-from PyQt5.QtCore import QEvent, Qt, QSize, QObject, QPoint
-from PyQt5.QtGui import QPixmap, QPainter, QHoverEvent
+from common.icon import drawSvgIcon
+from PyQt5.QtCore import QEvent, Qt, QObject, QPoint, QRect
+from PyQt5.QtGui import QPainter, QHoverEvent, QIcon
 from PyQt5.QtWidgets import QApplication, QPushButton
 
 
 class AppBarButton(QPushButton):
 
     def __init__(self, iconPath: str, text: str, parent=None, objectName=None):
-        super().__init__(parent)
-        self.pixmap = QPixmap(iconPath)
-        self.__text = text
-        styleSheet = """
-        QPushButton {
-            border: none;
-            border-radius: 23px;
-            spacing: 10px;
-            color: white;
-            background: transparent;
-            font: 16px "Segoe UI", "Microsoft YaHei";
-            padding: 13px 24px 13px 24px;
-        }
+        super().__init__(text, parent)
+        self.iconPath = iconPath
+        styleSheet = f"""
+            QPushButton {{
+                border: none;
+                border-radius: 23px;
+                spacing: 10px;
+                color: white;
+                background: transparent;
+                font: 16px "Segoe UI", "Microsoft YaHei";
+                padding: 13px 24px 13px {54 if text else 6}px;
+            }}
 
-        QPushButton:hover {
-            background: rgba(255, 255, 255, 0.2)
-        }
+            QPushButton:hover {{
+                background: rgba(255, 255, 255, 0.2)
+            }}
 
-        QPushButton:pressed {
-            background: rgba(255, 255, 255, 0.5)
-        }
+            QPushButton:pressed {{
+                background: rgba(255, 255, 255, 0.4)
+            }}
         """
         self.setStyleSheet(styleSheet)
         self.setFocusPolicy(Qt.NoFocus)
@@ -35,26 +35,14 @@ class AppBarButton(QPushButton):
         if objectName:
             self.setObjectName(objectName)
 
-    def sizeHint(self):
-        spacing = 12*(self.__text != '')
-        w = self.pixmap.width() + spacing + self.fontMetrics().width(self.__text) + 46
-        size = QSize(w, 46)
-        return size
-
-    def text(self):
-        return self.__text
-
     def paintEvent(self, e):
-        """ paint icon """
         super().paintEvent(e)
         painter = QPainter(self)
-        painter.setRenderHints(QPainter.Antialiasing |
-                               QPainter.SmoothPixmapTransform)
-        y = (self.height()-self.pixmap.height())//2
-        painter.drawPixmap(24, y, self.pixmap)
-        painter.setPen(Qt.white)
-        painter.setFont(self.font())
-        painter.drawText(54, 29, self.__text)
+        painter.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
+
+        # draw icon
+        rect = QRect(24, (self.height()-20)/2, 20, 20)
+        drawSvgIcon(self.iconPath, painter, rect)
 
     def cancelHoverState(self):
         """ cancel mouse hover state """
@@ -81,34 +69,34 @@ class AppBarButtonFactory(QObject):
         """ create a button """
         if buttonType == self.PLAY:
             button = AppBarButton(
-                ":/images/album_interface/Play.png", self.tr("Play all"), objectName="playAllButton")
+                ":/images/app_bar/Play.svg", self.tr("Play all"), objectName="playAllButton")
         elif buttonType == self.ADD_TO:
             button = AppBarButton(
-                ":/images/album_interface/Add.png", self.tr("Add to"), objectName="addToButton")
+                ":/images/app_bar/Add.svg", self.tr("Add to"), objectName="addToButton")
         elif buttonType == self.SINGER:
             button = AppBarButton(
-                ":/images/album_interface/Contact.png", self.tr("Show artist"), objectName="singerButton")
+                ":/images/app_bar/Contact.svg", self.tr("Show artist"), objectName="singerButton")
         elif buttonType == self.ONLINE:
             button = AppBarButton(
-                ":/images/album_interface/Online.png", self.tr("View online"), objectName="viewOnlineButton")
+                ":/images/app_bar/Online.svg", self.tr("View online"), objectName="viewOnlineButton")
         elif buttonType == self.PIN_TO_START:
             button = AppBarButton(
-                ":/images/album_interface/Pin.png", self.tr("Pin to Start"), objectName="pinToStartMenuButton")
+                ":/images/app_bar/Pin.svg", self.tr("Pin to Start"), objectName="pinToStartMenuButton")
         elif buttonType == self.EDIT_INFO:
             button = AppBarButton(
-                ":/images/album_interface/Edit.png", self.tr("Edit info"), objectName="editInfoButton")
+                ":/images/app_bar/Edit.svg", self.tr("Edit info"), objectName="editInfoButton")
         elif buttonType == self.RENAME:
             button = AppBarButton(
-                ":/images/album_interface/Edit.png", self.tr("Rename"), objectName="renameButton")
+                ":/images/app_bar/Edit.svg", self.tr("Rename"), objectName="renameButton")
         elif buttonType == self.DELETE:
             button = AppBarButton(
-                ":/images/album_interface/Delete.png", self.tr("Delete"), objectName="deleteButton")
+                ":/images/app_bar/Delete.svg", self.tr("Delete"), objectName="deleteButton")
         elif buttonType == self.ADD_FAVORITE:
             button = AppBarButton(
-                ":/images/album_interface/AddFavorite.png", self.tr("Add songs"), objectName="addButton")
+                ":/images/app_bar/AddFavorite.svg", self.tr("Add songs"), objectName="addButton")
         elif buttonType == self.MORE:
             button = AppBarButton(
-                ":/images/album_interface/More.png", "", objectName="moreActionButton")
+                ":/images/app_bar/More.svg", "", objectName="moreActionButton")
         else:
             raise ValueError(f'Button type `{buttonType}` is illegal')
 

@@ -27,7 +27,6 @@
 English | <a href="docs/README_zh.md">简体中文</a>
 </p>
 
-## Interface
 ![界面](docs/source/_static/images/Groove音乐.jpg)
 
 ## Features
@@ -99,4 +98,10 @@ English | <a href="docs/README_zh.md">简体中文</a>
 
 
 ## Document
-It is recommended to read the [help document](https://groove-music.readthedocs.io) before use Groove Music. All you want to know is here~~
+Want to know more about Groove Music? Please read the [help document](https://groove-music.readthedocs.io) 👈
+
+## See also
+
+- [zhiyiYo/PyQt-Frameless-Window](https://github.com/zhiyiYo/PyQt-Frameless-Window)：A cross-platform frameless window based on pyqt5, support Win32, Linux and macOS.
+- [zhiyiYo/PyQt-Fluent-Widgets](https://github.com/zhiyiYo/PyQt-Fluent-Widgets)：A fluent design widgets library based on PyQt5
+- [jsmolka/egg-player](https://github.com/jsmolka/egg-player)：A Groove Music like music player. The code of this repo is very elegant.

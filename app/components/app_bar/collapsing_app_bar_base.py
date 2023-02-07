@@ -4,7 +4,7 @@ from typing import List, Union
 from common.image_utils import DominantColor
 from components.widgets.label import AvatarLabel
 from components.widgets.menu import AddToMenu, AddFromMenu, RoundMenu
-from PyQt5.QtCore import QPoint, Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import (QColor, QFont, QFontMetrics, QPainter, QPalette,
                          QPixmap, QResizeEvent)
 from PyQt5.QtWidgets import QAction, QLabel, QWidget

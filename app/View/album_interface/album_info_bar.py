@@ -19,7 +19,7 @@ class AlbumInfoBar(CollapsingAppBarBase):
         )
 
         self.setButtons([BF.PLAY, BF.ADD_TO, BF.SINGER, BF.ONLINE,
-                        BF.PIN_TO_START, BF.EDIT_INFO, BF.DELETE])
+                        BF.EDIT_INFO, BF.DELETE])
 
     def setAlbumInfo(self, albumInfo: AlbumInfo):
         """ set album information """

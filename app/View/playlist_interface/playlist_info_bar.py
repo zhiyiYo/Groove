@@ -22,7 +22,7 @@ class PlaylistInfoBar(CollapsingAppBarBase):
 
         self.setButtons([
             BF.PLAY, BF.ADD_FAVORITE, BF.ADD_TO,
-            BF.RENAME, BF.PIN_TO_START, BF.DELETE
+            BF.RENAME, BF.DELETE
         ])
 
     def __getPlaylistInfo(self, playlist: Playlist):

@@ -132,15 +132,15 @@
         <file>images/thumbnail_tool_bar/Pause.svg</file>
         <file>images/thumbnail_tool_bar/Next.svg</file>
         <file>images/thumbnail_tool_bar/Previous.svg</file>
-        <file>images/album_interface/Add.png</file>
-        <file>images/album_interface/Contact.png</file>
-        <file>images/album_interface/Delete.png</file>
-        <file>images/album_interface/Edit.png</file>
-        <file>images/album_interface/More.png</file>
-        <file>images/album_interface/Pin.png</file>
-        <file>images/album_interface/Play.png</file>
-        <file>images/album_interface/Online.png</file>
-        <file>images/album_interface/AddFavorite.png</file>
+        <file>images/app_bar/Add.svg</file>
+        <file>images/app_bar/Contact.svg</file>
+        <file>images/app_bar/Delete.svg</file>
+        <file>images/app_bar/Edit.svg</file>
+        <file>images/app_bar/More.svg</file>
+        <file>images/app_bar/Pin.svg</file>
+        <file>images/app_bar/Play.svg</file>
+        <file>images/app_bar/Online.svg</file>
+        <file>images/app_bar/AddFavorite.svg</file>
         <file>images/default_covers/album_113_113.png</file>
         <file>images/default_covers/album_200_200.png</file>
         <file>images/default_covers/playlist_135_135.png</file>
