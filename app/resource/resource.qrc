@@ -3,10 +3,9 @@
         <file>qss/light/album_card_interface.qss</file>
         <file>qss/light/album_group_box.qss</file>
         <file>qss/light/album_info_edit_dialog.qss</file>
-        <file>qss/light/create_playlist_dialog.qss</file>
+        <file>qss/light/playlist_dialog.qss</file>
         <file>qss/light/dialog.qss</file>
         <file>qss/light/label_navigation_interface.qss</file>
-        <file>qss/light/line_edit.qss</file>
         <file>qss/light/main_window.qss</file>
         <file>qss/light/menu.qss</file>
         <file>qss/light/message_dialog.qss</file>
@@ -18,7 +17,6 @@
         <file>qss/light/playlist_card_interface.qss</file>
         <file>qss/light/playlist_group_box.qss</file>
         <file>qss/light/playlist_interface.qss</file>
-        <file>qss/light/rename_playlist_dialog.qss</file>
         <file>qss/light/search_result_interface.qss</file>
         <file>qss/light/more_search_result_interface.qss</file>
         <file>qss/light/setting_interface.qss</file>
@@ -47,10 +45,9 @@
         <file>qss/dark/album_card_interface.qss</file>
         <file>qss/dark/album_group_box.qss</file>
         <file>qss/dark/album_info_edit_dialog.qss</file>
-        <file>qss/dark/create_playlist_dialog.qss</file>
+        <file>qss/dark/playlist_dialog.qss</file>
         <file>qss/dark/dialog.qss</file>
         <file>qss/dark/label_navigation_interface.qss</file>
-        <file>qss/dark/line_edit.qss</file>
         <file>qss/dark/main_window.qss</file>
         <file>qss/dark/menu.qss</file>
         <file>qss/dark/message_dialog.qss</file>
@@ -62,7 +59,6 @@
         <file>qss/dark/playlist_card_interface.qss</file>
         <file>qss/dark/playlist_group_box.qss</file>
         <file>qss/dark/playlist_interface.qss</file>
-        <file>qss/dark/rename_playlist_dialog.qss</file>
         <file>qss/dark/search_result_interface.qss</file>
         <file>qss/dark/more_search_result_interface.qss</file>
         <file>qss/dark/setting_interface.qss</file>
@@ -151,17 +147,16 @@
         <file>images/album_tab_interface/Add.png</file>
         <file>images/album_tab_interface/CheckMark.png</file>
         <file>images/album_tab_interface/Play.png</file>
-        <file>images/create_playlist_dialog/clear_hover_50_50.png</file>
-        <file>images/create_playlist_dialog/clear_black_normal_50_50.png</file>
-        <file>images/create_playlist_dialog/clear_white_normal_50_50.png</file>
-        <file>images/create_playlist_dialog/clear_pressed_50_50.png</file>
-        <file>images/create_playlist_dialog/pencil_black_50_50.png</file>
-        <file>images/create_playlist_dialog/pencil_white_50_50.png</file>
-        <file>images/create_playlist_dialog/pencil_black_noFocus_50_50.png</file>
-        <file>images/create_playlist_dialog/pencil_white_noFocus_50_50.png</file>
-        <file>images/create_playlist_dialog/pencil_black_noFocus_hover_50_50.png</file>
-        <file>images/create_playlist_dialog/pencil_white_noFocus_hover_50_50.png</file>
-        <file>images/create_playlist_dialog/Playlist_white.png</file>
+        <file>images/playlist_dialog/Clear_black.svg</file>
+        <file>images/playlist_dialog/Clear_white.svg</file>
+        <file>images/playlist_dialog/Clear_green.svg</file>
+        <file>images/playlist_dialog/Pen_black.svg</file>
+        <file>images/playlist_dialog/Pen_white.svg</file>
+        <file>images/playlist_dialog/Pen_black_noFocus.svg</file>
+        <file>images/playlist_dialog/Pen_white_noFocus.svg</file>
+        <file>images/playlist_dialog/Pen_black_noFocus_hover.svg</file>
+        <file>images/playlist_dialog/Pen_white_noFocus_hover.svg</file>
+        <file>images/playlist_dialog/Playlist.svg</file>
         <file>images/line_edit/Close_white.svg</file>
         <file>images/line_edit/Close_black.svg</file>
         <file>images/line_edit/Close_green_white.svg</file>

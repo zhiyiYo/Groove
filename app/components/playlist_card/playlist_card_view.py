@@ -6,7 +6,7 @@ from common.database.entity import Playlist, SongInfo
 from common.library import Library
 from common.signal_bus import signalBus
 from components.dialog_box.message_dialog import MessageDialog
-from components.dialog_box.rename_playlist_dialog import RenamePlaylistDialog
+from components.dialog_box.playlist_dialog import RenamePlaylistDialog
 from components.layout import HBoxLayout, FlowLayout
 from components.layout.h_box_layout import HBoxLayout
 from PyQt5.QtCore import (QMargins, QParallelAnimationGroup, QPoint, Qt,

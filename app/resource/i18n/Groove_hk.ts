@@ -376,27 +376,27 @@
 <context>
     <name>CreatePlaylistDialog</name>
     <message>
-        <location filename="../../components/dialog_box/create_playlist_dialog.py" line="26"/>
+        <location filename="../../components/dialog_box/playlist_dialog.py" line="26"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/create_playlist_dialog.py" line="27"/>
+        <location filename="../../components/dialog_box/playlist_dialog.py" line="27"/>
         <source>Created by you</source>
         <translation>您創建的</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/create_playlist_dialog.py" line="28"/>
+        <location filename="../../components/dialog_box/playlist_dialog.py" line="28"/>
         <source>Create playlist</source>
         <translation>創建播放列表</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/create_playlist_dialog.py" line="30"/>
+        <location filename="../../components/dialog_box/playlist_dialog.py" line="30"/>
         <source>This name already exists. Please try a different name.</source>
         <translation>此名稱已經存在。請嘗試其他名稱。</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/create_playlist_dialog.py" line="90"/>
+        <location filename="../../components/dialog_box/playlist_dialog.py" line="90"/>
         <source>New playlist</source>
         <translation>新的播放列表</translation>
     </message>
@@ -573,7 +573,7 @@
 <context>
     <name>LineEdit</name>
     <message>
-        <location filename="../../components/dialog_box/create_playlist_dialog.py" line="131"/>
+        <location filename="../../components/dialog_box/playlist_dialog.py" line="131"/>
         <source>Name the playlist</source>
         <translation>命名此播放列表</translation>
     </message>
@@ -1753,17 +1753,17 @@
 <context>
     <name>RenamePlaylistDialog</name>
     <message>
-        <location filename="../../components/dialog_box/rename_playlist_dialog.py" line="26"/>
+        <location filename="../../components/dialog_box/playlist_dialog.py" line="26"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/rename_playlist_dialog.py" line="27"/>
+        <location filename="../../components/dialog_box/playlist_dialog.py" line="27"/>
         <source>Rename</source>
         <translation>重命名</translation>
     </message>
     <message>
-        <location filename="../../components/dialog_box/rename_playlist_dialog.py" line="28"/>
+        <location filename="../../components/dialog_box/playlist_dialog.py" line="28"/>
         <source>This name already exists. Please try a different name.</source>
         <translation>此名稱已經存在。請嘗試其他名稱。</translation>
     </message>

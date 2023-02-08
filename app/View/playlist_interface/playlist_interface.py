@@ -10,7 +10,7 @@ from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
 from components.buttons.three_state_button import ThreeStatePushButton
 from components.dialog_box.message_dialog import MessageDialog
-from components.dialog_box.rename_playlist_dialog import RenamePlaylistDialog
+from components.dialog_box.playlist_dialog import RenamePlaylistDialog
 from components.selection_mode_interface import (SelectionModeBarType,
                                                  SongSelectionModeInterface)
 from PyQt5.QtCore import pyqtSignal

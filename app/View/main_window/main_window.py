@@ -20,7 +20,7 @@ from common.thread.get_online_song_url_thread import GetOnlineSongUrlThread
 from common.thread.view_online_thread import ViewOnlineThread, ViewOnlineType
 from common.thread.library_thread import LibraryThread
 from common.url import FakeUrl
-from components.dialog_box.create_playlist_dialog import CreatePlaylistDialog
+from components.dialog_box.playlist_dialog import CreatePlaylistDialog
 from components.dialog_box.dialog import Dialog
 from components.frameless_window import AcrylicWindow
 from components.label_navigation_interface import LabelNavigationInterface

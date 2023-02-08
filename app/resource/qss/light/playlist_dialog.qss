@@ -1,0 +1,81 @@
+QWidget#centerWidget {
+    background-color: white;
+    border: 1px solid rgb(172, 172, 172);
+}
+
+QPushButton {
+    color: white;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: rgb(0, 107, 131);
+    font: 17px 'Segoe UI', 'Microsoft YaHei';
+    padding: 16px 104px 13px 104px;
+}
+
+QPushButton:hover {
+    color: black;
+    background-color: rgb(230, 230, 230);
+}
+
+QPushButton:pressed {
+    background-color: rgb(153, 153, 153);
+}
+
+QPushButton:disabled {
+    background-color: rgb(204, 204, 204);
+    color: rgb(122, 122, 122);
+}
+
+#renameButton {
+    padding: 13px 130px 13px 130px;
+}
+
+QLabel {
+    font: 18px 'Segoe UI', 'Microsoft YaHei';
+    background-color: transparent;
+}
+
+QLabel#cancelLabel {
+    color: rgb(0, 107, 131);
+    font: 18px 'Segoe UI', 'Microsoft YaHei';
+}
+
+QLabel#cancelLabel:hover {
+    color: rgb(154, 154, 154);
+}
+
+QLineEdit {
+    border: none;
+    padding: 11px 5px 11px 23px;
+    font: 37px 'Microsoft YaHei Light';
+    selection-background-color: rgb(0, 153, 188);
+}
+
+QLineEdit:focus {
+    background: rgb(240, 240, 240);
+    color: rgb(50, 50, 50);
+}
+
+QLineEdit:!focus {
+    background: rgb(230, 230, 230);
+}
+
+QLineEdit:hover:!focus {
+    background: rgb(215, 215, 215);
+}
+
+QLineEdit[noText=true]:!focus {
+    color: rgb(138, 138, 138);
+}
+
+QLineEdit[noText=true]:hover:!focus {
+    color: rgb(86, 86, 86);
+}
+
+ThreeStateButton {
+    background-color: transparent;
+}
+
+ThreeStateButton:pressed {
+    background-color: rgb(0, 153, 188);
+}
