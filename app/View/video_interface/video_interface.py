@@ -1,7 +1,7 @@
 # coding:utf-8
 from common.thread.download_mv_thread import DownloadMvThread
 from components.dialog_box.message_dialog import MessageDialog
-from components.widgets.tooltip import DownloadStateTooltip
+from components.widgets.tool_tip import DownloadStateToolTip
 from PyQt5.QtCore import QSizeF, Qt, QUrl, pyqtSignal, QEvent
 from PyQt5.QtGui import QPainter, QKeyEvent
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
@@ -214,7 +214,7 @@ class VideoInterface(QGraphicsView):
         title = self.tr('Downloading MVs')
         content = self.tr('There are') + \
             f' {1} ' + self.tr('left. Please wait patiently')
-        self.downloadStateTooltip = DownloadStateTooltip(
+        self.downloadStateTooltip = DownloadStateToolTip(
             title, content, 1, self.window())
         self.downloadMvThread.downloadOneMvFinished.connect(
             self.downloadStateTooltip.completeOneDownloadTask)

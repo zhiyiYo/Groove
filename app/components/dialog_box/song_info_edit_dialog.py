@@ -12,7 +12,7 @@ from components.buttons.perspective_button import PerspectivePushButton
 from components.buttons.switch_button import SwitchButton
 from components.widgets.label import ErrorIcon, ClickableLabel
 from components.widgets.line_edit import LineEdit, VLineEdit
-from components.widgets.tooltip import StateTooltip
+from components.widgets.tool_tip import StateToolTip
 from mutagen.id3 import TCON
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import (QApplication, QCompleter, QGridLayout, QLabel,
@@ -265,7 +265,7 @@ class SongInfoEditDialog(MaskDialogBase):
         self.cancelButton.setEnabled(False)
 
         # create state tooltip
-        self.stateToolTip = StateTooltip(self.tr('Retrieve metadata...'),
+        self.stateToolTip = StateToolTip(self.tr('Retrieve metadata...'),
                                          self.tr('Please wait patiently'), self)
         self.stateToolTip.show()
 

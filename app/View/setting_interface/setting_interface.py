@@ -5,8 +5,8 @@ from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
 from common.thread.crawl_meta_data_thread import CrawlFolderMetaDataThread
 from components.layout.expand_layout import ExpandLayout
-from components.widgets.scroll_area import ScrollArea, SmoothScrollArea, SmoothMode
-from components.widgets.tooltip import ToastTooltip, StateTooltip
+from components.widgets.scroll_area import SmoothScrollArea
+from components.widgets.tool_tip import ToastToolTip, StateToolTip
 from components.settings import (SettingCardGroup, SwitchSettingCard, FolderListSettingCard,
                                  OptionsSettingCard, RangeSettingCard, PushSettingCard,
                                  ColorSettingCard, HyperlinkCard, PrimaryPushSettingCard)
@@ -341,7 +341,7 @@ class SettingInterface(SmoothScrollArea):
 
     def __showRestartTooltip(self):
         """ show restart tooltip """
-        w = ToastTooltip(
+        w = ToastToolTip(
             self.tr('Configuration updated successfully'),
             self.tr('Configuration takes effect after restart'),
             'info',
@@ -392,7 +392,7 @@ class SettingInterface(SmoothScrollArea):
         crawler = CrawlFolderMetaDataThread(
             config.get(config.musicFolders), self)
 
-        stateToolTip = StateTooltip(
+        stateToolTip = StateToolTip(
             self.tr("Crawling metadata"), self.tr("Current progress: ")+f"{0:>3.0%}", self.window())
         stateToolTip.show()
 

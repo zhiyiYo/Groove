@@ -31,7 +31,7 @@ from components.title_bar import TitleBar
 from components.widgets.label import PixmapLabel
 from components.widgets.stacked_widget import (OpacityAniStackedWidget,
                                                PopUpAniStackedWidget)
-from components.widgets.tooltip import StateTooltip
+from components.widgets.tool_tip import StateToolTip
 from PyQt5.QtCore import (QEasingCurve, QEvent, QEventLoop, QFile, QFileInfo,
                           Qt, QTimer, QUrl)
 from PyQt5.QtGui import (QColor, QDesktopServices, QDragEnterEvent, QDropEvent,
@@ -1307,7 +1307,7 @@ class MainWindow(AcrylicWindow):
         """ show scan song information tooltip """
         title = self.tr("Scanning song information")
         content = self.tr("Please wait patiently")
-        self.scanInfoTooltip = StateTooltip(title, content, self.window())
+        self.scanInfoTooltip = StateToolTip(title, content, self.window())
         self.scanInfoTooltip.show()
 
     def hideScanInfoTooltip(self):

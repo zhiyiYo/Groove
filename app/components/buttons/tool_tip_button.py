@@ -1,6 +1,6 @@
 # coding:utf-8
 from common.config import config, Theme
-from components.widgets.tooltip import ToolTip
+from components.widgets.tool_tip import ToolTip
 from PyQt5.QtCore import QEvent, QObject, QPoint, QTimer
 from PyQt5.QtWidgets import QToolButton, QPushButton
 

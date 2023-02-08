@@ -499,24 +499,24 @@
     </message>
 </context>
 <context>
-    <name>DownloadStateTooltip</name>
+    <name>DownloadStateToolTip</name>
     <message>
-        <location filename="../../components/widgets/tooltip.py" line="178"/>
+        <location filename="../../components/widgets/tool_tip.py" line="178"/>
         <source>There are</source>
         <translation>還剩</translation>
     </message>
     <message>
-        <location filename="../../components/widgets/tooltip.py" line="179"/>
+        <location filename="../../components/widgets/tool_tip.py" line="179"/>
         <source>left. Please wait patiently</source>
         <translation>首，要耐心等待哦~</translation>
     </message>
     <message>
-        <location filename="../../components/widgets/tooltip.py" line="171"/>
+        <location filename="../../components/widgets/tool_tip.py" line="171"/>
         <source>Download complete</source>
         <translation>下載完成</translation>
     </message>
     <message>
-        <location filename="../../components/widgets/tooltip.py" line="172"/>
+        <location filename="../../components/widgets/tool_tip.py" line="172"/>
         <source>Download completed, please check</source>
         <translation>下載完成啦，請查收~</translation>
     </message>

@@ -9,9 +9,8 @@ from common.library import Library
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
 from common.thread.download_song_thread import DownloadSongThread
-from components.widgets.label import PixmapLabel
 from components.widgets.scroll_area import ScrollArea
-from components.widgets.tooltip import DownloadStateTooltip
+from components.widgets.tool_tip import DownloadStateToolTip
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QLabel, QVBoxLayout, QWidget
@@ -140,7 +139,7 @@ class SearchResultInterface(ScrollArea):
         title = self.tr('Downloading songs')
         content = self.tr('There are') + f' {1} ' + \
             self.tr('left. Please wait patiently')
-        self.downloadStateTooltip = DownloadStateTooltip(
+        self.downloadStateTooltip = DownloadStateToolTip(
             title, content, 1, self.window())
         self.downloadSongThread.downloadOneSongFinished.connect(
             self.downloadStateTooltip.completeOneDownloadTask)

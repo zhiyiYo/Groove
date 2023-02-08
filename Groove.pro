@@ -57,7 +57,7 @@ SOURCES += app/View/main_window/main_window.py \
         app/View/search_result_interface/album_group_box.py \
         app/components/system_tray_icon/system_tray_icon.py \
         app/components/video_window/video_window.py \
-        app/components/widgets/tooltip.py \
+        app/components/widgets/tool_tip.py \
         app/components/video_window/play_bar.py \
         app/components/widgets/lyric_widget.py \
         app/components/album_card/album_card_view.py \

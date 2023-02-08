@@ -28,7 +28,7 @@
         <file>qss/light/song_info_edit_dialog.qss</file>
         <file>qss/light/song_property_dialog.qss</file>
         <file>qss/light/song_list_widget.qss</file>
-        <file>qss/light/state_tooltip.qss</file>
+        <file>qss/light/state_tool_tip.qss</file>
         <file>qss/light/switch_button.qss</file>
         <file>qss/light/volume_slider_widget.qss</file>
         <file>qss/light/lyric_widget.qss</file>
@@ -72,7 +72,7 @@
         <file>qss/dark/song_info_edit_dialog.qss</file>
         <file>qss/dark/song_property_dialog.qss</file>
         <file>qss/dark/song_list_widget.qss</file>
-        <file>qss/dark/state_tooltip.qss</file>
+        <file>qss/dark/state_tool_tip.qss</file>
         <file>qss/dark/switch_button.qss</file>
         <file>qss/dark/volume_slider_widget.qss</file>
         <file>qss/dark/lyric_widget.qss</file>
@@ -123,11 +123,12 @@
         <file>images/title_bar/透明白色返回按钮_60_40.png</file>
         <file>images/title_bar/透明白色返回按钮_hover_60_40.png</file>
         <file>images/title_bar/透明白色返回按钮_pressed_60_40.png</file>
-        <file>images/state_tooltip/close_hover.png</file>
-        <file>images/state_tooltip/close_normal.png</file>
-        <file>images/state_tooltip/completed.png</file>
-        <file>images/state_tooltip/info.png</file>
-        <file>images/state_tooltip/running.png</file>
+        <file>images/state_tool_tip/close_normal.svg</file>
+        <file>images/state_tool_tip/close_hover.svg</file>
+        <file>images/state_tool_tip/close_pressed.svg</file>
+        <file>images/state_tool_tip/completed.svg</file>
+        <file>images/state_tool_tip/info.svg</file>
+        <file>images/state_tool_tip/running.svg</file>
         <file>images/thumbnail_tool_bar/Play.svg</file>
         <file>images/thumbnail_tool_bar/Pause.svg</file>
         <file>images/thumbnail_tool_bar/Next.svg</file>
