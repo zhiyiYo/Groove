@@ -181,7 +181,7 @@ class MenuActionListWidget(ListWidget):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setTextElideMode(Qt.ElideNone)
         self.setMouseTracking(True)
-        self.setIconSize(QSize(19, 19))
+        self.setIconSize(QSize(20, 20))
         self.setStyleSheet(
             'MenuActionListWidget{font: 18px "Segoe UI", "Microsoft YaHei"}')
 

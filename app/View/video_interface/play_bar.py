@@ -1,14 +1,12 @@
 # coding:utf-8
-from components.buttons.play_bar_buttons import (CircleButton,
-                                                 FullScreenButton, PlayButton,
-                                                 VolumeButton)
 from components.buttons.play_bar_buttons import ButtonFactory as BF
+from components.buttons.tool_tip_button import ToolTipButton
 from components.widgets.slider import HollowHandleStyle, Slider
+from components.widgets.volume_widget import VolumeWidget, Theme
 from PyQt5.QtCore import Qt, pyqtSignal, QTimer
 from PyQt5.QtGui import QColor, QLinearGradient, QPainter
 from PyQt5.QtWidgets import QLabel, QWidget
 
-from .volume_slider_widget import VolumeSliderWidget
 
 
 class PlayBar(QWidget):
@@ -27,7 +25,7 @@ class PlayBar(QWidget):
         self.skipBackButton = BF.create(BF.SKIP_BACK, self)
         self.skipForwardButton = BF.create(BF.SKIP_FORWARD, self)
         self.downloadButton = BF.create(BF.DOWNLOAD, self)
-        self.volumeSliderWidget = VolumeSliderWidget(self.window())
+        self.volumeWidget = VolumeWidget(self.window(), Theme.DARK)
         self.timer = QTimer(self)
 
         self.__initWidget()
@@ -57,7 +55,7 @@ class PlayBar(QWidget):
         self.skipForwardButton.setToolTip(self.tr('Fast forward'))
         self.downloadButton.setToolTip(self.tr('Download'))
         self.fullScreenButton.setToolTip(self.tr('Show fullscreen'))
-        for button in self.findChildren(CircleButton):
+        for button in self.findChildren(ToolTipButton):
             button.setDarkToolTip(True)
 
         self.__initLayout()
@@ -158,20 +156,20 @@ class PlayBar(QWidget):
 
     def __toggleVolumeWidget(self):
         """ toggle the visibility of volume widget """
-        if not self.volumeSliderWidget.isVisible():
+        if not self.volumeWidget.isVisible():
             pos = self.mapToGlobal(self.volumeButton.pos())
-            self.volumeSliderWidget.move(self.window().x(), pos.y()-100)
-            self.volumeSliderWidget.show()
+            self.volumeWidget.move(self.window().x(), pos.y()-100)
+            self.volumeWidget.show()
         else:
-            self.volumeSliderWidget.hide()
+            self.volumeWidget.hide()
 
     def __connectSignalToSlot(self):
         """ connect signal to slot """
         self.progressSlider.clicked.connect(self.progressSliderMoved)
         self.progressSlider.sliderMoved.connect(self.progressSliderMoved)
         self.volumeButton.clicked.connect(self.__toggleVolumeWidget)
-        self.volumeSliderWidget.volumeLevelChanged.connect(
-            self.volumeButton.updateIcon)
-        self.volumeSliderWidget.muteStateChanged.connect(
+        self.volumeWidget.volumeChanged.connect(
+            self.volumeButton.setVolume)
+        self.volumeWidget.muteStateChanged.connect(
             self.volumeButton.setMute)
         self.timer.timeout.connect(self.hide)

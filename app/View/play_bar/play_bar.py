@@ -124,7 +124,7 @@ class PlayBar(QWidget):
     def setVolume(self, volume: int):
         """ set volume """
         self.volumeSlider.setValue(volume)
-        self.volumeButton.setVolumeLevel(volume)
+        self.volumeButton.setVolume(volume)
 
     def setPlay(self, isPlay: bool):
         """ set play state """
@@ -331,14 +331,15 @@ class PlayProgressBar(QWidget):
         self.hBoxLayout.setContentsMargins(0, 0, 0, 0)
         self.hBoxLayout.setSpacing(10)
 
-    def setCurrentTime(self, currentTime: int):
+    def setCurrentTime(self, time: int):
         """ set current time in milliseconds """
-        self.currentTimeLabel.setTime(int(currentTime/1000))
+        self.progressSlider.setValue(time)
+        self.currentTimeLabel.setTime(int(time/1000))
 
-    def setTotalTime(self, totalTime: int):
+    def setTotalTime(self, time: int):
         """ set total time in milliseconds """
-        self.totalTimeLabel.setTime(int(totalTime/1000))
-        self.progressSlider.setRange(0, totalTime)
+        self.totalTimeLabel.setTime(int(time/1000))
+        self.progressSlider.setRange(0, time)
 
     def resizeEvent(self, e):
         self.progressSlider.setFixedWidth(self.width() - 100)

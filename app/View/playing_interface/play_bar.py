@@ -4,10 +4,10 @@ from components.buttons.play_bar_buttons import ButtonFactory as BF
 from components.widgets.label import TimeLabel
 from components.widgets.menu import PlayingInterfaceMoreActionsMenu
 from components.widgets.slider import HollowHandleStyle, Slider
+from components.widgets.volume_widget import VolumeWidget
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QWidget
 
-from .volume_slider_widget import VolumeSliderWidget
 
 
 class PlayBar(QWidget):
@@ -20,7 +20,6 @@ class PlayBar(QWidget):
     embedLyricSig = pyqtSignal()
     reloadLyricSig = pyqtSignal()
     savePlaylistSig = pyqtSignal()
-    clearPlaylistSig = pyqtSignal()
     loadLyricFromFileSig = pyqtSignal()
     locateCurrentSongSig = pyqtSignal()
     revealLyricInFolderSig = pyqtSignal()
@@ -31,7 +30,7 @@ class PlayBar(QWidget):
         self.isLyricVisible = True
         self.playButton = BF.create(BF.PLAY, self)
         self.volumeButton = BF.create(BF.VOLUME, self)
-        self.volumeSliderWidget = VolumeSliderWidget(self.window())
+        self.volumeWidget = VolumeWidget(self.window())
         self.fullScreenButton = BF.create(BF.FULL_SCREEN, self)
         self.playProgressBar = PlayProgressBar(parent=self)
         self.pullUpArrowButton = BF.create(BF.PULL_UP_ARROW, self)
@@ -43,6 +42,7 @@ class PlayBar(QWidget):
         self.moreActionsButton = BF.create(BF.MORE, self)
         self.showPlaylistButton = BF.create(BF.PLAYLIST, self)
         self.smallPlayModeButton = BF.create(BF.SMALLEST_PLAY_MODE, self)
+        self.progressSlider = self.playProgressBar.progressSlider
 
         self.__initWidget()
 
@@ -50,6 +50,7 @@ class PlayBar(QWidget):
         """ initialize widgets """
         self.setFixedHeight(193)
         self.setAttribute(Qt.WA_TranslucentBackground)
+
         self.lastSongButton.move(17, 85)
         self.playButton.move(77, 85)
         self.nextSongButton.move(137, 85)
@@ -58,28 +59,29 @@ class PlayBar(QWidget):
         self.volumeButton.move(317, 85)
         self.desktopLyricButton.move(377, 85)
         self.moreActionsButton.move(437, 85)
-        self.volumeSliderWidget.hide()
         self.playProgressBar.move(0, 45)
+        self.volumeWidget.hide()
+
         self.lastSongButton.setToolTip(self.tr('Previous'))
         self.nextSongButton.setToolTip(self.tr('Next'))
         self.moreActionsButton.setToolTip(self.tr('More actions'))
         self.showPlaylistButton.setToolTip(self.tr('Show playlist'))
         self.smallPlayModeButton.setToolTip(self.tr('Smallest play mode'))
+
         self.__moveButtons()
         self.__connectSignalToSlot()
-        self.__referenceWidget()
 
     def __onVolumeButtonClicked(self):
         """ show volume slider """
-        if not self.volumeSliderWidget.isVisible():
+        if not self.volumeWidget.isVisible():
             pos = self.mapToGlobal(self.volumeButton.pos())
             x = pos.x() + int(
-                self.volumeButton.width() / 2 - self.volumeSliderWidget.width() / 2)
+                self.volumeButton.width() / 2 - self.volumeWidget.width() / 2)
             y = pos.y()-100
-            self.volumeSliderWidget.move(x, y)
-            self.volumeSliderWidget.show()
+            self.volumeWidget.move(x, y)
+            self.volumeWidget.show()
         else:
-            self.volumeSliderWidget.hide()
+            self.volumeWidget.hide()
 
     def __moveButtons(self):
         """ move buttons """
@@ -99,11 +101,6 @@ class PlayBar(QWidget):
 
     def leaveEvent(self, e):
         self.leaveSignal.emit()
-
-    def __referenceWidget(self):
-        self.progressSlider = self.playProgressBar.progressSlider
-        self.setCurrentTime = self.playProgressBar.setCurrentTime
-        self.setTotalTime = self.playProgressBar.setTotalTime
 
     def __showMoreActionsMenu(self):
         """ show more actions menu """
@@ -128,13 +125,31 @@ class PlayBar(QWidget):
     def __connectSignalToSlot(self):
         """ connect signal to slot """
         self.moreActionsButton.clicked.connect(self.__showMoreActionsMenu)
+
         self.volumeButton.clicked.connect(self.__onVolumeButtonClicked)
-        self.volumeSliderWidget.volumeLevelChanged.connect(
-            self.volumeButton.updateIcon)
+        self.volumeWidget.volumeChanged.connect(self.volumeButton.setVolume)
+        self.volumeWidget.volumeChanged.connect(signalBus.volumeChanged)
+        self.volumeWidget.muteStateChanged.connect(signalBus.muteStateChanged)
+
+        self.lastSongButton.clicked.connect(signalBus.lastSongSig)
+        self.nextSongButton.clicked.connect(signalBus.nextSongSig)
+        self.playButton.clicked.connect(signalBus.togglePlayStateSig)
+        self.fullScreenButton.fullScreenChanged.connect(signalBus.fullScreenChanged)
+        self.playProgressBar.progressChanged.connect(signalBus.progressSliderMoved)
+
+    def setCurrentTime(self, time: int):
+        """ set current time in milliseconds """
+        self.playProgressBar.setCurrentTime(time)
+
+    def setTotalTime(self, time):
+        """ set total time in milliseconds """
+        self.playProgressBar.setTotalTime(time)
 
 
 class PlayProgressBar(QWidget):
     """ Play progress bar """
+
+    progressChanged = pyqtSignal(int)
 
     def __init__(self, duration: int = 0, parent=None):
         """
@@ -168,9 +183,13 @@ class PlayProgressBar(QWidget):
         self.currentTimeLabel.setObjectName("timeLabel")
         self.totalTimeLabel.setObjectName("timeLabel")
 
-    def setCurrentTime(self, currentTime: int):
+        self.progressSlider.clicked.connect(self.progressChanged)
+        self.progressSlider.sliderMoved.connect(self.progressChanged)
+
+    def setCurrentTime(self, time: int):
         """ set current time in milliseconds """
-        self.currentTimeLabel.setTime(int(currentTime/1000))
+        self.progressSlider.setValue(time)
+        self.currentTimeLabel.setTime(int(time/1000))
         self.currentTimeLabel.move(
             33 - 9 * (len(self.totalTimeLabel.text()) - 4), 1)
 

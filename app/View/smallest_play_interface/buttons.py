@@ -1,78 +1,72 @@
 # coding:utf-8
-from PyQt5.QtCore import Qt, QEvent
-from PyQt5.QtGui import QPainter, QColor, QPen, QPixmap
+from common.icon import drawSvgIcon
+from components.buttons.circle_button import CIF
+from PyQt5.QtCore import Qt, QEvent, QSize, QRectF
+from PyQt5.QtGui import QPainter, QColor, QPen
 from PyQt5.QtWidgets import QToolButton
 
 
 class SmallestPlayModeButton(QToolButton):
     """ Smallest interface button """
 
-    def __init__(self, iconPath, parent=None, buttonSize: tuple = (45, 45)):
+    def __init__(self, iconPath, parent=None, iconSize=(21, 21), buttonSize=(45, 45)):
         super().__init__(parent)
-        self.__isEnter = False
-        self.__isPressed = False
-        self._pixPos_list = [(1, 0), (2, 2)]
-        self.iconPixmap = QPixmap(iconPath)
+        self.isEnter = False
+        self.isPressed = False
 
+        self.iconPath = iconPath
+        self.setIconSize(QSize(*iconSize))
         self.resize(*buttonSize)
-        self.setStyleSheet(
-            "QToolButton{border:none;margin:0;background:transparent}")
         self.installEventFilter(self)
 
     def eventFilter(self, obj, e: QEvent):
-        if obj == self:
+        if obj is self:
             if e.type() == QEvent.Enter:
-                self.__isEnter = True
+                self.isEnter = True
                 self.update()
-                return False
             elif e.type() == QEvent.Leave:
-                self.__isEnter = False
+                self.isEnter = False
                 self.update()
-                return False
             elif e.type() in [QEvent.MouseButtonPress, QEvent.MouseButtonDblClick, QEvent.MouseButtonRelease]:
-                self.__isPressed = not self.__isPressed
+                self.isPressed = not self.isPressed
                 self.update()
-                return False
 
         return super().eventFilter(obj, e)
 
     def paintEvent(self, e):
         """ paint button """
-        iconPixmap = self.iconPixmap
-        px, py = self._pixPos_list[0]
         painter = QPainter(self)
-        painter.setRenderHints(QPainter.Antialiasing |
-                               QPainter.SmoothPixmapTransform)
-        pen = Qt.NoPen
-        if self.__isPressed:
-            pen = QPen(QColor(255, 255, 255, 30))
-            pen.setWidth(2)
-            iconPixmap = self.iconPixmap.scaled(
-                self.iconPixmap.width() - 4, self.iconPixmap.height() - 4,
-                Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            px, py = self._pixPos_list[1]
-        elif self.__isEnter:
-            pen = QPen(QColor(255, 255, 255, 96))
-            pen.setWidth(2)
-        painter.setPen(pen)
+        painter.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
 
+        ds = 0
+        if self.isPressed:
+            ds = 4
+            pen = QPen(QColor(255, 255, 255, 30), 2)
+        elif self.isEnter:
+            pen = QPen(QColor(255, 255, 255, 96), 2)
+        else:
+            pen = Qt.NoPen
+
+        # draw circle
+        painter.setPen(pen)
         painter.drawEllipse(1, 1, self.width()-2, self.height()-2)
-        painter.drawPixmap(px, py, iconPixmap.width(),
-                           iconPixmap.height(), iconPixmap)
+
+        # draw icon
+        iw, ih = self.iconSize().width()-ds, self.iconSize().height()-ds
+        rect = QRectF((self.width()-iw)/2, (self.height()-ih)/2, iw, ih)
+        drawSvgIcon(self.iconPath, painter, rect)
 
 
 class PlayButton(SmallestPlayModeButton):
     """ Play button """
 
     def __init__(self, parent=None, isPause=True):
-        iconPaths = [
-            ":/images/smallest_play_interface/Pause.png",
-            ":/images/smallest_play_interface/Play.png",
-        ]
-        super().__init__(iconPaths[isPause], parent, (45, 45))
         self.__isPause = isPause
-        self.iconPixmaps = [QPixmap(iconPath) for iconPath in iconPaths]
-        self._pixPos_list = [(0, 0), (2, 2)]
+        self.iconPaths = [
+            ":/images/smallest_play_interface/Pause.svg",
+            ":/images/smallest_play_interface/Play.svg",
+        ]
+        super().__init__(self.iconPaths[isPause], parent, (34, 34), (45, 45))
 
     def mouseReleaseEvent(self, e):
         self.setPlay(self.__isPause)
@@ -81,5 +75,5 @@ class PlayButton(SmallestPlayModeButton):
     def setPlay(self, isPlay: bool):
         """ set play state """
         self.__isPause = not isPlay
-        self.iconPixmap = self.iconPixmaps[self.__isPause]
+        self.iconPath = self.iconPaths[self.__isPause]
         self.update()

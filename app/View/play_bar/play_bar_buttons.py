@@ -1,4 +1,5 @@
 # coding:utf-8
+from common.audio_utils import getVolumeLevel
 from common.signal_bus import signalBus
 from components.buttons.tool_tip_button import ToolTipButton
 from PyQt5.QtCore import QEvent, Qt
@@ -351,7 +352,7 @@ class VolumeButton(ToolTipButton):
         self.isEnter = False
         self.isPressed = False
         self.isMute = False
-        self.volumeLevel = 1
+        self.level = 1
         self.iconPixmaps = [
             QPixmap(':/images/play_bar/Volume0.png'),
             QPixmap(':/images/play_bar/Volume1.png'),
@@ -422,27 +423,17 @@ class VolumeButton(ToolTipButton):
         self.setToolTip(text)
 
         self.isMute = isMute
-        index = -1 if isMute else self.volumeLevel
+        index = -1 if isMute else self.level
         self.iconPixmap = self.iconPixmaps[index]
         self.update()
 
-    def setVolumeLevel(self, volume):
+    def setVolume(self, volume: int):
         """ set volume level """
-        if volume == 0:
-            self.__updateIcon(0)
-        elif volume <= 32:
-            self.__updateIcon(1)
-        elif 33 <= volume <= 65:
-            self.__updateIcon(2)
-        elif volume > 65:
-            self.__updateIcon(3)
-
-    def __updateIcon(self, iconIndex):
-        """ update icon """
-        if self.volumeLevel == iconIndex:
+        level = getVolumeLevel(volume)
+        if self.level == level:
             return
 
-        self.volumeLevel = iconIndex
+        self.level = level
         if not self.isMute:
-            self.iconPixmap = self.iconPixmaps[iconIndex]
+            self.iconPixmap = self.iconPixmaps[level]
             self.update()

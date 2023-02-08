@@ -28,7 +28,7 @@
         <file>qss/light/song_list_widget.qss</file>
         <file>qss/light/state_tool_tip.qss</file>
         <file>qss/light/switch_button.qss</file>
-        <file>qss/light/volume_slider_widget.qss</file>
+        <file>qss/light/volume_widget.qss</file>
         <file>qss/light/lyric_widget.qss</file>
         <file>qss/light/tool_tip.qss</file>
         <file>qss/light/selection_mode_interface.qss</file>
@@ -70,7 +70,7 @@
         <file>qss/dark/song_list_widget.qss</file>
         <file>qss/dark/state_tool_tip.qss</file>
         <file>qss/dark/switch_button.qss</file>
-        <file>qss/dark/volume_slider_widget.qss</file>
+        <file>qss/dark/volume_widget.qss</file>
         <file>qss/dark/lyric_widget.qss</file>
         <file>qss/dark/tool_tip.qss</file>
         <file>qss/dark/selection_mode_interface.qss</file>
@@ -265,49 +265,22 @@
         <file>images/play_bar/RepeatAll.png</file>
         <file>images/play_bar/RepeatOne.png</file>
         <file>images/play_bar/Shuffle.png</file>
-        <file>images/play_bar/SmallestPlayMode.png</file>
         <file>images/play_bar/Volume0.png</file>
         <file>images/play_bar/Volume1.png</file>
         <file>images/play_bar/Volume2.png</file>
         <file>images/play_bar/Volume3.png</file>
         <file>images/play_bar/Volumex.png</file>
-        <file>images/playing_interface/Add.png</file>
-        <file>images/playing_interface/Add_20_20.png</file>
-        <file>images/playing_interface/Add_green.png</file>
-        <file>images/playing_interface/Album.png</file>
-        <file>images/playing_interface/BackToWindow.png</file>
-        <file>images/playing_interface/DesktopLyric.png</file>
+        <file>images/play_bar/SmallestPlayMode.png</file>
         <file>images/playing_interface/CheckMark.png</file>
-        <file>images/playing_interface/ChevronRight.png</file>
-        <file>images/playing_interface/ChevronUp.png</file>
-        <file>images/playing_interface/FullScreen.png</file>
-        <file>images/playing_interface/More.png</file>
-        <file>images/playing_interface/Next.png</file>
-        <file>images/playing_interface/Pause_47_47.png</file>
-        <file>images/playing_interface/Playing_green.png</file>
-        <file>images/playing_interface/Playing_white.png</file>
-        <file>images/playing_interface/Playlist_47_47.png</file>
-        <file>images/playing_interface/Play_47_47.png</file>
-        <file>images/playing_interface/Play_60_60.png</file>
-        <file>images/playing_interface/Play_green_60_60.png</file>
-        <file>images/playing_interface/Previous.png</file>
-        <file>images/playing_interface/randomPlay_47_47.png</file>
-        <file>images/playing_interface/RepeatAll.png</file>
-        <file>images/playing_interface/RepeatOne.png</file>
-        <file>images/playing_interface/Shuffle_hover.png</file>
-        <file>images/playing_interface/Shuffle_normal.png</file>
-        <file>images/playing_interface/Shuffle_pressed.png</file>
-        <file>images/playing_interface/SmallestPlayMode.png</file>
-        <file>images/playing_interface/Volume0.png</file>
-        <file>images/playing_interface/Volume0_black.png</file>
-        <file>images/playing_interface/Volume1.png</file>
-        <file>images/playing_interface/Volume1_black.png</file>
-        <file>images/playing_interface/Volume2.png</file>
-        <file>images/playing_interface/Volume2_black.png</file>
-        <file>images/playing_interface/Volume3.png</file>
-        <file>images/playing_interface/Volume3_black.png</file>
-        <file>images/playing_interface/volume_black_level_mute_47_47.png</file>
-        <file>images/playing_interface/volume_white_level_mute_47_47.png</file>
+        <file>images/playing_interface/Add_white.svg</file>
+        <file>images/playing_interface/Add_green.svg</file>
+        <file>images/playing_interface/Play_white.svg</file>
+        <file>images/playing_interface/Play_green.svg</file>
+        <file>images/playing_interface/Playing_green.svg</file>
+        <file>images/playing_interface/Playing_white.svg</file>
+        <file>images/playing_interface/Shuffle_hover.svg</file>
+        <file>images/playing_interface/Shuffle_normal.svg</file>
+        <file>images/playing_interface/Shuffle_pressed.svg</file>
         <file>images/playlist_card_interface/Add_black_hover.svg</file>
         <file>images/playlist_card_interface/Add_black_normal.svg</file>
         <file>images/playlist_card_interface/Add_black_pressed.svg</file>
@@ -372,10 +345,8 @@
         <file>images/singer_interface/Play_white_hover.svg</file>
         <file>images/singer_interface/Play_white_normal.svg</file>
         <file>images/singer_interface/Play_white_pressed.svg</file>
-        <file>images/smallest_play_interface/Next.png</file>
-        <file>images/smallest_play_interface/Pause.png</file>
-        <file>images/smallest_play_interface/Play.png</file>
-        <file>images/smallest_play_interface/Previous.png</file>
+        <file>images/smallest_play_interface/Pause.svg</file>
+        <file>images/smallest_play_interface/Play.svg</file>
         <file>images/song_list_widget/Add_black.svg</file>
         <file>images/song_list_widget/Add_green_black.svg</file>
         <file>images/song_list_widget/Add_green_white.svg</file>
@@ -399,14 +370,6 @@
         <file>images/song_list_widget/Delete_white.svg</file>
         <file>images/song_list_widget/Delete_green_black.svg</file>
         <file>images/song_list_widget/Delete_green_white.svg</file>
-        <file>images/video_window/Volume0.png</file>
-        <file>images/video_window/Volume1.png</file>
-        <file>images/video_window/Volume2.png</file>
-        <file>images/video_window/Volume3.png</file>
-        <file>images/video_window/Volumex.png</file>
-        <file>images/video_window/SkipBack.png</file>
-        <file>images/video_window/SkipForward.png</file>
-        <file>images/video_window/Download.png</file>
         <file>images/desktop_lyric_interface/Play.svg</file>
         <file>images/desktop_lyric_interface/Pause.svg</file>
         <file>images/desktop_lyric_interface/Next.svg</file>
@@ -475,6 +438,33 @@
         <file>images/color_picker/HuePanel.png</file>
         <file>images/color_picker/Clear_black.svg</file>
         <file>images/color_picker/Clear_white.svg</file>
+        <file>images/circle_button/BackToWindow.svg</file>
+        <file>images/circle_button/DesktopLyric.svg</file>
+        <file>images/circle_button/FullScreen.svg</file>
+        <file>images/circle_button/More.svg</file>
+        <file>images/circle_button/Playlist.svg</file>
+        <file>images/circle_button/Download.svg</file>
+        <file>images/circle_button/SkipBack.svg</file>
+        <file>images/circle_button/SkipForward.svg</file>
+        <file>images/circle_button/Next.svg</file>
+        <file>images/circle_button/Pause.svg</file>
+        <file>images/circle_button/Play.svg</file>
+        <file>images/circle_button/Previous.svg</file>
+        <file>images/circle_button/RepeatAll.svg</file>
+        <file>images/circle_button/RepeatOne.svg</file>
+        <file>images/circle_button/Shuffle.svg</file>
+        <file>images/circle_button/SmallestPlayMode.svg</file>
+        <file>images/circle_button/Volume0_black.svg</file>
+        <file>images/circle_button/Volume0_white.svg</file>
+        <file>images/circle_button/Volume1_black.svg</file>
+        <file>images/circle_button/Volume1_white.svg</file>
+        <file>images/circle_button/Volume2_black.svg</file>
+        <file>images/circle_button/Volume2_white.svg</file>
+        <file>images/circle_button/Volume3_black.svg</file>
+        <file>images/circle_button/Volume3_white.svg</file>
+        <file>images/circle_button/Volumex_black.svg</file>
+        <file>images/circle_button/Volumex_white.svg</file>
+        <file>images/circle_button/ChevronUp.svg</file>
 
         <file>i18n/Groove_zh.qm</file>
         <file>i18n/Groove_hk.qm</file>

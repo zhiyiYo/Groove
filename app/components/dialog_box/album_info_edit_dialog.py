@@ -12,11 +12,12 @@ from components.widgets.line_edit import LineEdit
 from components.widgets.perspective_widget import PerspectiveWidget
 from components.widgets.scroll_area import ScrollArea
 from mutagen.id3 import TCON
-from PyQt5.QtCore import QFile, QRegExp, Qt, QTimer, pyqtSignal
+from PyQt5.QtCore import QRegExp, Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import (QBrush, QColor, QLinearGradient, QPainter, QPixmap,
                          QRegExpValidator)
 from PyQt5.QtWidgets import (QApplication, QCompleter, QFileDialog, QLabel,
                              QWidget)
+from PyQt5.QtSvg import QSvgWidget
 
 from .mask_dialog_base import MaskDialogBase
 
@@ -365,17 +366,16 @@ class SongInfoWidget(QWidget):
 
 
 class AlbumCoverWindow(PerspectiveWidget):
-    """ 显示专辑封面窗口 """
 
     clicked = pyqtSignal()
 
     def __init__(self, picPath: str, picSize: tuple, parent=None):
-        super().__init__(parent)
+        super().__init__(parent, True)
         self.__picPath = picPath
         self.__picSize = picSize
         self.albumCoverLabel = PixmapLabel(self)
         self.albumCoverMask = AlbumCoverMask(self)
-        self.editAlbumCoverLabel = PixmapLabel(self)
+        self.editLabel = QSvgWidget(":/images/app_bar/Edit.svg", self)
         self.__initWidget()
 
     def __initWidget(self):
@@ -383,10 +383,8 @@ class AlbumCoverWindow(PerspectiveWidget):
         self.setFixedSize(*self.__picSize)
         self.albumCoverLabel.setFixedSize(*self.__picSize)
         self.setAlbumCover(self.__picPath)
-        self.editAlbumCoverLabel.setAttribute(Qt.WA_TranslucentBackground)
-        self.editAlbumCoverLabel.setPixmap(
-            QPixmap(":/images/album_interface/Edit.png"))
-        self.editAlbumCoverLabel.move(14, 137)
+        self.editLabel.setFixedSize(20, 20)
+        self.editLabel.move(14, 137)
 
     def setAlbumCover(self, picPath: str):
         """ set album cover """

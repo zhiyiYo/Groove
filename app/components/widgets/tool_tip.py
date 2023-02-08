@@ -7,7 +7,7 @@ from PyQt5.QtCore import (QEasingCurve, QPoint, QPropertyAnimation, QSize, Qt,
 from PyQt5.QtGui import QColor, QPainter
 from PyQt5.QtWidgets import (QApplication, QFrame, QGraphicsDropShadowEffect,
                              QGraphicsOpacityEffect, QHBoxLayout, QLabel,
-                             QToolButton, QWidget)
+                             QWidget)
 from PyQt5.QtSvg import QSvgWidget
 
 

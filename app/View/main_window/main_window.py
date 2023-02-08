@@ -569,10 +569,8 @@ class MainWindow(AcrylicWindow):
     def onPlayerPositionChanged(self, position):
         """ player position changed slot """
         self.playBar.setCurrentTime(position)
-        self.playBar.progressSlider.setValue(position)
         self.playingInterface.setCurrentTime(position)
-        self.playingInterface.playBar.progressSlider.setValue(position)
-        self.smallestPlayInterface.progressBar.setValue(position)
+        self.smallestPlayInterface.setCurrentTime(position)
 
     def setDuration(self, duration):
         """ player duration changed slot """
@@ -715,7 +713,7 @@ class MainWindow(AcrylicWindow):
         if self.isInSelectionMode:
             return
 
-        self.playingInterface.playBar.volumeSliderWidget.hide()
+        self.playingInterface.playBar.volumeWidget.hide()
 
         history = self.navigationHistories.pop()
         if history == ("totalStackWidget", 2):

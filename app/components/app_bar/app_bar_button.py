@@ -1,7 +1,7 @@
 # coding:utf-8
 from common.icon import drawSvgIcon
 from PyQt5.QtCore import QEvent, Qt, QObject, QPoint, QRect
-from PyQt5.QtGui import QPainter, QHoverEvent, QIcon
+from PyQt5.QtGui import QPainter, QHoverEvent
 from PyQt5.QtWidgets import QApplication, QPushButton
 
 

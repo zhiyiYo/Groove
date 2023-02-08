@@ -328,7 +328,7 @@ class PlayingInterface(QWidget):
 
     def __startSongInfoCardTimer(self):
         """ restart the timer of song information cards """
-        if not self.playBar.volumeSliderWidget.isVisible():
+        if not self.playBar.volumeWidget.isVisible():
             self.songInfoCardChute.startSongInfoCardTimer()
 
     def __removeSongFromPlaylist(self, index):
@@ -427,15 +427,15 @@ class PlayingInterface(QWidget):
     def setMute(self, isMute: bool):
         """ set whether to mute """
         self.playBar.volumeButton.setMute(isMute)
-        self.playBar.volumeSliderWidget.volumeButton.setMute(isMute)
+        self.playBar.volumeWidget.volumeButton.setMute(isMute)
 
     def setVolume(self, volume: int):
         """ set volume """
-        if self.playBar.volumeSliderWidget.volumeSlider.value() == volume:
+        if self.playBar.volumeWidget.value() == volume:
             return
 
-        self.playBar.volumeSliderWidget.setVolume(volume)
-        self.playBar.volumeButton.setVolumeLevel(volume)
+        self.playBar.volumeWidget.setVolume(volume)
+        self.playBar.volumeButton.setVolume(volume)
 
     def setCurrentTime(self, currentTime: int):
         """ set current time in milliseconds """
@@ -643,17 +643,6 @@ class PlayingInterface(QWidget):
         self.songInfoCardChute.aniFinished.connect(self.__getLyric)
 
         # play bar signal
-        self.playBar.volumeSliderWidget.volumeSlider.valueChanged.connect(
-            signalBus.volumeChanged)
-        self.playBar.fullScreenButton.fullScreenChanged.connect(
-            signalBus.fullScreenChanged)
-        self.playBar.progressSlider.sliderMoved.connect(
-            signalBus.progressSliderMoved)
-        self.playBar.progressSlider.clicked.connect(
-            signalBus.progressSliderMoved)
-        self.playBar.lastSongButton.clicked.connect(signalBus.lastSongSig)
-        self.playBar.nextSongButton.clicked.connect(signalBus.nextSongSig)
-        self.playBar.playButton.clicked.connect(signalBus.togglePlayStateSig)
         self.playBar.desktopLyricButton.lyricVisibleChanged.connect(
             self.desktopLyricInterface.setVisible)
         self.playBar.pullUpArrowButton.clicked.connect(
@@ -669,10 +658,12 @@ class PlayingInterface(QWidget):
         self.playBar.enterSignal.connect(self.__settleDownPlayBar)
         self.playBar.leaveSignal.connect(self.__startSongInfoCardTimer)
         self.playBar.loadLyricFromFileSig.connect(self.__loadLyricFromFile)
-        self.playBar.revealLyricInFolderSig.connect(self.__revealLyricFileInExplorer)
+        self.playBar.revealLyricInFolderSig.connect(
+            self.__revealLyricFileInExplorer)
         self.playBar.lyricVisibleChanged.connect(self.__onLyricVisibleChanged)
-        self.playBar.locateCurrentSongSig.connect(self.songListWidget.locateCurrentSong)
-        self.playBar.clearPlaylistSig.connect(signalBus.clearPlayingPlaylistSig)
+        self.playBar.locateCurrentSongSig.connect(
+            self.songListWidget.locateCurrentSong)
+        
         self.playBar.savePlaylistSig.connect(
             lambda: signalBus.addSongsToNewCustomPlaylistSig.emit(self.playlist))
 

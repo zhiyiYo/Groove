@@ -50,7 +50,7 @@ class VideoInterface(QGraphicsView):
 
         # initialize volume
         self.player.setVolume(30)
-        self.playBar.volumeSliderWidget.setVolume(30)
+        self.playBar.volumeWidget.setVolume(30)
 
         self.playBar.installEventFilter(self)
 
@@ -133,9 +133,9 @@ class VideoInterface(QGraphicsView):
         elif e.key() == Qt.Key_Right:
             self.skipForward()
         elif e.key() == Qt.Key_Up:
-            self.playBar.volumeSliderWidget.setVolume(self.player.volume()+1)
+            self.playBar.volumeWidget.setVolume(self.player.volume()+1)
         elif e.key() == Qt.Key_Down:
-            self.playBar.volumeSliderWidget.setVolume(self.player.volume()-1)
+            self.playBar.volumeWidget.setVolume(self.player.volume()-1)
 
         return super().keyPressEvent(e)
 
@@ -240,9 +240,9 @@ class VideoInterface(QGraphicsView):
         self.playBar.progressSliderMoved.connect(self.player.setPosition)
         self.playBar.skipBackButton.clicked.connect(self.skipBack)
         self.playBar.skipForwardButton.clicked.connect(self.skipForward)
-        self.playBar.volumeSliderWidget.muteStateChanged.connect(
+        self.playBar.volumeWidget.muteStateChanged.connect(
             self.player.setMuted)
-        self.playBar.volumeSliderWidget.volumeSlider.valueChanged.connect(
+        self.playBar.volumeWidget.volumeSlider.valueChanged.connect(
             self.player.setVolume)
         self.playBar.fullScreenButton.fullScreenChanged.connect(
             self.__onFullScreenChanged)

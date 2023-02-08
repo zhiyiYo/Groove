@@ -5,7 +5,7 @@ from common.database.entity import SongInfo
 from common.picture import Cover
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
-from components.buttons.circle_button import CircleButton
+from components.buttons.play_bar_buttons import ButtonFactory as BF
 from components.frameless_window import FramelessWindow
 from components.widgets.label import BlurCoverLabel
 from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
@@ -14,7 +14,7 @@ from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
 from PyQt5.QtGui import QFont, QFontMetrics
 from PyQt5.QtWidgets import QGraphicsOpacityEffect, QLabel, QSlider, QWidget
 
-from .buttons import PlayButton, SmallestPlayModeButton
+from .buttons import PlayButton, SmallestPlayModeButton, CIF
 from .title_bar import TitleBar
 
 
@@ -36,12 +36,9 @@ class SmallestPlayInterface(FramelessWindow):
         self.albumCoverLabel = BlurCoverLabel(35, (350, 350), self)
 
         self.playButton = PlayButton(self)
-        self.lastSongButton = SmallestPlayModeButton(
-            ":/images/smallest_play_interface/Previous.png", self)
-        self.nextSongButton = SmallestPlayModeButton(
-            ":/images/smallest_play_interface/Next.png", self)
-        self.exitButton = CircleButton(
-            ":/images/playing_interface/SmallestPlayMode.png", self)
+        self.lastSongButton = SmallestPlayModeButton(CIF.path(CIF.PREVIOUS), self)
+        self.nextSongButton = SmallestPlayModeButton(CIF.path(CIF.NEXT), self)
+        self.exitButton = BF.create(BF.SMALLEST_PLAY_MODE, self)
         self.progressBar = QSlider(Qt.Horizontal, self)
         self.aniGroup = QParallelAnimationGroup(self)
         self.titleBar = TitleBar(self)
@@ -283,6 +280,10 @@ class SmallestPlayInterface(FramelessWindow):
     def clearPlaylist(self):
         """ clear playlist """
         self.playlist.clear()
+
+    def setCurrentTime(self, time: int):
+        """ set current time in milliseconds """
+        self.progressBar.setValue(time)
 
     def __completeShift(self, index):
         """ complete the shift of cards """

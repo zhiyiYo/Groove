@@ -1,4 +1,5 @@
 # coding: utf-8
+import math
 from pathlib import Path
 from .logger import Logger
 from .signal_bus import signalBus
@@ -23,3 +24,8 @@ def writeAudio(func):
 
 def isValidLocalAudio(file: str):
     return not file.startswith('http') and Path(file).exists()
+
+
+def getVolumeLevel(volume: int):
+    """ map volume value to level """
+    return min(math.ceil(volume/32), 3)

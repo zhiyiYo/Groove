@@ -428,7 +428,7 @@ class Config(Singleton):
 
     @property
     def theme(self) -> Theme:
-        """ theme mode """
+        """ theme mode, could be `Theme.LIGHT` or `Theme.DARK` """
         return self.__theme
 
     @property

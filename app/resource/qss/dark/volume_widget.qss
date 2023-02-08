@@ -1,0 +1,57 @@
+VolumeWidget {
+    background-color: rgb(31, 31, 31);
+    border: 1px solid rgb(25, 25, 25);
+    border-radius: 8px;
+}
+
+QLabel {
+    font: 16px 'Microsoft YaHei';
+    color: white;
+}
+
+
+QSlider:horizontal {
+    width: 188px;
+    min-height: 30px;
+}
+
+QSlider::groove:horizontal {
+    height: 5px;
+    background-color: rgb(158, 159, 159);
+    border-radius: 2px;
+}
+
+QSlider::sub-page:horizontal {
+    background: rgb(41, 247, 255);
+    height: 5px;
+    border-radius: 2px;
+}
+
+QSlider::handle:horizontal {
+    border: 1px solid rgb(58, 58, 58);
+    width: 26px;
+    min-height: 31px;
+    margin: -12px 0 -11px 0;
+    border-radius: 14px;
+    background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5,
+        stop:0 rgb(41, 247, 255),
+        stop:0.5 rgb(41, 247, 255),
+        stop:0.6 rgb(69, 69, 69),
+        stop:1 rgb(69, 69, 69));
+}
+
+QSlider::handle:horizontal:hover {
+    background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5,
+        stop:0 rgb(41, 247, 255),
+        stop:0.6 rgb(41, 247, 255),
+        stop:0.7 rgb(69, 69, 69),
+        stop:1 rgb(69, 69, 69));
+}
+
+QSlider::handle:horizontal:pressed {
+    background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5,
+        stop:0 rgb(41, 247, 255),
+        stop:0.4 rgb(41, 247, 255),
+        stop:0.5 rgb(69, 69, 69),
+        stop:1 rgb(69, 69, 69));
+}

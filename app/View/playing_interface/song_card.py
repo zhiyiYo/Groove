@@ -1,6 +1,5 @@
 # coding:utf-8
 from common.config import Theme
-from common.icon import Icon
 from common.database.entity import SongInfo
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
@@ -9,9 +8,10 @@ from components.widgets.label import ClickableLabel, PixmapLabel
 from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
                           QParallelAnimationGroup, QPoint, QPropertyAnimation,
                           QSize, Qt, pyqtSignal)
-from PyQt5.QtGui import QFont, QFontMetrics, QMouseEvent, QPixmap
+from PyQt5.QtGui import QFont, QFontMetrics, QMouseEvent, QPixmap, QIcon
 from PyQt5.QtWidgets import (QApplication, QCheckBox, QLabel, QToolButton,
                              QWidget)
+from PyQt5.QtSvg import QSvgWidget
 
 
 class SongCard(QWidget):
@@ -321,14 +321,14 @@ class ToolButton(QToolButton):
         self.iconPaths = iconPaths
         self.isPlaying = False
         self.setFixedSize(60, 60)
-        self.setIconSize(QSize(60, 60))
-        self.setIcon(Icon(self.iconPaths[self.isPlaying]))
+        self.setIconSize(QSize(20, 20))
+        self.setIcon(QIcon(self.iconPaths[self.isPlaying]))
         self.setStyleSheet("QToolButton{border:none;margin:0}")
 
     def setPlay(self, isPlay: bool):
         """ set play state """
         self.isPlaying = isPlay
-        self.setIcon(Icon(self.iconPaths[self.isPlaying]))
+        self.setIcon(QIcon(self.iconPaths[self.isPlaying]))
 
 
 class ButtonGroup(QWidget):
@@ -338,15 +338,15 @@ class ButtonGroup(QWidget):
         super().__init__(parent)
         self.playButton = ToolButton(
             [
-                ":/images/playing_interface/Play_60_60.png",
-                ":/images/playing_interface/Play_green_60_60.png",
+                ":/images/playing_interface/Play_white.svg",
+                ":/images/playing_interface/Play_green.svg",
             ],
             self,
         )
         self.addToButton = ToolButton(
             [
-                ":/images/playing_interface/Add.png",
-                ":/images/playing_interface/Add_green.png",
+                ":/images/playing_interface/Add_white.svg",
+                ":/images/playing_interface/Add_green.svg",
             ],
             self,
         )
@@ -369,9 +369,10 @@ class SongNameCard(QWidget):
         super().__init__(parent)
         self.songName = songName
         self.checkBox = QCheckBox(self)
-        self.playingLabel = PixmapLabel(self)
         self.songNameLabel = QLabel(songName, self)
         self.buttonGroup = ButtonGroup(self)
+        self.playingLabel = QSvgWidget(
+            ":/images/playing_interface/Playing_green.svg", self)
         self.playButton = self.buttonGroup.playButton
         self.addToButton = self.buttonGroup.addToButton
         self.__initWidget()
@@ -381,9 +382,8 @@ class SongNameCard(QWidget):
         self.setFixedHeight(60)
         self.resize(390, 60)
         self.setAttribute(Qt.WA_TranslucentBackground)
-        self.playingLabel.setPixmap(
-            QPixmap(":/images/playing_interface/Playing_green.png"))
         self.playingLabel.setObjectName('playingLabel')
+        self.playingLabel.setFixedSize(17, 17)
 
         self.checkBox.hide()
         self.buttonGroup.hide()
@@ -395,7 +395,7 @@ class SongNameCard(QWidget):
     def __initLayout(self):
         """ initialize layout """
         self.checkBox.move(8, 17)
-        self.playingLabel.move(43, 22)
+        self.playingLabel.move(43, 21)
         self.songNameLabel.move(41, 20)
         self.__moveButtonGroup()
 

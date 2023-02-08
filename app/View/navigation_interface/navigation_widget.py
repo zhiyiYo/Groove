@@ -1,4 +1,5 @@
 # coding:utf-8
+from common.config import config, Theme
 from common.os_utils import getPlaylistNames
 from common.signal_bus import signalBus
 from components.widgets.scroll_area import ScrollArea
@@ -97,7 +98,10 @@ class NavigationWidget(NavigationWidgetBase):
     def paintEvent(self, e):
         """ paint seperator """
         painter = QPainter(self)
-        painter.setPen(QColor(0, 0, 0, 30))
+        c = 255 if config.theme == Theme.DARK else 0
+        pen = QPen(QColor(c, c, c, 30))
+        pen.setCosmetic(True)
+        painter.setPen(pen)
         painter.drawLine(15, self.settingButton.y()-1,
                          self.width()-15, self.settingButton.y()-1)
 
@@ -141,7 +145,8 @@ class NavigationWidget(NavigationWidgetBase):
         """ create playlist name buttons """
         self.playlistNames = playlistNames
         self.playlistNameButtons = [
-            PushButton(NIF.path(NIF.ALBUM), i, (400, 62), (22, 22), self.scrollWidget)
+            PushButton(NIF.path(NIF.ALBUM), i, (400, 62),
+                       (22, 22), self.scrollWidget)
             for i in playlistNames
         ]
 
@@ -166,6 +171,8 @@ class ScrollWidget(QWidget):
     def paintEvent(self, e):
         """ paint seperator """
         painter = QPainter(self)
-        pen = QPen(QColor(0, 0, 0, 30))
+        c = 255 if config.theme == Theme.DARK else 0
+        pen = QPen(QColor(c, c, c, 30))
+        pen.setCosmetic(True)
         painter.setPen(pen)
         painter.drawLine(15, 185, self.width() - 15, 185)
