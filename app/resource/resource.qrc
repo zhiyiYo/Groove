@@ -144,9 +144,9 @@
         <file>images/default_covers/playlist_275_275.png</file>
         <file>images/default_covers/singer_295_295.png</file>
         <file>images/default_covers/singer_200_200.png</file>
-        <file>images/album_tab_interface/Add.png</file>
+        <file>images/blur_button/Add.svg</file>
+        <file>images/blur_button/Play.svg</file>
         <file>images/album_tab_interface/CheckMark.png</file>
-        <file>images/album_tab_interface/Play.png</file>
         <file>images/playlist_dialog/Clear_black.svg</file>
         <file>images/playlist_dialog/Clear_white.svg</file>
         <file>images/playlist_dialog/Clear_green.svg</file>

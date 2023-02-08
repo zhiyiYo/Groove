@@ -1,6 +1,7 @@
 # coding:utf-8
+from common.icon import drawSvgIcon
 from PIL.ImageFilter import GaussianBlur
-from PyQt5.QtCore import QPropertyAnimation, Qt, pyqtProperty
+from PyQt5.QtCore import QPropertyAnimation, Qt, pyqtProperty, QRectF, QSize
 from PyQt5.QtGui import QBrush, QEnterEvent, QPainter, QPixmap
 
 from .tool_tip_button import ToolTipButton
@@ -11,7 +12,7 @@ class BlurButton(ToolTipButton):
     """ Blur button class """
 
     def __init__(self, parent, cropPos: tuple, iconPath: str, blurPicPath: str,
-                 text: str, radius=35, blurRadius=40):
+                 text: str, radius=35, blurRadius=40, iconSize=(25, 25)):
         """
         Parameters
         ----------
@@ -35,6 +36,9 @@ class BlurButton(ToolTipButton):
 
         blurRadius: int
             blur radius
+
+        iconSize: tuple
+            icon size
         """
         super().__init__(parent=parent)
         self.__paintRadius = radius-5
@@ -42,13 +46,13 @@ class BlurButton(ToolTipButton):
         self.radius = radius
         self.resize(radius*2, radius*2)
         self.setAttribute(Qt.WA_TranslucentBackground)
+        self.setIconSize(QSize(*iconSize))
 
         self.blurPix = None
         self.blurPicPath = blurPicPath
         self.blurRadius = blurRadius
         self.cropX, self.cropY = cropPos
-        self.iconPix = QPixmap(iconPath).scaled(
-            radius*2, radius*2, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        self.iconPath = iconPath
         self.radiusAni = QPropertyAnimation(self, b'paintRadius', self)
         self.opacityAni = QPropertyAnimation(self, b'opacity', self)
         self.setToolTip(text)
@@ -101,15 +105,16 @@ class BlurButton(ToolTipButton):
         painter.setPen(Qt.NoPen)
         painter.setRenderHints(QPainter.Antialiasing |
                                QPainter.SmoothPixmapTransform)
-        # paint background
+        # draw background
         if self.blurPix:
             r = self.__paintRadius
             dr = self.radius - r
             self.__drawCirclePic(painter, dr, dr, 2*r, 2*r, self.blurPix)
 
-        # paint icon
-        self.__drawCirclePic(painter, 5, 5, self.width()-10,
-                             self.height() - 10, self.iconPix)
+        # draw icon
+        iw, ih = self.iconSize().width(), self.iconSize().height()
+        rect = QRectF((self.width()-iw)/2, (self.height()-ih)/2, iw, ih)
+        drawSvgIcon(self.iconPath, painter, rect)
 
     def __drawCirclePic(self, painter, x, y, width, height, pixmap):
         """ paint image in circle region """

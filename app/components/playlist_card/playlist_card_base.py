@@ -44,14 +44,14 @@ class PlaylistCardBase(PerspectiveWidget):
         self.playButton = BlurButton(
             self,
             (35, 70),
-            ":/images/album_tab_interface/Play.png",
+            ":/images/blur_button/Play.svg",
             self.coverPath,
             self.tr('Play')
         )
         self.addToButton = BlurButton(
             self,
             (105, 70),
-            ":/images/album_tab_interface/Add.png",
+            ":/images/blur_button/Add.svg",
             self.coverPath,
             self.tr('Add to')
         )
