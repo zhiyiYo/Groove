@@ -51,14 +51,6 @@ QLabel#clickableLabel[state='notChecked-notPlay-enter']:hover {
     color: rgb(212, 214, 215)
 }
 
-QLabel#playingLabel[state="notChecked"] {
-    qproperty-pixmap: url(:/images/playing_interface/Playing_green.png)
-}
-
-QLabel#playingLabel[state="checked"] {
-    qproperty-pixmap: url(:/images/playing_interface/Playing_white.png)
-}
-
 /* 歌曲卡背景 */
 QWidget[state='notChecked-leave'] {
     background-color: transparent;

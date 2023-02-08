@@ -101,7 +101,11 @@ class SongCard(QWidget):
         self.setProperty('state', bgState)
         self.buttonGroup.setProperty('state', bgState)
         self.checkBox.setProperty('state', checkBoxState)
-        self.songNameCard.playingLabel.setProperty('state', checkedState)
+
+        if isChecked:
+            self.songNameCard.playingLabel.load(':/images/playing_interface/Playing_white.svg')
+        else:
+            self.songNameCard.playingLabel.load(':/images/playing_interface/Playing_green.svg')
 
         for label in self.labels:
             label.setProperty('state', labelState)

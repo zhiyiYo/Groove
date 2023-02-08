@@ -455,11 +455,12 @@ class PlayingInterface(QWidget):
         """ set loop mode """
         self.playBar.loopModeButton.setLoopMode(loopMode)
 
-    def __onSelectionModeChanged(self, isOpenSelectionMode: bool):
+    def __onSelectionModeChanged(self, isOpen: bool):
         """ selection mode changed slot """
-        self.isInSelectionMode = isOpenSelectionMode
-        self.selectionModeBar.setVisible(isOpenSelectionMode)
-        self.selectionModeStateChanged.emit(isOpenSelectionMode)
+        self.isInSelectionMode = isOpen
+        self.selectionModeBar.setVisible(isOpen)
+        self.selectionModeStateChanged.emit(isOpen)
+        self.songListWidget.setViewportMargins(30, 0, 30, 70*isOpen)
 
     def __onCancelButtonClicked(self):
         """ selection mode bar cancel button clicked slot """
@@ -663,7 +664,7 @@ class PlayingInterface(QWidget):
         self.playBar.lyricVisibleChanged.connect(self.__onLyricVisibleChanged)
         self.playBar.locateCurrentSongSig.connect(
             self.songListWidget.locateCurrentSong)
-        
+
         self.playBar.savePlaylistSig.connect(
             lambda: signalBus.addSongsToNewCustomPlaylistSig.emit(self.playlist))
 

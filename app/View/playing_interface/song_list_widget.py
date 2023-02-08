@@ -58,7 +58,6 @@ class SongListWidget(ListWidget):
         self.resize(1200, 800)
 
     def resizeEvent(self, e):
-        """ 更新item的尺寸 """
         for item in self.item_list:
             item.setSizeHint(QSize(self.width() - 60, 60))
 
