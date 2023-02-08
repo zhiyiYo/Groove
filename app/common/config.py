@@ -464,7 +464,7 @@ config = Config()
 
 YEAR = 2022
 AUTHOR = "zhiyiYo"
-VERSION = "v1.3.1"
+VERSION = "v1.3.2"
 HELP_URL = "https://groove-music.readthedocs.io"
 FEEDBACK_URL = "https://github.com/zhiyiYo/Groove/issues"
 RELEASE_URL = "https://github.com/zhiyiYo/Groove/releases/latest"
