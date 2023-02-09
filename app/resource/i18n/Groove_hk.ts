@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="zh_HK">
+<TS version="2.1" language="zh_CN">
 <context>
     <name>@default</name>
     <message>
@@ -25,12 +25,12 @@
 <context>
     <name>AddToMenu</name>
     <message>
-        <location filename="../../View/playing_interface/menu.py" line="63"/>
+        <location filename="../../View/playing_interface/song_list_widget.py" line="63"/>
         <source>Now playing</source>
         <translation>正在播放</translation>
     </message>
     <message>
-        <location filename="../../View/playing_interface/menu.py" line="65"/>
+        <location filename="../../View/playing_interface/song_list_widget.py" line="65"/>
         <source>New playlist</source>
         <translation>新的播放列表</translation>
     </message>
@@ -2059,8 +2059,13 @@
     </message>
     <message>
         <location filename="../../View/setting_interface/setting_interface.py" line="107"/>
-        <source>Download Directory</source>
+        <source>Download directory</source>
         <translation>下載目錄</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="110"/>
+        <source>Cache directory</source>
+        <translation>緩存目錄</translation>
     </message>
     <message>
         <location filename="../../View/setting_interface/setting_interface.py" line="86"/>

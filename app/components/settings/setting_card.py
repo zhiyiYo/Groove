@@ -349,6 +349,7 @@ class SettingIconFactory:
     FONT = "Font"
     INFO = "Info"
     ZOOM = "Zoom"
+    CACHE = "Cache"
     CLOSE = "Close"
     BRUSH = "Brush"
     MUSIC = "Music"

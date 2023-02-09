@@ -4,6 +4,7 @@ from PyQt5.QtCore import Qt, pyqtSignal, QThread
 from PyQt5.QtSql import QSqlDatabase
 
 from common.library import Library, Directory
+from common.database import DBInitializer
 
 
 class LibraryThread(QThread):
@@ -27,7 +28,7 @@ class LibraryThread(QThread):
         """ executive song library task """
         if not QSqlDatabase.contains('thread'):
             db = QSqlDatabase.addDatabase('QSQLITE', 'thread')
-            db.setDatabaseName(Library.cacheFile)
+            db.setDatabaseName(DBInitializer.CACHE_FILE)
             db.open()
             self.library.setDatabase(db)
 

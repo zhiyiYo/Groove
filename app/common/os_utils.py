@@ -27,7 +27,7 @@ def adjustName(name: str):
 
 def getPlaylistNames():
     """ get all playlist names in database """
-    db = QSqlDatabase.database(DBInitializer.connectionName)
+    db = QSqlDatabase.database(DBInitializer.CONNECTION_NAME)
     service = PlaylistService(db)
     return [i.name for i in service.listAll()]
 

@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import QApplication
 
 from common.application import SingletonApplication
 from common.config import config, Language
+from common.setting import APP_NAME
 from common.dpi_manager import DPI_SCALE
 from View.main_window import MainWindow
 
@@ -26,8 +27,9 @@ os.environ["QT_SCALE_FACTOR"] = str(DPI_SCALE)
 
 QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
-app = SingletonApplication(sys.argv, "PyQt-Groove-Music")
+app = SingletonApplication(sys.argv, APP_NAME)
 app.setAttribute(Qt.AA_DontCreateNativeWidgetSiblings)
+app.setApplicationName(APP_NAME)
 
 # Internationalization
 translator = QTranslator()

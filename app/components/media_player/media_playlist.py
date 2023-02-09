@@ -1,7 +1,6 @@
 # coding:utf-8
 import json
 from enum import Enum
-from pathlib import Path
 from typing import List
 
 from common.cache import lastPlaylistFolder
@@ -25,8 +24,6 @@ class PlaylistType(Enum):
 
 class MediaPlaylist(QMediaPlaylist):
     """ Media playlist class """
-
-    folder = Path('cache/last_playlist')
 
     def __init__(self, library: Library, parent=None):
         super().__init__(parent=parent)

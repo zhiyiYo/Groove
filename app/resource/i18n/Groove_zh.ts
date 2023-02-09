@@ -2059,8 +2059,13 @@
     </message>
     <message>
         <location filename="../../View/setting_interface/setting_interface.py" line="107"/>
-        <source>Download Directory</source>
+        <source>Download directory</source>
         <translation>下载目录</translation>
+    </message>
+    <message>
+        <location filename="../../View/setting_interface/setting_interface.py" line="110"/>
+        <source>Cache directory</source>
+        <translation>缓存目录</translation>
     </message>
     <message>
         <location filename="../../View/setting_interface/setting_interface.py" line="86"/>

@@ -4,7 +4,7 @@ import requests
 
 from PyQt5.QtCore import QVersionNumber
 
-from .config import VERSION
+from .setting import VERSION
 from .exception_handler import exceptionHandler
 
 

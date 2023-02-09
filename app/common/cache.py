@@ -1,9 +1,9 @@
 # encoding:utf-8
 from pathlib import Path
+from .config import config
 
 
-cacheFolder = Path("cache")
-logFolder = cacheFolder / "Log"
+cacheFolder = Path(config.get(config.cacheFolder))
 dbPath = cacheFolder / "cache.db"
 lyricFolder = cacheFolder / "Lyric"
 albumCoverFolder = cacheFolder / "AlbumCover"

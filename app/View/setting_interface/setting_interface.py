@@ -1,5 +1,6 @@
 # coding:utf-8
-from common.config import config, HELP_URL, FEEDBACK_URL, AUTHOR, VERSION, YEAR
+from common.config import config
+from common.setting import HELP_URL, FEEDBACK_URL, AUTHOR, VERSION, YEAR
 from common.url import openUrl
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
@@ -44,8 +45,15 @@ class SettingInterface(SmoothScrollArea):
         self.downloadFolderCard = PushSettingCard(
             self.tr('Choose folder'),
             SIF.path(SIF.DOWNLOAD),
-            self.tr("Download Directory"),
+            self.tr("Download directory"),
             config.get(config.downloadFolder),
+            self.musicInThisPCGroup
+        )
+        self.cacheFolderCard = PushSettingCard(
+            self.tr('Choose folder'),
+            SIF.path(SIF.CACHE),
+            self.tr('Cache directory'),
+            config.get(config.cacheFolder),
             self.musicInThisPCGroup
         )
 
@@ -287,6 +295,7 @@ class SettingInterface(SmoothScrollArea):
         # add cards to group
         self.musicInThisPCGroup.addSettingCard(self.musicFolderCard)
         self.musicInThisPCGroup.addSettingCard(self.downloadFolderCard)
+        self.musicInThisPCGroup.addSettingCard(self.cacheFolderCard)
 
         self.personalGroup.addSettingCard(self.enableAcrylicCard)
         self.personalGroup.addSettingCard(self.themeCard)
@@ -379,6 +388,16 @@ class SettingInterface(SmoothScrollArea):
         config.set(config.downloadFolder, folder)
         self.downloadFolderCard.setContent(folder)
 
+    def __onCacheFolderCardClicked(self):
+        """ download folder card clicked slot """
+        folder = QFileDialog.getExistingDirectory(
+            self, self.tr("Choose folder"), "./")
+        if not folder or config.get(config.cacheFolder) == folder:
+            return
+
+        config.set(config.cacheFolder, folder)
+        self.cacheFolderCard.setContent(folder)
+
     def __onMetaDataCardCheckedChanged(self):
         """ crawl metadata card checked state changed slot """
         if self.crawlMetadataCard.isChecked():
@@ -415,13 +434,15 @@ class SettingInterface(SmoothScrollArea):
 
     def __connectSignalToSlot(self):
         """ connect signal to slot """
-        signalBus.appRestartSig.connect(self.__showRestartTooltip)
+        config.appRestartSig.connect(self.__showRestartTooltip)
 
         # music in the pc
         self.musicFolderCard.folderChanged.connect(
             self.__onMusicFoldersChanged)
         self.downloadFolderCard.clicked.connect(
             self.__onDownloadFolderCardClicked)
+        self.cacheFolderCard.clicked.connect(
+            self.__onCacheFolderCardClicked)
 
         # personalization
         self.enableAcrylicCard.checkedChanged.connect(

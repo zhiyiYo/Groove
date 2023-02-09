@@ -6,14 +6,14 @@ from pathlib import Path
 from typing import Iterable, List, Union
 
 import darkdetect
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QStandardPaths, QObject, pyqtSignal
 from PyQt5.QtGui import QColor, QFont, QGuiApplication
 from PyQt5.QtMultimedia import QMediaPlaylist
 
-from .crawler import MvQuality, SongQuality
+from .quality import MvQuality, SongQuality
 from .exception_handler import exceptionHandler
 from .singleton import Singleton
-from .signal_bus import signalBus
+from .setting import APP_NAME, CONFIG_FOLDER, CONFIG_FILE
 
 
 class Language(Enum):
@@ -89,10 +89,10 @@ class BoolValidator(OptionsValidator):
 class FolderValidator(ConfigValidator):
     """ Folder validator """
 
-    def validate(self, value: str) -> bool:
+    def validate(self, value: Union[str, Path]) -> bool:
         return Path(value).exists()
 
-    def correct(self, value: str):
+    def correct(self, value: Union[str, Path]):
         path = Path(value)
         try:
             path.mkdir(exist_ok=True, parents=True)
@@ -104,10 +104,10 @@ class FolderValidator(ConfigValidator):
 class FolderListValidator(ConfigValidator):
     """ Folder list validator """
 
-    def validate(self, value: List[str]) -> bool:
+    def validate(self, value: List[Union[str, Path]]) -> bool:
         return all(Path(i).exists() for i in value)
 
-    def correct(self, value: List[str]):
+    def correct(self, value: List[Union[str, Path]]):
         folders = []
         for folder in value:
             path = Path(folder)
@@ -261,17 +261,16 @@ class ColorConfigItem(ConfigItem):
                          ColorValidator(default), ColorSerializer(), restart)
 
 
-class Config(Singleton):
+class Config(Singleton, QObject):
     """ Config of app """
-
-    folder = Path('config')
-    file = folder/"config.json"
 
     # folders
     musicFolders = ConfigItem(
         "Folders", "LocalMusic", [], FolderListValidator())
     downloadFolder = ConfigItem(
-        "Folders", "Download", "download", FolderValidator())
+        "Folders", "Download", QStandardPaths.writableLocation(QStandardPaths.MusicLocation), FolderValidator())
+    cacheFolder = ConfigItem(
+        "Folders", "CacheFolder", Path(QStandardPaths.writableLocation(QStandardPaths.AppLocalDataLocation))/APP_NAME, FolderValidator(), restart=True)
 
     # online
     onlineSongQuality = OptionsConfigItem(
@@ -345,24 +344,25 @@ class Config(Singleton):
     checkUpdateAtStartUp = ConfigItem(
         "Update", "CheckUpdateAtStartUp", True, BoolValidator())
 
+    appRestartSig = pyqtSignal()
+
     def __init__(self):
+        super().__init__()
         self.__theme = Theme.LIGHT
         self.load()
 
-    @classmethod
-    def get(cls, item: ConfigItem):
+    def get(self, item: ConfigItem):
         return item.value
 
-    @classmethod
-    def set(cls, item: ConfigItem, value):
+    def set(self, item: ConfigItem, value):
         if item.value == value:
             return
 
         item.value = value
-        cls.save()
+        self.save()
 
         if item.restart:
-            signalBus.appRestartSig.emit()
+            self.appRestartSig.emit()
 
     @classmethod
     def toDict(cls, serialize=True):
@@ -387,15 +387,15 @@ class Config(Singleton):
 
     @classmethod
     def save(cls):
-        cls.folder.mkdir(parents=True, exist_ok=True)
-        with open(cls.file, "w", encoding="utf-8") as f:
+        CONFIG_FOLDER.mkdir(parents=True, exist_ok=True)
+        with open(CONFIG_FILE, "w", encoding="utf-8") as f:
             json.dump(cls.toDict(), f, ensure_ascii=False, indent=4)
 
     @exceptionHandler("config")
     def load(self):
         """ load config """
         try:
-            with open(self.file, encoding="utf-8") as f:
+            with open(CONFIG_FILE, encoding="utf-8") as f:
                 cfg = json.load(f)
         except:
             cfg = {}
@@ -464,10 +464,3 @@ class Config(Singleton):
 
 
 config = Config()
-
-YEAR = 2022
-AUTHOR = "zhiyiYo"
-VERSION = "v1.3.2"
-HELP_URL = "https://groove-music.readthedocs.io"
-FEEDBACK_URL = "https://github.com/zhiyiYo/Groove/issues"
-RELEASE_URL = "https://github.com/zhiyiYo/Groove/releases/latest"

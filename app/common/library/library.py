@@ -21,8 +21,6 @@ class Library(QObject):
     fileRemoved = pyqtSignal(list)
     loadFromFilesFinished = pyqtSignal(list)
 
-    cacheFile = 'cache/cache.db'
-
     def __init__(self, directories: List[str] = None, db: QSqlDatabase = None, watch=True, parent=None):
         """
         Parameters

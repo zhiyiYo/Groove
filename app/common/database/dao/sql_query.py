@@ -1,12 +1,12 @@
 # coding:utf-8
 from common.logger import Logger
-from PyQt5.QtSql import QSqlQuery, QSqlError, QSqlDatabase
+from PyQt5.QtSql import QSqlQuery, QSqlError
 
 
 class SqlQuery(QSqlQuery):
     """ Database sql statement execution class """
 
-    cacheLogger = Logger('cache')
+    logger = Logger('cache')
 
     def exec(self, query: str = None):
         """ execute sql statement """
@@ -23,7 +23,7 @@ class SqlQuery(QSqlQuery):
         error = self.lastError()
         if error.isValid() and error.type() != QSqlError.NoError:
             msg = f'"{error.text()}" for query "{self.lastBoundQuery()}"'
-            self.cacheLogger.error(msg)
+            self.logger.error(msg)
 
         return False
 

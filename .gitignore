@@ -10,6 +10,7 @@ config.json
 
 # 忽略缓存
 cache
+AppData
 
 
 # 忽略python缓存文件

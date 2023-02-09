@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import List, Tuple
 
 import requests
+from common.quality import MvQuality, SongQuality
 from common.picture import Cover
 from common.database.entity import AlbumInfo, SingerInfo, SongInfo
 from common.meta_data.writer import MetaDataWriter
@@ -12,31 +13,6 @@ from fuzzywuzzy import fuzz
 
 from .exception_handler import exceptionHandler
 
-
-class SongQuality(Enum):
-    """ Online song quality enumeration class """
-
-    STANDARD = "Standard quality"
-    HIGH = "High quality"
-    SUPER = "Super quality"
-    LOSSLESS = "Lossless quality"
-
-    @staticmethod
-    def values():
-        return [q.value for q in SongQuality]
-
-
-class MvQuality(Enum):
-    """ MV quality enumeration class """
-
-    FULL_HD = "Full HD"
-    HD = "HD"
-    SD = "SD"
-    LD = "LD"
-
-    @staticmethod
-    def values():
-        return [q.value for q in MvQuality]
 
 
 class CrawlerBase:

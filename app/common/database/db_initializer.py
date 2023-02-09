@@ -1,5 +1,6 @@
 # coding:utf-8
 from common.logger import Logger
+from common.cache import dbPath
 from PyQt5.QtSql import QSqlDatabase
 from PyQt5.QtWidgets import qApp
 
@@ -11,16 +12,16 @@ class DBInitializer:
     """ Database initializer """
 
     logger = Logger("cache")
-    connectionName = "main"
-    cacheFile = 'cache/cache.db'
+    CONNECTION_NAME = "main"
+    CACHE_FILE = str(dbPath)
 
     @classmethod
     def init(cls):
         """ Initialize database """
-        db = QSqlDatabase.addDatabase('QSQLITE', cls.connectionName)
-        db.setDatabaseName(cls.cacheFile)
+        db = QSqlDatabase.addDatabase('QSQLITE', cls.CONNECTION_NAME)
+        db.setDatabaseName(cls.CACHE_FILE)
         if not db.open():
-            Logger.error("Database connection failed")
+            cls.logger.error("Database connection failed")
             qApp.exit()
 
         SongInfoService(db).createTable()

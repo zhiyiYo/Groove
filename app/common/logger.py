@@ -1,9 +1,11 @@
 # coding:utf-8
 import logging
 import weakref
-from pathlib import Path
-from .cache import logFolder
 
+from .setting import CONFIG_FOLDER
+
+
+LOG_FOLDER = CONFIG_FOLDER / "Log"
 _loggers = weakref.WeakValueDictionary()
 
 
@@ -33,8 +35,8 @@ class Logger:
         fileName: str
             log filename which doesn't contain `.log` suffix
         """
-        logFolder.mkdir(exist_ok=True, parents=True)
-        self.__logFile = logFolder/(fileName+'.log')
+        LOG_FOLDER.mkdir(exist_ok=True, parents=True)
+        self.__logFile = LOG_FOLDER / (fileName + '.log')
         self.__logger = logging.getLogger(fileName)
         self.__consoleHandler = logging.StreamHandler()
         self.__fileHandler = logging.FileHandler(

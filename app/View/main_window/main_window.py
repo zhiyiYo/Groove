@@ -6,7 +6,8 @@ from random import shuffle
 from typing import List, Union
 
 from common import resource
-from common.config import config, FEEDBACK_URL, RELEASE_URL, Theme
+from common.config import config, Theme
+from common.setting import FEEDBACK_URL, RELEASE_URL
 from common.database import DBInitializer
 from common.database.entity import AlbumInfo, Playlist, SongInfo
 from common.hotkey_manager import HotkeyManager
@@ -196,7 +197,7 @@ class MainWindow(AcrylicWindow):
 
         self.library = Library(
             config.get(config.musicFolders),
-            QSqlDatabase.database(DBInitializer.connectionName)
+            QSqlDatabase.database(DBInitializer.CONNECTION_NAME)
         )
         self.libraryThread = LibraryThread(
             config.get(config.musicFolders), self)
@@ -1246,8 +1247,8 @@ class MainWindow(AcrylicWindow):
         self.hotkeyManager.clear(self.winId())
 
         # close database
-        QSqlDatabase.database(DBInitializer.connectionName).close()
-        QSqlDatabase.removeDatabase(DBInitializer.connectionName)
+        QSqlDatabase.database(DBInitializer.CONNECTION_NAME).close()
+        QSqlDatabase.removeDatabase(DBInitializer.CONNECTION_NAME)
 
     def onNavigationLabelClicked(self, label: str):
         """ navigation label clicked slot """
