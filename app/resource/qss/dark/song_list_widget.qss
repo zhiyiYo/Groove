@@ -63,7 +63,7 @@ QLabel[state='notSelected-notPlay'] {
 }
 
 QLabel[state='notSelected-play'] {
-    color: rgb(41, 247, 255);
+    color: rgb(121, 230, 255);
 }
 
 QLabel[state='selected'] {
@@ -75,7 +75,7 @@ QLabel#clickableLabel[state='notSelected-notPlay']:hover {
 }
 
 QLabel#clickableLabel[state='notSelected-play']:hover {
-    color: rgba(41, 247, 255, 0.8);
+    color: rgba(121, 230, 255, 0.8);
 }
 
 QLabel#clickableLabel[state='selected']:hover {
@@ -118,11 +118,11 @@ QCheckBox::indicator[state='notSelected-notPlay']:pressed {
 }
 
 QCheckBox::indicator[state='notSelected-play'] {
-    border: 1px solid rgb(41, 247, 255);
+    border: 1px solid rgb(121, 230, 255);
 }
 
 QCheckBox::indicator[state='notSelected-play']:pressed {
-    border: 1px solid rgba(41, 247, 255, 0.6);
+    border: 1px solid rgba(121, 230, 255, 0.6);
 }
 
 QCheckBox::indicator:checked {
