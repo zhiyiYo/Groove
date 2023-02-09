@@ -33,7 +33,7 @@ class PlayBar(QWidget):
         self.volumeWidget = VolumeWidget(self.window())
         self.fullScreenButton = BF.create(BF.FULL_SCREEN, self)
         self.playProgressBar = PlayProgressBar(parent=self)
-        self.pullUpArrowButton = BF.create(BF.PULL_UP_ARROW, self)
+        self.pullUpButton = BF.create(BF.PULL_UP_ARROW, self)
         self.lastSongButton = BF.create(BF.PREVIOUS, self)
         self.nextSongButton = BF.create(BF.NEXT, self)
         self.randomPlayButton = BF.create(BF.RANDOM_PLAY, self)
@@ -85,8 +85,8 @@ class PlayBar(QWidget):
 
     def __moveButtons(self):
         """ move buttons """
-        self.pullUpArrowButton.move(
-            self.width()//2 - self.pullUpArrowButton.width()//2, 165)
+        self.pullUpButton.move(
+            self.width()//2 - self.pullUpButton.width()//2, 165)
         self.fullScreenButton.move(self.width() - 64, 85)
         self.smallPlayModeButton.move(self.width() - 124, 85)
         self.showPlaylistButton.move(self.width() - 184, 85)

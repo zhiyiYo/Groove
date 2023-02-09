@@ -77,12 +77,12 @@ class PlayingInterface(QWidget):
             "Here, you will see the song being played and the songs to be played."), self)
         self.randomPlayAllButton = ThreeStatePushButton(
             {
-                "normal": ":/images/playing_interface/Shuffle_normal.png",
-                "hover": ":/images/playing_interface/Shuffle_hover.png",
-                "pressed": ":/images/playing_interface/Shuffle_pressed.png",
+                "normal": ":/images/playing_interface/Shuffle_normal.svg",
+                "hover": ":/images/playing_interface/Shuffle_hover.svg",
+                "pressed": ":/images/playing_interface/Shuffle_pressed.svg",
             },
             self.tr(" Shuffle all songs in your collection"),
-            (30, 22),
+            (30, 30),
             self
         )
 
@@ -200,27 +200,35 @@ class PlayingInterface(QWidget):
             QPoint(0, -self.playBar.height() + 68))
         self.songInfoCardChuteAni.start()
 
-    def showPlaylist(self):
+    def showPlaylist(self, ani=True):
         """ show playlist """
         if self.songListWidgetAni.state() == QAbstractAnimation.Running:
             return
 
         self.playBar.showPlaylistButton.setToolTip(
             self.tr('Hide playlist'))
-        self.playBar.pullUpArrowButton.setToolTip(self.tr('Hide playlist'))
+        self.playBar.pullUpButton.setToolTip(self.tr('Hide playlist'))
 
-        self.songInfoCardChuteAni.setDuration(350)
+        duration = 350 if ani else 1
+        self.songInfoCardChuteAni.setDuration(duration)
         self.songInfoCardChuteAni.setEasingCurve(QEasingCurve.InOutQuad)
         self.songInfoCardChuteAni.setStartValue(self.songInfoCardChute.pos())
-        self.songInfoCardChuteAni.setEndValue(QPoint(0, 258 - self.height()))
+        self.songInfoCardChuteAni.setEndValue(QPoint(0, 258 - self.window().height()))
+
         self.playBarAni.setStartValue(self.playBar.pos())
         self.playBarAni.setEndValue(QPoint(0, 190))
+        self.playBarAni.setDuration(duration)
+
         self.songListWidgetAni.setStartValue(self.songListWidget.pos())
         self.songListWidgetAni.setEndValue(
             QPoint(self.songListWidget.x(), 382))
+        self.songListWidgetAni.setDuration(duration)
 
-        if self.sender() == self.playBar.showPlaylistButton:
-            self.playBar.pullUpArrowButton.timer.start()
+        if self.sender() is not self.playBar.pullUpButton:
+            if ani:
+                self.playBar.pullUpButton.rotate()
+            else:
+                self.playBar.pullUpButton.setArrowDirection('down')
 
         self.playBar.setVisible(len(self.playlist) > 0)
         self.parallelAniGroup.start()
@@ -247,22 +255,26 @@ class PlayingInterface(QWidget):
 
         self.playBar.showPlaylistButton.setToolTip(
             self.tr('Show playlist'))
-        self.playBar.pullUpArrowButton.setToolTip(self.tr('Show playlist'))
+        self.playBar.pullUpButton.setToolTip(self.tr('Show playlist'))
 
         self.songInfoCardChuteAni.setDuration(350)
         self.songInfoCardChuteAni.setEasingCurve(QEasingCurve.InOutQuad)
         self.songInfoCardChuteAni.setStartValue(self.songInfoCardChute.pos())
         self.songInfoCardChuteAni.setEndValue(
             QPoint(0, -self.playBar.height() + 68))
+
+        self.playBarAni.setDuration(350)
         self.playBarAni.setStartValue(QPoint(0, 190))
         self.playBarAni.setEndValue(
             QPoint(0, self.height() - self.playBar.height()))
+
+        self.songListWidgetAni.setDuration(350)
         self.songListWidgetAni.setStartValue(self.songListWidget.pos())
         self.songListWidgetAni.setEndValue(
             QPoint(self.songListWidget.x(), self.height()))
 
         if self.sender() is self.playBar.showPlaylistButton:
-            self.playBar.pullUpArrowButton.timer.start()
+            self.playBar.pullUpButton.rotate()
 
         # self.parallelAniGroup.start()
         self.songListWidgetAni.start()
@@ -274,7 +286,7 @@ class PlayingInterface(QWidget):
     def __onShowPlaylistButtonClicked(self):
         """ show playlist button clicked """
         self.playBar.showPlaylistButton.cancelHoverState()
-        self.playBar.pullUpArrowButton.cancelHoverState()
+        self.playBar.pullUpButton.cancelHoverState()
         if not self.isPlaylistVisible:
             self.showPlaylist()
         else:
@@ -316,6 +328,10 @@ class PlayingInterface(QWidget):
         self.albumCoverLabel.setCover(self.coverPath)
         self.__setGuideLabelHidden(len(playlist) > 0)
         self.__getLyric()
+
+        if not self.isPlaylistVisible:
+            self.playBar.hide()
+            self.songInfoCardChute.move(0, 0)
 
     def setPlay(self, isPlay: bool):
         """ set play state """
@@ -646,7 +662,7 @@ class PlayingInterface(QWidget):
         # play bar signal
         self.playBar.desktopLyricButton.lyricVisibleChanged.connect(
             self.desktopLyricInterface.setVisible)
-        self.playBar.pullUpArrowButton.clicked.connect(
+        self.playBar.pullUpButton.clicked.connect(
             self.__onShowPlaylistButtonClicked)
         self.playBar.showPlaylistButton.clicked.connect(
             self.__onShowPlaylistButtonClicked)

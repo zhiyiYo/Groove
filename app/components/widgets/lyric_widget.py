@@ -220,7 +220,7 @@ class LyricLabel(QLabel):
             parent window
         """
         super().__init__(parent=parent)
-        self.maxCharacters = 50
+        self.maxCharacters = 52
         self.setAlignment(Qt.AlignCenter)
         self.setLyric(lyric)
 

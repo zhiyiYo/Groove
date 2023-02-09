@@ -200,6 +200,10 @@ class PullUpArrow(CircleButton):
         self.timer.start()
         super().mouseReleaseEvent(e)
 
+    def rotate(self):
+        self.timer.stop()
+        self.timer.start()
+
     def paintEvent(self, e):
         """ paint button """
         painter = QPainter(self)

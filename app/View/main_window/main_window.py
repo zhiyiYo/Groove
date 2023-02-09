@@ -452,26 +452,12 @@ class MainWindow(AcrylicWindow):
 
         if not isFullScreen:
             self.exitFullScreen()
-            return
-
-        # update title bar
-        self.playBar.hide()
-        self.titleBar.titleLabel.hide()
-        self.titleBar.setWhiteIcon(True)
-        self.titleBar.hide()
-
-        # switch to playing interface
-        self.totalStackWidget.setCurrentIndex(1)
-        self.navigationHistories.append(("totalStackWidget", 1))
-
-        self.showFullScreen()
-        self.videoInterface.playBar.fullScreenButton.setFullScreen(True)
-        self.videoInterface.playBar.fullScreenButton.setToolTip(
-            self.tr('Exit fullscreen'))
-        self.playingInterface.setFullScreen(True)
-        if self.playingInterface.isPlaylistVisible:
-            self.playingInterface.songInfoCardChute.move(
-                0, 258 - self.height())
+        else:
+            self.switchToPlayingInterface()
+            self.titleBar.hide()
+            self.videoInterface.setFullScreen(True)
+            self.playingInterface.setFullScreen(True)
+            self.showFullScreen()
 
     def setVideoFullScreen(self, isFullScreen: bool):
         """ set video interface full screen """
@@ -812,6 +798,7 @@ class MainWindow(AcrylicWindow):
         self.exitSelectionMode()
         self.playBar.hide()
         self.titleBar.titleLabel.hide()
+        self.titleBar.setWhiteIcon(True)
         self.titleBar.returnButton.show()
 
         if not self.playingInterface.isPlaylistVisible and len(self.playingInterface.playlist) > 0:
@@ -820,17 +807,12 @@ class MainWindow(AcrylicWindow):
             self.playingInterface.playBar.show()
 
         self.totalStackWidget.setCurrentIndex(1)
-        self.titleBar.setWhiteIcon(True)
-
         self.navigationHistories.append(("totalStackWidget", 1))
 
     def showPlayingPlaylist(self):
         """ show playing playlist """
-        self.playingInterface.showPlaylist()
-        self.playingInterface.playBar.pullUpArrowButton.setArrowDirection(
-            "down")
-        if self.playingInterface.isPlaylistVisible:
-            self.switchToPlayingInterface()
+        self.playingInterface.showPlaylist(ani=False)
+        self.switchToPlayingInterface()
 
     def clearPlaylist(self):
         """ clear playlist """
@@ -850,7 +832,6 @@ class MainWindow(AcrylicWindow):
             self.navigationInterface.isExpanded)
         self.adjustWidgetGeometry()
         self.navigationInterface.navigationMenu.stackUnder(self.playBar)
-        # 如果现在显示的是字母导航界面就将其隐藏
         if self.subStackWidget.currentWidget() is self.labelNavigationInterface:
             self.subStackWidget.setCurrentIndex(0)
 
@@ -884,8 +865,9 @@ class MainWindow(AcrylicWindow):
         self.titleBar.returnButton.show()
         self.titleBar.show()
 
-        self.videoInterface.playBar.fullScreenButton.setFullScreen(False)
+        self.videoInterface.setFullScreen(False)
         self.playingInterface.setFullScreen(False)
+
         if self.playingInterface.isPlaylistVisible:
             self.playingInterface.songInfoCardChute.move(
                 0, 258 - self.height())

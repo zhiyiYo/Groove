@@ -143,24 +143,18 @@ class VideoInterface(QGraphicsView):
         """ disable scrolling """
         return
 
-    def __enterFullScreen(self):
-        """ enter full screen """
-        self.playBar.fullScreenButton.setFullScreen(True)
-        self.playBar.fullScreenButton.setToolTip(self.tr('Exit fullscreen'))
-        self.fullScreenChanged.emit(True)
-
-    def __exitFullScreen(self):
-        """ exit full screen """
-        self.playBar.fullScreenButton.setFullScreen(False)
-        self.playBar.fullScreenButton.setToolTip(self.tr('Show fullscreen'))
-        self.fullScreenChanged.emit(False)
+    def setFullScreen(self, isFull: bool):
+        self.playBar.fullScreenButton.setFullScreen(isFull)
+        if isFull:
+            self.playBar.fullScreenButton.setToolTip(self.tr('Exit fullscreen'))
+        else:
+            self.playBar.fullScreenButton.setToolTip(self.tr('Show fullscreen'))
 
     def __toggleFullScreen(self):
         """ toggle full screen """
-        if self.window().isFullScreen():
-            self.__exitFullScreen()
-        else:
-            self.__enterFullScreen()
+        isFull = not self.window().isFullScreen()
+        self.setFullScreen(isFull)
+        self.fullScreenChanged.emit(isFull)
 
     def __onMediaStatusChanged(self, status: QMediaPlayer.MediaStatus):
         """ media status changed slot """
