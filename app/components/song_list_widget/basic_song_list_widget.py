@@ -473,3 +473,7 @@ class BasicSongListWidget(ListWidget):
             return None
 
         return self.songInfos[self.playingIndex]
+
+    def _playSongs(self, index: int):
+        """ Use the song list as current playlist of media player """
+        signalBus.playPlaylistSig.emit(self.songInfos, index)

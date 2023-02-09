@@ -20,6 +20,7 @@ class SignalBus(Singleton, QObject):
     nextToPlaySig = pyqtSignal(list)            # 下一首播放
     playAlbumSig = pyqtSignal(str, str)         # 播放专辑
     playOneSongCardSig = pyqtSignal(SongInfo)   # 将播放列表重置为一首歌
+    playPlaylistSig = pyqtSignal(list, int)     # 播放歌曲列表
 
     playBySongInfoSig = pyqtSignal(SongInfo)          # 更新歌曲卡列表控件的正在播放歌曲
     getAlbumDetailsUrlSig = pyqtSignal(AlbumInfo)     # 在线查看专辑详细信息

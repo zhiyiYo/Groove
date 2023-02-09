@@ -12,7 +12,6 @@ from common.thread.download_song_thread import DownloadSongThread
 from components.widgets.scroll_area import ScrollArea
 from components.widgets.tool_tip import DownloadStateToolTip
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QLabel, QVBoxLayout, QWidget
 from PyQt5.QtSvg import QSvgWidget
 
@@ -24,9 +23,6 @@ from .song_group_box import SongGroupBox
 
 class SearchResultInterface(ScrollArea):
     """ Search result interface """
-
-    playLocalSongSig = pyqtSignal(int)    # 播放本地歌曲
-    playOnlineSongSig = pyqtSignal(int)   # 播放在线音乐
 
     def __init__(self, library: Library, parent=None):
         """
@@ -54,9 +50,8 @@ class SearchResultInterface(ScrollArea):
         self.albumGroupBox = AlbumGroupBox(library, self.scrollWidget)
         self.singerGroupBox = SingerGroupBox(library, self.scrollWidget)
         self.playlistGroupBox = PlaylistGroupBox(library, self.scrollWidget)
-        self.localSongGroupBox = SongGroupBox('Local songs', self.scrollWidget)
-        self.onlineSongGroupBox = SongGroupBox(
-            'Online songs', self.scrollWidget)
+        self.localSongGroupBox = SongGroupBox('Local', self.scrollWidget)
+        self.onlineSongGroupBox = SongGroupBox('Online', self.scrollWidget)
         self.searchOthersLabel = QLabel(
             self.tr("Try searching for something else."), self)
         self.checkSpellLabel = QLabel(
@@ -252,12 +247,10 @@ class SearchResultInterface(ScrollArea):
         # local song group box signal
         self.localSongGroupBox.switchToMoreSearchResultInterfaceSig.connect(
             lambda: signalBus.switchToMoreSearchResultInterfaceSig.emit(self.keyWord, 'local song', self.localSongInfos))
-        self.localSongListWidget.playSignal.connect(self.playLocalSongSig)
         self.localSongListWidget.currentIndexChanged.connect(
             self.onlineSongListWidget.cancelSelectedState)
 
         # online song group box signal
-        self.onlineSongListWidget.playSignal.connect(self.playOnlineSongSig)
         self.onlineSongListWidget.currentIndexChanged.connect(
             self.localSongListWidget.cancelSelectedState)
         self.onlineSongGroupBox.switchToMoreSearchResultInterfaceSig.connect(

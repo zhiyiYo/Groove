@@ -9,7 +9,6 @@ from components.buttons.three_state_button import RandomPlayAllButton
 from components.dialog_box.message_dialog import MessageDialog
 from components.selection_mode_interface import (SelectionModeBarType,
                                                  SongSelectionModeInterface)
-from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QLabel, QPushButton, QWidget, QApplication
 
 from .song_list_widget import RecentSongListWidget
@@ -17,8 +16,6 @@ from .song_list_widget import RecentSongListWidget
 
 class RecentPlayInterface(SongSelectionModeInterface):
     """ Recent play interface """
-
-    playSongCardSig = pyqtSignal(SongInfo)
 
     def __init__(self, library: Library, parent=None):
         super().__init__(
@@ -109,7 +106,6 @@ class RecentPlayInterface(SongSelectionModeInterface):
 
         self.songListWidget.songCardNumChanged.connect(
             self.randomPlayAllButton.setNumber)
-        self.songListWidget.playSignal.connect(self.playSongCardSig)
         self.songListWidget.removeSongSignal.connect(
             lambda i: self.library.recentPlayController.delete(i.file))
 

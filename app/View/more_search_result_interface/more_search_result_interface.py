@@ -4,7 +4,6 @@ from typing import List
 from common.database.entity import AlbumInfo, Playlist, SingerInfo, SongInfo
 from common.library import Library
 from common.style_sheet import setStyleSheet
-from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QLabel, QStackedWidget, QWidget
 
 from .album_interface import AlbumInterface
@@ -15,9 +14,6 @@ from .song_interface import LocalSongInterface, OnlineSongInterface
 
 class MoreSearchResultInterface(QWidget):
     """ More search result interface """
-
-    playLocalSongSig = pyqtSignal(SongInfo)
-    playOnlineSongSig = pyqtSignal(int)
 
     def __init__(self, library: Library, parent=None):
         super().__init__(parent=parent)
@@ -46,7 +42,6 @@ class MoreSearchResultInterface(QWidget):
         self.stackedWidget.addWidget(self.localSongInterface)
         self.stackedWidget.addWidget(self.onlineSongInterface)
         self.__setQss()
-        self.__connectSignalToSlot()
 
     def resizeEvent(self, e):
         self.titleMask.resize(self.width()-10, 125)
@@ -124,8 +119,3 @@ class MoreSearchResultInterface(QWidget):
         self.titleMask.setObjectName('mask')
         self.titleLabel.setObjectName('titleLabel')
         setStyleSheet(self, 'more_search_result_interface')
-
-    def __connectSignalToSlot(self):
-        """ connect signal to slot """
-        self.localSongListWidget.playSignal.connect(self.playLocalSongSig)
-        self.onlineSongListWidget.playSignal.connect(self.playOnlineSongSig)

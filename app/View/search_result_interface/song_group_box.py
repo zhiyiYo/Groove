@@ -18,7 +18,6 @@ from PyQt5.QtWidgets import QAction, QPushButton, QWidget
 class SongGroupBox(QWidget):
     """ Song group box """
 
-    loadMoreSignal = pyqtSignal()
     switchToMoreSearchResultInterfaceSig = pyqtSignal()
 
     def __init__(self, song_type: str, parent=None):
@@ -32,12 +31,12 @@ class SongGroupBox(QWidget):
             parent window
         """
         super().__init__(parent=parent)
-        if song_type not in ['Online songs', 'Local songs']:
+        if song_type not in ['Online', 'Local']:
             raise ValueError(
                 "Song type must be 'Online songs' or 'Local songs'")
 
         self.songType = song_type
-        self.isOnline = song_type == 'Online songs'
+        self.isOnline = song_type == 'Online'
         self.songInfos = []
         if not self.isOnline:
             self.songListWidget = LocalSongListWidget(self)
@@ -97,8 +96,6 @@ class SongGroupBox(QWidget):
 class LocalSongListWidget(NoScrollSongListWidget):
     """ Local song list widget """
 
-    playSignal = pyqtSignal(int)     # 将播放列表的当前歌曲切换为指定的歌曲卡
-
     def __init__(self, parent=None):
         super().__init__(None, SongCardType.NO_CHECKBOX_SONG_CARD,
                          parent, QMargins(30, 0, 30, 0), 0)
@@ -134,15 +131,13 @@ class LocalSongListWidget(NoScrollSongListWidget):
             lambda: signalBus.addSongsToNewCustomPlaylistSig.emit([self.currentSongInfo]))
 
     def _connectSongCardSignalToSlot(self, songCard: NoCheckBoxSongCard):
-        songCard.doubleClicked.connect(self.playSignal)
-        songCard.playButtonClicked.connect(self.playSignal)
+        songCard.doubleClicked.connect(lambda i: self._playSongs(i))
+        songCard.playButtonClicked.connect(lambda i: self._playSongs(i))
         songCard.clicked.connect(self.setCurrentIndex)
 
 
 class OnlineSongListWidget(NoScrollSongListWidget):
     """ Online song list widget """
-
-    playSignal = pyqtSignal(int)    # 将播放列表的当前歌曲切换为指定的歌曲卡
 
     def __init__(self, parent=None):
         super().__init__(None, SongCardType.NO_CHECKBOX_ONLINE_SONG_CARD,
@@ -157,8 +152,8 @@ class OnlineSongListWidget(NoScrollSongListWidget):
             menu.exec(self.cursor().pos())
 
     def _connectSongCardSignalToSlot(self, songCard: NoCheckBoxOnlineSongCard):
-        songCard.doubleClicked.connect(self.playSignal)
-        songCard.playButtonClicked.connect(self.playSignal)
+        songCard.doubleClicked.connect(lambda i: self._playSongs(i))
+        songCard.playButtonClicked.connect(lambda i: self._playSongs(i))
         songCard.clicked.connect(self.setCurrentIndex)
 
     def __connectContextMenuSignalToSlot(self, menu):

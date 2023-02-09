@@ -41,8 +41,6 @@ class OnlineSongListContextMenu(RoundMenu):
 class OnlineSongListWidget(NoScrollSongListWidget):
     """ Online song list widget """
 
-    playSignal = pyqtSignal(int)    # 将播放列表的当前歌曲切换为指定的歌曲卡
-
     def __init__(self, songInfos: List[SongInfo], parent=None):
         super().__init__(songInfos, SongCardType.ONLINE_SONG_CARD, parent)
         setStyleSheet(self, 'song_list_widget')
@@ -55,8 +53,8 @@ class OnlineSongListWidget(NoScrollSongListWidget):
             menu.exec(self.cursor().pos())
 
     def _connectSongCardSignalToSlot(self, songCard: OnlineSongCard):
-        songCard.doubleClicked.connect(self.playSignal)
-        songCard.playButtonClicked.connect(self.playSignal)
+        songCard.doubleClicked.connect(lambda i: self._playSongs(i))
+        songCard.playButtonClicked.connect(lambda i: self._playSongs(i))
         songCard.clicked.connect(self.setCurrentIndex)
         songCard.checkedStateChanged.connect(
             self.onSongCardCheckedStateChanged)
@@ -102,8 +100,14 @@ class LocalSongInterface(SongSelectionModeInterface):
         self.songListWidget.removeSongCards(songPaths)
         self.adjustScrollHeight()
 
+    def __play(self, songInfo: SongInfo):
+        """ play songs """
+        index = self.songListWidget.songInfos.index(songInfo)
+        signalBus.playPlaylistSig.emit(self.songListWidget.songInfos, index)
+
     def __connectSignalToSlot(self):
         """ connect signal to slot """
+        self.songListWidget.playSignal.connect(self.__play)
         self.songListWidget.removeSongSignal.connect(
             lambda songInfo: signalBus.removeSongSig.emit([songInfo.file]))
 

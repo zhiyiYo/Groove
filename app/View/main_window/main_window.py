@@ -1176,33 +1176,6 @@ class MainWindow(AcrylicWindow):
 
         self.mediaPlaylist.setCurrentIndex(index)
 
-    def playLocalSearchedSong(self, index: int):
-        """ play selected local searched song """
-        songInfos = self.searchResultInterface.localSongListWidget.songInfos
-        self.playCustomPlaylistSong(songInfos, index)
-
-    def playOnlineSearchedSong(self, index: int):
-        """ play selected online searched song """
-        songInfos = self.searchResultInterface.onlineSongListWidget.songInfos
-        self.playCustomPlaylistSong(songInfos, index)
-
-    def playLocalMoreSearchedSong(self, songInfo: SongInfo):
-        """ play selected local more searched song """
-        songInfos = self.moreSearchResultInterface.localSongListWidget.songInfos
-        index = songInfos.index(songInfo)
-        self.playCustomPlaylistSong(songInfos, index)
-
-    def playOnlineMoreSearchedSong(self, index: int):
-        """ play selected online more searched song """
-        songInfos = self.moreSearchResultInterface.onlineSongListWidget.songInfos
-        self.playCustomPlaylistSong(songInfos, index)
-
-    def playRecentPlaySong(self, songInfo: SongInfo):
-        """ play recent played song """
-        songInfos = self.recentPlayInterface.songListWidget.songInfos
-        index = songInfos.index(songInfo)
-        self.playCustomPlaylistSong(songInfos, index)
-
     def randomPlayAll(self):
         """ play all songs randomly """
         self.mediaPlaylist.playlistType = PlaylistType.ALL_SONG_PLAYLIST
@@ -1542,6 +1515,7 @@ class MainWindow(AcrylicWindow):
         signalBus.playCheckedSig.connect(self.playCustomPlaylist)
         signalBus.playOneSongCardSig.connect(self.playOneSongCard)
         signalBus.nextToPlaySig.connect(self.onSongsNextToPlay)
+        signalBus.playPlaylistSig.connect(self.playCustomPlaylist)
 
         signalBus.playSpeedUpSig.connect(self.playSpeedUp)
         signalBus.playSpeedDownSig.connect(self.playSpeedDown)
@@ -1626,10 +1600,6 @@ class MainWindow(AcrylicWindow):
         self.albumInterface.songCardPlaySig.connect(
             self.playAbumSong)
 
-        # recent play signal
-        self.recentPlayInterface.playSongCardSig.connect(
-            self.playRecentPlaySong)
-
         # playlist interface signal
         self.playlistInterface.songCardPlaySig.connect(
             self.onPlaylistInterfaceSongCardPlay)
@@ -1649,18 +1619,6 @@ class MainWindow(AcrylicWindow):
         # label navigation interface signal
         self.labelNavigationInterface.labelClicked.connect(
             self.onNavigationLabelClicked)
-
-        # search result interface signal
-        self.searchResultInterface.playLocalSongSig.connect(
-            self.playLocalSearchedSong)
-        self.searchResultInterface.playOnlineSongSig.connect(
-            self.playOnlineSearchedSong)
-
-        # more search result interface signal
-        self.moreSearchResultInterface.playLocalSongSig.connect(
-            self.playLocalMoreSearchedSong)
-        self.moreSearchResultInterface.playOnlineSongSig.connect(
-            self.playOnlineMoreSearchedSong)
 
         # system tray icon signal
         qApp.aboutToQuit.connect(self.onExit)

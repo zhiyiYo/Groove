@@ -19,6 +19,8 @@ class RecentSongListWidget(SongListWidget):
         }
         self.songCardNumChanged.connect(
             lambda i: self.guideLabel.setVisible(i == 0))
+        self.playSignal.connect(
+            lambda s: signalBus.playPlaylistSig.emit(self.songInfos, self.songInfos.index(s)))
 
     def _showDeleteCardDialog(self):
         index = self.currentRow()

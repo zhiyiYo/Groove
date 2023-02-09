@@ -32,7 +32,7 @@ class SelectionModeViewBase(QWidget):
         raise NotImplementedError
 
 
-class SelectionModeInterface(SmoothScrollArea):
+class SelectionModeInterface(ScrollArea):
     """ Selection mode interface """
 
     def __init__(self, barType: SelectionModeBarType, parent=None):

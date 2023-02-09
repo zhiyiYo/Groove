@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QToolButton
 class SmallestPlayModeButton(QToolButton):
     """ Smallest interface button """
 
-    def __init__(self, iconPath, parent=None, iconSize=(21, 21), buttonSize=(45, 45)):
+    def __init__(self, iconPath, parent=None, iconSize=(24, 24), buttonSize=(45, 45)):
         super().__init__(parent)
         self.isEnter = False
         self.isPressed = False
