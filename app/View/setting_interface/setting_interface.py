@@ -12,7 +12,7 @@ from components.settings import (SettingCardGroup, SwitchSettingCard, FolderList
                                  OptionsSettingCard, RangeSettingCard, PushSettingCard,
                                  ColorSettingCard, HyperlinkCard, PrimaryPushSettingCard)
 from components.settings import SettingIconFactory as SIF
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal, QOperatingSystemVersion
 from PyQt5.QtWidgets import QWidget, QLabel, QFontDialog, QFileDialog
 
 
@@ -90,7 +90,7 @@ class SettingInterface(SmoothScrollArea):
             ],
             parent=self.personalGroup
         )
-        self.languageCard=OptionsSettingCard(
+        self.languageCard = OptionsSettingCard(
             config.language,
             SIF.path(SIF.LANGUAGE),
             self.tr('Language'),
@@ -282,6 +282,10 @@ class SettingInterface(SmoothScrollArea):
         self.scrollWidget.setObjectName('scrollWidget')
         self.settingLabel.setObjectName('settingLabel')
         setStyleSheet(self, 'setting_interface')
+
+        # disable acrylic effect
+        self.enableAcrylicCard.switchButton.setEnabled(
+            QOperatingSystemVersion.current() >= QOperatingSystemVersion.Windows10)
 
         # initialize layout
         self.__initLayout()
