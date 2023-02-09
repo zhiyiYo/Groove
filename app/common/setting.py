@@ -18,6 +18,6 @@ RELEASE_URL = "https://github.com/zhiyiYo/Groove/releases/latest"
 if DEBUG:
     CONFIG_FOLDER = Path('AppData').absolute()
 else:
-    CONFIG_FOLDER = Path(QStandardPaths.writableLocation(QStandardPaths.AppConfigLocation))
+    CONFIG_FOLDER = Path(QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)) / APP_NAME
 
 CONFIG_FILE = CONFIG_FOLDER / "config.json"
