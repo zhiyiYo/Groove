@@ -2,8 +2,8 @@
 from enum import Enum
 
 from common.icon import getIconColor
-from PyQt5.QtCore import QEvent, QSize, Qt
-from PyQt5.QtGui import QFont, QFontMetrics, QIcon
+from PyQt5.QtCore import QEvent, QSize, Qt, QPoint
+from PyQt5.QtGui import QFont, QFontMetrics, QIcon, QHoverEvent
 from PyQt5.QtWidgets import QApplication, QCheckBox, QLabel, QToolButton, QWidget
 from PyQt5.QtSvg import QSvgWidget
 
@@ -226,7 +226,7 @@ class SongNameCard(QWidget):
 
         # update icon
         if isSongExit:
-            color ="white" if state == WidgetState.SELECTED else f"green_{getIconColor()}"
+            color = "white" if state == WidgetState.SELECTED else f"green_{getIconColor()}"
             path = f":/images/song_list_widget/Playing_{color}.svg"
         else:
             color = "white" if state == WidgetState.SELECTED else "red"
@@ -237,6 +237,12 @@ class SongNameCard(QWidget):
     def setButtonGroupState(self, state: CardState):
         """ set button group state """
         self.buttonGroup.setState(state)
+
+    def cancelButtonHoverState(self):
+        """ cancel the hover state of button """
+        self.playButton.setAttribute(Qt.WA_UnderMouse, False)
+        e = QHoverEvent(QEvent.HoverLeave, QPoint(-1, -1), QPoint())
+        QApplication.sendEvent(self.playButton, e)
 
     def setPlay(self, isPlay: bool, isSongExist: bool = True):
         """ set playing state """

@@ -78,6 +78,7 @@ class BasicSongCard(QWidget):
         # connect signal to slot
         self.playButton.clicked.connect(
             lambda: self.playButtonClicked.emit(self.itemIndex))
+        self.playButton.clicked.connect(self.songNameCard.cancelButtonHoverState)
 
     def setSongInfo(self, songInfo: SongInfo):
         """ set song information without updating song card """

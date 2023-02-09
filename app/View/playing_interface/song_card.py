@@ -4,13 +4,12 @@ from common.database.entity import SongInfo
 from common.signal_bus import signalBus
 from common.style_sheet import setStyleSheet
 from components.widgets.menu import AddToMenu
-from components.widgets.label import ClickableLabel, PixmapLabel
+from components.widgets.label import ClickableLabel
 from PyQt5.QtCore import (QAbstractAnimation, QEasingCurve, QEvent,
                           QParallelAnimationGroup, QPoint, QPropertyAnimation,
                           QSize, Qt, pyqtSignal)
-from PyQt5.QtGui import QFont, QFontMetrics, QMouseEvent, QPixmap, QIcon
-from PyQt5.QtWidgets import (QApplication, QCheckBox, QLabel, QToolButton,
-                             QWidget)
+from PyQt5.QtGui import QFont, QFontMetrics, QMouseEvent, QIcon, QHoverEvent
+from PyQt5.QtWidgets import QApplication, QCheckBox, QLabel, QToolButton, QWidget
 from PyQt5.QtSvg import QSvgWidget
 
 
@@ -309,6 +308,8 @@ class SongCard(QWidget):
         """ connect signal to slot """
         self.playButton.clicked.connect(
             lambda: self.clicked.emit(self.itemIndex))
+        self.playButton.clicked.connect(
+            self.songNameCard.cancelButtonHoverState)
         self.singerLabel.clicked.connect(
             lambda: signalBus.switchToSingerInterfaceSig.emit(self.singer))
         self.albumLabel.clicked.connect(
@@ -420,6 +421,12 @@ class SongNameCard(QWidget):
     def resizeEvent(self, e):
         super().resizeEvent(e)
         self.__moveButtonGroup()
+
+    def cancelButtonHoverState(self):
+        """ cancel the hover state of button """
+        self.playButton.setAttribute(Qt.WA_UnderMouse, False)
+        e = QHoverEvent(QEvent.HoverLeave, QPoint(-1, -1), QPoint())
+        QApplication.sendEvent(self.playButton, e)
 
     def __moveButtonGroup(self):
         """ move button group """

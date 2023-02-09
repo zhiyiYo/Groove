@@ -94,7 +94,10 @@ class FolderValidator(ConfigValidator):
 
     def correct(self, value: str):
         path = Path(value)
-        path.mkdir(exist_ok=True, parents=True)
+        try:
+            path.mkdir(exist_ok=True, parents=True)
+        except:
+            pass
         return str(path.absolute()).replace("\\", "/")
 
 
