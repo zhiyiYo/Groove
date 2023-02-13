@@ -2,7 +2,7 @@
 from common.get_pressed_pos import getPressedPos, Position
 from common.image_utils import PixmapPerspectiveTransform
 from PyQt5.QtCore import QPoint, Qt
-from PyQt5.QtGui import QPainter, QPixmap, QScreen
+from PyQt5.QtGui import QPainter, QPixmap, QScreen, QCursor
 from PyQt5.QtWidgets import QApplication, QWidget
 
 
@@ -110,7 +110,7 @@ class PerspectiveWidget(QWidget):
 
     def __getScreenShot(self) -> QPixmap:
         """ get screen shot """
-        screen = QApplication.primaryScreen()  # type:QScreen
+        screen = QApplication.screenAt(QCursor.pos())  # type:QScreen
         pos = self.mapToGlobal(QPoint(0, 0))  # type:QPoint
         pix = screen.grabWindow(0, pos.x(), pos.y(),
                                 self.width(), self.height())
