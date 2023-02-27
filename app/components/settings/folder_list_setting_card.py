@@ -4,7 +4,7 @@ from pathlib import Path
 
 from common.config import ConfigItem, config
 from common.icon import drawSvgIcon
-from PyQt5.QtCore import Qt, pyqtSignal, QRectF
+from PyQt5.QtCore import Qt, pyqtSignal, QRectF, QStandardPaths
 from PyQt5.QtGui import QPainter
 from PyQt5.QtWidgets import (QPushButton, QFileDialog, QWidget, QLabel,
                              QHBoxLayout, QToolButton)
@@ -137,7 +137,7 @@ class FolderListSettingCard(ExpandSettingCard):
     def __showFolderDialog(self):
         """ show folder dialog """
         folder = QFileDialog.getExistingDirectory(
-            self, self.tr("Choose folder"), "./")
+            self, self.tr("Choose folder"), QStandardPaths.writableLocation(QStandardPaths.MusicLocation))
 
         if not folder or folder in self.folders:
             return

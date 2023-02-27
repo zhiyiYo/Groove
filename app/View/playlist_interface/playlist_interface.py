@@ -1,6 +1,5 @@
 # coding:utf-8
-from pathlib import Path
-from typing import List, Union
+from typing import List
 
 from common.picture import Cover, CoverType
 from common.database.entity import Playlist, SongInfo
@@ -13,7 +12,7 @@ from components.dialog_box.message_dialog import MessageDialog
 from components.dialog_box.playlist_dialog import RenamePlaylistDialog
 from components.selection_mode_interface import (SelectionModeBarType,
                                                  SongSelectionModeInterface)
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal, QStandardPaths
 from PyQt5.QtWidgets import QFileDialog, QLabel
 
 from .playlist_info_bar import PlaylistInfoBar
@@ -187,7 +186,7 @@ class PlaylistInterface(SongSelectionModeInterface):
     def __showAddFolderToPlaylistDialog(self):
         """ add folder to playlist """
         path = QFileDialog.getExistingDirectory(
-            self, self.tr("Choose folder"), "./")
+            self, self.tr("Choose folder"), QStandardPaths.writableLocation(QStandardPaths.MusicLocation))
         if path:
             signalBus.addFilesToCustomPlaylistSig.emit(
                 self.playlistName, Directory(path).glob(True))
@@ -196,7 +195,11 @@ class PlaylistInterface(SongSelectionModeInterface):
         """ add files to playlist """
         filters = '(' + ';'.join(["*"+i for i in Directory.formats]) + ')'
         files, _ = QFileDialog.getOpenFileNames(
-            self, self.tr("Choose songs to add"), "./", self.tr("Audio files")+filters)
+            self,
+            self.tr("Choose songs to add"),
+            QStandardPaths.writableLocation(QStandardPaths.MusicLocation),
+            self.tr("Audio files")+filters
+        )
         if files:
             signalBus.addFilesToCustomPlaylistSig.emit(
                 self.playlistName, files)
