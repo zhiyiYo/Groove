@@ -1,5 +1,5 @@
 # coding:utf-8
-from common.smooth_scroll import SmoothScroll
+from common.smooth_scroll import SmoothScroll, SmoothMode
 from PyQt5.QtCore import Qt, QPoint
 from PyQt5.QtGui import QWheelEvent, QCursor
 from PyQt5.QtWidgets import QApplication, QListWidget
@@ -15,6 +15,8 @@ class ListWidget(QListWidget):
         self.setVerticalScrollMode(self.ScrollPerPixel)
         self.setAttribute(Qt.WA_StyledBackground)
         self.smoothScroll = SmoothScroll(self)
+        self.smoothScroll.acceleration = 1.12
+        self.smoothScroll.stepRatio = 0.88
 
         if trigger:
             self.verticalScrollBar().valueChanged.connect(self.__fakeMoveMouse)
