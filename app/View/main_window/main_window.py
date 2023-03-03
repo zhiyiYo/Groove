@@ -32,10 +32,10 @@ from components.title_bar import TitleBar
 from components.widgets.label import PixmapLabel
 from components.widgets.stacked_widget import (OpacityAniStackedWidget,
                                                PopUpAniStackedWidget)
-from components.widgets.tool_tip import StateToolTip
+from components.widgets.tool_tip import StateToolTip, ToastToolTip
 from PyQt5.QtCore import (QEasingCurve, QEvent, QEventLoop, QFile, QFileInfo,
                           Qt, QTimer, QUrl)
-from PyQt5.QtGui import (QColor, QDesktopServices, QDragEnterEvent, QDropEvent,
+from PyQt5.QtGui import (QDesktopServices, QDragEnterEvent, QDropEvent,
                          QIcon, QPixmap)
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist
 from PyQt5.QtSql import QSqlDatabase
@@ -1081,24 +1081,13 @@ class MainWindow(AcrylicWindow):
         oldFiles = [i.file for i in oldPlaylist.songInfos]
         diffSongInfos = [i for i in songInfos if i.file not in oldFiles]
 
-        planToAddNum = len(songInfos)
-        repeatNum = planToAddNum-len(diffSongInfos)
-
-        # show dialog box if there are duplicate songs
-        if repeatNum > 0:
-            if planToAddNum == 1:
-                content = self.tr(
-                    "This song is already in your playlist.")
-            elif repeatNum < planToAddNum:
-                content = self.tr(
-                    "Some songs are already in your playlist.")
-            else:
-                content = self.tr(
-                    "All these songs are already in your playlist.")
-
-            self.showMessageBox(self.tr("Song duplication"), content)
-
         if not diffSongInfos:
+            if len(songInfos) == 1:
+                content = self.tr("This song is already in your playlist.")
+            else:
+                content = self.tr("All these songs are already in your playlist.")
+
+            ToastToolTip.warn(self.tr('Song duplication'), content, self)
             return
 
         success = self.library.playlistController.addSongs(name, diffSongInfos)
@@ -1111,6 +1100,12 @@ class MainWindow(AcrylicWindow):
             name, songInfos)
         self.moreSearchResultInterface.playlistInterface.playlistCardView.addSongsToPlaylistCard(
             name, songInfos)
+
+        ToastToolTip.success(
+            self.tr('Add completed'),
+            self.tr('Successfully added')+f" {len(diffSongInfos)} "+self.tr('songs to the playlist'),
+            self
+        )
 
     def removeSongsFromCustomPlaylist(self, name: str, songInfos: List[SongInfo]):
         """ remove songs from custom playlist """

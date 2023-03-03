@@ -769,7 +769,7 @@
     <message>
         <location filename="../../View/main_window/main_window.py" line="1100"/>
         <source>This song is already in your playlist.</source>
-        <translation>这首歌曲已经在你的播放列表中啦~~</translation>
+        <translation>这首歌曲已经在你的播放列表中啦</translation>
     </message>
     <message>
         <location filename="../../View/main_window/main_window.py" line="1103"/>
@@ -779,12 +779,27 @@
     <message>
         <location filename="../../View/main_window/main_window.py" line="1106"/>
         <source>All these songs are already in your playlist.</source>
-        <translation>所有这些歌曲都已在你的播放列表中。</translation>
+        <translation>所有这些歌曲都已在你的播放列表中啦</translation>
     </message>
     <message>
         <location filename="../../View/main_window/main_window.py" line="1109"/>
         <source>Song duplication</source>
         <translation>歌曲重复</translation>
+    </message>
+    <message>
+        <location filename="../../View/main_window/main_window.py" line="1105"/>
+        <source>Add completed</source>
+        <translation>添加完成</translation>
+    </message>
+    <message>
+        <location filename="../../View/main_window/main_window.py" line="1106"/>
+        <source>Successfully added</source>
+        <translation>已成功添加</translation>
+    </message>
+    <message>
+        <location filename="../../View/main_window/main_window.py" line="1106"/>
+        <source>songs to the playlist</source>
+        <translation>首歌曲到播放列表中</translation>
     </message>
     <message>
         <location filename="../../View/main_window/main_window.py" line="1232"/>

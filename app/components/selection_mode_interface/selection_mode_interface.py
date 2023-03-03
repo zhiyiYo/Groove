@@ -133,7 +133,7 @@ class SelectionModeInterface(ScrollArea):
         """ selection mode bar add to signal slot """
         menu = AddToMenu(parent=self)
 
-        for act in menu.actions():
+        for act in menu.menuActions():
             act.triggered.connect(self.exitSelectionMode)
 
         songInfos = self._getCheckedSongInfos()

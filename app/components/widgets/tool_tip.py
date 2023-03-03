@@ -299,6 +299,9 @@ class DownloadStateToolTip(StateToolTip):
 class ToastToolTip(QFrame):
     """ Toast tool tip """
 
+    SUCCESS = "completed"
+    WARNING = "info"
+
     def __init__(self, title: str, content: str, icon: str, parent=None):
         """
         Parameters
@@ -403,3 +406,13 @@ class ToastToolTip(QFrame):
         self.slideAni.start()
         super().showEvent(e)
         QTimer.singleShot(2000, self.__fadeOut)
+
+    @classmethod
+    def success(cls, title: str, content: str, parent=None):
+        """ show a success toast """
+        cls(title, content, cls.SUCCESS, parent).show()
+
+    @classmethod
+    def warn(cls, title: str, content: str, parent=None):
+        """ show a warning toast """
+        cls(title, content, cls.WARNING, parent).show()
