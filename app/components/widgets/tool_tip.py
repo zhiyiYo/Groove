@@ -4,7 +4,7 @@ from common.style_sheet import setStyleSheet
 from components.buttons.three_state_button import ThreeStateButton
 from PyQt5.QtCore import (QEasingCurve, QPoint, QPropertyAnimation, QSize, Qt,
                           QTimer, pyqtSignal, QRect)
-from PyQt5.QtGui import QColor, QPainter
+from PyQt5.QtGui import QColor, QPainter, QCursor
 from PyQt5.QtWidgets import (QApplication, QFrame, QGraphicsDropShadowEffect,
                              QGraphicsOpacityEffect, QHBoxLayout, QLabel,
                              QWidget)
@@ -103,7 +103,7 @@ class ToolTip(QFrame):
 
         # adjust postion to prevent tooltips from appearing outside the screen
         desk = QApplication.desktop()
-        x = min(max(0, x), desk.width() - self.width() - 2)
+        x = min(max(0, x) if QCursor().pos().x() >= 0 else x, desk.width() - self.width() - 2)
         y = min(max(0, y), desk.height() - self.height() - 2)
 
         self.move(x, y)
