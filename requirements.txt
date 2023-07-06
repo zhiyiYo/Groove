@@ -10,7 +10,7 @@ PyCocoa ; sys_platform=="darwin"
 PyQt5==5.15.2
 PyQt5-sip==12.8.1
 numpy==1.19.5
-scipy==1.5.2
+scipy==1.10.0
 opencv-python==4.5.3.56
 Pillow==8.1.0
 tinytag==1.7.0
