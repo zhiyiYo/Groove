@@ -25,8 +25,8 @@ class KuWoMusicCrawler(CrawlerBase):
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                           'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
-            'Cookie': 'kw_token=C713RK6IJ8J',
-            'csrf': 'C713RK6IJ8J',
+            'Cookie': 'Hm_token=ySrp5hfGSBasHWPYar4CmbCCesJARJ6t',
+            'Cross': 'b555e05b8e901d62781f4543c7743b32',
             'Host': 'www.kuwo.cn',
             'Referer': ''
         }
@@ -88,7 +88,7 @@ class KuWoMusicCrawler(CrawlerBase):
         # configure request header
         headers = self.headers.copy()
         headers.pop('Referer')
-        headers.pop('csrf')
+        headers.pop('Cross')
 
         # send request for play url
         url = f'http://www.kuwo.cn/api/v1/www/music/playUrl?mid={rid}&type=convert_url3&br={br}mp3'
@@ -115,7 +115,7 @@ class KuWoMusicCrawler(CrawlerBase):
         # send request for binary data of audio
         headers = self.headers.copy()
         headers.pop('Referer')
-        headers.pop('csrf')
+        headers.pop('Cross')
         headers.pop('Host')
         response = self.send_request(url, headers=headers)
 
@@ -148,7 +148,7 @@ class KuWoMusicCrawler(CrawlerBase):
         artist_info = json.loads(response.text)["data"]["artistList"][0]
         headers = self.headers.copy()
         headers.pop('Referer')
-        headers.pop('csrf')
+        headers.pop('Cross')
         headers.pop('Host')
         response = self.send_request(artist_info['pic300'], headers=headers)
 
@@ -174,8 +174,6 @@ class KuWoMusicCrawler(CrawlerBase):
 
         # configure request header
         headers = self.headers.copy()
-        headers['csrf'] = '1RTQ5LGVIRZ'
-        headers['Cookie'] = 'kw_token=1RTQ5LGVIRZ'
         headers['Referer'] = 'http://www.kuwo.cn/search/mv?'+key_word
 
         # search MV information
@@ -202,15 +200,14 @@ class KuWoMusicCrawler(CrawlerBase):
         # configure request header
         headers = self.headers.copy()
         headers.pop('Referer')
-        headers.pop('csrf')
+        headers.pop('Cross')
 
         # send request for HTML file
-        url = f"http://www.kuwo.cn/mvplay/{mv_info['id']}"
+        url = f"https://www.kuwo.cn/api/v1/www/music/playUrl?mid={mv_info['id']}&type=mv&reqId=f7ee4730-2181-11ee-b032-931b89d4122d"
         response = self.send_request(url, headers=headers)
 
         # search the play url of mp4
-        match = re.search(r'src:"(.+\.mp4)"', response.text)
-        return match.group(1).replace(r'\u002F', '/')
+        return json.loads(response.text)['data']['url']
 
 
 class KuWoFakeUrl(FakeUrl):
