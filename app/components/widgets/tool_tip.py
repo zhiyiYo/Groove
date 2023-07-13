@@ -31,6 +31,10 @@ class ToolTip(QFrame):
         self.containerLayout.addWidget(self.label)
         self.containerLayout.setContentsMargins(10, 7, 10, 7)
 
+        # add opacity effect
+        self.opacityAni = QPropertyAnimation(self, b'windowOpacity', self)
+        self.opacityAni.setDuration(150)
+
         # add shadow
         self.shadowEffect = QGraphicsDropShadowEffect(self)
         self.shadowEffect.setBlurRadius(32)
@@ -79,6 +83,10 @@ class ToolTip(QFrame):
         self.setStyle(QApplication.style())
 
     def showEvent(self, e):
+        self.opacityAni.setStartValue(0)
+        self.opacityAni.setEndValue(1)
+        self.opacityAni.start()
+        
         self.timer.stop()
         self.timer.start(self.__duration)
         super().showEvent(e)
