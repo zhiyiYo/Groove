@@ -53,8 +53,8 @@ class OnlineSongListWidget(NoScrollSongListWidget):
             menu.exec(self.cursor().pos())
 
     def _connectSongCardSignalToSlot(self, songCard: OnlineSongCard):
-        songCard.doubleClicked.connect(lambda i: self._playSongs(i))
-        songCard.playButtonClicked.connect(lambda i: self._playSongs(i))
+        songCard.doubleClicked.connect(self._playSongs)
+        songCard.playButtonClicked.connect(self._playSongs)
         songCard.clicked.connect(self.setCurrentIndex)
         songCard.checkedStateChanged.connect(
             self.onSongCardCheckedStateChanged)

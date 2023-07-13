@@ -1493,7 +1493,7 @@ class MainWindow(AcrylicWindow):
         signalBus.playCheckedSig.connect(self.playCustomPlaylist)
         signalBus.playOneSongCardSig.connect(self.playOneSongCard)
         signalBus.nextToPlaySig.connect(self.onSongsNextToPlay)
-        signalBus.playPlaylistSig.connect(self.playCustomPlaylist)
+        signalBus.playPlaylistSig.connect(self.playCustomPlaylistSong)
 
         signalBus.playSpeedUpSig.connect(self.playSpeedUp)
         signalBus.playSpeedDownSig.connect(self.playSpeedDown)
