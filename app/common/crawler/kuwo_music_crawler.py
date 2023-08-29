@@ -1,11 +1,9 @@
 # coding:utf-8
 import json
-import re
+from enum import Enum
 from typing import List, Tuple
 from urllib import parse
 
-from uuid import uuid4
-import requests
 from common.picture import Avatar
 from common.database.entity import SongInfo
 from common.url import FakeUrl
@@ -13,6 +11,15 @@ from common.url import FakeUrl
 from .crawler_base import (AudioQualityError, CrawlerBase, MvQuality,
                            SongQuality)
 from .exception_handler import exceptionHandler
+from .kuwo_url_decoder import decode_song_url, decode_mv_url
+
+
+
+class KuWoSearchType(Enum):
+    """ Kuwo search type """
+    SONG = "music"
+    SINGER = "artist"
+    MV = "video"
 
 
 class KuWoMusicCrawler(CrawlerBase):
@@ -25,49 +32,46 @@ class KuWoMusicCrawler(CrawlerBase):
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                           'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
-            'Cookie': 'Hm_token=ySrp5hfGSBasHWPYar4CmbCCesJARJ6t',
-            'Cross': 'b555e05b8e901d62781f4543c7743b32',
-            'Host': 'www.kuwo.cn',
-            'Referer': ''
+            'Referer': '',
         }
 
     @exceptionHandler([], 0)
     def getSongInfos(self, key_word: str, page_num=1, page_size=10) -> Tuple[List[SongInfo], int]:
         key_word = parse.quote(key_word)
 
-        # configure request header
-        headers = self.headers.copy()
-        headers["Referer"] = 'http://www.kuwo.cn/search/list?key='+key_word
-
         # send request for song information
-        try:
-            url = f'http://www.kuwo.cn/api/www/search/searchMusicBykeyWord?key={key_word}&pn={page_num}&rn={page_size}&reqId=c06e0e50-fe7c-11eb-9998-47e7e13a7206'
-            response = self.send_request(url, headers=headers)
-        except:
-            url = f'http://www.kuwo.cn/api/www/search/searchMusicBykeyWord?key={key_word}&pn={page_num}&rn={page_size}'
-            response = self.send_request(url, headers=headers)
+        data = self._search(KuWoSearchType.SONG, key_word, page_num, page_size)
+        # url = f"http://search.kuwo.cn/r.s?all={key_word}&pn={page_num-1}&rn={page_size}&reqId=85bde120-b7b5-11ec-94ee-75d538904202&client=kt&uid=794762570&ver=kwplayer_ar_9.2.2.1&vipver=1&show_copyright_off=1&newver=1&ft=music&cluster=0&strategy=2012&encoding=utf8&rformat=json&vermerge=1&mobi=1&issubtitle=1"
+        # response = self.send_request(url, headers=self.headers)
 
         # parse the response data
         song_infos = []
-        data = json.loads(response.text)['data']
-        for info in data['list']:
+        for info in data['abslist']:
             song_info = SongInfo()
-            song_info.file = KuWoFakeSongUrl(info['rid']).url()
-            song_info.title = info['name']
-            song_info.singer = info['artist']
-            song_info.album = info['album']
-            song_info.track = info['track']
-            song_info.trackTotal = info['track']
-            song_info.duration = info["duration"]
+            song_info.file = KuWoFakeSongUrl(info['MUSICRID'].split('_')[1]).url()
+            song_info.title = info['NAME']
+            song_info.singer = info['ARTIST']
+            song_info.album = info['ALBUM']
+            song_info.track = 0
+            song_info.trackTotal = 1
+            song_info.duration = int(info["DURATION"])
             song_info.genre = 'Pop'
-            song_info['coverPath'] = info.get('albumpic', '')
-            if info.get('releaseDate'):
-                year = info['releaseDate'].split('-')[0]
+
+            # album cover
+            if info.get('web_albumpic_short'):
+                path = '300/' + '/'.join(info['web_albumpic_short'].split('/')[1:])
+                song_info['coverPath'] = "https://img3.kuwo.cn/star/albumcover/" + path
+            else:
+                song_info['coverPath'] = ''
+
+            # release year
+            if info.get('web_timingonline'):
+                year = info['web_timingonline'][:4]
                 song_info.year = int(year) if year.isnumeric() else None
 
             song_infos.append(song_info)
 
-        return song_infos, int(data['total'])
+        return song_infos, int(data['TOTAL'])
 
     @exceptionHandler('')
     def getSongUrl(self, song_info: SongInfo, quality=SongQuality.STANDARD) -> str:
@@ -77,25 +81,14 @@ class KuWoMusicCrawler(CrawlerBase):
         if not FakeUrl.isFake(song_info.file):
             return song_info.file
 
+        # get mobi url
         rid = KuWoFakeSongUrl.getId(song_info.file)
-        br = {
-            SongQuality.STANDARD: '128k',
-            SongQuality.HIGH: '192k',
-            SongQuality.SUPER: '320k',
-            SongQuality.LOSSLESS: '320k',
-        }[quality]
+        format = self._qualityToFormat(quality)
+        mobi_url = decode_song_url(rid, format)
 
-        # configure request header
-        headers = self.headers.copy()
-        headers.pop('Referer')
-        headers.pop('Cross')
-
-        # send request for play url
-        url = f'http://www.kuwo.cn/api/v1/www/music/playUrl?mid={rid}&type=convert_url3&br={br}mp3'
-        response = self.send_request(url, headers=headers)
-        play_url = json.loads(response.text)['data']['url']
-
-        return play_url
+        response = self.send_request(mobi_url)
+        url = response.text.split('\r\n')[2][4:]
+        return url
 
     @exceptionHandler('')
     def getSongDetailsUrl(self, key_word: str):
@@ -113,14 +106,10 @@ class KuWoMusicCrawler(CrawlerBase):
             return ''
 
         # send request for binary data of audio
-        headers = self.headers.copy()
-        headers.pop('Referer')
-        headers.pop('Cross')
-        headers.pop('Host')
-        response = self.send_request(url, headers=headers)
+        response = self.send_request(url, headers=self.headers)
 
         # save audio file
-        return self.saveSong(song_info, save_dir, '.mp3', response.content)
+        return self.saveSong(song_info, save_dir, '.' + self._qualityToFormat(quality), response.content)
 
     @exceptionHandler([], 0)
     def search(self, key_word: str, page_num=1, page_size=10, quality=SongQuality.STANDARD) -> Tuple[List[SongInfo], int]:
@@ -136,21 +125,12 @@ class KuWoMusicCrawler(CrawlerBase):
     def getSingerAvatar(self, singer):
         singer_ = parse.quote(singer)
 
-        # configure request header
-        headers = self.headers.copy()
-        headers["Referer"] = 'http://www.kuwo.cn/search/singers?key='+singer_
-
         # send request for singer information
-        url = f'http://www.kuwo.cn/api/www/search/searchArtistBykeyWord?key={singer_}&pn=1&rn=3&reqId=c06e0e50-fe7c-11eb-9998-47e7e13a7206'
-        response = self.send_request(url, headers=headers)
+        data = self._search(KuWoSearchType.SINGER, singer_)
 
         # send request for singer avatar
-        artist_info = json.loads(response.text)["data"]["artistList"][0]
-        headers = self.headers.copy()
-        headers.pop('Referer')
-        headers.pop('Cross')
-        headers.pop('Host')
-        response = self.send_request(artist_info['pic300'], headers=headers)
+        artist_info = data["abslist"][0]
+        response = self.send_request(artist_info['hts_PICPATH'], headers=self.headers)
 
         # save avatar
         return Avatar(singer).save(response.content)
@@ -173,41 +153,44 @@ class KuWoMusicCrawler(CrawlerBase):
         key_word = parse.quote(key_word)
 
         # configure request header
-        headers = self.headers.copy()
-        headers['Referer'] = 'http://www.kuwo.cn/search/mv?'+key_word
 
         # search MV information
-        url = f'http://www.kuwo.cn/api/www/search/searchMvBykeyWord?key={key_word}&pn={page_num}&rn={page_size}&reqId=ba2f7511-6e89-11ec-aa1e-9520a8bfa7a5'
-        response = self.send_request(url, headers=headers)
+        data = self._search(KuWoSearchType.MV, key_word, page_num, page_size)
 
         # parse the response data
         mv_info_list = []
-        data = json.loads(response.text)['data']
-        for info in data['mvlist']:
+        for info in data['abslist']:
             mv_info = {}
             mv_info['id'] = info['id']
-            mv_info['name'] = info['name']
-            mv_info['singer'] = info['artist']
-            mv_info['coverPath'] = info['pic']
-            d = info["duration"]
+            mv_info['name'] = info['SONGNAME']
+            mv_info['singer'] = info['ARTIST']
+            mv_info['coverPath'] = data['BASEPICPATH'] + info['MVPIC']
+            d = int(info["DURATION"])
             mv_info["duration"] = f"{int(d//60)}:{int(d%60):02}"
             mv_info_list.append(mv_info)
 
-        return mv_info_list, data['total']
+        return mv_info_list, data['TOTAL']
 
     @exceptionHandler('')
     def getMvUrl(self, mv_info: dict, quality=MvQuality.SD) -> str:
-        # configure request header
-        headers = self.headers.copy()
-        headers.pop('Referer')
-        headers.pop('Cross')
+        mobi_url = decode_mv_url(mv_info['id'])
+        response = self.send_request(mobi_url, headers=self.headers)
+        return response.text.split('\r\n')[2][4:]
 
-        # send request for HTML file
-        url = f"https://www.kuwo.cn/api/v1/www/music/playUrl?mid={mv_info['id']}&type=mv&reqId=f7ee4730-2181-11ee-b032-931b89d4122d"
-        response = self.send_request(url, headers=headers)
+    def _search(self, type: KuWoSearchType, key_word: str, page_num=1, page_size=30):
+        """ search  """
+        url = f"http://search.kuwo.cn/r.s?all={key_word}&pn={page_num-1}&rn={page_size}&reqId=85bde120-b7b5-11ec-94ee-75d538904202&client=kt&uid=794762570&ver=kwplayer_ar_9.2.2.1&vipver=1&show_copyright_off=1&newver=1&ft={type.value}&cluster=0&strategy=2012&encoding=utf8&rformat=json&vermerge=1&mobi=1&issubtitle=1"
+        response = self.send_request(url, headers=self.headers)
+        return json.loads(response.text)
 
-        # search the play url of mp4
-        return json.loads(response.text)['data']['url']
+    def _qualityToFormat(self, quality: SongQuality):
+        format = {
+            SongQuality.STANDARD: 'mp3',
+            SongQuality.HIGH: 'aac',
+            SongQuality.SUPER: 'flac',
+            SongQuality.LOSSLESS: 'flac',
+        }[quality]
+        return format
 
 
 class KuWoFakeUrl(FakeUrl):

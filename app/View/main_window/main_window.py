@@ -580,6 +580,10 @@ class MainWindow(AcrylicWindow):
         if error == QMediaPlayer.NoError:
             return
 
+        # Online music may raise resource error even though it's avaliable
+        if error == QMediaPlayer.ResourceError and self.mediaPlaylist.getCurrentSong().file.startswith('http'):
+            return
+
         self.pause()
 
         decoder = "LAV filters" if sys.platform == "win32" else "GStreamer"

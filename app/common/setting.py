@@ -8,7 +8,7 @@ DEBUG = True
 
 YEAR = 2022
 AUTHOR = "zhiyiYo"
-VERSION = "v1.3.4"
+VERSION = "v1.3.5"
 APP_NAME = "Groove"
 HELP_URL = "https://groove-music.readthedocs.io"
 FEEDBACK_URL = "https://github.com/zhiyiYo/Groove/issues"
