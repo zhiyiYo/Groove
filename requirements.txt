@@ -15,7 +15,7 @@ opencv-python==4.5.3.56
 Pillow==8.1.0
 tinytag==1.7.0
 pinyin==0.4.0
-pycryptodome==3.9.8
+pycryptodome==3.19.1
 pyqtkeybind==0.0.9
 darkdetect
 sphinx-markdown-tables==0.0.17
