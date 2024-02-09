@@ -196,9 +196,9 @@ def decode_song_url(rid: str, format='mp3'):
     if format not in ['mp3', 'aac', 'flac']:
         raise ValueError(f'The format `{format}` is invalid')
 
-    return "http://mobi.kuwo.cn/mobi.s?f=kuwo&q=" + KuwoDES.base64_encrypt(KuwoDES, f"corp=kuwo&p2p=1&type=convert_url2&format={format}&rid={rid}")
+    return "http://mobi.kuwo.cn/mobi.s?f=kuwo&q=" + KuwoDES.base64_encrypt(KuwoDES, f"corp=kuwo&p2p=1&type=convert_url2&source=oppo&format={format}&rid={rid}")
 
 
 def decode_mv_url(mid: str):
     """ decode mv url """
-    return "http://mobi.kuwo.cn/mobi.s?f=kuwo&q=" + KuwoDES.base64_encrypt(KuwoDES, f"corp=kuwo&p2p=1&type=convert_mv_url2&format=MP4&rid={mid}")
+    return "http://mobi.kuwo.cn/mobi.s?f=kuwo&q=" + KuwoDES.base64_encrypt(KuwoDES, f"corp=kuwo&p2p=1&type=convert_mv_url2&source=oppo&format=MP4&rid={mid}")
