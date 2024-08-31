@@ -11,7 +11,7 @@ PyQt5==5.15.2
 PyQt5-sip==12.8.1
 numpy==1.19.5
 scipy==1.5.2
-opencv-python==4.5.3.56
+opencv-python==4.8.1.78
 Pillow==8.1.0
 tinytag==1.7.0
 pinyin==0.4.0
