@@ -35,10 +35,6 @@ English | <a href="docs/README_zh.md">简体中文</a>
 
   ![local music](docs/source/_static/images/本地音乐.gif)
 
-* Search, play and download online music
-
-  ![online music](docs/source/_static/images/在线音乐.gif)
-
 * Create and manage custom playlist
 
   ![custom playlist](docs/source/_static/images/播放列表.gif)
@@ -74,28 +70,6 @@ English | <a href="docs/README_zh.md">简体中文</a>
     python Groove.py
     ```
 
-## Install
-### Win32
-#### Installer
-1. Download and install [LAV Filters](https://github.com/Nevcairiel/LAVFilters/releases/download/0.74/LAVFilters-0.74-Installer.exe)
-2. Download `Groove_v*.*.*_x64_setup.exe` from [release page](https://github.com/zhiyiYo/Groove/releases)
-3. Run `Groove_v*.*.*_x64_setup.exe` as administrator and install Groove
-4. Start to enjoy your music~~
-
-#### Portable Edition
-1. Download and install [LAV Filters](https://github.com/Nevcairiel/LAVFilters/releases/download/0.74/LAVFilters-0.74-Installer.exe)
-2. Download `Groove_v*.*.*_windows_x64.zip` from [release page](https://github.com/zhiyiYo/Groove/releases)
-3. Unzip `Groove_v*.*.*_windows_x64.zip`
-4. Go to `Groove` folder, find and double click **Groove.exe**
-5. Start to enjoy your music~~
-
-### Linux
-1. Install GStreamer
-2. Download `Groove_v*.*.*_linux_x64.zip` from [release page](https://github.com/zhiyiYo/Groove/releases)
-3. Unzip `Groove_v*.*.*_linux_x64.zip`
-4. Go to `Groove` folder, find and double click the **Groove** executable file
-5. Start to enjoy your music~~
-
 
 ## Document
 Want to know more about Groove Music? Please read the [help document](https://groove-music.readthedocs.io) 👈
@@ -105,3 +79,12 @@ Want to know more about Groove Music? Please read the [help document](https://gr
 - [zhiyiYo/PyQt-Frameless-Window](https://github.com/zhiyiYo/PyQt-Frameless-Window)：A cross-platform frameless window based on pyqt5, support Win32, Linux and macOS.
 - [zhiyiYo/PyQt-Fluent-Widgets](https://github.com/zhiyiYo/PyQt-Fluent-Widgets)：A fluent design widgets library based on PyQt5
 - [jsmolka/egg-player](https://github.com/jsmolka/egg-player)：A Groove Music like music player. The code of this repo is very elegant.
+
+## License
+Groove is licensed under GPLv3 for non-commercial usage.
+
+Copyright © 2020 by zhiyiYo.
+
+> *Attention*
+>
+> This software is only for learning and communication, the songs' and playlists' copyright belongs to each music platform.
