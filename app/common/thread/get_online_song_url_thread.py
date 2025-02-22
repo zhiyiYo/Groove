@@ -29,7 +29,7 @@ class GetOnlineSongUrlThread(QThread):
         songInfo = self.songInfo
         cover = Cover(songInfo.singer, songInfo.album)
         self.coverPath = cover.path()
-        if not Path(self.coverPath).exists():
+        if self.coverPath.startswith(":") or not Path(self.coverPath).exists():
             url = self.songInfo.get('coverPath') or \
                 self.crawler.getAlbumCoverUrl(songInfo.singer+" "+songInfo.title)
             self.coverPath = self.crawler.downloadAlbumCover(
