@@ -11,7 +11,6 @@ from common.url import FakeUrl
 from .crawler_base import (AudioQualityError, CrawlerBase, MvQuality,
                            SongQuality)
 from .exception_handler import exceptionHandler
-from .kuwo_url_decoder import decode_song_url, decode_mv_url
 
 
 
@@ -83,11 +82,17 @@ class KuWoMusicCrawler(CrawlerBase):
 
         # get mobi url
         rid = KuWoFakeSongUrl.getId(song_info.file)
-        format = self._qualityToFormat(quality)
-        mobi_url = decode_song_url(rid, format)
+        br = {
+            SongQuality.STANDARD: '128k',
+            SongQuality.HIGH: '192k',
+            SongQuality.SUPER: '320k',
+            SongQuality.LOSSLESS: '320k',
+        }[quality]
 
-        response = self.send_request(mobi_url)
-        url = response.text.split('\r\n')[2][4:]
+        url = f"https://mobi.kuwo.cn/mobi.s?f=web&source=jiakong&type=convert_url_with_sign&rid={rid}&br={br}mp3"
+        response = self.send_request(url, headers=self.headers).json()
+        url = response['data']['url']
+
         return url
 
     @exceptionHandler('')
@@ -173,9 +178,10 @@ class KuWoMusicCrawler(CrawlerBase):
 
     @exceptionHandler('')
     def getMvUrl(self, mv_info: dict, quality=MvQuality.SD) -> str:
-        mobi_url = decode_mv_url(mv_info['id'])
-        response = self.send_request(mobi_url, headers=self.headers)
-        return response.text.split('\r\n')[2][4:]
+        rid = mv_info['id']
+        url = f"https://mobi.kuwo.cn/mobi.s?f=web&source=jiakong&type=convert_mv_url2&rid={rid}&format=MP4"
+        response = self.send_request(url, headers=self.headers)
+        return response.text.split("\r\n")[2][4:]
 
     def _search(self, type: KuWoSearchType, key_word: str, page_num=1, page_size=30):
         """ search  """
