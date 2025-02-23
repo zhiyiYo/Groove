@@ -1,11 +1,14 @@
 # coding:utf-8
 import imghdr
 from math import floor
+from io import BytesIO
+from typing import Union
 
 import cv2 as cv
 import numpy as np
 from colorthief import ColorThief
 from PIL import Image
+from PyQt5.QtCore import QIODevice, QBuffer
 from PyQt5.QtGui import QImage, QPixmap
 from scipy.ndimage.filters import gaussian_filter
 
@@ -33,7 +36,29 @@ def readImage(imagePath: str):
         Logger("image").error(e)
         imagePath = ":/images/default_covers/album_200_200.png"
 
-    return Image.fromqpixmap(QPixmap(imagePath))
+    return fromqpixmap(QPixmap(imagePath))
+
+
+def fromqpixmap(im: Union[QImage, QPixmap]):
+    """
+    :param im: QImage or PIL ImageQt object
+    """
+    buffer = QBuffer()
+    buffer.open(QIODevice.ReadWrite)
+
+    # preserve alpha channel with png
+    # otherwise ppm is more friendly with Image.open
+    if im.hasAlphaChannel():
+        im.save(buffer, "png")
+    else:
+        im.save(buffer, "ppm")
+
+    b = BytesIO()
+    b.write(buffer.data())
+    buffer.close()
+    b.seek(0)
+
+    return Image.open(b)
 
 
 def gaussianBlur(imagePath: str, blurRadius=18, brightFactor=1, blurPicSize: tuple = None) -> np.ndarray:
@@ -68,7 +93,11 @@ def gaussianBlur(imagePath: str, blurRadius=18, brightFactor=1, blurPicSize: tup
         w_, h_ = w * ratio, h * ratio
 
         if w_ < w:
-            image = image.resize((int(w_), int(h_)), Image.ANTIALIAS)
+            if hasattr(Image, 'ANTIALIAS'):
+                image = image.resize((int(w_), int(h_)), Image.ANTIALIAS)
+            else:
+                image = image.resize((int(w_), int(h_)), Image.Resampling.BILINEAR)
+
 
     image = np.array(image)
 
@@ -108,7 +137,20 @@ def getBlurPixmap(imagePath: str, blurRadius=30, brightFactor=1, blurPicSize: tu
         the image after blurring
     """
     image = gaussianBlur(imagePath, blurRadius, brightFactor, blurPicSize)
-    return Image.fromarray(image).toqpixmap()
+    return imageToQPixmap(image)
+
+
+def imageToQPixmap(image):
+    if isinstance(image, Image.Image):
+        image = np.uint8(image)
+
+    h, w, c = image.shape
+    if c == 3:
+        format = QImage.Format_RGB888
+    else:
+        format = QImage.Format_RGBA8888
+
+    return QPixmap.fromImage(QImage(image.data, w, h, c*w, format))
 
 
 class DominantColor:

@@ -1,6 +1,6 @@
 # coding:utf-8
 from common.config import config, Theme
-from common.image_utils import readImage
+from common.image_utils import readImage, imageToQPixmap
 from components.widgets.label import FadeInLabel
 from PIL import Image, ImageDraw
 from PIL.ImageFilter import GaussianBlur
@@ -47,7 +47,7 @@ class SingerBlurBackground(FadeInLabel):
         # apply Gaussian blur to album cover
         blurAvatar = blurAvatar.filter(GaussianBlur(blurRadius/2))
         self.resize(*blurAvatar.size)
-        self.setPixmap(blurAvatar.toqpixmap())
+        self.setPixmap(imageToQPixmap(blurAvatar))
 
     def showEvent(self, e):
         super().showEvent(e)

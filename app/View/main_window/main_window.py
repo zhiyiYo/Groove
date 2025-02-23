@@ -222,6 +222,9 @@ class MainWindow(AcrylicWindow):
 
         self.move(w//2 - self.width()//2, h//2 - self.height()//2)
         self.show()
+        if sys.platform == "darwin":
+            self.showMaximized()
+            
         QApplication.processEvents()
 
     def initWidget(self):

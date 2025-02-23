@@ -2,10 +2,10 @@
 from common.icon import drawSvgIcon
 from PIL.ImageFilter import GaussianBlur
 from PyQt5.QtCore import QPropertyAnimation, Qt, pyqtProperty, QRectF, QSize
-from PyQt5.QtGui import QBrush, QEnterEvent, QPainter, QPixmap
+from PyQt5.QtGui import QBrush, QEnterEvent, QPainter, QPixmap, QImage
 
 from .tool_tip_button import ToolTipButton
-from common.image_utils import readImage
+from common.image_utils import readImage, imageToQPixmap
 
 
 class BlurButton(ToolTipButton):
@@ -77,8 +77,7 @@ class BlurButton(ToolTipButton):
             self.height() + self.cropY
         ))
         img = img.filter(GaussianBlur(self.blurRadius)).point(lambda x: int(x * 0.7))
-        self.blurPix = img.toqpixmap()
-
+        self.blurPix = imageToQPixmap(img)
         self.update()
 
     def fadeIn(self):
